@@ -19,6 +19,8 @@ services:
       - '${API_PORT:-4000}:${API_PORT:-4000}'
     env_file:
       - ./recruiting-tool-backend/.env
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/recruiting_tool_db
     volumes:
       - ./recruiting-tool-backend:/app
     networks:
