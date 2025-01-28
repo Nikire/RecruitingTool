@@ -16,6 +16,7 @@ datasource db {
 
 enum RolesType {
   USER
+  HR
   ADMIN
   SUPER_ADMIN
 }
