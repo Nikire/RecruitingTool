@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
+import { AuthModule } from './auth/auth.module';
 
 /*
   The idea behind this module is to import various common Modules in a single Module call.
@@ -8,7 +9,7 @@ import { DatabaseModule } from './database/database.module';
 */
 
 @Module({
-  imports: [DatabaseModule],
-  exports: [DatabaseModule],
+  imports: [DatabaseModule, AuthModule],
+  exports: [DatabaseModule, AuthModule],
 })
 export class SharedModule {}

@@ -10,6 +10,16 @@
 yarn install
 ```
 
+### Setting up .env
+
+- Create a `.env` file and follow the `.env.example` file to set up the environment variables.
+
+- Here is a fast way to generate a `JWT_SECRET` key through the terminal:
+
+```bash
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+```
+
 ## Running the app
 
 ```bash
