@@ -23,6 +23,10 @@ yarn run start:dev
 yarn run start:prod
 ```
 
+## Swagger
+
+You can see the API documentation by visiting the following URL once you got the app running: `http://localhost:{YOUR-SELECTED-BACKEND-PORT}/api`
+
 ## License
 
 This project is [MIT licensed](../LICENSE).
