@@ -17,3 +17,7 @@ docker-compose build
 ```bash
 docker-compose up
 ```
+
+## Swagger
+
+You can see the API documentation by visiting the following URL once you got the app running: `http://localhost:{YOUR-SELECTED-BACKEND-PORT}/api`
