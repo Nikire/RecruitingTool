@@ -1,16 +1,8 @@
-import {
-  Injectable,
-  ConflictException,
-  NotFoundException,
-} from '@nestjs/common';
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  UserResponseDto,
-  UserWithPasswordResponseDto,
-} from './dto/users.dto';
+import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { CreateUserDto, UpdateUserDto, UserResponseDto, UserWithPasswordResponseDto } from './dto/users.dto';
 import { DatabaseService } from '../shared/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { UserMapper, UserWithPasswordMapper } from './entities/users.entities';
 
 @Injectable()
 export class UsersService {
@@ -21,13 +13,7 @@ export class UsersService {
         data: createUserDto,
       });
 
-      return {
-        uid: newUser.uid.toString(),
-        name: newUser.name.toString(),
-        email: newUser.email.toString(),
-        createdAt: newUser.createdAt.toISOString(),
-        updatedAt: newUser.updatedAt.toISOString(),
-      };
+      return UserMapper(newUser);
     } catch (error) {
       if (error.code === 'P2002') {
         throw new ConflictException('Email already exists');
@@ -38,13 +24,7 @@ export class UsersService {
 
   async findAll() {
     const users = await this.databaseService.user.findMany();
-    return users.map((user) => ({
-      uid: user.uid.toString(),
-      name: user.name.toString(),
-      email: user.email.toString(),
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    }));
+    return users.map((user) => UserMapper(user));
   }
 
   async findOne(uid: string): Promise<UserResponseDto> {
@@ -54,19 +34,10 @@ export class UsersService {
     if (!user) {
       throw new NotFoundException(`User ${uid} not found`);
     }
-    return {
-      uid: user.uid.toString(),
-      name: user.name.toString(),
-      email: user.email.toString(),
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    };
+    return UserMapper(user);
   }
 
-  async update(
-    uid: string,
-    updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseDto> {
+  async update(uid: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     if (!uid) {
       throw new NotFoundException(`User ${uid} not found`);
     }
@@ -82,13 +53,7 @@ export class UsersService {
       where: { uid },
       data: updateUserDto,
     });
-    return {
-      uid: updatedUser.uid.toString(),
-      name: updatedUser.name.toString(),
-      email: updatedUser.email.toString(),
-      createdAt: updatedUser.createdAt.toISOString(),
-      updatedAt: updatedUser.updatedAt.toISOString(),
-    };
+    return UserMapper(updatedUser);
   }
 
   async remove(uid: string): Promise<MessageResponseDto> {
@@ -111,13 +76,6 @@ export class UsersService {
       throw new NotFoundException(`User with email ${email} not found`);
     }
 
-    return {
-      uid: user.uid.toString(),
-      name: user.name.toString(),
-      password: user.password.toString(),
-      email: user.email.toString(),
-      createdAt: user.createdAt.toISOString(),
-      updatedAt: user.updatedAt.toISOString(),
-    };
+    return UserWithPasswordMapper(user);
   }
 }

@@ -2,17 +2,11 @@ import { Body, Controller, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisteredUserDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiCreatedResponse,
-  ApiOperation,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiCreatedResponse, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 @ApiTags('Auth')
-@ApiCreatedResponse({
+@ApiResponse({
+  status: 201,
   description: 'Returns the user details',
   type: RegisteredUserDto,
 })
