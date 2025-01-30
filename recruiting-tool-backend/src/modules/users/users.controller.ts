@@ -22,6 +22,7 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -93,7 +94,7 @@ export class UsersController {
   })
   @ApiParam({ name: 'uid', required: true })
   @Auth(['SUPER_ADMIN'])
-  remove(@Param('uid') uid: string) {
+  remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.usersService.remove(uid);
   }
 }

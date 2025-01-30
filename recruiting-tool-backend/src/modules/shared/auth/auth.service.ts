@@ -3,11 +3,14 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginDto } from './dto/auth.dto';
+import { LoginDto, RegisteredUserDto } from './dto/auth.dto';
 import * as bycrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/users.service';
-import { CreateUserDto } from 'src/modules/users/dto/users.dto';
+import {
+  CreateUserDto,
+  UserWithPasswordResponseDto,
+} from 'src/modules/users/dto/users.dto';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +19,11 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register({ name, email, password }: CreateUserDto) {
+  async register({
+    name,
+    email,
+    password,
+  }: CreateUserDto): Promise<RegisteredUserDto> {
     const user = await this.usersService.findByEmail(email);
     if (user) {
       throw new BadRequestException('User already exists');
@@ -35,7 +42,7 @@ export class AuthService {
     };
   }
 
-  async login({ email, password }: LoginDto) {
+  async login({ email, password }: LoginDto): Promise<RegisteredUserDto> {
     const user = await this.usersService.findByEmail(email);
     if (!user) {
       throw new UnauthorizedException('Email is wrong');
@@ -61,7 +68,7 @@ export class AuthService {
     };
   }
 
-  async verifyToken(token: string) {
+  async verifyToken(token: string): Promise<UserWithPasswordResponseDto> {
     try {
       const user = await this.jwtService.verifyAsync(token);
       return user;

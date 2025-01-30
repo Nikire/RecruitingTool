@@ -3,13 +3,19 @@ import {
   ConflictException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto } from './dto/users.dto';
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserResponseDto,
+  UserWithPasswordResponseDto,
+} from './dto/users.dto';
 import { DatabaseService } from '../shared/database/database.service';
+import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private databaseService: DatabaseService) {}
-  async create(createUserDto: CreateUserDto) {
+  async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     try {
       const newUser = await this.databaseService.user.create({
         data: createUserDto,
@@ -41,7 +47,7 @@ export class UsersService {
     }));
   }
 
-  async findOne(uid: string) {
+  async findOne(uid: string): Promise<UserResponseDto> {
     const user = await this.databaseService.user.findUnique({
       where: { uid },
     });
@@ -57,7 +63,10 @@ export class UsersService {
     };
   }
 
-  async update(uid: string, updateUserDto: UpdateUserDto) {
+  async update(
+    uid: string,
+    updateUserDto: UpdateUserDto,
+  ): Promise<UserResponseDto> {
     if (!uid) {
       throw new NotFoundException(`User ${uid} not found`);
     }
@@ -82,7 +91,7 @@ export class UsersService {
     };
   }
 
-  async remove(uid: string) {
+  async remove(uid: string): Promise<MessageResponseDto> {
     const existingUser = await this.databaseService.user.findUnique({
       where: { uid },
     });
@@ -93,7 +102,7 @@ export class UsersService {
     return { message: `User deleted successfully` };
   }
 
-  async findByEmail(email: string) {
+  async findByEmail(email: string): Promise<UserWithPasswordResponseDto> {
     const user = await this.databaseService.user.findUnique({
       where: { email },
     });

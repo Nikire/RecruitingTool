@@ -89,3 +89,11 @@ export class UserResponseDto {
   })
   updatedAt: string;
 }
+
+export class UserWithPasswordResponseDto extends UserResponseDto {
+  @ApiProperty({
+    description: 'The password of the user',
+    example: 'Testing123',
+  })
+  password: string;
+}
