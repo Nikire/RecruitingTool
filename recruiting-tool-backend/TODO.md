@@ -10,5 +10,6 @@
 - [ ] Research a better way to handle errors in the backend
 - [ ] Research a better way to document the backend using Swagger
 - [ ] Add pagination on array responses ( e.g. GET /users )
+- [ ] Have a response Interceptor so that all responses are formatted in a standard way
 
 ### Done
