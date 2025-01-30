@@ -1,16 +1,10 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { LoginDto, RegisteredUserDto } from './dto/auth.dto';
 import * as bycrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/users.service';
-import {
-  CreateUserDto,
-  UserWithPasswordResponseDto,
-} from 'src/modules/users/dto/users.dto';
+import { CreateUserDto, UserWithPasswordResponseDto } from 'src/modules/users/dto/users.dto';
+import { UserMapper } from 'src/modules/users/entities/users.entities';
 
 @Injectable()
 export class AuthService {
@@ -19,11 +13,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
-  async register({
-    name,
-    email,
-    password,
-  }: CreateUserDto): Promise<RegisteredUserDto> {
+  async register({ name, email, password }: CreateUserDto): Promise<RegisteredUserDto> {
     const user = await this.usersService.findByEmail(email);
     if (user) {
       throw new BadRequestException('User already exists');
@@ -59,11 +49,7 @@ export class AuthService {
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
 
     return {
-      uid: user.uid.toString(),
-      name: user.name.toString(),
-      email: user.email.toString(),
-      createdAt: user.createdAt,
-      updatedAt: user.updatedAt,
+      ...UserMapper(user),
       token,
     };
   }

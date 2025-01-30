@@ -1,35 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Put,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UserResponseDto, UpdateUserDto } from './dto/users.dto';
 import { Auth } from '../shared/auth/decorators/auth.decorator';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiConflictResponse,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiParam,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
 @Controller('users')
 @ApiUnauthorizedResponse({
-  description:
-    "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
 })
 @ApiNotFoundResponse({ description: 'User not found' })
 @Auth(['USER'])
@@ -38,7 +18,8 @@ export class UsersController {
 
   @Post()
   @ApiOperation({ summary: 'Creates a User - ADMIN role required' })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: 201,
     description: 'The user has been successfully created.',
     type: UserResponseDto,
   })
@@ -53,7 +34,8 @@ export class UsersController {
 
   @Get()
   @ApiOperation({ summary: 'Get users list' })
-  @ApiOkResponse({
+  @ApiResponse({
+    status: 200,
     description: 'Returns the users details',
     type: [UserResponseDto],
   })
@@ -63,7 +45,8 @@ export class UsersController {
 
   @Get(':uid')
   @ApiOperation({ summary: 'Get one user' })
-  @ApiOkResponse({
+  @ApiResponse({
+    status: 200,
     description: 'Returns the user details',
     type: UserResponseDto,
   })
@@ -74,23 +57,23 @@ export class UsersController {
 
   @Put(':uid')
   @ApiOperation({ summary: 'Update one user' })
-  @ApiOkResponse({
+  @ApiResponse({
+    status: 200,
     description: 'Returns the user details',
     type: UserResponseDto,
   })
   @ApiBody({ type: UpdateUserDto })
   @ApiParam({ name: 'uid', required: true })
-  update(
-    @Param('uid') uid: string,
-    @Body() updateUserDto: UpdateUserDto,
-  ): Promise<UserResponseDto> {
+  update(@Param('uid') uid: string, @Body() updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
     return this.usersService.update(uid, updateUserDto);
   }
 
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete one user - SUPER_ADMIN role required' })
-  @ApiOkResponse({
+  @ApiResponse({
+    status: 200,
     description: 'The user has been successfully deleted.',
+    example: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
   @Auth(['SUPER_ADMIN'])
