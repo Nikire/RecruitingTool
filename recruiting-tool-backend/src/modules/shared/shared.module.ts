@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
-import { DatabaseModule } from './database/database.module';
-import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './modules/database/database.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AdminUserModule } from './modules/admin-user/admin-user.module';
 
 /*
   The idea behind this module is to import various common Modules in a single Module call.
@@ -9,7 +10,7 @@ import { AuthModule } from './auth/auth.module';
 */
 
 @Module({
-  imports: [DatabaseModule, AuthModule],
-  exports: [DatabaseModule, AuthModule],
+  imports: [DatabaseModule, AuthModule, AdminUserModule],
+  exports: [DatabaseModule, AuthModule, AdminUserModule],
 })
 export class SharedModule {}

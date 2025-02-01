@@ -25,6 +25,8 @@ services:
       - ./recruiting-tool-backend:/app
     networks:
       - app-network
+    entrypoint: ['/bin/sh', '/app/docker-entrypoint.sh']
+    command: ['yarn', 'run', 'start']
 
 networks:
   app-network:

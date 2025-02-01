@@ -22,7 +22,7 @@ export class AuthService {
     const newUser = await this.usersService.create({
       name,
       email,
-      password: await bycrypt.hash(password, 10),
+      password,
     });
 
     const { token } = await this.login({ email, password });
