@@ -1,8 +1,9 @@
 import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
-import { CreateUserDto, UpdateUserDto, UserResponseDto, UserWithPasswordResponseDto } from './dto/users.dto';
-import { DatabaseService } from '../shared/database/database.service';
+import { CreateUserDto, CreateUserInternalDto, UpdateUserDto, UserResponseDto, UserWithPasswordResponseDto } from './dto/users.dto';
+import { DatabaseService } from '../shared/modules/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { UserMapper, UserWithPasswordMapper } from './entities/users.entities';
+import * as bycrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
@@ -10,7 +11,7 @@ export class UsersService {
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     try {
       const newUser = await this.databaseService.user.create({
-        data: createUserDto,
+        data: { ...createUserDto, password: await bycrypt.hash(createUserDto.password, 10) },
       });
 
       return UserMapper(newUser);
@@ -22,7 +23,22 @@ export class UsersService {
     }
   }
 
-  async findAll() {
+  async createInternal(createUserDto: CreateUserInternalDto): Promise<UserResponseDto> {
+    try {
+      const newUser = await this.databaseService.user.create({
+        data: { ...createUserDto, password: await bycrypt.hash(createUserDto.password, 10) },
+      });
+
+      return UserMapper(newUser);
+    } catch (error) {
+      if (error.code === 'P2002') {
+        throw new ConflictException('Email already exists');
+      }
+      throw error;
+    }
+  }
+
+  async findAll(): Promise<Array<UserResponseDto>> {
     const users = await this.databaseService.user.findMany();
     return users.map((user) => UserMapper(user));
   }
@@ -67,13 +83,13 @@ export class UsersService {
     return { message: `User deleted successfully` };
   }
 
-  async findByEmail(email: string): Promise<UserWithPasswordResponseDto> {
+  async findByEmail(email: string): Promise<UserWithPasswordResponseDto> | null {
     const user = await this.databaseService.user.findUnique({
       where: { email },
     });
 
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      return null;
     }
 
     return UserWithPasswordMapper(user);

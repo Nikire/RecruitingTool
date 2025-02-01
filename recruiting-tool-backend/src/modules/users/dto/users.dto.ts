@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { RolesType } from '@prisma/client';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto {
@@ -81,4 +82,14 @@ export class UserWithPasswordResponseDto extends UserResponseDto {
     example: 'Testing123',
   })
   password: string;
+}
+
+export class CreateUserInternalDto extends CreateUserDto {
+  @ApiProperty({
+    description: 'The roles of the user',
+    example: ['USER', 'ADMIN'],
+  })
+  @IsString()
+  @IsNotEmpty()
+  roles: Array<RolesType>;
 }

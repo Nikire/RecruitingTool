@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
@@ -12,13 +6,6 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-enum RolesType {
-  USER
-  HR
-  ADMIN
-  SUPER_ADMIN
 }
 
 model User {
@@ -30,4 +17,11 @@ model User {
   roles     RolesType[] @default([USER])
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
+}
+
+enum RolesType {
+  USER
+  ADMIN
+  SUPER_ADMIN
+  HR
 }
