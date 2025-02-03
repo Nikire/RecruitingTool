@@ -9,14 +9,16 @@ datasource db {
 }
 
 model User {
-  id        Int         @id @default(autoincrement())
-  uid       String      @unique @default(uuid()) @db.Uuid
-  name      String
-  email     String      @unique
-  password  String
-  roles     RolesType[] @default([USER])
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  id              Int             @id @default(autoincrement())
+  uid             String          @unique @default(uuid()) @db.Uuid
+  name            String
+  email           String          @unique
+  password        String
+  roles           RolesType[]     @default([USER])
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  HiringProcesses HiringProcess[] @relation("HiringProcesses")
+  Candidate       HiringProcess[] @relation("Candidate")
 }
 
 enum RolesType {
@@ -24,4 +26,44 @@ enum RolesType {
   ADMIN
   SUPER_ADMIN
   HR
+}
+
+model HiringProcess {
+  id          Int                 @id @default(autoincrement())
+  uid         String              @unique @default(uuid()) @db.Uuid
+  title       String
+  status      HiringProcessStatus @default(OPEN)
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+  createdBy   User                @relation("HiringProcesses", fields: [createdById], references: [id])
+  createdById Int
+  Candidate   User                @relation("Candidate", fields: [candidateId], references: [id])
+  candidateId Int
+  stages      Stage[]
+}
+
+enum HiringProcessStatus {
+  OPEN
+  CLOSED
+  IN_PROGRESS
+  CANCELLED
+  REJECTED
+}
+
+model Stage {
+  id              Int           @id @default(autoincrement())
+  uid             String        @unique @default(uuid()) @db.Uuid
+  title           String
+  type            StageType
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  HiringProcess   HiringProcess @relation(fields: [hiringProcessId], references: [id])
+  hiringProcessId Int
+}
+
+enum StageType {
+  INTERVIEW
+  TECHNICAL_INTERVIEW
+  FINAL_INTERVIEW
+  OFFER
 }
