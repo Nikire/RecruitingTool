@@ -39,7 +39,7 @@ You can see the API documentation by visiting the following URL once you got the
 
 ## Prisma migrations
 
-- To run migrations you need to run the following command:
+- Migrations are run automatically on docker container start, but you can run migrations by running the following command:
 
 ```bash
 # run migrations
