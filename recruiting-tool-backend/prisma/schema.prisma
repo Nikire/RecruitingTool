@@ -55,10 +55,21 @@ model Stage {
   uid             String        @unique @default(uuid()) @db.Uuid
   title           String
   type            StageType
+  description     String
+  status          StageStatus   @default(OPEN)
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
   hiringProcess   HiringProcess @relation(fields: [hiringProcessId], references: [id])
   hiringProcessId Int
+  position        Int
+
+  @@unique([hiringProcessId, position])
+}
+
+enum StageStatus {
+  OPEN
+  CANCELLED
+  DONE
 }
 
 enum StageType {

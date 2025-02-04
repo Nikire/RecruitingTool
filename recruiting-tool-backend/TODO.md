@@ -10,10 +10,10 @@
 - [ ] Add Profile model and relation between the user
 - [ ] Add user Profile update endpoints
 - [ ] Add try catch error as a formatedErrorResponse function on every controller return
-- [ ] Add Stages CRUD and include stages on HiringProcess services
 
 ### Done
 
 - [x] Add SUPER_ADMIN user through script
 - [x] Research a better way to document the backend using Swagger
 - [x] Add HiringProcess Model to keep track of the hiring process of a company
+- [x] Add Stages CRUD and include stages on HiringProcess services
