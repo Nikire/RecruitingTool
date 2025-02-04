@@ -17,8 +17,8 @@ model User {
   roles           RolesType[]     @default([USER])
   createdAt       DateTime        @default(now())
   updatedAt       DateTime        @updatedAt
-  HiringProcesses HiringProcess[] @relation("HiringProcesses")
-  Candidate       HiringProcess[] @relation("Candidate")
+  hiringProcesses HiringProcess[] @relation("HiringProcesses")
+  candidate       HiringProcess[] @relation("Candidate")
 }
 
 enum RolesType {
@@ -37,7 +37,7 @@ model HiringProcess {
   updatedAt   DateTime            @updatedAt
   createdBy   User                @relation("HiringProcesses", fields: [createdById], references: [id])
   createdById Int
-  Candidate   User                @relation("Candidate", fields: [candidateId], references: [id])
+  candidate   User                @relation("Candidate", fields: [candidateId], references: [id])
   candidateId Int
   stages      Stage[]
 }
@@ -57,7 +57,7 @@ model Stage {
   type            StageType
   createdAt       DateTime      @default(now())
   updatedAt       DateTime      @updatedAt
-  HiringProcess   HiringProcess @relation(fields: [hiringProcessId], references: [id])
+  hiringProcess   HiringProcess @relation(fields: [hiringProcessId], references: [id])
   hiringProcessId Int
 }
 

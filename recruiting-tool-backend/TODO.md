@@ -8,7 +8,9 @@
 - [ ] Add pagination on array responses ( e.g. GET /users )
 - [ ] Have a response Interceptor so that all responses are formatted in a standard way
 - [ ] Add Profile model and relation between the user
-- [ ] Add user Profile update endpoints.
+- [ ] Add user Profile update endpoints
+- [ ] Add try catch error as a formatedErrorResponse function on every controller return
+- [ ] Add Stages CRUD and include stages on HiringProcess services
 
 ### Done
 
