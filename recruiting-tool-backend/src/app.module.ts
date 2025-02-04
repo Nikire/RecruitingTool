@@ -4,9 +4,10 @@ import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule } from '@nestjs/config';
+import { HiringProcessModule } from './modules/hiring-process/hiring-process.module';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true })],
+  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), HiringProcessModule],
   controllers: [AppController],
   providers: [AppService],
 })
