@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { HiringProcessStatus } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { UserResponseDto } from 'src/modules/users/dto/users.dto';
+import { StageResponseDto } from '../modules/stages/dto/stages.dto';
 
 export class CreateHiringProcessDto {
   @ApiProperty({ description: 'The title of the hiring process', example: 'Software Engineer Interview' })
@@ -36,12 +37,6 @@ export class UpdateHiringProcessDto {
   status?: HiringProcessStatus;
 }
 
-/*  uid: hiringProcess.uid,
-    title: hiringProcess.title,
-    status: hiringProcess.status,
-    candidate: UserMapper(hiringProcess.candidate),
-     */
-
 export class HiringProcessResponseDto {
   @ApiProperty({ description: 'The UID of the hiring process', example: '123e4567-e89b-12d3-a456-426614174000' })
   uid: string;
@@ -54,4 +49,7 @@ export class HiringProcessResponseDto {
 
   @ApiProperty({ description: 'The candidate of the hiring process' })
   candidate?: UserResponseDto;
+
+  @ApiProperty({ description: 'The stages of the hiring process' })
+  stages?: Array<StageResponseDto>;
 }
