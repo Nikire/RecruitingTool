@@ -1,9 +1,4 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Injectable,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { RolesType } from '@prisma/client';
 import { Observable } from 'rxjs';
@@ -12,17 +7,12 @@ import { Observable } from 'rxjs';
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
 
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest();
     const handler = [context.getHandler(), context.getClass()];
 
-    const { roles } = request.user || {};
-    const authRoles = this.reflector.getAllAndOverride<RolesType[]>(
-      'roles',
-      handler,
-    );
+    const { roles } = request.currentUser || {};
+    const authRoles = this.reflector.getAllAndOverride<RolesType[]>('roles', handler);
     if (!roles) {
       throw new Error('Auth token has no roles component');
     }
