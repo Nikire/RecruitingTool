@@ -4,7 +4,7 @@ import { StagesService } from './stages.service';
 import { CreateStageDto, UpdateStageDto } from './dto/stages.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
 
-@Auth(['HR'])
+@Auth(['HR', 'ADMIN'])
 @ApiBearerAuth()
 @ApiTags('Stages')
 @Controller('stages')
