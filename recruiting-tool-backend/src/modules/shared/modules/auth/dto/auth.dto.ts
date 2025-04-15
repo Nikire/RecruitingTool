@@ -1,11 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  MaxLength,
-  MinLength,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { UserResponseDto } from 'src/modules/users/dto/users.dto';
 
 export class LoginDto {
@@ -31,8 +25,7 @@ export class LoginDto {
 export class RegisteredUserDto extends UserResponseDto {
   @ApiProperty({
     description: 'The token of the user',
-    example:
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGhvdG1haWwuY29tIiwibmFtZSI6ImpvaG4gZG9lIiwiaWQi',
+    example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGhvdG1haWwuY29tIiwibmFtZSI6ImpvaG4gZG9lIiwiaWQi',
   })
   token: string;
 }

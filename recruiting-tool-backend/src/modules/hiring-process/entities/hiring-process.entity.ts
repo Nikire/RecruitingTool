@@ -1,25 +1,19 @@
 import { HiringProcess, Prisma } from '@prisma/client';
-import { UserMapper } from 'src/modules/users/entities/users.entities';
 import { StageMapper } from '../modules/stages/entities/stage.entity';
+import { CandidateMapper } from '../modules/candidate/entities/candidate.entity';
+
+export const includeHiringProcess = { candidate: true, stages: true };
 
 type HiringProcessWithRelations = Prisma.HiringProcessGetPayload<{
-  include: { candidate: true; stages: true };
+  include: typeof includeHiringProcess;
 }>;
-
-export function HiringProcessMapper(hiringProcess: HiringProcess) {
-  return {
-    uid: hiringProcess.uid,
-    title: hiringProcess.title,
-    status: hiringProcess.status,
-  };
-}
 
 export function HiringProcessOneMapper(hiringProcess: HiringProcessWithRelations) {
   return {
     uid: hiringProcess.uid,
     title: hiringProcess.title,
     status: hiringProcess.status,
-    candidate: UserMapper(hiringProcess.candidate),
     stages: hiringProcess.stages.map(StageMapper),
+    candidate: CandidateMapper(hiringProcess.candidate),
   };
 }

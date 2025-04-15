@@ -12,9 +12,7 @@ async function bootstrap() {
 
   const config = new DocumentBuilder()
     .setTitle('Recruiting Tool API')
-    .setDescription(
-      'API for managing recruitment processes, user roles and more.',
-    )
+    .setDescription('API for managing recruitment processes, user roles and more.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

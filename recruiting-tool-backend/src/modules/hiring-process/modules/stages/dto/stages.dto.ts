@@ -78,4 +78,7 @@ export class StageResponseDto {
 
   @ApiProperty({ description: 'The status of the stage', example: StageStatus.DONE, enum: StageStatus })
   status: StageStatus;
+
+  jobPositionUid?: string;
+  hiringProcessUid?: string;
 }

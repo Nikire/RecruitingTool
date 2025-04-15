@@ -1,21 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { HiringProcessStatus } from '@prisma/client';
 import { IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
-import { UserResponseDto } from 'src/modules/users/dto/users.dto';
 import { StageResponseDto } from '../modules/stages/dto/stages.dto';
 
 export class CreateHiringProcessDto {
-  @ApiProperty({ description: 'The title of the hiring process', example: 'Software Engineer Interview' })
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(3)
-  @MaxLength(100)
-  title: string;
-
   @ApiProperty({ description: 'The UID of the candidate', example: '123e4567-e89b-12d3-a456-426614174000' })
   @IsString()
   @IsNotEmpty()
   candidateUid: string;
+
+  @ApiProperty({ description: 'The UID of the job position related', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @IsString()
+  @IsNotEmpty()
+  jobPositionUid: string;
 }
 
 export class UpdateHiringProcessDto {
@@ -25,11 +22,6 @@ export class UpdateHiringProcessDto {
   @MinLength(3)
   @MaxLength(100)
   title?: string;
-
-  @ApiProperty({ description: 'The UID of the candidate', example: '123e4567-e89b-12d3-a456-426614174000' })
-  @IsOptional()
-  @IsString()
-  candidateUid?: string;
 
   @ApiProperty({ description: 'The status of the hiring process', example: 'IN_PROGRESS', enum: HiringProcessStatus })
   @IsOptional()
@@ -47,9 +39,13 @@ export class HiringProcessResponseDto {
   @ApiProperty({ description: 'The status of the hiring process', example: 'IN_PROGRESS', enum: HiringProcessStatus })
   status: HiringProcessStatus;
 
-  @ApiProperty({ description: 'The candidate of the hiring process' })
-  candidate?: UserResponseDto;
-
   @ApiProperty({ description: 'The stages of the hiring process' })
   stages?: Array<StageResponseDto>;
+}
+
+export class HiringProcessFindDto {
+  @ApiProperty({ description: 'The UID of the candidate related on the hiring process', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @IsOptional()
+  @IsString()
+  candidateUid?: string;
 }

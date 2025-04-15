@@ -9,16 +9,28 @@ datasource db {
 }
 
 model User {
-  id              Int             @id @default(autoincrement())
-  uid             String          @unique @default(uuid()) @db.Uuid
+  id           Int           @id @default(autoincrement())
+  uid          String        @unique @default(uuid()) @db.Uuid
+  name         String
+  email        String        @unique
+  password     String
+  roles        RolesType[]   @default([USER])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  jobPositions JobPosition[] @relation("JobPositionsUser")
+}
+
+model Candidate {
+  id              Int            @id @default(autoincrement())
+  uid             String         @unique @default(uuid()) @db.Uuid
   name            String
-  email           String          @unique
-  password        String
-  roles           RolesType[]     @default([USER])
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  hiringProcesses HiringProcess[] @relation("HiringProcesses")
-  candidate       HiringProcess[] @relation("Candidate")
+  email           String
+  hiringProcessId Int?           @unique
+  hiringProcess   HiringProcess? @relation("HiringProcessCandidate", fields: [hiringProcessId], references: [id])
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([hiringProcessId, email])
 }
 
 enum RolesType {
@@ -28,18 +40,31 @@ enum RolesType {
   HR
 }
 
+model JobPosition {
+  id              Int               @id @default(autoincrement())
+  uid             String            @unique @default(uuid()) @db.Uuid
+  title           String
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  createdById     Int
+  createdBy       User              @relation("JobPositionsUser", fields: [createdById], references: [id])
+  stages          Stage[] // Here stages is used to create the template of the job position
+  status          JobPositionStatus @default(OPEN)
+  hiringProcesses HiringProcess[]
+}
+
 model HiringProcess {
-  id          Int                 @id @default(autoincrement())
-  uid         String              @unique @default(uuid()) @db.Uuid
-  title       String
-  status      HiringProcessStatus @default(OPEN)
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
-  createdBy   User                @relation("HiringProcesses", fields: [createdById], references: [id])
-  createdById Int
-  candidate   User                @relation("Candidate", fields: [candidateId], references: [id])
-  candidateId Int
-  stages      Stage[]
+  id            Int                 @id @default(autoincrement())
+  uid           String              @unique @default(uuid()) @db.Uuid
+  title         String
+  status        HiringProcessStatus @default(OPEN)
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+  candidateId   Int?                @unique
+  candidate     Candidate?          @relation("HiringProcessCandidate")
+  stages        Stage[] // Here stages is used to check on which stage the Candidate is and where 
+  jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id])
+  jobPositionId Int
 }
 
 enum HiringProcessStatus {
@@ -48,6 +73,12 @@ enum HiringProcessStatus {
   IN_PROGRESS
   CANCELLED
   REJECTED
+}
+
+enum JobPositionStatus {
+  OPEN
+  CLOSED
+  CANCELLED
 }
 
 model Stage {
@@ -62,6 +93,9 @@ model Stage {
   hiringProcess   HiringProcess @relation(fields: [hiringProcessId], references: [id])
   hiringProcessId Int
   position        Int
+  JobPosition     JobPosition?  @relation(fields: [jobPositionId], references: [id])
+  jobPositionId   Int?
+  estimatedTime   Int?
 
   @@unique([hiringProcessId, position])
 }

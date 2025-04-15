@@ -1,27 +1,53 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateHiringProcessDto, HiringProcessResponseDto, UpdateHiringProcessDto } from './dto/hiring-process.dto';
+import { CreateHiringProcessDto, HiringProcessFindDto, HiringProcessResponseDto, UpdateHiringProcessDto } from './dto/hiring-process.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { HiringProcessMapper, HiringProcessOneMapper } from './entities/hiring-process.entity';
+import { HiringProcessOneMapper, includeHiringProcess } from './entities/hiring-process.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { JobPositionService } from '../job-position/job-position.service';
+import { CandidateService } from './modules/candidate/candidate.service';
+import { StagesService } from './modules/stages/stages.service';
 
 @Injectable()
 export class HiringProcessService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private readonly jobPositionService: JobPositionService,
+    private readonly candidateService: CandidateService,
+    private readonly stagesService: StagesService,
+  ) {}
 
-  async create(creatorUid: string, createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
+  async create(createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
+    const candidate = await this.candidateService.findOne(createHiringProcessDto.candidateUid);
+
+    if (!candidate) {
+      throw new NotFoundException(`Candidate ${createHiringProcessDto.candidateUid} not found`);
+    }
+
+    const jobPosition = await this.jobPositionService.findOne(createHiringProcessDto.jobPositionUid);
+
+    if (!jobPosition.stages?.length) {
+      throw new NotFoundException(`There is no stages on job position ${jobPosition.uid}`);
+    }
+
     const newHiringProcess = await this.databaseService.hiringProcess.create({
       data: {
-        title: createHiringProcessDto.title,
-        createdBy: { connect: { uid: creatorUid } },
-        candidate: { connect: { uid: createHiringProcessDto.candidateUid } },
+        title: jobPosition.title + ' - ' + candidate.name,
+        candidate: { connect: { uid: candidate.uid } },
+        jobPosition: { connect: { uid: jobPosition.uid } },
       },
+      include: includeHiringProcess,
     });
-    return HiringProcessMapper(newHiringProcess);
+
+    const copiedStages = jobPosition.stages.map(({ uid, ...rest }) => ({ ...rest, hiringProcessUid: newHiringProcess.uid }));
+    await this.stagesService.bulkCreateStages(copiedStages);
+
+    return HiringProcessOneMapper(newHiringProcess);
   }
 
-  async findAll(): Promise<Array<HiringProcessResponseDto>> {
+  async findAll(hiringProcessFindDto: HiringProcessFindDto): Promise<Array<HiringProcessResponseDto>> {
     const hiringProcesses = await this.databaseService.hiringProcess.findMany({
-      include: { candidate: true, stages: true },
+      include: includeHiringProcess,
+      where: hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid } } : {},
     });
     return hiringProcesses.map((hp) => HiringProcessOneMapper(hp));
   }
@@ -29,7 +55,7 @@ export class HiringProcessService {
   async findOne(uid: string): Promise<HiringProcessResponseDto> {
     const hiringProcess = await this.databaseService.hiringProcess.findUnique({
       where: { uid },
-      include: { candidate: true, stages: true },
+      include: includeHiringProcess,
     });
 
     if (!hiringProcess) {
@@ -47,12 +73,13 @@ export class HiringProcessService {
     const hiringProcess = await this.databaseService.hiringProcess.update({
       where: { uid },
       data: { ...updateHiringProcessDto },
+      include: includeHiringProcess,
     });
 
     if (!hiringProcess) {
       throw new NotFoundException(`Hiring process ${uid} not found`);
     }
-    return HiringProcessMapper(hiringProcess);
+    return HiringProcessOneMapper(hiringProcess);
   }
 
   async remove(uid: string): Promise<MessageResponseDto> {

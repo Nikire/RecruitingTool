@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
-import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto } from './dto/hiring-process.dto';
+import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto } from './dto/hiring-process.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User, HiringProcessStatus } from '@prisma/client';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
@@ -26,8 +26,8 @@ export class HiringProcessController {
     type: HiringProcessResponseDto,
   })
   @ApiBody({ type: CreateHiringProcessDto })
-  create(@CurrentUser() currentUser: User, @Body() createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
-    return this.hiringProcessService.create(currentUser.uid, createHiringProcessDto);
+  create(@Body() createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
+    return this.hiringProcessService.create(createHiringProcessDto);
   }
 
   @Get()
@@ -37,8 +37,8 @@ export class HiringProcessController {
     description: 'Returns the hiring process details',
     type: [HiringProcessResponseDto],
   })
-  findAll(): Promise<Array<HiringProcessResponseDto>> {
-    return this.hiringProcessService.findAll();
+  findAll(@Body() hiringProcessFindDto: HiringProcessFindDto): Promise<Array<HiringProcessResponseDto>> {
+    return this.hiringProcessService.findAll(hiringProcessFindDto);
   }
 
   @Get(':uid')
