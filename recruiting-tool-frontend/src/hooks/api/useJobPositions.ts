@@ -6,7 +6,7 @@ import {
 	updateJobPosition,
 } from '../../api/jobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
-import {MessageResponse} from '../../types/responses'; // TODO: implement toasts
+//import {MessageResponse} from '../../types/responses'; // TODO: implement toasts
 
 const JOB_POSITIONS_KEY = 'jobPositions';
 

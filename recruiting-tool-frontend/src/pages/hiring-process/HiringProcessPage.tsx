@@ -1,5 +1,4 @@
-import {Box, Divider, Typography} from '@mui/material';
-import React from 'react';
+import {Divider, Typography} from '@mui/material';
 import {HiringProcessPageWrapper} from './HiringProcessPage.styles';
 import {useParams} from 'react-router';
 import StagesTimeline from '../../components/stages/StagesTimeline/StagesTimeline';

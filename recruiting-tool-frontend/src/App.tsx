@@ -1,7 +1,6 @@
 import {Container} from '@mui/material';
 import Dashboard from './pages/dashboard/Dashboard';
-import {Route, Routes} from 'react-router';
-import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
+import {Route, Routes} from 'react-router-dom';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import Home from './pages/home/Home';

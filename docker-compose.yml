@@ -28,6 +28,17 @@ services:
     entrypoint: ['/bin/sh', '/app/docker-entrypoint.sh']
     command: ['yarn', 'run', 'start']
 
+  frontend:
+    build:
+      context: ./recruiting-tool-frontend
+      dockerfile: Dockerfile
+    env_file:
+      - ./recruiting-tool-backend/.env
+    ports:
+      - '${VITE_PORT:-5137}:80'
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
