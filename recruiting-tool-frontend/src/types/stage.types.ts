@@ -9,6 +9,7 @@ export type Stage = {
 
 const stageStatus = {
 	OPEN: 'OPEN',
+	CURRENT: 'CURRENT',
 	CANCELLED: 'CANCELLED',
 	DONE: 'DONE',
 };

@@ -5,6 +5,7 @@ import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import Home from './pages/home/Home';
+import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 
 /* 
 Example of good use of Routes
@@ -35,7 +36,8 @@ function App() {
 				<Route path="/signup" element={<Signup />} />
 
 				{/* <Route element={<ProtectedRoute />}> */}
-				<Route path="dashboard" element={<Dashboard />} />
+				<Route path="/dashboard" element={<Dashboard />} />
+				<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
 				{/* </Route> */}
 			</Routes>
 		</Container>
