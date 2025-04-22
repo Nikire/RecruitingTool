@@ -5,6 +5,10 @@ import react from '@vitejs/plugin-react-swc';
 export default defineConfig(({mode}) => {
 	const env = loadEnv(mode, process.cwd(), '');
 
+	console.log('-------------------------------');
+	console.log('VITE MODE:', mode);
+	console.log('-------------------------------');
+
 	return {
 		plugins: [react()],
 		server: {

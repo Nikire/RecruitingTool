@@ -8,7 +8,7 @@ RUN yarn install
 
 COPY . .
 
-RUN yarn build
+RUN yarn build:vite -- --mode docker
 
 FROM nginx:stable-alpine
 
