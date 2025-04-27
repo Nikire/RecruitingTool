@@ -82,19 +82,19 @@ enum JobPositionStatus {
 }
 
 model Stage {
-  id              Int           @id @default(autoincrement())
-  uid             String        @unique @default(uuid()) @db.Uuid
+  id              Int            @id @default(autoincrement())
+  uid             String         @unique @default(uuid()) @db.Uuid
   title           String
   type            StageType
   description     String
-  status          StageStatus   @default(OPEN)
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
-  hiringProcess   HiringProcess @relation(fields: [hiringProcessId], references: [id])
-  hiringProcessId Int
+  status          StageStatus    @default(OPEN)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id])
+  hiringProcessId Int?
   position        Int
-  JobPosition     JobPosition?  @relation(fields: [jobPositionId], references: [id])
-  jobPositionId   Int?
+  JobPosition     JobPosition    @relation(fields: [jobPositionId], references: [id])
+  jobPositionId   Int
   estimatedTime   Int?
 
   @@unique([hiringProcessId, position])

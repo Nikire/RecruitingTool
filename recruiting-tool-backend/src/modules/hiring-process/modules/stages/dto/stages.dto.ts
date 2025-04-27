@@ -21,10 +21,15 @@ export class CreateStageDto {
   @MaxLength(500)
   description: string;
 
-  @ApiProperty({ description: 'The UID of the hiring process', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @ApiProperty({ description: 'The UID of the job position', example: '123e4567-e89b-12d3-a456-426614174001' })
   @IsString()
   @IsNotEmpty()
-  hiringProcessUid: string;
+  jobPositionUid: string;
+
+  @ApiProperty({ description: 'The UID of the hiring process, used to bulk create stages on a hiring process', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @IsString()
+  @IsNotEmpty()
+  hiringProcessUid?: string;
 
   @ApiProperty({ description: 'The position of the stage', example: 1 })
   @IsOptional()

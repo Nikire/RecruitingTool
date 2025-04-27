@@ -2,7 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { JobPositionStatus } from '@prisma/client';
 import { IsInt, IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
 import { HiringProcessResponseDto } from 'src/modules/hiring-process/dto/hiring-process.dto';
-import { StageResponseDto } from 'src/modules/hiring-process/modules/stages/dto/stages.dto';
+import { CreateCandidateDto } from 'src/modules/hiring-process/modules/candidate/dto/candidate.dto';
+import { CreateStageDto, StageResponseDto } from 'src/modules/hiring-process/modules/stages/dto/stages.dto';
 
 export class JobPositionResponseDto {
   @ApiProperty({ description: 'The title of the Job position', example: 'Software Engineer Interview' })
@@ -36,6 +37,12 @@ export class CreateJobPositionDto {
   @MinLength(3)
   @MaxLength(100)
   title: string;
+
+  @ApiProperty({ description: 'The candidate object to create', type: CreateCandidateDto })
+  candidate?: CreateCandidateDto;
+
+  @ApiProperty({ description: 'The stages of the job position', type: [CreateStageDto] })
+  stages?: Array<CreateStageDto>;
 }
 
 export class UpdateJobPositionDto {

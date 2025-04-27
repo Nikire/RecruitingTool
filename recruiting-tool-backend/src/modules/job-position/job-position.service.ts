@@ -1,15 +1,23 @@
-import { Inject, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto } from './dto/job-position.dto';
-import { JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
+import { includeJobPosition, JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
+import { HiringProcessService } from '../hiring-process/hiring-process.service';
+import { StagesService } from '../hiring-process/modules/stages/stages.service';
 
 export class JobPositionService {
-  constructor(@Inject(DatabaseService) private readonly databaseService: DatabaseService) {}
+  constructor(
+    @Inject(DatabaseService) private readonly databaseService: DatabaseService,
+    @Inject(forwardRef(() => HiringProcessService)) private readonly hiringProcessService: HiringProcessService,
+    private readonly candidateService: CandidateService,
+    private readonly stagesService: StagesService,
+  ) {}
 
   async findAll(): Promise<Array<JobPositionResponseDto>> {
     const jobPositions = await this.databaseService.jobPosition.findMany({
-      include: { stages: true, hiringProcesses: true },
+      include: includeJobPosition,
     });
     return jobPositions.map((jp) => JobPositionOneMapper(jp));
   }
@@ -17,7 +25,7 @@ export class JobPositionService {
   async findOne(uid: string): Promise<JobPositionResponseDto> {
     const jobPosition = await this.databaseService.jobPosition.findUnique({
       where: { uid },
-      include: { stages: true, hiringProcesses: true },
+      include: includeJobPosition,
     });
 
     if (!jobPosition) {
@@ -28,12 +36,33 @@ export class JobPositionService {
   }
 
   async create(creatorUid: string, createJobPositionDto: CreateJobPositionDto): Promise<JobPositionResponseDto> {
-    const newJobPosition = await this.databaseService.jobPosition.create({
+    let newJobPosition = await this.databaseService.jobPosition.create({
       data: {
         title: createJobPositionDto.title,
         createdBy: { connect: { uid: creatorUid } },
       },
     });
+
+    if (createJobPositionDto.stages) {
+      const stages = createJobPositionDto.stages.map((stage) => ({ ...stage, jobPositionUid: newJobPosition.uid }));
+      await this.stagesService.bulkCreateStages(stages);
+    }
+
+    if (createJobPositionDto.candidate) {
+      const candidate = await this.candidateService.create(createJobPositionDto.candidate);
+      const hiringProcess = await this.hiringProcessService.create({ candidateUid: candidate.uid, jobPositionUid: newJobPosition.uid });
+      const updatedJobPosition = await this.databaseService.jobPosition.update({
+        where: { uid: newJobPosition.uid },
+        data: {
+          hiringProcesses: {
+            connect: { uid: hiringProcess.uid },
+          },
+        },
+        include: includeJobPosition,
+      });
+      newJobPosition = updatedJobPosition;
+    }
+
     return JobPositionMapper(newJobPosition);
   }
 

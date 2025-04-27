@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateHiringProcessDto, HiringProcessFindDto, HiringProcessResponseDto, UpdateHiringProcessDto } from './dto/hiring-process.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { HiringProcessOneMapper, includeHiringProcess } from './entities/hiring-process.entity';
@@ -10,8 +10,8 @@ import { StagesService } from './modules/stages/stages.service';
 @Injectable()
 export class HiringProcessService {
   constructor(
-    private databaseService: DatabaseService,
-    private readonly jobPositionService: JobPositionService,
+    @Inject(DatabaseService) private databaseService: DatabaseService,
+    @Inject(forwardRef(() => JobPositionService)) private readonly jobPositionService: JobPositionService,
     private readonly candidateService: CandidateService,
     private readonly stagesService: StagesService,
   ) {}
@@ -38,7 +38,7 @@ export class HiringProcessService {
       include: includeHiringProcess,
     });
 
-    const copiedStages = jobPosition.stages.map(({ uid, ...rest }) => ({ ...rest, hiringProcessUid: newHiringProcess.uid }));
+    const copiedStages = jobPosition.stages.map(({ uid, ...rest }) => ({ ...rest, jobPositionUid: jobPosition.uid, hiringProcessUid: newHiringProcess.uid }));
     await this.stagesService.bulkCreateStages(copiedStages);
 
     return HiringProcessOneMapper(newHiringProcess);

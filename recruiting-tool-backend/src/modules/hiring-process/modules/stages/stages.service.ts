@@ -7,10 +7,10 @@ import { StageMapper } from './entities/stage.entity';
 export class StagesService {
   constructor(private readonly databaseService: DatabaseService) {}
   async create(createStageDto: CreateStageDto) {
-    const { hiringProcessUid, title, type, description } = createStageDto;
+    const { jobPositionUid, title, type, description } = createStageDto;
 
     const maxPosition = await this.databaseService.stage.aggregate({
-      where: { uid: hiringProcessUid },
+      where: { JobPosition: { uid: jobPositionUid } },
       _max: { position: true },
     });
 
@@ -22,7 +22,7 @@ export class StagesService {
         type,
         description,
         position: newPosition,
-        hiringProcess: { connect: { uid: hiringProcessUid } },
+        JobPosition: { connect: { uid: jobPositionUid } },
       },
     });
 
@@ -112,14 +112,33 @@ export class StagesService {
 
   async bulkCreateStages(stages: CreateStageDto[]) {
     if (stages.length === 0) return [];
-    const uid = stages[0].hiringProcessUid;
-    const hiringProcessId = await this.databaseService.hiringProcess.findUnique({ where: { uid } }).then((hp) => hp.id);
+
+    const jobPositionUid = stages[0].jobPositionUid;
+    const hiringProcessUid = stages[0].hiringProcessUid;
+
+    const jobPositionId = await this.databaseService.jobPosition
+      .findUnique({
+        where: { uid: jobPositionUid },
+      })
+      .then((jp) => jp.id);
+
+    let hiringProcessId: number | undefined = undefined;
+
+    if (hiringProcessUid) {
+      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { uid: hiringProcessUid },
+      });
+      hiringProcessId = hiringProcess?.id;
+    }
 
     const createdStages = await this.databaseService.stage.createManyAndReturn({
       data: stages.map((stage, index) => ({
-        ...stage,
+        title: stage.title,
+        type: stage.type,
+        description: stage.description,
         position: index,
-        hiringProcessId,
+        jobPositionId,
+        ...(hiringProcessId !== undefined && { hiringProcessId }),
       })),
     });
 
