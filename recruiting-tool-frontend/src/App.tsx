@@ -5,6 +5,7 @@ import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
 import Home from './pages/home/Home';
 import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
+import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 
 /* 
 Example of good use of Routes
@@ -34,10 +35,10 @@ function App() {
 				<Route path="/login" element={<Login />} />
 				<Route path="/signup" element={<Signup />} />
 
-				{/* <Route element={<ProtectedRoute />}> */}
-				<Route path="/dashboard" element={<Dashboard />} />
 				<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
-				{/* </Route> */}
+				<Route element={<ProtectedRoute />}>
+					<Route path="/dashboard" element={<Dashboard />} />
+				</Route>
 			</Routes>
 		</Container>
 	);

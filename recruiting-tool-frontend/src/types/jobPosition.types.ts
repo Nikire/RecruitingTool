@@ -5,9 +5,9 @@ export type JobPosition = {
 	id?: number;
 	uid: string;
 	title: string;
-	status?: JobPositionStatus;
-	hiringProcesses?: Array<HiringProcess>;
-	stages?: Array<Stage>;
+	status: JobPositionStatus;
+	hiringProcesses: Array<HiringProcess>;
+	stages: Array<Stage>;
 };
 const jobPositionStatus = {
 	OPEN: 'OPEN',

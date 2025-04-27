@@ -3,8 +3,8 @@ export type Stage = {
 	title: string;
 	type: StageType;
 	description: string;
-	position?: number;
-	status?: StageStatus;
+	position: number;
+	status: StageStatus;
 };
 
 const stageStatus = {

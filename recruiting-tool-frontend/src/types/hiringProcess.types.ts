@@ -4,8 +4,8 @@ import {Stage} from './stage.types';
 export type HiringProcess = {
 	uid: string;
 	title: string;
-	status?: HiringProcessStatus;
-	stages?: Array<Stage>;
+	status: HiringProcessStatus;
+	stages: Array<Stage>;
 	candidate?: Candidate;
 };
 

@@ -23,7 +23,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({stages}) => {
 				},
 			}}
 		>
-			{stages.map((stage, i) =>
+			{stages?.map((stage, i) =>
 				i === stages.length - 1 ? (
 					<TimelineItem key={'timeline-stage-' + i}>
 						<TimelineSeparator>
