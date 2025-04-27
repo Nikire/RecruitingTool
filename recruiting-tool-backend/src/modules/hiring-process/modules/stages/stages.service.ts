@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateStageDto, UpdateStageDto } from './dto/stages.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { StageMapper } from './entities/stage.entity';
+import { StageStatus } from '@prisma/client';
 
 @Injectable()
 export class StagesService {
@@ -139,6 +140,7 @@ export class StagesService {
         position: index,
         jobPositionId,
         ...(hiringProcessId !== undefined && { hiringProcessId }),
+        status: index === 0 ? StageStatus.CURRENT : StageStatus.OPEN,
       })),
     });
 

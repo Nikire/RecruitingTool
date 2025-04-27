@@ -102,6 +102,7 @@ model Stage {
 
 enum StageStatus {
   OPEN
+  CURRENT
   CANCELLED
   DONE
 }
