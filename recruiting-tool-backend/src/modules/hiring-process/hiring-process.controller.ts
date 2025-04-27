@@ -14,10 +14,10 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
   description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
 })
 @ApiNotFoundResponse({ description: 'Hiring process not found' })
-@Auth(['HR', 'ADMIN'])
 export class HiringProcessController {
   constructor(private readonly hiringProcessService: HiringProcessService) {}
 
+  @Auth(['HR', 'ADMIN'])
   @Post()
   @ApiOperation({ summary: 'Creates a Hiring Process - HR role required' })
   @ApiResponse({
@@ -30,6 +30,7 @@ export class HiringProcessController {
     return this.hiringProcessService.create(createHiringProcessDto);
   }
 
+  @Auth(['HR', 'ADMIN'])
   @Get()
   @ApiOperation({ summary: 'Get hiring process list' })
   @ApiResponse({
@@ -53,6 +54,7 @@ export class HiringProcessController {
     return this.hiringProcessService.findOne(uid);
   }
 
+  @Auth(['HR', 'ADMIN'])
   @Put(':uid')
   @ApiOperation({ summary: 'Update one hiring process' })
   @ApiResponse({
@@ -66,6 +68,7 @@ export class HiringProcessController {
     return this.hiringProcessService.update(uid, updateHiringProcessDto);
   }
 
+  @Auth(['HR', 'ADMIN'])
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete one hiring process - HR role required' })
   @ApiResponse({

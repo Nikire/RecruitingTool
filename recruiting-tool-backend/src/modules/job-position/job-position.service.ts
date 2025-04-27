@@ -1,11 +1,11 @@
-import { NotFoundException } from '@nestjs/common';
+import { Inject, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto } from './dto/job-position.dto';
 import { JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 
 export class JobPositionService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(@Inject(DatabaseService) private readonly databaseService: DatabaseService) {}
 
   async findAll(): Promise<Array<JobPositionResponseDto>> {
     const jobPositions = await this.databaseService.jobPosition.findMany({

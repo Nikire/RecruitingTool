@@ -8,6 +8,7 @@ export function UserMapper(user: User | UserWithPasswordResponseDto): UserRespon
     email: user.email,
     createdAt: typeof user.createdAt === 'string' ? user.createdAt : user.createdAt.toISOString(),
     updatedAt: typeof user.updatedAt === 'string' ? user.updatedAt : user.updatedAt.toISOString(),
+    roles: user.roles,
   };
 }
 
@@ -19,5 +20,6 @@ export function UserWithPasswordMapper(user: User): UserWithPasswordResponseDto 
     password: user.password,
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
+    roles: user.roles,
   };
 }

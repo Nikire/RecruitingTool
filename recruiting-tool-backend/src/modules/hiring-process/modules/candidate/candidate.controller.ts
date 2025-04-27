@@ -1,5 +1,8 @@
-import { Controller } from '@nestjs/common';
-import { ApiBearerAuth, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { CandidateService } from './candidate.service';
+import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto } from './dto/candidate.dto';
+import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
 
 @ApiTags('Candidate')
@@ -10,4 +13,66 @@ import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator'
 })
 @ApiNotFoundResponse({ description: 'Candidate not found' })
 @Auth(['HR', 'ADMIN'])
-export class CandidateController {}
+export class CandidateController {
+  constructor(private readonly candidateService: CandidateService) {}
+
+  @Post()
+  @ApiOperation({ summary: 'Creates a new candidate' })
+  @ApiResponse({
+    status: 201,
+    description: 'The candidate has been successfully created.',
+    type: CandidateResponseDto,
+  })
+  @ApiBody({ type: CreateCandidateDto })
+  create(@Body() createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
+    return this.candidateService.create(createCandidateDto);
+  }
+
+  @Get()
+  @ApiOperation({ summary: 'Get all candidates' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of candidates',
+    type: [CandidateResponseDto],
+  })
+  findAll(): Promise<Array<CandidateResponseDto>> {
+    return this.candidateService.findAll();
+  }
+
+  @Get(':uid')
+  @ApiOperation({ summary: 'Get a candidate by UID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the candidate details',
+    type: CandidateResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true })
+  findOne(@Param('uid') uid: string): Promise<CandidateResponseDto> {
+    return this.candidateService.findOne(uid);
+  }
+
+  @Put(':uid')
+  @ApiOperation({ summary: 'Update a candidate by UID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated candidate',
+    type: CandidateResponseDto,
+  })
+  @ApiBody({ type: UpdateCandidateDto })
+  @ApiParam({ name: 'uid', required: true })
+  update(@Param('uid') uid: string, @Body() updateCandidateDto: UpdateCandidateDto): Promise<CandidateResponseDto> {
+    return this.candidateService.update(uid, updateCandidateDto);
+  }
+
+  @Delete(':uid')
+  @ApiOperation({ summary: 'Delete a candidate by UID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The candidate has been successfully deleted.',
+    type: MessageResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true })
+  remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
+    return this.candidateService.remove(uid);
+  }
+}

@@ -21,7 +21,7 @@ export class AdminUserService implements OnApplicationBootstrap {
           email: ADMIN_EMAIL,
           name: ADMIN_NAME,
           password: ADMIN_PASSWORD,
-          roles: [RolesType.USER, RolesType.ADMIN, RolesType.SUPER_ADMIN],
+          roles: [RolesType.USER, RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
         });
       } else {
         console.log('ADMIN USER FOUND:', admin, '\n');
