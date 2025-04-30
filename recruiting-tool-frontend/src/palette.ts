@@ -7,6 +7,11 @@ const recruitingToolPalette: ThemeOptions = {
 			main: green.A400,
 			light: green.A100,
 		},
+		action: {
+			disabled: grey[400],
+			disabledOpacity: 1,
+			disabledBackground: grey.A200,
+		},
 	},
 	typography: {
 		h1: {
@@ -40,22 +45,14 @@ const recruitingToolPalette: ThemeOptions = {
 		} as any),
 		MuiAccordion: {
 			styleOverrides: {
-				root: {
+				root: ({theme}) => ({
 					backgroundColor: green.A100,
-				},
+					'&.Mui-disabled .MuiTypography-root': {
+						color: theme.palette.text.disabled,
+					},
+				}),
 				rounded: {
 					borderRadius: '20px !important',
-				},
-				disabled: {
-					color: grey[500],
-					backgroundColor: grey[200],
-				},
-			},
-		},
-		MuiSvgIcon: {
-			styleOverrides: {
-				colorDisabled: {
-					color: grey[500],
 				},
 			},
 		},

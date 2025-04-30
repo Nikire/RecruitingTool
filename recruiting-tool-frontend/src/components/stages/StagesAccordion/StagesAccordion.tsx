@@ -35,7 +35,9 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({stage, disabled}) => {
 				</AccordionHeaderWrapper>
 			</AccordionSummary>
 			<AccordionDetails>
-				<Typography variant="body2">{stage.description}</Typography>
+				<Typography variant="body2">
+					{disabled ? null : stage.description}
+				</Typography>
 			</AccordionDetails>
 		</Accordion>
 	);

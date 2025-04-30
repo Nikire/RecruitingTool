@@ -29,7 +29,7 @@ Example of good use of Routes
 
 function App() {
 	return (
-		<Container maxWidth="lg">
+		<Container sx={{backgroundColor: '#fff', minHeight: '100vh'}} maxWidth="md">
 			<Routes>
 				<Route index element={<Home />} />
 				<Route path="/login" element={<Login />} />
