@@ -27,9 +27,8 @@ const StepCircle: React.FC<StepCircleProps> = ({
 			<Typography
 				sx={
 					disabled
-						? {fontWeight: 600, color: grey[500]}
+						? {color: grey[500]}
 						: {
-								fontWeight: 600,
 								color: status == 'CURRENT' ? green.A400 : '#000',
 						  }
 				}

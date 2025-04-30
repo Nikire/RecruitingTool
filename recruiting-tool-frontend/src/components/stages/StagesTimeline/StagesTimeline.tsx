@@ -6,7 +6,6 @@ import TimelineSeparator from '@mui/lab/TimelineSeparator';
 import React from 'react';
 import StepCircle from '../StepCircle/StepCircle';
 import {Stage} from '../../../types/stage.types';
-import {green} from '@mui/material/colors';
 import StagesAccordion from '../StagesAccordion/StagesAccordion';
 
 type StagesTimelineProps = {
@@ -48,7 +47,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({stages}) => {
 								disabled={stage.status === 'OPEN'}
 								position={i + 1}
 							/>
-							<TimelineConnector sx={{width: '10px', background: green.A400}} />
+							<TimelineConnector sx={{width: '10px'}} />
 						</TimelineSeparator>
 						<TimelineContent>
 							<StagesAccordion

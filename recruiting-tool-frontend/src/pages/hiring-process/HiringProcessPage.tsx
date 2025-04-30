@@ -7,10 +7,13 @@ import {HiringProcess} from '../../types/hiringProcess.types';
 
 const HiringProcessPage: React.FC = () => {
 	const {uid} = useParams<{uid: string}>();
-	console.log('HiringProcessPage uid:', uid);
-	const {data, isLoading, error} = useHiringProcesses(uid);
+	const {
+		data: hiringProcessData,
+		isLoading: isHiringProcessLoading,
+		error,
+	} = useHiringProcesses(uid);
 
-	if (isLoading) {
+	if (isHiringProcessLoading) {
 		return <div>LOADING...</div>;
 	}
 
@@ -18,18 +21,18 @@ const HiringProcessPage: React.FC = () => {
 		return <div>ERROR...</div>;
 	}
 
-	if (!data) {
+	if (!hiringProcessData) {
 		return <div>No data found</div>;
 	}
 
-	const hiringProcess = data as HiringProcess;
+	const hiringProcess = hiringProcessData as HiringProcess;
 
 	return (
 		<HiringProcessPageWrapper>
-			<Typography sx={{fontWeight: 600}} variant="h6" gutterBottom>
+			<Typography variant="h6" gutterBottom>
 				You are editing:
 			</Typography>
-			<Typography sx={{fontWeight: 600}} variant="h4" gutterBottom>
+			<Typography variant="h4" gutterBottom>
 				{hiringProcess.title}
 			</Typography>
 			<Typography variant="subtitle2" gutterBottom>
@@ -37,7 +40,7 @@ const HiringProcessPage: React.FC = () => {
 			</Typography>
 			<Divider variant="middle" />
 
-			{data && <StagesTimeline stages={hiringProcess.stages} />}
+			{hiringProcessData && <StagesTimeline stages={hiringProcess.stages} />}
 		</HiringProcessPageWrapper>
 	);
 };
