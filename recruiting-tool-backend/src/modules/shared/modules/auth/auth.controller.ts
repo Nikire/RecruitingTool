@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisteredUserDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
@@ -37,5 +37,20 @@ export class AuthController {
     loginDto: LoginDto,
   ): Promise<RegisteredUserDto> {
     return this.authService.login(loginDto);
+  }
+
+  @Get('me')
+  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns user details if token is valid',
+    type: RegisteredUserDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid or missing token',
+  })
+  async getProfile(@Headers('authorization') authHeader: string) {
+    const token = authHeader?.replace('Bearer ', '');
+    return this.authService.verifyToken(token);
   }
 }
