@@ -5,10 +5,14 @@ import {
 	Typography,
 } from '@mui/material';
 import React from 'react';
-import {ArrowDropDown, LockOpen, CheckCircle, Lock} from '@mui/icons-material';
+import {
+	LockOpen,
+	CheckCircle,
+	Lock,
+	KeyboardArrowDown,
+} from '@mui/icons-material';
 import {Stage} from '../../../types/stage.types';
 import {AccordionHeaderWrapper} from './StagesAccordion.styles';
-
 type StagesAccordionProps = {
 	stage: Stage;
 	disabled?: boolean;
@@ -22,7 +26,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({stage, disabled}) => {
 			disabled={disabled}
 			square={false}
 		>
-			<AccordionSummary expandIcon={<ArrowDropDown />}>
+			<AccordionSummary expandIcon={<KeyboardArrowDown />}>
 				<AccordionHeaderWrapper>
 					{stage.status === 'CURRENT' ? (
 						<LockOpen sx={{color: '#000'}} />

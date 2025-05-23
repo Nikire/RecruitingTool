@@ -25,6 +25,7 @@ const StepCircle: React.FC<StepCircleProps> = ({
 			}
 		>
 			<Typography
+				variant="h6"
 				sx={
 					disabled
 						? {color: grey[500]}
