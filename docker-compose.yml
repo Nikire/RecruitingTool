@@ -17,6 +17,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - '${API_PORT:-4000}:${API_PORT:-4000}'
+    depends_on:
+      - db
     env_file:
       - ./recruiting-tool-backend/.env
     environment:
@@ -33,9 +35,11 @@ services:
       context: ./recruiting-tool-frontend
       dockerfile: Dockerfile
     env_file:
-      - ./recruiting-tool-backend/.env
+      - ./recruiting-tool-frontend/.env
     ports:
       - '${VITE_PORT:-5137}:80'
+    depends_on:
+      - backend
     networks:
       - app-network
 

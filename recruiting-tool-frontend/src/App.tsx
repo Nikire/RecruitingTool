@@ -1,4 +1,3 @@
-import {Container} from '@mui/material';
 import Dashboard from './pages/dashboard/Dashboard';
 import {Route, Routes} from 'react-router-dom';
 import Login from './pages/auth/Login';
@@ -6,41 +5,26 @@ import Signup from './pages/auth/Signup';
 import Home from './pages/home/Home';
 import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
-
-/* 
-Example of good use of Routes
-<Routes>
-  <Route index element={<Home />} />
-  <Route path="about" element={<About />} />
-
-  <Route element={<AuthLayout />}>
-    <Route path="login" element={<Login />} />
-    <Route path="register" element={<Register />} />
-  </Route>
-
-  <Route path="concerts">
-    <Route index element={<ConcertsHome />} />
-    <Route path=":city" element={<City />} />
-    <Route path="trending" element={<Trending />} />
-  </Route>
-</Routes> 
-
-*/
+import DocumentContainer from './layouts/DocumentContainer';
+import MainLayout from './layouts/MainLayout';
 
 function App() {
 	return (
-		<Container sx={{backgroundColor: '#fff', minHeight: '100vh'}} maxWidth="md">
-			<Routes>
+		<Routes>
+			<Route element={<MainLayout />}>
 				<Route index element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/signup" element={<Signup />} />
 
-				<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
+				<Route element={<DocumentContainer />}>
+					<Route path="hiring-process/:uid" element={<HiringProcessPage />} />
+				</Route>
+
 				<Route element={<ProtectedRoute />}>
 					<Route path="/dashboard" element={<Dashboard />} />
 				</Route>
-			</Routes>
-		</Container>
+			</Route>
+		</Routes>
 	);
 }
 

@@ -1,11 +1,11 @@
-export type Stage = {
+export interface Stage {
 	uid: string;
 	title: string;
 	type: StageType;
 	description: string;
 	position: number;
 	status: StageStatus;
-};
+}
 
 const stageStatus = {
 	OPEN: 'OPEN',

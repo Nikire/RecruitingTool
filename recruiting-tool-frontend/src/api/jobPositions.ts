@@ -1,6 +1,6 @@
 import {JobPosition} from '../types/jobPosition.types';
 import {MessageResponse} from '../types/responses';
-import {api} from './axios';
+import api from './axios';
 
 export function getJobPositions(
 	uid?: string

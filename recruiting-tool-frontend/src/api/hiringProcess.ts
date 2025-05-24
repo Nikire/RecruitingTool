@@ -1,6 +1,6 @@
 import {HiringProcess} from '../types/hiringProcess.types';
 import {MessageResponse} from '../types/responses';
-import {api} from './axios';
+import api from './axios';
 
 export function getHiringProcesses(
 	uid?: string

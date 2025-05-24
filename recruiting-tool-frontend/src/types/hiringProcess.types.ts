@@ -1,13 +1,13 @@
 import {Candidate} from './candidate';
 import {Stage} from './stage.types';
 
-export type HiringProcess = {
+export interface HiringProcess {
 	uid: string;
 	title: string;
 	status: HiringProcessStatus;
 	stages: Array<Stage>;
 	candidate?: Candidate;
-};
+}
 
 const hiringProcessStatus = {
 	OPEN: 'OPEN',
