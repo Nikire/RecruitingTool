@@ -68,17 +68,17 @@ export class UserResponseDto {
     description: 'The date the user was created',
     example: '2021-08-01T00:00:00.000Z',
   })
-  createdAt: string;
+  createdAt?: string;
   @ApiProperty({
     description: 'The date the user was last updated',
     example: '2021-08-01T00:00:00.000Z',
   })
-  updatedAt: string;
+  updatedAt?: string;
   @ApiProperty({
     description: 'The roles of the user',
     example: ['USER', 'ADMIN'],
   })
-  roles: Array<RolesType>;
+  roles?: Array<RolesType>;
 }
 
 export class UserWithPasswordResponseDto extends UserResponseDto {

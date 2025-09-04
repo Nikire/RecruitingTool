@@ -4,7 +4,7 @@ import * as bycrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto, UserWithPasswordResponseDto } from 'src/modules/users/dto/users.dto';
-import { UserMapper } from 'src/modules/users/entities/users.entities';
+import { UserLoginMapper } from 'src/modules/users/entities/users.entities';
 
 @Injectable()
 export class AuthService {
@@ -49,7 +49,7 @@ export class AuthService {
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
 
     return {
-      ...UserMapper(user),
+      ...UserLoginMapper(user),
       token,
     };
   }

@@ -1,6 +1,14 @@
 import { UserResponseDto, UserWithPasswordResponseDto } from '../dto/users.dto';
 import { User } from '@prisma/client';
 
+export function UserLoginMapper(user: User | UserWithPasswordResponseDto): UserResponseDto {
+  return {
+    uid: user.uid,
+    name: user.name,
+    email: user.email,
+  };
+}
+
 export function UserMapper(user: User | UserWithPasswordResponseDto): UserResponseDto {
   return {
     uid: user.uid,
