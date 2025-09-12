@@ -38,9 +38,6 @@ export class CreateJobPositionDto {
   @MaxLength(100)
   title: string;
 
-  @ApiProperty({ description: 'The candidate object to create', type: CreateCandidateDto })
-  candidate?: CreateCandidateDto;
-
   @ApiProperty({ description: 'The stages of the job position', type: [CreateStageDto] })
   stages?: Array<CreateStageDto>;
 }

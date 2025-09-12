@@ -48,21 +48,6 @@ export class JobPositionService {
       await this.stagesService.bulkCreateStages(stages);
     }
 
-    if (createJobPositionDto.candidate) {
-      const candidate = await this.candidateService.create(createJobPositionDto.candidate);
-      const hiringProcess = await this.hiringProcessService.create({ candidateUid: candidate.uid, jobPositionUid: newJobPosition.uid });
-      const updatedJobPosition = await this.databaseService.jobPosition.update({
-        where: { uid: newJobPosition.uid },
-        data: {
-          hiringProcesses: {
-            connect: { uid: hiringProcess.uid },
-          },
-        },
-        include: includeJobPosition,
-      });
-      newJobPosition = updatedJobPosition;
-    }
-
     return JobPositionMapper(newJobPosition);
   }
 
