@@ -138,6 +138,7 @@ export class StagesService {
         title: stage.title,
         type: stage.type,
         description: stage.description,
+        estimatedTime: stage.estimatedTime,
         position: index,
         jobPositionId,
         ...(hiringProcessId !== undefined && { hiringProcessId }),
