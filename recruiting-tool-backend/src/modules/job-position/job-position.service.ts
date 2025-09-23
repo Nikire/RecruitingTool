@@ -6,6 +6,7 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
 import { HiringProcessService } from '../hiring-process/hiring-process.service';
 import { StagesService } from '../hiring-process/modules/stages/stages.service';
+import { Prisma } from '@prisma/client';
 
 export class JobPositionService {
   constructor(
@@ -15,9 +16,24 @@ export class JobPositionService {
     private readonly stagesService: StagesService,
   ) {}
 
-  async findAll(): Promise<Array<JobPositionResponseDto>> {
+  async find(where: Prisma.JobPositionWhereInput): Promise<Array<JobPositionResponseDto>> {
     const jobPositions = await this.databaseService.jobPosition.findMany({
       include: includeJobPosition,
+      where,
+    });
+    return jobPositions.map((jp) => JobPositionOneMapper(jp));
+  }
+
+  async findAll(): Promise<Array<JobPositionResponseDto>> {
+    const jobPositions = await this.databaseService.jobPosition.findMany({
+      include: {
+        ...includeJobPosition,
+        stages: {
+          where: {
+            hiringProcessId: null,
+          },
+        },
+      },
     });
     return jobPositions.map((jp) => JobPositionOneMapper(jp));
   }

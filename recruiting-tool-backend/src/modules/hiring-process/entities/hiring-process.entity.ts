@@ -13,7 +13,7 @@ export function HiringProcessOneMapper(hiringProcess: HiringProcessWithRelations
     uid: hiringProcess.uid,
     title: hiringProcess.title,
     status: hiringProcess.status,
-    stages: Array.isArray(hiringProcess.stages) ? hiringProcess.stages.map(StageMapper) : [],
+    stages: Array.isArray(hiringProcess.stages) ? hiringProcess.stages.map((stage) => StageMapper(stage)) : [],
     candidate: hiringProcess.candidate ? CandidateMapper(hiringProcess.candidate) : null,
   };
 }

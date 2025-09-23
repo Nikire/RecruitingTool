@@ -2,7 +2,7 @@ import { JobPosition, Prisma } from '@prisma/client';
 import { HiringProcessOneMapper } from 'src/modules/hiring-process/entities/hiring-process.entity';
 import { StageMapper } from 'src/modules/hiring-process/modules/stages/entities/stage.entity';
 
-export const includeJobPosition = { stages: true, hiringProcesses: true };
+export const includeJobPosition = { stages: true, hiringProcesses: true, createdBy: true };
 
 type JobPositionWithRelations = Prisma.JobPositionGetPayload<{
   include: typeof includeJobPosition;
@@ -10,22 +10,21 @@ type JobPositionWithRelations = Prisma.JobPositionGetPayload<{
 
 export function JobPositionMapper(jobPosition: JobPosition | JobPositionWithRelations) {
   return {
-    id: jobPosition.id,
     uid: jobPosition.uid,
     title: jobPosition.title,
     status: jobPosition.status,
-    stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map(StageMapper) : [],
-    hiringProcesses: Array.isArray((jobPosition as any).hiringProcesses) ? (jobPosition as any).hiringProcesses.map(HiringProcessOneMapper) : [],
+    stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map((stage) => StageMapper(stage)) : [],
+    hiringProcesses: Array.isArray((jobPosition as any).hiringProcesses) ? (jobPosition as any).hiringProcesses.map((hp) => HiringProcessOneMapper(hp)) : [],
   };
 }
 
 export function JobPositionOneMapper(jobPosition: JobPositionWithRelations) {
   return {
-    id: jobPosition.id,
     uid: jobPosition.uid,
     title: jobPosition.title,
     status: jobPosition.status,
-    hiringProcesses: jobPosition.hiringProcesses,
-    stages: jobPosition.stages,
+    stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map((stage) => StageMapper(stage)) : [],
+    hiringProcesses: Array.isArray((jobPosition as any).hiringProcesses) ? (jobPosition as any).hiringProcesses.map((hp) => HiringProcessOneMapper(hp)) : [],
+    createdBy: jobPosition.createdBy,
   };
 }

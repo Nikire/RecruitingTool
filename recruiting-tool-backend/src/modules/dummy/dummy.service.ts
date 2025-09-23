@@ -29,6 +29,13 @@ export class DummyService implements OnApplicationBootstrap {
       return;
     }
 
+    const existingAdminJobPositions = await this.jobPositionService.find({ createdBy: { uid: adminUser.uid } });
+
+    if (existingAdminJobPositions.length > 0) {
+      console.log('Dummy data already exists, skipping creation');
+      return;
+    }
+
     const dummyCandidate: CreateCandidateDto = {
       email: 'dummy.candidate@example.com',
       name: 'Dummy Candidate',

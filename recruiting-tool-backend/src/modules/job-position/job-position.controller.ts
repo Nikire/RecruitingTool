@@ -13,10 +13,10 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 @ApiUnauthorizedResponse({
   description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
 })
-@Auth(['HR', 'ADMIN'])
 export class JobPositionController {
   constructor(private readonly jobPositionService: JobPositionService) {}
 
+  @Auth(['HR', 'ADMIN'])
   @Post()
   @ApiOperation({ summary: 'Creates a Job position - HR role required' })
   @ApiResponse({
@@ -52,6 +52,7 @@ export class JobPositionController {
     return this.jobPositionService.findOne(uid);
   }
 
+  @Auth(['HR', 'ADMIN'])
   @Put(':uid')
   @ApiOperation({ summary: 'Update one job position' })
   @ApiResponse({
@@ -65,6 +66,7 @@ export class JobPositionController {
     return this.jobPositionService.update(uid, updateJobPositionDto);
   }
 
+  @Auth(['HR', 'ADMIN'])
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete one job position - HR role required' })
   @ApiResponse({
