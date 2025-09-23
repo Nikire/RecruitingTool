@@ -26,6 +26,11 @@ export class CreateStageDto {
   @IsNotEmpty()
   jobPositionUid: string;
 
+  @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60, required: false })
+  @IsOptional()
+  @IsNumber()
+  estimatedTime?: number;
+
   @ApiProperty({ description: 'The UID of the hiring process, used to bulk create stages on a hiring process', example: '123e4567-e89b-12d3-a456-426614174001' })
   @IsString()
   @IsNotEmpty()

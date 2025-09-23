@@ -8,7 +8,7 @@ import { StageStatus } from '@prisma/client';
 export class StagesService {
   constructor(private readonly databaseService: DatabaseService) {}
   async create(createStageDto: CreateStageDto) {
-    const { jobPositionUid, title, type, description } = createStageDto;
+    const { jobPositionUid, title, type, description, estimatedTime } = createStageDto;
 
     const maxPosition = await this.databaseService.stage.aggregate({
       where: { JobPosition: { uid: jobPositionUid } },
@@ -23,6 +23,7 @@ export class StagesService {
         type,
         description,
         position: newPosition,
+        estimatedTime,
         JobPosition: { connect: { uid: jobPositionUid } },
       },
     });

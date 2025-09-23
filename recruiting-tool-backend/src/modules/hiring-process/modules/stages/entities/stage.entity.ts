@@ -8,5 +8,6 @@ export function StageMapper(stage: Stage) {
     description: stage.description,
     position: stage.position,
     status: stage.status,
+    estimatedTime: stage.estimatedTime,
   };
 }
