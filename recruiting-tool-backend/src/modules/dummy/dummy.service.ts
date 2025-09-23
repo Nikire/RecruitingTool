@@ -54,9 +54,9 @@ export class DummyService implements OnApplicationBootstrap {
     console.log('Created dummy job position with UID:', createdJobPosition.uid);
 
     const dummyStages: Array<CreateStageDto> = [
-      { title: 'Phone Screen', type: StageType.INTERVIEW, description: 'Initial phone screen', jobPositionUid: createdJobPosition.uid },
-      { title: 'Technical Interview', type: StageType.TECHNICAL_INTERVIEW, description: 'In-depth technical interview', jobPositionUid: createdJobPosition.uid },
-      { title: 'HR Interview', type: StageType.FINAL_INTERVIEW, description: 'Final HR interview', jobPositionUid: createdJobPosition.uid },
+      { title: 'Phone Screen', type: StageType.INTERVIEW, description: 'Initial phone screen', jobPositionUid: createdJobPosition.uid, estimatedTime: 30 },
+      { title: 'Technical Interview', type: StageType.TECHNICAL_INTERVIEW, description: 'In-depth technical interview', jobPositionUid: createdJobPosition.uid, estimatedTime: 90 },
+      { title: 'HR Interview', type: StageType.FINAL_INTERVIEW, description: 'Final HR interview', jobPositionUid: createdJobPosition.uid, estimatedTime: 30 },
     ];
 
     const createdStages = await this.stagesService.bulkCreateStages(dummyStages);
