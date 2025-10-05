@@ -7,6 +7,7 @@ import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 import DocumentContainer from './layouts/DocumentContainer';
 import MainLayout from './layouts/MainLayout';
+import JobPositionsPage from './pages/job-positions/JobPositionsPage';
 
 function App() {
 	return (
@@ -15,9 +16,10 @@ function App() {
 				<Route index element={<Home />} />
 				<Route path="/login" element={<Login />} />
 				<Route path="/signup" element={<Signup />} />
+				<Route path="/job-positions" element={<JobPositionsPage />} />
 
 				<Route element={<DocumentContainer />}>
-					<Route path="hiring-process/:uid" element={<HiringProcessPage />} />
+					<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
 				</Route>
 
 				<Route element={<ProtectedRoute />}>

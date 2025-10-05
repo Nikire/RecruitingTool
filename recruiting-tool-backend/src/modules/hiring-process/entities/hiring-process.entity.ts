@@ -17,3 +17,11 @@ export function HiringProcessOneMapper(hiringProcess: HiringProcessWithRelations
     candidate: hiringProcess.candidate ? CandidateMapper(hiringProcess.candidate) : null,
   };
 }
+
+export function PublicHiringProcessOneMapper(hiringProcess: HiringProcessWithRelations) {
+  return {
+    uid: hiringProcess.uid,
+    title: hiringProcess.title,
+    status: hiringProcess.status,
+  };
+}

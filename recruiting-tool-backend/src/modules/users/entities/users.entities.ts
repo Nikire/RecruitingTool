@@ -20,6 +20,14 @@ export function UserMapper(user: User | UserWithPasswordResponseDto): UserRespon
   };
 }
 
+export function PublicUserMapper(user: User | UserWithPasswordResponseDto): UserResponseDto {
+  return {
+    uid: user.uid,
+    name: user.name,
+    email: user.email,
+  };
+}
+
 export function UserWithPasswordMapper(user: User): UserWithPasswordResponseDto {
   return {
     uid: user.uid,

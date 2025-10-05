@@ -2,9 +2,9 @@ export interface User {
 	uid: string;
 	name: string;
 	email: string;
-	createdAt: string;
-	updatedAt: string;
-	roles: UserRoles[];
+	createdAt?: string;
+	updatedAt?: string;
+	roles?: UserRoles[];
 }
 
 export enum UserRoles {
