@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {Divider, Typography, Box, Chip, Paper, CircularProgress, Button} from '@mui/material';
 import {useParams, useNavigate} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';

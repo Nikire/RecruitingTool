@@ -1,4 +1,4 @@
-import {Box, Button, Card, CardContent, Typography, ButtonGroup} from '@mui/material';
+import {Box, Button, Card, Typography, ButtonGroup} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {JobPosition} from '../../../types/jobPosition.types';
 import StatusLabel from '../../StatusLabel';

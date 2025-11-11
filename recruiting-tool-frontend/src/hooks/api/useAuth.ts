@@ -3,6 +3,7 @@ import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
 import {getCurrentUser, login, register} from '../../api/auth';
 import {User} from '../../types/user.types';
 import {useUserAtom} from './state/useUserAtom';
+import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const AUTH_KEY = 'auth';
 
@@ -49,6 +50,10 @@ export function useLogin() {
 			localStorage.setItem('authToken', data.token);
 			// Invalidate to fetch user data
 			queryClient.invalidateQueries({queryKey: [AUTH_KEY, 'me']});
+			showSuccessToast('Login successful! Welcome back.');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Login failed. Please check your credentials.');
 		},
 	});
 }
@@ -63,6 +68,10 @@ export function useRegister() {
 			localStorage.setItem('authToken', data.token);
 			// Invalidate to fetch user data
 			queryClient.invalidateQueries({queryKey: [AUTH_KEY, 'me']});
+			showSuccessToast('Account created successfully! Welcome aboard.');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Registration failed. Please try again.');
 		},
 	});
 }

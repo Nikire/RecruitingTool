@@ -1,7 +1,0 @@
-- [x] Add Candidate creation
-- [x] Add Job Position creation
-- [x] Add Stages creation
-- [x] Add Hiring Process creation
-- [x] List of all hiring processes of a job position
-- [x] List of all candidates in a hiring process
-- [x] List of all job positions

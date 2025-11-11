@@ -6,7 +6,7 @@ import {
 	updateJobPosition,
 } from '../../api/jobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
-//import {MessageResponse} from '../../types/responses'; // TODO: implement toasts
+import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const JOB_POSITIONS_KEY = 'jobPositions';
 
@@ -24,6 +24,10 @@ export function useCreateJobPosition() {
 		mutationFn: (data: Partial<JobPosition>) => createJobPosition(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [JOB_POSITIONS_KEY]});
+			showSuccessToast('Job position created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create job position');
 		},
 	});
 }
@@ -36,6 +40,10 @@ export function useUpdateJobPosition() {
 			updateJobPosition(data, uid),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [JOB_POSITIONS_KEY]});
+			showSuccessToast('Job position updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update job position');
 		},
 	});
 }
@@ -47,6 +55,10 @@ export function useDeleteJobPosition() {
 		mutationFn: (uid: string) => deleteJobPosition(uid),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [JOB_POSITIONS_KEY]});
+			showSuccessToast('Job position deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete job position');
 		},
 	});
 }

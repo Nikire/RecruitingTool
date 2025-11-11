@@ -7,7 +7,7 @@ import {
 	getHiringProcesses,
 	updateHiringProcess,
 } from '../../api/hiringProcess';
-//import {MessageResponse} from '../../types/responses'; // TODO: implement toasts
+import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const HIRING_PROCESS_KEY = 'hiringProcess';
 
@@ -25,6 +25,10 @@ export function useCreateHiringProcess() {
 		mutationFn: (data: Partial<HiringProcess>) => createHiringProcess(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [HIRING_PROCESS_KEY]});
+			showSuccessToast('Hiring process created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create hiring process');
 		},
 	});
 }
@@ -37,6 +41,10 @@ export function useUpdateHiringProcess() {
 			updateHiringProcess(data, uid),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [HIRING_PROCESS_KEY]});
+			showSuccessToast('Hiring process updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update hiring process');
 		},
 	});
 }
@@ -48,6 +56,10 @@ export function useDeleteHiringProcess() {
 		mutationFn: (uid: string) => deleteHiringProcess(uid),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [HIRING_PROCESS_KEY]});
+			showSuccessToast('Hiring process deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete hiring process');
 		},
 	});
 }

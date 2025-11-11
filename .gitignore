@@ -4,3 +4,6 @@ builddocker.sh
 
 # AI Assistant instruction files
 .instructions/
+
+# Claude Code settings
+.claude/

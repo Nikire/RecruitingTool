@@ -7,6 +7,7 @@ import {
 	deleteCandidate,
 } from '../../api/candidates';
 import {Candidate} from '../../types/candidate';
+import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const CANDIDATES_KEY = 'candidates';
 
@@ -32,6 +33,10 @@ export function useCreateCandidate() {
 		mutationFn: (data: Partial<Candidate>) => createCandidate(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [CANDIDATES_KEY]});
+			showSuccessToast('Candidate created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create candidate');
 		},
 	});
 }
@@ -44,6 +49,10 @@ export function useUpdateCandidate() {
 			updateCandidate(data, uid),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [CANDIDATES_KEY]});
+			showSuccessToast('Candidate updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update candidate');
 		},
 	});
 }
@@ -55,6 +64,10 @@ export function useDeleteCandidate() {
 		mutationFn: (uid: string) => deleteCandidate(uid),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [CANDIDATES_KEY]});
+			showSuccessToast('Candidate deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete candidate');
 		},
 	});
 }

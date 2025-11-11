@@ -10,10 +10,10 @@
 
 ### High Priority
 
+- [x] **Add toast notifications for success/error/warning messages across the app** ✅
 - [ ] Add update/delete functionality for Candidates
 - [ ] Add update/delete functionality for Companies
 - [ ] Add update/delete functionality for Hiring Processes
-- [ ] Add toast notifications for success/error messages across the app
 
 ### Medium Priority
 
@@ -21,6 +21,11 @@
 - [ ] Add advanced search/filtering for candidates and hiring processes
 - [ ] Add form validation improvements (better error messages)
 - [ ] Add loading states for all data fetching operations
+- [ ] Add pagination on array responses (GET /users, etc.) - Backend
+- [ ] Add response interceptor for standardized API responses - Backend
+- [ ] Add Profile model and relation to User - Backend
+- [ ] Add user Profile update endpoints - Backend
+- [ ] Add try-catch error handling with formatted error responses - Backend
 
 ### Low Priority
 
@@ -47,3 +52,7 @@
 ✅ Database migrations for Company system and optional jobPositionId in Stage
 ✅ Enhanced dummy data service with persistent seed data
 ✅ User avatar component and logout functionality
+✅ Toast notification system with error/success/warning support
+✅ Integrated toasts into all API hooks (auth, candidates, companies, hiring processes, job positions, stages)
+✅ Automatic error messages with descriptive content from backend
+✅ Success messages for all CRUD operations

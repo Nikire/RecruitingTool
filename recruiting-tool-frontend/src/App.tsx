@@ -12,10 +12,13 @@ import JobPositionsPage from './pages/job-positions/JobPositionsPage';
 import JobPositionDetailPage from './pages/job-position-detail/JobPositionDetailPage';
 import CandidatesPage from './pages/candidates/CandidatesPage';
 import { CompaniesPage } from './pages/companies/CompaniesPage';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
 	return (
-		<Routes>
+		<>
+			<Toaster />
+			<Routes>
 			<Route element={<MainLayout />}>
 				<Route index element={<Home />} />
 				<Route path="/login" element={<Login />} />
@@ -35,6 +38,7 @@ function App() {
 				</Route>
 			</Route>
 		</Routes>
+		</>
 	);
 }
 

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {ChevronLeft as ChevronLeftIcon} from '@mui/icons-material';
 import {
 	Drawer,

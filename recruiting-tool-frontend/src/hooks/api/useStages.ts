@@ -7,6 +7,7 @@ import {
 	deleteStage,
 } from '../../api/stages';
 import {Stage} from '../../types/stage.types';
+import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const STAGES_KEY = 'stages';
 
@@ -26,6 +27,10 @@ export function useCreateStage() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: ['jobPositions']});
 			queryClient.invalidateQueries({queryKey: [STAGES_KEY]});
+			showSuccessToast('Stage created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create stage');
 		},
 	});
 }
@@ -38,6 +43,10 @@ export function useBulkCreateStages() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: ['jobPositions']});
 			queryClient.invalidateQueries({queryKey: [STAGES_KEY]});
+			showSuccessToast('Stages created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create stages');
 		},
 	});
 }
@@ -52,6 +61,10 @@ export function useUpdateStage() {
 			queryClient.invalidateQueries({queryKey: ['jobPositions']});
 			queryClient.invalidateQueries({queryKey: ['hiringProcess']});
 			queryClient.invalidateQueries({queryKey: [STAGES_KEY]});
+			showSuccessToast('Stage updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update stage');
 		},
 	});
 }
@@ -64,6 +77,10 @@ export function useDeleteStage() {
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: ['jobPositions']});
 			queryClient.invalidateQueries({queryKey: [STAGES_KEY]});
+			showSuccessToast('Stage deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete stage');
 		},
 	});
 }
