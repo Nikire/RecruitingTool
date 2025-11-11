@@ -39,6 +39,9 @@ export class HiringProcessResponseDto {
   @ApiProperty({ description: 'The status of the hiring process', example: 'IN_PROGRESS', enum: HiringProcessStatus })
   status: HiringProcessStatus;
 
+  @ApiProperty({ description: 'The ID of the related job position', example: 1 })
+  jobPositionId: number;
+
   @ApiProperty({ description: 'The stages of the hiring process' })
   stages?: Array<StageResponseDto>;
 }

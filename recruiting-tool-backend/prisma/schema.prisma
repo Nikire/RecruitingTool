@@ -8,6 +8,18 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Company {
+  id              Int           @id @default(autoincrement())
+  uid             String        @unique @default(uuid()) @db.Uuid
+  name            String
+  description     String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  users           User[]
+  jobPositions    JobPosition[]
+  hiringProcesses HiringProcess[]
+}
+
 model User {
   id           Int           @id @default(autoincrement())
   uid          String        @unique @default(uuid()) @db.Uuid
@@ -17,6 +29,8 @@ model User {
   roles        RolesType[]   @default([USER])
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
+  companyId    Int?
+  company      Company?      @relation(fields: [companyId], references: [id])
   jobPositions JobPosition[] @relation("JobPositionsUser")
 }
 
@@ -44,10 +58,13 @@ model JobPosition {
   id              Int               @id @default(autoincrement())
   uid             String            @unique @default(uuid()) @db.Uuid
   title           String
+  description     String?
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   createdById     Int
   createdBy       User              @relation("JobPositionsUser", fields: [createdById], references: [id])
+  companyId       Int
+  company         Company           @relation(fields: [companyId], references: [id])
   stages          Stage[] // Here stages is used to create the template of the job position
   status          JobPositionStatus @default(OPEN)
   hiringProcesses HiringProcess[]
@@ -62,9 +79,11 @@ model HiringProcess {
   updatedAt     DateTime            @updatedAt
   candidateId   Int?                @unique
   candidate     Candidate?          @relation("HiringProcessCandidate")
-  stages        Stage[] // Here stages is used to check on which stage the Candidate is and where 
+  stages        Stage[] // Here stages is used to check on which stage the Candidate is and where
   jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id])
   jobPositionId Int
+  companyId     Int
+  company       Company             @relation(fields: [companyId], references: [id])
 }
 
 enum HiringProcessStatus {
@@ -93,8 +112,8 @@ model Stage {
   hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id])
   hiringProcessId Int?
   position        Int
-  JobPosition     JobPosition    @relation(fields: [jobPositionId], references: [id])
-  jobPositionId   Int
+  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
+  jobPositionId   Int?
   estimatedTime   Int?
 
   @@unique([hiringProcessId, position])

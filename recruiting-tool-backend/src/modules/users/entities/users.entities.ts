@@ -17,6 +17,7 @@ export function UserMapper(user: User | UserWithPasswordResponseDto): UserRespon
     createdAt: typeof user.createdAt === 'string' ? user.createdAt : user.createdAt.toISOString(),
     updatedAt: typeof user.updatedAt === 'string' ? user.updatedAt : user.updatedAt.toISOString(),
     roles: user.roles,
+    companyId: user.companyId,
   };
 }
 
@@ -37,5 +38,6 @@ export function UserWithPasswordMapper(user: User): UserWithPasswordResponseDto 
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
     roles: user.roles,
+    companyId: user.companyId,
   };
 }

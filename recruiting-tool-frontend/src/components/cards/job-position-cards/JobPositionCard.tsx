@@ -1,12 +1,21 @@
-import {Box, Button, Card, CardContent, Typography} from '@mui/material';
+import {Box, Button, Card, CardContent, Typography, ButtonGroup} from '@mui/material';
+import {useNavigate} from 'react-router-dom';
 import {JobPosition} from '../../../types/jobPosition.types';
 import StatusLabel from '../../StatusLabel';
 
 type JobPositionCardProps = {
 	jobPosition: JobPosition;
+	onManageStages?: () => void;
+	canManageStages?: boolean;
 };
 
-const JobPositionCard: React.FC<JobPositionCardProps> = ({jobPosition}) => {
+const JobPositionCard: React.FC<JobPositionCardProps> = ({
+	jobPosition,
+	onManageStages,
+	canManageStages = false,
+}) => {
+	const navigate = useNavigate();
+
 	return (
 		<Card
 			variant="elevation"
@@ -15,8 +24,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({jobPosition}) => {
 				padding: 2,
 				marginBottom: 2,
 				display: 'flex',
-				maxHeight: 75,
-				height: 75,
+				minHeight: 75,
 			}}
 		>
 			<Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
@@ -26,13 +34,27 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({jobPosition}) => {
 					<b>{jobPosition.stages.length}</b> Stages
 				</Typography>
 			</Box>
-			<Button
+			<ButtonGroup
 				variant="contained"
-				color="primary"
-				sx={{alignSelf: 'center', marginLeft: 'auto', fontWeight: 600}}
+				sx={{alignSelf: 'center', marginLeft: 'auto'}}
 			>
-				View Details
-			</Button>
+				{canManageStages && (
+					<Button
+						color="secondary"
+						onClick={onManageStages}
+						sx={{fontWeight: 600}}
+					>
+						Manage Stages
+					</Button>
+				)}
+				<Button
+					color="primary"
+					onClick={() => navigate(`/job-positions/${jobPosition.uid}`)}
+					sx={{fontWeight: 600}}
+				>
+					View Details
+				</Button>
+			</ButtonGroup>
 		</Card>
 	);
 };

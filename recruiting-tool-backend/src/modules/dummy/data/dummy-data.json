@@ -1,0 +1,208 @@
+{
+  "companies": [
+    {
+      "name": "Tech Innovations Inc",
+      "description": "A leading technology company focused on innovative software solutions"
+    },
+    {
+      "name": "Digital Solutions Corp",
+      "description": "Providing cutting-edge digital transformation services"
+    }
+  ],
+  "users": [
+    {
+      "name": "Alice Johnson",
+      "email": "alice@techinnovations.com",
+      "password": "password123",
+      "roles": ["USER", "HR", "ADMIN"],
+      "companyIndex": 0
+    },
+    {
+      "name": "Bob Smith",
+      "email": "bob@techinnovations.com",
+      "password": "password123",
+      "roles": ["USER", "HR"],
+      "companyIndex": 0
+    },
+    {
+      "name": "Charlie Brown",
+      "email": "charlie@digitalsolutions.com",
+      "password": "password123",
+      "roles": ["USER", "HR", "ADMIN"],
+      "companyIndex": 1
+    },
+    {
+      "name": "Diana Prince",
+      "email": "diana@digitalsolutions.com",
+      "password": "password123",
+      "roles": ["USER"],
+      "companyIndex": 1
+    }
+  ],
+  "jobPositions": [
+    {
+      "title": "Senior Software Engineer",
+      "description": "Looking for an experienced software engineer to join our team",
+      "status": "OPEN",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "stages": [
+        {
+          "title": "Initial Screening",
+          "type": "INTERVIEW",
+          "description": "First contact with the candidate",
+          "estimatedTime": 30
+        },
+        {
+          "title": "Technical Interview",
+          "type": "TECHNICAL_INTERVIEW",
+          "description": "Assess technical skills and problem-solving",
+          "estimatedTime": 90
+        },
+        {
+          "title": "Team Interview",
+          "type": "FINAL_INTERVIEW",
+          "description": "Meet with the team members",
+          "estimatedTime": 60
+        },
+        {
+          "title": "Offer",
+          "type": "OFFER",
+          "description": "Present the job offer",
+          "estimatedTime": 15
+        }
+      ]
+    },
+    {
+      "title": "Frontend Developer",
+      "description": "React expert needed for exciting new projects",
+      "status": "OPEN",
+      "companyIndex": 0,
+      "createdByUserIndex": 1,
+      "stages": [
+        {
+          "title": "Phone Screening",
+          "type": "INTERVIEW",
+          "description": "Initial conversation about the role",
+          "estimatedTime": 20
+        },
+        {
+          "title": "Coding Challenge",
+          "type": "TECHNICAL_INTERVIEW",
+          "description": "Complete a React coding challenge",
+          "estimatedTime": 120
+        },
+        {
+          "title": "Final Interview",
+          "type": "FINAL_INTERVIEW",
+          "description": "Discussion with hiring manager",
+          "estimatedTime": 45
+        },
+        {
+          "title": "Offer",
+          "type": "OFFER",
+          "description": "Present the compensation package",
+          "estimatedTime": 15
+        }
+      ]
+    },
+    {
+      "title": "DevOps Engineer",
+      "description": "Experienced DevOps engineer for cloud infrastructure",
+      "status": "OPEN",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "stages": [
+        {
+          "title": "Recruiter Call",
+          "type": "INTERVIEW",
+          "description": "Initial screening call",
+          "estimatedTime": 30
+        },
+        {
+          "title": "Technical Assessment",
+          "type": "TECHNICAL_INTERVIEW",
+          "description": "DevOps and cloud knowledge test",
+          "estimatedTime": 90
+        },
+        {
+          "title": "Final Interview",
+          "type": "FINAL_INTERVIEW",
+          "description": "Meet with the infrastructure team",
+          "estimatedTime": 60
+        },
+        {
+          "title": "Offer",
+          "type": "OFFER",
+          "description": "Discuss terms and offer",
+          "estimatedTime": 20
+        }
+      ]
+    },
+    {
+      "title": "Product Manager",
+      "description": "Lead product strategy and development",
+      "status": "OPEN",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "stages": [
+        {
+          "title": "Initial Call",
+          "type": "INTERVIEW",
+          "description": "Discuss role and experience",
+          "estimatedTime": 30
+        },
+        {
+          "title": "Case Study",
+          "type": "TECHNICAL_INTERVIEW",
+          "description": "Present a product case study",
+          "estimatedTime": 60
+        },
+        {
+          "title": "Leadership Interview",
+          "type": "FINAL_INTERVIEW",
+          "description": "Meet with senior leadership",
+          "estimatedTime": 45
+        },
+        {
+          "title": "Offer",
+          "type": "OFFER",
+          "description": "Final offer discussion",
+          "estimatedTime": 15
+        }
+      ]
+    }
+  ],
+  "candidates": [
+    {
+      "name": "John Doe",
+      "email": "john.doe@example.com",
+      "jobPositionIndex": 0,
+      "companyIndex": 0
+    },
+    {
+      "name": "Jane Smith",
+      "email": "jane.smith@example.com",
+      "jobPositionIndex": 0,
+      "companyIndex": 0
+    },
+    {
+      "name": "Mike Wilson",
+      "email": "mike.wilson@example.com",
+      "jobPositionIndex": 1,
+      "companyIndex": 0
+    },
+    {
+      "name": "Sarah Davis",
+      "email": "sarah.davis@example.com",
+      "jobPositionIndex": 2,
+      "companyIndex": 1
+    },
+    {
+      "name": "Tom Anderson",
+      "email": "tom.anderson@example.com",
+      "jobPositionIndex": 3,
+      "companyIndex": 1
+    }
+  ]
+}

@@ -52,11 +52,27 @@ export class JobPositionService {
   }
 
   async create(creatorUid: string, createJobPositionDto: CreateJobPositionDto): Promise<JobPositionResponseDto> {
+    // Get user to find their company
+    const user = await this.databaseService.user.findUnique({
+      where: { uid: creatorUid },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User ${creatorUid} not found`);
+    }
+
+    if (!user.companyId) {
+      throw new NotFoundException(`User ${creatorUid} does not belong to a company`);
+    }
+
     let newJobPosition = await this.databaseService.jobPosition.create({
       data: {
         title: createJobPositionDto.title,
+        description: createJobPositionDto.description,
         createdBy: { connect: { uid: creatorUid } },
+        company: { connect: { id: user.companyId } },
       },
+      include: includeJobPosition,
     });
 
     if (createJobPositionDto.stages) {
@@ -75,6 +91,7 @@ export class JobPositionService {
     const jobPosition = await this.databaseService.jobPosition.update({
       where: { uid },
       data: { ...updateHiringProcessDto },
+      include: includeJobPosition,
     });
 
     if (!jobPosition) {

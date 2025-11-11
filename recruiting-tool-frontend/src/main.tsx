@@ -8,6 +8,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 import {ThemeProvider as MuiThemeProvider, createTheme} from '@mui/material';
 import {ThemeProvider as StyledThemeProvider} from 'styled-components';
+import {Provider as JotaiProvider} from 'jotai';
 
 import {BrowserRouter} from 'react-router';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
@@ -22,9 +23,11 @@ createRoot(document.getElementById('root')!).render(
 		<QueryClientProvider client={queryClient}>
 			<MuiThemeProvider theme={theme}>
 				<StyledThemeProvider theme={theme}>
-					<BrowserRouter>
-						<App />
-					</BrowserRouter>
+					<JotaiProvider>
+						<BrowserRouter>
+							<App />
+						</BrowserRouter>
+					</JotaiProvider>
 				</StyledThemeProvider>
 			</MuiThemeProvider>
 		</QueryClientProvider>

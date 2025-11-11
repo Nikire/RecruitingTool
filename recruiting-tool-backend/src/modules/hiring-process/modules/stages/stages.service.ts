@@ -118,14 +118,17 @@ export class StagesService {
     const jobPositionUid = stages[0].jobPositionUid;
     const hiringProcessUid = stages[0].hiringProcessUid;
 
-    const jobPositionId = await this.databaseService.jobPosition
-      .findUnique({
+    // Get jobPositionId if jobPositionUid is provided
+    let jobPositionId: number | undefined = undefined;
+    if (jobPositionUid) {
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
         where: { uid: jobPositionUid },
-      })
-      .then((jp) => jp.id);
+      });
+      jobPositionId = jobPosition?.id;
+    }
 
+    // Get hiringProcessId if hiringProcessUid is provided
     let hiringProcessId: number | undefined = undefined;
-
     if (hiringProcessUid) {
       const hiringProcess = await this.databaseService.hiringProcess.findUnique({
         where: { uid: hiringProcessUid },
@@ -140,7 +143,7 @@ export class StagesService {
         description: stage.description,
         estimatedTime: stage.estimatedTime,
         position: index,
-        jobPositionId,
+        ...(jobPositionId !== undefined && { jobPositionId }),
         ...(hiringProcessId !== undefined && { hiringProcessId }),
         status: index === 0 ? StageStatus.CURRENT : StageStatus.OPEN,
       })),

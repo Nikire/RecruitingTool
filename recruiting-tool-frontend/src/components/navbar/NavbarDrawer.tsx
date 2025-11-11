@@ -8,6 +8,8 @@ import {
 	PropTypes,
 } from '@mui/material';
 import {NavLink} from 'react-router-dom';
+import { User, UserRoles } from '../../types/user.types';
+import { hasRole } from '../../utils/permissions';
 
 type NavbarDrawerProps = {
 	isOpen?: boolean;
@@ -15,6 +17,8 @@ type NavbarDrawerProps = {
 	color?: PropTypes.Color;
 	linkSx?: ListItemButtonBaseProps['sx'];
 	handleMenuClick?: () => void;
+	isAuthenticated?: boolean;
+	user?: User | null;
 };
 
 const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
@@ -23,6 +27,8 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 	color,
 	linkSx,
 	handleMenuClick,
+	isAuthenticated,
+	user,
 }) => {
 	return (
 		<Drawer anchor="left" color={color} open={isOpen} onClose={onClose}>
@@ -49,9 +55,19 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 				<ListItemButton component={NavLink} sx={linkSx} to="/job-positions">
 					<ListItemText color="inherit" primary="Job Positions" />
 				</ListItemButton>
+				{isAuthenticated && (
+					<ListItemButton component={NavLink} sx={linkSx} to="/candidates">
+						<ListItemText color="inherit" primary="Candidates" />
+					</ListItemButton>
+				)}
 				<ListItemButton component={NavLink} sx={linkSx} to="/dashboard">
 					<ListItemText color="inherit" primary="Dashboard" />
 				</ListItemButton>
+				{isAuthenticated && hasRole(user, UserRoles.SUPER_ADMIN) && (
+					<ListItemButton component={NavLink} sx={linkSx} to="/companies">
+						<ListItemText color="inherit" primary="Companies" />
+					</ListItemButton>
+				)}
 			</List>
 		</Drawer>
 	);

@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { JobPositionStatus } from '@prisma/client';
-import { IsNotEmpty, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 import { HiringProcessResponseDto } from 'src/modules/hiring-process/dto/hiring-process.dto';
 import { CreateStageDto, StageResponseDto } from 'src/modules/hiring-process/modules/stages/dto/stages.dto';
 
@@ -18,6 +18,15 @@ export class JobPositionResponseDto {
   @ApiProperty({ description: 'The status of the job position', example: 'OPEN', enum: JobPositionStatus })
   status: JobPositionStatus;
 
+  @ApiProperty({ description: 'The description of the job position', example: 'Looking for a talented software engineer', required: false })
+  description?: string;
+
+  @ApiProperty({ description: 'The company ID', example: 1 })
+  companyId: number;
+
+  @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
+  companyName?: string;
+
   @ApiProperty({ description: 'The stages of the job position' })
   stages?: Array<StageResponseDto>;
 
@@ -33,15 +42,28 @@ export class CreateJobPositionDto {
   @MaxLength(100)
   title: string;
 
+  @ApiProperty({ description: 'The description of the job position', example: 'Looking for a talented software engineer', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  description?: string;
+
   @ApiProperty({ description: 'The stages of the job position', type: [CreateStageDto] })
   stages?: Array<CreateStageDto>;
 }
 
 export class UpdateJobPositionDto {
-  @ApiProperty({ description: 'The title of the Job position', example: 'Software Engineer Interview' })
+  @ApiProperty({ description: 'The title of the Job position', example: 'Software Engineer Interview', required: false })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   @MinLength(3)
   @MaxLength(100)
   title?: string;
+
+  @ApiProperty({ description: 'The description of the job position', example: 'Updated description', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  description?: string;
 }

@@ -25,6 +25,12 @@ export class CreateUserDto {
   @MinLength(3)
   @MaxLength(20)
   password: string;
+
+  @ApiProperty({ description: 'The UID of the company', example: '123e4567-e89b-12d3-a456-426614174000', required: false })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  companyUid?: string;
 }
 export class UpdateUserDto {
   @ApiProperty({ description: 'The name of the user', example: 'John Doe 2' })
@@ -52,6 +58,12 @@ export class UpdateUserDto {
   @MinLength(3)
   @MaxLength(20)
   password?: string;
+
+  @ApiProperty({ description: 'The UID of the company', example: '123e4567-e89b-12d3-a456-426614174000', required: false })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  companyUid?: string;
 }
 
 export class UserResponseDto {
@@ -79,6 +91,12 @@ export class UserResponseDto {
     example: ['USER', 'ADMIN'],
   })
   roles?: Array<RolesType>;
+  @ApiProperty({
+    description: 'The company ID of the user',
+    example: 1,
+    required: false,
+  })
+  companyId?: number;
 }
 
 export class UserWithPasswordResponseDto extends UserResponseDto {

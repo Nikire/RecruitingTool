@@ -10,8 +10,20 @@ export class UsersService {
   constructor(private databaseService: DatabaseService) {}
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     try {
+      let companyId: number | undefined = undefined;
+      if (createUserDto.companyUid) {
+        const company = await this.databaseService.company.findUnique({
+          where: { uid: createUserDto.companyUid },
+        });
+        if (!company) {
+          throw new NotFoundException(`Company ${createUserDto.companyUid} not found`);
+        }
+        companyId = company.id;
+      }
+
+      const { companyUid, ...userData } = createUserDto;
       const newUser = await this.databaseService.user.create({
-        data: { ...createUserDto, password: await bycrypt.hash(createUserDto.password, 10) },
+        data: { ...userData, password: await bycrypt.hash(createUserDto.password, 10), companyId },
       });
 
       return UserMapper(newUser);
@@ -65,9 +77,21 @@ export class UsersService {
       throw new NotFoundException(`User ${uid} not found`);
     }
 
+    let companyId: number | undefined = undefined;
+    if (updateUserDto.companyUid) {
+      const company = await this.databaseService.company.findUnique({
+        where: { uid: updateUserDto.companyUid },
+      });
+      if (!company) {
+        throw new NotFoundException(`Company ${updateUserDto.companyUid} not found`);
+      }
+      companyId = company.id;
+    }
+
+    const { companyUid, ...userData } = updateUserDto;
     const updatedUser = await this.databaseService.user.update({
       where: { uid },
-      data: updateUserDto,
+      data: { ...userData, ...(companyId !== undefined && { companyId }) },
     });
     return UserMapper(updatedUser);
   }

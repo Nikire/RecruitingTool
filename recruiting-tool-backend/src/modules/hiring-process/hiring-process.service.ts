@@ -29,16 +29,26 @@ export class HiringProcessService {
       throw new NotFoundException(`There is no stages on job position ${jobPosition.uid}`);
     }
 
+    // Get companyId from jobPosition
+    const companyId = jobPosition.companyId;
+
     const newHiringProcess = await this.databaseService.hiringProcess.create({
       data: {
         title: jobPosition.title + ' - ' + candidate.name,
         candidate: { connect: { uid: candidate.uid } },
         jobPosition: { connect: { uid: jobPosition.uid } },
+        company: { connect: { id: companyId } },
       },
       include: includeHiringProcess,
     });
 
-    const copiedStages = jobPosition.stages.map(({ uid, ...rest }) => ({ ...rest, jobPositionUid: jobPosition.uid, hiringProcessUid: newHiringProcess.uid }));
+    // Copy stages from job position template, but link them ONLY to the hiring process
+    // Do NOT include jobPositionUid so stages are isolated to this hiring process
+    const copiedStages = jobPosition.stages.map(({ uid, jobPositionUid, status, position, ...rest }) => ({
+      ...rest,
+      hiringProcessUid: newHiringProcess.uid,
+      // Note: jobPositionUid is intentionally omitted - stages belong to hiring process only
+    }));
     await this.stagesService.bulkCreateStages(copiedStages);
 
     return HiringProcessOneMapper(newHiringProcess);

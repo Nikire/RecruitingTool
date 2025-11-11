@@ -9,9 +9,10 @@ import { StagesModule } from './modules/hiring-process/modules/stages/stages.mod
 import { CandidateModule } from './modules/hiring-process/modules/candidate/candidate.module';
 import { JobPositionModule } from './modules/job-position/job-position.module';
 import { DummyModule } from './modules/dummy/dummy.module';
+import { CompanyModule } from './modules/company/company.module';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule],
+  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule],
   controllers: [AppController],
   providers: [AppService],
 })

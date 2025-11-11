@@ -4,7 +4,7 @@ export interface User {
 	email: string;
 	createdAt?: string;
 	updatedAt?: string;
-	roles?: UserRoles[];
+	roles: UserRoles[];
 }
 
 export enum UserRoles {

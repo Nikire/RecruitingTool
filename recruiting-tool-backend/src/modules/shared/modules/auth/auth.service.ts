@@ -4,7 +4,7 @@ import * as bycrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto, UserWithPasswordResponseDto } from 'src/modules/users/dto/users.dto';
-import { UserLoginMapper } from 'src/modules/users/entities/users.entities';
+import { UserMapper } from 'src/modules/users/entities/users.entities';
 
 @Injectable()
 export class AuthService {
@@ -14,12 +14,12 @@ export class AuthService {
   ) {}
 
   async register({ name, email, password }: CreateUserDto): Promise<RegisteredUserDto> {
-    const user = await this.usersService.findByEmail(email);
-    if (user) {
+    const foundUser = await this.usersService.findByEmail(email);
+    if (foundUser) {
       throw new BadRequestException('User already exists');
     }
 
-    const newUser = await this.usersService.create({
+    const user = await this.usersService.create({
       name,
       email,
       password,
@@ -27,29 +27,29 @@ export class AuthService {
 
     const { token } = await this.login({ email, password });
     return {
-      ...newUser,
+      user,
       token,
     };
   }
 
   async login({ email, password }: LoginDto): Promise<RegisteredUserDto> {
-    const user = await this.usersService.findByEmail(email);
-    if (!user) {
+    const foundUser = await this.usersService.findByEmail(email);
+    if (!foundUser) {
       throw new UnauthorizedException('Email is wrong');
     }
 
-    const isPasswordValid = await bycrypt.compare(password, user.password);
+    const isPasswordValid = await bycrypt.compare(password, foundUser.password);
 
     if (!isPasswordValid) {
       throw new UnauthorizedException('Password is wrong');
     }
 
-    const payload = user;
+    const payload = foundUser;
 
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
 
     return {
-      ...UserLoginMapper(user),
+      user: { ...UserMapper(foundUser) },
       token,
     };
   }

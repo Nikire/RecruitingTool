@@ -22,7 +22,8 @@ export class LoginDto {
   password: string;
 }
 
-export class RegisteredUserDto extends UserResponseDto {
+export class RegisteredUserDto {
+  user: UserResponseDto;
   @ApiProperty({
     description: 'The token of the user',
     example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImphbWVzQGhvdG1haWwuY29tIiwibmFtZSI6ImpvaG4gZG9lIiwiaWQi',

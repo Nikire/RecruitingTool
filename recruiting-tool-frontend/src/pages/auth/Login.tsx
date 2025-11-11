@@ -1,4 +1,5 @@
 import {useForm} from 'react-hook-form';
+import {useNavigate} from 'react-router-dom';
 import {Typography, TextField, Button, Divider} from '@mui/material';
 import {useLogin} from '../../hooks/api/useAuth';
 import {AuthGroupWrapper, AuthPageWrapper, FormWrapper} from './Auth.styles';
@@ -8,11 +9,16 @@ interface LoginFormData {
 }
 
 const Login: React.FC = () => {
+	const navigate = useNavigate();
 	const {register, handleSubmit} = useForm<LoginFormData>();
 	const {mutate: login, isPending, isError} = useLogin();
 
 	const onSubmit = (data: LoginFormData) => {
-		login(data);
+		login(data, {
+			onSuccess: () => {
+				navigate('/dashboard');
+			},
+		});
 	};
 
 	return (

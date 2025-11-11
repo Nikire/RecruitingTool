@@ -1,4 +1,4 @@
-import {Box} from '@mui/material';
+import {Box, Container} from '@mui/material';
 import {Outlet} from 'react-router';
 
 const DocumentContainer = () => (
@@ -6,10 +6,14 @@ const DocumentContainer = () => (
 		sx={{
 			minHeight: '100vh',
 			display: 'flex',
-			backgroundColor: '#fff',
+			justifyContent: 'center',
+			backgroundColor: '#f5f5f5',
+			py: 4,
 		}}
 	>
-		<Outlet />
+		<Container maxWidth="lg">
+			<Outlet />
+		</Container>
 	</Box>
 );
 

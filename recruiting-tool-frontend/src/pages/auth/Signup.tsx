@@ -1,4 +1,5 @@
 import {useForm} from 'react-hook-form';
+import {useNavigate} from 'react-router-dom';
 import {Typography, TextField, Button, Divider} from '@mui/material';
 import {useRegister} from '../../hooks/api/useAuth';
 import {AuthGroupWrapper, AuthPageWrapper, FormWrapper} from './Auth.styles';
@@ -9,11 +10,16 @@ interface SignupFormData {
 }
 
 const Signup: React.FC = () => {
+	const navigate = useNavigate();
 	const {register, handleSubmit} = useForm<SignupFormData>();
 	const {mutate: registerUser, isPending, isError} = useRegister();
 
 	const onSubmit = (data: SignupFormData) => {
-		registerUser(data);
+		registerUser(data, {
+			onSuccess: () => {
+				navigate('/dashboard');
+			},
+		});
 	};
 
 	return (

@@ -1,75 +1,200 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { HiringProcessService } from '../hiring-process/hiring-process.service';
-import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
-import { JobPositionService } from '../job-position/job-position.service';
-import { UsersService } from '../users/users.service';
+import { DatabaseService } from '../shared/modules/database/database.service';
 import { ConfigService } from '@nestjs/config';
-import { CreateJobPositionDto } from '../job-position/dto/job-position.dto';
-import { CreateCandidateDto } from '../hiring-process/modules/candidate/dto/candidate.dto';
-import { CreateStageDto } from '../hiring-process/modules/stages/dto/stages.dto';
-import { StagesService } from '../hiring-process/modules/stages/stages.service';
-import { StageType } from '@prisma/client';
-import { CreateHiringProcessDto } from '../hiring-process/dto/hiring-process.dto';
+import * as bcrypt from 'bcryptjs';
+import { RolesType, StageStatus, StageType } from '@prisma/client';
+import * as fs from 'fs';
+import * as path from 'path';
+
+interface DummyDataStructure {
+  companies: Array<{ name: string; description: string }>;
+  users: Array<{
+    name: string;
+    email: string;
+    password: string;
+    roles: RolesType[];
+    companyIndex: number;
+  }>;
+  jobPositions: Array<{
+    title: string;
+    description: string;
+    status: string;
+    companyIndex: number;
+    createdByUserIndex: number;
+    stages: Array<{
+      title: string;
+      type: StageType;
+      description: string;
+      estimatedTime: number;
+    }>;
+  }>;
+  candidates: Array<{
+    name: string;
+    email: string;
+    jobPositionIndex: number;
+    companyIndex: number;
+  }>;
+}
 
 @Injectable()
 export class DummyService implements OnApplicationBootstrap {
   constructor(
-    private readonly jobPositionService: JobPositionService,
-    private readonly stagesService: StagesService,
-    private readonly candidateService: CandidateService,
-    private readonly hiringProcessService: HiringProcessService,
-    private readonly usersService: UsersService,
+    private readonly databaseService: DatabaseService,
     private readonly configService: ConfigService,
   ) {}
+
   async onApplicationBootstrap() {
     console.log('DummyService initialized');
-    const adminUser = await this.usersService.findByEmail(this.configService.get<string>('ADMIN_EMAIL'));
-    if (!adminUser) {
-      console.log('Admin user not found');
-      return;
-    }
 
-    const existingAdminJobPositions = await this.jobPositionService.find({ createdBy: { uid: adminUser.uid } });
-
-    if (existingAdminJobPositions.length > 0) {
+    // Check if dummy data already exists
+    const existingCompanies = await this.databaseService.company.count();
+    if (existingCompanies > 0) {
       console.log('Dummy data already exists, skipping creation');
       return;
     }
 
-    const dummyCandidate: CreateCandidateDto = {
-      email: 'dummy.candidate@example.com',
-      name: 'Dummy Candidate',
-    };
+    console.log('Creating dummy data from JSON...');
+    await this.createDummyData();
+    console.log('Dummy data created successfully!');
+  }
 
-    const createdCandidate = await this.candidateService.create(dummyCandidate);
+  async createDummyData() {
+    // Read JSON file at runtime
+    const jsonPath = path.join(__dirname, 'data', 'dummy-data.json');
+    const jsonContent = fs.readFileSync(jsonPath, 'utf-8');
+    const data: DummyDataStructure = JSON.parse(jsonContent);
+    const createdCompanies = [];
+    const createdUsers = [];
+    const createdJobPositions = [];
+    const createdCandidates = [];
 
-    console.log('Created dummy candidate with UID:', createdCandidate.uid);
+    // Create companies
+    console.log('Creating companies...');
+    for (const company of data.companies) {
+      const created = await this.databaseService.company.create({
+        data: {
+          name: company.name,
+          description: company.description,
+        },
+      });
+      createdCompanies.push(created);
+      console.log(`Created company: ${created.name}`);
+    }
 
-    const dummyJobPosition: CreateJobPositionDto = {
-      title: 'Software Engineer',
-    };
+    // Update admin user to belong to first company
+    const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
+    if (adminEmail) {
+      await this.databaseService.user.update({
+        where: { email: adminEmail },
+        data: { companyId: createdCompanies[0].id },
+      });
+      console.log(`Updated admin user to belong to ${createdCompanies[0].name}`);
+    }
 
-    const createdJobPosition = await this.jobPositionService.create(adminUser.uid, dummyJobPosition);
+    // Create users
+    console.log('Creating users...');
+    for (const user of data.users) {
+      const created = await this.databaseService.user.create({
+        data: {
+          name: user.name,
+          email: user.email,
+          password: await bcrypt.hash(user.password, 10),
+          roles: user.roles,
+          companyId: createdCompanies[user.companyIndex].id,
+        },
+      });
+      createdUsers.push(created);
+      console.log(`Created user: ${created.name} for ${createdCompanies[user.companyIndex].name}`);
+    }
 
-    console.log('Created dummy job position with UID:', createdJobPosition.uid);
+    // Create job positions with stages
+    console.log('Creating job positions...');
+    for (const jobPosition of data.jobPositions) {
+      const created = await this.databaseService.jobPosition.create({
+        data: {
+          title: jobPosition.title,
+          description: jobPosition.description,
+          status: jobPosition.status as any,
+          companyId: createdCompanies[jobPosition.companyIndex].id,
+          createdById: createdUsers[jobPosition.createdByUserIndex].id,
+        },
+      });
+      createdJobPositions.push(created);
+      console.log(`Created job position: ${created.title} for ${createdCompanies[jobPosition.companyIndex].name}`);
 
-    const dummyStages: Array<CreateStageDto> = [
-      { title: 'Phone Screen', type: StageType.INTERVIEW, description: 'Initial phone screen', jobPositionUid: createdJobPosition.uid, estimatedTime: 30 },
-      { title: 'Technical Interview', type: StageType.TECHNICAL_INTERVIEW, description: 'In-depth technical interview', jobPositionUid: createdJobPosition.uid, estimatedTime: 90 },
-      { title: 'HR Interview', type: StageType.FINAL_INTERVIEW, description: 'Final HR interview', jobPositionUid: createdJobPosition.uid, estimatedTime: 30 },
-    ];
+      // Create stages for this job position
+      const stages = jobPosition.stages.map((stage, index) => ({
+        title: stage.title,
+        type: stage.type,
+        description: stage.description,
+        estimatedTime: stage.estimatedTime,
+        position: index,
+        status: index === 0 ? StageStatus.CURRENT : StageStatus.OPEN,
+        jobPositionId: created.id,
+      }));
 
-    const createdStages = await this.stagesService.bulkCreateStages(dummyStages);
+      await this.databaseService.stage.createMany({
+        data: stages,
+      });
+      console.log(`  Created ${stages.length} stages for ${created.title}`);
+    }
 
-    console.log(
-      'Created dummy stages:',
-      createdStages.map((s) => s.title),
-    );
+    // Create candidates
+    console.log('Creating candidates...');
+    for (const candidate of data.candidates) {
+      const created = await this.databaseService.candidate.create({
+        data: {
+          name: candidate.name,
+          email: candidate.email,
+        },
+      });
+      createdCandidates.push(created);
+      console.log(`Created candidate: ${created.name}`);
+    }
 
-    const dummyHiringProcess: CreateHiringProcessDto = { candidateUid: createdCandidate.uid, jobPositionUid: createdJobPosition.uid };
+    // Create hiring processes
+    console.log('Creating hiring processes...');
+    for (let i = 0; i < createdCandidates.length; i++) {
+      const candidate = createdCandidates[i];
+      const candidateData = data.candidates[i];
+      const jobPosition = createdJobPositions[candidateData.jobPositionIndex];
+      const company = createdCompanies[candidateData.companyIndex];
 
-    const createdHiringProcess = await this.hiringProcessService.create(dummyHiringProcess);
+      const hiringProcess = await this.databaseService.hiringProcess.create({
+        data: {
+          title: `${jobPosition.title} - ${candidate.name}`,
+          candidateId: candidate.id,
+          jobPositionId: jobPosition.id,
+          companyId: company.id,
+        },
+      });
 
-    console.log('Created dummy hiring process with UID:', createdHiringProcess.uid);
+      // Copy stages from job position to hiring process
+      const templateStages = await this.databaseService.stage.findMany({
+        where: {
+          jobPositionId: jobPosition.id,
+          hiringProcessId: null,
+        },
+        orderBy: { position: 'asc' },
+      });
+
+      const hiringProcessStages = templateStages.map((stage, index) => ({
+        title: stage.title,
+        type: stage.type,
+        description: stage.description,
+        estimatedTime: stage.estimatedTime,
+        position: index,
+        status: index === 0 ? StageStatus.CURRENT : StageStatus.OPEN,
+        hiringProcessId: hiringProcess.id,
+      }));
+
+      await this.databaseService.stage.createMany({
+        data: hiringProcessStages,
+      });
+
+      console.log(`Created hiring process: ${hiringProcess.title} with ${hiringProcessStages.length} stages`);
+    }
+
+    console.log('All dummy data created successfully!');
   }
 }

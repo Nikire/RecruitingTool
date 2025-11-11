@@ -11,6 +11,10 @@ import {
 import {useState} from 'react';
 import {NavLink} from 'react-router-dom';
 import NavbarDrawer from './NavbarDrawer';
+import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import UserAvatar from '../user/UserAvatar';
+import { hasRole } from '../../utils/permissions';
+import { UserRoles } from '../../types/user.types';
 
 const Navbar: React.FC = () => {
 	const color: PropTypes.Color = 'secondary';
@@ -25,6 +29,7 @@ const Navbar: React.FC = () => {
 			'&.Mui-selected, &.Mui-selected:hover': {bgcolor: `${color}.main`},
 		},
 	};
+	const {user: logedUser, isAuthenticated} = useUserAtom();
 
 	const [menuOpen, setMenuOpen] = useState(false);
 
@@ -40,6 +45,8 @@ const Navbar: React.FC = () => {
 				linkSx={linkSx}
 				onClose={handleMenuClick}
 				handleMenuClick={handleMenuClick}
+				isAuthenticated={isAuthenticated}
+				user={logedUser}
 			/>
 			<Box sx={{flexGrow: 1}}>
 				<AppBar position="static" color={color}>
@@ -77,6 +84,16 @@ const Navbar: React.FC = () => {
 							>
 								Job Positions
 							</Button>
+							{isAuthenticated && (
+								<Button
+									color="inherit"
+									component={NavLink}
+									to="/candidates"
+									sx={linkSx}
+								>
+									Candidates
+								</Button>
+							)}
 							<Button
 								color="inherit"
 								component={NavLink}
@@ -85,27 +102,51 @@ const Navbar: React.FC = () => {
 							>
 								Dashboard
 							</Button>
+							{isAuthenticated && hasRole(logedUser, UserRoles.SUPER_ADMIN) && (
+								<Button
+									color="inherit"
+									component={NavLink}
+									to="/companies"
+									sx={linkSx}
+								>
+									Companies
+								</Button>
+							)}
 						</Box>
 
 						<Box sx={{flexGrow: 1}} />
-						<Box sx={{display: 'flex', gap: 0.5}}>
-							<Button
-								color="inherit"
-								component={NavLink}
-								to="/login"
-								sx={linkSx}
-							>
-								Login
-							</Button>
-							<Button
-								color="inherit"
-								component={NavLink}
-								to="/signup"
-								sx={linkSx}
-							>
-								Signup
-							</Button>
-						</Box>
+						{isAuthenticated ? (
+							<Box sx={{display: 'flex', gap: 0.5}}>
+								<Button
+									color="inherit"
+									component={NavLink}
+									to="/logout"
+									sx={linkSx}
+								>
+									Logout
+								</Button>
+								<UserAvatar name={logedUser?.name} />
+							</Box>
+						) : (
+							<Box sx={{display: 'flex', gap: 0.5}}>
+								<Button
+									color="inherit"
+									component={NavLink}
+									to="/login"
+									sx={linkSx}
+								>
+									Login
+								</Button>
+								<Button
+									color="inherit"
+									component={NavLink}
+									to="/signup"
+									sx={linkSx}
+								>
+									Signup
+								</Button>
+							</Box>
+						)}
 					</Toolbar>
 				</AppBar>
 			</Box>

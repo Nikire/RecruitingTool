@@ -21,17 +21,19 @@ export class CreateStageDto {
   @MaxLength(500)
   description: string;
 
-  @ApiProperty({ description: 'The UID of the job position', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @ApiProperty({ description: 'The UID of the job position (required for job position template stages)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
-  jobPositionUid: string;
+  jobPositionUid?: string;
 
   @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60, required: false })
   @IsOptional()
   @IsNumber()
   estimatedTime?: number;
 
-  @ApiProperty({ description: 'The UID of the hiring process, used to bulk create stages on a hiring process', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @ApiProperty({ description: 'The UID of the hiring process (required for hiring process specific stages)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
   hiringProcessUid?: string;
@@ -86,9 +88,18 @@ export class StageResponseDto {
   @ApiProperty({ description: 'The description of the stage', example: 'A technical interview with coding challenges' })
   description: string;
 
+  @ApiProperty({ description: 'The position of the stage in the sequence', example: 0 })
+  position: number;
+
   @ApiProperty({ description: 'The status of the stage', example: StageStatus.DONE, enum: StageStatus })
   status: StageStatus;
 
+  @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60, required: false })
+  estimatedTime?: number;
+
+  @ApiProperty({ description: 'The UID of the job position (if this is a template stage)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   jobPositionUid?: string;
+
+  @ApiProperty({ description: 'The UID of the hiring process (if this is a hiring process stage)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   hiringProcessUid?: string;
 }

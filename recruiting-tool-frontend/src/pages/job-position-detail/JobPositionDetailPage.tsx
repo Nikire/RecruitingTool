@@ -1,0 +1,228 @@
+import {useParams, useNavigate} from 'react-router-dom';
+import {
+	Box,
+	Typography,
+	Button,
+	Paper,
+	CircularProgress,
+	Chip,
+	Divider,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Card,
+	CardContent,
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import {useJobPositions} from '../../hooks/api/useJobPositions';
+import {JobPosition} from '../../types/jobPosition.types';
+import StatusLabel from '../../components/StatusLabel';
+import {HiringProcessStatus} from '../../types/hiringProcess.types';
+import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {canManageResources} from '../../utils/permissions';
+
+const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
+	switch (status) {
+		case 'OPEN':
+			return 'info';
+		case 'IN_PROGRESS':
+			return 'primary';
+		case 'CLOSED':
+			return 'success';
+		case 'CANCELLED':
+			return 'default';
+		case 'REJECTED':
+			return 'error';
+		default:
+			return 'default';
+	}
+};
+
+const JobPositionDetailPage: React.FC = () => {
+	const {uid} = useParams<{uid: string}>();
+	const navigate = useNavigate();
+	const {user} = useUserAtom();
+	const {data: jobPositionData, isLoading, error} = useJobPositions(uid);
+
+	const canManage = canManageResources(user);
+
+	if (isLoading) {
+		return (
+			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
+				<CircularProgress />
+			</Box>
+		);
+	}
+
+	if (error || !jobPositionData) {
+		return (
+			<Box sx={{p: 4}}>
+				<Typography color="error">
+					Error loading job position. Please try again.
+				</Typography>
+				<Button
+					startIcon={<ArrowBackIcon />}
+					onClick={() => navigate('/job-positions')}
+					sx={{mt: 2}}
+				>
+					Back to Job Positions
+				</Button>
+			</Box>
+		);
+	}
+
+	const jobPosition = jobPositionData as JobPosition;
+
+	return (
+		<Box sx={{p: 4}}>
+			<Button
+				startIcon={<ArrowBackIcon />}
+				onClick={() => navigate('/job-positions')}
+				sx={{mb: 3}}
+			>
+				Back to Job Positions
+			</Button>
+
+			<Paper sx={{p: 3, mb: 3}}>
+				<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
+					<Typography variant="h4">{jobPosition.title}</Typography>
+					<StatusLabel status={jobPosition.status} />
+				</Box>
+
+				<Divider sx={{my: 2}} />
+
+				<Box sx={{display: 'flex', gap: 4}}>
+					<Box>
+						<Typography variant="body2" color="textSecondary">
+							Created By
+						</Typography>
+						<Typography variant="body1">
+							{jobPosition.createdBy?.name || 'Unknown'}
+						</Typography>
+					</Box>
+					<Box>
+						<Typography variant="body2" color="textSecondary">
+							Total Stages
+						</Typography>
+						<Typography variant="body1">
+							{jobPosition.stages?.length || 0}
+						</Typography>
+					</Box>
+					{canManage && (
+						<Box>
+							<Typography variant="body2" color="textSecondary">
+								Active Hiring Processes
+							</Typography>
+							<Typography variant="body1">
+								{jobPosition.hiringProcesses?.length || 0}
+							</Typography>
+						</Box>
+					)}
+				</Box>
+			</Paper>
+
+			<Typography variant="h5" sx={{mb: 2}}>
+				Stage Template
+			</Typography>
+			<Card sx={{mb: 3}}>
+				<CardContent>
+					{jobPosition.stages && jobPosition.stages.length > 0 ? (
+						<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+							{jobPosition.stages
+								.sort((a, b) => a.position - b.position)
+								.map((stage, index) => (
+									<Box key={stage.uid} sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+										<Chip label={index + 1} size="small" color="primary" />
+										<Box sx={{flex: 1}}>
+											<Typography variant="body1" fontWeight="bold">
+												{stage.title}
+											</Typography>
+											<Typography variant="body2" color="textSecondary">
+												{stage.description}
+											</Typography>
+											<Typography variant="caption" color="textSecondary">
+												Type: {stage.type.replace(/_/g, ' ')}
+											</Typography>
+										</Box>
+									</Box>
+								))}
+						</Box>
+					) : (
+						<Typography color="textSecondary">
+							No stages defined for this job position yet.
+						</Typography>
+					)}
+				</CardContent>
+			</Card>
+
+			{canManage && (
+				<>
+					<Typography variant="h5" sx={{mb: 2}}>
+						Active Hiring Processes ({jobPosition.hiringProcesses?.length || 0})
+					</Typography>
+					{jobPosition.hiringProcesses && jobPosition.hiringProcesses.length > 0 ? (
+						<TableContainer component={Paper}>
+							<Table>
+								<TableHead>
+									<TableRow>
+										<TableCell><strong>Title</strong></TableCell>
+										<TableCell><strong>Status</strong></TableCell>
+										<TableCell><strong>Candidate</strong></TableCell>
+										<TableCell><strong>Actions</strong></TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{jobPosition.hiringProcesses.map((process) => (
+										<TableRow key={process.uid} hover>
+											<TableCell>{process.title}</TableCell>
+											<TableCell>
+												<Chip
+													label={process.status}
+													color={getStatusColor(process.status)}
+													size="small"
+												/>
+											</TableCell>
+											<TableCell>
+												{process.candidate ? (
+													<>
+														{process.candidate.name}
+														<br />
+														<Typography variant="caption" color="textSecondary">
+															{process.candidate.email}
+														</Typography>
+													</>
+												) : (
+													'N/A'
+												)}
+											</TableCell>
+											<TableCell>
+												<Button
+													size="small"
+													variant="outlined"
+													onClick={() => navigate(`/hiring-process/${process.uid}`)}
+												>
+													View Details
+												</Button>
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</TableContainer>
+					) : (
+						<Paper sx={{p: 4, textAlign: 'center'}}>
+							<Typography variant="body1" color="textSecondary">
+								No active hiring processes for this job position.
+							</Typography>
+						</Paper>
+					)}
+				</>
+			)}
+		</Box>
+	);
+};
+
+export default JobPositionDetailPage;
