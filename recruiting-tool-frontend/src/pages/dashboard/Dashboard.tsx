@@ -71,7 +71,7 @@ const Dashboard: React.FC = () => {
 	const companyDisplay = companies.length > 0 ? companies.join(', ') : 'All Companies';
 
 	return (
-		<Box sx={{p: 4}}>
+		<Box sx={{width: '100%'}}>
 			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
 				<Typography variant="h4">
 					Hiring Processes Dashboard
@@ -95,7 +95,7 @@ const Dashboard: React.FC = () => {
 
 			{processes && processes.length > 0 ? (
 				<TableContainer component={Paper} sx={{width: '100%', overflowX: 'auto'}}>
-					<Table sx={{minWidth: 650}}>
+					<Table>
 						<TableHead>
 							<TableRow>
 								<TableCell sx={{minWidth: 150}}><strong>Title</strong></TableCell>

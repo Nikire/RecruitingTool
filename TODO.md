@@ -63,3 +63,6 @@
 ✅ Fixed horizontal scroll issue on dashboard with proper table cell sizing
 ✅ Restricted candidates page access to ADMIN and SUPER_ADMIN roles only
 ✅ Hidden candidates navigation link for non-admin users
+✅ Fixed dashboard table being cut off by using wider container layout (xl instead of md)
+✅ Implemented dynamic container width based on page route
+✅ Applied wider layout to dashboard, companies, and candidates pages

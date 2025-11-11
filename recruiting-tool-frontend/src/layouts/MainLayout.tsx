@@ -1,14 +1,23 @@
 import {Container} from '@mui/material';
-import {Outlet} from 'react-router-dom';
+import {Outlet, useLocation} from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
 
-const MainLayout = () => (
-	<>
-		<Navbar />
-		<Container sx={{paddingTop: 2}} maxWidth="md">
-			<Outlet />
-		</Container>
-	</>
-);
+const MainLayout = () => {
+	const location = useLocation();
+
+	// Use wider container for pages with tables
+	const widePages = ['/dashboard', '/companies', '/candidates'];
+	const isWidePage = widePages.includes(location.pathname);
+	const maxWidth = isWidePage ? 'xl' : 'md';
+
+	return (
+		<>
+			<Navbar />
+			<Container sx={{paddingTop: 2}} maxWidth={maxWidth}>
+				<Outlet />
+			</Container>
+		</>
+	);
+};
 
 export default MainLayout;
