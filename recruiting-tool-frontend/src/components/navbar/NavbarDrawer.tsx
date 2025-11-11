@@ -10,7 +10,7 @@ import {
 } from '@mui/material';
 import {NavLink} from 'react-router-dom';
 import { User, UserRoles } from '../../types/user.types';
-import { hasRole } from '../../utils/permissions';
+import { hasRole, isAdmin } from '../../utils/permissions';
 
 type NavbarDrawerProps = {
 	isOpen?: boolean;
@@ -56,7 +56,7 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 				<ListItemButton component={NavLink} sx={linkSx} to="/job-positions">
 					<ListItemText color="inherit" primary="Job Positions" />
 				</ListItemButton>
-				{isAuthenticated && (
+				{isAuthenticated && isAdmin(user) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/candidates">
 						<ListItemText color="inherit" primary="Candidates" />
 					</ListItemButton>

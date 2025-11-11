@@ -36,3 +36,13 @@ export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
 	if (!user) return false;
 	return roles.some(role => user.roles.includes(role));
 };
+
+/**
+ * Checks if the user is an admin (ADMIN or SUPER_ADMIN)
+ * @param user - The user to check
+ * @returns true if the user is an admin, false otherwise
+ */
+export const isAdmin = (user: User | null): boolean => {
+	if (!user) return false;
+	return user.roles.includes(UserRoles.ADMIN) || user.roles.includes(UserRoles.SUPER_ADMIN);
+};

@@ -60,3 +60,6 @@
 ✅ Company name and HR user information in job position details
 ✅ Company name and HR manager information in hiring process details
 ✅ Enhanced hiring process entity to include company and job position creator details
+✅ Fixed horizontal scroll issue on dashboard with proper table cell sizing
+✅ Restricted candidates page access to ADMIN and SUPER_ADMIN roles only
+✅ Hidden candidates navigation link for non-admin users

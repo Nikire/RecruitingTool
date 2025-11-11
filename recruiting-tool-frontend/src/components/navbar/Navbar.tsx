@@ -13,7 +13,7 @@ import {NavLink} from 'react-router-dom';
 import NavbarDrawer from './NavbarDrawer';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
-import { hasRole } from '../../utils/permissions';
+import { hasRole, isAdmin } from '../../utils/permissions';
 import { UserRoles } from '../../types/user.types';
 
 const Navbar: React.FC = () => {
@@ -84,7 +84,7 @@ const Navbar: React.FC = () => {
 							>
 								Job Positions
 							</Button>
-							{isAuthenticated && (
+							{isAuthenticated && isAdmin(logedUser) && (
 								<Button
 									color="inherit"
 									component={NavLink}

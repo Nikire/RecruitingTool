@@ -94,23 +94,25 @@ const Dashboard: React.FC = () => {
 			</Box>
 
 			{processes && processes.length > 0 ? (
-				<TableContainer component={Paper}>
-					<Table>
+				<TableContainer component={Paper} sx={{width: '100%', overflowX: 'auto'}}>
+					<Table sx={{minWidth: 650}}>
 						<TableHead>
 							<TableRow>
-								<TableCell><strong>Title</strong></TableCell>
-								<TableCell><strong>Company</strong></TableCell>
-								<TableCell><strong>Status</strong></TableCell>
-								<TableCell><strong>Stages</strong></TableCell>
-								<TableCell><strong>Candidate</strong></TableCell>
-								<TableCell><strong>Created By</strong></TableCell>
-								<TableCell><strong>Actions</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>Title</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>Company</strong></TableCell>
+								<TableCell sx={{minWidth: 100}}><strong>Status</strong></TableCell>
+								<TableCell sx={{minWidth: 80}}><strong>Stages</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>Candidate</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>Created By</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>Actions</strong></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
 							{processes.map((process) => (
 								<TableRow key={process.uid} hover>
-									<TableCell>{process.title}</TableCell>
+									<TableCell sx={{maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
+										{process.title}
+									</TableCell>
 									<TableCell>{process.company?.name || 'N/A'}</TableCell>
 									<TableCell>
 										<Chip
@@ -120,12 +122,13 @@ const Dashboard: React.FC = () => {
 										/>
 									</TableCell>
 									<TableCell>{process.stages?.length || 0} stages</TableCell>
-									<TableCell>
+									<TableCell sx={{maxWidth: 180}}>
 										{process.candidate ? (
 											<>
-												{process.candidate.name}
-												<br />
-												<Typography variant="caption" color="textSecondary">
+												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+													{process.candidate.name}
+												</Typography>
+												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
 													{process.candidate.email}
 												</Typography>
 											</>
@@ -133,12 +136,13 @@ const Dashboard: React.FC = () => {
 											'N/A'
 										)}
 									</TableCell>
-									<TableCell>
+									<TableCell sx={{maxWidth: 180}}>
 										{process.jobPosition?.createdBy ? (
 											<>
-												{process.jobPosition.createdBy.name}
-												<br />
-												<Typography variant="caption" color="textSecondary">
+												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+													{process.jobPosition.createdBy.name}
+												</Typography>
+												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
 													{process.jobPosition.createdBy.email}
 												</Typography>
 											</>

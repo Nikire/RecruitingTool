@@ -11,12 +11,13 @@ import {
 	TableRow,
 	Paper,
 	CircularProgress,
+	Alert,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {useCandidates} from '../../hooks/api/useCandidates';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
-import {canManageResources} from '../../utils/permissions';
+import {canManageResources, isAdmin} from '../../utils/permissions';
 
 const CandidatesPage: React.FC = () => {
 	const [openDialog, setOpenDialog] = useState(false);
@@ -24,6 +25,21 @@ const CandidatesPage: React.FC = () => {
 	const {data: candidates, isLoading, error} = useCandidates();
 
 	const canManage = canManageResources(user);
+	const hasAdminAccess = isAdmin(user);
+
+	// Check if user has admin access
+	if (!hasAdminAccess) {
+		return (
+			<Box sx={{p: 4}}>
+				<Alert severity="error" sx={{mb: 2}}>
+					Access Denied: You need ADMIN or SUPER_ADMIN role to view candidates.
+				</Alert>
+				<Typography variant="body1">
+					Please contact your administrator if you believe you should have access to this page.
+				</Typography>
+			</Box>
+		);
+	}
 
 	if (isLoading) {
 		return (
