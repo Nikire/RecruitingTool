@@ -7,6 +7,8 @@ export interface JobPosition {
 	uid: string;
 	title: string;
 	status: JobPositionStatus;
+	companyId?: number;
+	companyName?: string;
 	hiringProcesses?: Array<HiringProcess>;
 	stages: Array<Stage>;
 	createdBy?: User;

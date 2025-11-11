@@ -56,3 +56,7 @@
 ✅ Integrated toasts into all API hooks (auth, candidates, companies, hiring processes, job positions, stages)
 ✅ Automatic error messages with descriptive content from backend
 ✅ Success messages for all CRUD operations
+✅ Company display on dashboard showing which company's data is being viewed
+✅ Company name and HR user information in job position details
+✅ Company name and HR manager information in hiring process details
+✅ Enhanced hiring process entity to include company and job position creator details

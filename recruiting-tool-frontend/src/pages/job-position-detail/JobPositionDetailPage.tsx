@@ -97,11 +97,24 @@ const JobPositionDetailPage: React.FC = () => {
 				<Box sx={{display: 'flex', gap: 4}}>
 					<Box>
 						<Typography variant="body2" color="textSecondary">
-							Created By
+							Company
+						</Typography>
+						<Typography variant="body1" sx={{fontWeight: 500}}>
+							{jobPosition.companyName || 'N/A'}
+						</Typography>
+					</Box>
+					<Box>
+						<Typography variant="body2" color="textSecondary">
+							Created By (HR)
 						</Typography>
 						<Typography variant="body1">
 							{jobPosition.createdBy?.name || 'Unknown'}
 						</Typography>
+						{jobPosition.createdBy?.email && (
+							<Typography variant="caption" color="textSecondary">
+								{jobPosition.createdBy.email}
+							</Typography>
+						)}
 					</Box>
 					<Box>
 						<Typography variant="body2" color="textSecondary">

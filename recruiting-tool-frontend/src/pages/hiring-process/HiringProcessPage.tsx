@@ -89,6 +89,34 @@ const HiringProcessPage: React.FC = () => {
 					/>
 				</Box>
 
+				<Divider sx={{my: 3}} />
+
+				<Box sx={{display: 'flex', gap: 8, mb: 3}}>
+					{hiringProcess.company && (
+						<Box>
+							<Typography variant="body2" color="textSecondary" sx={{mb: 0.5}}>
+								Company
+							</Typography>
+							<Typography variant="body1" sx={{fontWeight: 500}}>
+								{hiringProcess.company.name}
+							</Typography>
+						</Box>
+					)}
+					{hiringProcess.jobPosition?.createdBy && (
+						<Box>
+							<Typography variant="body2" color="textSecondary" sx={{mb: 0.5}}>
+								HR Manager
+							</Typography>
+							<Typography variant="body1">
+								{hiringProcess.jobPosition.createdBy.name}
+							</Typography>
+							<Typography variant="caption" color="textSecondary">
+								{hiringProcess.jobPosition.createdBy.email}
+							</Typography>
+						</Box>
+					)}
+				</Box>
+
 				{hiringProcess.candidate && (
 					<>
 						<Divider sx={{my: 3}} />

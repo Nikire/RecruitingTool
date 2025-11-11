@@ -7,6 +7,19 @@ export interface HiringProcess {
 	status: HiringProcessStatus;
 	stages: Array<Stage>;
 	candidate?: Candidate;
+	company?: {
+		uid: string;
+		name: string;
+	};
+	jobPosition?: {
+		uid: string;
+		title: string;
+		createdBy?: {
+			uid: string;
+			name: string;
+			email: string;
+		};
+	};
 }
 
 const hiringProcessStatus = {

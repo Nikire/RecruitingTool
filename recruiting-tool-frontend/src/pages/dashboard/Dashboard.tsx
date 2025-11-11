@@ -66,9 +66,13 @@ const Dashboard: React.FC = () => {
 
 	const processes = hiringProcesses as HiringProcess[] | undefined;
 
+	// Get unique companies from hiring processes
+	const companies = processes ? [...new Set(processes.map(p => p.company?.name).filter(Boolean))] : [];
+	const companyDisplay = companies.length > 0 ? companies.join(', ') : 'All Companies';
+
 	return (
 		<Box sx={{p: 4}}>
-			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
+			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1}}>
 				<Typography variant="h4">
 					Hiring Processes Dashboard
 				</Typography>
@@ -83,15 +87,23 @@ const Dashboard: React.FC = () => {
 				)}
 			</Box>
 
+			<Box sx={{mb: 3}}>
+				<Typography variant="subtitle1" color="textSecondary">
+					{companyDisplay}
+				</Typography>
+			</Box>
+
 			{processes && processes.length > 0 ? (
 				<TableContainer component={Paper}>
 					<Table>
 						<TableHead>
 							<TableRow>
 								<TableCell><strong>Title</strong></TableCell>
+								<TableCell><strong>Company</strong></TableCell>
 								<TableCell><strong>Status</strong></TableCell>
 								<TableCell><strong>Stages</strong></TableCell>
 								<TableCell><strong>Candidate</strong></TableCell>
+								<TableCell><strong>Created By</strong></TableCell>
 								<TableCell><strong>Actions</strong></TableCell>
 							</TableRow>
 						</TableHead>
@@ -99,6 +111,7 @@ const Dashboard: React.FC = () => {
 							{processes.map((process) => (
 								<TableRow key={process.uid} hover>
 									<TableCell>{process.title}</TableCell>
+									<TableCell>{process.company?.name || 'N/A'}</TableCell>
 									<TableCell>
 										<Chip
 											label={process.status}
@@ -114,6 +127,19 @@ const Dashboard: React.FC = () => {
 												<br />
 												<Typography variant="caption" color="textSecondary">
 													{process.candidate.email}
+												</Typography>
+											</>
+										) : (
+											'N/A'
+										)}
+									</TableCell>
+									<TableCell>
+										{process.jobPosition?.createdBy ? (
+											<>
+												{process.jobPosition.createdBy.name}
+												<br />
+												<Typography variant="caption" color="textSecondary">
+													{process.jobPosition.createdBy.email}
 												</Typography>
 											</>
 										) : (
