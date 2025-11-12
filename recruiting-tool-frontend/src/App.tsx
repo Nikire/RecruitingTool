@@ -12,6 +12,7 @@ import JobPositionsPage from './pages/job-positions/JobPositionsPage';
 import JobPositionDetailPage from './pages/job-position-detail/JobPositionDetailPage';
 import CandidatesPage from './pages/candidates/CandidatesPage';
 import { CompaniesPage } from './pages/companies/CompaniesPage';
+import UserManagementPage from './pages/users/UserManagementPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -35,6 +36,7 @@ function App() {
 					<Route path="/dashboard" element={<Dashboard />} />
 					<Route path="/candidates" element={<CandidatesPage />} />
 					<Route path="/companies" element={<CompaniesPage />} />
+					<Route path="/users" element={<UserManagementPage />} />
 				</Route>
 			</Route>
 		</Routes>

@@ -5,6 +5,11 @@ export interface User {
 	createdAt?: string;
 	updatedAt?: string;
 	roles: UserRoles[];
+	companyId?: number;
+	company?: {
+		uid: string;
+		name: string;
+	};
 }
 
 export enum UserRoles {
@@ -12,4 +17,18 @@ export enum UserRoles {
 	ADMIN = 'ADMIN',
 	HR = 'HR',
 	USER = 'USER',
+}
+
+export interface CreateUserDto {
+	name: string;
+	email: string;
+	password: string;
+	companyUid?: string;
+}
+
+export interface UpdateUserDto {
+	name?: string;
+	email?: string;
+	password?: string;
+	companyUid?: string;
 }

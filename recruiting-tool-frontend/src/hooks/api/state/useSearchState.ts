@@ -17,6 +17,7 @@ export const candidatesSearchAtom = atom<SearchState>(defaultSearchState);
 export const companiesSearchAtom = atom<SearchState>(defaultSearchState);
 export const hiringProcessesSearchAtom = atom<SearchState>(defaultSearchState);
 export const jobPositionsSearchAtom = atom<SearchState>(defaultSearchState);
+export const usersSearchAtom = atom<SearchState>(defaultSearchState);
 
 // Read-only hooks (subscribe to changes) - use these for data that needs to trigger re-renders
 export const useCandidatesSearchValue = () => useAtomValue(candidatesSearchAtom);
@@ -35,3 +36,4 @@ export const useCandidatesSearch = () => [useAtomValue(candidatesSearchAtom), us
 export const useCompaniesSearch = () => [useAtomValue(companiesSearchAtom), useSetAtom(companiesSearchAtom)] as const;
 export const useHiringProcessesSearch = () => [useAtomValue(hiringProcessesSearchAtom), useSetAtom(hiringProcessesSearchAtom)] as const;
 export const useJobPositionsSearch = () => [useAtomValue(jobPositionsSearchAtom), useSetAtom(jobPositionsSearchAtom)] as const;
+export const useUsersSearch = () => [useAtomValue(usersSearchAtom), useSetAtom(usersSearchAtom)] as const;
