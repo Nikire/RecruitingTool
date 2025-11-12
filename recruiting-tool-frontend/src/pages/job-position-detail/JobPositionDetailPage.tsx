@@ -1,3 +1,4 @@
+import {useState} from 'react';
 import {useParams, useNavigate} from 'react-router-dom';
 import {
 	Box,
@@ -46,8 +47,11 @@ const JobPositionDetailPage: React.FC = () => {
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
 	const {data: jobPositionData, isLoading, error} = useJobPositions(uid);
+	const [statusFilter, setStatusFilter] = useState<HiringProcessStatus | 'ALL'>('ALL');
 
 	const canManage = canManageResources(user);
+
+	const statusOptions: Array<HiringProcessStatus | 'ALL'> = ['ALL', 'OPEN', 'IN_PROGRESS', 'CLOSED', 'CANCELLED', 'REJECTED'];
 
 	if (isLoading) {
 		return (
@@ -75,6 +79,11 @@ const JobPositionDetailPage: React.FC = () => {
 	}
 
 	const jobPosition = jobPositionData as JobPosition;
+
+	// Filter hiring processes by status
+	const filteredHiringProcesses = jobPosition.hiringProcesses?.filter(process =>
+		statusFilter === 'ALL' || process.status === statusFilter
+	) || [];
 
 	return (
 		<Box sx={{p: 4}}>
@@ -173,10 +182,32 @@ const JobPositionDetailPage: React.FC = () => {
 
 			{canManage && (
 				<>
-					<Typography variant="h5" sx={{mb: 2}}>
-						Active Hiring Processes ({jobPosition.hiringProcesses?.length || 0})
-					</Typography>
-					{jobPosition.hiringProcesses && jobPosition.hiringProcesses.length > 0 ? (
+					<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
+						<Typography variant="h5">
+							Active Hiring Processes ({filteredHiringProcesses.length} of {jobPosition.hiringProcesses?.length || 0})
+						</Typography>
+					</Box>
+
+					<Box sx={{mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
+						{statusOptions.map((status) => {
+							const count = status === 'ALL'
+								? jobPosition.hiringProcesses?.length || 0
+								: jobPosition.hiringProcesses?.filter(p => p.status === status).length || 0;
+
+							return (
+								<Chip
+									key={status}
+									label={`${status.replace(/_/g, ' ')} (${count})`}
+									onClick={() => setStatusFilter(status)}
+									color={statusFilter === status ? 'primary' : 'default'}
+									variant={statusFilter === status ? 'filled' : 'outlined'}
+									clickable
+								/>
+							);
+						})}
+					</Box>
+
+					{filteredHiringProcesses.length > 0 ? (
 						<TableContainer component={Paper}>
 							<Table>
 								<TableHead>
@@ -188,7 +219,7 @@ const JobPositionDetailPage: React.FC = () => {
 									</TableRow>
 								</TableHead>
 								<TableBody>
-									{jobPosition.hiringProcesses.map((process) => (
+									{filteredHiringProcesses.map((process) => (
 										<TableRow key={process.uid} hover>
 											<TableCell>{process.title}</TableCell>
 											<TableCell>
@@ -228,7 +259,9 @@ const JobPositionDetailPage: React.FC = () => {
 					) : (
 						<Paper sx={{p: 4, textAlign: 'center'}}>
 							<Typography variant="body1" color="textSecondary">
-								No active hiring processes for this job position.
+								{statusFilter === 'ALL'
+									? 'No active hiring processes for this job position.'
+									: `No hiring processes with status: ${statusFilter.replace(/_/g, ' ')}`}
 							</Typography>
 						</Paper>
 					)}

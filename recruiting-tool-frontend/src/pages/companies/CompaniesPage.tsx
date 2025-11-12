@@ -114,7 +114,6 @@ export const CompaniesPage: React.FC = () => {
 
   const handleSearch = (value: string) => {
     setSearch(value);
-    setPage(1); // Reset to first page on search
   };
 
   const handlePageChange = (newPage: number) => {
