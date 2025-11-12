@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import {Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField} from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
-import { useCreateCompany, useUpdateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
+import { useCreateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
 import { useCompaniesSearch } from '../../hooks/api/state/useSearchState';
 import { hasRole } from '../../utils/permissions';
@@ -9,6 +9,8 @@ import { UserRoles } from '../../types/user.types';
 import { Company, CreateCompanyDto } from '../../types/company.types';
 import SearchBar from '../../components/search/SearchBar';
 import CompaniesList from '../../components/companies/CompaniesList';
+import UpdateCompanyDialog from '../../components/dialogs/UpdateCompanyDialog';
+import ConfirmDeleteDialog from '../../components/dialogs/ConfirmDeleteDialog';
 
 export const CompaniesPage: React.FC = () => {
   const { user } = useUserAtom();
@@ -16,7 +18,6 @@ export const CompaniesPage: React.FC = () => {
   const { page, limit, search } = searchState;
 
   const createMutation = useCreateCompany();
-  const updateMutation = useUpdateCompany();
   const deleteMutation = useDeleteCompany();
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -52,21 +53,7 @@ export const CompaniesPage: React.FC = () => {
     });
   };
 
-  const handleEdit = () => {
-    if (!selectedCompany) return;
-    updateMutation.mutate(
-      { uid: selectedCompany.uid, data: formData },
-      {
-        onSuccess: () => {
-          setEditDialogOpen(false);
-          setSelectedCompany(null);
-          setFormData({ name: '', description: '' });
-        },
-      }
-    );
-  };
-
-  const handleDelete = () => {
+  const handleConfirmDelete = () => {
     if (!selectedCompany) return;
     deleteMutation.mutate(selectedCompany.uid, {
       onSuccess: () => {
@@ -78,16 +65,22 @@ export const CompaniesPage: React.FC = () => {
 
   const openEditDialog = (company: Company) => {
     setSelectedCompany(company);
-    setFormData({
-      name: company.name,
-      description: company.description || '',
-    });
     setEditDialogOpen(true);
   };
 
   const openDeleteDialog = (company: Company) => {
     setSelectedCompany(company);
     setDeleteDialogOpen(true);
+  };
+
+  const handleCloseEditDialog = () => {
+    setEditDialogOpen(false);
+    setSelectedCompany(null);
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setSelectedCompany(null);
   };
 
   const handleSearch = useCallback((value: string) => {
@@ -159,52 +152,21 @@ export const CompaniesPage: React.FC = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Edit Dialog */}
-      <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Edit Company</DialogTitle>
-        <DialogContent>
-          <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              label="Company Name"
-              value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              required
-              fullWidth
-            />
-            <TextField
-              label="Description"
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              multiline
-              rows={3}
-              fullWidth
-            />
-          </Box>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setEditDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleEdit} variant="contained" disabled={!formData.name || updateMutation.isPending}>
-            {updateMutation.isPending ? 'Updating...' : 'Update'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <UpdateCompanyDialog
+        open={editDialogOpen}
+        onClose={handleCloseEditDialog}
+        company={selectedCompany}
+      />
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
-        <DialogTitle>Delete Company</DialogTitle>
-        <DialogContent>
-          <Typography>
-            Are you sure you want to delete <strong>{selectedCompany?.name}</strong>?
-            This action cannot be undone.
-          </Typography>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setDeleteDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleDelete} variant="contained" color="error" disabled={deleteMutation.isPending}>
-            {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <ConfirmDeleteDialog
+        open={deleteDialogOpen}
+        onClose={handleCloseDeleteDialog}
+        onConfirm={handleConfirmDelete}
+        title="Delete Company"
+        message="Are you sure you want to delete this company?"
+        itemName={selectedCompany?.name}
+        isDeleting={deleteMutation.isPending}
+      />
     </Box>
   );
 };
