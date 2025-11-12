@@ -8,11 +8,13 @@ import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 import DocumentContainer from './layouts/DocumentContainer';
 import MainLayout from './layouts/MainLayout';
+import AdminLayout from './layouts/AdminLayout';
 import JobPositionsPage from './pages/job-positions/JobPositionsPage';
 import JobPositionDetailPage from './pages/job-position-detail/JobPositionDetailPage';
 import CandidatesPage from './pages/candidates/CandidatesPage';
 import { CompaniesPage } from './pages/companies/CompaniesPage';
 import UserManagementPage from './pages/users/UserManagementPage';
+import AdminDashboard from './pages/admin/AdminDashboard';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -35,8 +37,15 @@ function App() {
 				<Route element={<ProtectedRoute />}>
 					<Route path="/dashboard" element={<Dashboard />} />
 					<Route path="/candidates" element={<CandidatesPage />} />
-					<Route path="/companies" element={<CompaniesPage />} />
-					<Route path="/users" element={<UserManagementPage />} />
+				</Route>
+
+				{/* Admin Panel Routes */}
+				<Route element={<ProtectedRoute />}>
+					<Route element={<AdminLayout />}>
+						<Route path="/admin" element={<AdminDashboard />} />
+						<Route path="/admin/companies" element={<CompaniesPage />} />
+						<Route path="/admin/users" element={<UserManagementPage />} />
+					</Route>
 				</Route>
 			</Route>
 		</Routes>

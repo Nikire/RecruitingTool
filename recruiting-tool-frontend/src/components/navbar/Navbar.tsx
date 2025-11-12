@@ -103,24 +103,14 @@ const Navbar: React.FC = () => {
 								Dashboard
 							</Button>
 							{isAuthenticated && hasRole(logedUser, UserRoles.SUPER_ADMIN) && (
-								<>
-									<Button
-										color="inherit"
-										component={NavLink}
-										to="/companies"
-										sx={linkSx}
-									>
-										Companies
-									</Button>
-									<Button
-										color="inherit"
-										component={NavLink}
-										to="/users"
-										sx={linkSx}
-									>
-										Users
-									</Button>
-								</>
+								<Button
+									color="inherit"
+									component={NavLink}
+									to="/admin"
+									sx={linkSx}
+								>
+									Admin Panel
+								</Button>
 							)}
 						</Box>
 
