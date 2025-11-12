@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {useState} from 'react';
 import {
 	Dialog,
@@ -25,7 +24,6 @@ import {useCreateHiringProcess} from '../../hooks/api/useHiringProcess';
 import {useCandidates, useCreateCandidate} from '../../hooks/api/useCandidates';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
-import {Candidate} from '../../types/candidate';
 
 interface CreateHiringProcessDialogProps {
 	open: boolean;

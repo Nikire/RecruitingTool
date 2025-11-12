@@ -1,6 +1,6 @@
 import {useQuery, useMutation, useQueryClient} from '@tanstack/react-query';
 
-import {HiringProcess} from '../../types/hiringProcess.types';
+import {HiringProcess, CreateHiringProcessDto} from '../../types/hiringProcess.types';
 import {
 	createHiringProcess,
 	deleteHiringProcess,
@@ -22,7 +22,7 @@ export function useCreateHiringProcess() {
 	const queryClient = useQueryClient();
 
 	return useMutation({
-		mutationFn: (data: Partial<HiringProcess>) => createHiringProcess(data),
+		mutationFn: (data: CreateHiringProcessDto) => createHiringProcess(data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [HIRING_PROCESS_KEY]});
 			showSuccessToast('Hiring process created successfully!');

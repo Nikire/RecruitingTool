@@ -1,4 +1,4 @@
-import {HiringProcess} from '../types/hiringProcess.types';
+import {HiringProcess, CreateHiringProcessDto} from '../types/hiringProcess.types';
 import {MessageResponse} from '../types/responses';
 import api from './axios';
 
@@ -11,7 +11,7 @@ export function getHiringProcesses(
 }
 
 export function createHiringProcess(
-	data: Partial<HiringProcess>
+	data: CreateHiringProcessDto
 ): Promise<HiringProcess> {
 	return api.post('/hiring-process', data).then((res) => res.data);
 }

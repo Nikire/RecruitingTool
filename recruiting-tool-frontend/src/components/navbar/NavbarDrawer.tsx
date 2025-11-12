@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {ChevronLeft as ChevronLeftIcon} from '@mui/icons-material';
 import {
 	Drawer,
@@ -56,7 +55,7 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 				<ListItemButton component={NavLink} sx={linkSx} to="/job-positions">
 					<ListItemText color="inherit" primary="Job Positions" />
 				</ListItemButton>
-				{isAuthenticated && isAdmin(user) && (
+				{isAuthenticated && isAdmin(user ?? null) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/candidates">
 						<ListItemText color="inherit" primary="Candidates" />
 					</ListItemButton>
@@ -64,7 +63,7 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 				<ListItemButton component={NavLink} sx={linkSx} to="/dashboard">
 					<ListItemText color="inherit" primary="Dashboard" />
 				</ListItemButton>
-				{isAuthenticated && hasRole(user, UserRoles.SUPER_ADMIN) && (
+				{isAuthenticated && hasRole(user ?? null, UserRoles.SUPER_ADMIN) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/companies">
 						<ListItemText color="inherit" primary="Companies" />
 					</ListItemButton>

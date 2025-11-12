@@ -1,11 +1,9 @@
-// @ts-nocheck
 import {Divider, Typography, Box, Chip, Paper, CircularProgress, Button} from '@mui/material';
 import {useParams, useNavigate} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import StagesTimeline from '../../components/stages/StagesTimeline/StagesTimeline';
 import {useHiringProcesses} from '../../hooks/api/useHiringProcess';
 import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
-import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 
 const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
 	switch (status) {
@@ -27,7 +25,6 @@ const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 's
 const HiringProcessPage: React.FC = () => {
 	const {uid} = useParams<{uid: string}>();
 	const navigate = useNavigate();
-	const {user} = useUserAtom();
 	const {
 		data: hiringProcessData,
 		isLoading: isHiringProcessLoading,

@@ -1,5 +1,3 @@
-// @ts-nocheck
-import {useState} from 'react';
 import {
 	Dialog,
 	DialogTitle,
@@ -230,7 +228,9 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
 								/>
 								{errors.stages?.[index]?.type && (
 									<Typography color="error" variant="caption">
-										{errors.stages?.[index]?.type?.message}
+										{typeof errors.stages[index]?.type === 'object' && errors.stages[index]?.type?.message
+											? errors.stages[index]?.type?.message
+											: 'Stage type is required'}
 									</Typography>
 								)}
 							</FormControl>

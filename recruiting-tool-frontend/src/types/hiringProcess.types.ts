@@ -22,6 +22,11 @@ export interface HiringProcess {
 	};
 }
 
+export interface CreateHiringProcessDto {
+	candidateUid: string;
+	jobPositionUid: string;
+}
+
 const hiringProcessStatus = {
 	OPEN: 'OPEN',
 	CLOSED: 'CLOSED',
