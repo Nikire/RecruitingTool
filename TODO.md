@@ -13,8 +13,8 @@
 - [x] Change the existing searchbars to the same format of JobPositionsPage (searchbar outside, send parameters to a list component and inside the list component make the API call.) ✅
 - [x] Fill the input values with the values that are on Jotai search. ✅
 - [x] **Add toast notifications for success/error/warning messages across the app** ✅
-- [ ] Add update/delete functionality for Candidates
-- [ ] Add update/delete functionality for Companies
+- [x] Add update/delete functionality for Candidates ✅
+- [x] Add update/delete functionality for Companies ✅
 - [ ] Add update/delete functionality for Hiring Processes
 
 ### Medium Priority
@@ -37,6 +37,166 @@
 ---
 
 ## Feature Development - Planned
+
+### Admin Panel System
+
+**Goal:** Create a dedicated admin panel with routes accessible only to ADMIN and SUPER_ADMIN roles, centralizing administrative features and improving navigation.
+
+**Frontend Tasks:**
+
+**1. Admin Layout & Routing:**
+- [ ] Create AdminLayout component with dedicated navigation
+  - [ ] Sidebar with admin-specific links
+  - [ ] Breadcrumb navigation
+  - [ ] Admin dashboard header
+- [ ] Create protected admin routes structure
+  - [ ] /admin - Admin dashboard (overview)
+  - [ ] /admin/users - User management page
+  - [ ] /admin/companies - Company management page (SUPER_ADMIN only)
+  - [ ] /admin/system - System settings (SUPER_ADMIN only)
+- [ ] Add route guards for admin-only pages
+  - [ ] Check for ADMIN or SUPER_ADMIN role
+  - [ ] Redirect unauthorized users to dashboard or access denied page
+- [ ] Update main navigation to include "Admin Panel" link
+  - [ ] Only visible to users with ADMIN or SUPER_ADMIN role
+  - [ ] Highlight when on admin routes
+
+**2. Admin Dashboard Page (/admin):**
+- [ ] Create AdminDashboard component
+  - [ ] Overview cards: Total Users, Total Companies, Total Job Positions, Active Hiring Processes
+  - [ ] Recent activity feed
+  - [ ] Quick actions (Create User, Create Company, etc.)
+  - [ ] System health indicators
+- [ ] Add analytics charts (optional)
+  - [ ] User growth over time
+  - [ ] Hiring processes by status
+  - [ ] Job positions by company
+
+**3. User Management Page (/admin/users):**
+- [ ] Create UserManagementPage component
+  - [ ] User list table with search and filters
+  - [ ] Columns: Name, Email, Roles, Company, Created Date, Actions
+  - [ ] Filter by role (USER, HR, ADMIN, SUPER_ADMIN)
+  - [ ] Filter by company
+- [ ] Create CreateUserDialog component
+  - [ ] Fields: Name, Email, Password, Roles (multi-select), Company
+  - [ ] Role selection with descriptions
+  - [ ] Password strength indicator
+- [ ] Create UpdateUserDialog component
+  - [ ] Update name, email, roles, company
+  - [ ] Option to reset password
+- [ ] Add user deactivation/reactivation functionality
+  - [ ] Soft delete (mark as inactive) instead of hard delete
+  - [ ] Show inactive users with visual indicator
+- [ ] Add bulk operations
+  - [ ] Bulk role assignment
+  - [ ] Bulk company assignment
+  - [ ] Export users to CSV
+
+**4. Company Management Page (/admin/companies):**
+- [ ] Move existing CompaniesPage to /admin/companies route
+- [ ] Enhance with admin-specific features
+  - [ ] Show all users in each company
+  - [ ] Show all job positions per company
+  - [ ] Company activation/deactivation toggle
+- [ ] Add company statistics card
+  - [ ] Total job positions
+  - [ ] Total users
+  - [ ] Active hiring processes
+
+**5. System Settings Page (/admin/system):**
+- [ ] Create SystemSettingsPage component (SUPER_ADMIN only)
+  - [ ] Application settings (name, logo, etc.)
+  - [ ] Email configuration settings display
+  - [ ] Database backup/restore info
+  - [ ] System logs viewer
+- [ ] Add environment variables viewer (read-only, masked secrets)
+- [ ] Add system health checks
+  - [ ] Database connection status
+  - [ ] Email service status
+  - [ ] Storage service status
+
+**6. UI/UX Improvements:**
+- [ ] Create consistent admin theme
+  - [ ] Darker/distinct color scheme for admin area
+  - [ ] Admin-specific icons
+- [ ] Add confirmation modals for destructive actions
+  - [ ] Delete user confirmation
+  - [ ] Role change confirmation (especially granting ADMIN)
+- [ ] Add activity logging display
+  - [ ] Who created/updated/deleted what and when
+  - [ ] Filter by user, action type, date range
+- [ ] Add tooltips and help text for admin features
+
+**Backend Tasks:**
+
+**1. User Management Enhancements:**
+- [ ] Add user deactivation/reactivation endpoints
+  - [ ] PUT /users/:uid/deactivate - Soft delete user
+  - [ ] PUT /users/:uid/activate - Reactivate user
+  - [ ] Add isActive field to User model
+- [ ] Enhance user list endpoint with filters
+  - [ ] Filter by role
+  - [ ] Filter by company
+  - [ ] Filter by active/inactive status
+  - [ ] Include company and role information in response
+- [ ] Add bulk user operations endpoints
+  - [ ] POST /users/bulk-update-roles - Update roles for multiple users
+  - [ ] POST /users/bulk-assign-company - Assign company to multiple users
+
+**2. Admin Activity Logging:**
+- [ ] Create ActivityLog entity in Prisma
+  - [ ] Fields: id, uid, userId, action, entity, entityId, details (JSON), timestamp
+  - [ ] Relations: user (User who performed action)
+  - [ ] Action types: CREATE, UPDATE, DELETE, LOGIN, LOGOUT, ROLE_CHANGE
+- [ ] Add activity logging middleware
+  - [ ] Automatically log admin actions (user creation, role changes, etc.)
+  - [ ] Log authentication events
+- [ ] Add activity log endpoints
+  - [ ] GET /activity-logs - List activity logs with filters
+  - [ ] Filter by user, action type, entity type, date range
+  - [ ] Pagination support
+
+**3. System Health & Statistics:**
+- [ ] Create SystemStats service
+  - [ ] Get total counts (users, companies, job positions, hiring processes)
+  - [ ] Get active counts (active users, open job positions, in-progress hiring)
+  - [ ] Get growth metrics (new users this month, etc.)
+- [ ] Add system health check endpoints
+  - [ ] GET /admin/health/database - Check database connection
+  - [ ] GET /admin/health/email - Check email service (if configured)
+  - [ ] GET /admin/health/storage - Check storage service (if configured)
+- [ ] Add admin statistics endpoint
+  - [ ] GET /admin/stats - Get overview statistics for admin dashboard
+
+**4. Enhanced Role & Permission Management:**
+- [ ] Add granular permission checks
+  - [ ] SUPER_ADMIN can do everything
+  - [ ] ADMIN can manage users (except other ADMINs/SUPER_ADMINs)
+  - [ ] ADMIN cannot access system settings
+- [ ] Add role change validation
+  - [ ] Prevent users from promoting themselves
+  - [ ] Prevent ADMIN from creating SUPER_ADMIN users
+  - [ ] Require SUPER_ADMIN to change ADMIN roles
+
+**Testing:**
+- [ ] Test admin route guards work correctly
+- [ ] Test role-based permissions in admin panel
+- [ ] Test user management CRUD operations
+- [ ] Test activity logging captures all admin actions
+- [ ] Test system stats calculations are accurate
+- [ ] Test admin panel is responsive and accessible
+- [ ] Verify SUPER_ADMIN restrictions are enforced
+- [ ] Test bulk operations don't cause performance issues
+
+**Security Considerations:**
+- [ ] All admin routes protected with role guards
+- [ ] Activity logs are immutable (no delete endpoint)
+- [ ] Sensitive data (passwords, tokens) never exposed in admin panel
+- [ ] Rate limiting on admin API endpoints
+- [ ] Audit trail for all admin actions
+
+---
 
 ### File Storage System (S3/Local)
 
