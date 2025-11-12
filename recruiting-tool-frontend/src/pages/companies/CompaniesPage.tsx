@@ -1,41 +1,19 @@
-import React, { useState } from 'react';
-import {
-  Box,
-  Button,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  IconButton,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-  CircularProgress,
-} from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { useListCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
+import React, { useState, useCallback } from 'react';
+import {Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField} from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
+import { useCreateCompany, useUpdateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
+import { useCompaniesSearch } from '../../hooks/api/state/useSearchState';
 import { hasRole } from '../../utils/permissions';
 import { UserRoles } from '../../types/user.types';
 import { Company, CreateCompanyDto } from '../../types/company.types';
-import Pagination from '../../components/pagination/Pagination';
 import SearchBar from '../../components/search/SearchBar';
+import CompaniesList from '../../components/companies/CompaniesList';
 
 export const CompaniesPage: React.FC = () => {
   const { user } = useUserAtom();
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const [search, setSearch] = useState('');
-  const { data, isLoading } = useListCompanies({ page, limit, search, sortBy: 'createdAt', sortOrder: 'desc' });
-
-  const companies = data?.data;
-  const meta = data?.meta;
+  const [searchState, setSearchState] = useCompaniesSearch();
+  const { page, limit, search } = searchState;
 
   const createMutation = useCreateCompany();
   const updateMutation = useUpdateCompany();
@@ -112,26 +90,17 @@ export const CompaniesPage: React.FC = () => {
     setDeleteDialogOpen(true);
   };
 
-  const handleSearch = (value: string) => {
-    setSearch(value);
-  };
+  const handleSearch = useCallback((value: string) => {
+    setSearchState((prev) => ({ ...prev, search: value, page: 1 }));
+  }, [setSearchState]);
 
-  const handlePageChange = (newPage: number) => {
-    setPage(newPage);
-  };
+  const handlePageChange = useCallback((newPage: number) => {
+    setSearchState((prev) => ({ ...prev, page: newPage }));
+  }, [setSearchState]);
 
-  const handleLimitChange = (newLimit: number) => {
-    setLimit(newLimit);
-    setPage(1); // Reset to first page when changing limit
-  };
-
-  if (isLoading) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
+  const handleLimitChange = useCallback((newLimit: number) => {
+    setSearchState((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+  }, [setSearchState]);
 
   return (
     <Box sx={{ p: 3 }}>
@@ -147,42 +116,18 @@ export const CompaniesPage: React.FC = () => {
       </Box>
 
       <Box sx={{ mb: 3, maxWidth: 400 }}>
-        <SearchBar onSearch={handleSearch} placeholder="Search companies..." />
+        <SearchBar onSearch={handleSearch} placeholder="Search companies..." value={search} />
       </Box>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Description</TableCell>
-              <TableCell align="center">Users</TableCell>
-              <TableCell align="center">Job Positions</TableCell>
-              <TableCell align="center">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {companies?.map((company) => (
-              <TableRow key={company.uid}>
-                <TableCell>{company.name}</TableCell>
-                <TableCell>{company.description || '-'}</TableCell>
-                <TableCell align="center">{company.userCount || 0}</TableCell>
-                <TableCell align="center">{company.jobPositionCount || 0}</TableCell>
-                <TableCell align="center">
-                  <IconButton size="small" onClick={() => openEditDialog(company)} color="primary">
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton size="small" onClick={() => openDeleteDialog(company)} color="error">
-                    <DeleteIcon />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      {meta && <Pagination meta={meta} onPageChange={handlePageChange} onLimitChange={handleLimitChange} />}
+      <CompaniesList
+        page={page}
+        limit={limit}
+        search={search}
+        onPageChange={handlePageChange}
+        onLimitChange={handleLimitChange}
+        onEdit={openEditDialog}
+        onDelete={openDeleteDialog}
+      />
 
       {/* Create Dialog */}
       <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>

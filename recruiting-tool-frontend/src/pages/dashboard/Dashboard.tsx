@@ -1,69 +1,47 @@
-import {useState} from 'react';
-import {
-	Box,
-	Typography,
-	Button,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Paper,
-	CircularProgress,
-	Chip,
-	Card,
-	CardContent,
-	CardActionArea,
-	Divider,
-} from '@mui/material';
+import {useState, useCallback} from 'react';
+import {Box, Typography, Button, CircularProgress, Chip, Card, CardContent, CardActionArea, Divider} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import FolderIcon from '@mui/icons-material/Folder';
 import {useListHiringProcesses} from '../../hooks/api/useHiringProcess';
 import {useListJobPositions} from '../../hooks/api/useJobPositions';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
-import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
+import {useHiringProcessesSearch} from '../../hooks/api/state/useSearchState';
+import {HiringProcess} from '../../types/hiringProcess.types';
 import CreateHiringProcessDialog from '../../components/dialogs/CreateHiringProcessDialog';
 import {useNavigate} from 'react-router-dom';
 import {canManageResources} from '../../utils/permissions';
-import Pagination from '../../components/pagination/Pagination';
 import SearchBar from '../../components/search/SearchBar';
-
-const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
-	switch (status) {
-		case 'OPEN':
-			return 'info';
-		case 'IN_PROGRESS':
-			return 'primary';
-		case 'CLOSED':
-			return 'success';
-		case 'CANCELLED':
-			return 'default';
-		case 'REJECTED':
-			return 'error';
-		default:
-			return 'default';
-	}
-};
+import HiringProcessesList from '../../components/hiring-processes/HiringProcessesList';
 
 const Dashboard: React.FC = () => {
 	const [openDialog, setOpenDialog] = useState(false);
-	const [page, setPage] = useState(1);
-	const [limit, setLimit] = useState(10);
-	const [search, setSearch] = useState('');
+	const [searchState, setSearchState] = useHiringProcessesSearch();
+	const {page, limit, search} = searchState;
 	const [viewMode, setViewMode] = useState<'folders' | 'list'>('folders');
 	const {user} = useUserAtom();
-	const {data, isLoading, error} = useListHiringProcesses({page, limit, search, sortBy: 'createdAt', sortOrder: 'desc'});
-	const {data: jobPositionsData, isLoading: isJobPositionsLoading} = useListJobPositions({page: 1, limit: 100, sortBy: 'createdAt', sortOrder: 'desc'});
+	const {data, isLoading, isFetching, error} = useListHiringProcesses({page, limit, search, sortBy: 'createdAt', sortOrder: 'desc'});
+	const {data: jobPositionsData, isLoading: isJobPositionsLoading, isFetching: isJobPositionsFetching} = useListJobPositions({page: 1, limit: 100, sortBy: 'createdAt', sortOrder: 'desc'});
 	const navigate = useNavigate();
 
+	const handleSearch = useCallback((value: string) => {
+		setSearchState((prev) => ({...prev, search: value, page: 1}));
+	}, [setSearchState]);
+
+	const handlePageChange = useCallback((newPage: number) => {
+		setSearchState((prev) => ({...prev, page: newPage}));
+	}, [setSearchState]);
+
+	const handleLimitChange = useCallback((newLimit: number) => {
+		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
+	}, [setSearchState]);
+
 	const hiringProcesses = data?.data;
-	const meta = data?.meta;
 	const jobPositions = jobPositionsData?.data;
 
 	const canManage = canManageResources(user);
 
-	if (isLoading) {
+	// Only show loading spinner on INITIAL load, not on refetch
+	if (isLoading && !data) {
 		return (
 			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
 				<CircularProgress />
@@ -71,7 +49,7 @@ const Dashboard: React.FC = () => {
 		);
 	}
 
-	if (error) {
+	if (error && !data) {
 		return (
 			<Box sx={{p: 4}}>
 				<Typography color="error">
@@ -80,19 +58,6 @@ const Dashboard: React.FC = () => {
 			</Box>
 		);
 	}
-
-	const handleSearch = (value: string) => {
-		setSearch(value);
-	};
-
-	const handlePageChange = (newPage: number) => {
-		setPage(newPage);
-	};
-
-	const handleLimitChange = (newLimit: number) => {
-		setLimit(newLimit);
-		setPage(1); // Reset to first page when changing limit
-	};
 
 	const processes = hiringProcesses as HiringProcess[] | undefined;
 
@@ -212,89 +177,16 @@ const Dashboard: React.FC = () => {
 			) : (
 				<>
 					<Box sx={{mb: 3, maxWidth: 400}}>
-						<SearchBar onSearch={handleSearch} placeholder="Search hiring processes..." />
+						<SearchBar onSearch={handleSearch} placeholder="Search hiring processes..." value={search} />
 					</Box>
 
-					{processes && processes.length > 0 ? (
-				<TableContainer component={Paper} sx={{width: '100%', overflowX: 'auto'}}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell sx={{minWidth: 150}}><strong>Title</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Company</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>Status</strong></TableCell>
-								<TableCell sx={{minWidth: 80}}><strong>Stages</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Candidate</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Created By</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Actions</strong></TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{processes.map((process) => (
-								<TableRow key={process.uid} hover>
-									<TableCell sx={{maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
-										{process.title}
-									</TableCell>
-									<TableCell>{process.company?.name || 'N/A'}</TableCell>
-									<TableCell>
-										<Chip
-											label={process.status}
-											color={getStatusColor(process.status)}
-											size="small"
-										/>
-									</TableCell>
-									<TableCell>{process.stages?.length || 0} stages</TableCell>
-									<TableCell sx={{maxWidth: 180}}>
-										{process.candidate ? (
-											<>
-												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-													{process.candidate.name}
-												</Typography>
-												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-													{process.candidate.email}
-												</Typography>
-											</>
-										) : (
-											'N/A'
-										)}
-									</TableCell>
-									<TableCell sx={{maxWidth: 180}}>
-										{process.jobPosition?.createdBy ? (
-											<>
-												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-													{process.jobPosition.createdBy.name}
-												</Typography>
-												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-													{process.jobPosition.createdBy.email}
-												</Typography>
-											</>
-										) : (
-											'N/A'
-										)}
-									</TableCell>
-									<TableCell>
-										<Button
-											size="small"
-											variant="outlined"
-											onClick={() => navigate(`/hiring-process/${process.uid}`)}
-										>
-											View Details
-										</Button>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-					) : (
-						<Paper sx={{p: 4, textAlign: 'center'}}>
-							<Typography variant="body1" color="textSecondary">
-								No hiring processes found. {canManage && 'Create your first hiring process to get started.'}
-							</Typography>
-						</Paper>
-					)}
-
-					{meta && <Pagination meta={meta} onPageChange={handlePageChange} onLimitChange={handleLimitChange} />}
+					<HiringProcessesList
+						page={page}
+						limit={limit}
+						search={search}
+						onPageChange={handlePageChange}
+						onLimitChange={handleLimitChange}
+					/>
 				</>
 			)}
 

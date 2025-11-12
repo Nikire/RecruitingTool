@@ -10,6 +10,8 @@
 
 ### High Priority
 
+- [x] Change the existing searchbars to the same format of JobPositionsPage (searchbar outside, send parameters to a list component and inside the list component make the API call.) ✅
+- [x] Fill the input values with the values that are on Jotai search. ✅
 - [x] **Add toast notifications for success/error/warning messages across the app** ✅
 - [ ] Add update/delete functionality for Candidates
 - [ ] Add update/delete functionality for Companies
