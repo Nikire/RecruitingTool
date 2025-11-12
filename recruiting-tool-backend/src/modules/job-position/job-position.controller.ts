@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -6,6 +6,7 @@ import { JobPositionService } from './job-position.service';
 import { User } from '@prisma/client';
 import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto } from './dto/job-position.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('Job Position')
 @ApiBearerAuth()
@@ -27,6 +28,16 @@ export class JobPositionController {
   @ApiBody({ type: CreateJobPositionDto })
   create(@CurrentUser() currentUser: User, @Body() createJobPositionDto: CreateJobPositionDto): Promise<JobPositionResponseDto> {
     return this.jobPositionService.create(currentUser.uid, createJobPositionDto);
+  }
+
+  @Get('list')
+  @ApiOperation({ summary: 'Get paginated job positions list with filtering' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns paginated job positions list',
+  })
+  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<JobPositionResponseDto>> {
+    return this.jobPositionService.list(paginationDto);
   }
 
   @Get()

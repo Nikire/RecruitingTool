@@ -5,8 +5,10 @@ import {
 	createCandidate,
 	updateCandidate,
 	deleteCandidate,
+	listCandidates,
 } from '../../api/candidates';
 import {Candidate} from '../../types/candidate';
+import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const CANDIDATES_KEY = 'candidates';
@@ -15,6 +17,13 @@ export function useCandidates() {
 	return useQuery({
 		queryKey: [CANDIDATES_KEY],
 		queryFn: getCandidates,
+	});
+}
+
+export function useListCandidates(params: PaginationParams) {
+	return useQuery({
+		queryKey: [CANDIDATES_KEY, 'list', params],
+		queryFn: () => listCandidates(params),
 	});
 }
 

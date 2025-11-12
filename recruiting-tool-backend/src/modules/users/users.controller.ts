@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UserResponseDto, UpdateUserDto } from './dto/users.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -32,15 +33,14 @@ export class UsersController {
     return this.usersService.create(createUserDto);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get users list' })
+  @Get('list')
+  @ApiOperation({ summary: 'Get paginated users list with filtering' })
   @ApiResponse({
     status: 200,
-    description: 'Returns the users details',
-    type: [UserResponseDto],
+    description: 'Returns paginated users list',
   })
-  findAll(): Promise<Array<UserResponseDto>> {
-    return this.usersService.findAll();
+  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
+    return this.usersService.list(paginationDto);
   }
 
   @Get(':uid')

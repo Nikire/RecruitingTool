@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { CandidateService } from './candidate.service';
 import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto } from './dto/candidate.dto';
 import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -26,6 +27,16 @@ export class CandidateController {
   @ApiBody({ type: CreateCandidateDto })
   create(@Body() createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
     return this.candidateService.create(createCandidateDto);
+  }
+
+  @Get('list')
+  @ApiOperation({ summary: 'Get paginated candidates list with filtering' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns paginated candidates list',
+  })
+  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<CandidateResponseDto>> {
+    return this.candidateService.list(paginationDto);
   }
 
   @Get()

@@ -3,9 +3,11 @@ import {
 	createJobPosition,
 	deleteJobPosition,
 	getJobPositions,
+	listJobPositions,
 	updateJobPosition,
 } from '../../api/jobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
+import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const JOB_POSITIONS_KEY = 'jobPositions';
@@ -14,6 +16,13 @@ export function useJobPositions(uid?: string) {
 	return useQuery({
 		queryKey: uid ? [JOB_POSITIONS_KEY, uid] : [JOB_POSITIONS_KEY],
 		queryFn: () => getJobPositions(uid),
+	});
+}
+
+export function useListJobPositions(params: PaginationParams) {
+	return useQuery({
+		queryKey: [JOB_POSITIONS_KEY, 'list', params],
+		queryFn: () => listJobPositions(params),
 	});
 }
 

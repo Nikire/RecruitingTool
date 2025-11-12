@@ -1,5 +1,11 @@
 import axiosInstance from './axios';
 import {Stage} from '../types/stage.types';
+import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
+
+export const listStages = async (params: PaginationParams): Promise<PaginatedResponse<Stage>> => {
+	const response = await axiosInstance.get('/stages/list', {params});
+	return response.data;
+};
 
 export const getStage = async (uid: string): Promise<Stage> => {
 	const response = await axiosInstance.get(`/stages/${uid}`);

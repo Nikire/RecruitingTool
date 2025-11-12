@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
 import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto } from './dto/hiring-process.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -6,6 +6,7 @@ import { User, HiringProcessStatus } from '@prisma/client';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('Hiring Process')
 @ApiBearerAuth()
@@ -28,6 +29,17 @@ export class HiringProcessController {
   @ApiBody({ type: CreateHiringProcessDto })
   create(@Body() createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
     return this.hiringProcessService.create(createHiringProcessDto);
+  }
+
+  @Auth(['HR', 'ADMIN'])
+  @Get('list')
+  @ApiOperation({ summary: 'Get paginated hiring processes list with filtering' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns paginated hiring processes list',
+  })
+  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+    return this.hiringProcessService.list(paginationDto);
   }
 
   @Auth(['HR', 'ADMIN'])

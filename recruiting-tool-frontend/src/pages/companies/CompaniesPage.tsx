@@ -19,15 +19,24 @@ import {
   CircularProgress,
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { useCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
+import { useListCompanies, useCreateCompany, useUpdateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
 import { hasRole } from '../../utils/permissions';
 import { UserRoles } from '../../types/user.types';
 import { Company, CreateCompanyDto } from '../../types/company.types';
+import Pagination from '../../components/pagination/Pagination';
+import SearchBar from '../../components/search/SearchBar';
 
 export const CompaniesPage: React.FC = () => {
   const { user } = useUserAtom();
-  const { data: companies, isLoading } = useCompanies();
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(10);
+  const [search, setSearch] = useState('');
+  const { data, isLoading } = useListCompanies({ page, limit, search, sortBy: 'createdAt', sortOrder: 'desc' });
+
+  const companies = data?.data;
+  const meta = data?.meta;
+
   const createMutation = useCreateCompany();
   const updateMutation = useUpdateCompany();
   const deleteMutation = useDeleteCompany();
@@ -103,6 +112,20 @@ export const CompaniesPage: React.FC = () => {
     setDeleteDialogOpen(true);
   };
 
+  const handleSearch = (value: string) => {
+    setSearch(value);
+    setPage(1); // Reset to first page on search
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleLimitChange = (newLimit: number) => {
+    setLimit(newLimit);
+    setPage(1); // Reset to first page when changing limit
+  };
+
   if (isLoading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
@@ -122,6 +145,10 @@ export const CompaniesPage: React.FC = () => {
         >
           Add Company
         </Button>
+      </Box>
+
+      <Box sx={{ mb: 3, maxWidth: 400 }}>
+        <SearchBar onSearch={handleSearch} placeholder="Search companies..." />
       </Box>
 
       <TableContainer component={Paper}>
@@ -155,6 +182,8 @@ export const CompaniesPage: React.FC = () => {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {meta && <Pagination meta={meta} onPageChange={handlePageChange} onLimitChange={handleLimitChange} />}
 
       {/* Create Dialog */}
       <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>

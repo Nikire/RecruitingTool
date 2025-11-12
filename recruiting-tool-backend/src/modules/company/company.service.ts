@@ -3,6 +3,7 @@ import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto } from './dto/co
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CompanyMapper, includeCompany } from './entities/company.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @Injectable()
 export class CompanyService {
@@ -18,6 +19,44 @@ export class CompanyService {
     });
 
     return CompanyMapper(newCompany);
+  }
+
+  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<CompanyResponseDto>> {
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    // Build where clause for search
+    const where = search
+      ? {
+          OR: [{ name: { contains: search, mode: 'insensitive' as const } }],
+        }
+      : {};
+
+    // Get total count
+    const total = await this.databaseService.company.count({ where });
+
+    // Get paginated data
+    const companies = await this.databaseService.company.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+      include: includeCompany,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: companies.map((company) => CompanyMapper(company)),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findAll(): Promise<Array<CompanyResponseDto>> {

@@ -7,6 +7,7 @@ import { CandidateService } from '../hiring-process/modules/candidate/candidate.
 import { HiringProcessService } from '../hiring-process/hiring-process.service';
 import { StagesService } from '../hiring-process/modules/stages/stages.service';
 import { Prisma } from '@prisma/client';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 export class JobPositionService {
   constructor(
@@ -22,6 +23,51 @@ export class JobPositionService {
       where,
     });
     return jobPositions.map((jp) => JobPositionOneMapper(jp));
+  }
+
+  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<JobPositionResponseDto>> {
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    // Build where clause for search
+    const where = search
+      ? {
+          OR: [{ title: { contains: search, mode: 'insensitive' as const } }],
+        }
+      : {};
+
+    // Get total count
+    const total = await this.databaseService.jobPosition.count({ where });
+
+    // Get paginated data
+    const jobPositions = await this.databaseService.jobPosition.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+      include: {
+        ...includeJobPosition,
+        stages: {
+          where: {
+            hiringProcessId: null,
+          },
+        },
+      },
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: jobPositions.map((jp) => JobPositionOneMapper(jp)),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findAll(): Promise<Array<JobPositionResponseDto>> {

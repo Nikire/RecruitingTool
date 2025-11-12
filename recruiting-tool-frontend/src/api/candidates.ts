@@ -1,8 +1,14 @@
 import axiosInstance from './axios';
 import {Candidate} from '../types/candidate';
+import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 
 export const getCandidates = async (): Promise<Candidate[]> => {
 	const response = await axiosInstance.get('/candidate');
+	return response.data;
+};
+
+export const listCandidates = async (params: PaginationParams): Promise<PaginatedResponse<Candidate>> => {
+	const response = await axiosInstance.get('/candidate/list', {params});
 	return response.data;
 };
 

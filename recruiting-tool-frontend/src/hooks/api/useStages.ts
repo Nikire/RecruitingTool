@@ -5,8 +5,10 @@ import {
 	bulkCreateStages,
 	updateStage,
 	deleteStage,
+	listStages,
 } from '../../api/stages';
 import {Stage} from '../../types/stage.types';
+import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const STAGES_KEY = 'stages';
@@ -16,6 +18,13 @@ export function useStage(uid: string) {
 		queryKey: [STAGES_KEY, uid],
 		queryFn: () => getStage(uid),
 		enabled: !!uid,
+	});
+}
+
+export function useListStages(params: PaginationParams) {
+	return useQuery({
+		queryKey: [STAGES_KEY, 'list', params],
+		queryFn: () => listStages(params),
 	});
 }
 

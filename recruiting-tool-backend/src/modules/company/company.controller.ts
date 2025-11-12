@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Put, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto } from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('company')
 @Controller('company')
@@ -16,6 +17,14 @@ export class CompanyController {
   @ApiResponse({ status: 201, description: 'Company created successfully', type: CompanyResponseDto })
   create(@Body() createCompanyDto: CreateCompanyDto): Promise<CompanyResponseDto> {
     return this.companyService.create(createCompanyDto);
+  }
+
+  @Get('list')
+  @Auth(['SUPER_ADMIN'])
+  @ApiOperation({ summary: 'Get paginated companies list with filtering (SUPER_ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'Returns paginated companies list' })
+  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<CompanyResponseDto>> {
+    return this.companyService.list(paginationDto);
   }
 
   @Get()

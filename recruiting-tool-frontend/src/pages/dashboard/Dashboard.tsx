@@ -14,12 +14,14 @@ import {
 	Chip,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import {useHiringProcesses} from '../../hooks/api/useHiringProcess';
+import {useListHiringProcesses} from '../../hooks/api/useHiringProcess';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
 import CreateHiringProcessDialog from '../../components/dialogs/CreateHiringProcessDialog';
 import {useNavigate} from 'react-router-dom';
 import {canManageResources} from '../../utils/permissions';
+import Pagination from '../../components/pagination/Pagination';
+import SearchBar from '../../components/search/SearchBar';
 
 const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
 	switch (status) {
@@ -40,9 +42,15 @@ const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 's
 
 const Dashboard: React.FC = () => {
 	const [openDialog, setOpenDialog] = useState(false);
+	const [page, setPage] = useState(1);
+	const [limit, setLimit] = useState(10);
+	const [search, setSearch] = useState('');
 	const {user} = useUserAtom();
-	const {data: hiringProcesses, isLoading, error} = useHiringProcesses();
+	const {data, isLoading, error} = useListHiringProcesses({page, limit, search, sortBy: 'createdAt', sortOrder: 'desc'});
 	const navigate = useNavigate();
+
+	const hiringProcesses = data?.data;
+	const meta = data?.meta;
 
 	const canManage = canManageResources(user);
 
@@ -63,6 +71,20 @@ const Dashboard: React.FC = () => {
 			</Box>
 		);
 	}
+
+	const handleSearch = (value: string) => {
+		setSearch(value);
+		setPage(1); // Reset to first page on search
+	};
+
+	const handlePageChange = (newPage: number) => {
+		setPage(newPage);
+	};
+
+	const handleLimitChange = (newLimit: number) => {
+		setLimit(newLimit);
+		setPage(1); // Reset to first page when changing limit
+	};
 
 	const processes = hiringProcesses as HiringProcess[] | undefined;
 
@@ -91,6 +113,10 @@ const Dashboard: React.FC = () => {
 				<Typography variant="subtitle1" color="textSecondary">
 					{companyDisplay}
 				</Typography>
+			</Box>
+
+			<Box sx={{mb: 3, maxWidth: 400}}>
+				<SearchBar onSearch={handleSearch} placeholder="Search hiring processes..." />
 			</Box>
 
 			{processes && processes.length > 0 ? (
@@ -171,6 +197,8 @@ const Dashboard: React.FC = () => {
 					</Typography>
 				</Paper>
 			)}
+
+			{meta && <Pagination meta={meta} onPageChange={handlePageChange} onLimitChange={handleLimitChange} />}
 
 			<CreateHiringProcessDialog
 				open={openDialog}

@@ -1,8 +1,10 @@
-import { Controller, Get, Post, Body, Param, Delete, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
 import { StagesService } from './stages.service';
 import { CreateStageDto, UpdateStageDto } from './dto/stages.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { StageResponseDto } from './dto/stages.dto';
 
 @Auth(['HR', 'ADMIN'])
 @ApiBearerAuth()
@@ -23,6 +25,12 @@ export class StagesController {
   @ApiBody({ type: Array<CreateStageDto> })
   bulkCreate(@Body() bulkCreateStagesDto: Array<CreateStageDto>) {
     return this.stagesService.bulkCreateStages(bulkCreateStagesDto);
+  }
+
+  @Get('list')
+  @ApiOperation({ summary: 'Get paginated stages list with filtering' })
+  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<StageResponseDto>> {
+    return this.stagesService.list(paginationDto);
   }
 
   @Get(':uid')

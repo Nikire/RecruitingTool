@@ -3,6 +3,7 @@ import { CreateUserDto, CreateUserInternalDto, UpdateUserDto, UserResponseDto, U
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { UserMapper, UserWithPasswordMapper } from './entities/users.entities';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import * as bycrypt from 'bcryptjs';
 
 @Injectable()
@@ -53,6 +54,49 @@ export class UsersService {
   async findAll(): Promise<Array<UserResponseDto>> {
     const users = await this.databaseService.user.findMany();
     return users.map((user) => UserMapper(user));
+  }
+
+  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    // Build where clause for search
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: 'insensitive' as const } },
+            { email: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    // Get total count
+    const total = await this.databaseService.user.count({ where });
+
+    // Get paginated data
+    const users = await this.databaseService.user.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+      include: {
+        company: true,
+      },
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: users.map((user) => UserMapper(user)),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findOne(uid: string): Promise<UserResponseDto> {

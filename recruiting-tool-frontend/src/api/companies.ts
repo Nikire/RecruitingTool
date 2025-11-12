@@ -1,9 +1,15 @@
 import api from './axios';
 import { Company, CreateCompanyDto, UpdateCompanyDto } from '../types/company.types';
+import { PaginationParams, PaginatedResponse } from '../types/pagination.types';
 
 export const companiesApi = {
   getAll: async (): Promise<Company[]> => {
     const response = await api.get('/company');
+    return response.data;
+  },
+
+  list: async (params: PaginationParams): Promise<PaginatedResponse<Company>> => {
+    const response = await api.get('/company/list', { params });
     return response.data;
   },
 

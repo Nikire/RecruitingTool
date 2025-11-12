@@ -6,6 +6,7 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 import { JobPositionService } from '../job-position/job-position.service';
 import { CandidateService } from './modules/candidate/candidate.service';
 import { StagesService } from './modules/stages/stages.service';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @Injectable()
 export class HiringProcessService {
@@ -52,6 +53,44 @@ export class HiringProcessService {
     await this.stagesService.bulkCreateStages(copiedStages);
 
     return HiringProcessOneMapper(newHiringProcess);
+  }
+
+  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    // Build where clause for search
+    const where = search
+      ? {
+          OR: [{ title: { contains: search, mode: 'insensitive' as const } }],
+        }
+      : {};
+
+    // Get total count
+    const total = await this.databaseService.hiringProcess.count({ where });
+
+    // Get paginated data
+    const hiringProcesses = await this.databaseService.hiringProcess.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+      include: includeHiringProcess,
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: hiringProcesses.map((hp) => HiringProcessOneMapper(hp)),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findAll(hiringProcessFindDto: HiringProcessFindDto): Promise<Array<HiringProcessResponseDto>> {

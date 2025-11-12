@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateStageDto, UpdateStageDto } from './dto/stages.dto';
+import { CreateStageDto, UpdateStageDto, StageResponseDto } from './dto/stages.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { StageMapper } from './entities/stage.entity';
 import { StageStatus } from '@prisma/client';
+import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @Injectable()
 export class StagesService {
@@ -29,6 +30,46 @@ export class StagesService {
     });
 
     return StageMapper(stage);
+  }
+
+  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<StageResponseDto>> {
+    const { page = 1, limit = 10, search, sortBy = 'position', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * limit;
+
+    // Build where clause for search
+    const where = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' as const } },
+            { description: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
+      : {};
+
+    // Get total count
+    const total = await this.databaseService.stage.count({ where });
+
+    // Get paginated data
+    const stages = await this.databaseService.stage.findMany({
+      where,
+      skip,
+      take: limit,
+      orderBy: { [sortBy]: sortOrder },
+    });
+
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: stages.map((stage) => StageMapper(stage)),
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages,
+        hasNextPage: page < totalPages,
+        hasPreviousPage: page > 1,
+      },
+    };
   }
 
   async findOne(uid: string) {

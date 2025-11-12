@@ -5,8 +5,10 @@ import {
 	createHiringProcess,
 	deleteHiringProcess,
 	getHiringProcesses,
+	listHiringProcesses,
 	updateHiringProcess,
 } from '../../api/hiringProcess';
+import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const HIRING_PROCESS_KEY = 'hiringProcess';
@@ -15,6 +17,13 @@ export function useHiringProcesses(uid?: string) {
 	return useQuery({
 		queryKey: uid ? [HIRING_PROCESS_KEY, uid] : [HIRING_PROCESS_KEY],
 		queryFn: () => getHiringProcesses(uid),
+	});
+}
+
+export function useListHiringProcesses(params: PaginationParams) {
+	return useQuery({
+		queryKey: [HIRING_PROCESS_KEY, 'list', params],
+		queryFn: () => listHiringProcesses(params),
 	});
 }
 

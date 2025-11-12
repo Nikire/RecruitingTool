@@ -1,5 +1,6 @@
 import {HiringProcess, CreateHiringProcessDto} from '../types/hiringProcess.types';
 import {MessageResponse} from '../types/responses';
+import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 import api from './axios';
 
 export function getHiringProcesses(
@@ -7,6 +8,14 @@ export function getHiringProcesses(
 ): Promise<HiringProcess | HiringProcess[]> {
 	return api
 		.get('/hiring-process' + (uid ? '/' + uid : ''))
+		.then((res) => res.data);
+}
+
+export function listHiringProcesses(
+	params: PaginationParams
+): Promise<PaginatedResponse<HiringProcess>> {
+	return api
+		.get('/hiring-process/list', {params})
 		.then((res) => res.data);
 }
 

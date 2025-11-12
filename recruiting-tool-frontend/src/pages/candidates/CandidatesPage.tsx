@@ -14,15 +14,23 @@ import {
 	Alert,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import {useCandidates} from '../../hooks/api/useCandidates';
+import {useListCandidates} from '../../hooks/api/useCandidates';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
 import {canManageResources, isAdmin} from '../../utils/permissions';
+import Pagination from '../../components/pagination/Pagination';
+import SearchBar from '../../components/search/SearchBar';
 
 const CandidatesPage: React.FC = () => {
 	const [openDialog, setOpenDialog] = useState(false);
+	const [page, setPage] = useState(1);
+	const [limit, setLimit] = useState(10);
+	const [search, setSearch] = useState('');
 	const {user} = useUserAtom();
-	const {data: candidates, isLoading, error} = useCandidates();
+	const {data, isLoading, error} = useListCandidates({page, limit, search, sortBy: 'createdAt', sortOrder: 'desc'});
+
+	const candidates = data?.data;
+	const meta = data?.meta;
 
 	const canManage = canManageResources(user);
 	const hasAdminAccess = isAdmin(user);
@@ -59,6 +67,20 @@ const CandidatesPage: React.FC = () => {
 		);
 	}
 
+	const handleSearch = (value: string) => {
+		setSearch(value);
+		setPage(1); // Reset to first page on search
+	};
+
+	const handlePageChange = (newPage: number) => {
+		setPage(newPage);
+	};
+
+	const handleLimitChange = (newLimit: number) => {
+		setLimit(newLimit);
+		setPage(1); // Reset to first page when changing limit
+	};
+
 	return (
 		<Box sx={{p: 4}}>
 			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
@@ -74,6 +96,10 @@ const CandidatesPage: React.FC = () => {
 						Create Candidate
 					</Button>
 				)}
+			</Box>
+
+			<Box sx={{mb: 3, maxWidth: 400}}>
+				<SearchBar onSearch={handleSearch} placeholder="Search by name or email..." />
 			</Box>
 
 			{candidates && candidates.length > 0 ? (
@@ -108,6 +134,8 @@ const CandidatesPage: React.FC = () => {
 					</Typography>
 				</Paper>
 			)}
+
+			{meta && <Pagination meta={meta} onPageChange={handlePageChange} onLimitChange={handleLimitChange} />}
 
 			<CreateCandidateDialog
 				open={openDialog}

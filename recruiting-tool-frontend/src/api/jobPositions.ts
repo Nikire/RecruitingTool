@@ -1,5 +1,6 @@
 import {JobPosition} from '../types/jobPosition.types';
 import {MessageResponse} from '../types/responses';
+import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 import api from './axios';
 
 export function getJobPositions(
@@ -7,6 +8,14 @@ export function getJobPositions(
 ): Promise<JobPosition | JobPosition[]> {
 	return api
 		.get('/job-position' + (uid ? '/' + uid : ''))
+		.then((res) => res.data);
+}
+
+export function listJobPositions(
+	params: PaginationParams
+): Promise<PaginatedResponse<JobPosition>> {
+	return api
+		.get('/job-position/list', {params})
 		.then((res) => res.data);
 }
 
