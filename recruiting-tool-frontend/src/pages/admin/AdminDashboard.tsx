@@ -50,11 +50,11 @@ const AdminDashboard: React.FC = () => {
 
 	const stats = [
 		{
-			title: 'User Management',
+			title: 'Candidate Management',
 			icon: <PeopleIcon />,
 			color: '#1976d2',
-			description: 'Manage user accounts, roles, and permissions',
-			path: '/admin/users',
+			description: 'Manage candidates and their applications',
+			path: '/admin/candidates',
 		},
 		{
 			title: 'Company Management',
@@ -64,18 +64,18 @@ const AdminDashboard: React.FC = () => {
 			path: '/admin/companies',
 		},
 		{
-			title: 'Job Positions',
-			icon: <WorkIcon />,
+			title: 'User Management',
+			icon: <AssignmentIcon />,
 			color: '#ed6c02',
-			description: 'View all job positions across companies',
-			path: '/job-positions',
+			description: 'Manage user accounts, roles, and permissions',
+			path: '/admin/users',
 		},
 		{
-			title: 'Hiring Processes',
-			icon: <AssignmentIcon />,
+			title: 'Job Positions',
+			icon: <WorkIcon />,
 			color: '#9c27b0',
-			description: 'Monitor all active hiring processes',
-			path: '/dashboard',
+			description: 'View all job positions across companies',
+			path: '/job-positions',
 		},
 	];
 
@@ -125,9 +125,9 @@ const AdminDashboard: React.FC = () => {
 							<Button
 								variant="outlined"
 								startIcon={<PeopleIcon />}
-								onClick={() => navigate('/admin/users')}
+								onClick={() => navigate('/admin/candidates')}
 							>
-								Manage Users
+								Manage Candidates
 							</Button>
 							<Button
 								variant="outlined"
@@ -139,9 +139,9 @@ const AdminDashboard: React.FC = () => {
 							<Button
 								variant="outlined"
 								startIcon={<AssignmentIcon />}
-								onClick={() => navigate('/dashboard')}
+								onClick={() => navigate('/admin/users')}
 							>
-								View Dashboard
+								Manage Users
 							</Button>
 						</Box>
 					</CardContent>

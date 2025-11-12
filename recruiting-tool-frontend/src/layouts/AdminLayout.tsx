@@ -5,9 +5,10 @@ import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BusinessIcon from '@mui/icons-material/Business';
 import PeopleIcon from '@mui/icons-material/People';
+import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {useUserAtom} from '../hooks/api/state/useUserAtom';
-import {hasRole} from '../utils/permissions';
+import {hasRole, isAdmin} from '../utils/permissions';
 import {UserRoles} from '../types/user.types';
 import UserAvatar from '../components/user/UserAvatar';
 
@@ -18,6 +19,7 @@ const AdminLayout: React.FC = () => {
 	const navigate = useNavigate();
 	const [mobileOpen, setMobileOpen] = useState(false);
 	const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
+	const isAdminUser = isAdmin(user);
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
@@ -29,18 +31,28 @@ const AdminLayout: React.FC = () => {
 			icon: <DashboardIcon />,
 			path: '/admin',
 			requiresSuperAdmin: false,
+			requiresAdmin: false,
+		},
+		{
+			text: 'Candidates',
+			icon: <GroupIcon />,
+			path: '/admin/candidates',
+			requiresSuperAdmin: false,
+			requiresAdmin: true,
 		},
 		{
 			text: 'Companies',
 			icon: <BusinessIcon />,
 			path: '/admin/companies',
 			requiresSuperAdmin: true,
+			requiresAdmin: false,
 		},
 		{
 			text: 'Users',
 			icon: <PeopleIcon />,
 			path: '/admin/users',
 			requiresSuperAdmin: true,
+			requiresAdmin: false,
 		},
 	];
 
@@ -56,6 +68,10 @@ const AdminLayout: React.FC = () => {
 				{menuItems.map((item) => {
 					// Skip items that require SUPER_ADMIN if user doesn't have that role
 					if (item.requiresSuperAdmin && !isSuperAdmin) {
+						return null;
+					}
+					// Skip items that require ADMIN if user doesn't have that role
+					if (item.requiresAdmin && !isAdminUser) {
 						return null;
 					}
 
@@ -157,9 +173,10 @@ const AdminLayout: React.FC = () => {
 				component="main"
 				sx={{
 					flexGrow: 1,
-					p: 3,
+					p: 4,
 					width: {sm: `calc(100% - ${drawerWidth}px)`},
 					mt: 8,
+					maxWidth: '100%',
 				}}
 			>
 				<Outlet />

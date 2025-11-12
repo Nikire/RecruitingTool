@@ -36,13 +36,13 @@ function App() {
 
 				<Route element={<ProtectedRoute />}>
 					<Route path="/dashboard" element={<Dashboard />} />
-					<Route path="/candidates" element={<CandidatesPage />} />
 				</Route>
 
 				{/* Admin Panel Routes */}
 				<Route element={<ProtectedRoute />}>
 					<Route element={<AdminLayout />}>
 						<Route path="/admin" element={<AdminDashboard />} />
+						<Route path="/admin/candidates" element={<CandidatesPage />} />
 						<Route path="/admin/companies" element={<CompaniesPage />} />
 						<Route path="/admin/users" element={<UserManagementPage />} />
 					</Route>
