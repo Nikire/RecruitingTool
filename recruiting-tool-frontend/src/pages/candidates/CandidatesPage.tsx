@@ -32,7 +32,7 @@ const CandidatesPage: React.FC = () => {
 	// Check if user has admin access
 	if (!hasAdminAccess) {
 		return (
-			<Box sx={{p: 4}}>
+			<Box>
 				<Alert severity="error" sx={{mb: 2}}>
 					Access Denied: You need ADMIN or SUPER_ADMIN role to view candidates.
 				</Alert>
@@ -44,7 +44,7 @@ const CandidatesPage: React.FC = () => {
 	}
 
 	return (
-		<Box sx={{p: 4}}>
+		<Box>
 			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
 				<Typography variant="h4">
 					Candidates

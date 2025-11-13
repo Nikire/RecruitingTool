@@ -30,7 +30,7 @@ const UserManagementPage: React.FC = () => {
 	// Check if user has SUPER_ADMIN access
 	if (!isSuperAdmin) {
 		return (
-			<Box sx={{p: 4}}>
+			<Box>
 				<Alert severity="error" sx={{mb: 2}}>
 					Access Denied: You need SUPER_ADMIN role to view user management.
 				</Alert>
@@ -42,7 +42,7 @@ const UserManagementPage: React.FC = () => {
 	}
 
 	return (
-		<Box sx={{p: 4}}>
+		<Box>
 			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
 				<Typography variant="h4">
 					User Management

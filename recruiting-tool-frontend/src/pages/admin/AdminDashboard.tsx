@@ -90,7 +90,7 @@ const AdminDashboard: React.FC = () => {
 				</Typography>
 			</Box>
 
-			<Grid container spacing={3} sx={{maxWidth: 800}}>
+			<Grid container spacing={3} sx={{maxWidth: 900}}>
 				{stats.map((stat) => (
 					<Grid item xs={12} sm={6} md={6} key={stat.title}>
 						<Box
@@ -98,7 +98,7 @@ const AdminDashboard: React.FC = () => {
 							sx={{
 								cursor: 'pointer',
 								height: '100%',
-								minHeight: 150,
+								minHeight: 140,
 								'&:hover': {
 									transform: 'translateY(-4px)',
 									transition: 'transform 0.2s ease-in-out',

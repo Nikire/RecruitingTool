@@ -113,7 +113,7 @@ const AdminLayout: React.FC = () => {
 	);
 
 	return (
-		<Box sx={{display: 'flex'}}>
+		<Box sx={{display: 'flex', minHeight: '100vh'}}>
 			<AppBar
 				position="fixed"
 				sx={{
@@ -173,8 +173,10 @@ const AdminLayout: React.FC = () => {
 				component="main"
 				sx={{
 					flexGrow: 1,
-					p: 4,
-					width: '100%',
+					p: 3,
+					width: {sm: `calc(100% - ${drawerWidth}px)`},
+					mt: ['64px', '64px', '64px'],
+					overflow: 'hidden',
 				}}
 			>
 				<Outlet />

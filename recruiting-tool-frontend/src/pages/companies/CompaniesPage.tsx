@@ -35,7 +35,7 @@ export const CompaniesPage: React.FC = () => {
 
   if (!isSuperAdmin) {
     return (
-      <Box sx={{ p: 3 }}>
+      <Box>
         <Typography variant="h5" color="error">
           Access Denied
         </Typography>
@@ -96,7 +96,7 @@ export const CompaniesPage: React.FC = () => {
   }, [setSearchState]);
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h4">Company Management</Typography>
         <Button
