@@ -113,43 +113,44 @@ const AdminLayout: React.FC = () => {
 	);
 
 	return (
-		<Box sx={{display: 'flex', minHeight: '100vh'}}>
-			{/* Sidebar Navigation - positioned outside main content flow */}
-			<Box
-				component="nav"
-				sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
-				aria-label="admin navigation"
-			>
-				{/* Mobile drawer */}
-				<Drawer
-					variant="temporary"
-					open={mobileOpen}
-					onClose={handleDrawerToggle}
-					ModalProps={{
-						keepMounted: true, // Better open performance on mobile.
-					}}
-					sx={{
-						display: {xs: 'block', sm: 'none'},
-						'& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
-					}}
+		<Box sx={{minHeight: '100vh'}}>
+			{/* Top level flex container with sidebar and AppBar */}
+			<Box sx={{display: 'flex'}}>
+				{/* Sidebar Navigation */}
+				<Box
+					component="nav"
+					sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
+					aria-label="admin navigation"
 				>
-					{drawer}
-				</Drawer>
-				{/* Desktop drawer */}
-				<Drawer
-					variant="permanent"
-					sx={{
-						display: {xs: 'none', sm: 'block'},
-						'& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
-					}}
-					open
-				>
-					{drawer}
-				</Drawer>
-			</Box>
+					{/* Mobile drawer */}
+					<Drawer
+						variant="temporary"
+						open={mobileOpen}
+						onClose={handleDrawerToggle}
+						ModalProps={{
+							keepMounted: true, // Better open performance on mobile.
+						}}
+						sx={{
+							display: {xs: 'block', sm: 'none'},
+							'& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+						}}
+					>
+						{drawer}
+					</Drawer>
+					{/* Desktop drawer */}
+					<Drawer
+						variant="permanent"
+						sx={{
+							display: {xs: 'none', sm: 'block'},
+							'& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
+						}}
+						open
+					>
+						{drawer}
+					</Drawer>
+				</Box>
 
-			{/* Main content area - full width minus sidebar */}
-			<Box sx={{flexGrow: 1, display: 'flex', flexDirection: 'column', width: '100%'}}>
+				{/* AppBar - sibling to sidebar */}
 				<AppBar
 					position="fixed"
 					sx={{
@@ -173,17 +174,18 @@ const AdminLayout: React.FC = () => {
 						<UserAvatar name={user?.name} />
 					</Toolbar>
 				</AppBar>
+			</Box>
 
-				<Box
-					component="main"
-					sx={{
-						flexGrow: 1,
-						p: 3,
-						mt: '64px',
-					}}
-				>
-					<Outlet />
-				</Box>
+			{/* Main content area - separate from sidebar/appbar container */}
+			<Box
+				component="main"
+				sx={{
+					ml: {sm: `${drawerWidth}px`},
+					mt: '64px',
+					p: 3,
+				}}
+			>
+				<Outlet />
 			</Box>
 		</Box>
 	);
