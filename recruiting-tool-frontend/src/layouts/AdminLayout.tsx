@@ -181,8 +181,7 @@ const AdminLayout: React.FC = () => {
 				component="main"
 				sx={{
 					ml: {sm: `${drawerWidth}px`},
-					mt: '64px',
-					p: 3,
+					pt: '64px',
 				}}
 			>
 				<Outlet />
