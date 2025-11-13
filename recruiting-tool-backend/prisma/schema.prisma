@@ -27,6 +27,13 @@ model User {
   email        String        @unique
   password     String
   roles        RolesType[]   @default([USER])
+  profilePicture String?
+  phoneNumber  String?
+  position     String?
+  department   String?
+  bio          String?
+  linkedinUrl  String?
+  timezone     String?
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   companyId    Int?

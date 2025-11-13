@@ -16,6 +16,16 @@
 - [x] Add update/delete functionality for Candidates ✅
 - [x] Add update/delete functionality for Companies ✅
 - [x] Add update/delete functionality for Hiring Processes ✅
+- [x] **Admin Panel Layout & Design** ✅
+  - [x] Separate admin routes from MainLayout ✅
+  - [x] Fix sidebar and AppBar positioning ✅
+  - [x] Remove navigation duplicates (Candidates/Companies) ✅
+  - [x] Center admin dashboard content (vertical & horizontal) ✅
+  - [x] Create 2x2 card grid with consistent sizing (280px × 160px min) ✅
+- [ ] **User Profile Management**
+  - [ ] Add profile picture field to User entity
+  - [ ] Add user profile update functionality
+  - [ ] Create profile page UI
 - [ ] Create a proper Home page with landing page content
 - [ ] Implement applicant system for job applications
   - [ ] Public job positions list with card-based view

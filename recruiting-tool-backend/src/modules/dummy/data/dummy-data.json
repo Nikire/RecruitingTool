@@ -15,28 +15,56 @@
       "email": "alice@techinnovations.com",
       "password": "password123",
       "roles": ["USER", "HR", "ADMIN"],
-      "companyIndex": 0
+      "companyIndex": 0,
+      "profilePicture": "https://i.pravatar.cc/150?img=1",
+      "phoneNumber": "+1-555-0101",
+      "position": "Senior HR Manager",
+      "department": "Human Resources",
+      "bio": "Experienced HR professional with 10+ years in tech recruitment. Passionate about finding the right talent.",
+      "linkedinUrl": "https://linkedin.com/in/alicejohnson",
+      "timezone": "America/New_York"
     },
     {
       "name": "Bob Smith",
       "email": "bob@techinnovations.com",
       "password": "password123",
       "roles": ["USER", "HR"],
-      "companyIndex": 0
+      "companyIndex": 0,
+      "profilePicture": "https://i.pravatar.cc/150?img=12",
+      "phoneNumber": "+1-555-0102",
+      "position": "HR Specialist",
+      "department": "Human Resources",
+      "bio": "Dedicated to streamlining hiring processes and enhancing candidate experience.",
+      "linkedinUrl": "https://linkedin.com/in/bobsmith",
+      "timezone": "America/New_York"
     },
     {
       "name": "Charlie Brown",
       "email": "charlie@digitalsolutions.com",
       "password": "password123",
       "roles": ["USER", "HR", "ADMIN"],
-      "companyIndex": 1
+      "companyIndex": 1,
+      "profilePicture": "https://i.pravatar.cc/150?img=33",
+      "phoneNumber": "+1-555-0201",
+      "position": "Director of Talent Acquisition",
+      "department": "People Operations",
+      "bio": "Building world-class teams through strategic recruitment and employer branding.",
+      "linkedinUrl": "https://linkedin.com/in/charliebrown",
+      "timezone": "America/Los_Angeles"
     },
     {
       "name": "Diana Prince",
       "email": "diana@digitalsolutions.com",
       "password": "password123",
       "roles": ["USER"],
-      "companyIndex": 1
+      "companyIndex": 1,
+      "profilePicture": "https://i.pravatar.cc/150?img=5",
+      "phoneNumber": "+1-555-0202",
+      "position": "Recruitment Coordinator",
+      "department": "People Operations",
+      "bio": "Supporting the hiring team with scheduling, coordination, and candidate communication.",
+      "linkedinUrl": "https://linkedin.com/in/dianaprince",
+      "timezone": "America/Los_Angeles"
     }
   ],
   "jobPositions": [

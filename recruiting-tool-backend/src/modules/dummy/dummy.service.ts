@@ -14,6 +14,13 @@ interface DummyDataStructure {
     password: string;
     roles: RolesType[];
     companyIndex: number;
+    profilePicture?: string;
+    phoneNumber?: string;
+    position?: string;
+    department?: string;
+    bio?: string;
+    linkedinUrl?: string;
+    timezone?: string;
   }>;
   jobPositions: Array<{
     title: string;
@@ -101,6 +108,13 @@ export class DummyService implements OnApplicationBootstrap {
           password: await bcrypt.hash(user.password, 10),
           roles: user.roles,
           companyId: createdCompanies[user.companyIndex].id,
+          profilePicture: user.profilePicture,
+          phoneNumber: user.phoneNumber,
+          position: user.position,
+          department: user.department,
+          bio: user.bio,
+          linkedinUrl: user.linkedinUrl,
+          timezone: user.timezone,
         },
       });
       createdUsers.push(created);

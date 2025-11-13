@@ -64,6 +64,41 @@ export class UpdateUserDto {
   @IsString()
   @IsNotEmpty()
   companyUid?: string;
+
+  @ApiProperty({ description: 'Profile picture URL', example: 'https://example.com/avatar.jpg', required: false })
+  @IsOptional()
+  @IsString()
+  profilePicture?: string;
+
+  @ApiProperty({ description: 'Phone number', example: '+1-555-0123', required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ description: 'Job position/title', example: 'Senior HR Manager', required: false })
+  @IsOptional()
+  @IsString()
+  position?: string;
+
+  @ApiProperty({ description: 'Department', example: 'Human Resources', required: false })
+  @IsOptional()
+  @IsString()
+  department?: string;
+
+  @ApiProperty({ description: 'Professional bio', example: 'Experienced HR professional...', required: false })
+  @IsOptional()
+  @IsString()
+  bio?: string;
+
+  @ApiProperty({ description: 'LinkedIn profile URL', example: 'https://linkedin.com/in/johndoe', required: false })
+  @IsOptional()
+  @IsString()
+  linkedinUrl?: string;
+
+  @ApiProperty({ description: 'User timezone', example: 'America/New_York', required: false })
+  @IsOptional()
+  @IsString()
+  timezone?: string;
 }
 
 export class UserResponseDto {
@@ -97,6 +132,20 @@ export class UserResponseDto {
     required: false,
   })
   companyId?: number;
+  @ApiProperty({ description: 'Profile picture URL', required: false })
+  profilePicture?: string;
+  @ApiProperty({ description: 'Phone number', required: false })
+  phoneNumber?: string;
+  @ApiProperty({ description: 'Job position/title', required: false })
+  position?: string;
+  @ApiProperty({ description: 'Department', required: false })
+  department?: string;
+  @ApiProperty({ description: 'Professional bio', required: false })
+  bio?: string;
+  @ApiProperty({ description: 'LinkedIn profile URL', required: false })
+  linkedinUrl?: string;
+  @ApiProperty({ description: 'User timezone', required: false })
+  timezone?: string;
 }
 
 export class UserWithPasswordResponseDto extends UserResponseDto {
