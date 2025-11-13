@@ -114,29 +114,7 @@ const AdminLayout: React.FC = () => {
 
 	return (
 		<Box sx={{display: 'flex', minHeight: '100vh'}}>
-			<AppBar
-				position="fixed"
-				sx={{
-					width: {sm: `calc(100% - ${drawerWidth}px)`},
-					ml: {sm: `${drawerWidth}px`},
-				}}
-			>
-				<Toolbar>
-					<IconButton
-						color="inherit"
-						aria-label="open drawer"
-						edge="start"
-						onClick={handleDrawerToggle}
-						sx={{mr: 2, display: {sm: 'none'}}}
-					>
-						<MenuIcon />
-					</IconButton>
-					<Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
-						Administration
-					</Typography>
-					<UserAvatar name={user?.name} />
-				</Toolbar>
-			</AppBar>
+			{/* Sidebar Navigation - positioned outside main content flow */}
 			<Box
 				component="nav"
 				sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
@@ -169,17 +147,43 @@ const AdminLayout: React.FC = () => {
 					{drawer}
 				</Drawer>
 			</Box>
-			<Box
-				component="main"
-				sx={{
-					flexGrow: 1,
-					p: 3,
-					width: {sm: `calc(100% - ${drawerWidth}px)`},
-					mt: ['64px', '64px', '64px'],
-					overflow: 'hidden',
-				}}
-			>
-				<Outlet />
+
+			{/* Main content area - full width minus sidebar */}
+			<Box sx={{flexGrow: 1, display: 'flex', flexDirection: 'column', width: '100%'}}>
+				<AppBar
+					position="fixed"
+					sx={{
+						width: {sm: `calc(100% - ${drawerWidth}px)`},
+						ml: {sm: `${drawerWidth}px`},
+					}}
+				>
+					<Toolbar>
+						<IconButton
+							color="inherit"
+							aria-label="open drawer"
+							edge="start"
+							onClick={handleDrawerToggle}
+							sx={{mr: 2, display: {sm: 'none'}}}
+						>
+							<MenuIcon />
+						</IconButton>
+						<Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
+							Administration
+						</Typography>
+						<UserAvatar name={user?.name} />
+					</Toolbar>
+				</AppBar>
+
+				<Box
+					component="main"
+					sx={{
+						flexGrow: 1,
+						p: 3,
+						mt: '64px',
+					}}
+				>
+					<Outlet />
+				</Box>
 			</Box>
 		</Box>
 	);
