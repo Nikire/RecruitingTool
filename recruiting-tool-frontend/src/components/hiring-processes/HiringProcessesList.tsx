@@ -1,8 +1,15 @@
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip} from '@mui/material';
-import {useListHiringProcesses} from '../../hooks/api/useHiringProcess';
+import {useState} from 'react';
+import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import {useListHiringProcesses, useDeleteHiringProcess} from '../../hooks/api/useHiringProcess';
 import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
 import {useNavigate} from 'react-router-dom';
 import Pagination from '../pagination/Pagination';
+import UpdateHiringProcessDialog from '../dialogs/UpdateHiringProcessDialog';
+import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
+import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {canManageResources} from '../../utils/permissions';
 
 interface HiringProcessesListProps {
 	page: number;
@@ -37,6 +44,13 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 	onLimitChange,
 }) => {
 	const navigate = useNavigate();
+	const {user} = useUserAtom();
+	const canManage = canManageResources(user);
+
+	const [selectedHiringProcess, setSelectedHiringProcess] = useState<HiringProcess | null>(null);
+	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+
 	const {data, isLoading, error} = useListHiringProcesses({
 		page,
 		limit,
@@ -45,8 +59,41 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 		sortOrder: 'desc',
 	});
 
+	const {mutate: deleteHiringProcess, isPending: isDeleting} = useDeleteHiringProcess();
+
 	const processes = data?.data as HiringProcess[] | undefined;
 	const meta = data?.meta;
+
+	const handleEditClick = (process: HiringProcess) => {
+		setSelectedHiringProcess(process);
+		setOpenUpdateDialog(true);
+	};
+
+	const handleDeleteClick = (process: HiringProcess) => {
+		setSelectedHiringProcess(process);
+		setOpenDeleteDialog(true);
+	};
+
+	const handleConfirmDelete = () => {
+		if (selectedHiringProcess) {
+			deleteHiringProcess(selectedHiringProcess.uid, {
+				onSuccess: () => {
+					setOpenDeleteDialog(false);
+					setSelectedHiringProcess(null);
+				},
+			});
+		}
+	};
+
+	const handleCloseUpdateDialog = () => {
+		setOpenUpdateDialog(false);
+		setSelectedHiringProcess(null);
+	};
+
+	const handleCloseDeleteDialog = () => {
+		setOpenDeleteDialog(false);
+		setSelectedHiringProcess(null);
+	};
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
@@ -127,13 +174,37 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 										)}
 									</TableCell>
 									<TableCell>
-										<Button
-											size="small"
-											variant="outlined"
-											onClick={() => navigate(`/hiring-process/${process.uid}`)}
-										>
-											View Details
-										</Button>
+										<Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
+											<Button
+												size="small"
+												variant="outlined"
+												onClick={() => navigate(`/hiring-process/${process.uid}`)}
+											>
+												View
+											</Button>
+											{canManage && (
+												<>
+													<Tooltip title="Edit hiring process">
+														<IconButton
+															size="small"
+															color="primary"
+															onClick={() => handleEditClick(process)}
+														>
+															<EditIcon fontSize="small" />
+														</IconButton>
+													</Tooltip>
+													<Tooltip title="Delete hiring process">
+														<IconButton
+															size="small"
+															color="error"
+															onClick={() => handleDeleteClick(process)}
+														>
+															<DeleteIcon fontSize="small" />
+														</IconButton>
+													</Tooltip>
+												</>
+											)}
+										</Box>
 									</TableCell>
 								</TableRow>
 							))}
@@ -149,6 +220,22 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
+
+			<UpdateHiringProcessDialog
+				open={openUpdateDialog}
+				onClose={handleCloseUpdateDialog}
+				hiringProcess={selectedHiringProcess}
+			/>
+
+			<ConfirmDeleteDialog
+				open={openDeleteDialog}
+				onClose={handleCloseDeleteDialog}
+				onConfirm={handleConfirmDelete}
+				title="Delete Hiring Process"
+				message="Are you sure you want to delete this hiring process? This will also delete all associated stages."
+				itemName={selectedHiringProcess?.title}
+				isDeleting={isDeleting}
+			/>
 		</>
 	);
 };
