@@ -155,7 +155,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 											<Button
 												size="small"
 												variant="outlined"
-												onClick={() => navigate(`/job-position/${jobPosition.uid}`)}
+												onClick={() => navigate(`/job-positions/${jobPosition.uid}`)}
 											>
 												View Details
 											</Button>

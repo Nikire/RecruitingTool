@@ -89,15 +89,20 @@ const JobPositionDetailPage: React.FC = () => {
 		<Box sx={{p: 4}}>
 			<Button
 				startIcon={<ArrowBackIcon />}
-				onClick={() => navigate('/job-positions')}
+				onClick={() => navigate('/dashboard')}
 				sx={{mb: 3}}
 			>
-				Back to Job Positions
+				Back to Dashboard
 			</Button>
 
 			<Paper sx={{p: 3, mb: 3}}>
 				<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
-					<Typography variant="h4">{jobPosition.title}</Typography>
+					<Box>
+						<Typography variant="h4">{jobPosition.title}</Typography>
+						<Typography variant="subtitle1" color="textSecondary">
+							Hiring Processes Overview
+						</Typography>
+					</Box>
 					<StatusLabel status={jobPosition.status} />
 				</Box>
 
@@ -146,45 +151,11 @@ const JobPositionDetailPage: React.FC = () => {
 				</Box>
 			</Paper>
 
-			<Typography variant="h5" sx={{mb: 2}}>
-				Stage Template
-			</Typography>
-			<Card sx={{mb: 3}}>
-				<CardContent>
-					{jobPosition.stages && jobPosition.stages.length > 0 ? (
-						<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-							{jobPosition.stages
-								.sort((a, b) => a.position - b.position)
-								.map((stage, index) => (
-									<Box key={stage.uid} sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-										<Chip label={index + 1} size="small" color="primary" />
-										<Box sx={{flex: 1}}>
-											<Typography variant="body1" fontWeight="bold">
-												{stage.title}
-											</Typography>
-											<Typography variant="body2" color="textSecondary">
-												{stage.description}
-											</Typography>
-											<Typography variant="caption" color="textSecondary">
-												Type: {stage.type.replace(/_/g, ' ')}
-											</Typography>
-										</Box>
-									</Box>
-								))}
-						</Box>
-					) : (
-						<Typography color="textSecondary">
-							No stages defined for this job position yet.
-						</Typography>
-					)}
-				</CardContent>
-			</Card>
-
 			{canManage && (
 				<>
 					<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
 						<Typography variant="h5">
-							Active Hiring Processes ({filteredHiringProcesses.length} of {jobPosition.hiringProcesses?.length || 0})
+							Hiring Processes ({filteredHiringProcesses.length} of {jobPosition.hiringProcesses?.length || 0})
 						</Typography>
 					</Box>
 
@@ -265,6 +236,40 @@ const JobPositionDetailPage: React.FC = () => {
 							</Typography>
 						</Paper>
 					)}
+
+					<Typography variant="h5" sx={{mb: 2, mt: 5}}>
+						Stage Template
+					</Typography>
+					<Card sx={{mb: 3}}>
+						<CardContent>
+							{jobPosition.stages && jobPosition.stages.length > 0 ? (
+								<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+									{jobPosition.stages
+										.sort((a, b) => a.position - b.position)
+										.map((stage, index) => (
+											<Box key={stage.uid} sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+												<Chip label={index + 1} size="small" color="primary" />
+												<Box sx={{flex: 1}}>
+													<Typography variant="body1" fontWeight="bold">
+														{stage.title}
+													</Typography>
+													<Typography variant="body2" color="textSecondary">
+														{stage.description}
+													</Typography>
+													<Typography variant="caption" color="textSecondary">
+														Type: {stage.type.replace(/_/g, ' ')}
+													</Typography>
+												</Box>
+											</Box>
+										))}
+								</Box>
+							) : (
+								<Typography color="textSecondary">
+									No stages defined for this job position yet.
+								</Typography>
+							)}
+						</CardContent>
+					</Card>
 				</>
 			)}
 		</Box>
