@@ -22,23 +22,24 @@ function App() {
 		<>
 			<Toaster />
 			<Routes>
-			<Route element={<MainLayout />}>
-				<Route index element={<Home />} />
-				<Route path="/login" element={<Login />} />
-				<Route path="/signup" element={<Signup />} />
-				<Route path="/logout" element={<Logout />} />
-				<Route path="/job-positions" element={<JobPositionsPage />} />
-				<Route path="/job-positions/:uid" element={<JobPositionDetailPage />} />
+				<Route element={<MainLayout />}>
+					<Route index element={<Home />} />
+					<Route path="/login" element={<Login />} />
+					<Route path="/signup" element={<Signup />} />
+					<Route path="/logout" element={<Logout />} />
+					<Route path="/job-positions" element={<JobPositionsPage />} />
+					<Route path="/job-positions/:uid" element={<JobPositionDetailPage />} />
 
-				<Route element={<DocumentContainer />}>
-					<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
+					<Route element={<DocumentContainer />}>
+						<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
+					</Route>
+
+					<Route element={<ProtectedRoute />}>
+						<Route path="/dashboard" element={<Dashboard />} />
+					</Route>
 				</Route>
 
-				<Route element={<ProtectedRoute />}>
-					<Route path="/dashboard" element={<Dashboard />} />
-				</Route>
-
-				{/* Admin Panel Routes */}
+				{/* Admin Panel Routes - separate from MainLayout */}
 				<Route element={<ProtectedRoute />}>
 					<Route element={<AdminLayout />}>
 						<Route path="/admin" element={<AdminDashboard />} />
@@ -47,8 +48,7 @@ function App() {
 						<Route path="/admin/users" element={<UserManagementPage />} />
 					</Route>
 				</Route>
-			</Route>
-		</Routes>
+			</Routes>
 		</>
 	);
 }
