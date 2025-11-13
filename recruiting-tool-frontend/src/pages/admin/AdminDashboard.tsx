@@ -90,9 +90,9 @@ const AdminDashboard: React.FC = () => {
 				</Typography>
 			</Box>
 
-			<Grid container spacing={3}>
+			<Grid container spacing={3} sx={{maxWidth: 900, margin: '0 auto'}}>
 				{stats.map((stat) => (
-					<Grid item xs={12} sm={6} md={6} key={stat.title}>
+					<Grid item xs={12} sm={6} key={stat.title}>
 						<Box
 							onClick={() => navigate(stat.path)}
 							sx={{
@@ -114,39 +114,6 @@ const AdminDashboard: React.FC = () => {
 					</Grid>
 				))}
 			</Grid>
-
-			<Box sx={{mt: 4}}>
-				<Card>
-					<CardContent>
-						<Typography variant="h6" gutterBottom>
-							Quick Actions
-						</Typography>
-						<Box sx={{display: 'flex', gap: 2, mt: 2, flexWrap: 'wrap'}}>
-							<Button
-								variant="outlined"
-								startIcon={<PeopleIcon />}
-								onClick={() => navigate('/admin/candidates')}
-							>
-								Manage Candidates
-							</Button>
-							<Button
-								variant="outlined"
-								startIcon={<BusinessIcon />}
-								onClick={() => navigate('/admin/companies')}
-							>
-								Manage Companies
-							</Button>
-							<Button
-								variant="outlined"
-								startIcon={<AssignmentIcon />}
-								onClick={() => navigate('/admin/users')}
-							>
-								Manage Users
-							</Button>
-						</Box>
-					</CardContent>
-				</Card>
-			</Box>
 		</Box>
 	);
 };

@@ -17,6 +17,12 @@
 - [x] Add update/delete functionality for Companies ✅
 - [x] Add update/delete functionality for Hiring Processes ✅
 - [ ] Create a proper Home page with landing page content
+- [ ] Implement applicant system for job applications
+  - [ ] Public job positions list with card-based view
+  - [ ] Job application form for candidates
+  - [ ] Application submission and tracking
+  - [ ] Email notifications for applications
+  - [ ] Application status management
 
 ### Medium Priority
 

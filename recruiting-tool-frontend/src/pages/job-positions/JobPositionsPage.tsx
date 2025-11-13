@@ -78,8 +78,6 @@ const JobPositionsPage: React.FC = () => {
 				search={search}
 				onPageChange={handlePageChange}
 				onLimitChange={handleLimitChange}
-				onManageStages={handleManageStages}
-				canManageStages={canManage}
 			/>
 
 			<CreateJobPositionDialog

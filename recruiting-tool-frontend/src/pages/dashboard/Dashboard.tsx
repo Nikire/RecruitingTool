@@ -6,7 +6,7 @@ import {useJobPositionsSearch} from '../../hooks/api/state/useSearchState';
 import CreateJobPositionDialog from '../../components/dialogs/CreateJobPositionDialog';
 import {canManageResources} from '../../utils/permissions';
 import SearchBar from '../../components/search/SearchBar';
-import JobPositionsList from '../../components/job-positions/JobPositionsList';
+import JobPositionsManagementList from '../../components/job-positions/JobPositionsManagementList';
 
 const Dashboard: React.FC = () => {
 	const [openDialog, setOpenDialog] = useState(false);
@@ -48,7 +48,7 @@ const Dashboard: React.FC = () => {
 				<SearchBar onSearch={handleSearch} placeholder="Search job positions..." value={search} />
 			</Box>
 
-			<JobPositionsList
+			<JobPositionsManagementList
 				page={page}
 				limit={limit}
 				search={search}

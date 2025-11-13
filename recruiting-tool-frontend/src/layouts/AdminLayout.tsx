@@ -175,7 +175,8 @@ const AdminLayout: React.FC = () => {
 					flexGrow: 1,
 					p: 4,
 					width: {sm: `calc(100% - ${drawerWidth}px)`},
-					maxWidth: '100%',
+					maxWidth: '1600px',
+					margin: '0 auto',
 				}}
 			>
 				<Outlet />
