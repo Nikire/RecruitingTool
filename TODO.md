@@ -15,7 +15,8 @@
 - [x] **Add toast notifications for success/error/warning messages across the app** ✅
 - [x] Add update/delete functionality for Candidates ✅
 - [x] Add update/delete functionality for Companies ✅
-- [ ] Add update/delete functionality for Hiring Processes
+- [x] Add update/delete functionality for Hiring Processes ✅
+- [ ] Create a proper Home page with landing page content
 
 ### Medium Priority
 

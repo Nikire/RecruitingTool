@@ -175,7 +175,6 @@ const AdminLayout: React.FC = () => {
 					flexGrow: 1,
 					p: 4,
 					width: {sm: `calc(100% - ${drawerWidth}px)`},
-					mt: 8,
 					maxWidth: '100%',
 				}}
 			>

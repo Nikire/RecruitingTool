@@ -62,47 +62,19 @@ const Navbar: React.FC = () => {
 							<MenuIcon />
 						</IconButton>
 
-						<Typography color="inherit" variant="h6" sx={{mr: 2}}>
+						<Button
+							color="inherit"
+							component={NavLink}
+							to="/"
+							end
+							sx={{...linkSx, textTransform: 'none', mr: 2}}
+						>
+							Home
+						</Button>
+
+						<Typography color="inherit" variant="h6">
 							Recruiting Tool
 						</Typography>
-
-						<Box sx={{display: 'flex', alignItems: 'center', gap: 0.5}}>
-							<Button
-								color="inherit"
-								component={NavLink}
-								to="/"
-								end
-								sx={linkSx}
-							>
-								Home
-							</Button>
-							<Button
-								color="inherit"
-								component={NavLink}
-								to="/job-positions"
-								sx={linkSx}
-							>
-								Job Positions
-							</Button>
-							<Button
-								color="inherit"
-								component={NavLink}
-								to="/dashboard"
-								sx={linkSx}
-							>
-								Dashboard
-							</Button>
-							{isAuthenticated && hasRole(logedUser, UserRoles.SUPER_ADMIN) && (
-								<Button
-									color="inherit"
-									component={NavLink}
-									to="/admin"
-									sx={linkSx}
-								>
-									Admin Panel
-								</Button>
-							)}
-						</Box>
 
 						<Box sx={{flexGrow: 1}} />
 						{isAuthenticated ? (

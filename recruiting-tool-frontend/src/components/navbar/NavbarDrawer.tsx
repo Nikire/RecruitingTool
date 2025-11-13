@@ -49,23 +49,30 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 				>
 					<ChevronLeftIcon sx={{color: `${color}.contrastText`}} />
 				</ListItemButton>
-				<ListItemButton component={NavLink} sx={linkSx} to="/">
+				<ListItemButton component={NavLink} sx={linkSx} to="/" end>
 					<ListItemText color="inherit" primary="Home" />
 				</ListItemButton>
 				<ListItemButton component={NavLink} sx={linkSx} to="/job-positions">
 					<ListItemText color="inherit" primary="Job Positions" />
 				</ListItemButton>
+				{isAuthenticated && (
+					<ListItemButton component={NavLink} sx={linkSx} to="/dashboard">
+						<ListItemText color="inherit" primary="Dashboard" />
+					</ListItemButton>
+				)}
 				{isAuthenticated && isAdmin(user ?? null) && (
-					<ListItemButton component={NavLink} sx={linkSx} to="/candidates">
+					<ListItemButton component={NavLink} sx={linkSx} to="/admin/candidates">
 						<ListItemText color="inherit" primary="Candidates" />
 					</ListItemButton>
 				)}
-				<ListItemButton component={NavLink} sx={linkSx} to="/dashboard">
-					<ListItemText color="inherit" primary="Dashboard" />
-				</ListItemButton>
 				{isAuthenticated && hasRole(user ?? null, UserRoles.SUPER_ADMIN) && (
-					<ListItemButton component={NavLink} sx={linkSx} to="/companies">
+					<ListItemButton component={NavLink} sx={linkSx} to="/admin/companies">
 						<ListItemText color="inherit" primary="Companies" />
+					</ListItemButton>
+				)}
+				{isAuthenticated && hasRole(user ?? null, UserRoles.SUPER_ADMIN) && (
+					<ListItemButton component={NavLink} sx={linkSx} to="/admin">
+						<ListItemText color="inherit" primary="Admin Panel" />
 					</ListItemButton>
 				)}
 			</List>
