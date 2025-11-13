@@ -61,16 +61,6 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 					</ListItemButton>
 				)}
 				{isAuthenticated && isAdmin(user ?? null) && (
-					<ListItemButton component={NavLink} sx={linkSx} to="/admin/candidates">
-						<ListItemText color="inherit" primary="Candidates" />
-					</ListItemButton>
-				)}
-				{isAuthenticated && hasRole(user ?? null, UserRoles.SUPER_ADMIN) && (
-					<ListItemButton component={NavLink} sx={linkSx} to="/admin/companies">
-						<ListItemText color="inherit" primary="Companies" />
-					</ListItemButton>
-				)}
-				{isAuthenticated && hasRole(user ?? null, UserRoles.SUPER_ADMIN) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/admin">
 						<ListItemText color="inherit" primary="Admin Panel" />
 					</ListItemButton>

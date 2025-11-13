@@ -17,8 +17,8 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({title, icon, color, description}) => {
 	return (
-		<Card sx={{height: '100%'}}>
-			<CardContent>
+		<Card sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
+			<CardContent sx={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
 				<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
 					<Box
 						sx={{
@@ -80,8 +80,17 @@ const AdminDashboard: React.FC = () => {
 	];
 
 	return (
-		<Box>
-			<Box sx={{mb: 4}}>
+		<Box
+			sx={{
+				display: 'flex',
+				flexDirection: 'column',
+				alignItems: 'center',
+				justifyContent: 'center',
+				minHeight: 'calc(100vh - 64px)', // Full height minus AppBar
+				width: '100%',
+			}}
+		>
+			<Box sx={{mb: 4, textAlign: 'center', maxWidth: 800}}>
 				<Typography variant="h4" gutterBottom>
 					Admin Dashboard
 				</Typography>
@@ -90,31 +99,38 @@ const AdminDashboard: React.FC = () => {
 				</Typography>
 			</Box>
 
-			<Grid container spacing={3} sx={{maxWidth: 900}}>
+			<Box
+				sx={{
+					display: 'flex',
+					flexWrap: 'wrap',
+					gap: 3,
+					justifyContent: 'center',
+					width: 'calc(280px * 2 + 24px)', // 2 cards + gap (theme spacing 3 = 24px)
+				}}
+			>
 				{stats.map((stat) => (
-					<Grid item xs={12} sm={6} md={6} key={stat.title}>
-						<Box
-							onClick={() => navigate(stat.path)}
-							sx={{
-								cursor: 'pointer',
-								height: '100%',
-								minHeight: 140,
-								'&:hover': {
-									transform: 'translateY(-4px)',
-									transition: 'transform 0.2s ease-in-out',
-								},
-							}}
-						>
-							<StatCard
-								title={stat.title}
-								icon={stat.icon}
-								color={stat.color}
-								description={stat.description}
-							/>
-						</Box>
-					</Grid>
+					<Box
+						key={stat.title}
+						onClick={() => navigate(stat.path)}
+						sx={{
+							cursor: 'pointer',
+							width: 280,
+							minHeight: 160,
+							'&:hover': {
+								transform: 'translateY(-4px)',
+								transition: 'transform 0.2s ease-in-out',
+							},
+						}}
+					>
+						<StatCard
+							title={stat.title}
+							icon={stat.icon}
+							color={stat.color}
+							description={stat.description}
+						/>
+					</Box>
 				))}
-			</Grid>
+			</Box>
 		</Box>
 	);
 };
