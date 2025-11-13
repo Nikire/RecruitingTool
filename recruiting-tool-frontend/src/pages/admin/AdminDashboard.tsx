@@ -90,14 +90,15 @@ const AdminDashboard: React.FC = () => {
 				</Typography>
 			</Box>
 
-			<Grid container spacing={3} sx={{maxWidth: 900, margin: '0 auto'}}>
+			<Grid container spacing={3} sx={{maxWidth: 800}}>
 				{stats.map((stat) => (
-					<Grid item xs={12} sm={6} key={stat.title}>
+					<Grid item xs={12} sm={6} md={6} key={stat.title}>
 						<Box
 							onClick={() => navigate(stat.path)}
 							sx={{
 								cursor: 'pointer',
 								height: '100%',
+								minHeight: 150,
 								'&:hover': {
 									transform: 'translateY(-4px)',
 									transition: 'transform 0.2s ease-in-out',
