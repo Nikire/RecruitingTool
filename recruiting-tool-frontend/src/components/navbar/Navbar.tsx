@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
 
 						<Box sx={{flexGrow: 1}} />
 						{isAuthenticated ? (
-							<Box sx={{display: 'flex', gap: 0.5}}>
+							<Box sx={{display: 'flex', gap: 0.5, alignItems: 'center'}}>
 								<Button
 									color="inherit"
 									component={NavLink}
@@ -87,7 +87,9 @@ const Navbar: React.FC = () => {
 								>
 									Logout
 								</Button>
-								<UserAvatar name={logedUser?.name} />
+								<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
+									<UserAvatar name={logedUser?.name} avatarUrl={logedUser?.profilePicture} />
+								</IconButton>
 							</Box>
 						) : (
 							<Box sx={{display: 'flex', gap: 0.5}}>

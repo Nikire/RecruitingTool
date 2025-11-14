@@ -1,26 +1,18 @@
 import {useState, useCallback} from 'react';
-import {Typography, Button, Box} from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
+import {Typography, Box} from '@mui/material';
 import {JobPosition} from '../../types/jobPosition.types';
 import {JobPositionsPageWrapper} from './JobPositionsPage.styles';
-import CreateJobPositionDialog from '../../components/dialogs/CreateJobPositionDialog';
 import ManageStagesDialog from '../../components/dialogs/ManageStagesDialog';
-import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useJobPositionsSearch} from '../../hooks/api/state/useSearchState';
-import {canManageResources} from '../../utils/permissions';
 import JobPositionsList from '../../components/job-positions/JobPositionsList';
 import SearchBar from '../../components/search/SearchBar';
 
 const JobPositionsPage: React.FC = () => {
-	const [openCreateDialog, setOpenCreateDialog] = useState(false);
 	const [selectedJobPosition, setSelectedJobPosition] =
 		useState<JobPosition | null>(null);
 
-	const {user} = useUserAtom();
 	const [searchState, setSearchState] = useJobPositionsSearch();
 	const {page, limit, search} = searchState;
-
-	const canManage = canManageResources(user);
 
 	const handleSearch = useCallback((value: string) => {
 		setSearchState((prev) => ({...prev, search: value, page: 1}));
@@ -44,24 +36,8 @@ const JobPositionsPage: React.FC = () => {
 
 	return (
 		<JobPositionsPageWrapper>
-			<Box
-				sx={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-					mb: 2,
-				}}
-			>
+			<Box sx={{mb: 2}}>
 				<Typography variant="h6">Open job positions:</Typography>
-				{canManage && (
-					<Button
-						variant="contained"
-						startIcon={<AddIcon />}
-						onClick={() => setOpenCreateDialog(true)}
-					>
-						Create Job Position
-					</Button>
-				)}
 			</Box>
 
 			<Box sx={{mb: 3, maxWidth: 400}}>
@@ -78,11 +54,6 @@ const JobPositionsPage: React.FC = () => {
 				search={search}
 				onPageChange={handlePageChange}
 				onLimitChange={handleLimitChange}
-			/>
-
-			<CreateJobPositionDialog
-				open={openCreateDialog}
-				onClose={() => setOpenCreateDialog(false)}
 			/>
 
 			{selectedJobPosition && (

@@ -50,6 +50,8 @@ export const useUpdateUser = () => {
 		mutationFn: ({uid, data}: {uid: string; data: UpdateUserDto}) => usersApi.update(uid, data),
 		onSuccess: () => {
 			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
+			// Also invalidate the auth/me query to refresh the current user data
+			queryClient.invalidateQueries({queryKey: ['auth', 'me']});
 			showSuccessToast('User updated successfully!');
 		},
 		onError: (error) => {

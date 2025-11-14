@@ -15,6 +15,7 @@ import CandidatesPage from './pages/candidates/CandidatesPage';
 import { CompaniesPage } from './pages/companies/CompaniesPage';
 import UserManagementPage from './pages/users/UserManagementPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import ProfilePage from './pages/profile/ProfilePage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
 
 					<Route element={<ProtectedRoute />}>
 						<Route path="/dashboard" element={<Dashboard />} />
+						<Route path="/profile" element={<ProfilePage />} />
 					</Route>
 				</Route>
 

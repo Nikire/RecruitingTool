@@ -7,6 +7,7 @@ import BusinessIcon from '@mui/icons-material/Business';
 import PeopleIcon from '@mui/icons-material/People';
 import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PersonIcon from '@mui/icons-material/Person';
 import {useUserAtom} from '../hooks/api/state/useUserAtom';
 import {hasRole, isAdmin} from '../utils/permissions';
 import {UserRoles} from '../types/user.types';
@@ -101,6 +102,14 @@ const AdminLayout: React.FC = () => {
 			<Divider />
 			<List>
 				<ListItem disablePadding>
+					<ListItemButton component={NavLink} to="/profile">
+						<ListItemIcon>
+							<PersonIcon />
+						</ListItemIcon>
+						<ListItemText primary="My Profile" />
+					</ListItemButton>
+				</ListItem>
+				<ListItem disablePadding>
 					<ListItemButton onClick={() => navigate('/dashboard')}>
 						<ListItemIcon>
 							<ArrowBackIcon />
@@ -171,7 +180,9 @@ const AdminLayout: React.FC = () => {
 						<Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
 							Administration
 						</Typography>
-						<UserAvatar name={user?.name} />
+						<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
+							<UserAvatar name={user?.name} avatarUrl={user?.profilePicture} />
+						</IconButton>
 					</Toolbar>
 				</AppBar>
 			</Box>

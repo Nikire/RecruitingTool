@@ -10,6 +10,13 @@ export interface User {
 		uid: string;
 		name: string;
 	};
+	profilePicture?: string;
+	phoneNumber?: string;
+	position?: string;
+	department?: string;
+	bio?: string;
+	linkedinUrl?: string;
+	timezone?: string;
 }
 
 export enum UserRoles {
@@ -31,4 +38,11 @@ export interface UpdateUserDto {
 	email?: string;
 	password?: string;
 	companyUid?: string;
+	profilePicture?: string;
+	phoneNumber?: string;
+	position?: string;
+	department?: string;
+	bio?: string;
+	linkedinUrl?: string;
+	timezone?: string;
 }
