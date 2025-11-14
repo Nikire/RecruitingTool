@@ -220,52 +220,68 @@
 **Goal:** Implement file storage for candidate resumes and documents with local development support and production S3 option.
 
 **Backend Tasks:**
-- [ ] Set up local file storage system using MinIO (S3-compatible local instance)
-  - [ ] Add MinIO service to docker-compose.yml
-  - [ ] Configure MinIO with access keys and bucket creation
-  - [ ] Add MinIO web UI (port 9001) for local testing
-- [ ] Install and configure AWS SDK for NestJS (@aws-sdk/client-s3)
-- [ ] Create StorageModule with StorageService
-  - [ ] Implement upload file method (accepts file buffer, filename, mimetype)
-  - [ ] Implement download file method (returns file stream)
-  - [ ] Implement delete file method
-  - [ ] Implement get file URL method (signed URLs)
-- [ ] Add environment variables for storage configuration
-  - [ ] STORAGE_TYPE (local or s3)
-  - [ ] S3_ENDPOINT (MinIO URL for local, AWS URL for production)
-  - [ ] S3_BUCKET_NAME
-  - [ ] S3_ACCESS_KEY_ID
-  - [ ] S3_SECRET_ACCESS_KEY
-  - [ ] S3_REGION (for production AWS)
-- [ ] Create FileUpload entity in Prisma
-  - [ ] Fields: id, uid, filename, originalName, mimetype, size, s3Key, uploadedById, uploadedAt
-  - [ ] Relations: uploadedBy (User), candidate (optional)
-- [ ] Add file upload endpoints to Candidate module
-  - [ ] POST /candidate/:uid/upload - Upload resume/document
-  - [ ] GET /candidate/:uid/files - List all files for candidate
-  - [ ] GET /files/:uid/download - Download file by UID
-  - [ ] DELETE /files/:uid - Delete file
-- [ ] Add file size and type validation
-  - [ ] Max file size: 10MB
-  - [ ] Allowed types: PDF, DOC, DOCX, TXT
-- [ ] Run Prisma migration for FileUpload model
+- [x] Set up local file storage system using MinIO (S3-compatible local instance) ✅
+  - [x] Add MinIO service to docker-compose.yml ✅
+  - [x] Configure MinIO with access keys and bucket creation ✅
+  - [x] Add MinIO web UI (port 9001) for local testing ✅
+- [x] Install and configure AWS SDK for NestJS (@aws-sdk/client-s3) ✅
+- [x] Create StorageModule with StorageService ✅
+  - [x] Implement upload file method (accepts file buffer, filename, mimetype) ✅
+  - [x] Implement download file method (returns file stream) ✅
+  - [x] Implement delete file method ✅
+  - [x] Implement get file URL method (signed URLs) ✅
+- [x] Add environment variables for storage configuration ✅
+  - [x] STORAGE_TYPE (local or s3) ✅
+  - [x] S3_ENDPOINT (MinIO URL for local, AWS URL for production) ✅
+  - [x] S3_BUCKET_NAME ✅
+  - [x] S3_ACCESS_KEY_ID ✅
+  - [x] S3_SECRET_ACCESS_KEY ✅
+  - [x] S3_REGION (for production AWS) ✅
+- [x] Create FileUpload entity in Prisma ✅
+  - [x] Fields: id, uid, filename, originalName, mimetype, size, s3Key, uploadedById, uploadedAt ✅
+  - [x] Relations: uploadedBy (User), candidate (optional) ✅
+- [x] Add file upload endpoints (implemented as /files/* routes instead of /candidate/:uid/*) ✅
+  - [x] POST /files/upload - Upload file (with optional candidateUid query param) ✅
+  - [x] GET /files - List all files (optionally filter by candidateUid) ✅
+  - [x] GET /files/:uid/download - Download file by UID ✅
+  - [x] DELETE /files/:uid - Delete file ✅
+- [x] Add file size and type validation ✅
+  - [x] Max file size: 10MB ✅
+  - [x] Allowed types: PDF, DOC, DOCX, TXT ✅
+- [x] Run Prisma migration for FileUpload model ✅
+- [x] Add automatic bucket creation on startup ✅
+- [x] Fixed ES Module import issue with uuid (using crypto.randomUUID instead) ✅
 
 **Frontend Tasks:**
-- [ ] Create FileUpload component with drag-and-drop support
-- [ ] Add file upload to Candidate detail page
-- [ ] Add file list display with download/delete actions
-- [ ] Add file upload progress indicator
-- [ ] Add file type and size validation on frontend
-- [ ] Create useFileUpload hook for upload mutation
-- [ ] Create useFiles hook for listing files
-- [ ] Add toast notifications for upload success/error
+- [x] Create FileUpload component with drag-and-drop support ✅
+- [x] Add file upload to Candidate detail page (via UpdateCandidateDialog tabs) ✅
+- [x] Add file list display with download/delete actions ✅
+- [x] Add file upload progress indicator ✅
+- [x] Add file type and size validation on frontend ✅
+- [x] Create useUploadFile, useDownloadFile, useDeleteFile hooks ✅
+- [x] Create useFiles hook for listing files ✅
+- [x] Add toast notifications for upload success/error ✅
+- [x] Install date-fns for file date formatting ✅
+- [x] Create FileList component with icons and formatted dates ✅
+- [x] Integrate file management into UpdateCandidateDialog with tabs ✅
 
 **Testing:**
-- [ ] Test file upload with MinIO locally
-- [ ] Test file download and signed URLs
-- [ ] Test file deletion
-- [ ] Verify production S3 configuration works by switching env vars
-- [ ] Test error handling for invalid file types/sizes
+- [x] Test file upload with MinIO locally ✅
+- [x] Test file download and signed URLs ✅
+- [x] Test file deletion ✅
+- [x] Test error handling for invalid file types/sizes ✅
+- [x] Fixed uploadedById undefined error by using userUid lookup ✅
+- [ ] Verify production S3 configuration works by switching env vars (requires production environment)
+
+**Implementation Notes:**
+- Frontend uses React Query for file operations with automatic cache invalidation
+- FileUpload component supports drag-and-drop with visual feedback
+- FileList component displays file metadata with icons based on file type (PDF, DOC, etc.)
+- UpdateCandidateDialog enhanced with tabs to switch between candidate info and files
+- All file operations include toast notifications for user feedback
+- Files are associated with candidates via optional candidateUid parameter
+- Backend uses userUid from JWT to lookup numeric user ID for database relations
+- Package manager: ALWAYS use Yarn (documented in CLAUDE.md)
 
 ---
 

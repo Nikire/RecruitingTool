@@ -39,6 +39,7 @@ model User {
   companyId    Int?
   company      Company?      @relation(fields: [companyId], references: [id])
   jobPositions JobPosition[] @relation("JobPositionsUser")
+  fileUploads  FileUpload[]  @relation("FileUploadsUser")
 }
 
 model Candidate {
@@ -48,6 +49,7 @@ model Candidate {
   email           String
   hiringProcessId Int?           @unique
   hiringProcess   HiringProcess? @relation("HiringProcessCandidate", fields: [hiringProcessId], references: [id])
+  files           FileUpload[]   @relation("CandidateFiles")
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
@@ -138,4 +140,20 @@ enum StageType {
   TECHNICAL_INTERVIEW
   FINAL_INTERVIEW
   OFFER
+}
+
+model FileUpload {
+  id           Int       @id @default(autoincrement())
+  uid          String    @unique @default(uuid()) @db.Uuid
+  filename     String // Unique filename stored in S3 (with timestamp/uuid)
+  originalName String // Original filename from user
+  mimetype     String // MIME type (e.g., application/pdf)
+  size         Int // File size in bytes
+  s3Key        String // S3 object key (path in bucket)
+  uploadedById Int
+  uploadedBy   User      @relation("FileUploadsUser", fields: [uploadedById], references: [id])
+  candidateId  Int?
+  candidate    Candidate? @relation("CandidateFiles", fields: [candidateId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
