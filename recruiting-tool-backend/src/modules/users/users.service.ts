@@ -4,11 +4,15 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { UserMapper, UserWithPasswordMapper } from './entities/users.entities';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { StorageService } from '../storage/storage.service';
 import * as bycrypt from 'bcryptjs';
 
 @Injectable()
 export class UsersService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private storageService: StorageService,
+  ) {}
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     try {
       let companyId: number | undefined = undefined;
@@ -119,6 +123,31 @@ export class UsersService {
 
     if (!existingUser) {
       throw new NotFoundException(`User ${uid} not found`);
+    }
+
+    // Delete old profile picture if a new one is being set
+    if (updateUserDto.profilePicture !== undefined && existingUser.profilePicture) {
+      // Only delete if the new value is different from the old one
+      if (updateUserDto.profilePicture !== existingUser.profilePicture) {
+        try {
+          // Get the file record to find the S3 key
+          const oldFile = await this.databaseService.fileUpload.findUnique({
+            where: { uid: existingUser.profilePicture },
+          });
+
+          if (oldFile) {
+            // Delete from S3/MinIO
+            await this.storageService.deleteFile(oldFile.s3Key);
+            // Delete from database
+            await this.databaseService.fileUpload.delete({
+              where: { uid: existingUser.profilePicture },
+            });
+          }
+        } catch (error) {
+          // Log error but don't fail the update if file deletion fails
+          console.error(`Failed to delete old profile picture ${existingUser.profilePicture}:`, error.message);
+        }
+      }
     }
 
     let companyId: number | undefined = undefined;

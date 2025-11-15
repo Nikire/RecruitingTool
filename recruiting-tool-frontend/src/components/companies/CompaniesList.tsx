@@ -1,4 +1,4 @@
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton} from '@mui/material';
+import {Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton} from '@mui/material';
 import {Edit as EditIcon, Delete as DeleteIcon} from '@mui/icons-material';
 import {useListCompanies} from '../../hooks/api/useCompanies';
 import {Company} from '../../types/company.types';

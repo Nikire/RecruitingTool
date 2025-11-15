@@ -8,8 +8,8 @@ import {
 	PropTypes,
 } from '@mui/material';
 import {NavLink} from 'react-router-dom';
-import { User, UserRoles } from '../../types/user.types';
-import { hasRole, isAdmin } from '../../utils/permissions';
+import { User } from '../../types/user.types';
+import { isAdmin } from '../../utils/permissions';
 
 type NavbarDrawerProps = {
 	isOpen?: boolean;

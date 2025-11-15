@@ -2,10 +2,10 @@ import { Module } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
-import { SharedModule } from '../shared/shared.module';
+import { DatabaseModule } from '../shared/modules/database/database.module';
 
 @Module({
-	imports: [SharedModule],
+	imports: [DatabaseModule],
 	controllers: [FilesController],
 	providers: [StorageService, FilesService],
 	exports: [StorageService, FilesService],

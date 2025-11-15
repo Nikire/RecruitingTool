@@ -15,6 +15,7 @@ export class StorageService {
 	private readonly logger = new Logger(StorageService.name);
 	private readonly s3Client: S3Client;
 	private readonly bucketName: string;
+	private readonly publicEndpoint: string;
 
 	constructor() {
 		const endpoint = process.env.S3_ENDPOINT || 'http://minio:9000';
@@ -22,6 +23,8 @@ export class StorageService {
 		const accessKeyId = process.env.S3_ACCESS_KEY_ID || 'minioadmin';
 		const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY || 'minioadmin';
 		this.bucketName = process.env.S3_BUCKET_NAME || 'recruiting-tool-files';
+		// Public endpoint for signed URLs (accessible from browser)
+		this.publicEndpoint = process.env.S3_PUBLIC_ENDPOINT || 'http://localhost:9000';
 
 		this.s3Client = new S3Client({
 			endpoint,
@@ -140,8 +143,13 @@ export class StorageService {
 
 		try {
 			const url = await getSignedUrl(this.s3Client, command, { expiresIn });
+
+			// Replace internal endpoint with public endpoint for browser access
+			const internalEndpoint = process.env.S3_ENDPOINT || 'http://minio:9000';
+			const publicUrl = url.replace(internalEndpoint, this.publicEndpoint);
+
 			this.logger.log(`Generated signed URL for: ${key}`);
-			return url;
+			return publicUrl;
 		} catch (error) {
 			this.logger.error(`Error generating signed URL: ${error.message}`);
 			throw new Error(`Failed to generate signed URL: ${error.message}`);

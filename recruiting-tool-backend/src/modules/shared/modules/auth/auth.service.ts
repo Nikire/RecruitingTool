@@ -56,8 +56,16 @@ export class AuthService {
 
   async verifyToken(token: string): Promise<UserWithPasswordResponseDto> {
     try {
-      const user = await this.jwtService.verifyAsync(token);
-      return user;
+      const decoded = await this.jwtService.verifyAsync(token);
+
+      // Fetch fresh user data from database instead of using stale token data
+      const freshUser = await this.usersService.findByEmail(decoded.email);
+
+      if (!freshUser) {
+        throw new UnauthorizedException('User not found');
+      }
+
+      return freshUser;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }

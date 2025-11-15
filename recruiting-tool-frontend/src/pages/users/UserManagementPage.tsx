@@ -1,4 +1,4 @@
-import {useState, useCallback} from 'react';
+import {useCallback} from 'react';
 import {Box, Button, Typography, Alert} from '@mui/material';
 import {Add as AddIcon} from '@mui/icons-material';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';

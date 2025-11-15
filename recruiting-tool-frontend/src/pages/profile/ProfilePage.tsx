@@ -1,12 +1,84 @@
-import {Box, Typography, Card, CardContent, Grid, Avatar, Button, Chip} from '@mui/material';
-import {Edit as EditIcon, LinkedIn as LinkedInIcon, Phone as PhoneIcon, Work as WorkIcon, Business as BusinessIcon, Schedule as ScheduleIcon} from '@mui/icons-material';
+import {Box, Typography, Card, CardContent, Button, Chip, TextField, Divider, Grid} from '@mui/material';
+import {Save as SaveIcon, Refresh as RefreshIcon} from '@mui/icons-material';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
-import {useState} from 'react';
-import UpdateProfileDialog from '../../components/dialogs/UpdateProfileDialog';
+import {useForm} from 'react-hook-form';
+import {UpdateUserDto} from '../../types/user.types';
+import {useUpdateUser} from '../../hooks/api/useUsers';
+import {useEffect} from 'react';
+import ProfilePictureUpload from '../../components/user/ProfilePictureUpload';
 
 const ProfilePage: React.FC = () => {
 	const {user} = useUserAtom();
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+	const {mutate: updateUser, isPending} = useUpdateUser();
+
+	const {
+		register,
+		handleSubmit,
+		formState: {errors, isDirty},
+		reset,
+		watch,
+	} = useForm<UpdateUserDto>({
+		defaultValues: {
+			name: user?.name || '',
+			email: user?.email || '',
+			phoneNumber: user?.phoneNumber || '',
+			position: user?.position || '',
+			department: user?.department || '',
+			bio: user?.bio || '',
+			linkedinUrl: user?.linkedinUrl || '',
+			timezone: user?.timezone || '',
+			profilePicture: user?.profilePicture || '',
+		},
+	});
+
+	// Reset form when user data changes (e.g., after successful update)
+	useEffect(() => {
+		if (user) {
+			reset({
+				name: user.name,
+				email: user.email,
+				phoneNumber: user.phoneNumber || '',
+				position: user.position || '',
+				department: user.department || '',
+				bio: user.bio || '',
+				linkedinUrl: user.linkedinUrl || '',
+				timezone: user.timezone || '',
+				profilePicture: user.profilePicture || '',
+			});
+		}
+	}, [user, reset]);
+
+	const watchedName = watch('name');
+
+	const onSubmit = (data: UpdateUserDto) => {
+		if (!user) return;
+
+		// Remove empty strings and convert to undefined
+		const cleanedData: UpdateUserDto = Object.entries(data).reduce((acc, [key, value]) => {
+			if (value !== '' && value !== undefined) {
+				acc[key as keyof UpdateUserDto] = value;
+			}
+			return acc;
+		}, {} as UpdateUserDto);
+
+		updateUser({uid: user.uid, data: cleanedData});
+	};
+
+	const handleReset = () => {
+		if (user) {
+			reset({
+				name: user.name,
+				email: user.email,
+				phoneNumber: user.phoneNumber || '',
+				position: user.position || '',
+				department: user.department || '',
+				bio: user.bio || '',
+				linkedinUrl: user.linkedinUrl || '',
+				timezone: user.timezone || '',
+				profilePicture: user.profilePicture || '',
+			});
+		}
+	};
 
 	if (!user) {
 		return (
@@ -19,37 +91,85 @@ const ProfilePage: React.FC = () => {
 	}
 
 	return (
-		<Box>
+		<Box component="form" onSubmit={handleSubmit(onSubmit)}>
 			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
 				<Typography variant="h4">My Profile</Typography>
-				<Button variant="contained" startIcon={<EditIcon />} onClick={() => setOpenUpdateDialog(true)}>
-					Edit Profile
-				</Button>
+				<Box sx={{display: 'flex', gap: 1}}>
+					<Button
+						variant="outlined"
+						startIcon={<RefreshIcon />}
+						onClick={handleReset}
+						disabled={!isDirty || isPending}
+					>
+						Reset
+					</Button>
+					<Button
+						type="submit"
+						variant="contained"
+						startIcon={<SaveIcon />}
+						disabled={!isDirty || isPending}
+					>
+						{isPending ? 'Saving...' : 'Update Profile'}
+					</Button>
+				</Box>
 			</Box>
 
 			<Grid container spacing={3}>
 				{/* Profile Overview Card */}
-				<Grid item xs={12} md={4}>
+				<Grid size={{xs: 12, md: 4}}>
 					<Card>
 						<CardContent sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4}}>
-							<Avatar
-								src={user.profilePicture}
-								alt={user.name}
-								sx={{width: 120, height: 120, mb: 2, fontSize: '3rem'}}
-							>
-								{user.name.charAt(0).toUpperCase()}
-							</Avatar>
-							<Typography variant="h5" gutterBottom>
-								{user.name}
+							<ProfilePictureUpload
+								currentPicture={
+									user.profilePicture
+										? user.profilePicture.startsWith('http')
+											? user.profilePicture
+											: `${import.meta.env.VITE_API_URL}/files/${user.profilePicture}/view`
+										: undefined
+								}
+								userName={watchedName || user.name}
+								onUploadSuccess={(_fileUrl, fileUid) => {
+									// Store file UID instead of signed URL
+									console.log('Image uploaded with UID:', fileUid);
+									updateUser(
+										{
+											uid: user.uid,
+											data: {profilePicture: fileUid},
+										},
+										{
+											onSuccess: () => {
+												console.log('Profile picture updated successfully with UID!');
+											},
+											onError: (error) => {
+												console.error('Failed to update profile picture:', error);
+											},
+										},
+									);
+								}}
+								onRemove={() => {
+									// Automatically remove profile picture from user profile
+									console.log('Removing profile picture');
+									updateUser(
+										{
+											uid: user.uid,
+											data: {profilePicture: ''},
+										},
+										{
+											onSuccess: () => {
+												console.log('Profile picture removed successfully!');
+											},
+											onError: (error) => {
+												console.error('Failed to remove profile picture:', error);
+											},
+										},
+									);
+								}}
+							/>
+							<Typography variant="h5" gutterBottom sx={{mt: 2}}>
+								{watchedName || user.name}
 							</Typography>
 							<Typography variant="body2" color="text.secondary" gutterBottom>
 								{user.email}
-							</Typography>
-							<Typography variant="body1" color={user.position ? 'primary' : 'text.disabled'} sx={{mt: 1, fontStyle: user.position ? 'normal' : 'italic'}}>
-								{user.position || 'No position set'}
-							</Typography>
-							<Typography variant="body2" color={user.department ? 'text.secondary' : 'text.disabled'} sx={{fontStyle: user.department ? 'normal' : 'italic'}}>
-								{user.department || 'No department set'}
 							</Typography>
 							<Box sx={{mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center'}}>
 								{user.roles.map((role) => (
@@ -60,129 +180,145 @@ const ProfilePage: React.FC = () => {
 					</Card>
 				</Grid>
 
-				{/* Profile Details Card */}
-				<Grid item xs={12} md={8}>
+				{/* Profile Edit Form Card */}
+				<Grid size={{xs: 12, md: 8}}>
 					<Card>
-						<CardContent>
-							<Typography variant="h6" gutterBottom>
-								Profile Information
-							</Typography>
+						<CardContent sx={{p: 3}}>
+							{/* Basic Information Section */}
+							<Box sx={{mb: 4}}>
+								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+									Basic Information
+								</Typography>
+								<Grid container spacing={2.5}>
+									<Grid size={{xs: 12, sm: 6}}>
+										<TextField
+											fullWidth
+											label="Full Name"
+											{...register('name', {required: 'Name is required'})}
+											error={!!errors.name}
+											helperText={errors.name?.message}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
 
-							<Grid container spacing={2} sx={{mt: 1}}>
-								<Grid item xs={12} sm={6}>
-									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<PhoneIcon color={user.phoneNumber ? 'action' : 'disabled'} />
-										<Box>
-											<Typography variant="caption" color="text.secondary">
-												Phone Number
-											</Typography>
-											<Typography variant="body1" color={user.phoneNumber ? 'text.primary' : 'text.disabled'} sx={{fontStyle: user.phoneNumber ? 'normal' : 'italic'}}>
-												{user.phoneNumber || 'No phone number'}
-											</Typography>
-										</Box>
-									</Box>
-								</Grid>
+									<Grid size={{xs: 12, sm: 6}}>
+										<TextField
+											fullWidth
+											label="Email Address"
+											type="email"
+											{...register('email', {
+												required: 'Email is required',
+												pattern: {
+													value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+													message: 'Invalid email address',
+												},
+											})}
+											error={!!errors.email}
+											helperText={errors.email?.message}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
 
-								<Grid item xs={12} sm={6}>
-									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<BusinessIcon color={user.company ? 'action' : 'disabled'} />
-										<Box>
-											<Typography variant="caption" color="text.secondary">
-												Company
-											</Typography>
-											<Typography variant="body1" color={user.company ? 'text.primary' : 'text.disabled'} sx={{fontStyle: user.company ? 'normal' : 'italic'}}>
-												{user.company?.name || 'No company assigned'}
-											</Typography>
-										</Box>
-									</Box>
+									<Grid size={{xs: 12}}>
+										<TextField
+											fullWidth
+											label="Phone Number"
+											placeholder="+1-555-0123"
+											{...register('phoneNumber')}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
 								</Grid>
+							</Box>
 
-								<Grid item xs={12} sm={6}>
-									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<WorkIcon color={user.position ? 'action' : 'disabled'} />
-										<Box>
-											<Typography variant="caption" color="text.secondary">
-												Position
-											</Typography>
-											<Typography variant="body1" color={user.position ? 'text.primary' : 'text.disabled'} sx={{fontStyle: user.position ? 'normal' : 'italic'}}>
-												{user.position || 'No position set'}
-											</Typography>
-										</Box>
-									</Box>
-								</Grid>
+							<Divider sx={{my: 3}} />
 
-								<Grid item xs={12} sm={6}>
-									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<BusinessIcon color={user.department ? 'action' : 'disabled'} />
-										<Box>
-											<Typography variant="caption" color="text.secondary">
-												Department
-											</Typography>
-											<Typography variant="body1" color={user.department ? 'text.primary' : 'text.disabled'} sx={{fontStyle: user.department ? 'normal' : 'italic'}}>
-												{user.department || 'No department set'}
-											</Typography>
-										</Box>
-									</Box>
-								</Grid>
+							{/* Professional Information Section */}
+							<Box sx={{mb: 4}}>
+								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+									Professional Information
+								</Typography>
+								<Grid container spacing={2.5}>
+									<Grid size={{xs: 12, sm: 6}}>
+										<TextField
+											fullWidth
+											label="Position"
+											placeholder="e.g., Senior HR Manager"
+											{...register('position')}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
 
-								<Grid item xs={12} sm={6}>
-									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<ScheduleIcon color={user.timezone ? 'action' : 'disabled'} />
-										<Box>
-											<Typography variant="caption" color="text.secondary">
-												Timezone
-											</Typography>
-											<Typography variant="body1" color={user.timezone ? 'text.primary' : 'text.disabled'} sx={{fontStyle: user.timezone ? 'normal' : 'italic'}}>
-												{user.timezone || 'No timezone set'}
-											</Typography>
-										</Box>
-									</Box>
+									<Grid size={{xs: 12, sm: 6}}>
+										<TextField
+											fullWidth
+											label="Department"
+											placeholder="e.g., Human Resources"
+											{...register('department')}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
 								</Grid>
+							</Box>
 
-								<Grid item xs={12} sm={6}>
-									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<LinkedInIcon color={user.linkedinUrl ? 'action' : 'disabled'} />
-										<Box>
-											<Typography variant="caption" color="text.secondary">
-												LinkedIn
-											</Typography>
-											{user.linkedinUrl ? (
-												<Typography
-													variant="body1"
-													component="a"
-													href={user.linkedinUrl}
-													target="_blank"
-													rel="noopener noreferrer"
-													sx={{color: 'primary.main', textDecoration: 'none', '&:hover': {textDecoration: 'underline'}}}
-												>
-													View Profile
-												</Typography>
-											) : (
-												<Typography variant="body1" color="text.disabled" sx={{fontStyle: 'italic'}}>
-													No LinkedIn URL
-												</Typography>
-											)}
-										</Box>
-									</Box>
-								</Grid>
+							<Divider sx={{my: 3}} />
 
-								<Grid item xs={12}>
-									<Box sx={{mt: 2}}>
-										<Typography variant="caption" color="text.secondary">
-											Bio
-										</Typography>
-										<Typography variant="body1" color={user.bio ? 'text.primary' : 'text.disabled'} sx={{mt: 1, whiteSpace: 'pre-wrap', fontStyle: user.bio ? 'normal' : 'italic'}}>
-											{user.bio || 'No bio added yet'}
-										</Typography>
-									</Box>
+							{/* Additional Information Section */}
+							<Box sx={{mb: 4}}>
+								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+									Additional Information
+								</Typography>
+								<Grid container spacing={2.5}>
+									<Grid size={{xs: 12, sm: 6}}>
+										<TextField
+											fullWidth
+											label="Timezone"
+											placeholder="e.g., America/New_York"
+											{...register('timezone')}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
+
+									<Grid size={{xs: 12, sm: 6}}>
+										<TextField
+											fullWidth
+											label="LinkedIn Profile"
+											placeholder="https://linkedin.com/in/username"
+											{...register('linkedinUrl')}
+											variant="outlined"
+											size="small"
+										/>
+									</Grid>
 								</Grid>
-							</Grid>
+							</Box>
+
+							<Divider sx={{my: 3}} />
+
+							{/* Bio Section */}
+							<Box>
+								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+									About You
+								</Typography>
+								<TextField
+									fullWidth
+									label="Bio"
+									placeholder="Tell us about yourself, your experience, and what you're passionate about..."
+									multiline
+									rows={6}
+									{...register('bio')}
+									variant="outlined"
+								/>
+							</Box>
 						</CardContent>
 					</Card>
 				</Grid>
 			</Grid>
-
-			<UpdateProfileDialog open={openUpdateDialog} onClose={() => setOpenUpdateDialog(false)} user={user} />
 		</Box>
 	);
 };

@@ -30,7 +30,7 @@ export class FilesController {
 	@Post('upload')
 	@Auth([RolesType.USER])
 	@UseInterceptors(FileInterceptor('file'))
-	@ApiOperation({ summary: 'Upload a file' })
+	@ApiOperation({ summary: 'Upload a document file' })
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
@@ -63,6 +63,38 @@ export class FilesController {
 		return this.filesService.uploadFile(file, currentUser.uid, candidateUid);
 	}
 
+	@Post('upload-image')
+	@Auth([RolesType.USER])
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiOperation({ summary: 'Upload an image file (for profile pictures, etc.)' })
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				file: {
+					type: 'string',
+					format: 'binary',
+					description: 'Image file (JPG, PNG, GIF, WebP)',
+				},
+			},
+		},
+	})
+	async uploadImage(
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }), // 2MB max for images
+					new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif|webp)$/i }), // Only images
+				],
+			}),
+		)
+		file: Express.Multer.File,
+		@CurrentUser() currentUser: any,
+	): Promise<FileUploadResponseDto> {
+		return this.filesService.uploadFile(file, currentUser.uid);
+	}
+
 	@Get()
 	@Auth([RolesType.USER])
 	@ApiOperation({ summary: 'Get all files, optionally filtered by candidate' })
@@ -75,6 +107,18 @@ export class FilesController {
 	@ApiOperation({ summary: 'Get file metadata by UID' })
 	async getFile(@Param('uid') uid: string): Promise<FileUploadResponseDto> {
 		return this.filesService.getFileByUid(uid);
+	}
+
+	@Get(':uid/view')
+	@ApiOperation({ summary: 'View a file (e.g., display images) - No auth required for public access' })
+	async viewFile(@Param('uid') uid: string, @Res() res: Response): Promise<void> {
+		const { stream, filename, mimetype } = await this.filesService.downloadFile(uid);
+
+		res.setHeader('Content-Type', mimetype);
+		res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
+		res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+
+		stream.pipe(res);
 	}
 
 	@Get(':uid/download')

@@ -24,7 +24,7 @@ export function useFile(uid: string) {
 }
 
 /**
- * Hook to upload a file
+ * Hook to upload a document file
  */
 export function useUploadFile() {
 	const queryClient = useQueryClient();
@@ -44,6 +44,22 @@ export function useUploadFile() {
 		},
 		onError: (error: any) => {
 			const errorMessage = error?.response?.data?.message || 'Failed to upload file';
+			toast.error(errorMessage);
+		},
+	});
+}
+
+/**
+ * Hook to upload an image file
+ */
+export function useUploadImage() {
+	return useMutation({
+		mutationFn: filesApi.uploadImage,
+		onSuccess: (_data) => {
+			toast.success('Image uploaded successfully');
+		},
+		onError: (error: any) => {
+			const errorMessage = error?.response?.data?.message || 'Failed to upload image';
 			toast.error(errorMessage);
 		},
 	});

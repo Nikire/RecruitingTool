@@ -1,4 +1,4 @@
-import {Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Grid, Box, Typography, Divider} from '@mui/material';
+import {Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Divider, Grid} from '@mui/material';
 import {useForm} from 'react-hook-form';
 import {User, UpdateUserDto} from '../../types/user.types';
 import {useUpdateUser} from '../../hooks/api/useUsers';
@@ -75,7 +75,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							Basic Information
 						</Typography>
 						<Grid container spacing={2.5}>
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Full Name"
@@ -86,7 +86,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 								/>
 							</Grid>
 
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Email Address"
@@ -104,7 +104,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 								/>
 							</Grid>
 
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Phone Number"
@@ -114,7 +114,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 								/>
 							</Grid>
 
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Profile Picture URL"
@@ -132,7 +132,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							Professional Information
 						</Typography>
 						<Grid container spacing={2.5}>
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Position"
@@ -142,7 +142,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 								/>
 							</Grid>
 
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Department"
@@ -160,7 +160,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							Additional Information
 						</Typography>
 						<Grid container spacing={2.5}>
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="Timezone"
@@ -170,7 +170,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 								/>
 							</Grid>
 
-							<Grid item xs={12} sm={6}>
+							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
 									label="LinkedIn Profile"

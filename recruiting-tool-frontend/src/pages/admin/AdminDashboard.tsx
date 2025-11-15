@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Typography, Grid, Button} from '@mui/material';
+import {Box, Card, CardContent, Typography} from '@mui/material';
 import {
 	People as PeopleIcon,
 	Business as BusinessIcon,

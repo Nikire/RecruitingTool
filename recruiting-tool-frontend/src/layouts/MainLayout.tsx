@@ -9,7 +9,7 @@ const MainLayout = () => {
 	const navigate = useNavigate();
 
 	// Validate user session on every page
-	const {isError, isAuthenticated} = useAuthMe();
+	const {isError} = useAuthMe();
 
 	// Redirect to login if session is invalid or user is not authenticated
 	useEffect(() => {

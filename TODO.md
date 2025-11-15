@@ -10,6 +10,13 @@
 
 ### High Priority
 
+- [ ] **Remove ID relations and use UID relations throughout the entire system** 🔴 **TOP PRIORITY**
+  - [ ] Keep Prisma internal relations using IDs
+  - [ ] Add UID-based relations on the backend (services and controllers)
+  - [ ] Update all DTOs to use UIDs instead of IDs
+  - [ ] Update frontend to only work with UIDs
+  - [ ] Migrate existing endpoints to use UIDs for all relations
+  - [ ] Test all CRUD operations with UID-based relations
 - [x] Change the existing searchbars to the same format of JobPositionsPage (searchbar outside, send parameters to a list component and inside the list component make the API call.) ✅
 - [x] Fill the input values with the values that are on Jotai search. ✅
 - [x] **Add toast notifications for success/error/warning messages across the app** ✅
@@ -22,10 +29,11 @@
   - [x] Remove navigation duplicates (Candidates/Companies) ✅
   - [x] Center admin dashboard content (vertical & horizontal) ✅
   - [x] Create 2x2 card grid with consistent sizing (280px × 160px min) ✅
-- [ ] **User Profile Management**
-  - [ ] Add profile picture field to User entity
-  - [ ] Add user profile update functionality
-  - [ ] Create profile page UI
+- [x] **User Profile Management** ✅
+  - [x] Add profile picture field to User entity ✅
+  - [x] Add user profile update functionality ✅
+  - [x] Create profile page UI with inline editing ✅
+  - [x] Implement change detection for update button ✅
 - [ ] Create a proper Home page with landing page content
 - [ ] Implement applicant system for job applications
   - [ ] Public job positions list with card-based view

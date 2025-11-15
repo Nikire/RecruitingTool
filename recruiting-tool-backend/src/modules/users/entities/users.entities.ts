@@ -18,6 +18,13 @@ export function UserMapper(user: User | UserWithPasswordResponseDto): UserRespon
     updatedAt: typeof user.updatedAt === 'string' ? user.updatedAt : user.updatedAt.toISOString(),
     roles: user.roles,
     companyId: user.companyId,
+    profilePicture: user.profilePicture,
+    phoneNumber: user.phoneNumber,
+    position: user.position,
+    department: user.department,
+    bio: user.bio,
+    linkedinUrl: user.linkedinUrl,
+    timezone: user.timezone,
   };
 }
 
@@ -39,5 +46,12 @@ export function UserWithPasswordMapper(user: User): UserWithPasswordResponseDto 
     updatedAt: user.updatedAt.toISOString(),
     roles: user.roles,
     companyId: user.companyId,
+    profilePicture: user.profilePicture,
+    phoneNumber: user.phoneNumber,
+    position: user.position,
+    department: user.department,
+    bio: user.bio,
+    linkedinUrl: user.linkedinUrl,
+    timezone: user.timezone,
   };
 }

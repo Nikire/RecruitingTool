@@ -26,10 +26,6 @@ const JobPositionsPage: React.FC = () => {
 		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
 	}, [setSearchState]);
 
-	const handleManageStages = (jobPosition: JobPosition) => {
-		setSelectedJobPosition(jobPosition);
-	};
-
 	const handleCloseStagesDialog = () => {
 		setSelectedJobPosition(null);
 	};

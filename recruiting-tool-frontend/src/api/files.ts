@@ -24,7 +24,7 @@ export interface FileListParams {
 }
 
 /**
- * Upload a file (optionally associate with a candidate)
+ * Upload a document file (optionally associate with a candidate)
  */
 export const uploadFile = async ({ file, candidateUid }: UploadFileParams): Promise<FileUploadResponse> => {
 	const formData = new FormData();
@@ -33,6 +33,22 @@ export const uploadFile = async ({ file, candidateUid }: UploadFileParams): Prom
 	const url = candidateUid ? `/files/upload?candidateUid=${candidateUid}` : '/files/upload';
 
 	const response = await axios.post<FileUploadResponse>(url, formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	});
+
+	return response.data;
+};
+
+/**
+ * Upload an image file (for profile pictures, etc.)
+ */
+export const uploadImage = async (file: File): Promise<FileUploadResponse> => {
+	const formData = new FormData();
+	formData.append('file', file);
+
+	const response = await axios.post<FileUploadResponse>('/files/upload-image', formData, {
 		headers: {
 			'Content-Type': 'multipart/form-data',
 		},

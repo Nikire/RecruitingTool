@@ -13,8 +13,6 @@ import {NavLink} from 'react-router-dom';
 import NavbarDrawer from './NavbarDrawer';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
-import { hasRole } from '../../utils/permissions';
-import { UserRoles } from '../../types/user.types';
 
 const Navbar: React.FC = () => {
 	const color: PropTypes.Color = 'secondary';
