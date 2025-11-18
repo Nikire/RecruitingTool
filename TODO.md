@@ -10,13 +10,13 @@
 
 ### High Priority
 
-- [ ] **Remove ID relations and use UID relations throughout the entire system** 🔴 **TOP PRIORITY**
-  - [ ] Keep Prisma internal relations using IDs
-  - [ ] Add UID-based relations on the backend (services and controllers)
-  - [ ] Update all DTOs to use UIDs instead of IDs
-  - [ ] Update frontend to only work with UIDs
-  - [ ] Migrate existing endpoints to use UIDs for all relations
-  - [ ] Test all CRUD operations with UID-based relations
+- [x] **Remove ID relations and use UID relations throughout the entire system** ✅ **COMPLETED**
+  - [x] Keep Prisma internal relations using IDs ✅
+  - [x] Add UID-based relations on the backend (services and controllers) ✅
+  - [x] Update all DTOs to use UIDs instead of IDs ✅
+  - [x] Update frontend to only work with UIDs ✅
+  - [x] Migrate existing endpoints to use UIDs for all relations ✅
+  - [x] Test all CRUD operations with UID-based relations ✅
 - [x] Change the existing searchbars to the same format of JobPositionsPage (searchbar outside, send parameters to a list component and inside the list component make the API call.) ✅
 - [x] Fill the input values with the values that are on Jotai search. ✅
 - [x] **Add toast notifications for success/error/warning messages across the app** ✅
