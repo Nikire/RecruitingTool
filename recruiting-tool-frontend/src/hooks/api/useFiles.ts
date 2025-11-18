@@ -36,8 +36,8 @@ export function useUploadFile() {
 			queryClient.invalidateQueries({ queryKey: ['files'] });
 
 			// If file is associated with a candidate, invalidate that specific query
-			if (data.candidateId) {
-				queryClient.invalidateQueries({ queryKey: ['files', data.candidateId] });
+			if (data.candidateUid) {
+				queryClient.invalidateQueries({ queryKey: ['files', data.candidateUid] });
 			}
 
 			toast.success(`File "${data.originalName}" uploaded successfully`);

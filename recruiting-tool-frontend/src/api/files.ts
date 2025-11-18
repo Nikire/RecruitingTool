@@ -7,8 +7,8 @@ export interface FileUploadResponse {
 	mimetype: string;
 	size: number;
 	s3Key: string;
-	uploadedById: number;
-	candidateId?: number;
+	uploadedByUid?: string;
+	candidateUid?: string;
 	createdAt: string;
 	updatedAt: string;
 	downloadUrl?: string;

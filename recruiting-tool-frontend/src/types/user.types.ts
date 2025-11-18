@@ -5,7 +5,7 @@ export interface User {
 	createdAt?: string;
 	updatedAt?: string;
 	roles: UserRoles[];
-	companyId?: number;
+	companyUid?: string;
 	company?: {
 		uid: string;
 		name: string;

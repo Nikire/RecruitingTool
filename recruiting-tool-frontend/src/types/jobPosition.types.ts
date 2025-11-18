@@ -3,11 +3,10 @@ import {Stage} from './stage.types';
 import {User} from './user.types';
 
 export interface JobPosition {
-	id?: number;
 	uid: string;
 	title: string;
 	status: JobPositionStatus;
-	companyId?: number;
+	companyUid?: string;
 	companyName?: string;
 	hiringProcesses?: Array<HiringProcess>;
 	stages: Array<Stage>;
