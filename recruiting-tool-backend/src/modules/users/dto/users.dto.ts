@@ -127,11 +127,11 @@ export class UserResponseDto {
   })
   roles?: Array<RolesType>;
   @ApiProperty({
-    description: 'The company ID of the user',
-    example: 1,
+    description: 'The company UID of the user',
+    example: '123e4567-e89b-12d3-a456-426614174000',
     required: false,
   })
-  companyId?: number;
+  companyUid?: string;
   @ApiProperty({ description: 'Profile picture URL', required: false })
   profilePicture?: string;
   @ApiProperty({ description: 'Phone number', required: false })

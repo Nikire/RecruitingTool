@@ -30,8 +30,14 @@ export class HiringProcessService {
       throw new NotFoundException(`There is no stages on job position ${jobPosition.uid}`);
     }
 
-    // Get companyId from jobPosition
-    const companyId = jobPosition.companyId;
+    // Get companyId from jobPosition - need to fetch the company ID from UID
+    const company = await this.databaseService.company.findUnique({
+      where: { uid: jobPosition.companyUid },
+    });
+    if (!company) {
+      throw new NotFoundException(`Company ${jobPosition.companyUid} not found`);
+    }
+    const companyId = company.id;
 
     const newHiringProcess = await this.databaseService.hiringProcess.create({
       data: {

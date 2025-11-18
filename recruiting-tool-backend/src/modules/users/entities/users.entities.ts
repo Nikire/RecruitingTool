@@ -9,7 +9,7 @@ export function UserLoginMapper(user: User | UserWithPasswordResponseDto): UserR
   };
 }
 
-export function UserMapper(user: User | UserWithPasswordResponseDto): UserResponseDto {
+export function UserMapper(user: any): UserResponseDto {
   return {
     uid: user.uid,
     name: user.name,
@@ -17,7 +17,7 @@ export function UserMapper(user: User | UserWithPasswordResponseDto): UserRespon
     createdAt: typeof user.createdAt === 'string' ? user.createdAt : user.createdAt.toISOString(),
     updatedAt: typeof user.updatedAt === 'string' ? user.updatedAt : user.updatedAt.toISOString(),
     roles: user.roles,
-    companyId: user.companyId,
+    companyUid: user.company?.uid,
     profilePicture: user.profilePicture,
     phoneNumber: user.phoneNumber,
     position: user.position,
@@ -36,7 +36,7 @@ export function PublicUserMapper(user: User | UserWithPasswordResponseDto): User
   };
 }
 
-export function UserWithPasswordMapper(user: User): UserWithPasswordResponseDto {
+export function UserWithPasswordMapper(user: any): UserWithPasswordResponseDto {
   return {
     uid: user.uid,
     name: user.name,
@@ -45,7 +45,7 @@ export function UserWithPasswordMapper(user: User): UserWithPasswordResponseDto 
     createdAt: user.createdAt.toISOString(),
     updatedAt: user.updatedAt.toISOString(),
     roles: user.roles,
-    companyId: user.companyId,
+    companyUid: user.company?.uid,
     profilePicture: user.profilePicture,
     phoneNumber: user.phoneNumber,
     position: user.position,

@@ -7,8 +7,8 @@ export class FileUploadResponseDto {
 	mimetype: string;
 	size: number;
 	s3Key: string;
-	uploadedById: number;
-	candidateId?: number;
+	uploadedByUid?: string;
+	candidateUid?: string;
 	createdAt: Date;
 	updatedAt: Date;
 	downloadUrl?: string; // Optional signed URL for download

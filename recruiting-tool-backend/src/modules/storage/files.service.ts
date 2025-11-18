@@ -148,6 +148,26 @@ export class FilesService {
 	private async mapToDto(file: any): Promise<FileUploadResponseDto> {
 		const downloadUrl = await this.storageService.getSignedUrl(file.s3Key);
 
+		// Get UIDs for uploaded user and candidate
+		let uploadedByUid: string | undefined;
+		let candidateUid: string | undefined;
+
+		if (file.uploadedById) {
+			const user = await this.database.user.findUnique({
+				where: { id: file.uploadedById },
+				select: { uid: true },
+			});
+			uploadedByUid = user?.uid;
+		}
+
+		if (file.candidateId) {
+			const candidate = await this.database.candidate.findUnique({
+				where: { id: file.candidateId },
+				select: { uid: true },
+			});
+			candidateUid = candidate?.uid;
+		}
+
 		return {
 			uid: file.uid,
 			filename: file.filename,
@@ -155,8 +175,8 @@ export class FilesService {
 			mimetype: file.mimetype,
 			size: file.size,
 			s3Key: file.s3Key,
-			uploadedById: file.uploadedById,
-			candidateId: file.candidateId,
+			uploadedByUid,
+			candidateUid,
 			createdAt: file.createdAt,
 			updatedAt: file.updatedAt,
 			downloadUrl,

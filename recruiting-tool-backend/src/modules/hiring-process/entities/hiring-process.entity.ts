@@ -23,7 +23,7 @@ export function HiringProcessOneMapper(hiringProcess: HiringProcessWithRelations
     uid: hiringProcess.uid,
     title: hiringProcess.title,
     status: hiringProcess.status,
-    jobPositionId: hiringProcess.jobPositionId,
+    jobPositionUid: hiringProcess.jobPosition?.uid,
     stages: Array.isArray(hiringProcess.stages) ? hiringProcess.stages.map((stage) => StageMapper(stage)) : [],
     candidate: hiringProcess.candidate ? CandidateMapper(hiringProcess.candidate) : null,
     company: hiringProcess.company ? {

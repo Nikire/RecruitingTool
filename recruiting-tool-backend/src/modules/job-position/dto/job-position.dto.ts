@@ -21,8 +21,8 @@ export class JobPositionResponseDto {
   @ApiProperty({ description: 'The description of the job position', example: 'Looking for a talented software engineer', required: false })
   description?: string;
 
-  @ApiProperty({ description: 'The company ID', example: 1 })
-  companyId: number;
+  @ApiProperty({ description: 'The company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  companyUid: string;
 
   @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
   companyName?: string;

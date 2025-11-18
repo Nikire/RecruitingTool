@@ -29,6 +29,9 @@ export class UsersService {
       const { companyUid, ...userData } = createUserDto;
       const newUser = await this.databaseService.user.create({
         data: { ...userData, password: await bycrypt.hash(createUserDto.password, 10), companyId },
+        include: {
+          company: true,
+        },
       });
 
       return UserMapper(newUser);
@@ -56,7 +59,11 @@ export class UsersService {
   }
 
   async findAll(): Promise<Array<UserResponseDto>> {
-    const users = await this.databaseService.user.findMany();
+    const users = await this.databaseService.user.findMany({
+      include: {
+        company: true,
+      },
+    });
     return users.map((user) => UserMapper(user));
   }
 
@@ -106,6 +113,9 @@ export class UsersService {
   async findOne(uid: string): Promise<UserResponseDto> {
     const user = await this.databaseService.user.findUnique({
       where: { uid },
+      include: {
+        company: true,
+      },
     });
     if (!user) {
       throw new NotFoundException(`User ${uid} not found`);
@@ -165,6 +175,9 @@ export class UsersService {
     const updatedUser = await this.databaseService.user.update({
       where: { uid },
       data: { ...userData, ...(companyId !== undefined && { companyId }) },
+      include: {
+        company: true,
+      },
     });
     return UserMapper(updatedUser);
   }
