@@ -1,4 +1,23 @@
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, Button} from '@mui/material';
+import {
+	Box,
+	CircularProgress,
+	Typography,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Paper,
+	Chip,
+	Button,
+	Card,
+	CardContent,
+	Skeleton,
+	Stack,
+	useMediaQuery,
+	useTheme,
+} from '@mui/material';
 import {useState} from 'react';
 import {useListJobPositions} from '../../hooks/api/useJobPositions';
 import Pagination from '../pagination/Pagination';
@@ -13,6 +32,109 @@ interface JobPositionsListProps {
 	onLimitChange: (limit: number) => void;
 }
 
+// Skeleton loader for loading state
+const JobPositionCardSkeleton = () => (
+	<Card sx={{mb: 2, p: 2}}>
+		<Stack spacing={1}>
+			<Skeleton variant="text" width="70%" height={28} />
+			<Skeleton variant="text" width="40%" height={20} />
+			<Box sx={{display: 'flex', gap: 1, mt: 2}}>
+				<Skeleton variant="rectangular" width="48%" height={40} />
+				<Skeleton variant="rectangular" width="48%" height={40} />
+			</Box>
+		</Stack>
+	</Card>
+);
+
+// Mobile card view component
+const JobPositionCardView: React.FC<{
+	jobPosition: any;
+	onApplyClick: (uid: string, title: string) => void;
+	onViewDetails: (uid: string) => void;
+}> = ({jobPosition, onApplyClick, onViewDetails}) => (
+	<Card
+		sx={{
+			mb: 2,
+			p: 2,
+			transition: 'all 0.2s ease-in-out',
+			'&:hover': {
+				boxShadow: 3,
+				transform: 'translateY(-2px)',
+			},
+		}}
+	>
+		<CardContent sx={{p: 0}}>
+			<Typography variant="h6" sx={{mb: 1, fontSize: {xs: '1.1rem', sm: '1.25rem'}}}>
+				{jobPosition.title}
+			</Typography>
+
+			<Box sx={{display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap'}}>
+				<Chip
+					label={jobPosition.status}
+					color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
+					size="small"
+					sx={{fontSize: '0.85rem'}}
+				/>
+				<Chip
+					label={`${jobPosition.stages?.length || 0} Stages`}
+					variant="outlined"
+					size="small"
+					sx={{fontSize: '0.85rem'}}
+				/>
+			</Box>
+
+			{jobPosition.companyName && (
+				<Typography variant="body2" color="textSecondary" sx={{mb: 1}}>
+					Company: {jobPosition.companyName}
+				</Typography>
+			)}
+
+			{jobPosition.createdBy && (
+				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 2}}>
+					Posted by {jobPosition.createdBy.name}
+				</Typography>
+			)}
+
+			<Box
+				sx={{
+					display: 'flex',
+					gap: 1,
+					mt: 2,
+					flexWrap: 'wrap',
+				}}
+			>
+				<Button
+					fullWidth
+					size="small"
+					variant="outlined"
+					onClick={() => onViewDetails(jobPosition.uid)}
+					sx={{
+						minHeight: 44,
+						fontSize: {xs: '0.9rem', sm: '1rem'},
+						flex: {xs: '1 1 auto', sm: '0 1 auto'},
+					}}
+				>
+					View Details
+				</Button>
+				<Button
+					fullWidth
+					size="small"
+					variant="contained"
+					onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
+					disabled={jobPosition.status !== 'OPEN'}
+					sx={{
+						minHeight: 44,
+						fontSize: {xs: '0.9rem', sm: '1rem'},
+						flex: {xs: '1 1 auto', sm: '0 1 auto'},
+					}}
+				>
+					Apply
+				</Button>
+			</Box>
+		</CardContent>
+	</Card>
+);
+
 const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	page,
 	limit,
@@ -20,6 +142,8 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const navigate = useNavigate();
 	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
 	const [selectedJob, setSelectedJob] = useState<{uid: string; title: string} | null>(null);
@@ -45,25 +169,81 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 		setSelectedJob(null);
 	};
 
+	const handleViewDetails = (uid: string) => {
+		navigate(`/careers/${uid}`);
+	};
+
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
 		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
+			<Box sx={{display: 'flex', justifyContent: 'center', p: {xs: 2, sm: 4}}}>
+				{isMobile ? (
+					<Box sx={{width: '100%'}}>
+						{[1, 2, 3].map((i) => (
+							<JobPositionCardSkeleton key={i} />
+						))}
+					</Box>
+				) : (
+					<CircularProgress />
+				)}
 			</Box>
 		);
 	}
 
 	if (error && !data) {
 		return (
-			<Box sx={{p: 4}}>
-				<Typography color="error">
+			<Box sx={{p: {xs: 2, sm: 4}}}>
+				<Typography color="error" sx={{fontSize: {xs: '0.95rem', sm: '1rem'}}}>
 					Error loading job positions. Please try again.
 				</Typography>
 			</Box>
 		);
 	}
 
+	// Mobile view (card layout)
+	if (isMobile) {
+		return (
+			<>
+				{jobPositions && jobPositions.length > 0 ? (
+					<Box sx={{width: '100%'}}>
+						{jobPositions.map((jobPosition) => (
+							<JobPositionCardView
+								key={jobPosition.uid}
+								jobPosition={jobPosition}
+								onApplyClick={handleApplyClick}
+								onViewDetails={handleViewDetails}
+							/>
+						))}
+					</Box>
+				) : (
+					<Paper sx={{p: {xs: 2, sm: 4}, textAlign: 'center'}}>
+						<Typography variant="body1" color="textSecondary">
+							No job positions found.
+						</Typography>
+					</Paper>
+				)}
+
+				{meta && (
+					<Pagination
+						meta={meta}
+						onPageChange={onPageChange}
+						onLimitChange={onLimitChange}
+					/>
+				)}
+
+				{selectedJob && (
+					<ApplyToJobDialog
+						open={applyDialogOpen}
+						onClose={handleCloseApplyDialog}
+						jobUid={selectedJob.uid}
+						jobTitle={selectedJob.title}
+					/>
+				)}
+			</>
+		);
+	}
+
+	// Desktop view (table layout)
 	return (
 		<>
 			{jobPositions && jobPositions.length > 0 ? (
@@ -113,7 +293,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 											<Button
 												size="small"
 												variant="outlined"
-												onClick={() => navigate(`/careers/${jobPosition.uid}`)}
+												onClick={() => handleViewDetails(jobPosition.uid)}
 											>
 												View Details
 											</Button>

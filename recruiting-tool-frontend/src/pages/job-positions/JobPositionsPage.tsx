@@ -1,5 +1,5 @@
 import {useState, useCallback} from 'react';
-import {Typography, Box} from '@mui/material';
+import {Typography, Box, useTheme, useMediaQuery} from '@mui/material';
 import {JobPosition} from '../../types/jobPosition.types';
 import {JobPositionsPageWrapper} from './JobPositionsPage.styles';
 import ManageStagesDialog from '../../components/dialogs/ManageStagesDialog';
@@ -8,6 +8,8 @@ import JobPositionsList from '../../components/job-positions/JobPositionsList';
 import SearchBar from '../../components/search/SearchBar';
 
 const JobPositionsPage: React.FC = () => {
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const [selectedJobPosition, setSelectedJobPosition] =
 		useState<JobPosition | null>(null);
 
@@ -32,14 +34,30 @@ const JobPositionsPage: React.FC = () => {
 
 	return (
 		<JobPositionsPageWrapper>
-			<Box sx={{mb: 2}}>
-				<Typography variant="h6">Open job positions:</Typography>
+			<Box sx={{mb: {xs: 1.5, sm: 2}}}>
+				<Typography
+					variant={isMobile ? 'h5' : 'h4'}
+					sx={{
+						fontSize: {xs: '1.5rem', sm: '1.75rem', md: '2rem'},
+						fontWeight: 600,
+						mb: 0.5,
+					}}
+				>
+					Open Job Positions
+				</Typography>
+				<Typography
+					variant="body2"
+					color="textSecondary"
+					sx={{fontSize: {xs: '0.9rem', sm: '1rem'}}}
+				>
+					Find and apply to available opportunities
+				</Typography>
 			</Box>
 
-			<Box sx={{mb: 3, maxWidth: 400}}>
+			<Box sx={{mb: {xs: 2, sm: 3}, maxWidth: {xs: '100%', md: 400}}}>
 				<SearchBar
 					onSearch={handleSearch}
-					placeholder="Search job positions..."
+					placeholder="Search positions..."
 					value={search}
 				/>
 			</Box>

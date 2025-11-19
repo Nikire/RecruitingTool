@@ -1,4 +1,4 @@
-import {Box, Pagination as MuiPagination, Typography, Select, MenuItem, FormControl, InputLabel} from '@mui/material';
+import {Box, Pagination as MuiPagination, Typography, Select, MenuItem, FormControl, InputLabel, useTheme, useMediaQuery} from '@mui/material';
 import {PaginationMeta} from '../../types/pagination.types';
 
 interface PaginationProps {
@@ -8,6 +8,8 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChange}) => {
+	const theme = useTheme();
+	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const {page, totalPages, total, limit} = meta;
 
 	const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
@@ -27,19 +29,42 @@ const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChang
 				display: 'flex',
 				justifyContent: 'space-between',
 				alignItems: 'center',
-				mt: 3,
+				mt: {xs: 2, sm: 3},
 				flexWrap: 'wrap',
-				gap: 2,
+				gap: {xs: 1.5, sm: 2},
+				p: {xs: 1, sm: 0},
 			}}
 		>
-			<Typography variant="body2" color="textSecondary">
-				Showing {startItem} to {endItem} of {total} results
+			<Typography
+				variant="body2"
+				color="textSecondary"
+				sx={{fontSize: {xs: '0.85rem', sm: '0.875rem'}}}
+			>
+				Showing {startItem} to {endItem} of {total}
 			</Typography>
 
-			<Box sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-				<FormControl size="small" sx={{minWidth: 120}}>
-					<InputLabel>Items per page</InputLabel>
-					<Select value={limit} onChange={handleLimitChange} label="Items per page">
+			<Box
+				sx={{
+					display: 'flex',
+					alignItems: 'center',
+					gap: {xs: 1, sm: 2},
+					width: {xs: '100%', sm: 'auto'},
+					flexDirection: {xs: 'column-reverse', sm: 'row'},
+				}}
+			>
+				<FormControl size="small" sx={{minWidth: {xs: '100%', sm: 120}}}>
+					<InputLabel sx={{fontSize: {xs: '0.85rem', sm: '0.875rem'}}}>
+						{isMobile ? 'Items' : 'Items per page'}
+					</InputLabel>
+					<Select
+						value={limit}
+						onChange={handleLimitChange}
+						label={isMobile ? 'Items' : 'Items per page'}
+						sx={{
+							fontSize: {xs: '0.9rem', sm: '1rem'},
+							height: {xs: 40, sm: 40},
+						}}
+					>
 						<MenuItem value={10}>10</MenuItem>
 						<MenuItem value={25}>25</MenuItem>
 						<MenuItem value={50}>50</MenuItem>
@@ -47,15 +72,25 @@ const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChang
 					</Select>
 				</FormControl>
 
-				<MuiPagination
-					count={totalPages}
-					page={page}
-					onChange={handlePageChange}
-					color="primary"
-					shape="rounded"
-					showFirstButton
-					showLastButton
-				/>
+				<Box sx={{width: {xs: '100%', sm: 'auto'}, display: 'flex', justifyContent: 'center'}}>
+					<MuiPagination
+						count={totalPages}
+						page={page}
+						onChange={handlePageChange}
+						color="primary"
+						shape="rounded"
+						showFirstButton={!isMobile}
+						showLastButton={!isMobile}
+						size={isMobile ? 'small' : 'medium'}
+						sx={{
+							'& .MuiPaginationItem-root': {
+								minWidth: {xs: 32, sm: 40},
+								height: {xs: 32, sm: 40},
+								fontSize: {xs: '0.75rem', sm: '0.875rem'},
+							},
+						}}
+					/>
+				</Box>
 			</Box>
 		</Box>
 	);

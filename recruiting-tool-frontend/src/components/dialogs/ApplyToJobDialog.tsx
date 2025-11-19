@@ -131,15 +131,51 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 	};
 
 	return (
-		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Apply to {jobTitle}</DialogTitle>
+		<Dialog
+			open={open}
+			onClose={handleClose}
+			maxWidth="sm"
+			fullWidth
+			PaperProps={{
+				sx: {
+					m: {xs: 1, sm: 2},
+					borderRadius: {xs: 1, sm: 2},
+				},
+			}}
+			slotProps={{
+				backdrop: {
+					sx: {
+						backdropFilter: 'blur(4px)',
+						backgroundColor: 'rgba(0, 0, 0, 0.5)',
+					},
+				},
+			}}
+		>
+			<DialogTitle
+				sx={{
+					fontSize: {xs: '1.15rem', sm: '1.25rem'},
+					fontWeight: 600,
+					pb: {xs: 1.5, sm: 2},
+					pt: {xs: 1.5, sm: 2},
+					px: {xs: 2, sm: 3},
+				}}
+			>
+				Apply to {jobTitle}
+			</DialogTitle>
 			<DialogContent>
 				{success ? (
 					<Alert severity="success" sx={{mt: 2}}>
 						Application submitted successfully! We'll get back to you soon.
 					</Alert>
 				) : (
-					<Box sx={{pt: 2}}>
+					<Box
+						sx={{
+							pt: {xs: 1.5, sm: 2},
+							display: 'flex',
+							flexDirection: 'column',
+							gap: {xs: 1.5, sm: 2},
+						}}
+					>
 						<TextField
 							fullWidth
 							label="Full Name"
@@ -149,7 +185,15 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							error={!!formErrors.applicantName}
 							helperText={formErrors.applicantName}
 							required
-							sx={{mb: 2}}
+							inputProps={{
+								minLength: 2,
+							}}
+							sx={{
+								'& .MuiInputBase-input': {
+									fontSize: {xs: '1rem', sm: '1rem'},
+									minHeight: {xs: 44, sm: 'auto'},
+								},
+							}}
 						/>
 
 						<TextField
@@ -162,7 +206,12 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							error={!!formErrors.applicantEmail}
 							helperText={formErrors.applicantEmail}
 							required
-							sx={{mb: 2}}
+							sx={{
+								'& .MuiInputBase-input': {
+									fontSize: {xs: '1rem', sm: '1rem'},
+									minHeight: {xs: 44, sm: 'auto'},
+								},
+							}}
 						/>
 
 						<TextField
@@ -174,22 +223,36 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							error={!!formErrors.applicantPhone}
 							helperText={formErrors.applicantPhone}
 							required
-							sx={{mb: 2}}
+							sx={{
+								'& .MuiInputBase-input': {
+									fontSize: {xs: '1rem', sm: '1rem'},
+									minHeight: {xs: 44, sm: 'auto'},
+								},
+							}}
 						/>
 
-						<Box sx={{mb: 2}}>
+						<Box sx={{mb: 0}}>
 							<Button
 								variant="outlined"
 								component="label"
 								startIcon={<AttachFileIcon />}
 								fullWidth
-								sx={{justifyContent: 'flex-start', py: 1.5}}
+								sx={{
+									justifyContent: 'flex-start',
+									py: {xs: 1.75, sm: 1.5},
+									minHeight: 44,
+									fontSize: {xs: '0.9rem', sm: '1rem'},
+									textTransform: 'none',
+									textAlign: 'left',
+									paddingLeft: 2,
+									borderRadius: 1,
+								}}
 							>
-								{resumeFile ? resumeFile.name : 'Upload Resume (Optional - PDF or DOC)'}
+								{resumeFile ? resumeFile.name : 'Upload Resume (Optional)'}
 								<input type="file" hidden accept=".pdf,.doc,.docx" onChange={handleFileChange} />
 							</Button>
 							{formErrors.resume && (
-								<Typography variant="caption" color="error" sx={{mt: 1, display: 'block'}}>
+								<Typography variant="caption" color="error" sx={{mt: 1, display: 'block', fontSize: {xs: '0.85rem', sm: '0.75rem'}}}>
 									{formErrors.resume}
 								</Typography>
 							)}
@@ -204,17 +267,43 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							multiline
 							rows={4}
 							placeholder="Tell us why you're interested in this position..."
+							sx={{
+								'& .MuiInputBase-input': {
+									fontSize: {xs: '1rem', sm: '1rem'},
+									minHeight: {xs: 100, sm: 'auto'},
+								},
+							}}
 						/>
 					</Box>
 				)}
 			</DialogContent>
 			{!success && (
-				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
+				<DialogActions
+					sx={{
+						p: {xs: 1.5, sm: 2},
+						gap: {xs: 1, sm: 1},
+						flexDirection: {xs: 'column-reverse', sm: 'row'},
+						'& button': {
+							minHeight: 44,
+							fontSize: {xs: '0.95rem', sm: '1rem'},
+						},
+					}}
+				>
+					<Button
+						onClick={handleClose}
+						sx={{
+							minWidth: {xs: '100%', sm: 'auto'},
+						}}
+					>
+						Cancel
+					</Button>
 					<Button
 						variant="contained"
 						onClick={handleSubmit}
 						disabled={submitting || uploading}
+						sx={{
+							minWidth: {xs: '100%', sm: 'auto'},
+						}}
 					>
 						{submitting || uploading ? 'Submitting...' : 'Submit Application'}
 					</Button>

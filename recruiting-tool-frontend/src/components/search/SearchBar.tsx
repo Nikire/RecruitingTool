@@ -49,12 +49,26 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, placeholder = 'Search...
 			placeholder={placeholder}
 			value={localValue}
 			onChange={handleChange}
+			inputProps={{
+				minLength: 0,
+				style: {
+					fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+				},
+			}}
 			InputProps={{
 				startAdornment: (
 					<InputAdornment position="start">
-						<SearchIcon />
+						<SearchIcon sx={{fontSize: {xs: 20, sm: 24}}} />
 					</InputAdornment>
 				),
+			}}
+			sx={{
+				'& .MuiInputBase-root': {
+					minHeight: {xs: 44, sm: 40},
+				},
+				'& .MuiOutlinedInput-input': {
+					padding: {xs: '10px 14px', sm: '8px 14px'},
+				},
 			}}
 		/>
 	);
