@@ -17,6 +17,7 @@ import {Candidate} from '../../types/candidate';
 import {useEffect, useState} from 'react';
 import FileUpload from '../files/FileUpload';
 import FileList from '../files/FileList';
+import CandidateNotes from '../candidate/CandidateNotes';
 
 interface UpdateCandidateDialogProps {
 	open: boolean;
@@ -91,6 +92,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 				<Tabs value={activeTab} onChange={handleTabChange}>
 					<Tab label="Candidate Info" />
 					<Tab label="Files" />
+					<Tab label="Notes" />
 				</Tabs>
 			</Box>
 
@@ -171,6 +173,19 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 							</Typography>
 							<FileList candidateUid={candidate?.uid} />
 						</Box>
+					</DialogContent>
+					<DialogActions>
+						<Button onClick={handleClose}>
+							Close
+						</Button>
+					</DialogActions>
+				</>
+			)}
+
+			{activeTab === 2 && (
+				<>
+					<DialogContent>
+						<CandidateNotes candidateUid={candidate?.uid} />
 					</DialogContent>
 					<DialogActions>
 						<Button onClick={handleClose}>

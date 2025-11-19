@@ -6,8 +6,12 @@ import {
 	updateCandidate,
 	deleteCandidate,
 	listCandidates,
+	getCandidateNotes,
+	createCandidateNote,
+	updateCandidateNote,
+	deleteCandidateNote,
 } from '../../api/candidates';
-import {Candidate} from '../../types/candidate';
+import {Candidate, CreateCandidateNoteDto, UpdateCandidateNoteDto} from '../../types/candidate';
 import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
@@ -77,6 +81,63 @@ export function useDeleteCandidate() {
 		},
 		onError: (error) => {
 			showErrorToast(error, 'Failed to delete candidate');
+		},
+	});
+}
+
+// Candidate Notes hooks
+const CANDIDATE_NOTES_KEY = 'candidate-notes';
+
+export function useCandidateNotes(candidateUid: string) {
+	return useQuery({
+		queryKey: [CANDIDATE_NOTES_KEY, candidateUid],
+		queryFn: () => getCandidateNotes(candidateUid),
+		enabled: !!candidateUid,
+	});
+}
+
+export function useCreateCandidateNote() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (data: CreateCandidateNoteDto) => createCandidateNote(data),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({queryKey: [CANDIDATE_NOTES_KEY, variables.candidateUid]});
+			showSuccessToast('Note created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create note');
+		},
+	});
+}
+
+export function useUpdateCandidateNote() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({noteUid, data}: {noteUid: string; data: UpdateCandidateNoteDto}) =>
+			updateCandidateNote(noteUid, data),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [CANDIDATE_NOTES_KEY]});
+			showSuccessToast('Note updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update note');
+		},
+	});
+}
+
+export function useDeleteCandidateNote() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (noteUid: string) => deleteCandidateNote(noteUid),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [CANDIDATE_NOTES_KEY]});
+			showSuccessToast('Note deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete note');
 		},
 	});
 }

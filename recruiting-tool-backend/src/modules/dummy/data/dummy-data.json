@@ -232,5 +232,47 @@
       "jobPositionIndex": 3,
       "companyIndex": 1
     }
+  ],
+  "candidateNotes": [
+    {
+      "content": "Great technical skills demonstrated during phone screening. Strong React experience.",
+      "candidateIndex": 0,
+      "authorUserIndex": 0
+    },
+    {
+      "content": "Follow up needed - candidate mentioned they have another offer deadline next week.",
+      "candidateIndex": 0,
+      "authorUserIndex": 1
+    },
+    {
+      "content": "Excellent communication skills. Very interested in our company culture.",
+      "candidateIndex": 1,
+      "authorUserIndex": 0
+    },
+    {
+      "content": "Resume shows impressive portfolio. Scheduled for technical interview next Tuesday.",
+      "candidateIndex": 2,
+      "authorUserIndex": 1
+    },
+    {
+      "content": "Strong DevOps background with AWS and Kubernetes. Good culture fit.",
+      "candidateIndex": 3,
+      "authorUserIndex": 2
+    },
+    {
+      "content": "Candidate requested remote work flexibility. Need to discuss with team.",
+      "candidateIndex": 3,
+      "authorUserIndex": 3
+    },
+    {
+      "content": "Product case study presentation was outstanding. Clear strategic thinking.",
+      "candidateIndex": 4,
+      "authorUserIndex": 2
+    },
+    {
+      "content": "Salary expectations are slightly higher than budget. Will need approval for adjustment.",
+      "candidateIndex": 4,
+      "authorUserIndex": 2
+    }
   ]
 }

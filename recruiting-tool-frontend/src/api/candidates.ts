@@ -1,5 +1,5 @@
 import axiosInstance from './axios';
-import {Candidate} from '../types/candidate';
+import {Candidate, CandidateNote, CreateCandidateNoteDto, UpdateCandidateNoteDto} from '../types/candidate';
 import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 
 export const getCandidates = async (): Promise<Candidate[]> => {
@@ -29,4 +29,24 @@ export const updateCandidate = async (data: Partial<Candidate>, uid: string): Pr
 
 export const deleteCandidate = async (uid: string): Promise<void> => {
 	await axiosInstance.delete(`/candidate/${uid}`);
+};
+
+// Candidate Notes API
+export const getCandidateNotes = async (candidateUid: string): Promise<CandidateNote[]> => {
+	const response = await axiosInstance.get(`/candidate/${candidateUid}/notes`);
+	return response.data;
+};
+
+export const createCandidateNote = async (data: CreateCandidateNoteDto): Promise<CandidateNote> => {
+	const response = await axiosInstance.post(`/candidate/${data.candidateUid}/notes`, data);
+	return response.data;
+};
+
+export const updateCandidateNote = async (noteUid: string, data: UpdateCandidateNoteDto): Promise<CandidateNote> => {
+	const response = await axiosInstance.put(`/candidate/notes/${noteUid}`, data);
+	return response.data;
+};
+
+export const deleteCandidateNote = async (noteUid: string): Promise<void> => {
+	await axiosInstance.delete(`/candidate/notes/${noteUid}`);
 };

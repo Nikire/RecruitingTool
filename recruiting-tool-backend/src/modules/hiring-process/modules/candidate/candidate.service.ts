@@ -4,6 +4,7 @@ import { DatabaseService } from 'src/modules/shared/modules/database/database.se
 import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto } from './dto/candidate.dto';
 import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 
 @Injectable()
 export class CandidateService {
@@ -103,5 +104,105 @@ export class CandidateService {
       throw new NotFoundException(`Candidate ${uid} not found`);
     }
     return { message: `Candidate deleted successfully` };
+  }
+
+  // Candidate Notes methods
+  async createNote(createNoteDto: CreateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
+    // Find candidate by UID to get the numeric ID
+    const candidate = await this.databaseService.candidate.findUnique({
+      where: { uid: createNoteDto.candidateUid },
+    });
+
+    if (!candidate) {
+      throw new NotFoundException(`Candidate ${createNoteDto.candidateUid} not found`);
+    }
+
+    const note = await this.databaseService.candidateNote.create({
+      data: {
+        content: createNoteDto.content,
+        candidateId: candidate.id,
+        authorId: authorUserId,
+      },
+      include: {
+        author: true,
+        candidate: true,
+      },
+    });
+
+    return {
+      uid: note.uid,
+      content: note.content,
+      candidateUid: note.candidate.uid,
+      authorUid: note.author.uid,
+      authorName: note.author.name,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  }
+
+  async findNotesByCandidateUid(candidateUid: string): Promise<CandidateNoteResponseDto[]> {
+    const candidate = await this.databaseService.candidate.findUnique({
+      where: { uid: candidateUid },
+    });
+
+    if (!candidate) {
+      throw new NotFoundException(`Candidate ${candidateUid} not found`);
+    }
+
+    const notes = await this.databaseService.candidateNote.findMany({
+      where: { candidateId: candidate.id },
+      include: {
+        author: true,
+        candidate: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return notes.map((note) => ({
+      uid: note.uid,
+      content: note.content,
+      candidateUid: note.candidate.uid,
+      authorUid: note.author.uid,
+      authorName: note.author.name,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    }));
+  }
+
+  async updateNote(noteUid: string, updateNoteDto: UpdateCandidateNoteDto): Promise<CandidateNoteResponseDto> {
+    const note = await this.databaseService.candidateNote.update({
+      where: { uid: noteUid },
+      data: { content: updateNoteDto.content },
+      include: {
+        author: true,
+        candidate: true,
+      },
+    });
+
+    if (!note) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    return {
+      uid: note.uid,
+      content: note.content,
+      candidateUid: note.candidate.uid,
+      authorUid: note.author.uid,
+      authorName: note.author.name,
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  }
+
+  async removeNote(noteUid: string): Promise<MessageResponseDto> {
+    const note = await this.databaseService.candidateNote.delete({
+      where: { uid: noteUid },
+    });
+
+    if (!note) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    return { message: 'Note deleted successfully' };
   }
 }

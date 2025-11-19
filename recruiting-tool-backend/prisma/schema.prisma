@@ -21,12 +21,12 @@ model Company {
 }
 
 model User {
-  id                    Int           @id @default(autoincrement())
-  uid                   String        @unique @default(uuid()) @db.Uuid
+  id                    Int             @id @default(autoincrement())
+  uid                   String          @unique @default(uuid()) @db.Uuid
   name                  String
-  email                 String        @unique
+  email                 String          @unique
   password              String
-  roles                 RolesType[]   @default([USER])
+  roles                 RolesType[]     @default([USER])
   profilePicture        String?
   phoneNumber           String?
   position              String?
@@ -34,27 +34,44 @@ model User {
   bio                   String?
   linkedinUrl           String?
   timezone              String?
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
   companyId             Int?
-  company               Company?      @relation(fields: [companyId], references: [id])
-  jobPositions          JobPosition[] @relation("JobPositionsUser")
-  fileUploads           FileUpload[]  @relation("FileUploadsUser")
-  reviewedApplications  Application[] @relation("ApplicationReviewer")
+  company               Company?        @relation(fields: [companyId], references: [id])
+  jobPositions          JobPosition[]   @relation("JobPositionsUser")
+  fileUploads           FileUpload[]    @relation("FileUploadsUser")
+  reviewedApplications  Application[]   @relation("ApplicationReviewer")
+  candidateNotes        CandidateNote[] @relation("CandidateNoteAuthor")
 }
 
 model Candidate {
-  id              Int            @id @default(autoincrement())
-  uid             String         @unique @default(uuid()) @db.Uuid
+  id              Int             @id @default(autoincrement())
+  uid             String          @unique @default(uuid()) @db.Uuid
   name            String
   email           String
-  hiringProcessId Int?           @unique
-  hiringProcess   HiringProcess? @relation("HiringProcessCandidate", fields: [hiringProcessId], references: [id])
-  files           FileUpload[]   @relation("CandidateFiles")
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  hiringProcessId Int?            @unique
+  hiringProcess   HiringProcess?  @relation("HiringProcessCandidate", fields: [hiringProcessId], references: [id])
+  files           FileUpload[]    @relation("CandidateFiles")
+  notes           CandidateNote[] @relation("CandidateNotes")
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
 
   @@unique([hiringProcessId, email])
+}
+
+model CandidateNote {
+  id          Int       @id @default(autoincrement())
+  uid         String    @unique @default(uuid()) @db.Uuid
+  content     String    @db.Text
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  candidateId Int
+  candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: Cascade)
+  authorId    Int
+  author      User      @relation("CandidateNoteAuthor", fields: [authorId], references: [id])
+
+  @@index([candidateId])
+  @@index([authorId])
 }
 
 enum RolesType {

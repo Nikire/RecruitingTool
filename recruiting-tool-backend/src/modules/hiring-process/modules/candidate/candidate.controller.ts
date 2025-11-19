@@ -4,7 +4,9 @@ import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto } from './
 import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -85,5 +87,62 @@ export class CandidateController {
   @ApiParam({ name: 'uid', required: true })
   remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.candidateService.remove(uid);
+  }
+
+  // Candidate Notes endpoints
+  @Post(':candidateUid/notes')
+  @ApiOperation({ summary: 'Create a note for a candidate' })
+  @ApiResponse({
+    status: 201,
+    description: 'The note has been successfully created.',
+    type: CandidateNoteResponseDto,
+  })
+  @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
+  @ApiBody({ type: CreateCandidateNoteDto })
+  createNote(
+    @Param('candidateUid') candidateUid: string,
+    @Body() createNoteDto: CreateCandidateNoteDto,
+    @CurrentUser() user: any,
+  ): Promise<CandidateNoteResponseDto> {
+    // Override candidateUid from path param to ensure consistency
+    createNoteDto.candidateUid = candidateUid;
+    return this.candidateService.createNote(createNoteDto, user.id);
+  }
+
+  @Get(':candidateUid/notes')
+  @ApiOperation({ summary: 'Get all notes for a candidate' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of notes for the candidate',
+    type: [CandidateNoteResponseDto],
+  })
+  @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
+  findNotesByCandidateUid(@Param('candidateUid') candidateUid: string): Promise<CandidateNoteResponseDto[]> {
+    return this.candidateService.findNotesByCandidateUid(candidateUid);
+  }
+
+  @Put('notes/:noteUid')
+  @ApiOperation({ summary: 'Update a note by UID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated note',
+    type: CandidateNoteResponseDto,
+  })
+  @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
+  @ApiBody({ type: UpdateCandidateNoteDto })
+  updateNote(@Param('noteUid') noteUid: string, @Body() updateNoteDto: UpdateCandidateNoteDto): Promise<CandidateNoteResponseDto> {
+    return this.candidateService.updateNote(noteUid, updateNoteDto);
+  }
+
+  @Delete('notes/:noteUid')
+  @ApiOperation({ summary: 'Delete a note by UID' })
+  @ApiResponse({
+    status: 200,
+    description: 'The note has been successfully deleted.',
+    type: MessageResponseDto,
+  })
+  @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
+  removeNote(@Param('noteUid') noteUid: string): Promise<MessageResponseDto> {
+    return this.candidateService.removeNote(noteUid);
   }
 }

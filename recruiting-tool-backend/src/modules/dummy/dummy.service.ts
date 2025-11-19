@@ -41,6 +41,11 @@ interface DummyDataStructure {
     jobPositionIndex: number;
     companyIndex: number;
   }>;
+  candidateNotes: Array<{
+    content: string;
+    candidateIndex: number;
+    authorUserIndex: number;
+  }>;
 }
 
 @Injectable()
@@ -207,6 +212,19 @@ export class DummyService implements OnApplicationBootstrap {
       });
 
       console.log(`Created hiring process: ${hiringProcess.title} with ${hiringProcessStages.length} stages`);
+    }
+
+    // Create candidate notes
+    console.log('Creating candidate notes...');
+    for (const note of data.candidateNotes) {
+      await this.databaseService.candidateNote.create({
+        data: {
+          content: note.content,
+          candidateId: createdCandidates[note.candidateIndex].id,
+          authorId: createdUsers[note.authorUserIndex].id,
+        },
+      });
+      console.log(`Created note for candidate: ${createdCandidates[note.candidateIndex].name} by ${createdUsers[note.authorUserIndex].name}`);
     }
 
     console.log('All dummy data created successfully!');
