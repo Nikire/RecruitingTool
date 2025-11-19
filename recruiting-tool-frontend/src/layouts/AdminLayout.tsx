@@ -8,6 +8,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 import {useUserAtom} from '../hooks/api/state/useUserAtom';
 import {hasRole, isAdmin} from '../utils/permissions';
 import {UserRoles} from '../types/user.types';
@@ -33,6 +34,13 @@ const AdminLayout: React.FC = () => {
 			path: '/admin',
 			requiresSuperAdmin: false,
 			requiresAdmin: false,
+		},
+		{
+			text: 'Applications',
+			icon: <AssignmentIcon />,
+			path: '/admin/applications',
+			requiresSuperAdmin: false,
+			requiresAdmin: true,
 		},
 		{
 			text: 'Candidates',
@@ -67,11 +75,9 @@ const AdminLayout: React.FC = () => {
 			<Divider />
 			<List>
 				{menuItems.map((item) => {
-					// Skip items that require SUPER_ADMIN if user doesn't have that role
 					if (item.requiresSuperAdmin && !isSuperAdmin) {
 						return null;
 					}
-					// Skip items that require ADMIN if user doesn't have that role
 					if (item.requiresAdmin && !isAdminUser) {
 						return null;
 					}
@@ -123,21 +129,18 @@ const AdminLayout: React.FC = () => {
 
 	return (
 		<Box sx={{minHeight: '100vh'}}>
-			{/* Top level flex container with sidebar and AppBar */}
 			<Box sx={{display: 'flex'}}>
-				{/* Sidebar Navigation */}
 				<Box
 					component="nav"
 					sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
 					aria-label="admin navigation"
 				>
-					{/* Mobile drawer */}
 					<Drawer
 						variant="temporary"
 						open={mobileOpen}
 						onClose={handleDrawerToggle}
 						ModalProps={{
-							keepMounted: true, // Better open performance on mobile.
+							keepMounted: true,
 						}}
 						sx={{
 							display: {xs: 'block', sm: 'none'},
@@ -146,7 +149,6 @@ const AdminLayout: React.FC = () => {
 					>
 						{drawer}
 					</Drawer>
-					{/* Desktop drawer */}
 					<Drawer
 						variant="permanent"
 						sx={{
@@ -159,7 +161,6 @@ const AdminLayout: React.FC = () => {
 					</Drawer>
 				</Box>
 
-				{/* AppBar - sibling to sidebar */}
 				<AppBar
 					position="fixed"
 					sx={{
@@ -187,7 +188,6 @@ const AdminLayout: React.FC = () => {
 				</AppBar>
 			</Box>
 
-			{/* Main content area - separate from sidebar/appbar container */}
 			<Box
 				component="main"
 				sx={{

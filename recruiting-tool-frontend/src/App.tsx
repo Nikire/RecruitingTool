@@ -16,6 +16,7 @@ import { CompaniesPage } from './pages/companies/CompaniesPage';
 import UserManagementPage from './pages/users/UserManagementPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProfilePage from './pages/profile/ProfilePage';
+import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -48,6 +49,7 @@ function App() {
 						<Route path="/admin/candidates" element={<CandidatesPage />} />
 						<Route path="/admin/companies" element={<CompaniesPage />} />
 						<Route path="/admin/users" element={<UserManagementPage />} />
+						<Route path="/admin/applications" element={<ApplicationsPage />} />
 					</Route>
 				</Route>
 			</Routes>
