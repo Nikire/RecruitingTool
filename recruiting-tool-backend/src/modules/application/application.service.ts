@@ -3,12 +3,15 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { ApplicationStatus } from '@prisma/client';
+import { ApplicationStatus, StageStatus } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class ApplicationService {
-  constructor(private databaseService: DatabaseService, private emailService: EmailService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private emailService: EmailService,
+  ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
     const jobPosition = await this.databaseService.jobPosition.findUnique({
@@ -169,5 +172,91 @@ export class ApplicationService {
     });
 
     return { message: 'Application successfully deleted' };
+  }
+
+  async acceptApplication(applicationUid: string): Promise<ApplicationResponseDto> {
+    // Fetch the application with related data
+    const application = await this.databaseService.application.findUnique({
+      where: { uid: applicationUid },
+      include: {
+        jobPosition: { include: { stages: { orderBy: { position: 'asc' } }, company: true } },
+      },
+    });
+
+    if (!application) {
+      throw new NotFoundException(`Application ${applicationUid} not found`);
+    }
+
+    if (application.status === ApplicationStatus.ACCEPTED) {
+      throw new BadRequestException('Application is already accepted');
+    }
+
+    // Check if candidate exists by email
+    let candidate = await this.databaseService.candidate.findFirst({
+      where: { email: application.applicantEmail },
+    });
+
+    // Create candidate if doesn't exist
+    if (!candidate) {
+      candidate = await this.databaseService.candidate.create({
+        data: {
+          name: application.applicantName,
+          email: application.applicantEmail,
+        },
+      });
+    }
+
+    // Get company from job position (already fetched above)
+    const company = application.jobPosition.company;
+
+    if (!company) {
+      throw new NotFoundException(`Company not found for job position`);
+    }
+
+    // Create hiring process for the candidate
+    const hiringProcess = await this.databaseService.hiringProcess.create({
+      data: {
+        title: application.jobPosition.title + ' - ' + candidate.name,
+        candidateId: candidate.id,
+        jobPositionId: application.jobPosition.id,
+        companyId: company.id,
+      },
+    });
+
+    // Copy stages from job position to hiring process
+    if (application.jobPosition.stages.length > 0) {
+      const stages = application.jobPosition.stages.map((stage) => ({
+        title: stage.title,
+        type: stage.type,
+        description: stage.description,
+        estimatedTime: stage.estimatedTime,
+        position: stage.position,
+        hiringProcessId: hiringProcess.id,
+        status: stage.position === 0 ? StageStatus.CURRENT : StageStatus.OPEN,
+      }));
+
+      await this.databaseService.stage.createMany({
+        data: stages,
+      });
+    }
+
+    // Update application status to ACCEPTED
+    const updatedApplication = await this.databaseService.application.update({
+      where: { uid: applicationUid },
+      data: {
+        status: ApplicationStatus.ACCEPTED,
+        reviewedAt: new Date(),
+      },
+      include: includeApplication,
+    });
+
+    // Send acceptance email to applicant
+    await this.emailService.sendApplicationAcceptance(
+      application.applicantEmail,
+      application.applicantName,
+      application.jobPosition.title,
+    );
+
+    return ApplicationMapper(updatedApplication);
   }
 }

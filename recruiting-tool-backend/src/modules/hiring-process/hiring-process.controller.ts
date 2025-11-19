@@ -92,4 +92,29 @@ export class HiringProcessController {
   remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.hiringProcessService.remove(uid);
   }
+
+  @Auth(['HR', 'ADMIN'])
+  @Post(':uid/progress-stage')
+  @ApiOperation({ summary: 'Progress to next stage in hiring process' })
+  @ApiResponse({
+    status: 200,
+    description: 'Stage progressed successfully or hiring process completed',
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'Hiring Process UID' })
+  progressStage(@Param('uid') uid: string) {
+    return this.hiringProcessService.progressToNextStage(uid);
+  }
+
+  @Auth(['HR', 'ADMIN'])
+  @Post(':uid/move-to-stage/:stageUid')
+  @ApiOperation({ summary: 'Move candidate to specific stage in hiring process' })
+  @ApiResponse({
+    status: 200,
+    description: 'Candidate moved to target stage successfully',
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'Hiring Process UID' })
+  @ApiParam({ name: 'stageUid', required: true, description: 'Target Stage UID' })
+  moveToStage(@Param('uid') uid: string, @Param('stageUid') stageUid: string) {
+    return this.hiringProcessService.moveToSpecificStage(uid, stageUid);
+  }
 }

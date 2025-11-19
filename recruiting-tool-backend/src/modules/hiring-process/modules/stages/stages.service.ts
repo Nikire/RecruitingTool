@@ -192,4 +192,116 @@ export class StagesService {
 
     return createdStages.map(StageMapper);
   }
+
+  async progressToNextStage(hiringProcessUid: string) {
+    const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+      where: { uid: hiringProcessUid },
+      include: {
+        stages: {
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+
+    if (!hiringProcess) {
+      throw new NotFoundException(`Hiring process with UID ${hiringProcessUid} not found`);
+    }
+
+    const currentStage = hiringProcess.stages.find((stage) => stage.status === StageStatus.CURRENT);
+
+    if (!currentStage) {
+      throw new NotFoundException('No current stage found in this hiring process');
+    }
+
+    const nextStage = hiringProcess.stages.find(
+      (stage) => stage.position === currentStage.position + 1,
+    );
+
+    if (!nextStage) {
+      // No next stage, mark current as done and hiring process as completed
+      await this.databaseService.$transaction([
+        this.databaseService.stage.update({
+          where: { id: currentStage.id },
+          data: { status: StageStatus.DONE },
+        }),
+        this.databaseService.hiringProcess.update({
+          where: { id: hiringProcess.id },
+          data: { status: 'CLOSED' },
+        }),
+      ]);
+
+      return { message: 'Hiring process completed successfully' };
+    }
+
+    // Mark current stage as done and next stage as current
+    await this.databaseService.$transaction([
+      this.databaseService.stage.update({
+        where: { id: currentStage.id },
+        data: { status: StageStatus.DONE },
+      }),
+      this.databaseService.stage.update({
+        where: { id: nextStage.id },
+        data: { status: StageStatus.CURRENT },
+      }),
+    ]);
+
+    const updatedStages = await this.databaseService.stage.findMany({
+      where: { hiringProcessId: hiringProcess.id },
+      orderBy: { position: 'asc' },
+    });
+
+    return updatedStages.map(StageMapper);
+  }
+
+  async moveToSpecificStage(hiringProcessUid: string, targetStageUid: string) {
+    const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+      where: { uid: hiringProcessUid },
+      include: {
+        stages: {
+          orderBy: { position: 'asc' },
+        },
+      },
+    });
+
+    if (!hiringProcess) {
+      throw new NotFoundException(`Hiring process with UID ${hiringProcessUid} not found`);
+    }
+
+    const targetStage = hiringProcess.stages.find((stage) => stage.uid === targetStageUid);
+
+    if (!targetStage) {
+      throw new NotFoundException(`Target stage with UID ${targetStageUid} not found in this hiring process`);
+    }
+
+    // Reset all stages to OPEN first
+    await this.databaseService.stage.updateMany({
+      where: { hiringProcessId: hiringProcess.id },
+      data: { status: StageStatus.OPEN },
+    });
+
+    // Mark all stages before target as DONE, and target as CURRENT
+    const updates = hiringProcess.stages.map((stage) => {
+      if (stage.position < targetStage.position) {
+        return this.databaseService.stage.update({
+          where: { id: stage.id },
+          data: { status: StageStatus.DONE },
+        });
+      } else if (stage.id === targetStage.id) {
+        return this.databaseService.stage.update({
+          where: { id: stage.id },
+          data: { status: StageStatus.CURRENT },
+        });
+      }
+      return null;
+    }).filter(Boolean);
+
+    await this.databaseService.$transaction(updates);
+
+    const updatedStages = await this.databaseService.stage.findMany({
+      where: { hiringProcessId: hiringProcess.id },
+      orderBy: { position: 'asc' },
+    });
+
+    return updatedStages.map(StageMapper);
+  }
 }

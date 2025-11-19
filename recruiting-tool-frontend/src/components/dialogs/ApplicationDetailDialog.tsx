@@ -25,9 +25,10 @@ import {useForm} from 'react-hook-form';
 import {useEffect, useState} from 'react';
 import {format} from 'date-fns';
 import {Application, ApplicationStatus, UpdateApplicationDto} from '../../types/application.types';
-import {useUpdateApplication, useDeleteApplication} from '../../hooks/api/useApplications';
+import {useUpdateApplication, useDeleteApplication, useAcceptApplication} from '../../hooks/api/useApplications';
 import {useDownloadFile} from '../../hooks/api/useFiles';
 import ConfirmDeleteDialog from './ConfirmDeleteDialog';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 interface ApplicationDetailDialogProps {
 	open: boolean;
@@ -62,6 +63,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 
 	const {mutate: updateApplication, isPending: isUpdating} = useUpdateApplication();
 	const {mutate: deleteApplication, isPending: isDeleting} = useDeleteApplication();
+	const {mutate: acceptApp, isPending: isAccepting} = useAcceptApplication();
 	const {mutate: downloadFile} = useDownloadFile();
 
 	const currentStatus = watch('status');
@@ -117,6 +119,16 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 			deleteApplication(application.uid, {
 				onSuccess: () => {
 					setConfirmDeleteOpen(false);
+					onClose();
+				},
+			});
+		}
+	};
+
+	const handleAcceptApplication = () => {
+		if (application) {
+			acceptApp(application.uid, {
+				onSuccess: () => {
 					onClose();
 				},
 			});
@@ -309,18 +321,29 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 							color="error"
 							variant="outlined"
 							startIcon={<DeleteIcon />}
-							disabled={isDeleting || isUpdating}
+							disabled={isDeleting || isUpdating || isAccepting}
 						>
 							Delete
 						</Button>
 						<Box sx={{display: 'flex', gap: 1}}>
-							<Button onClick={handleClose} disabled={isUpdating}>
+							<Button onClick={handleClose} disabled={isUpdating || isAccepting}>
 								Cancel
 							</Button>
+							{application.status !== ApplicationStatus.ACCEPTED && (
+								<Button
+									onClick={handleAcceptApplication}
+									variant="contained"
+									color="success"
+									startIcon={<CheckCircleIcon />}
+									disabled={isAccepting || isUpdating}
+								>
+									{isAccepting ? 'Accepting...' : 'Accept & Create Hiring Process'}
+								</Button>
+							)}
 							<Button
 								type="submit"
 								variant="contained"
-								disabled={isUpdating || !isDirty}
+								disabled={isUpdating || !isDirty || isAccepting}
 							>
 								{isUpdating ? 'Saving...' : 'Save Changes'}
 							</Button>

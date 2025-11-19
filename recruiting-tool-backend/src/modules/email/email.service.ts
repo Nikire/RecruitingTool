@@ -81,6 +81,32 @@ Please log in to the admin panel to review this application.
     await this.sendEmail(hrEmail, subject, text, html);
   }
 
+  async sendApplicationAcceptance(applicantEmail: string, applicantName: string, jobTitle: string): Promise<void> {
+    const subject = `Congratulations: Your Application for ${jobTitle} Has Been Accepted`;
+    const text = `
+Dear ${applicantName},
+
+Congratulations! We are pleased to inform you that your application for the position of ${jobTitle} has been accepted.
+
+Our team will be in touch with you shortly with next steps.
+
+Best regards,
+The Recruiting Team
+    `.trim();
+
+    const html = `
+      <h2>Congratulations!</h2>
+      <p>Dear ${applicantName},</p>
+      <p>We are pleased to inform you that your application for the position of <strong>${jobTitle}</strong> has been <strong>accepted</strong>.</p>
+      <p>Our team will be in touch with you shortly with next steps.</p>
+      <br/>
+      <p>Best regards,<br/>
+      The Recruiting Team</p>
+    `;
+
+    await this.sendEmail(applicantEmail, subject, text, html);
+  }
+
   private async sendEmail(to: string, subject: string, text: string, html: string): Promise<void> {
     const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@recruiting.com');
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';

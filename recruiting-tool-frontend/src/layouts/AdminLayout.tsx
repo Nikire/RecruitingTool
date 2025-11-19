@@ -9,6 +9,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import EmailIcon from '@mui/icons-material/Email';
 import {useUserAtom} from '../hooks/api/state/useUserAtom';
 import {hasRole, isAdmin} from '../utils/permissions';
 import {UserRoles} from '../types/user.types';
@@ -46,6 +47,13 @@ const AdminLayout: React.FC = () => {
 			text: 'Candidates',
 			icon: <GroupIcon />,
 			path: '/admin/candidates',
+			requiresSuperAdmin: false,
+			requiresAdmin: true,
+		},
+		{
+			text: 'Email Templates',
+			icon: <EmailIcon />,
+			path: '/admin/email-templates',
 			requiresSuperAdmin: false,
 			requiresAdmin: true,
 		},

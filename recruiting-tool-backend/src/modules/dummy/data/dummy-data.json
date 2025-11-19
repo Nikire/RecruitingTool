@@ -274,5 +274,71 @@
       "candidateIndex": 4,
       "authorUserIndex": 2
     }
+  ],
+  "emailTemplates": [
+    {
+      "name": "Application Received Confirmation",
+      "subject": "Thank you for your application - {{positionTitle}}",
+      "body": "Dear {{candidateName}},\n\nThank you for applying to the {{positionTitle}} position at {{companyName}}.\n\nWe have received your application and our team is currently reviewing it. We will get back to you within 5-7 business days with the next steps.\n\nIf you have any questions in the meantime, please don't hesitate to reach out.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Interview Invitation",
+      "subject": "Interview Invitation - {{positionTitle}} at {{companyName}}",
+      "body": "Dear {{candidateName}},\n\nWe are pleased to invite you for an interview for the {{positionTitle}} position at {{companyName}}.\n\nInterview Details:\nDate: {{interviewDate}}\nTime: {{interviewTime}}\n\nPlease confirm your availability at your earliest convenience.\n\nWe look forward to speaking with you!\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Rejection - Early Stage",
+      "subject": "Update on your application - {{positionTitle}}",
+      "body": "Dear {{candidateName}},\n\nThank you for your interest in the {{positionTitle}} position at {{companyName}} and for taking the time to apply.\n\nAfter careful consideration, we have decided to move forward with other candidates whose qualifications more closely match our current needs.\n\nWe appreciate your interest in joining our team and encourage you to apply for future positions that match your skills and experience.\n\nBest of luck in your job search.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Rejection - Final Stage",
+      "subject": "Update regarding {{positionTitle}} position",
+      "body": "Dear {{candidateName}},\n\nThank you for your time and effort throughout the interview process for the {{positionTitle}} position at {{companyName}}.\n\nAfter thorough consideration, we have decided to proceed with another candidate for this role. This was a difficult decision, as we were impressed by your qualifications and the conversations we had.\n\nWe genuinely appreciate your interest in {{companyName}} and would like to keep your information on file for future opportunities that may be a better fit.\n\nThank you again for your time, and we wish you the very best in your career.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Offer Letter",
+      "subject": "Job Offer - {{positionTitle}} at {{companyName}}",
+      "body": "Dear {{candidateName}},\n\nWe are delighted to offer you the position of {{positionTitle}} at {{companyName}}!\n\nWe were very impressed with your skills and experience throughout the interview process, and we believe you will be a valuable addition to our team.\n\nPlease find the detailed offer letter attached to this email. We kindly request that you review the terms and respond within 5 business days.\n\nIf you have any questions about the offer, please don't hesitate to reach out.\n\nWe look forward to welcoming you to the team!\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Status Update",
+      "subject": "Update on your application - {{positionTitle}}",
+      "body": "Dear {{candidateName}},\n\nWe wanted to provide you with an update on your application for the {{positionTitle}} position at {{companyName}}.\n\nYour application is still under review, and we are working through the selection process. We appreciate your patience and will be in touch soon with next steps.\n\nThank you for your continued interest in joining our team.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Application Received",
+      "subject": "Application Received - {{positionTitle}}",
+      "body": "Hello {{candidateName}},\n\nThank you for applying to {{companyName}} for the {{positionTitle}} role.\n\nYour application has been successfully received and is being reviewed by our hiring team. We'll be in touch if your qualifications match our requirements.\n\nBest regards,\n{{hrName}}\nTalent Team",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "isDefault": true
+    },
+    {
+      "name": "Technical Interview Invitation",
+      "subject": "Technical Interview - {{positionTitle}}",
+      "body": "Hi {{candidateName}},\n\nCongratulations! We'd like to invite you to a technical interview for the {{positionTitle}} position.\n\nScheduled for: {{interviewDate}} at {{interviewTime}}\n\nThe interview will assess your technical skills and problem-solving abilities. Please confirm your availability.\n\nLooking forward to it!\n\n{{hrName}}\n{{companyName}}",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "isDefault": false
+    }
   ]
 }

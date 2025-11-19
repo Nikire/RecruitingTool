@@ -9,15 +9,16 @@ datasource db {
 }
 
 model Company {
-  id              Int           @id @default(autoincrement())
-  uid             String        @unique @default(uuid()) @db.Uuid
+  id              Int             @id @default(autoincrement())
+  uid             String          @unique @default(uuid()) @db.Uuid
   name            String
   description     String?
-  createdAt       DateTime      @default(now())
-  updatedAt       DateTime      @updatedAt
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
   users           User[]
   jobPositions    JobPosition[]
   hiringProcesses HiringProcess[]
+  emailTemplates  EmailTemplate[]
 }
 
 model User {
@@ -42,6 +43,7 @@ model User {
   fileUploads           FileUpload[]    @relation("FileUploadsUser")
   reviewedApplications  Application[]   @relation("ApplicationReviewer")
   candidateNotes        CandidateNote[] @relation("CandidateNoteAuthor")
+  emailTemplates        EmailTemplate[] @relation("EmailTemplateCreatedBy")
 }
 
 model Candidate {
@@ -204,4 +206,22 @@ enum ApplicationStatus {
   REVIEWED
   REJECTED
   ACCEPTED
+}
+
+model EmailTemplate {
+  id          Int      @id @default(autoincrement())
+  uid         String   @unique @default(uuid()) @db.Uuid
+  name        String
+  subject     String
+  body        String   @db.Text
+  companyId   Int
+  company     Company  @relation(fields: [companyId], references: [id])
+  createdById Int
+  createdBy   User     @relation("EmailTemplateCreatedBy", fields: [createdById], references: [id])
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([createdById])
 }

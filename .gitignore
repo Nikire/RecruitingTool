@@ -5,3 +5,4 @@ builddocker.sh
 # Claude Code settings
 .claude/
 CLAUDE.md
+CLAUDE.md.backup

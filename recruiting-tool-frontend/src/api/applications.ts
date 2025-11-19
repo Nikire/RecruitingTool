@@ -40,3 +40,7 @@ export function updateApplication(
 export function deleteApplication(uid: string): Promise<MessageResponse> {
 	return api.delete(`/applications/${uid}`).then((res) => res.data);
 }
+
+export function acceptApplication(uid: string): Promise<Application> {
+	return api.put(`/applications/${uid}/accept`).then((res) => res.data);
+}

@@ -156,7 +156,9 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 												</Typography>
 											</>
 										) : (
-											'N/A'
+											<Typography variant="caption" sx={{color: 'error.main', fontWeight: 500}}>
+												No candidate assigned
+											</Typography>
 										)}
 									</TableCell>
 									<TableCell sx={{maxWidth: 180}}>

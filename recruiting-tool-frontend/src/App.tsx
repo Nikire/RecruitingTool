@@ -17,6 +17,7 @@ import UserManagementPage from './pages/users/UserManagementPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
 import ProfilePage from './pages/profile/ProfilePage';
 import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
+import EmailTemplatesPage from './pages/admin/email-templates/EmailTemplatesPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
 						<Route path="/admin/companies" element={<CompaniesPage />} />
 						<Route path="/admin/users" element={<UserManagementPage />} />
 						<Route path="/admin/applications" element={<ApplicationsPage />} />
+						<Route path="/admin/email-templates" element={<EmailTemplatesPage />} />
 					</Route>
 				</Route>
 			</Routes>

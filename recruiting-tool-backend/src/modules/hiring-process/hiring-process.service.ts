@@ -146,4 +146,12 @@ export class HiringProcessService {
     }
     return { message: `Hiring Process deleted successfully` };
   }
+
+  async progressToNextStage(hiringProcessUid: string) {
+    return this.stagesService.progressToNextStage(hiringProcessUid);
+  }
+
+  async moveToSpecificStage(hiringProcessUid: string, targetStageUid: string) {
+    return this.stagesService.moveToSpecificStage(hiringProcessUid, targetStageUid);
+  }
 }

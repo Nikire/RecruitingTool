@@ -7,6 +7,8 @@ import {
 	getHiringProcesses,
 	listHiringProcesses,
 	updateHiringProcess,
+	progressStage,
+	moveToStage,
 } from '../../api/hiringProcess';
 import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
@@ -69,6 +71,36 @@ export function useDeleteHiringProcess() {
 		},
 		onError: (error) => {
 			showErrorToast(error, 'Failed to delete hiring process');
+		},
+	});
+}
+
+export function useProgressStage() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (uid: string) => progressStage(uid),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [HIRING_PROCESS_KEY]});
+			showSuccessToast('Stage progressed successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to progress stage');
+		},
+	});
+}
+
+export function useMoveToStage() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({uid, stageUid}: {uid: string; stageUid: string}) => moveToStage(uid, stageUid),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [HIRING_PROCESS_KEY]});
+			showSuccessToast('Candidate moved to stage successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to move candidate to stage');
 		},
 	});
 }

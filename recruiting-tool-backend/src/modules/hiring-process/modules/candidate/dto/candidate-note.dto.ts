@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsOptional } from 'class-validator';
 
 export class CreateCandidateNoteDto {
   @ApiProperty({ description: 'Content of the note', example: 'Great technical skills demonstrated during interview.' })
@@ -8,10 +8,10 @@ export class CreateCandidateNoteDto {
   @MaxLength(2000)
   content: string;
 
-  @ApiProperty({ description: 'UID of the candidate this note belongs to', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @ApiProperty({ description: 'UID of the candidate this note belongs to', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   @IsString()
-  @IsNotEmpty()
-  candidateUid: string;
+  @IsOptional()
+  candidateUid?: string;
 }
 
 export class UpdateCandidateNoteDto {

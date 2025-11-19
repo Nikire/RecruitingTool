@@ -7,6 +7,7 @@ import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
+import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -17,7 +18,10 @@ import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDt
 @ApiNotFoundResponse({ description: 'Candidate not found' })
 @Auth(['HR', 'ADMIN'])
 export class CandidateController {
-  constructor(private readonly candidateService: CandidateService) {}
+  constructor(
+    private readonly candidateService: CandidateService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Creates a new candidate' })
@@ -99,14 +103,19 @@ export class CandidateController {
   })
   @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
   @ApiBody({ type: CreateCandidateNoteDto })
-  createNote(
+  async createNote(
     @Param('candidateUid') candidateUid: string,
     @Body() createNoteDto: CreateCandidateNoteDto,
     @CurrentUser() user: any,
   ): Promise<CandidateNoteResponseDto> {
+    // Look up the user's numeric ID from the UID stored in the token
+    const dbUser = await this.databaseService.user.findUnique({
+      where: { uid: user.uid },
+    });
+
     // Override candidateUid from path param to ensure consistency
     createNoteDto.candidateUid = candidateUid;
-    return this.candidateService.createNote(createNoteDto, user.id);
+    return this.candidateService.createNote(createNoteDto, dbUser.id);
   }
 
   @Get(':candidateUid/notes')
@@ -130,8 +139,16 @@ export class CandidateController {
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
   @ApiBody({ type: UpdateCandidateNoteDto })
-  updateNote(@Param('noteUid') noteUid: string, @Body() updateNoteDto: UpdateCandidateNoteDto): Promise<CandidateNoteResponseDto> {
-    return this.candidateService.updateNote(noteUid, updateNoteDto);
+  async updateNote(
+    @Param('noteUid') noteUid: string,
+    @Body() updateNoteDto: UpdateCandidateNoteDto,
+    @CurrentUser() user: any,
+  ): Promise<CandidateNoteResponseDto> {
+    // Look up the user's numeric ID from the UID stored in the token
+    const dbUser = await this.databaseService.user.findUnique({
+      where: { uid: user.uid },
+    });
+    return this.candidateService.updateNote(noteUid, updateNoteDto, dbUser.id);
   }
 
   @Delete('notes/:noteUid')
@@ -142,7 +159,14 @@ export class CandidateController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
-  removeNote(@Param('noteUid') noteUid: string): Promise<MessageResponseDto> {
-    return this.candidateService.removeNote(noteUid);
+  async removeNote(
+    @Param('noteUid') noteUid: string,
+    @CurrentUser() user: any,
+  ): Promise<MessageResponseDto> {
+    // Look up the user's numeric ID from the UID stored in the token
+    const dbUser = await this.databaseService.user.findUnique({
+      where: { uid: user.uid },
+    });
+    return this.candidateService.removeNote(noteUid, dbUser.id);
   }
 }

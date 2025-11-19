@@ -1,9 +1,13 @@
-import {Divider, Typography, Box, Chip, Paper, CircularProgress, Button} from '@mui/material';
+import {Divider, Typography, Box, Chip, Paper, CircularProgress, Button, Alert} from '@mui/material';
 import {useParams, useNavigate} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SkipNextIcon from '@mui/icons-material/SkipNext';
+import WarningIcon from '@mui/icons-material/Warning';
 import StagesTimeline from '../../components/stages/StagesTimeline/StagesTimeline';
 import {useHiringProcesses} from '../../hooks/api/useHiringProcess';
 import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
+import {useState} from 'react';
+import StageProgressionDialog from '../../components/dialogs/StageProgressionDialog';
 
 const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
 	switch (status) {
@@ -25,6 +29,7 @@ const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 's
 const HiringProcessPage: React.FC = () => {
 	const {uid} = useParams<{uid: string}>();
 	const navigate = useNavigate();
+	const [stageProgressionOpen, setStageProgressionOpen] = useState(false);
 	const {
 		data: hiringProcessData,
 		isLoading: isHiringProcessLoading,
@@ -86,6 +91,19 @@ const HiringProcessPage: React.FC = () => {
 					/>
 				</Box>
 
+				{!hiringProcess.candidate && (
+					<Alert severity="warning" icon={<WarningIcon />} sx={{mb: 3}}>
+						<Box>
+							<Typography variant="subtitle2" sx={{fontWeight: 600, mb: 0.5}}>
+								No Candidate Assigned
+							</Typography>
+							<Typography variant="body2">
+								This hiring process does not have a candidate assigned yet. Please assign a candidate or check the hiring process configuration.
+							</Typography>
+						</Box>
+					</Alert>
+				)}
+
 				<Divider sx={{my: 3}} />
 
 				<Box sx={{display: 'flex', gap: 8, mb: 3}}>
@@ -144,11 +162,32 @@ const HiringProcessPage: React.FC = () => {
 				)}
 			</Paper>
 
-			<Typography variant="h5" sx={{mb: 3, fontWeight: 500}}>
-				Recruitment Stages
-			</Typography>
+			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
+				<Typography variant="h5" sx={{fontWeight: 500}}>
+					Recruitment Stages
+				</Typography>
+				{hiringProcess.status !== 'CLOSED' && (
+					<Button
+						startIcon={<SkipNextIcon />}
+						variant="contained"
+						onClick={() => setStageProgressionOpen(true)}
+					>
+						Progress Stage
+					</Button>
+				)}
+			</Box>
 
 			{hiringProcess.stages && <StagesTimeline stages={hiringProcess.stages} />}
+
+			{uid && (
+				<StageProgressionDialog
+					open={stageProgressionOpen}
+					onClose={() => setStageProgressionOpen(false)}
+					hiringProcessUid={uid}
+					stages={hiringProcess.stages || []}
+					currentStageUid={hiringProcess.stages?.find((s) => s.status === 'CURRENT')?.uid}
+				/>
+			)}
 		</Box>
 	);
 };

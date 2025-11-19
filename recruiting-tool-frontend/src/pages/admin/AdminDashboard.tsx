@@ -75,7 +75,7 @@ const AdminDashboard: React.FC = () => {
 			icon: <WorkIcon />,
 			color: '#9c27b0',
 			description: 'View all job positions across companies',
-			path: '/job-positions',
+			path: '/careers',
 		},
 	];
 

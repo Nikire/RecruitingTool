@@ -6,9 +6,198 @@
 
 ---
 
+## BUSINESS STRATEGY & PRICING ROADMAP
+
+**Target Market:** Small companies (10-50 employees), IT-focused, US/English-speaking
+**Positioning:** AI-First Recruiting Platform (competitive differentiation)
+**Developer:** Solo developer using Claude for development
+**Deployment:** Self-hosted option (Docker) + potential cloud SaaS later
+
+### Recommended Pricing Strategy
+
+**MODEL: Freemium with Usage-Based AI Credits**
+
+#### Tier 1: Starter (FREE)
+- **Price:** $0/month
+- **Target:** Solo founders, very small teams (1-5 employees)
+- **Features:**
+  - 1 active job position
+  - 25 applications/month
+  - Basic applicant tracking
+  - Email template library
+  - Mobile-responsive careers page
+  - Self-hosted Docker deployment
+- **AI Credits:** 10 AI resume scores/month (to showcase AI value)
+- **Limitations:** No interview scheduling, no analytics, no custom scorecards
+- **Goal:** Viral growth through self-hosted deployments, demonstrate core value
+
+#### Tier 2: Professional ($79/month)
+- **Price:** $79/month (or $750/year - save $200)
+- **Target:** Small HR teams (5-20 employees), startups with hiring needs
+- **Features:**
+  - Unlimited job positions
+  - Unlimited applications
+  - Automated interview scheduling + Google Calendar integration
+  - Custom job application forms
+  - Email automation (status notifications)
+  - Collaborative hiring scorecards
+  - Basic analytics dashboard
+- **AI Credits:** 200 AI resume scores/month
+- **Additional AI Credits:** $0.50 per score (beyond quota)
+- **Value Prop:** Saves 15+ hours/week on scheduling and coordination ($2,000+/mo value)
+
+#### Tier 3: Enterprise ($299/month)
+- **Price:** $299/month (or $2,870/year - save $700)
+- **Target:** Mid-size companies (20-50 employees), high-volume recruiting
+- **Features:**
+  - Everything in Professional
+  - Advanced analytics & reporting (time-to-hire, cost-per-hire, ROI)
+  - Custom branding (white-label careers page)
+  - Priority support (24h response time)
+  - SSO/SAML integration (future)
+  - API access for integrations
+  - Multi-company management (for agencies)
+- **AI Credits:** Unlimited AI resume scores
+- **Value Prop:** Complete recruiting ROI visibility, scales with growth
+
+#### Add-On: Integration Marketplace
+- **HRIS Integration (BambooHR, Gusto):** $29/month per integration
+- **Job Board Auto-Posting (LinkedIn, Indeed):** $49/month
+- **Background Check Integration (Checkr):** $39/month + per-check fees
+- **Revenue Share:** 20-30% from partner integrations
+
+### API Cost Management Strategy
+
+**Challenge:** Low budget initially, no clients yet
+
+**Solutions:**
+
+1. **Defer Heavy AI Features Until Revenue**
+   - Focus on Quick Wins first (Email templates, mobile careers page, notifications)
+   - Launch with Professional tier WITHOUT AI initially
+   - Add AI features once you have 10+ paying customers ($790/mo revenue to cover API costs)
+
+2. **Strict Quota Enforcement**
+   - Hard limits on free tier (10 scores/month = $0.10 in API costs)
+   - Cache AI scores aggressively (90-day TTL)
+   - Use GPT-3.5-turbo ($0.001/1K tokens) instead of GPT-4 ($0.03/1K tokens)
+   - Estimate: 200 scores/month = ~$20 in API costs (covered by $79 Professional tier)
+
+3. **Usage-Based Pricing for Overages**
+   - $0.50 per additional AI score (10x markup on $0.05 cost)
+   - Customers pre-pay for credit packs (100 credits = $40)
+   - Email warnings at 80% quota usage
+
+4. **Monitor and Alert**
+   - Track API costs per customer in real-time
+   - Auto-disable AI features if customer exceeds quota without payment
+   - Monthly cost reports for profitability analysis
+
+### Go-To-Market Timeline
+
+**Month 1-2 (QUICK WINS PHASE):**
+- [ ] Build Quick Win features (email templates, mobile careers, notifications, custom forms)
+- [ ] Polish existing features (fix bugs, improve UX)
+- [ ] Create landing page with demo video
+- [ ] Launch free self-hosted tier
+- [ ] Goal: 50 free self-hosted deployments, gather feedback
+
+**Month 3-4 (MONETIZATION PHASE):**
+- [ ] Build Automated Interview Scheduling (highest ROI, no AI costs)
+- [ ] Build Collaborative Scorecards (differentiation, no AI costs)
+- [ ] Add billing system (Stripe integration)
+- [ ] Launch Professional tier ($79/mo)
+- [ ] Outreach to beta testers: "Upgrade for scheduling + scorecards"
+- [ ] Goal: 5 paying customers ($395/mo recurring revenue)
+
+**Month 5-6 (AI DIFFERENTIATION PHASE):**
+- [ ] Build AI Resume Screening with quota management
+- [ ] Build Analytics Dashboard
+- [ ] Launch Enterprise tier ($299/mo)
+- [ ] Create case studies from early customers
+- [ ] Goal: 15 Professional + 3 Enterprise customers ($1,900/mo revenue)
+
+**Month 7-8 (SCALE & INTEGRATIONS):**
+- [ ] Build first 2 integrations (BambooHR + LinkedIn job posting)
+- [ ] Add white-label branding for Enterprise
+- [ ] Implement referral program (give 1 month free, get 1 month free)
+- [ ] Goal: 30 Professional + 8 Enterprise customers ($4,770/mo revenue)
+
+**Month 9-12 (PRODUCT-LED GROWTH):**
+- [ ] Build integration marketplace (3-5 more integrations)
+- [ ] Add advanced analytics features
+- [ ] Optimize AI costs and expand free tier AI quota
+- [ ] Launch affiliate program for HR consultants
+- [ ] Goal: 100 customers, $15,000+ MRR
+
+### Sales Approach
+
+**PRIMARY: Self-Serve + Product-Led Growth**
+- Self-hosted free tier creates viral distribution
+- In-app upgrade prompts when users hit limits
+- Automated email drip campaign after signup
+- Free trial of Professional tier (14 days, no credit card)
+
+**SECONDARY: Content Marketing**
+- Blog posts on hiring best practices (SEO for "how to screen resumes with AI")
+- Open-source parts of the codebase (get developer community awareness)
+- Case studies showing time/cost savings
+
+**AVOID (for now):**
+- Sales team (too expensive for solo dev)
+- Enterprise sales (defer until $50k+ MRR)
+- Paid ads (expensive for low-traffic SaaS)
+
+### Key Metrics to Track
+
+- **Free to Paid Conversion:** Target 5-10% of free users upgrade
+- **Monthly Churn:** Target <5% for Professional, <2% for Enterprise
+- **Customer Acquisition Cost (CAC):** Keep under $200 via self-serve
+- **Lifetime Value (LTV):** Target $2,000+ (25+ months retention)
+- **AI Cost per Customer:** Keep under 20% of subscription price
+- **Time to First Value:** <10 minutes from signup to first candidate added
+
+---
+
 ## Current Tasks
 
-### High Priority
+### HIGH PRIORITY - QUICK WINS (Complete This Month)
+
+**Goal:** Build traction with small, high-impact features that demonstrate value to early adopters.
+
+- [ ] **Email Template Library** (1-2 days)
+  - [ ] Create EmailTemplate entity (name, subject, body with Handlebars variables)
+  - [ ] Add CRUD endpoints for email templates
+  - [ ] Create template management UI (list, create, edit, delete)
+  - [ ] Pre-seed common templates (rejection, interview invitation, offer, etc.)
+  - [ ] Add template selector when sending emails
+  - [ ] Support variables: {{candidateName}}, {{positionTitle}}, {{companyName}}, {{hrName}}
+  - [ ] Value: Saves HR 30+ min/day on email composition
+
+- [ ] **Mobile-Responsive Careers Page** (2-3 days)
+  - [ ] Fix layout for mobile devices (viewport meta tag, responsive grid)
+  - [ ] Optimize font sizes and spacing for small screens
+  - [ ] Test on mobile devices (Chrome DevTools mobile emulation)
+  - [ ] Add loading states for slow connections
+  - [ ] Compress images and optimize assets
+  - [ ] Value: Capture 30-40% more applications from mobile users
+
+- [ ] **Application Status Email Notifications** (2-3 days)
+  - [ ] Add automatic email trigger when application status changes
+  - [ ] Create status change email templates (Under Review, Interview Scheduled, Rejected, Offer)
+  - [ ] Add email preferences to candidate entity (optional opt-out)
+  - [ ] Log all sent emails in database for audit trail
+  - [ ] Value: Reduces candidate support emails by 70%, improves candidate experience
+
+- [ ] **Custom Job Application Forms** (3-4 days)
+  - [ ] Add customQuestions JSON field to JobPosition entity
+  - [ ] Create UI for HR to add custom questions (text, multiple choice, file upload)
+  - [ ] Update application form to render custom questions dynamically
+  - [ ] Store custom question answers in Application entity (JSON field)
+  - [ ] Display custom answers in application detail page
+  - [ ] Value: Enables role-specific screening questions
+
+### HIGH PRIORITY - CORE FEATURES
 
 - [x] **Remove ID relations and use UID relations throughout the entire system** ✅ **COMPLETED**
   - [x] Keep Prisma internal relations using IDs ✅
@@ -58,6 +247,188 @@
 
 - [ ] Add analytics/reporting dashboard
 - [ ] Add export functionality (CSV/PDF reports)
+
+---
+
+## HIGH-REVENUE AI FEATURES (Implement After Quick Wins)
+
+**Goal:** Build AI-first competitive advantage that justifies premium pricing.
+
+### AI-Powered Resume Screening & Ranking (3-4 weeks)
+
+**Business Value:** Premium tier feature ($99-$149/mo) - saves customers $2,400/mo in manual screening time
+
+**Backend Tasks:**
+- [ ] Install OpenAI SDK (@openai/api)
+- [ ] Create AIService module with OpenAI client configuration
+- [ ] Add OPENAI_API_KEY environment variable
+- [ ] Create resume parsing endpoint
+  - [ ] POST /ai/parse-resume - Accepts resume file, returns structured data
+  - [ ] Extract: name, email, phone, skills, experience, education, summary
+  - [ ] Store parsed data in Candidate entity (new JSON field: aiParsedData)
+- [ ] Create candidate scoring endpoint
+  - [ ] POST /ai/score-candidate - Accepts candidateUid + jobPositionUid
+  - [ ] AI analyzes resume against job description
+  - [ ] Returns score (1-100), strengths, weaknesses, match reasons
+  - [ ] Store in new CandidateScore entity (candidateId, jobPositionId, score, analysis JSON, scoredAt)
+- [ ] Create batch scoring endpoint
+  - [ ] POST /ai/batch-score - Score all candidates for a job position
+  - [ ] Implements queue system to avoid API rate limits
+  - [ ] Returns job ID to check progress
+- [ ] Add AI scoring triggers
+  - [ ] Automatic scoring when candidate applies to job
+  - [ ] Re-score when job description changes (optional, costs API credits)
+- [ ] Create ranking endpoint
+  - [ ] GET /job-positions/:uid/ranked-candidates - Returns candidates sorted by AI score
+  - [ ] Filter by minimum score threshold
+  - [ ] Flag top 10% as "Highly Recommended"
+- [ ] Add usage tracking for API cost management
+  - [ ] Track OpenAI API calls per company/user
+  - [ ] Add monthly quota limits based on pricing tier
+  - [ ] Warning emails when approaching quota
+
+**Frontend Tasks:**
+- [ ] Add "AI Score" column to candidate lists
+  - [ ] Display score badge (1-100) with color coding (green >80, yellow 60-79, red <60)
+  - [ ] Show "Highly Recommended" badge for top 10%
+- [ ] Create AI Analysis Dialog
+  - [ ] Click on score to see detailed analysis
+  - [ ] Display strengths, weaknesses, match reasons
+  - [ ] Show parsed resume data
+- [ ] Add "Rank Candidates" button to job position detail page
+  - [ ] Trigger batch AI scoring
+  - [ ] Show progress indicator
+  - [ ] Display ranked list when complete
+- [ ] Add AI insights to hiring process page
+  - [ ] Show AI score next to candidate name
+  - [ ] Quick view of top match reasons
+- [ ] Create AI usage dashboard (Admin only)
+  - [ ] Monthly API call count
+  - [ ] Cost estimates
+  - [ ] Quota usage progress bar
+
+**Cost Management Strategy:**
+- [ ] Implement tiered quotas (Starter: 50 scores/mo, Professional: 200/mo, Enterprise: unlimited)
+- [ ] Cache AI scores (don't re-score unless resume/job description changes)
+- [ ] Use GPT-3.5-turbo for cost efficiency (vs GPT-4)
+- [ ] Batch requests to reduce API overhead
+
+**Testing:**
+- [ ] Test resume parsing with various formats (PDF, DOCX, TXT)
+- [ ] Test scoring accuracy with sample resumes and job descriptions
+- [ ] Test quota enforcement
+- [ ] Test batch scoring performance (100+ candidates)
+
+---
+
+### Collaborative Hiring Scorecards (2 weeks)
+
+**Business Value:** Professional tier feature ($79/mo) - improves hiring quality and compliance
+
+**Backend Tasks:**
+- [ ] Create ScorecardTemplate entity
+  - [ ] Fields: id, uid, name, description, companyId, criteria (JSON array)
+  - [ ] Criteria structure: [{name, description, weight, scoreType: "1-5" | "1-10" | "yes/no"}]
+  - [ ] Relations: company
+- [ ] Create InterviewScorecard entity
+  - [ ] Fields: id, uid, interviewId, templateId, interviewerId, scores (JSON), overallScore, recommendation (STRONG_YES, YES, MAYBE, NO, STRONG_NO), comments, submittedAt
+  - [ ] Relations: interview, template, interviewer (User)
+- [ ] Add scorecard CRUD endpoints
+  - [ ] POST /scorecard-templates - Create template
+  - [ ] GET /scorecard-templates - List company templates
+  - [ ] POST /interviews/:uid/scorecards - Submit scorecard for interview
+  - [ ] GET /interviews/:uid/scorecards - Get all scorecards for interview
+  - [ ] GET /interviews/:uid/consensus - Calculate aggregated scores
+- [ ] Add consensus calculation logic
+  - [ ] Average scores across all interviewers
+  - [ ] Show distribution of recommendations
+  - [ ] Flag disagreements (variance >2 points on any criterion)
+
+**Frontend Tasks:**
+- [ ] Create ScorecardTemplate management page
+  - [ ] List templates with edit/delete
+  - [ ] Create template dialog with criteria builder
+  - [ ] Drag-to-reorder criteria
+- [ ] Create InterviewScorecard form
+  - [ ] Render criteria dynamically based on template
+  - [ ] Sliders/radio buttons for scores
+  - [ ] Comments text area
+  - [ ] Overall recommendation selector
+- [ ] Add scorecard section to interview detail page
+  - [ ] List all submitted scorecards
+  - [ ] Show consensus view (aggregated scores)
+  - [ ] Highlight disagreements
+  - [ ] Download as PDF for compliance
+- [ ] Create consensus visualization
+  - [ ] Bar chart showing score distribution per criterion
+  - [ ] Pie chart of recommendations
+  - [ ] Table of individual scorecard summaries
+
+**Testing:**
+- [ ] Test scorecard template creation with various criteria types
+- [ ] Test scorecard submission by multiple interviewers
+- [ ] Test consensus calculation accuracy
+- [ ] Test access control (only assigned interviewers can submit)
+
+---
+
+### Analytics Dashboard & Reporting (2-3 weeks)
+
+**Business Value:** Enables Enterprise pricing tier ($299/mo) - provides ROI visibility
+
+**Backend Tasks:**
+- [ ] Create AnalyticsService with metrics calculations
+  - [ ] Time-to-hire (average days from job posted to offer accepted)
+  - [ ] Cost-per-hire (total recruiting costs / number of hires)
+  - [ ] Pipeline conversion rates (applicants -> interviews -> offers -> hires)
+  - [ ] Source effectiveness (which job boards/sources yield best candidates)
+  - [ ] Stage bottlenecks (which stages take longest)
+- [ ] Add analytics endpoints
+  - [ ] GET /analytics/time-to-hire - Filterable by date range, job position, department
+  - [ ] GET /analytics/cost-per-hire - Include breakdown by cost type
+  - [ ] GET /analytics/pipeline - Funnel data with conversion rates
+  - [ ] GET /analytics/sources - Application sources with quality metrics
+  - [ ] GET /analytics/stage-performance - Average time per stage
+- [ ] Add application source tracking
+  - [ ] Add source field to Application entity (LinkedIn, Indeed, Referral, Direct, etc.)
+  - [ ] Track UTM parameters from job board links
+  - [ ] Store in applicant submission
+- [ ] Add cost tracking
+  - [ ] Create RecruitingCost entity (costType, amount, jobPositionId, date, description)
+  - [ ] Cost types: Job Board Fees, Agency Fees, Advertising, Events, Software, Other
+  - [ ] CRUD endpoints for cost entry
+
+**Frontend Tasks:**
+- [ ] Create Analytics dashboard page (/analytics)
+  - [ ] KPI cards: Avg Time-to-Hire, Avg Cost-per-Hire, Total Hires This Month, Open Positions
+  - [ ] Date range selector (last 30 days, 90 days, year, custom)
+  - [ ] Filter by department, job position, location
+- [ ] Create Time-to-Hire chart
+  - [ ] Line chart showing trend over time
+  - [ ] Compare against industry benchmarks
+  - [ ] Breakdown by job position type
+- [ ] Create Pipeline Funnel visualization
+  - [ ] Funnel chart: Applicants -> Screened -> Interviewed -> Offered -> Hired
+  - [ ] Show drop-off rates at each stage
+  - [ ] Click to drill down into specific stage
+- [ ] Create Source Effectiveness table
+  - [ ] Columns: Source, Applications, Interviews, Hires, Conversion Rate, Avg Quality Score
+  - [ ] Sort by conversion rate or quality
+  - [ ] Cost per hire by source
+- [ ] Create Stage Performance heatmap
+  - [ ] Show bottleneck stages in red
+  - [ ] Average time vs estimated time comparison
+  - [ ] Identify process improvements
+- [ ] Add export functionality
+  - [ ] Export to CSV
+  - [ ] Export to PDF report with charts
+  - [ ] Schedule automated weekly/monthly reports (future enhancement)
+
+**Testing:**
+- [ ] Test calculation accuracy with sample data
+- [ ] Test filters and date range selection
+- [ ] Test export to CSV/PDF
+- [ ] Verify performance with large datasets (1000+ applications)
 
 ---
 

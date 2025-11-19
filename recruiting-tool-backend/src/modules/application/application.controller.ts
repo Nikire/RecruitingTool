@@ -79,4 +79,17 @@ export class ApplicationController {
   remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.applicationService.remove(uid);
   }
+
+  @Auth(['HR', 'ADMIN'])
+  @Put(':uid/accept')
+  @ApiOperation({ summary: 'Accept application and create candidate + hiring process (HR/ADMIN only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Application accepted successfully. Candidate and hiring process created.',
+    type: ApplicationResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'Application UID' })
+  acceptApplication(@Param('uid') uid: string): Promise<ApplicationResponseDto> {
+    return this.applicationService.acceptApplication(uid);
+  }
 }

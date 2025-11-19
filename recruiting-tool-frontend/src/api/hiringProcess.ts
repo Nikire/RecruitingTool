@@ -35,3 +35,11 @@ export function updateHiringProcess(
 export function deleteHiringProcess(uid: string): Promise<MessageResponse> {
 	return api.delete('/hiring-process/' + uid).then((res) => res.data);
 }
+
+export function progressStage(uid: string): Promise<HiringProcess> {
+	return api.post(`/hiring-process/${uid}/progress-stage`).then((res) => res.data);
+}
+
+export function moveToStage(uid: string, stageUid: string): Promise<HiringProcess> {
+	return api.post(`/hiring-process/${uid}/move-to-stage/${stageUid}`).then((res) => res.data);
+}

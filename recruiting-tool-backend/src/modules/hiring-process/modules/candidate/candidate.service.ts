@@ -169,7 +169,25 @@ export class CandidateService {
     }));
   }
 
-  async updateNote(noteUid: string, updateNoteDto: UpdateCandidateNoteDto): Promise<CandidateNoteResponseDto> {
+  async updateNote(noteUid: string, updateNoteDto: UpdateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
+    // First fetch the note to verify ownership
+    const existingNote = await this.databaseService.candidateNote.findUnique({
+      where: { uid: noteUid },
+      include: {
+        author: true,
+        candidate: true,
+      },
+    });
+
+    if (!existingNote) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    // Verify that the current user is the note author
+    if (existingNote.authorId !== authorUserId) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
     const note = await this.databaseService.candidateNote.update({
       where: { uid: noteUid },
       data: { content: updateNoteDto.content },
@@ -178,10 +196,6 @@ export class CandidateService {
         candidate: true,
       },
     });
-
-    if (!note) {
-      throw new NotFoundException(`Note ${noteUid} not found`);
-    }
 
     return {
       uid: note.uid,
@@ -194,7 +208,21 @@ export class CandidateService {
     };
   }
 
-  async removeNote(noteUid: string): Promise<MessageResponseDto> {
+  async removeNote(noteUid: string, authorUserId: number): Promise<MessageResponseDto> {
+    // First fetch the note to verify ownership
+    const existingNote = await this.databaseService.candidateNote.findUnique({
+      where: { uid: noteUid },
+    });
+
+    if (!existingNote) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    // Verify that the current user is the note author
+    if (existingNote.authorId !== authorUserId) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
     const note = await this.databaseService.candidateNote.delete({
       where: { uid: noteUid },
     });

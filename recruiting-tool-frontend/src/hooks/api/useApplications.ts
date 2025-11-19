@@ -6,6 +6,7 @@ import {
 	getApplications,
 	getPublicJobPositions,
 	updateApplication,
+	acceptApplication,
 } from '../../api/applications';
 import {
 	ApplicationFilterDto,
@@ -81,6 +82,21 @@ export function useDeleteApplication() {
 		},
 		onError: (error) => {
 			showErrorToast(error, 'Failed to delete application');
+		},
+	});
+}
+
+export function useAcceptApplication() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (uid: string) => acceptApplication(uid),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [APPLICATIONS_KEY]});
+			showSuccessToast('Application accepted! Candidate and hiring process created.');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to accept application');
 		},
 	});
 }

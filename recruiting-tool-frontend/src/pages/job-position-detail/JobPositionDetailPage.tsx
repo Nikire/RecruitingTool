@@ -16,6 +16,7 @@ import {
 	TableRow,
 	Card,
 	CardContent,
+	Alert,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
@@ -203,7 +204,7 @@ const JobPositionDetailPage: React.FC = () => {
 								</TableHead>
 								<TableBody>
 									{filteredHiringProcesses.map((process) => (
-										<TableRow key={process.uid} hover>
+										<TableRow key={process.uid} hover sx={{backgroundColor: !process.candidate ? 'rgba(255, 193, 7, 0.05)' : 'inherit'}}>
 											<TableCell>{process.title}</TableCell>
 											<TableCell>
 												<Chip
@@ -222,7 +223,9 @@ const JobPositionDetailPage: React.FC = () => {
 														</Typography>
 													</>
 												) : (
-													'N/A'
+													<Typography variant="body2" color="error" sx={{fontWeight: 500}}>
+														No candidate assigned
+													</Typography>
 												)}
 											</TableCell>
 											<TableCell>

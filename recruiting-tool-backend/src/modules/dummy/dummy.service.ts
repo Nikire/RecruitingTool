@@ -46,6 +46,14 @@ interface DummyDataStructure {
     candidateIndex: number;
     authorUserIndex: number;
   }>;
+  emailTemplates: Array<{
+    name: string;
+    subject: string;
+    body: string;
+    companyIndex: number;
+    createdByUserIndex: number;
+    isDefault: boolean;
+  }>;
 }
 
 @Injectable()
@@ -225,6 +233,22 @@ export class DummyService implements OnApplicationBootstrap {
         },
       });
       console.log(`Created note for candidate: ${createdCandidates[note.candidateIndex].name} by ${createdUsers[note.authorUserIndex].name}`);
+    }
+
+    // Create email templates
+    console.log('Creating email templates...');
+    for (const template of data.emailTemplates) {
+      await this.databaseService.emailTemplate.create({
+        data: {
+          name: template.name,
+          subject: template.subject,
+          body: template.body,
+          companyId: createdCompanies[template.companyIndex].id,
+          createdById: createdUsers[template.createdByUserIndex].id,
+          isDefault: template.isDefault,
+        },
+      });
+      console.log(`Created email template: ${template.name} for ${createdCompanies[template.companyIndex].name}`);
     }
 
     console.log('All dummy data created successfully!');
