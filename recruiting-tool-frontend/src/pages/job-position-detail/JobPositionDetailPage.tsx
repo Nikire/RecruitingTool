@@ -24,6 +24,7 @@ import StatusLabel from '../../components/StatusLabel';
 import {HiringProcessStatus} from '../../types/hiringProcess.types';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
+import {ApplyToJobDialog} from '../../components/dialogs/ApplyToJobDialog';
 
 const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
 	switch (status) {
@@ -48,6 +49,7 @@ const JobPositionDetailPage: React.FC = () => {
 	const {user} = useUserAtom();
 	const {data: jobPositionData, isLoading, error} = useJobPositions(uid);
 	const [statusFilter, setStatusFilter] = useState<HiringProcessStatus | 'ALL'>('ALL');
+	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
 
 	const canManage = canManageResources(user);
 
@@ -89,10 +91,10 @@ const JobPositionDetailPage: React.FC = () => {
 		<Box sx={{p: 4}}>
 			<Button
 				startIcon={<ArrowBackIcon />}
-				onClick={() => navigate('/dashboard')}
+				onClick={() => navigate('/careers')}
 				sx={{mb: 3}}
 			>
-				Back to Dashboard
+				Back to Careers
 			</Button>
 
 			<Paper sx={{p: 3, mb: 3}}>
@@ -100,10 +102,20 @@ const JobPositionDetailPage: React.FC = () => {
 					<Box>
 						<Typography variant="h4">{jobPosition.title}</Typography>
 						<Typography variant="subtitle1" color="textSecondary">
-							Hiring Processes Overview
+							{canManage ? 'Hiring Processes Overview' : jobPosition.description || 'Job Posting'}
 						</Typography>
 					</Box>
-					<StatusLabel status={jobPosition.status} />
+					<Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+						<StatusLabel status={jobPosition.status} />
+						{jobPosition.status === 'OPEN' && (
+							<Button
+								variant="contained"
+								onClick={() => setApplyDialogOpen(true)}
+							>
+								Apply Now
+							</Button>
+						)}
+					</Box>
 				</Box>
 
 				<Divider sx={{my: 2}} />
@@ -271,6 +283,15 @@ const JobPositionDetailPage: React.FC = () => {
 						</CardContent>
 					</Card>
 				</>
+			)}
+
+			{uid && (
+				<ApplyToJobDialog
+					open={applyDialogOpen}
+					onClose={() => setApplyDialogOpen(false)}
+					jobUid={uid}
+					jobTitle={jobPosition.title}
+				/>
 			)}
 		</Box>
 	);

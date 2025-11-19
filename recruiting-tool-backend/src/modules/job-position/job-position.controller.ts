@@ -16,6 +16,7 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 })
 export class JobPositionController {
   constructor(private readonly jobPositionService: JobPositionService) {}
+@Get('public/all')  @ApiOperation({ summary: 'Get all open job positions (Public - No auth required)' })  @ApiResponse({    status: 200,    description: 'Returns list of open job positions',  })  findAllPublic() {    return this.jobPositionService.findAllPublic();  }
 
   @Auth(['HR', 'ADMIN'])
   @Post()

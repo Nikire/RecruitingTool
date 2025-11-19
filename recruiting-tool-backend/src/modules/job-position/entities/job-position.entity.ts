@@ -48,3 +48,12 @@ export function JobPositionOneMapper(jobPosition: JobPositionWithRelations) {
     createdBy: PublicUserMapper(jobPosition.createdBy),
   };
 }
+
+export function PublicJobPositionMapper(jobPosition: JobPosition | JobPositionWithRelations) {
+  return {
+    uid: jobPosition.uid,
+    title: jobPosition.title,
+    description: jobPosition.description,
+    companyName: (jobPosition as any).company?.name || "Unknown Company",
+  };
+}

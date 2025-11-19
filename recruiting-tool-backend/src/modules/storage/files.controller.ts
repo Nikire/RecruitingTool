@@ -52,7 +52,7 @@ export class FilesController {
 			new ParseFilePipe({
 				validators: [
 					new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB max
-					new FileTypeValidator({ fileType: /(pdf|doc|docx|txt)$/ }), // Only documents
+					new FileTypeValidator({ fileType: /(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|plain)/ }), // PDF, DOC, DOCX, TXT
 				],
 			}),
 		)

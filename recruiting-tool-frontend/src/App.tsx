@@ -28,8 +28,8 @@ function App() {
 					<Route path="/login" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
 					<Route path="/logout" element={<Logout />} />
-					<Route path="/job-positions" element={<JobPositionsPage />} />
-					<Route path="/job-positions/:uid" element={<JobPositionDetailPage />} />
+					<Route path="/careers" element={<JobPositionsPage />} />
+					<Route path="/careers/:uid" element={<JobPositionDetailPage />} />
 
 					<Route element={<DocumentContainer />}>
 						<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />

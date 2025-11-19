@@ -21,26 +21,25 @@ model Company {
 }
 
 model User {
-  id                    Int           @id @default(autoincrement())
-  uid                   String        @unique @default(uuid()) @db.Uuid
-  name                  String
-  email                 String        @unique
-  password              String
-  roles                 RolesType[]   @default([USER])
-  profilePicture        String?
-  phoneNumber           String?
-  position              String?
-  department            String?
-  bio                   String?
-  linkedinUrl           String?
-  timezone              String?
-  createdAt             DateTime      @default(now())
-  updatedAt             DateTime      @updatedAt
-  companyId             Int?
-  company               Company?      @relation(fields: [companyId], references: [id])
-  jobPositions          JobPosition[] @relation("JobPositionsUser")
-  fileUploads           FileUpload[]  @relation("FileUploadsUser")
-  reviewedApplications  Application[] @relation("ApplicationReviewer")
+  id           Int           @id @default(autoincrement())
+  uid          String        @unique @default(uuid()) @db.Uuid
+  name         String
+  email        String        @unique
+  password     String
+  roles        RolesType[]   @default([USER])
+  profilePicture String?
+  phoneNumber  String?
+  position     String?
+  department   String?
+  bio          String?
+  linkedinUrl  String?
+  timezone     String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  companyId    Int?
+  company      Company?      @relation(fields: [companyId], references: [id])
+  jobPositions JobPosition[] @relation("JobPositionsUser")
+  fileUploads  FileUpload[]  @relation("FileUploadsUser")
 }
 
 model Candidate {
@@ -75,10 +74,9 @@ model JobPosition {
   createdBy       User              @relation("JobPositionsUser", fields: [createdById], references: [id])
   companyId       Int
   company         Company           @relation(fields: [companyId], references: [id])
-  stages          Stage[]
+  stages          Stage[] // Here stages is used to create the template of the job position
   status          JobPositionStatus @default(OPEN)
   hiringProcesses HiringProcess[]
-  applications    Application[]
 }
 
 model HiringProcess {
@@ -90,7 +88,7 @@ model HiringProcess {
   updatedAt     DateTime            @updatedAt
   candidateId   Int?                @unique
   candidate     Candidate?          @relation("HiringProcessCandidate")
-  stages        Stage[]
+  stages        Stage[] // Here stages is used to check on which stage the Candidate is and where
   jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id])
   jobPositionId Int
   companyId     Int
@@ -145,46 +143,17 @@ enum StageType {
 }
 
 model FileUpload {
-  id                 Int            @id @default(autoincrement())
-  uid                String         @unique @default(uuid()) @db.Uuid
-  filename           String
-  originalName       String
-  mimetype           String
-  size               Int
-  s3Key              String
-  uploadedById       Int
-  uploadedBy         User           @relation("FileUploadsUser", fields: [uploadedById], references: [id])
-  candidateId        Int?
-  candidate          Candidate?     @relation("CandidateFiles", fields: [candidateId], references: [id])
-  applicationResumes Application[]  @relation("ApplicationResume")
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
-}
-
-model Application {
-  id             Int               @id @default(autoincrement())
-  uid            String            @unique @default(uuid()) @db.Uuid
-  jobPositionId  Int
-  jobPosition    JobPosition       @relation(fields: [jobPositionId], references: [id])
-  applicantName  String
-  applicantEmail String
-  applicantPhone String
-  resumeFileId   Int?
-  resumeFile     FileUpload?       @relation("ApplicationResume", fields: [resumeFileId], references: [id])
-  coverLetter    String?           @db.Text
-  status         ApplicationStatus @default(PENDING)
-  appliedAt      DateTime          @default(now())
-  reviewedAt     DateTime?
-  reviewedById   Int?
-  reviewedBy     User?             @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
-  notes          String?           @db.Text
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-}
-
-enum ApplicationStatus {
-  PENDING
-  REVIEWED
-  REJECTED
-  ACCEPTED
+  id           Int       @id @default(autoincrement())
+  uid          String    @unique @default(uuid()) @db.Uuid
+  filename     String // Unique filename stored in S3 (with timestamp/uuid)
+  originalName String // Original filename from user
+  mimetype     String // MIME type (e.g., application/pdf)
+  size         Int // File size in bytes
+  s3Key        String // S3 object key (path in bucket)
+  uploadedById Int
+  uploadedBy   User      @relation("FileUploadsUser", fields: [uploadedById], references: [id])
+  candidateId  Int?
+  candidate    Candidate? @relation("CandidateFiles", fields: [candidateId], references: [id])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

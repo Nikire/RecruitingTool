@@ -11,9 +11,10 @@ import { JobPositionModule } from './modules/job-position/job-position.module';
 import { DummyModule } from './modules/dummy/dummy.module';
 import { CompanyModule } from './modules/company/company.module';
 import { StorageModule } from './modules/storage/storage.module';
+import { ApplicationModule } from './modules/application/application.module';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule],
+  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule],
   controllers: [AppController],
   providers: [AppService],
 })

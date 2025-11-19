@@ -1,7 +1,9 @@
 import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, Button} from '@mui/material';
+import {useState} from 'react';
 import {useListJobPositions} from '../../hooks/api/useJobPositions';
 import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
+import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
 
 interface JobPositionsListProps {
 	page: number;
@@ -19,6 +21,8 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	onLimitChange,
 }) => {
 	const navigate = useNavigate();
+	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
+	const [selectedJob, setSelectedJob] = useState<{uid: string; title: string} | null>(null);
 
 	const {data, isLoading, error} = useListJobPositions({
 		page,
@@ -30,6 +34,16 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 
 	const jobPositions = data?.data;
 	const meta = data?.meta;
+
+	const handleApplyClick = (jobUid: string, jobTitle: string) => {
+		setSelectedJob({uid: jobUid, title: jobTitle});
+		setApplyDialogOpen(true);
+	};
+
+	const handleCloseApplyDialog = () => {
+		setApplyDialogOpen(false);
+		setSelectedJob(null);
+	};
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
@@ -95,13 +109,23 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 										)}
 									</TableCell>
 									<TableCell>
-										<Button
-											size="small"
-											variant="outlined"
-											onClick={() => navigate(`/job-positions/${jobPosition.uid}`)}
-										>
-											View Details
-										</Button>
+										<Box sx={{display: 'flex', gap: 1}}>
+											<Button
+												size="small"
+												variant="outlined"
+												onClick={() => navigate(`/careers/${jobPosition.uid}`)}
+											>
+												View Details
+											</Button>
+											<Button
+												size="small"
+												variant="contained"
+												onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
+												disabled={jobPosition.status !== 'OPEN'}
+											>
+												Apply
+											</Button>
+										</Box>
 									</TableCell>
 								</TableRow>
 							))}
@@ -117,6 +141,15 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
+
+			{selectedJob && (
+				<ApplyToJobDialog
+					open={applyDialogOpen}
+					onClose={handleCloseApplyDialog}
+					jobUid={selectedJob.uid}
+					jobTitle={selectedJob.title}
+				/>
+			)}
 		</>
 	);
 };

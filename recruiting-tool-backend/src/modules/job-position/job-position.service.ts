@@ -155,4 +155,24 @@ export class JobPositionService {
     }
     return { message: `Job position deleted successfully` };
   }
+
+  async findAllPublic(): Promise<Array<any>> {
+    const jobPositions = await this.databaseService.jobPosition.findMany({
+      where: {
+        status: "OPEN",
+      },
+      include: {
+        company: true,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+    return jobPositions.map((jp) => ({
+      uid: jp.uid,
+      title: jp.title,
+      description: jp.description,
+      companyName: jp.company?.name || "Unknown Company",
+    }));
+  }
 }
