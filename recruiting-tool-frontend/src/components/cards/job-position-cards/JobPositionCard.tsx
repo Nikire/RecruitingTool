@@ -49,7 +49,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
 				)}
 				<Button
 					color="primary"
-					onClick={() => navigate(`/job-positions/${jobPosition.uid}`)}
+					onClick={() => navigate(`/careers/${jobPosition.uid}`)}
 					sx={{fontWeight: 600}}
 				>
 					View Details
