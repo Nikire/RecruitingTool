@@ -126,6 +126,7 @@ export class ApplicationService {
   async update(uid: string, updateApplicationDto: UpdateApplicationDto, reviewerUid: string): Promise<ApplicationResponseDto> {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
+      include: { jobPosition: true },
     });
 
     if (!application) {
@@ -140,6 +141,7 @@ export class ApplicationService {
       throw new NotFoundException(`Reviewer ${reviewerUid} not found`);
     }
 
+    const oldStatus = application.status;
     const updateData: any = {
       ...updateApplicationDto,
     };
@@ -155,7 +157,47 @@ export class ApplicationService {
       include: includeApplication,
     });
 
+    // Send status change email if status changed
+    if (updateApplicationDto.status && updateApplicationDto.status !== oldStatus) {
+      await this.sendStatusChangeEmail(
+        updatedApplication.applicantEmail,
+        updatedApplication.applicantName,
+        application.jobPosition.title,
+        updatedApplication.uid,
+        oldStatus,
+        updateApplicationDto.status,
+      );
+    }
+
     return ApplicationMapper(updatedApplication);
+  }
+
+  private async sendStatusChangeEmail(
+    email: string,
+    name: string,
+    jobTitle: string,
+    applicationUid: string,
+    oldStatus: ApplicationStatus,
+    newStatus: ApplicationStatus,
+  ): Promise<void> {
+    try {
+      switch (newStatus) {
+        case ApplicationStatus.REVIEWED:
+          await this.emailService.sendApplicationUnderReview(email, name, jobTitle, applicationUid);
+          break;
+        case ApplicationStatus.ACCEPTED:
+          await this.emailService.sendApplicationAcceptance(email, name, jobTitle);
+          break;
+        case ApplicationStatus.REJECTED:
+          await this.emailService.sendApplicationRejection(email, name, jobTitle, applicationUid);
+          break;
+        default:
+          break;
+      }
+    } catch (error) {
+      // Log error but don't throw - email sending shouldn't fail the main update
+      console.error(`Failed to send status change email for application ${applicationUid}:`, error);
+    }
   }
 
   async remove(uid: string): Promise<MessageResponseDto> {
@@ -251,11 +293,16 @@ export class ApplicationService {
     });
 
     // Send acceptance email to applicant
-    await this.emailService.sendApplicationAcceptance(
-      application.applicantEmail,
-      application.applicantName,
-      application.jobPosition.title,
-    );
+    try {
+      await this.emailService.sendApplicationAcceptance(
+        application.applicantEmail,
+        application.applicantName,
+        application.jobPosition.title,
+      );
+    } catch (error) {
+      // Log error but don't fail the accept operation
+      console.error(`Failed to send acceptance email for application ${applicationUid}:`, error);
+    }
 
     return ApplicationMapper(updatedApplication);
   }

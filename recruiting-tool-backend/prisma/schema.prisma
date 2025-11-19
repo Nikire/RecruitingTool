@@ -225,3 +225,23 @@ model EmailTemplate {
   @@index([companyId])
   @@index([createdById])
 }
+
+model EmailLog {
+  id              Int       @id @default(autoincrement())
+  uid             String    @unique @default(uuid()) @db.Uuid
+  recipientEmail  String
+  recipientName   String
+  subject         String
+  template        String    @db.Text
+  status          String    @default("SENT")
+  emailType       String
+  relatedEntity   String?
+  relatedEntityId String?
+  sentAt          DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+
+  @@index([recipientEmail])
+  @@index([sentAt])
+  @@index([emailType])
+  @@index([relatedEntityId])
+}
