@@ -4,7 +4,7 @@ import AddIcon from '@mui/icons-material/Add';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useCandidatesSearch} from '../../hooks/api/state/useSearchState';
 import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
-import {canManageResources, isAdmin} from '../../utils/permissions';
+import {canManageResources} from '../../utils/permissions';
 import SearchBar from '../../components/search/SearchBar';
 import CandidatesList from '../../components/candidates/CandidatesList';
 
@@ -15,7 +15,6 @@ const CandidatesPage: React.FC = () => {
 	const {page, limit, search} = searchState;
 
 	const canManage = canManageResources(user);
-	const hasAdminAccess = isAdmin(user);
 
 	const handleSearch = useCallback((value: string) => {
 		setSearchState((prev) => ({...prev, search: value, page: 1}));
@@ -29,12 +28,12 @@ const CandidatesPage: React.FC = () => {
 		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
 	}, [setSearchState]);
 
-	// Check if user has admin access
-	if (!hasAdminAccess) {
+	// Check if user has access (HR, ADMIN, or SUPER_ADMIN)
+	if (!canManage) {
 		return (
 			<Box>
 				<Alert severity="error" sx={{mb: 2}}>
-					Access Denied: You need ADMIN or SUPER_ADMIN role to view candidates.
+					Access Denied: You need HR, ADMIN or SUPER_ADMIN role to view candidates.
 				</Alert>
 				<Typography variant="body1">
 					Please contact your administrator if you believe you should have access to this page.

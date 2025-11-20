@@ -115,7 +115,7 @@ export class JobPositionService {
       data: {
         title: createJobPositionDto.title,
         description: createJobPositionDto.description,
-        customQuestions: createJobPositionDto.customQuestions ? createJobPositionDto.customQuestions : [],
+        customQuestions: (createJobPositionDto.customQuestions ? createJobPositionDto.customQuestions : []) as unknown as Prisma.JsonValue,
         createdBy: { connect: { uid: creatorUid } },
         company: { connect: { id: user.companyId } },
       },
@@ -139,7 +139,7 @@ export class JobPositionService {
     const updateData: any = {};
     if (updateJobPositionDto.title !== undefined) updateData.title = updateJobPositionDto.title;
     if (updateJobPositionDto.description !== undefined) updateData.description = updateJobPositionDto.description;
-    if (updateJobPositionDto.customQuestions !== undefined) updateData.customQuestions = updateJobPositionDto.customQuestions;
+    if (updateJobPositionDto.customQuestions !== undefined) updateData.customQuestions = updateJobPositionDto.customQuestions as unknown as Prisma.JsonValue;
 
     const jobPosition = await this.databaseService.jobPosition.update({
       where: { uid },

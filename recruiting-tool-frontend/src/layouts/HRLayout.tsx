@@ -3,26 +3,25 @@ import {Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
 import {Outlet, NavLink, useNavigate} from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import DashboardIcon from '@mui/icons-material/Dashboard';
-import BusinessIcon from '@mui/icons-material/Business';
-import PeopleIcon from '@mui/icons-material/People';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import GroupIcon from '@mui/icons-material/Group';
+import WorkIcon from '@mui/icons-material/Work';
+import EmailIcon from '@mui/icons-material/Email';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PersonIcon from '@mui/icons-material/Person';
 import {useUserAtom} from '../hooks/api/state/useUserAtom';
-import {hasRole} from '../utils/permissions';
-import {UserRoles} from '../types/user.types';
 import UserAvatar from '../components/user/UserAvatar';
 
 const drawerWidth = 240;
 
 /**
- * AdminLayout - Layout component for system administration
- * Accessible to ADMIN and SUPER_ADMIN roles only
+ * HRLayout - Layout component for HR panel with dedicated navigation
+ * Accessible to HR, ADMIN, and SUPER_ADMIN roles
  */
-const AdminLayout: React.FC = () => {
+const HRLayout: React.FC = () => {
 	const {user} = useUserAtom();
 	const navigate = useNavigate();
 	const [mobileOpen, setMobileOpen] = useState(false);
-	const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);
@@ -30,22 +29,29 @@ const AdminLayout: React.FC = () => {
 
 	const menuItems = [
 		{
-			text: 'Admin Dashboard',
+			text: 'HR Dashboard',
 			icon: <DashboardIcon />,
-			path: '/admin',
-			requiresSuperAdmin: false,
+			path: '/hr/dashboard',
 		},
 		{
-			text: 'Companies',
-			icon: <BusinessIcon />,
-			path: '/admin/companies',
-			requiresSuperAdmin: true,
+			text: 'Applications',
+			icon: <AssignmentIcon />,
+			path: '/hr/applications',
 		},
 		{
-			text: 'Users',
-			icon: <PeopleIcon />,
-			path: '/admin/users',
-			requiresSuperAdmin: true,
+			text: 'Candidates',
+			icon: <GroupIcon />,
+			path: '/hr/candidates',
+		},
+		{
+			text: 'Job Positions',
+			icon: <WorkIcon />,
+			path: '/hr/job-positions',
+		},
+		{
+			text: 'Email Templates',
+			icon: <EmailIcon />,
+			path: '/hr/email-templates',
 		},
 	];
 
@@ -53,38 +59,32 @@ const AdminLayout: React.FC = () => {
 		<Box>
 			<Toolbar>
 				<Typography variant="h6" noWrap component="div">
-					Admin Panel
+					HR Panel
 				</Typography>
 			</Toolbar>
 			<Divider />
 			<List>
-				{menuItems.map((item) => {
-					if (item.requiresSuperAdmin && !isSuperAdmin) {
-						return null;
-					}
-
-					return (
-						<ListItem key={item.text} disablePadding>
-							<ListItemButton
-								component={NavLink}
-								to={item.path}
-								end={item.path === '/admin'}
-								sx={{
-									'&.active': {
-										bgcolor: 'primary.light',
+				{menuItems.map((item) => (
+					<ListItem key={item.text} disablePadding>
+						<ListItemButton
+							component={NavLink}
+							to={item.path}
+							end={item.path === '/hr/dashboard'}
+							sx={{
+								'&.active': {
+									bgcolor: 'primary.light',
+									color: 'primary.contrastText',
+									'& .MuiListItemIcon-root': {
 										color: 'primary.contrastText',
-										'& .MuiListItemIcon-root': {
-											color: 'primary.contrastText',
-										},
 									},
-								}}
-							>
-								<ListItemIcon>{item.icon}</ListItemIcon>
-								<ListItemText primary={item.text} />
-							</ListItemButton>
-						</ListItem>
-					);
-				})}
+								},
+							}}
+						>
+							<ListItemIcon>{item.icon}</ListItemIcon>
+							<ListItemText primary={item.text} />
+						</ListItemButton>
+					</ListItem>
+				))}
 			</List>
 			<Divider />
 			<List>
@@ -114,7 +114,7 @@ const AdminLayout: React.FC = () => {
 				<Box
 					component="nav"
 					sx={{width: {sm: drawerWidth}, flexShrink: {sm: 0}}}
-					aria-label="admin navigation"
+					aria-label="hr navigation"
 				>
 					<Drawer
 						variant="temporary"
@@ -160,7 +160,7 @@ const AdminLayout: React.FC = () => {
 							<MenuIcon />
 						</IconButton>
 						<Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
-							Administration
+							Human Resources
 						</Typography>
 						<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
 							<UserAvatar name={user?.name} avatarUrl={user?.profilePicture} />
@@ -182,4 +182,4 @@ const AdminLayout: React.FC = () => {
 	);
 };
 
-export default AdminLayout;
+export default HRLayout;

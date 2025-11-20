@@ -9,12 +9,14 @@ import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 import DocumentContainer from './layouts/DocumentContainer';
 import MainLayout from './layouts/MainLayout';
 import AdminLayout from './layouts/AdminLayout';
+import HRLayout from './layouts/HRLayout';
 import JobPositionsPage from './pages/job-positions/JobPositionsPage';
 import JobPositionDetailPage from './pages/job-position-detail/JobPositionDetailPage';
 import CandidatesPage from './pages/candidates/CandidatesPage';
 import { CompaniesPage } from './pages/companies/CompaniesPage';
 import UserManagementPage from './pages/users/UserManagementPage';
 import AdminDashboard from './pages/admin/AdminDashboard';
+import HRDashboard from './pages/hr/HRDashboard';
 import ProfilePage from './pages/profile/ProfilePage';
 import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
 import EmailTemplatesPage from './pages/admin/email-templates/EmailTemplatesPage';
@@ -43,15 +45,23 @@ function App() {
 					</Route>
 				</Route>
 
-				{/* Admin Panel Routes - separate from MainLayout */}
+				{/* HR Panel Routes - accessible to HR, ADMIN, and SUPER_ADMIN */}
+				<Route element={<ProtectedRoute />}>
+					<Route element={<HRLayout />}>
+						<Route path="/hr/dashboard" element={<HRDashboard />} />
+						<Route path="/hr/applications" element={<ApplicationsPage />} />
+						<Route path="/hr/candidates" element={<CandidatesPage />} />
+						<Route path="/hr/job-positions" element={<JobPositionsPage />} />
+						<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
+					</Route>
+				</Route>
+
+				{/* Admin Panel Routes - accessible to ADMIN and SUPER_ADMIN only */}
 				<Route element={<ProtectedRoute />}>
 					<Route element={<AdminLayout />}>
 						<Route path="/admin" element={<AdminDashboard />} />
-						<Route path="/admin/candidates" element={<CandidatesPage />} />
 						<Route path="/admin/companies" element={<CompaniesPage />} />
 						<Route path="/admin/users" element={<UserManagementPage />} />
-						<Route path="/admin/applications" element={<ApplicationsPage />} />
-						<Route path="/admin/email-templates" element={<EmailTemplatesPage />} />
 					</Route>
 				</Route>
 			</Routes>

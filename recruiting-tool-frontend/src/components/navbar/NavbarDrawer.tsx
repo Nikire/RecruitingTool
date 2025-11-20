@@ -60,6 +60,11 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 						<ListItemText color="inherit" primary="Dashboard" />
 					</ListItemButton>
 				)}
+				{isAuthenticated && canManageResources(user ?? null) && (
+					<ListItemButton component={NavLink} sx={linkSx} to="/hr/dashboard">
+						<ListItemText color="inherit" primary="HR Panel" />
+					</ListItemButton>
+				)}
 				{isAuthenticated && isAdmin(user ?? null) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/admin">
 						<ListItemText color="inherit" primary="Admin Panel" />

@@ -20,14 +20,14 @@ import {
 import { Add, Edit, Delete, Search } from '@mui/icons-material';
 import { useUserAtom } from '../../../hooks/api/state/useUserAtom';
 import { useEmailTemplates, useDeleteEmailTemplate } from '../../../hooks/api/useEmailTemplates';
-import { isAdmin } from '../../../utils/permissions';
+import { canManageResources } from '../../../utils/permissions';
 import EmailTemplateDialog from '../../../components/email-templates/EmailTemplateDialog';
 import { EmailTemplate } from '../../../types/emailTemplate.types';
 import { format } from 'date-fns';
 
 const EmailTemplatesPage: React.FC = () => {
   const { user } = useUserAtom();
-  const hasAdminAccess = isAdmin(user);
+  const hasAccess = canManageResources(user);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,8 +46,8 @@ const EmailTemplatesPage: React.FC = () => {
     );
   });
 
-  // Check if user has admin access
-  if (!hasAdminAccess) {
+  // Check if user has access (HR, ADMIN, or SUPER_ADMIN)
+  if (!hasAccess) {
     return (
       <Box>
         <Alert severity="error" sx={{ mb: 2 }}>
