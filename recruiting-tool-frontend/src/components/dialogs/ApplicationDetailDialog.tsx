@@ -190,7 +190,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 								Applicant Information
 							</Typography>
 							<Grid container spacing={2}>
-								<Grid item xs={12} sm={6}>
+								<Grid size={{xs: 12, sm: 6}}>
 									<Typography variant="body2" color="text.secondary">
 										Name
 									</Typography>
@@ -198,7 +198,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 										{application.applicantName}
 									</Typography>
 								</Grid>
-								<Grid item xs={12} sm={6}>
+								<Grid size={{xs: 12, sm: 6}}>
 									<Typography variant="body2" color="text.secondary">
 										Email
 									</Typography>
@@ -206,7 +206,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 										{application.applicantEmail}
 									</Typography>
 								</Grid>
-								<Grid item xs={12} sm={6}>
+								<Grid size={{xs: 12, sm: 6}}>
 									<Typography variant="body2" color="text.secondary">
 										Phone
 									</Typography>
@@ -214,7 +214,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 										{application.applicantPhone}
 									</Typography>
 								</Grid>
-								<Grid item xs={12} sm={6}>
+								<Grid size={{xs: 12, sm: 6}}>
 									<Typography variant="body2" color="text.secondary">
 										Applied Date
 									</Typography>
