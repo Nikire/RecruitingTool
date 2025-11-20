@@ -28,6 +28,13 @@ interface DummyDataStructure {
     status: string;
     companyIndex: number;
     createdByUserIndex: number;
+    customQuestions?: Array<{
+      id: string;
+      type: 'TEXT' | 'TEXTAREA' | 'MULTIPLE_CHOICE' | 'CHECKBOX';
+      text: string;
+      required: boolean;
+      options?: string[];
+    }>;
     stages: Array<{
       title: string;
       type: StageType;
@@ -142,6 +149,7 @@ export class DummyService implements OnApplicationBootstrap {
           title: jobPosition.title,
           description: jobPosition.description,
           status: jobPosition.status as any,
+          customQuestions: jobPosition.customQuestions ? jobPosition.customQuestions : [],
           companyId: createdCompanies[jobPosition.companyIndex].id,
           createdById: createdUsers[jobPosition.createdByUserIndex].id,
         },

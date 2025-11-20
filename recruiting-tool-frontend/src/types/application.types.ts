@@ -16,6 +16,7 @@ export interface Application {
 	resumeFileUid?: string;
 	resumeFileName?: string;
 	coverLetter?: string;
+	customAnswers?: Record<string, any>;
 	status: ApplicationStatus;
 	appliedAt: Date;
 	reviewedAt?: Date;
@@ -33,6 +34,7 @@ export interface CreateApplicationDto {
 	applicantPhone: string;
 	resumeFileUid?: string;
 	coverLetter?: string;
+	customAnswers?: Record<string, any>;
 }
 
 export interface UpdateApplicationDto {

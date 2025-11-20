@@ -1,13 +1,16 @@
 import {HiringProcess} from './hiringProcess.types';
 import {Stage} from './stage.types';
 import {User} from './user.types';
+import {CustomQuestion} from './customQuestions';
 
 export interface JobPosition {
 	uid: string;
 	title: string;
 	status: JobPositionStatus;
+	description?: string;
 	companyUid?: string;
 	companyName?: string;
+	customQuestions?: Array<CustomQuestion>;
 	hiringProcesses?: Array<HiringProcess>;
 	stages: Array<Stage>;
 	createdBy?: User;

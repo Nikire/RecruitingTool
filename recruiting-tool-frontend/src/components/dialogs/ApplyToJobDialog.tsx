@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
 	Dialog,
 	DialogTitle,
@@ -13,6 +13,9 @@ import {
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import {useCreateApplication} from '../../hooks/api/useApplications';
 import {useUploadFile} from '../../hooks/api/useFiles';
+import {useJobPositions} from '../../hooks/api/useJobPositions';
+import {CustomQuestionRenderer} from '../forms/CustomQuestionRenderer';
+import {CustomAnswers} from '../../types/customQuestions';
 
 interface ApplyToJobDialogProps {
 	open: boolean;
@@ -29,6 +32,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 }) => {
 	const {mutateAsync: createApplication, isPending: submitting} = useCreateApplication();
 	const {mutateAsync: uploadFile, isPending: uploading} = useUploadFile();
+	const {data: jobPosition, isLoading: loadingJob} = useJobPositions(jobUid);
 
 	const [formData, setFormData] = useState({
 		applicantName: '',
@@ -36,9 +40,22 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 		applicantPhone: '',
 		coverLetter: '',
 	});
+	const [customAnswers, setCustomAnswers] = useState<CustomAnswers>({});
 	const [resumeFile, setResumeFile] = useState<File | null>(null);
 	const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+	const [customAnswerErrors, setCustomAnswerErrors] = useState<Record<string, string>>({});
 	const [success, setSuccess] = useState(false);
+
+	// Initialize custom answers when job position loads
+	useEffect(() => {
+		if (jobPosition?.customQuestions) {
+			const initialAnswers: CustomAnswers = {};
+			jobPosition.customQuestions.forEach((q) => {
+				initialAnswers[q.id] = '';
+			});
+			setCustomAnswers(initialAnswers);
+		}
+	}, [jobPosition]);
 
 	const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
 		const {name, value} = e.target;
@@ -71,6 +88,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 
 	const validateForm = () => {
 		const errors: Record<string, string> = {};
+		const customErrors: Record<string, string> = {};
 
 		if (!formData.applicantName.trim()) {
 			errors.applicantName = 'Name is required';
@@ -84,8 +102,21 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 			errors.applicantPhone = 'Phone number is required';
 		}
 
+		// Validate custom questions
+		if (jobPosition?.customQuestions) {
+			jobPosition.customQuestions.forEach((question) => {
+				if (question.required) {
+					const answer = customAnswers[question.id];
+					if (!answer || (Array.isArray(answer) && answer.length === 0)) {
+						customErrors[question.id] = 'This field is required';
+					}
+				}
+			});
+		}
+
 		setFormErrors(errors);
-		return Object.keys(errors).length === 0;
+		setCustomAnswerErrors(customErrors);
+		return Object.keys(errors).length === 0 && Object.keys(customErrors).length === 0;
 	};
 
 	const handleSubmit = async () => {
@@ -106,6 +137,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 				applicantPhone: formData.applicantPhone,
 				coverLetter: formData.coverLetter || undefined,
 				resumeFileUid,
+				customAnswers: Object.keys(customAnswers).length > 0 ? customAnswers : undefined,
 			});
 
 			setSuccess(true);
@@ -124,8 +156,10 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 			applicantPhone: '',
 			coverLetter: '',
 		});
+		setCustomAnswers({});
 		setResumeFile(null);
 		setFormErrors({});
+		setCustomAnswerErrors({});
 		setSuccess(false);
 		onClose();
 	};
@@ -274,6 +308,21 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 								},
 							}}
 						/>
+
+						{jobPosition?.customQuestions && jobPosition.customQuestions.length > 0 && (
+							<CustomQuestionRenderer
+								questions={jobPosition.customQuestions}
+								answers={customAnswers}
+								onAnswerChange={(questionId, answer) => {
+									setCustomAnswers((prev) => ({...prev, [questionId]: answer}));
+									// Clear error for this question
+									if (customAnswerErrors[questionId]) {
+										setCustomAnswerErrors((prev) => ({...prev, [questionId]: ''}));
+									}
+								}}
+								errors={customAnswerErrors}
+							/>
+						)}
 					</Box>
 				)}
 			</DialogContent>

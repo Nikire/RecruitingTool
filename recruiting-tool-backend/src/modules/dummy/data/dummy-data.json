@@ -74,6 +74,34 @@
       "status": "OPEN",
       "companyIndex": 0,
       "createdByUserIndex": 0,
+      "customQuestions": [
+        {
+          "id": "q1-se",
+          "type": "TEXT",
+          "text": "Years of professional software development experience?",
+          "required": true
+        },
+        {
+          "id": "q2-se",
+          "type": "TEXTAREA",
+          "text": "Describe your most significant technical achievement and the impact it had",
+          "required": true
+        },
+        {
+          "id": "q3-se",
+          "type": "MULTIPLE_CHOICE",
+          "text": "Preferred work arrangement?",
+          "required": true,
+          "options": ["Remote", "Hybrid", "On-site"]
+        },
+        {
+          "id": "q4-se",
+          "type": "CHECKBOX",
+          "text": "Which technologies are you proficient in?",
+          "required": true,
+          "options": ["JavaScript", "Python", "Java", "Go", "Rust", "C++"]
+        }
+      ],
       "stages": [
         {
           "title": "Initial Screening",
@@ -107,6 +135,27 @@
       "status": "OPEN",
       "companyIndex": 0,
       "createdByUserIndex": 1,
+      "customQuestions": [
+        {
+          "id": "q1-fe",
+          "type": "TEXT",
+          "text": "How many years of experience with React?",
+          "required": true
+        },
+        {
+          "id": "q2-fe",
+          "type": "TEXTAREA",
+          "text": "Tell us about a complex React component you've built. What challenges did you face?",
+          "required": true
+        },
+        {
+          "id": "q3-fe",
+          "type": "MULTIPLE_CHOICE",
+          "text": "What's your preferred state management solution?",
+          "required": false,
+          "options": ["Redux", "Context API", "Zustand", "Jotai", "No preference"]
+        }
+      ],
       "stages": [
         {
           "title": "Phone Screening",

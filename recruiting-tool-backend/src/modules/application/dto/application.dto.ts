@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ApplicationStatus } from '@prisma/client';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsEnum, IsUUID } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsEnum, IsUUID, IsObject } from 'class-validator';
 
 export class ApplicationResponseDto {
   @ApiProperty({ description: 'The UID of the application', example: '123e4567-e89b-12d3-a456-426614174000' })
@@ -32,6 +32,9 @@ export class ApplicationResponseDto {
 
   @ApiProperty({ description: 'Cover letter', example: 'I am very interested in this position...', required: false })
   coverLetter?: string;
+
+  @ApiProperty({ description: 'Answers to custom screening questions', example: { 'q1': 'answer 1', 'q2': 'answer 2' }, required: false })
+  customAnswers?: Record<string, any>;
 
   @ApiProperty({ description: 'Application status', example: 'PENDING', enum: ApplicationStatus })
   status: ApplicationStatus;
@@ -95,6 +98,11 @@ export class CreateApplicationDto {
   @IsString()
   @MaxLength(5000)
   coverLetter?: string;
+
+  @ApiProperty({ description: 'Answers to custom screening questions', example: { 'q1': 'answer 1', 'q2': ['option 1', 'option 2'] }, required: false })
+  @IsOptional()
+  @IsObject()
+  customAnswers?: Record<string, any>;
 }
 
 export class UpdateApplicationDto {

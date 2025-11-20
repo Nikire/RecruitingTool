@@ -88,6 +88,7 @@ model JobPosition {
   uid             String            @unique @default(uuid()) @db.Uuid
   title           String
   description     String?
+  customQuestions Json?             @default("[]")
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   createdById     Int
@@ -191,6 +192,7 @@ model Application {
   resumeFileId   Int?
   resumeFile     FileUpload?       @relation("ApplicationResume", fields: [resumeFileId], references: [id])
   coverLetter    String?           @db.Text
+  customAnswers  Json?             @default("{}")
   status         ApplicationStatus @default(PENDING)
   appliedAt      DateTime          @default(now())
   reviewedAt     DateTime?

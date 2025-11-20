@@ -115,6 +115,7 @@ export class JobPositionService {
       data: {
         title: createJobPositionDto.title,
         description: createJobPositionDto.description,
+        customQuestions: createJobPositionDto.customQuestions ? createJobPositionDto.customQuestions : [],
         createdBy: { connect: { uid: creatorUid } },
         company: { connect: { id: user.companyId } },
       },
@@ -129,14 +130,20 @@ export class JobPositionService {
     return JobPositionMapper(newJobPosition);
   }
 
-  async update(uid: string, updateHiringProcessDto: UpdateJobPositionDto): Promise<JobPositionResponseDto> {
+  async update(uid: string, updateJobPositionDto: UpdateJobPositionDto): Promise<JobPositionResponseDto> {
     if (!uid) {
       throw new NotFoundException(`Job position ${uid} not found`);
     }
 
+    // Build update data, ensuring customQuestions is properly handled
+    const updateData: any = {};
+    if (updateJobPositionDto.title !== undefined) updateData.title = updateJobPositionDto.title;
+    if (updateJobPositionDto.description !== undefined) updateData.description = updateJobPositionDto.description;
+    if (updateJobPositionDto.customQuestions !== undefined) updateData.customQuestions = updateJobPositionDto.customQuestions;
+
     const jobPosition = await this.databaseService.jobPosition.update({
       where: { uid },
-      data: { ...updateHiringProcessDto },
+      data: updateData,
       include: includeJobPosition,
     });
 
