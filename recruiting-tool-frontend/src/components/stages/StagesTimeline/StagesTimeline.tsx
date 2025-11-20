@@ -35,7 +35,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({stages}) => {
 						<TimelineContent>
 							<StagesAccordion
 								stage={stage}
-								disabled={stage.status !== 'CURRENT'}
+								disabled={false}
 							/>
 						</TimelineContent>
 					</TimelineItem>
@@ -52,7 +52,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({stages}) => {
 						<TimelineContent>
 							<StagesAccordion
 								stage={stage}
-								disabled={stage.status !== 'CURRENT'}
+								disabled={false}
 							/>
 						</TimelineContent>
 					</TimelineItem>

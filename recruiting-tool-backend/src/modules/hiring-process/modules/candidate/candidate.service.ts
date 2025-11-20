@@ -5,6 +5,8 @@ import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto } from './
 import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
+import { User } from '@prisma/client';
+import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class CandidateService {
@@ -20,21 +22,37 @@ export class CandidateService {
     return CandidateMapper(candidate);
   }
 
-  async findOne(uid: string): Promise<CandidateResponseDto> {
+  async findOne(uid: string, user?: User): Promise<CandidateResponseDto> {
     const candidate = await this.databaseService.candidate.findUnique({
       where: { uid },
-      include: { hiringProcess: true },
+      include: { hiringProcesses: true },
     });
+
+    if (!candidate) {
+      throw new NotFoundException(`Candidate ${uid} not found`);
+    }
+
+    // Verify company access if user is provided (through hiring processes)
+    if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        // Check if candidate has at least one hiring process for this company
+        const hasAccessToCandidate = candidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
+        if (!hasAccessToCandidate) {
+          throw new NotFoundException(`Candidate ${uid} not found`);
+        }
+      }
+    }
 
     return CandidateMapper(candidate);
   }
 
-  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<CandidateResponseDto>> {
+  async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * limit;
 
     // Build where clause for search
-    const where = search
+    const where: any = search
       ? {
           OR: [
             { name: { contains: search, mode: 'insensitive' as const } },
@@ -42,6 +60,16 @@ export class CandidateService {
           ],
         }
       : {};
+
+    // Add company filter for HR and USER roles (filter by hiring processes company)
+    const userCompanyId = getUserCompanyId(user);
+    if (userCompanyId !== null) {
+      where.hiringProcesses = {
+        some: {
+          companyId: userCompanyId,
+        },
+      };
+    }
 
     // Get total count
     const total = await this.databaseService.candidate.count({ where });
@@ -52,7 +80,7 @@ export class CandidateService {
       skip,
       take: limit,
       orderBy: { [sortBy]: sortOrder },
-      include: { hiringProcess: true },
+      include: { hiringProcesses: true },
     });
 
     const totalPages = Math.ceil(total / limit);
@@ -70,16 +98,50 @@ export class CandidateService {
     };
   }
 
-  async findAll(): Promise<Array<CandidateResponseDto>> {
+  async findAll(user: User): Promise<Array<CandidateResponseDto>> {
+    const where: any = {};
+
+    // Add company filter for HR and USER roles (filter by hiring processes company)
+    const userCompanyId = getUserCompanyId(user);
+    if (userCompanyId !== null) {
+      where.hiringProcesses = {
+        some: {
+          companyId: userCompanyId,
+        },
+      };
+    }
+
     const candidates = await this.databaseService.candidate.findMany({
-      include: { hiringProcess: true },
+      where,
+      include: { hiringProcesses: true },
     });
     return candidates.map((c) => CandidateMapper(c));
   }
 
-  async update(uid: string, updateCandidateDto: UpdateCandidateDto): Promise<CandidateResponseDto> {
+  async update(uid: string, updateCandidateDto: UpdateCandidateDto, user: User): Promise<CandidateResponseDto> {
     if (!uid) {
       throw new NotFoundException(`Candidate ${uid} not found`);
+    }
+
+    // Verify company access before update (through hiring processes)
+    const existingCandidate = await this.databaseService.candidate.findUnique({
+      where: { uid },
+      include: { hiringProcesses: true },
+    });
+
+    if (!existingCandidate) {
+      throw new NotFoundException(`Candidate ${uid} not found`);
+    }
+
+    // Check if user has access to this candidate through any hiring process
+    if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const hasAccessToCandidate = existingCandidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
+        if (!hasAccessToCandidate) {
+          throw new NotFoundException(`Candidate ${uid} not found`);
+        }
+      }
     }
 
     const candidate = await this.databaseService.candidate.update({
@@ -87,22 +149,37 @@ export class CandidateService {
       data: { ...updateCandidateDto },
     });
 
-    if (!candidate) {
-      throw new NotFoundException(`Candidate ${uid} not found`);
-    }
     return CandidateMapper(candidate);
   }
 
-  async remove(uid: string): Promise<MessageResponseDto> {
+  async remove(uid: string, user: User): Promise<MessageResponseDto> {
     if (!uid) {
       throw new NotFoundException(`Candidate ${uid} not found`);
     }
 
-    const candidate = await this.databaseService.candidate.delete({ where: { uid } });
+    // Verify company access before delete (through hiring processes)
+    const existingCandidate = await this.databaseService.candidate.findUnique({
+      where: { uid },
+      include: { hiringProcesses: true },
+    });
 
-    if (!candidate) {
+    if (!existingCandidate) {
       throw new NotFoundException(`Candidate ${uid} not found`);
     }
+
+    // Check if user has access to this candidate through any hiring process
+    if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const hasAccessToCandidate = existingCandidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
+        if (!hasAccessToCandidate) {
+          throw new NotFoundException(`Candidate ${uid} not found`);
+        }
+      }
+    }
+
+    const candidate = await this.databaseService.candidate.delete({ where: { uid } });
+
     return { message: `Candidate deleted successfully` };
   }
 

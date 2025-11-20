@@ -11,7 +11,7 @@ const MANAGEMENT_ROLES = [UserRoles.HR, UserRoles.ADMIN, UserRoles.SUPER_ADMIN] 
  * @returns true if the user has any management role, false otherwise
  */
 export const canManageResources = (user: User | null): boolean => {
-	if (!user) return false;
+	if (!user || !Array.isArray(user.roles)) return false;
 	return MANAGEMENT_ROLES.some(role => user.roles.includes(role));
 };
 
@@ -22,7 +22,7 @@ export const canManageResources = (user: User | null): boolean => {
  * @returns true if the user has the specified role, false otherwise
  */
 export const hasRole = (user: User | null, role: UserRoles): boolean => {
-	if (!user) return false;
+	if (!user || !Array.isArray(user.roles)) return false;
 	return user.roles.includes(role);
 };
 
@@ -33,7 +33,7 @@ export const hasRole = (user: User | null, role: UserRoles): boolean => {
  * @returns true if the user has any of the specified roles, false otherwise
  */
 export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
-	if (!user) return false;
+	if (!user || !Array.isArray(user.roles)) return false;
 	return roles.some(role => user.roles.includes(role));
 };
 
@@ -43,6 +43,29 @@ export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
  * @returns true if the user is an admin, false otherwise
  */
 export const isAdmin = (user: User | null): boolean => {
-	if (!user) return false;
+	if (!user || !Array.isArray(user.roles)) return false;
 	return user.roles.includes(UserRoles.ADMIN) || user.roles.includes(UserRoles.SUPER_ADMIN);
+};
+
+/**
+ * Gets the default dashboard route for a user based on their roles
+ * Priority: SUPER_ADMIN/ADMIN > HR > regular users
+ * @param user - The user to get the dashboard for
+ * @returns The appropriate dashboard route
+ */
+export const getDefaultDashboard = (user: User | null): string => {
+	if (!user || !Array.isArray(user.roles)) return '/careers';
+
+	// Admins go to admin panel
+	if (user.roles.includes(UserRoles.SUPER_ADMIN) || user.roles.includes(UserRoles.ADMIN)) {
+		return '/admin';
+	}
+
+	// HR goes to HR dashboard
+	if (user.roles.includes(UserRoles.HR)) {
+		return '/hr/dashboard';
+	}
+
+	// Regular users go to careers page
+	return '/careers';
 };

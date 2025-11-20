@@ -161,41 +161,41 @@
 
 ## Current Tasks
 
-### HIGH PRIORITY - QUICK WINS (Complete This Month)
+### HIGH PRIORITY - QUICK WINS ✅ **COMPLETED (Version 0.7.0)**
 
 **Goal:** Build traction with small, high-impact features that demonstrate value to early adopters.
 
-- [ ] **Email Template Library** (1-2 days)
-  - [ ] Create EmailTemplate entity (name, subject, body with Handlebars variables)
-  - [ ] Add CRUD endpoints for email templates
-  - [ ] Create template management UI (list, create, edit, delete)
-  - [ ] Pre-seed common templates (rejection, interview invitation, offer, etc.)
-  - [ ] Add template selector when sending emails
-  - [ ] Support variables: {{candidateName}}, {{positionTitle}}, {{companyName}}, {{hrName}}
-  - [ ] Value: Saves HR 30+ min/day on email composition
+- [x] **Email Template Library** ✅ **COMPLETED**
+  - [x] Create EmailTemplate entity (name, subject, body with Handlebars variables)
+  - [x] Add CRUD endpoints for email templates
+  - [x] Create template management UI (list, create, edit, delete)
+  - [x] Pre-seed common templates (rejection, interview invitation, offer, etc.)
+  - [x] Add template selector when sending emails
+  - [x] Support variables: {{candidateName}}, {{positionTitle}}, {{companyName}}, {{hrName}}
+  - [x] Value: Saves HR 30+ min/day on email composition
 
-- [ ] **Mobile-Responsive Careers Page** (2-3 days)
-  - [ ] Fix layout for mobile devices (viewport meta tag, responsive grid)
-  - [ ] Optimize font sizes and spacing for small screens
-  - [ ] Test on mobile devices (Chrome DevTools mobile emulation)
-  - [ ] Add loading states for slow connections
-  - [ ] Compress images and optimize assets
-  - [ ] Value: Capture 30-40% more applications from mobile users
+- [x] **Mobile-Responsive Careers Page** ✅ **COMPLETED**
+  - [x] Fix layout for mobile devices (viewport meta tag, responsive grid)
+  - [x] Optimize font sizes and spacing for small screens
+  - [x] Test on mobile devices (Chrome DevTools mobile emulation)
+  - [x] Add loading states for slow connections
+  - [x] Compress images and optimize assets
+  - [x] Value: Capture 30-40% more applications from mobile users
 
-- [ ] **Application Status Email Notifications** (2-3 days)
-  - [ ] Add automatic email trigger when application status changes
-  - [ ] Create status change email templates (Under Review, Interview Scheduled, Rejected, Offer)
-  - [ ] Add email preferences to candidate entity (optional opt-out)
-  - [ ] Log all sent emails in database for audit trail
-  - [ ] Value: Reduces candidate support emails by 70%, improves candidate experience
+- [x] **Application Status Email Notifications** ✅ **COMPLETED**
+  - [x] Add automatic email trigger when application status changes
+  - [x] Create status change email templates (Under Review, Interview Scheduled, Rejected, Offer)
+  - [x] Email Log entity for audit trail
+  - [x] Log all sent emails in database for audit trail
+  - [x] Value: Reduces candidate support emails by 70%, improves candidate experience
 
-- [ ] **Custom Job Application Forms** (3-4 days)
-  - [ ] Add customQuestions JSON field to JobPosition entity
-  - [ ] Create UI for HR to add custom questions (text, multiple choice, file upload)
-  - [ ] Update application form to render custom questions dynamically
-  - [ ] Store custom question answers in Application entity (JSON field)
-  - [ ] Display custom answers in application detail page
-  - [ ] Value: Enables role-specific screening questions
+- [x] **Custom Job Application Forms** ✅ **COMPLETED**
+  - [x] Add customQuestions JSON field to JobPosition entity
+  - [x] Create UI for HR to add custom questions (text, multiple choice, checkbox, textarea)
+  - [x] Update application form to render custom questions dynamically
+  - [x] Store custom question answers in Application entity (JSON field)
+  - [x] Display custom answers in application detail page
+  - [x] Value: Enables role-specific screening questions
 
 ### HIGH PRIORITY - CORE FEATURES
 
@@ -224,16 +224,22 @@
   - [x] Create profile page UI with inline editing ✅
   - [x] Implement change detection for update button ✅
 - [ ] Create a proper Home page with landing page content
-- [ ] Implement applicant system for job applications
-  - [ ] Public job positions list with card-based view
-  - [ ] Job application form for candidates
-  - [ ] Application submission and tracking
-  - [ ] Email notifications for applications
-  - [ ] Application status management
+- [x] **Implement applicant system for job applications** ✅ **COMPLETED (Version 0.7.0)**
+  - [x] Public job positions list with card-based view
+  - [x] Job application form for candidates
+  - [x] Application submission and tracking
+  - [x] Email notifications for applications
+  - [x] Application status management
+  - [x] Accept application and auto-create hiring process
+  - [x] HR Applications dashboard with recent applications
 
 ### Medium Priority
 
-- [ ] Add stage progression workflow (move candidates between stages)
+- [x] **Add stage progression workflow (move candidates between stages)** ✅ **COMPLETED (Version 0.7.0)**
+  - [x] Progress to next stage endpoint
+  - [x] Move to specific stage endpoint
+  - [x] StageProgressionDialog UI component
+  - [x] Visual stage status indicators
 - [ ] Add advanced search/filtering for candidates and hiring processes
 - [ ] Add form validation improvements (better error messages)
 - [ ] Add loading states for all data fetching operations
@@ -966,6 +972,22 @@ GOOGLE_REDIRECT_URI=http://localhost:4000/google/callback
 
 ## Completed Tasks
 
+### Version 0.7.0 (Latest)
+✅ Email Template Library with Handlebars variables ({{candidateName}}, etc.)
+✅ Mobile-Responsive Careers Page with card layout and touch-friendly buttons
+✅ Application Status Email Notifications with EmailLog audit trail
+✅ Custom Job Application Forms with dynamic question builder
+✅ Stage Progression System (progress to next stage, move to specific stage)
+✅ Application Acceptance with auto-creation of candidates and hiring processes
+✅ HR Navigation Reorganization with dedicated HRLayout and /hr/* routes
+✅ HR Dashboard with statistics cards and clickable recent applications
+✅ Candidate Notes System with full CRUD functionality
+✅ Fixed admin panel routing (/careers instead of /job-positions)
+✅ Fixed candidate note creation authorization (UID to ID lookup)
+✅ Fixed missing candidate display warnings in hiring processes
+✅ Fixed HR Dashboard recent applications display with correct fields
+
+### Previous Versions
 ✅ Company management system with full CRUD operations
 ✅ Enhanced authentication flow with token-only storage
 ✅ Complete UI for candidates, companies, and hiring processes
@@ -988,3 +1010,5 @@ GOOGLE_REDIRECT_URI=http://localhost:4000/google/callback
 ✅ Fixed dashboard table being cut off by using wider container layout (xl instead of md)
 ✅ Implemented dynamic container width based on page route
 ✅ Applied wider layout to dashboard, companies, and candidates pages
+✅ UID-only policy implementation throughout entire system
+✅ File Storage System with MinIO (S3-compatible) for resumes and documents

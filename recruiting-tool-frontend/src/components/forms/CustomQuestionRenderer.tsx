@@ -125,14 +125,15 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
 									key={option}
 									control={
 										<Checkbox
-											checked={checkboxValue.includes(option)}
+											checked={Array.isArray(checkboxValue) && checkboxValue.includes(option)}
 											onChange={(e) => {
+												const safeValue = Array.isArray(checkboxValue) ? checkboxValue : [];
 												if (e.target.checked) {
-													onAnswerChange(question.id, [...checkboxValue, option]);
+													onAnswerChange(question.id, [...safeValue, option]);
 												} else {
 													onAnswerChange(
 														question.id,
-														checkboxValue.filter((v) => v !== option)
+														safeValue.filter((v) => v !== option)
 													);
 												}
 											}}

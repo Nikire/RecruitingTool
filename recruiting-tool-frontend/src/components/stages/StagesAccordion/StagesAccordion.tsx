@@ -3,47 +3,138 @@ import {
 	AccordionDetails,
 	AccordionSummary,
 	Typography,
+	Box,
+	Button,
+	Divider,
+	CircularProgress,
 } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	LockOpen,
 	CheckCircle,
 	Lock,
 	KeyboardArrowDown,
+	Event as EventIcon,
 } from '@mui/icons-material';
-import {Stage} from '../../../types/stage.types';
-import {AccordionHeaderWrapper} from './StagesAccordion.styles';
+import { Stage } from '../../../types/stage.types';
+import { AccordionHeaderWrapper } from './StagesAccordion.styles';
+import { useInterviewsByStage } from '../../../hooks/api/useInterview';
+import InterviewCard from '../../interview/InterviewCard';
+import ScheduleInterviewDialog from '../../dialogs/ScheduleInterviewDialog';
+import { Interview } from '../../../types/interview.types';
+import { canManageResources } from '../../../utils/permissions';
+import { useUserAtom } from '../../../hooks/api/state/useUserAtom';
+
 type StagesAccordionProps = {
 	stage: Stage;
 	disabled?: boolean;
 };
 
-const StagesAccordion: React.FC<StagesAccordionProps> = ({stage, disabled}) => {
+const StagesAccordion: React.FC<StagesAccordionProps> = ({ stage, disabled }) => {
+	const { user } = useUserAtom();
+	const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+	const [editingInterview, setEditingInterview] = useState<Interview | null>(null);
+
+	const { data: interviews, isLoading: interviewsLoading } = useInterviewsByStage(stage.uid);
+
+	const canManage = canManageResources(user);
+
+	const handleScheduleClick = () => {
+		setEditingInterview(null);
+		setScheduleDialogOpen(true);
+	};
+
+	const handleEditInterview = (interview: Interview) => {
+		setEditingInterview(interview);
+		setScheduleDialogOpen(true);
+	};
+
+	const handleCloseDialog = () => {
+		setScheduleDialogOpen(false);
+		setEditingInterview(null);
+	};
+
 	return (
-		<Accordion
-			elevation={0}
-			defaultExpanded={stage.status === 'CURRENT'}
-			disabled={disabled}
-			square={false}
-		>
-			<AccordionSummary expandIcon={<KeyboardArrowDown />}>
-				<AccordionHeaderWrapper>
-					{stage.status === 'CURRENT' ? (
-						<LockOpen sx={{color: '#000'}} />
-					) : stage.status === 'DONE' ? (
-						<CheckCircle color="primary" />
-					) : (
-						<Lock color="disabled" />
+		<>
+			<Accordion
+				elevation={0}
+				defaultExpanded={stage.status === 'CURRENT'}
+				disabled={disabled}
+				square={false}
+			>
+				<AccordionSummary expandIcon={<KeyboardArrowDown />}>
+					<AccordionHeaderWrapper>
+						{stage.status === 'CURRENT' ? (
+							<LockOpen sx={{ color: '#000' }} />
+						) : stage.status === 'DONE' ? (
+							<CheckCircle color="primary" />
+						) : (
+							<Lock color="disabled" />
+						)}
+						<Typography variant="h6">{stage.title}</Typography>
+					</AccordionHeaderWrapper>
+				</AccordionSummary>
+				<AccordionDetails>
+					<Typography variant="body2" sx={{ mb: 3 }}>
+						{disabled ? null : stage.description}
+					</Typography>
+
+					{!disabled && (
+						<>
+							<Divider sx={{ my: 2 }} />
+
+							<Box sx={{ mt: 2 }}>
+								<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+									<Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+										<EventIcon fontSize="small" />
+										Interviews
+									</Typography>
+									{canManage && (
+										<Button
+											variant="contained"
+											size="small"
+											startIcon={<EventIcon />}
+											onClick={handleScheduleClick}
+										>
+											Schedule Interview
+										</Button>
+									)}
+								</Box>
+
+								{interviewsLoading ? (
+									<Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
+										<CircularProgress size={24} />
+									</Box>
+								) : interviews && interviews.length > 0 ? (
+									<Box sx={{ mt: 2 }}>
+										{interviews.map((interview) => (
+											<InterviewCard
+												key={interview.uid}
+												interview={interview}
+												onEdit={handleEditInterview}
+											/>
+										))}
+									</Box>
+								) : (
+									<Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
+										No interviews scheduled yet
+									</Typography>
+								)}
+							</Box>
+						</>
 					)}
-					<Typography variant="h6">{stage.title}</Typography>
-				</AccordionHeaderWrapper>
-			</AccordionSummary>
-			<AccordionDetails>
-				<Typography variant="body2">
-					{disabled ? null : stage.description}
-				</Typography>
-			</AccordionDetails>
-		</Accordion>
+				</AccordionDetails>
+			</Accordion>
+
+			{canManage && (
+				<ScheduleInterviewDialog
+					open={scheduleDialogOpen}
+					onClose={handleCloseDialog}
+					stageUid={stage.uid}
+					interview={editingInterview}
+				/>
+			)}
+		</>
 	);
 };
 

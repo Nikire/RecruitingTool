@@ -622,9 +622,23 @@
     csstype "^3.1.3"
     prop-types "^15.8.1"
 
-"@mui/system@^7.1.0", "@mui/system@^7.3.5":
+"@mui/system@^7.1.0":
   version "7.3.5"
   resolved "https://registry.npmjs.org/@mui/system/-/system-7.3.5.tgz"
+  integrity sha512-yPaf5+gY3v80HNkJcPi6WT+r9ebeM4eJzrREXPxMt7pNTV/1eahyODO4fbH3Qvd8irNxDFYn5RQ3idHW55rA6g==
+  dependencies:
+    "@babel/runtime" "^7.28.4"
+    "@mui/private-theming" "^7.3.5"
+    "@mui/styled-engine" "^7.3.5"
+    "@mui/types" "^7.4.8"
+    "@mui/utils" "^7.3.5"
+    clsx "^2.1.1"
+    csstype "^3.1.3"
+    prop-types "^15.8.1"
+
+"@mui/system@^7.3.5":
+  version "7.3.5"
+  resolved "https://registry.yarnpkg.com/@mui/system/-/system-7.3.5.tgz#ea077787ba9e9efc00a6df4db55a833de6a530fc"
   integrity sha512-yPaf5+gY3v80HNkJcPi6WT+r9ebeM4eJzrREXPxMt7pNTV/1eahyODO4fbH3Qvd8irNxDFYn5RQ3idHW55rA6g==
   dependencies:
     "@babel/runtime" "^7.28.4"
@@ -654,6 +668,29 @@
     clsx "^2.1.1"
     prop-types "^15.8.1"
     react-is "^19.2.0"
+
+"@mui/x-date-pickers@^8.18.0":
+  version "8.18.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-date-pickers/-/x-date-pickers-8.18.0.tgz#0be7c502cb6cd46d57ae053688f4a1964b48f7ae"
+  integrity sha512-lgq60mOhOf5AKfiCl37eOVSkCZQo3sHhE6tbwbcS93aNkdtlsTQlqy/s6O89RoIi8QS3/7rgCKy+WuC6YzwZrA==
+  dependencies:
+    "@babel/runtime" "^7.28.4"
+    "@mui/utils" "^7.3.5"
+    "@mui/x-internals" "8.18.0"
+    "@types/react-transition-group" "^4.4.12"
+    clsx "^2.1.1"
+    prop-types "^15.8.1"
+    react-transition-group "^4.4.5"
+
+"@mui/x-internals@8.18.0":
+  version "8.18.0"
+  resolved "https://registry.yarnpkg.com/@mui/x-internals/-/x-internals-8.18.0.tgz#480a7f86c09f1fc96bc366bc8e75dddd3b08b485"
+  integrity sha512-iM2SJALLo4kNqxTel8lfjIymYV9MgTa6021/rAlfdh/vwPMglaKyXQHrxkkWs2Eu/JFKkCKr5Fd34Gsdp63wIg==
+  dependencies:
+    "@babel/runtime" "^7.28.4"
+    "@mui/utils" "^7.3.5"
+    reselect "^5.1.1"
+    use-sync-external-store "^1.6.0"
 
 "@nodelib/fs.scandir@2.1.5":
   version "2.1.5"
@@ -2140,6 +2177,11 @@ react@^19.1.0:
   resolved "https://registry.npmjs.org/react/-/react-19.1.0.tgz"
   integrity sha512-FS+XFBNvn3GTAWq26joslQgWNoFu08F4kl0J4CgdNKADkdSGXQyTCnKteIAJy96Br6YbpEU1LSzV5dYtjMkMDg==
 
+reselect@^5.1.1:
+  version "5.1.1"
+  resolved "https://registry.yarnpkg.com/reselect/-/reselect-5.1.1.tgz#c766b1eb5d558291e5e550298adb0becc24bb72e"
+  integrity sha512-K/BG6eIky/SBpzfHZv/dd+9JBFiS4SWV7FIujVyJRux6e45+73RaUHXLmIR1f7WOMaQ0U1km6qwklRQxpJJY0w==
+
 resolve-from@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/resolve-from/-/resolve-from-4.0.0.tgz"
@@ -2349,6 +2391,11 @@ uri-js@^4.2.2:
   integrity sha512-7rKUyy33Q1yc98pQ1DAmLtwX109F7TIfWlW1Ydo8Wl1ii1SeHieeh0HHfPeL2fMXK6z0s8ecKs9frCuLJvndBg==
   dependencies:
     punycode "^2.1.0"
+
+use-sync-external-store@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.6.0.tgz#b174bfa65cb2b526732d9f2ac0a408027876f32d"
+  integrity sha512-Pp6GSwGP/NrPIrxVFAIkOQeyw8lFenOHijQWkUTrDvrF4ALqylP2C/KCkeS9dpUM3KvYRQhna5vt7IL95+ZQ9w==
 
 vite@^6.3.2:
   version "6.3.5"

@@ -32,8 +32,8 @@ export class ApplicationController {
     description: 'Returns list of applications',
     type: [ApplicationResponseDto],
   })
-  findAll(@Query() filterDto: ApplicationFilterDto): Promise<ApplicationResponseDto[]> {
-    return this.applicationService.findAll(filterDto);
+  findAll(@Query() filterDto: ApplicationFilterDto, @CurrentUser() currentUser: User): Promise<ApplicationResponseDto[]> {
+    return this.applicationService.findAll(filterDto, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -45,8 +45,8 @@ export class ApplicationController {
     type: ApplicationResponseDto,
   })
   @ApiParam({ name: 'uid', required: true, description: 'Application UID' })
-  findOne(@Param('uid') uid: string): Promise<ApplicationResponseDto> {
-    return this.applicationService.findOne(uid);
+  findOne(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<ApplicationResponseDto> {
+    return this.applicationService.findOne(uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -64,7 +64,7 @@ export class ApplicationController {
     @Body() updateApplicationDto: UpdateApplicationDto,
     @CurrentUser() currentUser: User,
   ): Promise<ApplicationResponseDto> {
-    return this.applicationService.update(uid, updateApplicationDto, currentUser.uid);
+    return this.applicationService.update(uid, updateApplicationDto, currentUser.uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -76,8 +76,8 @@ export class ApplicationController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true, description: 'Application UID' })
-  remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
-    return this.applicationService.remove(uid);
+  remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<MessageResponseDto> {
+    return this.applicationService.remove(uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -89,7 +89,7 @@ export class ApplicationController {
     type: ApplicationResponseDto,
   })
   @ApiParam({ name: 'uid', required: true, description: 'Application UID' })
-  acceptApplication(@Param('uid') uid: string): Promise<ApplicationResponseDto> {
-    return this.applicationService.acceptApplication(uid);
+  acceptApplication(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<ApplicationResponseDto> {
+    return this.applicationService.acceptApplication(uid, currentUser);
   }
 }

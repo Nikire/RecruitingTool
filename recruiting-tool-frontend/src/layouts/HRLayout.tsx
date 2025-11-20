@@ -97,11 +97,11 @@ const HRLayout: React.FC = () => {
 					</ListItemButton>
 				</ListItem>
 				<ListItem disablePadding>
-					<ListItemButton onClick={() => navigate('/dashboard')}>
+					<ListItemButton onClick={() => navigate('/careers')}>
 						<ListItemIcon>
 							<ArrowBackIcon />
 						</ListItemIcon>
-						<ListItemText primary="Back to Dashboard" />
+						<ListItemText primary="Back to Careers" />
 					</ListItemButton>
 				</ListItem>
 			</List>

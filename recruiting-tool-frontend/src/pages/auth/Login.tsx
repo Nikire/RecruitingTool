@@ -2,6 +2,8 @@ import {useForm} from 'react-hook-form';
 import {useNavigate} from 'react-router-dom';
 import {Typography, TextField, Button, Divider} from '@mui/material';
 import {useLogin} from '../../hooks/api/useAuth';
+import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {getDefaultDashboard} from '../../utils/permissions';
 import {AuthGroupWrapper, AuthPageWrapper, FormWrapper} from './Auth.styles';
 interface LoginFormData {
 	email: string;
@@ -10,13 +12,14 @@ interface LoginFormData {
 
 const Login: React.FC = () => {
 	const navigate = useNavigate();
+	const {user} = useUserAtom();
 	const {register, handleSubmit} = useForm<LoginFormData>();
 	const {mutate: login, isPending, isError} = useLogin();
 
 	const onSubmit = (data: LoginFormData) => {
 		login(data, {
 			onSuccess: () => {
-				navigate('/dashboard');
+				navigate(getDefaultDashboard(user));
 			},
 		});
 	};

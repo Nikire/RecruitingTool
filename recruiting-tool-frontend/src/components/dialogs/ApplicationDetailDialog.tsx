@@ -24,8 +24,16 @@ import {
 import {useForm} from 'react-hook-form';
 import {useEffect, useState} from 'react';
 import {format} from 'date-fns';
-import {Application, ApplicationStatus, UpdateApplicationDto} from '../../types/application.types';
-import {useUpdateApplication, useDeleteApplication, useAcceptApplication} from '../../hooks/api/useApplications';
+import {
+	Application,
+	ApplicationStatus,
+	UpdateApplicationDto,
+} from '../../types/application.types';
+import {
+	useUpdateApplication,
+	useDeleteApplication,
+	useAcceptApplication,
+} from '../../hooks/api/useApplications';
 import {useDownloadFile} from '../../hooks/api/useFiles';
 import ConfirmDeleteDialog from './ConfirmDeleteDialog';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -61,8 +69,10 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 		},
 	});
 
-	const {mutate: updateApplication, isPending: isUpdating} = useUpdateApplication();
-	const {mutate: deleteApplication, isPending: isDeleting} = useDeleteApplication();
+	const {mutate: updateApplication, isPending: isUpdating} =
+		useUpdateApplication();
+	const {mutate: deleteApplication, isPending: isDeleting} =
+		useDeleteApplication();
 	const {mutate: acceptApp, isPending: isAccepting} = useAcceptApplication();
 	const {mutate: downloadFile} = useDownloadFile();
 
@@ -154,9 +164,15 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 
 	return (
 		<>
-			<Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+			<Dialog open={open} onClose={handleClose} maxWidth="lg" fullWidth>
 				<DialogTitle>
-					<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+					<Box
+						sx={{
+							display: 'flex',
+							justifyContent: 'space-between',
+							alignItems: 'center',
+						}}
+					>
 						<Typography variant="h6">Application Details</Typography>
 						<Chip
 							label={application.status}
@@ -178,26 +194,35 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 									<Typography variant="body2" color="text.secondary">
 										Name
 									</Typography>
-									<Typography variant="body1">{application.applicantName}</Typography>
+									<Typography variant="body1">
+										{application.applicantName}
+									</Typography>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<Typography variant="body2" color="text.secondary">
 										Email
 									</Typography>
-									<Typography variant="body1">{application.applicantEmail}</Typography>
+									<Typography variant="body1">
+										{application.applicantEmail}
+									</Typography>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<Typography variant="body2" color="text.secondary">
 										Phone
 									</Typography>
-									<Typography variant="body1">{application.applicantPhone}</Typography>
+									<Typography variant="body1">
+										{application.applicantPhone}
+									</Typography>
 								</Grid>
 								<Grid item xs={12} sm={6}>
 									<Typography variant="body2" color="text.secondary">
 										Applied Date
 									</Typography>
 									<Typography variant="body1">
-										{format(new Date(application.appliedAt), 'MMM d, yyyy h:mm a')}
+										{format(
+											new Date(application.appliedAt),
+											'MMM d, yyyy h:mm a'
+										)}
 									</Typography>
 								</Grid>
 							</Grid>
@@ -210,7 +235,9 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 							<Typography variant="subtitle1" fontWeight="bold" gutterBottom>
 								Job Position
 							</Typography>
-							<Typography variant="body1">{application.jobPositionTitle}</Typography>
+							<Typography variant="body1">
+								{application.jobPositionTitle}
+							</Typography>
 							{application.companyName && (
 								<Typography variant="body2" color="text.secondary">
 									{application.companyName}
@@ -224,11 +251,17 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 						{application.resumeFileUid && (
 							<>
 								<Box sx={{mb: 3}}>
-									<Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+									<Typography
+										variant="subtitle1"
+										fontWeight="bold"
+										gutterBottom
+									>
 										Resume
 									</Typography>
 									<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-										<Typography variant="body2">{application.resumeFileName}</Typography>
+										<Typography variant="body2">
+											{application.resumeFileName}
+										</Typography>
 										<Tooltip title="Download Resume">
 											<IconButton
 												onClick={handleDownloadResume}
@@ -248,7 +281,11 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 						{application.coverLetter && (
 							<>
 								<Box sx={{mb: 3}}>
-									<Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+									<Typography
+										variant="subtitle1"
+										fontWeight="bold"
+										gutterBottom
+									>
 										Cover Letter
 									</Typography>
 									<Box
@@ -274,41 +311,51 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 							<Typography variant="subtitle1" fontWeight="bold" gutterBottom>
 								HR Review
 							</Typography>
-							<Grid container spacing={2}>
-								<Grid item xs={12}>
-									<FormControl fullWidth>
-										<InputLabel id="status-label">Status</InputLabel>
-										<Select
-											labelId="status-label"
-											label="Status"
-											value={currentStatus}
-											{...register('status', {required: 'Status is required'})}
-											error={!!errors.status}
-										>
-											<MenuItem value={ApplicationStatus.PENDING}>Pending</MenuItem>
-											<MenuItem value={ApplicationStatus.REVIEWED}>Reviewed</MenuItem>
-											<MenuItem value={ApplicationStatus.ACCEPTED}>Accepted</MenuItem>
-											<MenuItem value={ApplicationStatus.REJECTED}>Rejected</MenuItem>
-										</Select>
-									</FormControl>
-								</Grid>
-								<Grid item xs={12}>
-									<TextField
-										label="Internal Notes"
-										multiline
-										rows={4}
-										fullWidth
-										placeholder="Add notes about this application..."
-										{...register('notes')}
-									/>
-								</Grid>
-							</Grid>
+							<Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+								<FormControl fullWidth>
+									<InputLabel id="status-label">Status</InputLabel>
+									<Select
+										labelId="status-label"
+										label="Status"
+										value={currentStatus}
+										{...register('status', {required: 'Status is required'})}
+										error={!!errors.status}
+									>
+										<MenuItem value={ApplicationStatus.PENDING}>
+											Pending
+										</MenuItem>
+										<MenuItem value={ApplicationStatus.REVIEWED}>
+											Reviewed
+										</MenuItem>
+										<MenuItem value={ApplicationStatus.ACCEPTED}>
+											Accepted
+										</MenuItem>
+										<MenuItem value={ApplicationStatus.REJECTED}>
+											Rejected
+										</MenuItem>
+									</Select>
+								</FormControl>
+								<TextField
+									label="Internal Notes"
+									multiline
+									rows={6}
+									sx={{flexGrow: 1}}
+									fullWidth
+									placeholder="Add notes about this application..."
+									{...register('notes')}
+								/>
+							</Box>
 
 							{application.reviewedAt && (
 								<Box sx={{mt: 2}}>
 									<Typography variant="caption" color="text.secondary">
-										Reviewed on {format(new Date(application.reviewedAt), 'MMM d, yyyy h:mm a')}
-										{application.reviewedByName && ` by ${application.reviewedByName}`}
+										Reviewed on{' '}
+										{format(
+											new Date(application.reviewedAt),
+											'MMM d, yyyy h:mm a'
+										)}
+										{application.reviewedByName &&
+											` by ${application.reviewedByName}`}
 									</Typography>
 								</Box>
 							)}
@@ -326,7 +373,10 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 							Delete
 						</Button>
 						<Box sx={{display: 'flex', gap: 1}}>
-							<Button onClick={handleClose} disabled={isUpdating || isAccepting}>
+							<Button
+								onClick={handleClose}
+								disabled={isUpdating || isAccepting}
+							>
 								Cancel
 							</Button>
 							{application.status !== ApplicationStatus.ACCEPTED && (
@@ -337,7 +387,9 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 									startIcon={<CheckCircleIcon />}
 									disabled={isAccepting || isUpdating}
 								>
-									{isAccepting ? 'Accepting...' : 'Accept & Create Hiring Process'}
+									{isAccepting
+										? 'Accepting...'
+										: 'Accept & Create Hiring Process'}
 								</Button>
 							)}
 							<Button

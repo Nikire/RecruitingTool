@@ -43,14 +43,14 @@ const JobPositionsPage: React.FC = () => {
 						mb: 0.5,
 					}}
 				>
-					Open Job Positions
+					Job Positions
 				</Typography>
 				<Typography
 					variant="body2"
 					color="textSecondary"
 					sx={{fontSize: {xs: '0.9rem', sm: '1rem'}}}
 				>
-					Find and apply to available opportunities
+					Create, manage, and monitor job openings for recruitment
 				</Typography>
 			</Box>
 

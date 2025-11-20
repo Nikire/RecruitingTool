@@ -13,9 +13,10 @@ import { CompanyModule } from './modules/company/company.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { ApplicationModule } from './modules/application/application.module';
 import { EmailTemplatesModule } from './modules/email-templates/email-templates.module';
+import { InterviewModule } from './modules/interview/interview.module';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule],
+  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule, InterviewModule],
   controllers: [AppController],
   providers: [AppService],
 })

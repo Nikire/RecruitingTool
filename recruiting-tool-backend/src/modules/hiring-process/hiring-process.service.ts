@@ -7,6 +7,8 @@ import { JobPositionService } from '../job-position/job-position.service';
 import { CandidateService } from './modules/candidate/candidate.service';
 import { StagesService } from './modules/stages/stages.service';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { User } from '@prisma/client';
+import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class HiringProcessService {
@@ -61,16 +63,22 @@ export class HiringProcessService {
     return HiringProcessOneMapper(newHiringProcess);
   }
 
-  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+  async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * limit;
 
     // Build where clause for search
-    const where = search
+    const where: any = search
       ? {
           OR: [{ title: { contains: search, mode: 'insensitive' as const } }],
         }
       : {};
+
+    // Add company filter for HR and USER roles
+    const userCompanyId = getUserCompanyId(user);
+    if (userCompanyId !== null) {
+      where.companyId = userCompanyId;
+    }
 
     // Get total count
     const total = await this.databaseService.hiringProcess.count({ where });
@@ -99,15 +107,23 @@ export class HiringProcessService {
     };
   }
 
-  async findAll(hiringProcessFindDto: HiringProcessFindDto): Promise<Array<HiringProcessResponseDto>> {
+  async findAll(hiringProcessFindDto: HiringProcessFindDto, user: User): Promise<Array<HiringProcessResponseDto>> {
+    const where: any = hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid } } : {};
+
+    // Add company filter for HR and USER roles
+    const userCompanyId = getUserCompanyId(user);
+    if (userCompanyId !== null) {
+      where.companyId = userCompanyId;
+    }
+
     const hiringProcesses = await this.databaseService.hiringProcess.findMany({
       include: includeHiringProcess,
-      where: hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid } } : {},
+      where,
     });
     return hiringProcesses.map((hp) => HiringProcessOneMapper(hp));
   }
 
-  async findOne(uid: string): Promise<HiringProcessResponseDto> {
+  async findOne(uid: string, user?: User): Promise<HiringProcessResponseDto> {
     const hiringProcess = await this.databaseService.hiringProcess.findUnique({
       where: { uid },
       include: includeHiringProcess,
@@ -117,13 +133,29 @@ export class HiringProcessService {
       throw new NotFoundException(`Hiring process ${uid} not found`);
     }
 
+    // Verify company access if user is provided
+    if (user) {
+      verifyCompanyAccess(user, hiringProcess.companyId);
+    }
+
     return HiringProcessOneMapper(hiringProcess);
   }
 
-  async update(uid: string, updateHiringProcessDto: UpdateHiringProcessDto): Promise<HiringProcessResponseDto> {
+  async update(uid: string, updateHiringProcessDto: UpdateHiringProcessDto, user: User): Promise<HiringProcessResponseDto> {
     if (!uid) {
       throw new NotFoundException(`Hiring process ${uid} not found`);
     }
+
+    // Verify company access before update
+    const existingHiringProcess = await this.databaseService.hiringProcess.findUnique({
+      where: { uid },
+    });
+
+    if (!existingHiringProcess) {
+      throw new NotFoundException(`Hiring process ${uid} not found`);
+    }
+
+    verifyCompanyAccess(user, existingHiringProcess.companyId);
 
     const hiringProcess = await this.databaseService.hiringProcess.update({
       where: { uid },
@@ -131,27 +163,55 @@ export class HiringProcessService {
       include: includeHiringProcess,
     });
 
-    if (!hiringProcess) {
-      throw new NotFoundException(`Hiring process ${uid} not found`);
-    }
     return HiringProcessOneMapper(hiringProcess);
   }
 
-  async remove(uid: string): Promise<MessageResponseDto> {
+  async remove(uid: string, user: User): Promise<MessageResponseDto> {
+    // Verify company access before delete
+    const existingHiringProcess = await this.databaseService.hiringProcess.findUnique({
+      where: { uid },
+    });
+
+    if (!existingHiringProcess) {
+      throw new NotFoundException(`Hiring process ${uid} not found`);
+    }
+
+    verifyCompanyAccess(user, existingHiringProcess.companyId);
+
     const hiringProcess = await this.databaseService.hiringProcess.delete({
       where: { uid },
     });
-    if (!hiringProcess) {
-      throw new NotFoundException(`Hiring process ${uid} not found`);
-    }
+
     return { message: `Hiring Process deleted successfully` };
   }
 
-  async progressToNextStage(hiringProcessUid: string) {
+  async progressToNextStage(hiringProcessUid: string, user: User) {
+    // Verify company access before progressing stage
+    const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+      where: { uid: hiringProcessUid },
+    });
+
+    if (!hiringProcess) {
+      throw new NotFoundException(`Hiring process ${hiringProcessUid} not found`);
+    }
+
+    verifyCompanyAccess(user, hiringProcess.companyId);
+
     return this.stagesService.progressToNextStage(hiringProcessUid);
   }
 
-  async moveToSpecificStage(hiringProcessUid: string, targetStageUid: string) {
+  async moveToSpecificStage(hiringProcessUid: string, targetStageUid: string, user: User) {
+    // Verify company access before moving to specific stage
+    const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+      where: { uid: hiringProcessUid },
+    });
+
+    if (!hiringProcess) {
+      throw new NotFoundException(`Hiring process ${hiringProcessUid} not found`);
+    }
+
+    verifyCompanyAccess(user, hiringProcess.companyId);
+
     return this.stagesService.moveToSpecificStage(hiringProcessUid, targetStageUid);
   }
 }
