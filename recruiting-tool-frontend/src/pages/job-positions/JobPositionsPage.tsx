@@ -16,24 +16,33 @@ const JobPositionsPage: React.FC = () => {
 	const [searchState, setSearchState] = useJobPositionsSearch();
 	const {page, limit, search} = searchState;
 
-	const handleSearch = useCallback((value: string) => {
-		setSearchState((prev) => ({...prev, search: value, page: 1}));
-	}, [setSearchState]);
+	const handleSearch = useCallback(
+		(value: string) => {
+			setSearchState((prev) => ({...prev, search: value, page: 1}));
+		},
+		[setSearchState]
+	);
 
-	const handlePageChange = useCallback((newPage: number) => {
-		setSearchState((prev) => ({...prev, page: newPage}));
-	}, [setSearchState]);
+	const handlePageChange = useCallback(
+		(newPage: number) => {
+			setSearchState((prev) => ({...prev, page: newPage}));
+		},
+		[setSearchState]
+	);
 
-	const handleLimitChange = useCallback((newLimit: number) => {
-		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
-	}, [setSearchState]);
+	const handleLimitChange = useCallback(
+		(newLimit: number) => {
+			setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
+		},
+		[setSearchState]
+	);
 
 	const handleCloseStagesDialog = () => {
 		setSelectedJobPosition(null);
 	};
 
 	return (
-		<JobPositionsPageWrapper>
+		<Box sx={{mt: 8}}>
 			<Box sx={{mb: {xs: 1.5, sm: 2}}}>
 				<Typography
 					variant={isMobile ? 'h5' : 'h4'}
@@ -79,7 +88,7 @@ const JobPositionsPage: React.FC = () => {
 					existingStages={selectedJobPosition.stages}
 				/>
 			)}
-		</JobPositionsPageWrapper>
+		</Box>
 	);
 };
 

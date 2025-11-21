@@ -7,7 +7,7 @@ const Home: React.FC = () => {
 	const navigate = useNavigate();
 
 	return (
-		<Container maxWidth="lg">
+		<Container sx={{mt: 12}} maxWidth="lg">
 			<Box
 				sx={{
 					py: 12,
@@ -21,8 +21,13 @@ const Home: React.FC = () => {
 				<Typography variant="h2" component="h1" gutterBottom fontWeight="bold">
 					Welcome to Recruiting Tool
 				</Typography>
-				<Typography variant="h5" color="text.secondary" sx={{mb: 4, maxWidth: 600}}>
-					Streamline your hiring process and find the perfect candidates for your team
+				<Typography
+					variant="h5"
+					color="text.secondary"
+					sx={{mb: 4, maxWidth: 600}}
+				>
+					Streamline your hiring process and find the perfect candidates for
+					your team
 				</Typography>
 				<Box sx={{display: 'flex', gap: 2}}>
 					<Button

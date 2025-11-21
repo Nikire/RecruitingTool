@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
 				user={logedUser}
 			/>
 			<Box sx={{flexGrow: 1}}>
-				<AppBar position="static" color={color}>
+				<AppBar position="fixed" color={color}>
 					<Toolbar>
 						<IconButton
 							size="large"
@@ -86,7 +86,10 @@ const Navbar: React.FC = () => {
 									Logout
 								</Button>
 								<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
-									<UserAvatar name={logedUser?.name} avatarUrl={logedUser?.profilePicture} />
+									<UserAvatar
+										name={logedUser?.name}
+										avatarUrl={logedUser?.profilePicture}
+									/>
 								</IconButton>
 							</Box>
 						) : (

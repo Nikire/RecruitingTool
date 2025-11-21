@@ -1,4 +1,14 @@
-import {Box, Typography, Card, CardContent, Button, Chip, TextField, Divider, Grid} from '@mui/material';
+import {
+	Box,
+	Typography,
+	Card,
+	CardContent,
+	Button,
+	Chip,
+	TextField,
+	Divider,
+	Grid,
+} from '@mui/material';
 import {Save as SaveIcon, Refresh as RefreshIcon} from '@mui/icons-material';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useForm} from 'react-hook-form';
@@ -54,12 +64,15 @@ const ProfilePage: React.FC = () => {
 		if (!user) return;
 
 		// Remove empty strings and convert to undefined
-		const cleanedData: UpdateUserDto = Object.entries(data).reduce((acc, [key, value]) => {
-			if (value !== '' && value !== undefined) {
-				acc[key as keyof UpdateUserDto] = value;
-			}
-			return acc;
-		}, {} as UpdateUserDto);
+		const cleanedData: UpdateUserDto = Object.entries(data).reduce(
+			(acc, [key, value]) => {
+				if (value !== '' && value !== undefined) {
+					acc[key as keyof UpdateUserDto] = value;
+				}
+				return acc;
+			},
+			{} as UpdateUserDto
+		);
 
 		updateUser({uid: user.uid, data: cleanedData});
 	};
@@ -82,7 +95,7 @@ const ProfilePage: React.FC = () => {
 
 	if (!user) {
 		return (
-			<Box sx={{p: 4}}>
+			<Box sx={{mt: 8, p: 4}}>
 				<Typography variant="h5" color="error">
 					No user data available
 				</Typography>
@@ -91,8 +104,15 @@ const ProfilePage: React.FC = () => {
 	}
 
 	return (
-		<Box component="form" onSubmit={handleSubmit(onSubmit)}>
-			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
+		<Box component="form" sx={{mt: 8}} onSubmit={handleSubmit(onSubmit)}>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+					mb: 3,
+				}}
+			>
 				<Typography variant="h4">My Profile</Typography>
 				<Box sx={{display: 'flex', gap: 1}}>
 					<Button
@@ -118,13 +138,22 @@ const ProfilePage: React.FC = () => {
 				{/* Profile Overview Card */}
 				<Grid size={{xs: 12, md: 4}}>
 					<Card>
-						<CardContent sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4}}>
+						<CardContent
+							sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								p: 4,
+							}}
+						>
 							<ProfilePictureUpload
 								currentPicture={
 									user.profilePicture
 										? user.profilePicture.startsWith('http')
 											? user.profilePicture
-											: `${import.meta.env.VITE_API_URL}/files/${user.profilePicture}/view`
+											: `${import.meta.env.VITE_API_URL}/files/${
+													user.profilePicture
+											  }/view`
 										: undefined
 								}
 								userName={watchedName || user.name}
@@ -138,12 +167,17 @@ const ProfilePage: React.FC = () => {
 										},
 										{
 											onSuccess: () => {
-												console.log('Profile picture updated successfully with UID!');
+												console.log(
+													'Profile picture updated successfully with UID!'
+												);
 											},
 											onError: (error) => {
-												console.error('Failed to update profile picture:', error);
+												console.error(
+													'Failed to update profile picture:',
+													error
+												);
 											},
-										},
+										}
 									);
 								}}
 								onRemove={() => {
@@ -159,9 +193,12 @@ const ProfilePage: React.FC = () => {
 												console.log('Profile picture removed successfully!');
 											},
 											onError: (error) => {
-												console.error('Failed to remove profile picture:', error);
+												console.error(
+													'Failed to remove profile picture:',
+													error
+												);
 											},
-										},
+										}
 									);
 								}}
 							/>
@@ -171,9 +208,23 @@ const ProfilePage: React.FC = () => {
 							<Typography variant="body2" color="text.secondary" gutterBottom>
 								{user.email}
 							</Typography>
-							<Box sx={{mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center'}}>
+							<Box
+								sx={{
+									mt: 2,
+									display: 'flex',
+									gap: 1,
+									flexWrap: 'wrap',
+									justifyContent: 'center',
+								}}
+							>
 								{user.roles.map((role) => (
-									<Chip key={role} label={role} size="small" color="primary" variant="outlined" />
+									<Chip
+										key={role}
+										label={role}
+										size="small"
+										color="primary"
+										variant="outlined"
+									/>
 								))}
 							</Box>
 						</CardContent>
@@ -186,7 +237,10 @@ const ProfilePage: React.FC = () => {
 						<CardContent sx={{p: 3}}>
 							{/* Basic Information Section */}
 							<Box sx={{mb: 4}}>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
 									Basic Information
 								</Typography>
 								<Grid container spacing={2.5}>
@@ -238,7 +292,10 @@ const ProfilePage: React.FC = () => {
 
 							{/* Professional Information Section */}
 							<Box sx={{mb: 4}}>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
 									Professional Information
 								</Typography>
 								<Grid container spacing={2.5}>
@@ -270,7 +327,10 @@ const ProfilePage: React.FC = () => {
 
 							{/* Additional Information Section */}
 							<Box sx={{mb: 4}}>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
 									Additional Information
 								</Typography>
 								<Grid container spacing={2.5}>
@@ -302,7 +362,10 @@ const ProfilePage: React.FC = () => {
 
 							{/* Bio Section */}
 							<Box>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
 									About You
 								</Typography>
 								<TextField
