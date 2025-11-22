@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Typography} from '@mui/material';
+import {Box, Typography} from '@mui/material';
 import {
 	People as PeopleIcon,
 	Business as BusinessIcon,
@@ -7,42 +7,7 @@ import {
 } from '@mui/icons-material';
 import {useNavigate} from 'react-router-dom';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
-
-interface StatCardProps {
-	title: string;
-	icon: React.ReactNode;
-	color: string;
-	description: string;
-}
-
-const StatCard: React.FC<StatCardProps> = ({title, icon, color, description}) => {
-	return (
-		<Card sx={{height: '100%', display: 'flex', flexDirection: 'column'}}>
-			<CardContent sx={{flexGrow: 1, display: 'flex', flexDirection: 'column'}}>
-				<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-					<Box
-						sx={{
-							bgcolor: color,
-							color: 'white',
-							p: 1.5,
-							borderRadius: 2,
-							display: 'flex',
-							mr: 2,
-						}}
-					>
-						{icon}
-					</Box>
-					<Typography variant="h6" component="div">
-						{title}
-					</Typography>
-				</Box>
-				<Typography variant="body2" color="text.secondary">
-					{description}
-				</Typography>
-			</CardContent>
-		</Card>
-	);
-};
+import StatCard from '../../components/cards/stat-card/StatCard';
 
 const AdminDashboard: React.FC = () => {
 	const {user} = useUserAtom();

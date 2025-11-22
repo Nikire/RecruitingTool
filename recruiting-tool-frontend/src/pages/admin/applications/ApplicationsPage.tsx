@@ -24,18 +24,39 @@ const ApplicationsPage: React.FC = () => {
 		return (
 			<Box>
 				<Alert severity="error" sx={{mb: 2}}>
-					Access Denied: You need ADMIN or SUPER_ADMIN role to view applications.
+					Access Denied: You need ADMIN or SUPER_ADMIN role to view
+					applications.
 				</Alert>
 				<Typography variant="body1">
-					Please contact your administrator if you believe you should have access to this page.
+					Please contact your administrator if you believe you should have
+					access to this page.
 				</Typography>
 			</Box>
 		);
 	}
 
+	const ApplicationStatusOptions: {
+		value: ApplicationStatus | '';
+		label: string;
+	}[] = [
+		{value: '', label: 'All Applications'},
+		{value: ApplicationStatus.PENDING, label: 'Pending'},
+		{value: ApplicationStatus.REVIEWED, label: 'Reviewed'},
+		{value: ApplicationStatus.ACCEPTED, label: 'Accepted'},
+		{value: ApplicationStatus.REJECTED, label: 'Rejected'},
+	];
+
 	return (
 		<Box>
-			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 8}}>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+					mb: 3,
+					mt: 8,
+				}}
+			>
 				<Typography variant="h4">Job Applications</Typography>
 			</Box>
 
@@ -48,13 +69,15 @@ const ApplicationsPage: React.FC = () => {
 							id="status-filter"
 							value={statusFilter}
 							label="Filter by Status"
-							onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | '')}
+							onChange={(e) =>
+								setStatusFilter(e.target.value as ApplicationStatus | '')
+							}
 						>
-							<MenuItem value="">All Applications</MenuItem>
-							<MenuItem value={ApplicationStatus.PENDING}>Pending</MenuItem>
-							<MenuItem value={ApplicationStatus.REVIEWED}>Reviewed</MenuItem>
-							<MenuItem value={ApplicationStatus.ACCEPTED}>Accepted</MenuItem>
-							<MenuItem value={ApplicationStatus.REJECTED}>Rejected</MenuItem>
+							{ApplicationStatusOptions.map((option) => (
+								<MenuItem key={option.value} value={option.value}>
+									{option.label}
+								</MenuItem>
+							))}
 						</Select>
 					</FormControl>
 				</Box>
