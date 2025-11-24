@@ -1,5 +1,6 @@
 import {Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton} from '@mui/material';
 import {Edit as EditIcon, Delete as DeleteIcon} from '@mui/icons-material';
+import {useTranslation} from 'react-i18next';
 import {useListCompanies} from '../../hooks/api/useCompanies';
 import {Company} from '../../types/company.types';
 import Pagination from '../pagination/Pagination';
@@ -23,6 +24,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 	onEdit,
 	onDelete,
 }) => {
+	const {t} = useTranslation();
 	const {data, isLoading} = useListCompanies({
 		page,
 		limit,
@@ -49,11 +51,11 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 				<Table>
 					<TableHead>
 						<TableRow>
-							<TableCell>Name</TableCell>
-							<TableCell>Description</TableCell>
-							<TableCell align="center">Users</TableCell>
-							<TableCell align="center">Job Positions</TableCell>
-							<TableCell align="center">Actions</TableCell>
+							<TableCell>{t('companies.name_label')}</TableCell>
+							<TableCell>{t('companies.description_label')}</TableCell>
+							<TableCell align="center">{t('users.title')}</TableCell>
+							<TableCell align="center">{t('job_positions.title')}</TableCell>
+							<TableCell align="center">{t('common.actions')}</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>

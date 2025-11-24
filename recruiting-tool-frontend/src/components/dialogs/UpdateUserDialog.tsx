@@ -7,8 +7,10 @@ import {
 	Button,
 	Typography,
 	Box,
+	CircularProgress,
 } from '@mui/material';
 import {useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useUpdateUser} from '../../hooks/api/useUsers';
 import {User} from '../../types/user.types';
 import {useEffect} from 'react';
@@ -31,6 +33,7 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 	onClose,
 	user,
 }) => {
+	const {t} = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -94,22 +97,22 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Update User</DialogTitle>
+			<DialogTitle>{t('users.update_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<Box sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: 1}}>
 						<TextField
-							label="User Name"
+							label={t('users.name_label')}
 							fullWidth
 							{...register('name', {
-								required: 'Name is required',
+								required: t('validation.name_required'),
 								minLength: {
 									value: 2,
-									message: 'Name must be at least 2 characters',
+									message: t('validation.name_min_length', {min: 2}),
 								},
 								maxLength: {
 									value: 100,
-									message: 'Name must be less than 100 characters',
+									message: t('validation.name_max_length', {max: 100}),
 								},
 							})}
 							error={!!errors.name}
@@ -117,14 +120,14 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 						/>
 
 						<TextField
-							label="Email"
+							label={t('users.email_label')}
 							type="email"
 							fullWidth
 							{...register('email', {
-								required: 'Email is required',
+								required: t('validation.email_required'),
 								pattern: {
 									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-									message: 'Invalid email address',
+									message: t('validation.email_invalid'),
 								},
 							})}
 							error={!!errors.email}
@@ -132,47 +135,48 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 						/>
 
 						<TextField
-							label="Password (leave empty to keep current)"
+							label={t('users.password_optional')}
 							type="password"
 							fullWidth
 							{...register('password', {
 								minLength: {
 									value: 3,
-									message: 'Password must be at least 3 characters',
+									message: t('validation.password_min_length', {min: 3}),
 								},
 								maxLength: {
 									value: 20,
-									message: 'Password must be less than 20 characters',
+									message: t('validation.password_max_length', {max: 20}),
 								},
 							})}
 							error={!!errors.password}
-							helperText={errors.password?.message || 'Leave empty to keep current password'}
+							helperText={errors.password?.message || t('users.password_helper')}
 						/>
 
 						<TextField
-							label="Company UID (optional)"
+							label={t('users.company_uid_label')}
 							fullWidth
 							{...register('companyUid')}
-							helperText="Enter company UID to assign user to a company"
+							helperText={t('users.company_uid_helper')}
 						/>
 					</Box>
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to update user. Please try again.
+							{t('errors.update_failed', {entity: t('users.title').toLowerCase()})}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isPending}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						type="submit"
 						variant="contained"
 						disabled={isPending}
+						startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : undefined}
 					>
-						{isPending ? 'Updating...' : 'Update'}
+						{isPending ? t('common.updating') : t('common.update')}
 					</Button>
 				</DialogActions>
 			</form>

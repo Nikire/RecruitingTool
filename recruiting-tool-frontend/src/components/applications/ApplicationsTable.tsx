@@ -17,6 +17,7 @@ import {
 } from '@mui/material';
 import {Visibility as VisibilityIcon} from '@mui/icons-material';
 import {format} from 'date-fns';
+import {useTranslation} from 'react-i18next';
 import {useApplications} from '../../hooks/api/useApplications';
 import {Application, ApplicationStatus} from '../../types/application.types';
 import ApplicationDetailDialog from '../dialogs/ApplicationDetailDialog';
@@ -26,6 +27,7 @@ interface ApplicationsTableProps {
 }
 
 const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => {
+	const {t} = useTranslation();
 	const {data: applications, isLoading, isError} = useApplications(
 		statusFilter ? {status: statusFilter} : undefined
 	);
@@ -68,7 +70,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 	if (isError) {
 		return (
 			<Alert severity="error">
-				Failed to load applications. Please try again later.
+				{t('applications.error_loading')}
 			</Alert>
 		);
 	}
@@ -77,12 +79,12 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 		return (
 			<Paper sx={{p: 4, textAlign: 'center'}}>
 				<Typography variant="h6" color="text.secondary" gutterBottom>
-					No Applications Found
+					{t('applications.no_applications_found')}
 				</Typography>
 				<Typography variant="body2" color="text.secondary">
 					{statusFilter
-						? `No applications with status "${statusFilter}"`
-						: 'No job applications have been submitted yet.'}
+						? t('applications.no_applications_with_status', {status: statusFilter})
+						: t('applications.no_applications_submitted')}
 				</Typography>
 			</Paper>
 		);
@@ -93,7 +95,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 			<Paper sx={{mb: 2}}>
 				<Box sx={{p: 2, borderBottom: 1, borderColor: 'divider'}}>
 					<Typography variant="body2" color="text.secondary">
-						Total Applications: {applications.length}
+						{t('applications.total_applications', {count: applications.length})}
 					</Typography>
 				</Box>
 			</Paper>
@@ -102,13 +104,13 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 				<Table>
 					<TableHead>
 						<TableRow>
-							<TableCell>Applicant Name</TableCell>
-							<TableCell>Email</TableCell>
-							<TableCell>Phone</TableCell>
-							<TableCell>Job Position</TableCell>
-							<TableCell>Status</TableCell>
-							<TableCell>Applied Date</TableCell>
-							<TableCell align="center">Actions</TableCell>
+							<TableCell>{t('applications.applicant_name')}</TableCell>
+							<TableCell>{t('applications.email')}</TableCell>
+							<TableCell>{t('applications.phone')}</TableCell>
+							<TableCell>{t('applications.job_position')}</TableCell>
+							<TableCell>{t('applications.status')}</TableCell>
+							<TableCell>{t('applications.applied_date')}</TableCell>
+							<TableCell align="center">{t('common.actions')}</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -141,7 +143,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 									{format(new Date(application.appliedAt), 'MMM d, yyyy h:mm a')}
 								</TableCell>
 								<TableCell align="center">
-									<Tooltip title="View Details">
+									<Tooltip title={t('applications.view_details')}>
 										<IconButton
 											onClick={(e) => {
 												e.stopPropagation();

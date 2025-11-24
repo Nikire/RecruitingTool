@@ -8,8 +8,10 @@ import {
 	Box,
 	Divider,
 	Alert,
+	CircularProgress,
 } from '@mui/material';
 import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {useBulkCreateStages} from '../../hooks/api/useStages';
 import {Stage, StageType, STAGE_TYPE_LABELS} from '../../types/stage.types';
 import StageItem from '../job-positions/StageItem';
@@ -34,6 +36,7 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
 	jobPositionTitle,
 	existingStages = [],
 }) => {
+	const {t} = useTranslation();
 	const [newStages, setNewStages] = useState<Omit<Stage, 'uid' | 'status'>[]>([]);
 	const {mutate: bulkCreateStages, isPending, isError} = useBulkCreateStages();
 
@@ -64,17 +67,17 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
 			<DialogTitle>
-				<Typography variant="h6">Manage Stages - {jobPositionTitle}</Typography>
+				<Typography variant="h6">{t('manage_stages.title', {jobTitle: jobPositionTitle})}</Typography>
 			</DialogTitle>
 			<DialogContent>
 				{/* Existing Stages Section */}
 				{existingStages.length > 0 && (
 					<Box sx={{mb: 4}}>
 						<Typography variant="h6" gutterBottom>
-							Current Stages ({existingStages.length})
+							{t('manage_stages.current_stages', {count: existingStages.length})}
 						</Typography>
 						<Typography variant="body2" color="text.secondary" gutterBottom sx={{mb: 2}}>
-							These stages are already configured for this job position.
+							{t('manage_stages.current_stages_help')}
 						</Typography>
 						<Box>
 							{existingStages
@@ -95,15 +98,15 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
 				{/* Add New Stages Section */}
 				<Box>
 					<Typography variant="h6" gutterBottom>
-						Add New Stages
+						{t('manage_stages.add_new_stages')}
 					</Typography>
 					<Typography variant="body2" color="text.secondary" gutterBottom sx={{mb: 2}}>
-						Configure additional stages for this job position.
+						{t('manage_stages.add_new_stages_help')}
 					</Typography>
 
 					{newStages.length === 0 && existingStages.length === 0 && (
 						<Alert severity="warning" sx={{mb: 2}}>
-							This job position has no stages configured yet. Add at least one stage to continue.
+							{t('manage_stages.no_stages_warning')}
 						</Alert>
 					)}
 
@@ -115,21 +118,28 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
 
 					{isError && (
 						<Alert severity="error" sx={{mt: 2}}>
-							Failed to create stages. Please try again.
+							{t('manage_stages.failed_to_create')}
 						</Alert>
 					)}
 				</Box>
 			</DialogContent>
 			<DialogActions>
 				<Button onClick={handleClose} disabled={isPending}>
-					Cancel
+					{t('common.cancel')}
 				</Button>
 				<Button
 					variant="contained"
 					onClick={onSubmit}
 					disabled={isPending || newStages.length === 0}
 				>
-					{isPending ? 'Adding Stages...' : `Add ${newStages.length} Stage${newStages.length !== 1 ? 's' : ''}`}
+					{isPending ? (
+						<>
+							<CircularProgress size={20} sx={{mr: 1}} />
+							{t('manage_stages.adding_stages')}
+						</>
+					) : (
+						t('manage_stages.add_stages_button', {count: newStages.length}) + (newStages.length !== 1 ? 's' : '')
+					)}
 				</Button>
 			</DialogActions>
 		</Dialog>

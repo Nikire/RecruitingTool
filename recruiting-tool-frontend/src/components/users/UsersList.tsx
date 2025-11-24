@@ -16,6 +16,7 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useTranslation} from 'react-i18next';
 import {useListUsers, useDeleteUser} from '../../hooks/api/useUsers';
 import {User, UserRoles} from '../../types/user.types';
 import Pagination from '../pagination/Pagination';
@@ -39,6 +40,7 @@ const UsersList: React.FC<UsersListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const {t} = useTranslation();
 	const {user: currentUser} = useUserAtom();
 	const isSuperAdmin = hasRole(currentUser, UserRoles.SUPER_ADMIN);
 
@@ -116,7 +118,7 @@ const UsersList: React.FC<UsersListProps> = ({
 		return (
 			<Box sx={{p: 4}}>
 				<Typography color="error">
-					Error loading users. Please try again.
+					{t('users.error_loading')}
 				</Typography>
 			</Box>
 		);
@@ -129,12 +131,12 @@ const UsersList: React.FC<UsersListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell><strong>Name</strong></TableCell>
-								<TableCell><strong>Email</strong></TableCell>
-								<TableCell><strong>Roles</strong></TableCell>
-								<TableCell><strong>Company</strong></TableCell>
-								<TableCell><strong>Created</strong></TableCell>
-								{isSuperAdmin && <TableCell align="right"><strong>Actions</strong></TableCell>}
+								<TableCell><strong>{t('users.name_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.email_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.roles_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.company_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.created_label')}</strong></TableCell>
+								{isSuperAdmin && <TableCell align="right"><strong>{t('common.actions')}</strong></TableCell>}
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -160,7 +162,7 @@ const UsersList: React.FC<UsersListProps> = ({
 									</TableCell>
 									{isSuperAdmin && (
 										<TableCell align="right">
-											<Tooltip title="Edit user">
+											<Tooltip title={t('users.edit_user_tooltip')}>
 												<IconButton
 													size="small"
 													color="primary"
@@ -169,7 +171,7 @@ const UsersList: React.FC<UsersListProps> = ({
 													<EditIcon fontSize="small" />
 												</IconButton>
 											</Tooltip>
-											<Tooltip title="Delete user">
+											<Tooltip title={t('users.delete_user_tooltip')}>
 												<IconButton
 													size="small"
 													color="error"
@@ -188,7 +190,7 @@ const UsersList: React.FC<UsersListProps> = ({
 			) : (
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
-						No users found.
+						{t('users.no_users')}
 					</Typography>
 				</Paper>
 			)}
@@ -205,8 +207,8 @@ const UsersList: React.FC<UsersListProps> = ({
 				open={openDeleteDialog}
 				onClose={handleCloseDeleteDialog}
 				onConfirm={handleConfirmDelete}
-				title="Delete User"
-				message="Are you sure you want to delete this user?"
+				title={t('users.delete_user_title')}
+				message={t('users.delete_user_message')}
 				itemName={selectedUser?.name}
 				isDeleting={isDeleting}
 			/>

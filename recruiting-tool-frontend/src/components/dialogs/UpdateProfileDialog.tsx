@@ -1,5 +1,6 @@
-import {Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Divider, Grid} from '@mui/material';
+import {Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, Box, Typography, Divider, Grid, CircularProgress} from '@mui/material';
 import {useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {User, UpdateUserDto} from '../../types/user.types';
 import {useUpdateUser} from '../../hooks/api/useUsers';
 
@@ -10,6 +11,7 @@ interface UpdateProfileDialogProps {
 }
 
 const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose, user}) => {
+	const {t} = useTranslation();
 	const {mutate: updateUser, isPending} = useUpdateUser();
 
 	const {
@@ -61,10 +63,10 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogTitle sx={{pb: 1}}>
 					<Typography variant="h5" component="div" sx={{fontWeight: 600}}>
-						Edit Profile
+						{t('edit_profile.title')}
 					</Typography>
 					<Typography variant="body2" color="text.secondary" sx={{mt: 0.5}}>
-						Update your personal and professional information
+						{t('edit_profile.subtitle')}
 					</Typography>
 				</DialogTitle>
 				<Divider />
@@ -72,14 +74,14 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 					{/* Basic Information Section */}
 					<Box sx={{mb: 4}}>
 						<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-							Basic Information
+							{t('edit_profile.basic_info')}
 						</Typography>
 						<Grid container spacing={2.5}>
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Full Name"
-									{...register('name', {required: 'Name is required'})}
+									label={t('edit_profile.full_name')}
+									{...register('name', {required: t('validation.name_required')})}
 									error={!!errors.name}
 									helperText={errors.name?.message}
 									variant="outlined"
@@ -89,13 +91,13 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Email Address"
+									label={t('edit_profile.email_address')}
 									type="email"
 									{...register('email', {
-										required: 'Email is required',
+										required: t('validation.email_required'),
 										pattern: {
 											value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-											message: 'Invalid email address',
+											message: t('edit_profile.email_invalid'),
 										},
 									})}
 									error={!!errors.email}
@@ -107,8 +109,8 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Phone Number"
-									placeholder="+1-555-0123"
+									label={t('edit_profile.phone_number')}
+									placeholder={t('edit_profile.phone_placeholder')}
 									{...register('phoneNumber')}
 									variant="outlined"
 								/>
@@ -117,8 +119,8 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Profile Picture URL"
-									placeholder="https://example.com/avatar.jpg"
+									label={t('edit_profile.profile_picture_url')}
+									placeholder={t('edit_profile.picture_placeholder')}
 									{...register('profilePicture')}
 									variant="outlined"
 								/>
@@ -129,14 +131,14 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 					{/* Professional Information Section */}
 					<Box sx={{mb: 4}}>
 						<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-							Professional Information
+							{t('edit_profile.professional_info')}
 						</Typography>
 						<Grid container spacing={2.5}>
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Position"
-									placeholder="e.g., Senior HR Manager"
+									label={t('edit_profile.position')}
+									placeholder={t('edit_profile.position_placeholder')}
 									{...register('position')}
 									variant="outlined"
 								/>
@@ -145,8 +147,8 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Department"
-									placeholder="e.g., Human Resources"
+									label={t('edit_profile.department')}
+									placeholder={t('edit_profile.department_placeholder')}
 									{...register('department')}
 									variant="outlined"
 								/>
@@ -157,14 +159,14 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 					{/* Additional Information Section */}
 					<Box sx={{mb: 4}}>
 						<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-							Additional Information
+							{t('edit_profile.additional_info')}
 						</Typography>
 						<Grid container spacing={2.5}>
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="Timezone"
-									placeholder="e.g., America/New_York"
+									label={t('edit_profile.timezone')}
+									placeholder={t('edit_profile.timezone_placeholder')}
 									{...register('timezone')}
 									variant="outlined"
 								/>
@@ -173,8 +175,8 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 							<Grid size={{xs: 12, sm: 6}}>
 								<TextField
 									fullWidth
-									label="LinkedIn Profile"
-									placeholder="https://linkedin.com/in/username"
+									label={t('edit_profile.linkedin_profile')}
+									placeholder={t('edit_profile.linkedin_placeholder')}
 									{...register('linkedinUrl')}
 									variant="outlined"
 								/>
@@ -185,12 +187,12 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 					{/* Bio Section - Separated */}
 					<Box>
 						<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-							About You
+							{t('edit_profile.about_you')}
 						</Typography>
 						<TextField
 							fullWidth
-							label="Bio"
-							placeholder="Tell us about yourself, your experience, and what you're passionate about..."
+							label={t('edit_profile.bio')}
+							placeholder={t('edit_profile.bio_placeholder')}
 							multiline
 							rows={6}
 							{...register('bio')}
@@ -201,10 +203,10 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 				<Divider />
 				<DialogActions sx={{px: 3, py: 2}}>
 					<Button onClick={handleClose} disabled={isPending} size="large">
-						Cancel
+						{t('common.cancel')}
 					</Button>
-					<Button type="submit" variant="contained" disabled={isPending} size="large">
-						{isPending ? 'Saving...' : 'Save Changes'}
+					<Button type="submit" variant="contained" disabled={isPending} size="large" startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : null}>
+						{isPending ? t('common.saving') : t('common.save')}
 					</Button>
 				</DialogActions>
 			</form>

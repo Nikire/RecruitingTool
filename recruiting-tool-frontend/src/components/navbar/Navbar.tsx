@@ -10,11 +10,13 @@ import {
 } from '@mui/material';
 import {useState} from 'react';
 import {NavLink} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import NavbarDrawer from './NavbarDrawer';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
 
 const Navbar: React.FC = () => {
+	const {t} = useTranslation();
 	const color: PropTypes.Color = 'secondary';
 
 	const linkSx = {
@@ -67,11 +69,11 @@ const Navbar: React.FC = () => {
 							end
 							sx={{...linkSx, textTransform: 'none', mr: 2}}
 						>
-							Home
+							{t('navbar.home')}
 						</Button>
 
 						<Typography color="inherit" variant="h6">
-							Recruiting Tool
+							{t('navbar.app_title')}
 						</Typography>
 
 						<Box sx={{flexGrow: 1}} />
@@ -83,7 +85,7 @@ const Navbar: React.FC = () => {
 									to="/logout"
 									sx={linkSx}
 								>
-									Logout
+									{t('navbar.logout')}
 								</Button>
 								<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
 									<UserAvatar
@@ -100,7 +102,7 @@ const Navbar: React.FC = () => {
 									to="/login"
 									sx={linkSx}
 								>
-									Login
+									{t('navbar.login')}
 								</Button>
 								<Button
 									color="inherit"
@@ -108,7 +110,7 @@ const Navbar: React.FC = () => {
 									to="/signup"
 									sx={linkSx}
 								>
-									Signup
+									{t('navbar.signup')}
 								</Button>
 							</Box>
 						)}

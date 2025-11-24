@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useTranslation} from 'react-i18next';
 import {useListHiringProcesses, useDeleteHiringProcess} from '../../hooks/api/useHiringProcess';
 import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
 import {useNavigate} from 'react-router-dom';
@@ -43,6 +44,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const {t} = useTranslation();
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
@@ -108,7 +110,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 		return (
 			<Box sx={{p: 4}}>
 				<Typography color="error">
-					Error loading hiring processes. Please try again.
+					{t('errors.fetch_failed')}
 				</Typography>
 			</Box>
 		);
@@ -121,13 +123,13 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell sx={{minWidth: 150}}><strong>Title</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Company</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>Status</strong></TableCell>
-								<TableCell sx={{minWidth: 80}}><strong>Stages</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Candidate</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Created By</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Actions</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('hiring_processes.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('companies.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 100}}><strong>{t('status.pending')}</strong></TableCell>
+								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('candidates.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -144,7 +146,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 											size="small"
 										/>
 									</TableCell>
-									<TableCell>{process.stages?.length || 0} stages</TableCell>
+									<TableCell>{process.stages?.length || 0} {t('stages.title').toLowerCase()}</TableCell>
 									<TableCell sx={{maxWidth: 180}}>
 										{process.candidate ? (
 											<>
@@ -157,7 +159,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 											</>
 										) : (
 											<Typography variant="caption" sx={{color: 'error.main', fontWeight: 500}}>
-												No candidate assigned
+												{t('hiring_processes.no_candidate')}
 											</Typography>
 										)}
 									</TableCell>
@@ -182,11 +184,11 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 												variant="outlined"
 												onClick={() => navigate(`/hiring-process/${process.uid}`)}
 											>
-												View
+												{t('common.view')}
 											</Button>
 											{canManage && (
 												<>
-													<Tooltip title="Edit hiring process">
+													<Tooltip title={t('common.edit')}>
 														<IconButton
 															size="small"
 															color="primary"
@@ -195,7 +197,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 															<EditIcon fontSize="small" />
 														</IconButton>
 													</Tooltip>
-													<Tooltip title="Delete hiring process">
+													<Tooltip title={t('common.delete')}>
 														<IconButton
 															size="small"
 															color="error"
@@ -216,7 +218,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 			) : (
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
-						No hiring processes found.
+						{t('hiring_processes.no_processes')}
 					</Typography>
 				</Paper>
 			)}
@@ -233,8 +235,8 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 				open={openDeleteDialog}
 				onClose={handleCloseDeleteDialog}
 				onConfirm={handleConfirmDelete}
-				title="Delete Hiring Process"
-				message="Are you sure you want to delete this hiring process? This will also delete all associated stages."
+				title={t('dialogs.delete_confirmation')}
+				message={t('hiring_processes.delete_message')}
 				itemName={selectedHiringProcess?.title}
 				isDeleting={isDeleting}
 			/>

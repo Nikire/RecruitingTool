@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useTranslation} from 'react-i18next';
 import {useListCandidates, useDeleteCandidate} from '../../hooks/api/useCandidates';
 import {Candidate} from '../../types/candidate';
 import Pagination from '../pagination/Pagination';
@@ -25,6 +26,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const {t} = useTranslation();
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
 
@@ -89,7 +91,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 		return (
 			<Box sx={{p: 4}}>
 				<Typography color="error">
-					Error loading candidates. Please try again.
+					{t('errors.fetch_failed')}
 				</Typography>
 			</Box>
 		);
@@ -102,10 +104,10 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell><strong>Name</strong></TableCell>
-								<TableCell><strong>Email</strong></TableCell>
+								<TableCell><strong>{t('candidates.name_label')}</strong></TableCell>
+								<TableCell><strong>{t('candidates.email_label')}</strong></TableCell>
 								<TableCell><strong>UID</strong></TableCell>
-								{canManage && <TableCell align="right"><strong>Actions</strong></TableCell>}
+								{canManage && <TableCell align="right"><strong>{t('common.actions')}</strong></TableCell>}
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -120,7 +122,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 									</TableCell>
 									{canManage && (
 										<TableCell align="right">
-											<Tooltip title="Edit candidate">
+											<Tooltip title={t('common.edit')}>
 												<IconButton
 													size="small"
 													color="primary"
@@ -129,7 +131,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 													<EditIcon fontSize="small" />
 												</IconButton>
 											</Tooltip>
-											<Tooltip title="Delete candidate">
+											<Tooltip title={t('common.delete')}>
 												<IconButton
 													size="small"
 													color="error"
@@ -148,7 +150,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 			) : (
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
-						No candidates found.
+						{t('candidates.no_candidates')}
 					</Typography>
 				</Paper>
 			)}

@@ -14,8 +14,10 @@ import {
 	Box,
 	Divider,
 	Alert,
+	CircularProgress,
 } from '@mui/material';
 import {useForm, Controller} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useUpdateJobPosition} from '../../hooks/api/useJobPositions';
 import {JobPosition, JobPositionStatus} from '../../types/jobPosition.types';
 
@@ -36,6 +38,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 	onClose,
 	jobPosition,
 }) => {
+	const {t} = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -84,32 +87,32 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-			<DialogTitle>Update Job Position</DialogTitle>
+			<DialogTitle>{t('update_job_position.title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<Box sx={{mb: 3}}>
 						<Typography variant="subtitle2" color="text.secondary" gutterBottom>
-							Job Position Details
+							{t('update_job_position.details')}
 						</Typography>
 
 						<TextField
-							label="Job Title"
+							label={t('update_job_position.job_title')}
 							fullWidth
 							margin="normal"
 							{...register('title', {
-								required: 'Job title is required',
+								required: t('update_job_position.job_title_required'),
 								minLength: {
 									value: 3,
-									message: 'Job title must be at least 3 characters',
+									message: t('update_job_position.job_title_min_length', {min: 3}),
 								},
 							})}
 							error={!!errors.title}
 							helperText={errors.title?.message}
-							placeholder="e.g., Senior Software Engineer"
+							placeholder={t('update_job_position.job_title_placeholder')}
 						/>
 
 						<TextField
-							label="Description"
+							label={t('update_job_position.description')}
 							fullWidth
 							margin="normal"
 							multiline
@@ -117,25 +120,25 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 							{...register('description', {
 								maxLength: {
 									value: 1000,
-									message: 'Description must be less than 1000 characters',
+									message: t('update_job_position.description_max_length', {max: 1000}),
 								},
 							})}
 							error={!!errors.description}
 							helperText={errors.description?.message}
-							placeholder="Describe the job position..."
+							placeholder={t('update_job_position.description_placeholder')}
 						/>
 
 						<FormControl fullWidth margin="normal">
-							<InputLabel>Status</InputLabel>
+							<InputLabel>{t('update_job_position.status')}</InputLabel>
 							<Controller
 								name="status"
 								control={control}
-								rules={{required: 'Status is required'}}
+								rules={{required: t('update_job_position.status_required')}}
 								render={({field}) => (
-									<Select {...field} label="Status" error={!!errors.status}>
-										<MenuItem value="OPEN">Open</MenuItem>
-										<MenuItem value="CLOSED">Closed</MenuItem>
-										<MenuItem value="CANCELLED">Cancelled</MenuItem>
+									<Select {...field} label={t('update_job_position.status')} error={!!errors.status}>
+										<MenuItem value="OPEN">{t('update_job_position.status_open')}</MenuItem>
+										<MenuItem value="CLOSED">{t('update_job_position.status_closed')}</MenuItem>
+										<MenuItem value="CANCELLED">{t('update_job_position.status_cancelled')}</MenuItem>
 									</Select>
 								)}
 							/>
@@ -152,27 +155,28 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 					{/* Stage Management Info */}
 					<Box sx={{mb: 2}}>
 						<Alert severity="info">
-							This job position has {jobPosition?.stages?.length || 0} hiring stage(s).
-							To manage stages, use the "Manage Stages" button on the job position details page.
+							{t('update_job_position.stages_info', {count: jobPosition?.stages?.length || 0})}
+							{' '}
+							{t('update_job_position.stages_manage_help')}
 						</Alert>
 					</Box>
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to update job position. Please try again.
+							{t('update_job_position.failed_to_update')}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isPending}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						type="submit"
 						variant="contained"
 						disabled={isPending}
 					>
-						{isPending ? 'Updating...' : 'Update Job Position'}
+						{isPending ? <CircularProgress size={20} /> : t('update_job_position.update_button')}
 					</Button>
 				</DialogActions>
 			</form>

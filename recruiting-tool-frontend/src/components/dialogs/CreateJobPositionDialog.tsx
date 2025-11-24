@@ -12,9 +12,11 @@ import {
 	Typography,
 	Box,
 	Divider,
+	CircularProgress,
 } from '@mui/material';
 import {useForm, Controller} from 'react-hook-form';
 import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {useCreateJobPosition} from '../../hooks/api/useJobPositions';
 import {JobPositionStatus} from '../../types/jobPosition.types';
 import {Stage} from '../../types/stage.types';
@@ -35,6 +37,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	open,
 	onClose,
 }) => {
+	const {t} = useTranslation();
 	const [stages, setStages] = useState<Omit<Stage, 'uid' | 'status'>[]>([]);
 	const [stageError, setStageError] = useState<string>('');
 
@@ -57,7 +60,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	const onSubmit = (data: JobPositionFormData) => {
 		// Validate stages
 		if (stages.length === 0) {
-			setStageError('At least one hiring stage is required');
+			setStageError(t('validation.stage_required'));
 			return;
 		}
 
@@ -92,32 +95,32 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-			<DialogTitle>Create New Job Position</DialogTitle>
+			<DialogTitle>{t('job_positions.create_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<Box sx={{mb: 3}}>
 						<Typography variant="subtitle2" color="text.secondary" gutterBottom>
-							Job Position Details
+							{t('job_positions.details')}
 						</Typography>
 
 						<TextField
-							label="Job Title"
+							label={t('job_positions.job_title_label')}
 							fullWidth
 							margin="normal"
 							{...register('title', {
-								required: 'Job title is required',
+								required: t('validation.title_required'),
 								minLength: {
 									value: 3,
-									message: 'Job title must be at least 3 characters',
+									message: t('validation.min_length', {min: 3}),
 								},
 							})}
 							error={!!errors.title}
 							helperText={errors.title?.message}
-							placeholder="e.g., Senior Software Engineer"
+							placeholder={t('job_positions.title_placeholder')}
 						/>
 
 						<TextField
-							label="Description"
+							label={t('job_positions.description_label')}
 							fullWidth
 							margin="normal"
 							multiline
@@ -125,25 +128,25 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							{...register('description', {
 								maxLength: {
 									value: 1000,
-									message: 'Description must be less than 1000 characters',
+									message: t('validation.description_max_length', {max: 1000}),
 								},
 							})}
 							error={!!errors.description}
 							helperText={errors.description?.message}
-							placeholder="Describe the job position..."
+							placeholder={t('job_positions.description_placeholder')}
 						/>
 
 						<FormControl fullWidth margin="normal">
-							<InputLabel>Status</InputLabel>
+							<InputLabel>{t('job_positions.status_label')}</InputLabel>
 							<Controller
 								name="status"
 								control={control}
-								rules={{required: 'Status is required'}}
+								rules={{required: t('validation.status_required')}}
 								render={({field}) => (
-									<Select {...field} label="Status" error={!!errors.status}>
-										<MenuItem value="OPEN">Open</MenuItem>
-										<MenuItem value="CLOSED">Closed</MenuItem>
-										<MenuItem value="CANCELLED">Cancelled</MenuItem>
+									<Select {...field} label={t('job_positions.status_label')} error={!!errors.status}>
+										<MenuItem value="OPEN">{t('status.open')}</MenuItem>
+										<MenuItem value="CLOSED">{t('status.closed')}</MenuItem>
+										<MenuItem value="CANCELLED">{t('status.cancelled')}</MenuItem>
 									</Select>
 								)}
 							/>
@@ -174,20 +177,21 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to create job position. Please try again.
+							{t('errors.create_failed', {entity: t('job_positions.title').toLowerCase()})}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isPending}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						type="submit"
 						variant="contained"
 						disabled={isPending || stages.length === 0}
+						startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : undefined}
 					>
-						{isPending ? 'Creating...' : 'Create Job Position'}
+						{isPending ? t('common.creating') : t('common.create')}
 					</Button>
 				</DialogActions>
 			</form>

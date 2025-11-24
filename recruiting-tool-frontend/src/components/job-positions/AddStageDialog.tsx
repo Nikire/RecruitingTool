@@ -11,8 +11,10 @@ import {
 	Select,
 	MenuItem,
 	Typography,
+	CircularProgress,
 } from '@mui/material';
 import {useForm, Controller} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {StageType, STAGE_TYPE_LABELS} from '../../types/stage.types';
 
 interface AddStageDialogProps {
@@ -41,6 +43,7 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
 	initialData,
 	isEdit = false,
 }) => {
+	const {t} = useTranslation();
 	const {
 		control,
 		handleSubmit,
@@ -74,46 +77,46 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>{isEdit ? 'Edit Stage' : 'Add New Stage'}</DialogTitle>
+			<DialogTitle>{isEdit ? t('add_stage.edit_title') : t('add_stage.add_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<Controller
 						name="title"
 						control={control}
 						rules={{
-							required: 'Stage title is required',
+							required: t('add_stage.title_required'),
 							minLength: {
 								value: 2,
-								message: 'Title must be at least 2 characters',
+								message: t('add_stage.title_min_length', {min: 2}),
 							},
 							maxLength: {
 								value: 100,
-								message: 'Title must be less than 100 characters',
+								message: t('add_stage.title_max_length', {max: 100}),
 							},
 						}}
 						render={({field}) => (
 							<TextField
 								{...field}
-								label="Stage Title"
+								label={t('add_stage.stage_title')}
 								fullWidth
 								margin="normal"
 								error={!!errors.title}
 								helperText={errors.title?.message}
-								placeholder="e.g., Initial Screening"
+								placeholder={t('add_stage.stage_title_placeholder')}
 							/>
 						)}
 					/>
 
 					<FormControl fullWidth margin="normal">
-						<InputLabel>Stage Type</InputLabel>
+						<InputLabel>{t('add_stage.stage_type')}</InputLabel>
 						<Controller
 							name="type"
 							control={control}
-							rules={{required: 'Stage type is required'}}
+							rules={{required: t('add_stage.type_required')}}
 							render={({field}) => (
 								<Select
 									{...field}
-									label="Stage Type"
+									label={t('add_stage.stage_type')}
 									error={!!errors.type}
 								>
 									{Object.entries(STAGE_TYPE_LABELS).map(([value, label]) => (
@@ -135,27 +138,27 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
 						name="description"
 						control={control}
 						rules={{
-							required: 'Description is required',
+							required: t('add_stage.description_required'),
 							minLength: {
 								value: 10,
-								message: 'Description must be at least 10 characters',
+								message: t('add_stage.description_min_length', {min: 10}),
 							},
 							maxLength: {
 								value: 500,
-								message: 'Description must be less than 500 characters',
+								message: t('add_stage.description_max_length', {max: 500}),
 							},
 						}}
 						render={({field}) => (
 							<TextField
 								{...field}
-								label="Description"
+								label={t('add_stage.description')}
 								fullWidth
 								multiline
 								rows={3}
 								margin="normal"
 								error={!!errors.description}
 								helperText={errors.description?.message}
-								placeholder="Describe what happens in this stage..."
+								placeholder={t('add_stage.description_placeholder')}
 							/>
 						)}
 					/>
@@ -166,24 +169,24 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
 						rules={{
 							min: {
 								value: 1,
-								message: 'Estimated time must be at least 1 minute',
+								message: t('add_stage.time_min', {min: 1}),
 							},
 							max: {
 								value: 10080,
-								message: 'Estimated time must be less than 10080 minutes (1 week)',
+								message: t('add_stage.time_max', {max: 10080}),
 							},
 						}}
 						render={({field}) => (
 							<TextField
 								{...field}
-								label="Estimated Time (minutes)"
+								label={t('add_stage.estimated_time')}
 								type="number"
 								fullWidth
 								margin="normal"
 								error={!!errors.estimatedTime}
 								helperText={
 									errors.estimatedTime?.message ||
-									'Optional: Approximate time to complete this stage'
+									t('add_stage.estimated_time_helper')
 								}
 								onChange={(e) => {
 									const value = e.target.value;
@@ -195,9 +198,9 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
 					/>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleClose}>Cancel</Button>
+					<Button onClick={handleClose}>{t('common.cancel')}</Button>
 					<Button type="submit" variant="contained">
-						{isEdit ? 'Update Stage' : 'Add Stage'}
+						{isEdit ? t('add_stage.update_stage') : t('add_stage.add_stage')}
 					</Button>
 				</DialogActions>
 			</form>

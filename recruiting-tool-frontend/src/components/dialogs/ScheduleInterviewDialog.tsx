@@ -7,11 +7,13 @@ import {
   TextField,
   Box,
   Grid,
+  CircularProgress,
 } from '@mui/material';
 import { LocalizationProvider, DatePicker, TimePicker } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useForm, Controller } from 'react-hook-form';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useCreateInterview, useUpdateInterview } from '../../hooks/api/useInterview';
 import { Interview } from '../../types/interview.types';
 import { format } from 'date-fns';
@@ -37,6 +39,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   stageUid,
   interview,
 }) => {
+  const {t} = useTranslation();
   const isEditMode = !!interview;
   const createMutation = useCreateInterview();
   const updateMutation = useUpdateInterview();
@@ -127,7 +130,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{isEditMode ? 'Edit Interview' : 'Schedule Interview'}</DialogTitle>
+      <DialogTitle>{isEditMode ? t('schedule_interview.edit_title') : t('schedule_interview.title')}</DialogTitle>
       <DialogContent>
         <Box component="form" sx={{ mt: 2 }}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -141,12 +144,12 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                       if (!value) return true; // Optional
                       const today = new Date();
                       today.setHours(0, 0, 0, 0);
-                      return value >= today || 'Date must be in the future';
+                      return value >= today || t('schedule_interview.date_future_error');
                     },
                   }}
                   render={({ field }) => (
                     <DatePicker
-                      label="Interview Date"
+                      label={t('schedule_interview.interview_date')}
                       value={field.value}
                       onChange={(newValue) => field.onChange(newValue)}
                       slotProps={{
@@ -167,7 +170,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                   control={control}
                   render={({ field }) => (
                     <TimePicker
-                      label="Interview Time"
+                      label={t('schedule_interview.interview_time')}
                       value={field.value}
                       onChange={(newValue) => field.onChange(newValue)}
                       slotProps={{
@@ -187,12 +190,12 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                   name="duration"
                   control={control}
                   rules={{
-                    min: { value: 1, message: 'Duration must be at least 1 minute' },
+                    min: { value: 1, message: t('schedule_interview.duration_min_error', {min: 1}) },
                   }}
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Duration (minutes)"
+                      label={t('schedule_interview.duration')}
                       type="number"
                       fullWidth
                       error={!!errors.duration}
@@ -209,8 +212,8 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Meeting Link (optional)"
-                      placeholder="https://zoom.us/j/123456789"
+                      label={t('schedule_interview.meeting_link')}
+                      placeholder={t('schedule_interview.meeting_link_placeholder')}
                       fullWidth
                       error={!!errors.meetingLink}
                       helperText={errors.meetingLink?.message}
@@ -226,8 +229,8 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                   render={({ field }) => (
                     <TextField
                       {...field}
-                      label="Notes (optional)"
-                      placeholder="Additional information about the interview..."
+                      label={t('schedule_interview.notes')}
+                      placeholder={t('schedule_interview.notes_placeholder')}
                       multiline
                       rows={3}
                       fullWidth
@@ -242,13 +245,17 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
+        <Button onClick={handleClose}>{t('common.cancel')}</Button>
         <Button
           onClick={handleSubmit(onSubmit)}
           variant="contained"
           disabled={createMutation.isPending || updateMutation.isPending}
         >
-          {isEditMode ? 'Update' : 'Schedule'}
+          {(createMutation.isPending || updateMutation.isPending) ? (
+            <CircularProgress size={20} />
+          ) : (
+            isEditMode ? t('common.update') : t('schedule_interview.schedule')
+          )}
         </Button>
       </DialogActions>
     </Dialog>

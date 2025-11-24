@@ -11,6 +11,7 @@ import {
 	Alert,
 } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import {useTranslation} from 'react-i18next';
 import {useCreateApplication} from '../../hooks/api/useApplications';
 import {useUploadFile} from '../../hooks/api/useFiles';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
@@ -30,6 +31,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 	jobUid,
 	jobTitle,
 }) => {
+	const {t} = useTranslation();
 	const {mutateAsync: createApplication, isPending: submitting} = useCreateApplication();
 	const {mutateAsync: uploadFile, isPending: uploading} = useUploadFile();
 	const {data: jobPosition, isLoading: loadingJob} = useJobPositions(jobUid);
@@ -74,11 +76,11 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 				'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 			];
 			if (!validTypes.includes(file.type)) {
-				setFormErrors((prev) => ({...prev, resume: 'Please upload a PDF or DOC file'}));
+				setFormErrors((prev) => ({...prev, resume: t('apply_job.invalid_file_type')}));
 				return;
 			}
 			if (file.size > 10 * 1024 * 1024) {
-				setFormErrors((prev) => ({...prev, resume: 'File size must be less than 10MB'}));
+				setFormErrors((prev) => ({...prev, resume: t('apply_job.file_too_large')}));
 				return;
 			}
 			setResumeFile(file);
@@ -91,15 +93,15 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 		const customErrors: Record<string, string> = {};
 
 		if (!formData.applicantName.trim()) {
-			errors.applicantName = 'Name is required';
+			errors.applicantName = t('apply_job.name_required');
 		}
 		if (!formData.applicantEmail.trim()) {
-			errors.applicantEmail = 'Email is required';
+			errors.applicantEmail = t('apply_job.email_required');
 		} else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.applicantEmail)) {
-			errors.applicantEmail = 'Invalid email format';
+			errors.applicantEmail = t('apply_job.email_invalid');
 		}
 		if (!formData.applicantPhone.trim()) {
-			errors.applicantPhone = 'Phone number is required';
+			errors.applicantPhone = t('apply_job.phone_required');
 		}
 
 		// Validate custom questions
@@ -108,7 +110,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 				if (question.required) {
 					const answer = customAnswers[question.id];
 					if (!answer || (Array.isArray(answer) && answer.length === 0)) {
-						customErrors[question.id] = 'This field is required';
+						customErrors[question.id] = t('validation.required');
 					}
 				}
 			});
@@ -194,12 +196,12 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 					px: {xs: 2, sm: 3},
 				}}
 			>
-				Apply to {jobTitle}
+				{t('apply_job.title', {jobTitle})}
 			</DialogTitle>
 			<DialogContent>
 				{success ? (
 					<Alert severity="success" sx={{mt: 2}}>
-						Application submitted successfully! We'll get back to you soon.
+						{t('apply_job.success_message')}
 					</Alert>
 				) : (
 					<Box
@@ -212,7 +214,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 					>
 						<TextField
 							fullWidth
-							label="Full Name"
+							label={t('apply_job.full_name')}
 							name="applicantName"
 							value={formData.applicantName}
 							onChange={handleInputChange}
@@ -232,7 +234,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 
 						<TextField
 							fullWidth
-							label="Email Address"
+							label={t('apply_job.email_address')}
 							name="applicantEmail"
 							type="email"
 							value={formData.applicantEmail}
@@ -250,7 +252,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 
 						<TextField
 							fullWidth
-							label="Phone Number"
+							label={t('apply_job.phone_number')}
 							name="applicantPhone"
 							value={formData.applicantPhone}
 							onChange={handleInputChange}
@@ -282,7 +284,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 									borderRadius: 1,
 								}}
 							>
-								{resumeFile ? resumeFile.name : 'Upload Resume (Optional)'}
+								{resumeFile ? resumeFile.name : t('apply_job.upload_resume')}
 								<input type="file" hidden accept=".pdf,.doc,.docx" onChange={handleFileChange} />
 							</Button>
 							{formErrors.resume && (
@@ -294,13 +296,13 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 
 						<TextField
 							fullWidth
-							label="Cover Letter (Optional)"
+							label={t('apply_job.cover_letter')}
 							name="coverLetter"
 							value={formData.coverLetter}
 							onChange={handleInputChange}
 							multiline
 							rows={4}
-							placeholder="Tell us why you're interested in this position..."
+							placeholder={t('apply_job.cover_letter_placeholder')}
 							sx={{
 								'& .MuiInputBase-input': {
 									fontSize: {xs: '1rem', sm: '1rem'},
@@ -344,7 +346,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							minWidth: {xs: '100%', sm: 'auto'},
 						}}
 					>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						variant="contained"
@@ -354,7 +356,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							minWidth: {xs: '100%', sm: 'auto'},
 						}}
 					>
-						{submitting || uploading ? 'Submitting...' : 'Submit Application'}
+						{submitting || uploading ? t('apply_job.submitting') : t('apply_job.submit_application')}
 					</Button>
 				</DialogActions>
 			)}
