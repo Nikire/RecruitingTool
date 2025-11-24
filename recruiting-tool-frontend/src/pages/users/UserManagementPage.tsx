@@ -1,8 +1,8 @@
-import {useCallback} from 'react';
 import {Box, Button, Typography, Alert} from '@mui/material';
 import {Add as AddIcon} from '@mui/icons-material';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useUsersSearch} from '../../hooks/api/state/useSearchState';
+import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandlers';
 import {hasRole} from '../../utils/permissions';
 import {UserRoles} from '../../types/user.types';
 import SearchBar from '../../components/search/SearchBar';
@@ -16,17 +16,8 @@ const UserManagementPage: React.FC = () => {
 
 	const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
 
-	const handleSearch = useCallback((value: string) => {
-		setSearchState((prev) => ({...prev, search: value, page: 1}));
-	}, [setSearchState]);
-
-	const handlePageChange = useCallback((newPage: number) => {
-		setSearchState((prev) => ({...prev, page: newPage}));
-	}, [setSearchState]);
-
-	const handleLimitChange = useCallback((newLimit: number) => {
-		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
-	}, [setSearchState]);
+	const {handleSearch, handlePageChange, handleLimitChange} =
+		useSearchPaginationHandlers(setSearchState);
 
 	// Check if user has SUPER_ADMIN access
 	if (!isSuperAdmin) {

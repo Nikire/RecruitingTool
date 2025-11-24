@@ -1,9 +1,11 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import {Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField} from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCreateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
 import { useCompaniesSearch } from '../../hooks/api/state/useSearchState';
+import { useSearchPaginationHandlers } from '../../hooks/useSearchPaginationHandlers';
+import { useDialog } from '../../hooks/useDialog';
 import { hasRole } from '../../utils/permissions';
 import { UserRoles } from '../../types/user.types';
 import { Company, CreateCompanyDto } from '../../types/company.types';
@@ -21,10 +23,9 @@ export const CompaniesPage: React.FC = () => {
   const createMutation = useCreateCompany();
   const deleteMutation = useDeleteCompany();
 
-  const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const [editDialogOpen, setEditDialogOpen] = useState(false);
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const createDialog = useDialog<never>();
+  const editDialog = useDialog<Company>();
+  const deleteDialog = useDialog<Company>();
 
   const [formData, setFormData] = useState<CreateCompanyDto>({
     name: '',
@@ -41,53 +42,23 @@ export const CompaniesPage: React.FC = () => {
   const handleCreate = () => {
     createMutation.mutate(formData, {
       onSuccess: () => {
-        setCreateDialogOpen(false);
+        createDialog.close();
         setFormData({ name: '', description: '' });
       },
     });
   };
 
   const handleConfirmDelete = () => {
-    if (!selectedCompany) return;
-    deleteMutation.mutate(selectedCompany.uid, {
+    if (!deleteDialog.selectedItem) return;
+    deleteMutation.mutate(deleteDialog.selectedItem.uid, {
       onSuccess: () => {
-        setDeleteDialogOpen(false);
-        setSelectedCompany(null);
+        deleteDialog.close();
       },
     });
   };
 
-  const openEditDialog = (company: Company) => {
-    setSelectedCompany(company);
-    setEditDialogOpen(true);
-  };
-
-  const openDeleteDialog = (company: Company) => {
-    setSelectedCompany(company);
-    setDeleteDialogOpen(true);
-  };
-
-  const handleCloseEditDialog = () => {
-    setEditDialogOpen(false);
-    setSelectedCompany(null);
-  };
-
-  const handleCloseDeleteDialog = () => {
-    setDeleteDialogOpen(false);
-    setSelectedCompany(null);
-  };
-
-  const handleSearch = useCallback((value: string) => {
-    setSearchState((prev) => ({ ...prev, search: value, page: 1 }));
-  }, [setSearchState]);
-
-  const handlePageChange = useCallback((newPage: number) => {
-    setSearchState((prev) => ({ ...prev, page: newPage }));
-  }, [setSearchState]);
-
-  const handleLimitChange = useCallback((newLimit: number) => {
-    setSearchState((prev) => ({ ...prev, limit: newLimit, page: 1 }));
-  }, [setSearchState]);
+  const {handleSearch, handlePageChange, handleLimitChange} =
+    useSearchPaginationHandlers(setSearchState);
 
   return (
     <Box>
@@ -96,7 +67,7 @@ export const CompaniesPage: React.FC = () => {
         <Button
           variant="contained"
           startIcon={<AddIcon />}
-          onClick={() => setCreateDialogOpen(true)}
+          onClick={createDialog.open}
         >
           Add Company
         </Button>
@@ -112,12 +83,12 @@ export const CompaniesPage: React.FC = () => {
         search={search}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
-        onEdit={openEditDialog}
-        onDelete={openDeleteDialog}
+        onEdit={editDialog.openWith}
+        onDelete={deleteDialog.openWith}
       />
 
       {/* Create Dialog */}
-      <Dialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} maxWidth="sm" fullWidth>
+      <Dialog open={createDialog.isOpen} onClose={createDialog.close} maxWidth="sm" fullWidth>
         <DialogTitle>Create New Company</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -139,7 +110,7 @@ export const CompaniesPage: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCreateDialogOpen(false)}>Cancel</Button>
+          <Button onClick={createDialog.close}>Cancel</Button>
           <Button onClick={handleCreate} variant="contained" disabled={!formData.name || createMutation.isPending}>
             {createMutation.isPending ? 'Creating...' : 'Create'}
           </Button>
@@ -147,18 +118,18 @@ export const CompaniesPage: React.FC = () => {
       </Dialog>
 
       <UpdateCompanyDialog
-        open={editDialogOpen}
-        onClose={handleCloseEditDialog}
-        company={selectedCompany}
+        open={editDialog.isOpen}
+        onClose={editDialog.close}
+        company={editDialog.selectedItem}
       />
 
       <ConfirmDeleteDialog
-        open={deleteDialogOpen}
-        onClose={handleCloseDeleteDialog}
+        open={deleteDialog.isOpen}
+        onClose={deleteDialog.close}
         onConfirm={handleConfirmDelete}
         title="Delete Company"
         message="Are you sure you want to delete this company?"
-        itemName={selectedCompany?.name}
+        itemName={deleteDialog.selectedItem?.name}
         isDeleting={deleteMutation.isPending}
       />
     </Box>

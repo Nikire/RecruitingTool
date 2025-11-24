@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -15,6 +14,8 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
 import {getHiringProcessStatusColor} from '../../utils/statusColors';
+import {useDialog} from '../../hooks/useDialog';
+import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 
 interface HiringProcessesListProps {
 	page: number;
@@ -36,9 +37,10 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
 
-	const [selectedHiringProcess, setSelectedHiringProcess] = useState<HiringProcess | null>(null);
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	// Dialog state management using custom hooks
+	const updateDialog = useDialog<HiringProcess>();
+	const deleteMutation = useDeleteHiringProcess();
+	const deleteConfirm = useConfirmDelete<HiringProcess>(deleteMutation);
 
 	const {data, isLoading, error} = useListHiringProcesses({
 		page,
@@ -48,41 +50,8 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const {mutate: deleteHiringProcess, isPending: isDeleting} = useDeleteHiringProcess();
-
 	const processes = data?.data as HiringProcess[] | undefined;
 	const meta = data?.meta;
-
-	const handleEditClick = (process: HiringProcess) => {
-		setSelectedHiringProcess(process);
-		setOpenUpdateDialog(true);
-	};
-
-	const handleDeleteClick = (process: HiringProcess) => {
-		setSelectedHiringProcess(process);
-		setOpenDeleteDialog(true);
-	};
-
-	const handleConfirmDelete = () => {
-		if (selectedHiringProcess) {
-			deleteHiringProcess(selectedHiringProcess.uid, {
-				onSuccess: () => {
-					setOpenDeleteDialog(false);
-					setSelectedHiringProcess(null);
-				},
-			});
-		}
-	};
-
-	const handleCloseUpdateDialog = () => {
-		setOpenUpdateDialog(false);
-		setSelectedHiringProcess(null);
-	};
-
-	const handleCloseDeleteDialog = () => {
-		setOpenDeleteDialog(false);
-		setSelectedHiringProcess(null);
-	};
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
@@ -169,7 +138,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 														<IconButton
 															size="small"
 															color="primary"
-															onClick={() => handleEditClick(process)}
+															onClick={() => updateDialog.openWith(process)}
 														>
 															<EditIcon fontSize="small" />
 														</IconButton>
@@ -178,7 +147,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 														<IconButton
 															size="small"
 															color="error"
-															onClick={() => handleDeleteClick(process)}
+															onClick={() => deleteConfirm.confirmDelete(process)}
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
@@ -199,19 +168,19 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
 			<UpdateHiringProcessDialog
-				open={openUpdateDialog}
-				onClose={handleCloseUpdateDialog}
-				hiringProcess={selectedHiringProcess}
+				open={updateDialog.isOpen}
+				onClose={updateDialog.close}
+				hiringProcess={updateDialog.selectedItem}
 			/>
 
 			<ConfirmDeleteDialog
-				open={openDeleteDialog}
-				onClose={handleCloseDeleteDialog}
-				onConfirm={handleConfirmDelete}
+				open={deleteConfirm.isOpen}
+				onClose={deleteConfirm.handleCancel}
+				onConfirm={deleteConfirm.handleConfirm}
 				title={t('dialogs.delete_confirmation')}
 				message={t('hiring_processes.delete_message')}
-				itemName={selectedHiringProcess?.title}
-				isDeleting={isDeleting}
+				itemName={deleteConfirm.selectedItem?.title}
+				isDeleting={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {
 	Box,
 	Typography,
@@ -27,6 +26,8 @@ import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
 import {getUserRoleColor} from '../../utils/statusColors';
+import {useDialog} from '../../hooks/useDialog';
+import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 
 interface UsersListProps {
 	page: number;
@@ -47,9 +48,10 @@ const UsersList: React.FC<UsersListProps> = ({
 	const {user: currentUser} = useUserAtom();
 	const isSuperAdmin = hasRole(currentUser, UserRoles.SUPER_ADMIN);
 
-	const [selectedUser, setSelectedUser] = useState<User | null>(null);
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	// Dialog state management using custom hooks
+	const updateDialog = useDialog<User>();
+	const deleteMutation = useDeleteUser();
+	const deleteConfirm = useConfirmDelete<User>(deleteMutation);
 
 	const {data, isLoading, error} = useListUsers({
 		page,
@@ -59,41 +61,8 @@ const UsersList: React.FC<UsersListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const {mutate: deleteUser, isPending: isDeleting} = useDeleteUser();
-
 	const users = data?.data;
 	const meta = data?.meta;
-
-	const handleEditClick = (user: User) => {
-		setSelectedUser(user);
-		setOpenUpdateDialog(true);
-	};
-
-	const handleDeleteClick = (user: User) => {
-		setSelectedUser(user);
-		setOpenDeleteDialog(true);
-	};
-
-	const handleConfirmDelete = () => {
-		if (selectedUser) {
-			deleteUser(selectedUser.uid, {
-				onSuccess: () => {
-					setOpenDeleteDialog(false);
-					setSelectedUser(null);
-				},
-			});
-		}
-	};
-
-	const handleCloseUpdateDialog = () => {
-		setOpenUpdateDialog(false);
-		setSelectedUser(null);
-	};
-
-	const handleCloseDeleteDialog = () => {
-		setOpenDeleteDialog(false);
-		setSelectedUser(null);
-	};
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
@@ -146,7 +115,7 @@ const UsersList: React.FC<UsersListProps> = ({
 												<IconButton
 													size="small"
 													color="primary"
-													onClick={() => handleEditClick(user)}
+													onClick={() => updateDialog.openWith(user)}
 												>
 													<EditIcon fontSize="small" />
 												</IconButton>
@@ -155,7 +124,7 @@ const UsersList: React.FC<UsersListProps> = ({
 												<IconButton
 													size="small"
 													color="error"
-													onClick={() => handleDeleteClick(user)}
+													onClick={() => deleteConfirm.confirmDelete(user)}
 												>
 													<DeleteIcon fontSize="small" />
 												</IconButton>
@@ -174,19 +143,19 @@ const UsersList: React.FC<UsersListProps> = ({
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
 			<UpdateUserDialog
-				open={openUpdateDialog}
-				onClose={handleCloseUpdateDialog}
-				user={selectedUser}
+				open={updateDialog.isOpen}
+				onClose={updateDialog.close}
+				user={updateDialog.selectedItem}
 			/>
 
 			<ConfirmDeleteDialog
-				open={openDeleteDialog}
-				onClose={handleCloseDeleteDialog}
-				onConfirm={handleConfirmDelete}
+				open={deleteConfirm.isOpen}
+				onClose={deleteConfirm.handleCancel}
+				onConfirm={deleteConfirm.handleConfirm}
 				title={t('users.delete_user_title')}
 				message={t('users.delete_user_message')}
-				itemName={selectedUser?.name}
-				isDeleting={isDeleting}
+				itemName={deleteConfirm.selectedItem?.name}
+				isDeleting={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

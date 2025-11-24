@@ -1,8 +1,9 @@
-import {useState, useCallback} from 'react';
 import {Typography, Button, Box} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useCandidatesSearch} from '../../hooks/api/state/useSearchState';
+import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandlers';
+import {useDialog} from '../../hooks/useDialog';
 import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
 import {canManageResources} from '../../utils/permissions';
 import SearchBar from '../../components/search/SearchBar';
@@ -10,24 +11,15 @@ import CandidatesList from '../../components/candidates/CandidatesList';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
 const CandidatesPage: React.FC = () => {
-	const [openDialog, setOpenDialog] = useState(false);
+	const createDialog = useDialog<never>();
 	const {user} = useUserAtom();
 	const [searchState, setSearchState] = useCandidatesSearch();
 	const {page, limit, search} = searchState;
 
 	const canManage = canManageResources(user);
 
-	const handleSearch = useCallback((value: string) => {
-		setSearchState((prev) => ({...prev, search: value, page: 1}));
-	}, [setSearchState]);
-
-	const handlePageChange = useCallback((newPage: number) => {
-		setSearchState((prev) => ({...prev, page: newPage}));
-	}, [setSearchState]);
-
-	const handleLimitChange = useCallback((newLimit: number) => {
-		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
-	}, [setSearchState]);
+	const {handleSearch, handlePageChange, handleLimitChange} =
+		useSearchPaginationHandlers(setSearchState);
 
 	// Check if user has access (HR, ADMIN, or SUPER_ADMIN)
 	if (!canManage) {
@@ -44,7 +36,7 @@ const CandidatesPage: React.FC = () => {
 					<Button
 						variant="contained"
 						startIcon={<AddIcon />}
-						onClick={() => setOpenDialog(true)}
+						onClick={createDialog.open}
 					>
 						Create Candidate
 					</Button>
@@ -64,8 +56,8 @@ const CandidatesPage: React.FC = () => {
 			/>
 
 			<CreateCandidateDialog
-				open={openDialog}
-				onClose={() => setOpenDialog(false)}
+				open={createDialog.isOpen}
+				onClose={createDialog.close}
 			/>
 		</Box>
 	);

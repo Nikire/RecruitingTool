@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, IconButton, Tooltip, Button} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +9,8 @@ import UpdateJobPositionDialog from '../dialogs/UpdateJobPositionDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
+import {useDialog} from '../../hooks/useDialog';
+import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 
 interface JobPositionsManagementListProps {
 	page: number;
@@ -30,9 +31,10 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
 
-	const [selectedJobPosition, setSelectedJobPosition] = useState<JobPosition | null>(null);
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	// Dialog state management using custom hooks
+	const updateDialog = useDialog<JobPosition>();
+	const deleteMutation = useDeleteJobPosition();
+	const deleteConfirm = useConfirmDelete<JobPosition>(deleteMutation);
 
 	const {data, isLoading, error} = useListJobPositions({
 		page,
@@ -42,41 +44,8 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const {mutate: deleteJobPosition, isPending: isDeleting} = useDeleteJobPosition();
-
 	const jobPositions = data?.data;
 	const meta = data?.meta;
-
-	const handleEditClick = (jobPosition: JobPosition) => {
-		setSelectedJobPosition(jobPosition);
-		setOpenUpdateDialog(true);
-	};
-
-	const handleDeleteClick = (jobPosition: JobPosition) => {
-		setSelectedJobPosition(jobPosition);
-		setOpenDeleteDialog(true);
-	};
-
-	const handleConfirmDelete = () => {
-		if (selectedJobPosition) {
-			deleteJobPosition(selectedJobPosition.uid, {
-				onSuccess: () => {
-					setOpenDeleteDialog(false);
-					setSelectedJobPosition(null);
-				},
-			});
-		}
-	};
-
-	const handleCloseUpdateDialog = () => {
-		setOpenUpdateDialog(false);
-		setSelectedJobPosition(null);
-	};
-
-	const handleCloseDeleteDialog = () => {
-		setOpenDeleteDialog(false);
-		setSelectedJobPosition(null);
-	};
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
@@ -165,7 +134,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 														<IconButton
 															size="small"
 															color="primary"
-															onClick={() => handleEditClick(jobPosition)}
+															onClick={() => updateDialog.openWith(jobPosition)}
 														>
 															<EditIcon fontSize="small" />
 														</IconButton>
@@ -174,7 +143,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 														<IconButton
 															size="small"
 															color="error"
-															onClick={() => handleDeleteClick(jobPosition)}
+															onClick={() => deleteConfirm.confirmDelete(jobPosition)}
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
@@ -199,19 +168,19 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
 			<UpdateJobPositionDialog
-				open={openUpdateDialog}
-				onClose={handleCloseUpdateDialog}
-				jobPosition={selectedJobPosition}
+				open={updateDialog.isOpen}
+				onClose={updateDialog.close}
+				jobPosition={updateDialog.selectedItem}
 			/>
 
 			<ConfirmDeleteDialog
-				open={openDeleteDialog}
-				onClose={handleCloseDeleteDialog}
-				onConfirm={handleConfirmDelete}
+				open={deleteConfirm.isOpen}
+				onClose={deleteConfirm.handleCancel}
+				onConfirm={deleteConfirm.handleConfirm}
 				title="Delete Job Position"
 				message="Are you sure you want to delete this job position? This will also delete all associated stages and hiring processes."
-				itemName={selectedJobPosition?.title}
-				isDeleting={isDeleting}
+				itemName={deleteConfirm.selectedItem?.title}
+				isDeleting={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

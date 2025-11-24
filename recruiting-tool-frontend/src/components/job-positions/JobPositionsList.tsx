@@ -18,12 +18,12 @@ import {
 	useMediaQuery,
 	useTheme,
 } from '@mui/material';
-import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useListJobPositions} from '../../hooks/api/useJobPositions';
 import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
+import {useDialog} from '../../hooks/useDialog';
 
 interface JobPositionsListProps {
 	page: number;
@@ -150,8 +150,9 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const navigate = useNavigate();
-	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
-	const [selectedJob, setSelectedJob] = useState<{uid: string; title: string} | null>(null);
+
+	// Dialog state management using custom hook
+	const applyDialog = useDialog<{uid: string; title: string}>();
 
 	const {data, isLoading, error} = useListJobPositions({
 		page,
@@ -165,13 +166,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	const meta = data?.meta;
 
 	const handleApplyClick = (jobUid: string, jobTitle: string) => {
-		setSelectedJob({uid: jobUid, title: jobTitle});
-		setApplyDialogOpen(true);
-	};
-
-	const handleCloseApplyDialog = () => {
-		setApplyDialogOpen(false);
-		setSelectedJob(null);
+		applyDialog.openWith({uid: jobUid, title: jobTitle});
 	};
 
 	const handleViewDetails = (uid: string) => {
@@ -236,12 +231,12 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 					/>
 				)}
 
-				{selectedJob && (
+				{applyDialog.selectedItem && (
 					<ApplyToJobDialog
-						open={applyDialogOpen}
-						onClose={handleCloseApplyDialog}
-						jobUid={selectedJob.uid}
-						jobTitle={selectedJob.title}
+						open={applyDialog.isOpen}
+						onClose={applyDialog.close}
+						jobUid={applyDialog.selectedItem.uid}
+						jobTitle={applyDialog.selectedItem.title}
 					/>
 				)}
 			</>
@@ -327,12 +322,12 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
-			{selectedJob && (
+			{applyDialog.selectedItem && (
 				<ApplyToJobDialog
-					open={applyDialogOpen}
-					onClose={handleCloseApplyDialog}
-					jobUid={selectedJob.uid}
-					jobTitle={selectedJob.title}
+					open={applyDialog.isOpen}
+					onClose={applyDialog.close}
+					jobUid={applyDialog.selectedItem.uid}
+					jobTitle={applyDialog.selectedItem.title}
 				/>
 			)}
 		</>
