@@ -14,6 +14,7 @@ import {Navigate} from 'react-router-dom';
 import {format} from 'date-fns';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
 import {Application} from '../../types/application.types';
+import {getApplicationStatusColor} from '../../utils/statusColors';
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -46,20 +47,6 @@ const HRDashboard: React.FC = () => {
 	const recentApplications = applications?.slice(0, 5) || [];
 
 	const isLoading = applicationsLoading || candidatesLoading || jobPositionsLoading;
-
-	// Get status color
-	const getStatusColor = (status: string) => {
-		switch (status) {
-			case 'PENDING':
-				return 'warning';
-			case 'ACCEPTED':
-				return 'success';
-			case 'REJECTED':
-				return 'error';
-			default:
-				return 'default';
-		}
-	};
 
 	return (
 		<Box sx={{mt: 8}}>
@@ -224,7 +211,7 @@ const HRDashboard: React.FC = () => {
 										<Chip
 											label={application.status}
 											size="small"
-											color={getStatusColor(application.status)}
+											color={getApplicationStatusColor(application.status)}
 										/>
 										<Typography variant="caption" color="text.secondary">
 											{application.appliedAt ? format(new Date(application.appliedAt), 'MMM dd, yyyy') : 'N/A'}

@@ -1,7 +1,6 @@
 import {useState} from 'react';
 import {
 	Box,
-	CircularProgress,
 	Typography,
 	Table,
 	TableBody,
@@ -24,6 +23,10 @@ import UpdateUserDialog from '../dialogs/UpdateUserDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {hasRole} from '../../utils/permissions';
+import LoadingSpinner from '../common/LoadingSpinner';
+import EmptyState from '../common/EmptyState';
+import ErrorMessage from '../common/ErrorMessage';
+import {getUserRoleColor} from '../../utils/statusColors';
 
 interface UsersListProps {
 	page: number;
@@ -92,36 +95,13 @@ const UsersList: React.FC<UsersListProps> = ({
 		setSelectedUser(null);
 	};
 
-	const getRoleColor = (role: UserRoles) => {
-		switch (role) {
-			case UserRoles.SUPER_ADMIN:
-				return 'error';
-			case UserRoles.ADMIN:
-				return 'warning';
-			case UserRoles.HR:
-				return 'info';
-			default:
-				return 'default';
-		}
-	};
-
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (error && !data) {
-		return (
-			<Box sx={{p: 4}}>
-				<Typography color="error">
-					{t('users.error_loading')}
-				</Typography>
-			</Box>
-		);
+		return <ErrorMessage message="users.error_loading" />;
 	}
 
 	return (
@@ -151,7 +131,7 @@ const UsersList: React.FC<UsersListProps> = ({
 													key={role}
 													label={role}
 													size="small"
-													color={getRoleColor(role)}
+													color={getUserRoleColor(role)}
 												/>
 											))}
 										</Box>
@@ -188,11 +168,7 @@ const UsersList: React.FC<UsersListProps> = ({
 					</Table>
 				</TableContainer>
 			) : (
-				<Paper sx={{p: 4, textAlign: 'center'}}>
-					<Typography variant="body1" color="textSecondary">
-						{t('users.no_users')}
-					</Typography>
-				</Paper>
+				<EmptyState message="users.no_users" />
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}

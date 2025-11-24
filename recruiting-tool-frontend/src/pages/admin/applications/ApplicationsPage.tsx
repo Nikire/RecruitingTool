@@ -6,13 +6,13 @@ import {
 	InputLabel,
 	Select,
 	MenuItem,
-	Alert,
 	Paper,
 } from '@mui/material';
 import {useUserAtom} from '../../../hooks/api/state/useUserAtom';
 import {isAdmin} from '../../../utils/permissions';
 import {ApplicationStatus} from '../../../types/application.types';
 import ApplicationsTable from '../../../components/applications/ApplicationsTable';
+import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
 
 const ApplicationsPage: React.FC = () => {
 	const {user} = useUserAtom();
@@ -21,18 +21,7 @@ const ApplicationsPage: React.FC = () => {
 
 	// Check if user has admin access
 	if (!hasAdminAccess) {
-		return (
-			<Box>
-				<Alert severity="error" sx={{mb: 2}}>
-					Access Denied: You need ADMIN or SUPER_ADMIN role to view
-					applications.
-				</Alert>
-				<Typography variant="body1">
-					Please contact your administrator if you believe you should have
-					access to this page.
-				</Typography>
-			</Box>
-		);
+		return <AccessDeniedMessage requiredRoles={['ADMIN', 'SUPER_ADMIN']} />;
 	}
 
 	const ApplicationStatusOptions: {

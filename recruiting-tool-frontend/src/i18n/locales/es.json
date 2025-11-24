@@ -33,7 +33,8 @@
     "remove": "Quitar",
     "clear": "Limpiar",
     "apply": "Aplicar",
-    "reset": "Restablecer"
+    "reset": "Restablecer",
+    "retry": "Reintentar"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -222,7 +223,8 @@
     "create_title": "Crear Plantilla de Correo",
     "subject_label": "Asunto",
     "body_label": "Cuerpo",
-    "variables": "Variables Disponibles"
+    "variables": "Variables Disponibles",
+    "no_templates": "Aún no hay plantillas de correo. ¡Haz clic en \"Crear Plantilla\" para agregar la primera!"
   },
   "forms": {
     "custom_questions": "Preguntas Personalizadas",
@@ -423,5 +425,10 @@
     "careers": "Carreras",
     "hr_panel": "Panel de RRHH",
     "admin_panel": "Panel de Administración"
+  },
+  "access": {
+    "denied": "Acceso Denegado",
+    "denied_with_roles": "Acceso Denegado: Necesitas el rol {{roles}} para ver esta página.",
+    "contact_admin": "Por favor contacta a tu administrador si crees que deberías tener acceso a esta página."
   }
 }

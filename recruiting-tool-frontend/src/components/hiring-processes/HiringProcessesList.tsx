@@ -1,16 +1,20 @@
 import {useState} from 'react';
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
+import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useTranslation} from 'react-i18next';
 import {useListHiringProcesses, useDeleteHiringProcess} from '../../hooks/api/useHiringProcess';
-import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
+import {HiringProcess} from '../../types/hiringProcess.types';
 import {useNavigate} from 'react-router-dom';
 import Pagination from '../pagination/Pagination';
 import UpdateHiringProcessDialog from '../dialogs/UpdateHiringProcessDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
+import LoadingSpinner from '../common/LoadingSpinner';
+import EmptyState from '../common/EmptyState';
+import ErrorMessage from '../common/ErrorMessage';
+import {getHiringProcessStatusColor} from '../../utils/statusColors';
 
 interface HiringProcessesListProps {
 	page: number;
@@ -19,23 +23,6 @@ interface HiringProcessesListProps {
 	onPageChange: (page: number) => void;
 	onLimitChange: (limit: number) => void;
 }
-
-const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
-	switch (status) {
-		case 'OPEN':
-			return 'info';
-		case 'IN_PROGRESS':
-			return 'primary';
-		case 'CLOSED':
-			return 'success';
-		case 'CANCELLED':
-			return 'default';
-		case 'REJECTED':
-			return 'error';
-		default:
-			return 'default';
-	}
-};
 
 const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 	page,
@@ -99,21 +86,11 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (error && !data) {
-		return (
-			<Box sx={{p: 4}}>
-				<Typography color="error">
-					{t('errors.fetch_failed')}
-				</Typography>
-			</Box>
-		);
+		return <ErrorMessage message="errors.fetch_failed" />;
 	}
 
 	return (
@@ -142,7 +119,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 									<TableCell>
 										<Chip
 											label={process.status}
-											color={getStatusColor(process.status)}
+											color={getHiringProcessStatusColor(process.status)}
 											size="small"
 										/>
 									</TableCell>
@@ -216,11 +193,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 					</Table>
 				</TableContainer>
 			) : (
-				<Paper sx={{p: 4, textAlign: 'center'}}>
-					<Typography variant="body1" color="textSecondary">
-						{t('hiring_processes.no_processes')}
-					</Typography>
-				</Paper>
+				<EmptyState message="hiring_processes.no_processes" />
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}

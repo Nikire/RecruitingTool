@@ -11,6 +11,7 @@ import SearchBar from '../../components/search/SearchBar';
 import CompaniesList from '../../components/companies/CompaniesList';
 import UpdateCompanyDialog from '../../components/dialogs/UpdateCompanyDialog';
 import ConfirmDeleteDialog from '../../components/dialogs/ConfirmDeleteDialog';
+import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
 export const CompaniesPage: React.FC = () => {
   const { user } = useUserAtom();
@@ -34,14 +35,7 @@ export const CompaniesPage: React.FC = () => {
   const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
 
   if (!isSuperAdmin) {
-    return (
-      <Box>
-        <Typography variant="h5" color="error">
-          Access Denied
-        </Typography>
-        <Typography>You do not have permission to access this page.</Typography>
-      </Box>
-    );
+    return <AccessDeniedMessage requiredRoles={['SUPER_ADMIN']} />;
   }
 
   const handleCreate = () => {

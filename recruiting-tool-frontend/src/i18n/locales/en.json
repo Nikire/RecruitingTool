@@ -33,7 +33,8 @@
     "remove": "Remove",
     "clear": "Clear",
     "apply": "Apply",
-    "reset": "Reset"
+    "reset": "Reset",
+    "retry": "Retry"
   },
   "validation": {
     "required": "This field is required",
@@ -224,7 +225,8 @@
     "create_title": "Create Email Template",
     "subject_label": "Subject",
     "body_label": "Body",
-    "variables": "Available Variables"
+    "variables": "Available Variables",
+    "no_templates": "No email templates yet. Click \"Create Template\" to add your first one!"
   },
   "forms": {
     "custom_questions": "Custom Questions",
@@ -425,5 +427,10 @@
     "careers": "Careers",
     "hr_panel": "HR Panel",
     "admin_panel": "Admin Panel"
+  },
+  "access": {
+    "denied": "Access Denied",
+    "denied_with_roles": "Access Denied: You need {{roles}} role to view this page.",
+    "contact_admin": "Please contact your administrator if you believe you should have access to this page."
   }
 }

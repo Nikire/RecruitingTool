@@ -12,8 +12,6 @@ import {
   TableRow,
   IconButton,
   Chip,
-  CircularProgress,
-  Alert,
   TextField,
   InputAdornment,
 } from '@mui/material';
@@ -24,6 +22,10 @@ import { canManageResources } from '../../../utils/permissions';
 import EmailTemplateDialog from '../../../components/email-templates/EmailTemplateDialog';
 import { EmailTemplate } from '../../../types/emailTemplate.types';
 import { format } from 'date-fns';
+import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
+import LoadingSpinner from '../../../components/common/LoadingSpinner';
+import ErrorMessage from '../../../components/common/ErrorMessage';
+import EmptyState from '../../../components/common/EmptyState';
 
 const EmailTemplatesPage: React.FC = () => {
   const { user } = useUserAtom();
@@ -48,16 +50,7 @@ const EmailTemplatesPage: React.FC = () => {
 
   // Check if user has access (HR, ADMIN, or SUPER_ADMIN)
   if (!hasAccess) {
-    return (
-      <Box>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          Access Denied: You need HR, ADMIN or SUPER_ADMIN role to view email templates.
-        </Alert>
-        <Typography variant="body1">
-          Please contact your administrator if you believe you should have access to this page.
-        </Typography>
-      </Box>
-    );
+    return <AccessDeniedMessage requiredRoles={['HR', 'ADMIN', 'SUPER_ADMIN']} />;
   }
 
   const handleOpenDialog = (template?: EmailTemplate) => {
@@ -101,24 +94,14 @@ const EmailTemplatesPage: React.FC = () => {
         />
       </Paper>
 
-      {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
+      {isLoading && <LoadingSpinner />}
 
-      {error && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          Error loading email templates. Please try again later.
-        </Alert>
-      )}
+      {error && <ErrorMessage message="errors.fetch_failed" />}
 
       {!isLoading && !error && filteredTemplates && filteredTemplates.length === 0 && (
-        <Alert severity="info" sx={{ mb: 2 }}>
-          {searchTerm
-            ? 'No templates found matching your search.'
-            : 'No email templates yet. Click "Create Template" to add your first one!'}
-        </Alert>
+        <EmptyState
+          message={searchTerm ? 'empty.no_results' : 'email_templates.no_templates'}
+        />
       )}
 
       {!isLoading && !error && filteredTemplates && filteredTemplates.length > 0 && (

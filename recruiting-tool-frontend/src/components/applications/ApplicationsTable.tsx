@@ -9,8 +9,6 @@ import {
 	Paper,
 	Chip,
 	IconButton,
-	CircularProgress,
-	Alert,
 	Typography,
 	Box,
 	Tooltip,
@@ -21,6 +19,10 @@ import {useTranslation} from 'react-i18next';
 import {useApplications} from '../../hooks/api/useApplications';
 import {Application, ApplicationStatus} from '../../types/application.types';
 import ApplicationDetailDialog from '../dialogs/ApplicationDetailDialog';
+import LoadingSpinner from '../common/LoadingSpinner';
+import EmptyState from '../common/EmptyState';
+import ErrorMessage from '../common/ErrorMessage';
+import {getApplicationStatusColor} from '../../utils/statusColors';
 
 interface ApplicationsTableProps {
 	statusFilter?: ApplicationStatus;
@@ -44,50 +46,19 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 		setSelectedApplication(null);
 	};
 
-	const getStatusColor = (status: ApplicationStatus) => {
-		switch (status) {
-			case ApplicationStatus.PENDING:
-				return 'warning';
-			case ApplicationStatus.REVIEWED:
-				return 'info';
-			case ApplicationStatus.ACCEPTED:
-				return 'success';
-			case ApplicationStatus.REJECTED:
-				return 'error';
-			default:
-				return 'default';
-		}
-	};
-
 	if (isLoading) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (isError) {
-		return (
-			<Alert severity="error">
-				{t('applications.error_loading')}
-			</Alert>
-		);
+		return <ErrorMessage message="applications.error_loading" />;
 	}
 
 	if (!applications || applications.length === 0) {
-		return (
-			<Paper sx={{p: 4, textAlign: 'center'}}>
-				<Typography variant="h6" color="text.secondary" gutterBottom>
-					{t('applications.no_applications_found')}
-				</Typography>
-				<Typography variant="body2" color="text.secondary">
-					{statusFilter
-						? t('applications.no_applications_with_status', {status: statusFilter})
-						: t('applications.no_applications_submitted')}
-				</Typography>
-			</Paper>
-		);
+		const emptyMessage = statusFilter
+			? 'applications.no_applications_with_status'
+			: 'applications.no_applications_submitted';
+		return <EmptyState message={emptyMessage} />;
 	}
 
 	return (
@@ -135,7 +106,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 								<TableCell>
 									<Chip
 										label={application.status}
-										color={getStatusColor(application.status)}
+										color={getApplicationStatusColor(application.status)}
 										size="small"
 									/>
 								</TableCell>

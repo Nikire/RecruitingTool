@@ -7,6 +7,7 @@ import {hasRole} from '../../utils/permissions';
 import {UserRoles} from '../../types/user.types';
 import SearchBar from '../../components/search/SearchBar';
 import UsersList from '../../components/users/UsersList';
+import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
 const UserManagementPage: React.FC = () => {
 	const {user} = useUserAtom();
@@ -29,16 +30,7 @@ const UserManagementPage: React.FC = () => {
 
 	// Check if user has SUPER_ADMIN access
 	if (!isSuperAdmin) {
-		return (
-			<Box>
-				<Alert severity="error" sx={{mb: 2}}>
-					Access Denied: You need SUPER_ADMIN role to view user management.
-				</Alert>
-				<Typography variant="body1">
-					Please contact your administrator if you believe you should have access to this page.
-				</Typography>
-			</Box>
-		);
+		return <AccessDeniedMessage requiredRoles={['SUPER_ADMIN']} />;
 	}
 
 	return (

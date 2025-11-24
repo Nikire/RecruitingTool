@@ -1,30 +1,16 @@
-import {Divider, Typography, Box, Chip, Paper, CircularProgress, Button, Alert} from '@mui/material';
+import {Divider, Typography, Box, Chip, Paper, Button, Alert} from '@mui/material';
 import {useParams, useNavigate} from 'react-router-dom';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SkipNextIcon from '@mui/icons-material/SkipNext';
 import WarningIcon from '@mui/icons-material/Warning';
 import StagesTimeline from '../../components/stages/StagesTimeline/StagesTimeline';
 import {useHiringProcesses} from '../../hooks/api/useHiringProcess';
-import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
+import {HiringProcess} from '../../types/hiringProcess.types';
 import {useState} from 'react';
 import StageProgressionDialog from '../../components/dialogs/StageProgressionDialog';
-
-const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
-	switch (status) {
-		case 'OPEN':
-			return 'info';
-		case 'IN_PROGRESS':
-			return 'primary';
-		case 'CLOSED':
-			return 'success';
-		case 'CANCELLED':
-			return 'default';
-		case 'REJECTED':
-			return 'error';
-		default:
-			return 'default';
-	}
-};
+import LoadingSpinner from '../../components/common/LoadingSpinner';
+import ErrorMessage from '../../components/common/ErrorMessage';
+import {getHiringProcessStatusColor} from '../../utils/statusColors';
 
 const HiringProcessPage: React.FC = () => {
 	const {uid} = useParams<{uid: string}>();
@@ -37,21 +23,11 @@ const HiringProcessPage: React.FC = () => {
 	} = useHiringProcesses(uid);
 
 	if (isHiringProcessLoading) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (error) {
-		return (
-			<Box sx={{p: 4}}>
-				<Typography color="error">
-					Error loading hiring process. Please try again.
-				</Typography>
-			</Box>
-		);
+		return <ErrorMessage message="errors.fetch_failed" />;
 	}
 
 	if (!hiringProcessData) {
@@ -86,7 +62,7 @@ const HiringProcessPage: React.FC = () => {
 					</Box>
 					<Chip
 						label={hiringProcess.status}
-						color={getStatusColor(hiringProcess.status)}
+						color={getHiringProcessStatusColor(hiringProcess.status)}
 						size="medium"
 					/>
 				</Box>

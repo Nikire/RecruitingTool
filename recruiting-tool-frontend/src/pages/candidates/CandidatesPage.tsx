@@ -1,5 +1,5 @@
 import {useState, useCallback} from 'react';
-import {Typography, Button, Box, Alert} from '@mui/material';
+import {Typography, Button, Box} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useCandidatesSearch} from '../../hooks/api/state/useSearchState';
@@ -7,6 +7,7 @@ import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialo
 import {canManageResources} from '../../utils/permissions';
 import SearchBar from '../../components/search/SearchBar';
 import CandidatesList from '../../components/candidates/CandidatesList';
+import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
 const CandidatesPage: React.FC = () => {
 	const [openDialog, setOpenDialog] = useState(false);
@@ -30,16 +31,7 @@ const CandidatesPage: React.FC = () => {
 
 	// Check if user has access (HR, ADMIN, or SUPER_ADMIN)
 	if (!canManage) {
-		return (
-			<Box  sx={{mt: 8}}>
-				<Alert severity="error" sx={{mb: 2}}>
-					Access Denied: You need HR, ADMIN or SUPER_ADMIN role to view candidates.
-				</Alert>
-				<Typography variant="body1">
-					Please contact your administrator if you believe you should have access to this page.
-				</Typography>
-			</Box>
-		);
+		return <AccessDeniedMessage requiredRoles={['HR', 'ADMIN', 'SUPER_ADMIN']} />;
 	}
 
 	return (
