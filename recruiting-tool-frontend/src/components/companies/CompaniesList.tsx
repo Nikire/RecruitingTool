@@ -1,9 +1,9 @@
-import {Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton} from '@mui/material';
-import {Edit as EditIcon, Delete as DeleteIcon} from '@mui/icons-material';
+import {Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {useListCompanies} from '../../hooks/api/useCompanies';
 import {Company} from '../../types/company.types';
 import Pagination from '../pagination/Pagination';
+import {TableRowActions} from '../tables';
 
 interface CompaniesListProps {
 	page: number;
@@ -66,12 +66,10 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 								<TableCell align="center">{company.userCount || 0}</TableCell>
 								<TableCell align="center">{company.jobPositionCount || 0}</TableCell>
 								<TableCell align="center">
-									<IconButton size="small" onClick={() => onEdit(company)} color="primary">
-										<EditIcon />
-									</IconButton>
-									<IconButton size="small" onClick={() => onDelete(company)} color="error">
-										<DeleteIcon />
-									</IconButton>
+									<TableRowActions
+										onEdit={() => onEdit(company)}
+										onDelete={() => onDelete(company)}
+									/>
 								</TableCell>
 							</TableRow>
 						))}

@@ -1,4 +1,4 @@
-import {Box, Card, CardContent, Typography, Grid, CircularProgress, Button, Paper, Chip} from '@mui/material';
+import {Box, Typography, Grid, CircularProgress, Button, Paper} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -14,7 +14,8 @@ import {Navigate} from 'react-router-dom';
 import {format} from 'date-fns';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
 import {Application} from '../../types/application.types';
-import {getApplicationStatusColor} from '../../utils/statusColors';
+import {DashboardStatCard} from '../../components/dashboard';
+import {StatusChip} from '../../components/common';
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -48,6 +49,41 @@ const HRDashboard: React.FC = () => {
 
 	const isLoading = applicationsLoading || candidatesLoading || jobPositionsLoading;
 
+	// Dashboard stat cards data
+	const statsData = [
+		{
+			title: 'Applications',
+			value: totalApplications,
+			subtitle: `${pendingApplications} pending review`,
+			icon: <AssignmentIcon />,
+			iconColor: 'primary.main',
+			onClick: () => navigate('/hr/applications'),
+		},
+		{
+			title: 'Candidates',
+			value: totalCandidates,
+			subtitle: 'Active in hiring processes',
+			icon: <GroupIcon />,
+			iconColor: 'success.main',
+			onClick: () => navigate('/hr/candidates'),
+		},
+		{
+			title: 'Job Positions',
+			value: totalJobPositions,
+			subtitle: `${openPositions} currently open`,
+			icon: <WorkIcon />,
+			iconColor: 'info.main',
+			onClick: () => navigate('/hr/job-positions'),
+		},
+		{
+			title: 'Pending Review',
+			value: pendingApplications,
+			subtitle: 'Applications need attention',
+			icon: <AssignmentIcon />,
+			iconColor: 'warning.main',
+		},
+	];
+
 	return (
 		<Box sx={{mt: 8}}>
 			<Box sx={{mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
@@ -65,97 +101,19 @@ const HRDashboard: React.FC = () => {
 
 			{/* Statistics Cards */}
 			<Grid container spacing={3} sx={{mb: 4}}>
-				<Grid item xs={12} sm={6} md={3}>
-					<Card sx={{height: '100%', cursor: 'pointer'}} onClick={() => navigate('/hr/applications')}>
-						<CardContent>
-							<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-								<AssignmentIcon sx={{fontSize: 40, color: 'primary.main', mr: 2}} />
-								<Box>
-									<Typography color="text.secondary" variant="body2">
-										Applications
-									</Typography>
-									{isLoading ? (
-										<CircularProgress size={24} />
-									) : (
-										<Typography variant="h4">{totalApplications}</Typography>
-									)}
-								</Box>
-							</Box>
-							<Typography variant="body2" color="text.secondary">
-								{pendingApplications} pending review
-							</Typography>
-						</CardContent>
-					</Card>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<Card sx={{height: '100%', cursor: 'pointer'}} onClick={() => navigate('/hr/candidates')}>
-						<CardContent>
-							<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-								<GroupIcon sx={{fontSize: 40, color: 'success.main', mr: 2}} />
-								<Box>
-									<Typography color="text.secondary" variant="body2">
-										Candidates
-									</Typography>
-									{isLoading ? (
-										<CircularProgress size={24} />
-									) : (
-										<Typography variant="h4">{totalCandidates}</Typography>
-									)}
-								</Box>
-							</Box>
-							<Typography variant="body2" color="text.secondary">
-								Active in hiring processes
-							</Typography>
-						</CardContent>
-					</Card>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<Card sx={{height: '100%', cursor: 'pointer'}} onClick={() => navigate('/hr/job-positions')}>
-						<CardContent>
-							<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-								<WorkIcon sx={{fontSize: 40, color: 'info.main', mr: 2}} />
-								<Box>
-									<Typography color="text.secondary" variant="body2">
-										Job Positions
-									</Typography>
-									{isLoading ? (
-										<CircularProgress size={24} />
-									) : (
-										<Typography variant="h4">{totalJobPositions}</Typography>
-									)}
-								</Box>
-							</Box>
-							<Typography variant="body2" color="text.secondary">
-								{openPositions} currently open
-							</Typography>
-						</CardContent>
-					</Card>
-				</Grid>
-
-				<Grid item xs={12} sm={6} md={3}>
-					<Card sx={{height: '100%'}}>
-						<CardContent>
-							<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
-								<AssignmentIcon sx={{fontSize: 40, color: 'warning.main', mr: 2}} />
-								<Box>
-									<Typography color="text.secondary" variant="body2">
-										Pending Review
-									</Typography>
-									{isLoading ? (
-										<CircularProgress size={24} />
-									) : (
-										<Typography variant="h4">{pendingApplications}</Typography>
-									)}
-								</Box>
-							</Box>
-							<Typography variant="body2" color="text.secondary">
-								Applications need attention
-							</Typography>
-						</CardContent>
-					</Card>
-				</Grid>
+				{statsData.map((stat, index) => (
+					<Grid item xs={12} sm={6} md={3} key={index}>
+						<DashboardStatCard
+							title={stat.title}
+							value={stat.value}
+							subtitle={stat.subtitle}
+							icon={stat.icon}
+							iconColor={stat.iconColor}
+							isLoading={isLoading}
+							onClick={stat.onClick}
+						/>
+					</Grid>
+				))}
 			</Grid>
 
 			{/* Recent Applications */}
@@ -208,10 +166,11 @@ const HRDashboard: React.FC = () => {
 										</Typography>
 									</Box>
 									<Box sx={{display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1, ml: 2}}>
-										<Chip
-											label={application.status}
+										<StatusChip
+											status={application.status}
+											type="application"
 											size="small"
-											color={getApplicationStatusColor(application.status)}
+											translate
 										/>
 										<Typography variant="caption" color="text.secondary">
 											{application.appliedAt ? format(new Date(application.appliedAt), 'MMM dd, yyyy') : 'N/A'}

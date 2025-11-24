@@ -8,12 +8,8 @@ import {
 	TableHead,
 	TableRow,
 	Paper,
-	IconButton,
-	Tooltip,
 	Chip,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import {useTranslation} from 'react-i18next';
 import {useListUsers, useDeleteUser} from '../../hooks/api/useUsers';
 import {User, UserRoles} from '../../types/user.types';
@@ -25,9 +21,10 @@ import {hasRole} from '../../utils/permissions';
 import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
-import {getUserRoleColor} from '../../utils/statusColors';
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
+import {TableRowActions} from '../tables';
+import {StatusChip} from '../common';
 
 interface UsersListProps {
 	page: number;
@@ -96,11 +93,11 @@ const UsersList: React.FC<UsersListProps> = ({
 									<TableCell>
 										<Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap'}}>
 											{user.roles.map((role) => (
-												<Chip
+												<StatusChip
 													key={role}
-													label={role}
+													status={role}
+													type="userRole"
 													size="small"
-													color={getUserRoleColor(role)}
 												/>
 											))}
 										</Box>
@@ -111,24 +108,10 @@ const UsersList: React.FC<UsersListProps> = ({
 									</TableCell>
 									{isSuperAdmin && (
 										<TableCell align="right">
-											<Tooltip title={t('users.edit_user_tooltip')}>
-												<IconButton
-													size="small"
-													color="primary"
-													onClick={() => updateDialog.openWith(user)}
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-											<Tooltip title={t('users.delete_user_tooltip')}>
-												<IconButton
-													size="small"
-													color="error"
-													onClick={() => deleteConfirm.confirmDelete(user)}
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
+											<TableRowActions
+												onEdit={() => updateDialog.openWith(user)}
+												onDelete={() => deleteConfirm.confirmDelete(user)}
+											/>
 										</TableCell>
 									)}
 								</TableRow>

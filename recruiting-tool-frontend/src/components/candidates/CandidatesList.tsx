@@ -1,6 +1,4 @@
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, IconButton, Tooltip} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {useListCandidates, useDeleteCandidate} from '../../hooks/api/useCandidates';
 import {useDialog} from '../../hooks/useDialog';
@@ -11,6 +9,7 @@ import UpdateCandidateDialog from '../dialogs/UpdateCandidateDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
+import {TableRowActions} from '../tables';
 
 interface CandidatesListProps {
 	page: number;
@@ -98,24 +97,10 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 									</TableCell>
 									{canManage && (
 										<TableCell align="right">
-											<Tooltip title={t('common.edit')}>
-												<IconButton
-													size="small"
-													color="primary"
-													onClick={() => handleEditClick(candidate)}
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-											<Tooltip title={t('common.delete')}>
-												<IconButton
-													size="small"
-													color="error"
-													onClick={() => handleDeleteClick(candidate)}
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
+											<TableRowActions
+												onEdit={() => handleEditClick(candidate)}
+												onDelete={() => handleDeleteClick(candidate)}
+											/>
 										</TableCell>
 									)}
 								</TableRow>

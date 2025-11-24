@@ -34,7 +34,9 @@
     "clear": "Limpiar",
     "apply": "Aplicar",
     "reset": "Restablecer",
-    "retry": "Reintentar"
+    "retry": "Reintentar",
+    "my_profile": "Mi Perfil",
+    "back_to_careers": "Volver a Carreras"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -87,7 +89,10 @@
     "cancelled": "Cancelado",
     "pending": "Pendiente",
     "completed": "Completado",
-    "in_progress": "En Progreso"
+    "in_progress": "En Progreso",
+    "reviewed": "Revisado",
+    "accepted": "Aceptado",
+    "rejected": "Rechazado"
   },
   "candidates": {
     "title": "Candidatos",
