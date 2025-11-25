@@ -1,5 +1,16 @@
-import {Box, Typography, Card, CardContent, Button, Chip, TextField, Divider, Grid} from '@mui/material';
+import {
+	Box,
+	Typography,
+	Card,
+	CardContent,
+	Button,
+	Chip,
+	TextField,
+	Divider,
+	Grid,
+} from '@mui/material';
 import {Save as SaveIcon, Refresh as RefreshIcon} from '@mui/icons-material';
+import {useTranslation} from 'react-i18next';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useForm} from 'react-hook-form';
 import {UpdateUserDto} from '../../types/user.types';
@@ -8,6 +19,7 @@ import {useEffect} from 'react';
 import ProfilePictureUpload from '../../components/user/ProfilePictureUpload';
 
 const ProfilePage: React.FC = () => {
+	const {t} = useTranslation();
 	const {user} = useUserAtom();
 	const {mutate: updateUser, isPending} = useUpdateUser();
 
@@ -54,12 +66,15 @@ const ProfilePage: React.FC = () => {
 		if (!user) return;
 
 		// Remove empty strings and convert to undefined
-		const cleanedData: UpdateUserDto = Object.entries(data).reduce((acc, [key, value]) => {
-			if (value !== '' && value !== undefined) {
-				acc[key as keyof UpdateUserDto] = value;
-			}
-			return acc;
-		}, {} as UpdateUserDto);
+		const cleanedData: UpdateUserDto = Object.entries(data).reduce(
+			(acc, [key, value]) => {
+				if (value !== '' && value !== undefined) {
+					acc[key as keyof UpdateUserDto] = value;
+				}
+				return acc;
+			},
+			{} as UpdateUserDto
+		);
 
 		updateUser({uid: user.uid, data: cleanedData});
 	};
@@ -82,18 +97,25 @@ const ProfilePage: React.FC = () => {
 
 	if (!user) {
 		return (
-			<Box sx={{p: 4}}>
+			<Box sx={{mt: 8, p: 4}}>
 				<Typography variant="h5" color="error">
-					No user data available
+					{t('profile_page.no_user_data')}
 				</Typography>
 			</Box>
 		);
 	}
 
 	return (
-		<Box component="form" onSubmit={handleSubmit(onSubmit)}>
-			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
-				<Typography variant="h4">My Profile</Typography>
+		<Box component="form" sx={{mt: 8}} onSubmit={handleSubmit(onSubmit)}>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+					mb: 3,
+				}}
+			>
+				<Typography variant="h4">{t('profile_page.my_profile')}</Typography>
 				<Box sx={{display: 'flex', gap: 1}}>
 					<Button
 						variant="outlined"
@@ -101,7 +123,7 @@ const ProfilePage: React.FC = () => {
 						onClick={handleReset}
 						disabled={!isDirty || isPending}
 					>
-						Reset
+						{t('profile_page.reset')}
 					</Button>
 					<Button
 						type="submit"
@@ -109,7 +131,7 @@ const ProfilePage: React.FC = () => {
 						startIcon={<SaveIcon />}
 						disabled={!isDirty || isPending}
 					>
-						{isPending ? 'Saving...' : 'Update Profile'}
+						{isPending ? t('common.saving') : t('profile.update_title')}
 					</Button>
 				</Box>
 			</Box>
@@ -118,13 +140,22 @@ const ProfilePage: React.FC = () => {
 				{/* Profile Overview Card */}
 				<Grid size={{xs: 12, md: 4}}>
 					<Card>
-						<CardContent sx={{display: 'flex', flexDirection: 'column', alignItems: 'center', p: 4}}>
+						<CardContent
+							sx={{
+								display: 'flex',
+								flexDirection: 'column',
+								alignItems: 'center',
+								p: 4,
+							}}
+						>
 							<ProfilePictureUpload
 								currentPicture={
 									user.profilePicture
 										? user.profilePicture.startsWith('http')
 											? user.profilePicture
-											: `${import.meta.env.VITE_API_URL}/files/${user.profilePicture}/view`
+											: `${import.meta.env.VITE_API_URL}/files/${
+													user.profilePicture
+											  }/view`
 										: undefined
 								}
 								userName={watchedName || user.name}
@@ -138,12 +169,17 @@ const ProfilePage: React.FC = () => {
 										},
 										{
 											onSuccess: () => {
-												console.log('Profile picture updated successfully with UID!');
+												console.log(
+													'Profile picture updated successfully with UID!'
+												);
 											},
 											onError: (error) => {
-												console.error('Failed to update profile picture:', error);
+												console.error(
+													'Failed to update profile picture:',
+													error
+												);
 											},
-										},
+										}
 									);
 								}}
 								onRemove={() => {
@@ -159,9 +195,12 @@ const ProfilePage: React.FC = () => {
 												console.log('Profile picture removed successfully!');
 											},
 											onError: (error) => {
-												console.error('Failed to remove profile picture:', error);
+												console.error(
+													'Failed to remove profile picture:',
+													error
+												);
 											},
-										},
+										}
 									);
 								}}
 							/>
@@ -171,9 +210,23 @@ const ProfilePage: React.FC = () => {
 							<Typography variant="body2" color="text.secondary" gutterBottom>
 								{user.email}
 							</Typography>
-							<Box sx={{mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center'}}>
+							<Box
+								sx={{
+									mt: 2,
+									display: 'flex',
+									gap: 1,
+									flexWrap: 'wrap',
+									justifyContent: 'center',
+								}}
+							>
 								{user.roles.map((role) => (
-									<Chip key={role} label={role} size="small" color="primary" variant="outlined" />
+									<Chip
+										key={role}
+										label={role}
+										size="small"
+										color="primary"
+										variant="outlined"
+									/>
 								))}
 							</Box>
 						</CardContent>
@@ -186,15 +239,18 @@ const ProfilePage: React.FC = () => {
 						<CardContent sx={{p: 3}}>
 							{/* Basic Information Section */}
 							<Box sx={{mb: 4}}>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-									Basic Information
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
+									{t('profile_page.basic_info')}
 								</Typography>
 								<Grid container spacing={2.5}>
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
 											fullWidth
-											label="Full Name"
-											{...register('name', {required: 'Name is required'})}
+											label={t('profile_page.full_name')}
+											{...register('name', {required: t('validation.name_required')})}
 											error={!!errors.name}
 											helperText={errors.name?.message}
 											variant="outlined"
@@ -205,13 +261,13 @@ const ProfilePage: React.FC = () => {
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
 											fullWidth
-											label="Email Address"
+											label={t('profile_page.email_address')}
 											type="email"
 											{...register('email', {
-												required: 'Email is required',
+												required: t('validation.email_required'),
 												pattern: {
 													value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-													message: 'Invalid email address',
+													message: t('validation.email_invalid'),
 												},
 											})}
 											error={!!errors.email}
@@ -224,7 +280,7 @@ const ProfilePage: React.FC = () => {
 									<Grid size={{xs: 12}}>
 										<TextField
 											fullWidth
-											label="Phone Number"
+											label={t('profile_page.phone_number')}
 											placeholder="+1-555-0123"
 											{...register('phoneNumber')}
 											variant="outlined"
@@ -238,15 +294,18 @@ const ProfilePage: React.FC = () => {
 
 							{/* Professional Information Section */}
 							<Box sx={{mb: 4}}>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-									Professional Information
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
+									{t('profile_page.professional_info')}
 								</Typography>
 								<Grid container spacing={2.5}>
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
 											fullWidth
-											label="Position"
-											placeholder="e.g., Senior HR Manager"
+											label={t('profile_page.position')}
+											placeholder={t('edit_profile.position_placeholder')}
 											{...register('position')}
 											variant="outlined"
 											size="small"
@@ -256,8 +315,8 @@ const ProfilePage: React.FC = () => {
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
 											fullWidth
-											label="Department"
-											placeholder="e.g., Human Resources"
+											label={t('profile_page.department')}
+											placeholder={t('edit_profile.department_placeholder')}
 											{...register('department')}
 											variant="outlined"
 											size="small"
@@ -270,15 +329,18 @@ const ProfilePage: React.FC = () => {
 
 							{/* Additional Information Section */}
 							<Box sx={{mb: 4}}>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-									Additional Information
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
+									{t('profile_page.additional_info')}
 								</Typography>
 								<Grid container spacing={2.5}>
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
 											fullWidth
-											label="Timezone"
-											placeholder="e.g., America/New_York"
+											label={t('profile_page.timezone')}
+											placeholder={t('edit_profile.timezone_placeholder')}
 											{...register('timezone')}
 											variant="outlined"
 											size="small"
@@ -288,8 +350,8 @@ const ProfilePage: React.FC = () => {
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
 											fullWidth
-											label="LinkedIn Profile"
-											placeholder="https://linkedin.com/in/username"
+											label={t('profile_page.linkedin_profile')}
+											placeholder={t('edit_profile.linkedin_placeholder')}
 											{...register('linkedinUrl')}
 											variant="outlined"
 											size="small"
@@ -302,13 +364,16 @@ const ProfilePage: React.FC = () => {
 
 							{/* Bio Section */}
 							<Box>
-								<Typography variant="h6" sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}>
-									About You
+								<Typography
+									variant="h6"
+									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
+								>
+									{t('profile_page.about_you')}
 								</Typography>
 								<TextField
 									fullWidth
-									label="Bio"
-									placeholder="Tell us about yourself, your experience, and what you're passionate about..."
+									label={t('profile_page.bio')}
+									placeholder={t('edit_profile.bio_placeholder')}
 									multiline
 									rows={6}
 									{...register('bio')}

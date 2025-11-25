@@ -11,8 +11,10 @@ import {
 	Select,
 	MenuItem,
 	Box,
+	CircularProgress,
 } from '@mui/material';
 import {useForm, Controller} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useUpdateHiringProcess} from '../../hooks/api/useHiringProcess';
 import {HiringProcess} from '../../types/hiringProcess.types';
 import {useEffect} from 'react';
@@ -29,11 +31,11 @@ interface HiringProcessFormData {
 }
 
 const hiringProcessStatuses = [
-	{value: 'OPEN', label: 'Open'},
-	{value: 'IN_PROGRESS', label: 'In Progress'},
-	{value: 'CLOSED', label: 'Closed'},
-	{value: 'CANCELLED', label: 'Cancelled'},
-	{value: 'REJECTED', label: 'Rejected'},
+	{value: 'OPEN', labelKey: 'update_hiring_process.status_open'},
+	{value: 'IN_PROGRESS', labelKey: 'update_hiring_process.status_in_progress'},
+	{value: 'CLOSED', labelKey: 'update_hiring_process.status_closed'},
+	{value: 'CANCELLED', labelKey: 'update_hiring_process.status_cancelled'},
+	{value: 'REJECTED', labelKey: 'update_hiring_process.status_rejected'},
 ];
 
 const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
@@ -41,6 +43,7 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 	onClose,
 	hiringProcess,
 }) => {
+	const {t} = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -87,22 +90,22 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Update Hiring Process</DialogTitle>
+			<DialogTitle>{t('update_hiring_process.title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<Box sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: 1}}>
 						<TextField
-							label="Title"
+							label={t('update_hiring_process.title_label')}
 							fullWidth
 							{...register('title', {
-								required: 'Title is required',
+								required: t('validation.title_required'),
 								minLength: {
 									value: 3,
-									message: 'Title must be at least 3 characters',
+									message: t('update_hiring_process.title_min_length', {min: 3}),
 								},
 								maxLength: {
 									value: 200,
-									message: 'Title must be less than 200 characters',
+									message: t('update_hiring_process.title_max_length', {max: 200}),
 								},
 							})}
 							error={!!errors.title}
@@ -110,16 +113,16 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 						/>
 
 						<FormControl fullWidth error={!!errors.status}>
-							<InputLabel>Status</InputLabel>
+							<InputLabel>{t('update_hiring_process.status_label')}</InputLabel>
 							<Controller
 								name="status"
 								control={control}
-								rules={{required: 'Status is required'}}
+								rules={{required: t('validation.status_required')}}
 								render={({field}) => (
-									<Select {...field} label="Status">
+									<Select {...field} label={t('update_hiring_process.status_label')}>
 										{hiringProcessStatuses.map((status) => (
 											<MenuItem key={status.value} value={status.value}>
-												{status.label}
+												{t(status.labelKey)}
 											</MenuItem>
 										))}
 									</Select>
@@ -133,22 +136,22 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 						</FormControl>
 
 						<Typography variant="caption" color="textSecondary">
-							Note: Candidate and Job Position cannot be changed after creation.
+							{t('update_hiring_process.note')}
 						</Typography>
 					</Box>
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to update hiring process. Please try again.
+							{t('update_hiring_process.failed_to_update')}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isPending}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button type="submit" variant="contained" disabled={isPending}>
-						{isPending ? 'Updating...' : 'Update'}
+						{isPending ? <CircularProgress size={20} /> : t('common.update')}
 					</Button>
 				</DialogActions>
 			</form>

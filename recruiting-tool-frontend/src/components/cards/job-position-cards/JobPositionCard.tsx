@@ -1,5 +1,6 @@
 import {Box, Button, Card, Typography, ButtonGroup} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import {JobPosition} from '../../../types/jobPosition.types';
 import StatusLabel from '../../StatusLabel';
 
@@ -14,6 +15,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
 	onManageStages,
 	canManageStages = false,
 }) => {
+	const {t} = useTranslation();
 	const navigate = useNavigate();
 
 	return (
@@ -31,7 +33,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
 				<Typography variant="h6">{jobPosition.title}</Typography>
 				<StatusLabel status={jobPosition.status} />
 				<Typography variant="body2" color="textSecondary">
-					<b>{jobPosition.stages.length}</b> Stages
+					<b>{jobPosition.stages.length}</b> {t('job_positions.stages_count', {count: jobPosition.stages.length})}
 				</Typography>
 			</Box>
 			<ButtonGroup
@@ -44,7 +46,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
 						onClick={onManageStages}
 						sx={{fontWeight: 600}}
 					>
-						Manage Stages
+						{t('job_positions.manage_stages')}
 					</Button>
 				)}
 				<Button
@@ -52,7 +54,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
 					onClick={() => navigate(`/careers/${jobPosition.uid}`)}
 					sx={{fontWeight: 600}}
 				>
-					View Details
+					{t('job_positions.view_details')}
 				</Button>
 			</ButtonGroup>
 		</Card>

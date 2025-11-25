@@ -1,6 +1,7 @@
 import {Box, Button, Avatar, CircularProgress, IconButton, Typography} from '@mui/material';
 import {PhotoCamera as PhotoCameraIcon, Delete as DeleteIcon} from '@mui/icons-material';
 import {useState, useRef} from 'react';
+import {useTranslation} from 'react-i18next';
 import {useUploadImage} from '../../hooks/api/useFiles';
 import {showErrorToast} from '../../utils/toast';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
@@ -18,6 +19,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 	onUploadSuccess,
 	onRemove,
 }) => {
+	const {t} = useTranslation();
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 	const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -32,14 +34,14 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 		// Validate file type
 		const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
 		if (!validTypes.includes(file.type)) {
-			showErrorToast('Please select a valid image file (JPG, PNG, GIF, or WebP)');
+			showErrorToast(t('profile.invalid_image_type'));
 			return;
 		}
 
 		// Validate file size (2MB max for profile pictures)
 		const maxSizeInBytes = 2 * 1024 * 1024;
 		if (file.size > maxSizeInBytes) {
-			showErrorToast('Image size must be less than 2MB');
+			showErrorToast(t('profile.image_size_limit'));
 			return;
 		}
 
@@ -149,7 +151,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 					</Typography>
 					<Box sx={{display: 'flex', gap: 1}}>
 						<Button variant="outlined" size="small" onClick={handleCancel} disabled={isPending}>
-							Cancel
+							{t('common.cancel')}
 						</Button>
 						<Button
 							variant="contained"
@@ -158,7 +160,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 							disabled={isPending}
 							startIcon={<PhotoCameraIcon />}
 						>
-							{isPending ? 'Uploading...' : 'Upload'}
+							{isPending ? t('profile.uploading') : t('profile.upload')}
 						</Button>
 					</Box>
 				</Box>
@@ -171,7 +173,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 						onClick={handleButtonClick}
 						disabled={isPending}
 					>
-						Change Picture
+						{t('profile.change_picture')}
 					</Button>
 					{currentPicture && onRemove && (
 						<IconButton
@@ -179,7 +181,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 							color="error"
 							onClick={handleRemovePicture}
 							disabled={isPending}
-							title="Remove picture"
+							title={t('profile.remove_picture_tooltip')}
 						>
 							<DeleteIcon />
 						</IconButton>
@@ -188,15 +190,15 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 			)}
 
 			<Typography variant="caption" color="text.secondary" sx={{textAlign: 'center'}}>
-				Supported formats: JPG, PNG, GIF, WebP (Max 2MB)
+				{t('profile.supported_formats')}
 			</Typography>
 
 			<ConfirmDeleteDialog
 				open={showDeleteConfirm}
 				onClose={handleCancelDelete}
 				onConfirm={handleConfirmDelete}
-				title="Remove Profile Picture"
-				message="Are you sure you want to remove your profile picture?"
+				title={t('profile.remove_picture_title')}
+				message={t('profile.remove_picture_message')}
 				isDeleting={isPending}
 			/>
 		</Box>

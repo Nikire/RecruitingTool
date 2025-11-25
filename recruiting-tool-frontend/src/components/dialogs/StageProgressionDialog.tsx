@@ -15,6 +15,7 @@ import {
 	CircularProgress,
 	Alert,
 } from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import {Stage, StageStatus} from '../../types/stage.types';
 import {useProgressStage, useMoveToStage} from '../../hooks/api/useHiringProcess';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -35,6 +36,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 	stages,
 	currentStageUid,
 }) => {
+	const {t} = useTranslation();
 	const [selectedStageUid, setSelectedStageUid] = useState<string | null>(null);
 	const progressStageMutation = useProgressStage();
 	const moveToStageMutation = useMoveToStage();
@@ -75,7 +77,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 		<Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
 			<DialogTitle>
 				<Typography variant="h6" sx={{fontWeight: 600}}>
-					Progress Stage
+					{t('progress.title')}
 				</Typography>
 			</DialogTitle>
 
@@ -88,10 +90,10 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 
 				<Box sx={{mb: 3}}>
 					<Typography variant="subtitle2" sx={{mb: 1.5, fontWeight: 600}}>
-						Current Stage Progress
+						{t('progress.current_stage_progress')}
 					</Typography>
 					<Typography variant="body2" color="textSecondary" sx={{mb: 2}}>
-						Move to a specific stage or progress to the next stage in the hiring process.
+						{t('progress.move_stage_help')}
 					</Typography>
 
 					{hasNextStage && (
@@ -103,20 +105,20 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 							sx={{mb: 2}}
 						>
 							{isLoading ? <CircularProgress size={20} sx={{mr: 1}} /> : null}
-							Progress to Next Stage
+							{t('progress.progress_to_next')}
 						</Button>
 					)}
 
 					{!hasNextStage && currentStage?.status === 'CURRENT' && (
 						<Alert severity="info">
-							This is the final stage. Progressing will mark the hiring process as completed.
+							{t('progress.final_stage_notice')}
 						</Alert>
 					)}
 				</Box>
 
 				<Box sx={{mb: 2}}>
 					<Typography variant="subtitle2" sx={{mb: 1.5, fontWeight: 600}}>
-						Or Jump to a Specific Stage
+						{t('progress.jump_to_stage')}
 					</Typography>
 
 					<List sx={{maxHeight: 300, overflow: 'auto', border: '1px solid #e0e0e0', borderRadius: 1}}>
@@ -161,7 +163,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 												}
 												secondary={
 													<Typography variant="caption" color="textSecondary">
-														Position {stage.position + 1} - {stage.status}
+														{t('progress.position')} {stage.position + 1} - {stage.status}
 													</Typography>
 												}
 											/>
@@ -176,7 +178,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 
 			<DialogActions sx={{p: 2}}>
 				<Button onClick={onClose} disabled={isLoading}>
-					Cancel
+					{t('common.cancel')}
 				</Button>
 				<Button
 					onClick={handleMoveToStage}
@@ -184,7 +186,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
 					disabled={!selectedStageUid || isLoading}
 				>
 					{isLoading ? <CircularProgress size={20} sx={{mr: 1}} /> : null}
-					Move to Stage
+					{t('progress.move_to_stage')}
 				</Button>
 			</DialogActions>
 		</Dialog>

@@ -1,31 +1,23 @@
-import {useState, useCallback} from 'react';
 import {Box, Typography, Button} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useJobPositionsSearch} from '../../hooks/api/state/useSearchState';
+import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandlers';
+import {useDialog} from '../../hooks/useDialog';
 import CreateJobPositionDialog from '../../components/dialogs/CreateJobPositionDialog';
 import {canManageResources} from '../../utils/permissions';
 import SearchBar from '../../components/search/SearchBar';
 import JobPositionsManagementList from '../../components/job-positions/JobPositionsManagementList';
 
 const Dashboard: React.FC = () => {
-	const [openDialog, setOpenDialog] = useState(false);
+	const createDialog = useDialog<never>();
 	const [searchState, setSearchState] = useJobPositionsSearch();
 	const {page, limit, search} = searchState;
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
 
-	const handleSearch = useCallback((value: string) => {
-		setSearchState((prev) => ({...prev, search: value, page: 1}));
-	}, [setSearchState]);
-
-	const handlePageChange = useCallback((newPage: number) => {
-		setSearchState((prev) => ({...prev, page: newPage}));
-	}, [setSearchState]);
-
-	const handleLimitChange = useCallback((newLimit: number) => {
-		setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
-	}, [setSearchState]);
+	const {handleSearch, handlePageChange, handleLimitChange} =
+		useSearchPaginationHandlers(setSearchState);
 
 	return (
 		<Box sx={{width: '100%'}}>
@@ -37,7 +29,7 @@ const Dashboard: React.FC = () => {
 					<Button
 						variant="contained"
 						startIcon={<AddIcon />}
-						onClick={() => setOpenDialog(true)}
+						onClick={createDialog.open}
 					>
 						Create Job Position
 					</Button>
@@ -57,8 +49,8 @@ const Dashboard: React.FC = () => {
 			/>
 
 			<CreateJobPositionDialog
-				open={openDialog}
-				onClose={() => setOpenDialog(false)}
+				open={createDialog.isOpen}
+				onClose={createDialog.close}
 			/>
 		</Box>
 	);

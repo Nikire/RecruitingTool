@@ -1,0 +1,73 @@
+name: Update Issues on Branch Merge
+
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - development
+      - production
+
+jobs:
+  update-issues:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract issue numbers from PR
+        id: extract_issues
+        run: |
+          # Extract issue numbers from PR body and title
+          # Looks for patterns like: Closes #123, Fixes #456, Resolves #789
+          PR_BODY="${{ github.event.pull_request.body }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+
+          # Combine all text sources
+          ALL_TEXT="$PR_TITLE $PR_BODY $BRANCH_NAME"
+
+          # Extract issue numbers using grep and regex
+          ISSUE_NUMBERS=$(echo "$ALL_TEXT" | grep -oE '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s*#[0-9]+' -i | grep -oE '[0-9]+' | sort -u)
+
+          echo "Found issues: $ISSUE_NUMBERS"
+          echo "issues=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
+
+      - name: Update issues for development branch
+        if: github.event.pull_request.base.ref == 'development'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUES="${{ steps.extract_issues.outputs.issues }}"
+          if [ -z "$ISSUES" ]; then
+            echo "No issues found to update"
+            exit 0
+          fi
+
+          for issue in $ISSUES; do
+            echo "Adding 'in development' label to issue #$issue"
+            gh issue edit "$issue" --add-label "in development" || echo "Failed to update issue #$issue"
+
+            echo "Adding comment to issue #$issue"
+            gh issue comment "$issue" --body "🔄 This issue is now in development. Changes merged to \`development\` branch via PR #${{ github.event.pull_request.number }}" || echo "Failed to comment on issue #$issue"
+          done
+
+      - name: Close issues for production branch
+        if: github.event.pull_request.base.ref == 'production'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          ISSUES="${{ steps.extract_issues.outputs.issues }}"
+          if [ -z "$ISSUES" ]; then
+            echo "No issues found to close"
+            exit 0
+          fi
+
+          for issue in $ISSUES; do
+            echo "Closing issue #$issue"
+            gh issue close "$issue" --comment "✅ Completed and merged to production via PR #${{ github.event.pull_request.number }}" || echo "Failed to close issue #$issue"
+          done

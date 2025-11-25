@@ -1,15 +1,21 @@
-import {useState} from 'react';
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
+import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import {useTranslation} from 'react-i18next';
 import {useListHiringProcesses, useDeleteHiringProcess} from '../../hooks/api/useHiringProcess';
-import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
+import {HiringProcess} from '../../types/hiringProcess.types';
 import {useNavigate} from 'react-router-dom';
 import Pagination from '../pagination/Pagination';
 import UpdateHiringProcessDialog from '../dialogs/UpdateHiringProcessDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
+import LoadingSpinner from '../common/LoadingSpinner';
+import EmptyState from '../common/EmptyState';
+import ErrorMessage from '../common/ErrorMessage';
+import {getHiringProcessStatusColor} from '../../utils/statusColors';
+import {useDialog} from '../../hooks/useDialog';
+import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 
 interface HiringProcessesListProps {
 	page: number;
@@ -19,23 +25,6 @@ interface HiringProcessesListProps {
 	onLimitChange: (limit: number) => void;
 }
 
-const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
-	switch (status) {
-		case 'OPEN':
-			return 'info';
-		case 'IN_PROGRESS':
-			return 'primary';
-		case 'CLOSED':
-			return 'success';
-		case 'CANCELLED':
-			return 'default';
-		case 'REJECTED':
-			return 'error';
-		default:
-			return 'default';
-	}
-};
-
 const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 	page,
 	limit,
@@ -43,13 +32,15 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const {t} = useTranslation();
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
 
-	const [selectedHiringProcess, setSelectedHiringProcess] = useState<HiringProcess | null>(null);
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	// Dialog state management using custom hooks
+	const updateDialog = useDialog<HiringProcess>();
+	const deleteMutation = useDeleteHiringProcess();
+	const deleteConfirm = useConfirmDelete<HiringProcess>(deleteMutation);
 
 	const {data, isLoading, error} = useListHiringProcesses({
 		page,
@@ -59,59 +50,16 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const {mutate: deleteHiringProcess, isPending: isDeleting} = useDeleteHiringProcess();
-
 	const processes = data?.data as HiringProcess[] | undefined;
 	const meta = data?.meta;
 
-	const handleEditClick = (process: HiringProcess) => {
-		setSelectedHiringProcess(process);
-		setOpenUpdateDialog(true);
-	};
-
-	const handleDeleteClick = (process: HiringProcess) => {
-		setSelectedHiringProcess(process);
-		setOpenDeleteDialog(true);
-	};
-
-	const handleConfirmDelete = () => {
-		if (selectedHiringProcess) {
-			deleteHiringProcess(selectedHiringProcess.uid, {
-				onSuccess: () => {
-					setOpenDeleteDialog(false);
-					setSelectedHiringProcess(null);
-				},
-			});
-		}
-	};
-
-	const handleCloseUpdateDialog = () => {
-		setOpenUpdateDialog(false);
-		setSelectedHiringProcess(null);
-	};
-
-	const handleCloseDeleteDialog = () => {
-		setOpenDeleteDialog(false);
-		setSelectedHiringProcess(null);
-	};
-
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (error && !data) {
-		return (
-			<Box sx={{p: 4}}>
-				<Typography color="error">
-					Error loading hiring processes. Please try again.
-				</Typography>
-			</Box>
-		);
+		return <ErrorMessage message="errors.fetch_failed" />;
 	}
 
 	return (
@@ -121,13 +69,13 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell sx={{minWidth: 150}}><strong>Title</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Company</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>Status</strong></TableCell>
-								<TableCell sx={{minWidth: 80}}><strong>Stages</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Candidate</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Created By</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Actions</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('hiring_processes.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('companies.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 100}}><strong>{t('status.pending')}</strong></TableCell>
+								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('candidates.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -140,11 +88,11 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 									<TableCell>
 										<Chip
 											label={process.status}
-											color={getStatusColor(process.status)}
+											color={getHiringProcessStatusColor(process.status)}
 											size="small"
 										/>
 									</TableCell>
-									<TableCell>{process.stages?.length || 0} stages</TableCell>
+									<TableCell>{process.stages?.length || 0} {t('stages.title').toLowerCase()}</TableCell>
 									<TableCell sx={{maxWidth: 180}}>
 										{process.candidate ? (
 											<>
@@ -157,7 +105,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 											</>
 										) : (
 											<Typography variant="caption" sx={{color: 'error.main', fontWeight: 500}}>
-												No candidate assigned
+												{t('hiring_processes.no_candidate')}
 											</Typography>
 										)}
 									</TableCell>
@@ -182,24 +130,24 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 												variant="outlined"
 												onClick={() => navigate(`/hiring-process/${process.uid}`)}
 											>
-												View
+												{t('common.view')}
 											</Button>
 											{canManage && (
 												<>
-													<Tooltip title="Edit hiring process">
+													<Tooltip title={t('common.edit')}>
 														<IconButton
 															size="small"
 															color="primary"
-															onClick={() => handleEditClick(process)}
+															onClick={() => updateDialog.openWith(process)}
 														>
 															<EditIcon fontSize="small" />
 														</IconButton>
 													</Tooltip>
-													<Tooltip title="Delete hiring process">
+													<Tooltip title={t('common.delete')}>
 														<IconButton
 															size="small"
 															color="error"
-															onClick={() => handleDeleteClick(process)}
+															onClick={() => deleteConfirm.confirmDelete(process)}
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
@@ -214,29 +162,25 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 					</Table>
 				</TableContainer>
 			) : (
-				<Paper sx={{p: 4, textAlign: 'center'}}>
-					<Typography variant="body1" color="textSecondary">
-						No hiring processes found.
-					</Typography>
-				</Paper>
+				<EmptyState message="hiring_processes.no_processes" />
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
 			<UpdateHiringProcessDialog
-				open={openUpdateDialog}
-				onClose={handleCloseUpdateDialog}
-				hiringProcess={selectedHiringProcess}
+				open={updateDialog.isOpen}
+				onClose={updateDialog.close}
+				hiringProcess={updateDialog.selectedItem}
 			/>
 
 			<ConfirmDeleteDialog
-				open={openDeleteDialog}
-				onClose={handleCloseDeleteDialog}
-				onConfirm={handleConfirmDelete}
-				title="Delete Hiring Process"
-				message="Are you sure you want to delete this hiring process? This will also delete all associated stages."
-				itemName={selectedHiringProcess?.title}
-				isDeleting={isDeleting}
+				open={deleteConfirm.isOpen}
+				onClose={deleteConfirm.handleCancel}
+				onConfirm={deleteConfirm.handleConfirm}
+				title={t('dialogs.delete_confirmation')}
+				message={t('hiring_processes.delete_message')}
+				itemName={deleteConfirm.selectedItem?.title}
+				isDeleting={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

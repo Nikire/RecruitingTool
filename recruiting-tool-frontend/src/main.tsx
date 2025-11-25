@@ -14,6 +14,8 @@ import {BrowserRouter} from 'react-router';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import recruitingToolPalette from './palette.ts';
 
+import './i18n/i18n.ts';
+
 const queryClient = new QueryClient();
 
 const theme = createTheme(recruitingToolPalette);

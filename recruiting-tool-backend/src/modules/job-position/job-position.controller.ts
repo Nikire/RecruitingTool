@@ -31,16 +31,18 @@ export class JobPositionController {
     return this.jobPositionService.create(currentUser.uid, createJobPositionDto);
   }
 
+  @Auth(['HR', 'ADMIN', 'USER'])
   @Get('list')
   @ApiOperation({ summary: 'Get paginated job positions list with filtering' })
   @ApiResponse({
     status: 200,
     description: 'Returns paginated job positions list',
   })
-  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<JobPositionResponseDto>> {
-    return this.jobPositionService.list(paginationDto);
+  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<JobPositionResponseDto>> {
+    return this.jobPositionService.list(paginationDto, currentUser);
   }
 
+  @Auth(['HR', 'ADMIN', 'USER'])
   @Get()
   @ApiOperation({ summary: 'Get job position list' })
   @ApiResponse({
@@ -48,10 +50,11 @@ export class JobPositionController {
     description: 'Returns the job position details',
     type: [JobPositionResponseDto],
   })
-  findAll(): Promise<Array<JobPositionResponseDto>> {
-    return this.jobPositionService.findAll();
+  findAll(@CurrentUser() currentUser: User): Promise<Array<JobPositionResponseDto>> {
+    return this.jobPositionService.findAll(currentUser);
   }
 
+  @Auth(['HR', 'ADMIN', 'USER'])
   @Get(':uid')
   @ApiOperation({ summary: 'Get job position process' })
   @ApiResponse({
@@ -60,8 +63,8 @@ export class JobPositionController {
     type: JobPositionResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
-  findOne(@Param('uid') uid: string): Promise<JobPositionResponseDto> {
-    return this.jobPositionService.findOne(uid);
+  findOne(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<JobPositionResponseDto> {
+    return this.jobPositionService.findOne(uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -74,8 +77,8 @@ export class JobPositionController {
   })
   @ApiBody({ type: UpdateJobPositionDto })
   @ApiParam({ name: 'uid', required: true })
-  update(@Param('uid') uid: string, @Body() updateJobPositionDto: UpdateJobPositionDto): Promise<JobPositionResponseDto> {
-    return this.jobPositionService.update(uid, updateJobPositionDto);
+  update(@Param('uid') uid: string, @Body() updateJobPositionDto: UpdateJobPositionDto, @CurrentUser() currentUser: User): Promise<JobPositionResponseDto> {
+    return this.jobPositionService.update(uid, updateJobPositionDto, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -87,7 +90,7 @@ export class JobPositionController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
-  remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
-    return this.jobPositionService.remove(uid);
+  remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<MessageResponseDto> {
+    return this.jobPositionService.remove(uid, currentUser);
   }
 }

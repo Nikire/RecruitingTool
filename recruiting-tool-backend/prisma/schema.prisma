@@ -44,21 +44,19 @@ model User {
   reviewedApplications  Application[]   @relation("ApplicationReviewer")
   candidateNotes        CandidateNote[] @relation("CandidateNoteAuthor")
   emailTemplates        EmailTemplate[] @relation("EmailTemplateCreatedBy")
+  scheduledInterviews   Interview[]     @relation("InterviewScheduledBy")
 }
 
 model Candidate {
-  id              Int             @id @default(autoincrement())
-  uid             String          @unique @default(uuid()) @db.Uuid
+  id              Int              @id @default(autoincrement())
+  uid             String           @unique @default(uuid()) @db.Uuid
   name            String
-  email           String
-  hiringProcessId Int?            @unique
-  hiringProcess   HiringProcess?  @relation("HiringProcessCandidate", fields: [hiringProcessId], references: [id])
-  files           FileUpload[]    @relation("CandidateFiles")
-  notes           CandidateNote[] @relation("CandidateNotes")
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-
-  @@unique([hiringProcessId, email])
+  email           String           @unique
+  hiringProcesses HiringProcess[]  @relation("HiringProcessCandidate")
+  files           FileUpload[]     @relation("CandidateFiles")
+  notes           CandidateNote[]  @relation("CandidateNotes")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
 }
 
 model CandidateNote {
@@ -108,10 +106,10 @@ model HiringProcess {
   status        HiringProcessStatus @default(OPEN)
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
-  candidateId   Int?                @unique
-  candidate     Candidate?          @relation("HiringProcessCandidate")
+  candidateId   Int?
+  candidate     Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id])
   stages        Stage[]
-  jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id])
+  jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
   jobPositionId Int
   companyId     Int
   company       Company             @relation(fields: [companyId], references: [id])
@@ -140,12 +138,13 @@ model Stage {
   status          StageStatus    @default(OPEN)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
-  hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id])
+  hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
   hiringProcessId Int?
   position        Int
   JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
   jobPositionId   Int?
   estimatedTime   Int?
+  interviews      Interview[]    @relation("StageInterviews")
 
   @@unique([hiringProcessId, position])
 }
@@ -185,7 +184,7 @@ model Application {
   id             Int               @id @default(autoincrement())
   uid            String            @unique @default(uuid()) @db.Uuid
   jobPositionId  Int
-  jobPosition    JobPosition       @relation(fields: [jobPositionId], references: [id])
+  jobPosition    JobPosition       @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
   applicantName  String
   applicantEmail String
   applicantPhone String
@@ -246,4 +245,32 @@ model EmailLog {
   @@index([sentAt])
   @@index([emailType])
   @@index([relatedEntityId])
+}
+
+model Interview {
+  id            Int             @id @default(autoincrement())
+  uid           String          @unique @default(uuid()) @db.Uuid
+  stageId       Int
+  stage         Stage           @relation("StageInterviews", fields: [stageId], references: [id], onDelete: Cascade)
+  scheduledDate DateTime?
+  scheduledTime String?
+  duration      Int?
+  status        InterviewStatus @default(PENDING)
+  meetingLink   String?         @db.Text
+  notes         String?         @db.Text
+  scheduledById Int
+  scheduledBy   User            @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  @@index([stageId])
+  @@index([scheduledById])
+  @@index([status])
+}
+
+enum InterviewStatus {
+  PENDING
+  SCHEDULED
+  COMPLETED
+  CANCELLED
 }

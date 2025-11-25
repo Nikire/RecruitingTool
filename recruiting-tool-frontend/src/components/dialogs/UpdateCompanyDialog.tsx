@@ -7,8 +7,10 @@ import {
 	Button,
 	Typography,
 	Box,
+	CircularProgress,
 } from '@mui/material';
 import {useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useUpdateCompany} from '../../hooks/api/useCompanies';
 import {Company} from '../../types/company.types';
 import {useEffect} from 'react';
@@ -29,6 +31,7 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
 	onClose,
 	company,
 }) => {
+	const {t} = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -74,22 +77,22 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Update Company</DialogTitle>
+			<DialogTitle>{t('companies.update_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<Box sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: 1}}>
 						<TextField
-							label="Company Name"
+							label={t('companies.name_label')}
 							fullWidth
 							{...register('name', {
-								required: 'Company name is required',
+								required: t('validation.name_required'),
 								minLength: {
 									value: 2,
-									message: 'Name must be at least 2 characters',
+									message: t('validation.name_min_length', {min: 2}),
 								},
 								maxLength: {
 									value: 100,
-									message: 'Name must be less than 100 characters',
+									message: t('validation.name_max_length', {max: 100}),
 								},
 							})}
 							error={!!errors.name}
@@ -97,14 +100,14 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
 						/>
 
 						<TextField
-							label="Description"
+							label={t('companies.description_label')}
 							multiline
 							rows={3}
 							fullWidth
 							{...register('description', {
 								maxLength: {
 									value: 500,
-									message: 'Description must be less than 500 characters',
+									message: t('validation.description_max_length', {max: 500}),
 								},
 							})}
 							error={!!errors.description}
@@ -114,20 +117,21 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to update company. Please try again.
+							{t('errors.update_failed', {entity: t('companies.title').toLowerCase()})}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isPending}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						type="submit"
 						variant="contained"
 						disabled={isPending}
+						startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : undefined}
 					>
-						{isPending ? 'Updating...' : 'Update'}
+						{isPending ? t('common.updating') : t('common.update')}
 					</Button>
 				</DialogActions>
 			</form>

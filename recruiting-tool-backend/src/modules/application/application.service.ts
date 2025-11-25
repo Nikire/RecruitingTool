@@ -3,8 +3,9 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { ApplicationStatus, StageStatus } from '@prisma/client';
+import { ApplicationStatus, StageStatus, User } from '@prisma/client';
 import { EmailService } from '../email/email.service';
+import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class ApplicationService {
@@ -80,7 +81,7 @@ export class ApplicationService {
     return ApplicationMapper(application);
   }
 
-  async findAll(filterDto: ApplicationFilterDto): Promise<ApplicationResponseDto[]> {
+  async findAll(filterDto: ApplicationFilterDto, user: User): Promise<ApplicationResponseDto[]> {
     const where: any = {};
 
     if (filterDto.jobPositionUid) {
@@ -99,6 +100,14 @@ export class ApplicationService {
       where.status = filterDto.status;
     }
 
+    // Add company filter for HR and USER roles (filter by job position's company)
+    const userCompanyId = getUserCompanyId(user);
+    if (userCompanyId !== null) {
+      where.jobPosition = {
+        companyId: userCompanyId,
+      };
+    }
+
     const applications = await this.databaseService.application.findMany({
       where,
       include: includeApplication,
@@ -110,7 +119,7 @@ export class ApplicationService {
     return applications.map(ApplicationMapper);
   }
 
-  async findOne(uid: string): Promise<ApplicationResponseDto> {
+  async findOne(uid: string, user?: User): Promise<ApplicationResponseDto> {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
       include: includeApplication,
@@ -120,10 +129,15 @@ export class ApplicationService {
       throw new NotFoundException(`Application ${uid} not found`);
     }
 
+    // Verify company access if user is provided (through job position)
+    if (user) {
+      verifyCompanyAccess(user, application.jobPosition.companyId);
+    }
+
     return ApplicationMapper(application);
   }
 
-  async update(uid: string, updateApplicationDto: UpdateApplicationDto, reviewerUid: string): Promise<ApplicationResponseDto> {
+  async update(uid: string, updateApplicationDto: UpdateApplicationDto, reviewerUid: string, user: User): Promise<ApplicationResponseDto> {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
       include: { jobPosition: true },
@@ -132,6 +146,9 @@ export class ApplicationService {
     if (!application) {
       throw new NotFoundException(`Application ${uid} not found`);
     }
+
+    // Verify company access before update (through job position)
+    verifyCompanyAccess(user, application.jobPosition.companyId);
 
     const reviewer = await this.databaseService.user.findUnique({
       where: { uid: reviewerUid },
@@ -200,14 +217,18 @@ export class ApplicationService {
     }
   }
 
-  async remove(uid: string): Promise<MessageResponseDto> {
+  async remove(uid: string, user: User): Promise<MessageResponseDto> {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
+      include: { jobPosition: true },
     });
 
     if (!application) {
       throw new NotFoundException(`Application ${uid} not found`);
     }
+
+    // Verify company access before delete (through job position)
+    verifyCompanyAccess(user, application.jobPosition.companyId);
 
     await this.databaseService.application.delete({
       where: { uid },
@@ -216,7 +237,7 @@ export class ApplicationService {
     return { message: 'Application successfully deleted' };
   }
 
-  async acceptApplication(applicationUid: string): Promise<ApplicationResponseDto> {
+  async acceptApplication(applicationUid: string, user: User): Promise<ApplicationResponseDto> {
     // Fetch the application with related data
     const application = await this.databaseService.application.findUnique({
       where: { uid: applicationUid },
@@ -228,6 +249,9 @@ export class ApplicationService {
     if (!application) {
       throw new NotFoundException(`Application ${applicationUid} not found`);
     }
+
+    // Verify company access before accepting (through job position)
+    verifyCompanyAccess(user, application.jobPosition.companyId);
 
     if (application.status === ApplicationStatus.ACCEPTED) {
       throw new BadRequestException('Application is already accepted');

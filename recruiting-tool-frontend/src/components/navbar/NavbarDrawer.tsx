@@ -8,6 +8,7 @@ import {
 	PropTypes,
 } from '@mui/material';
 import {NavLink} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import { User } from '../../types/user.types';
 import { isAdmin, canManageResources } from '../../utils/permissions';
 
@@ -30,6 +31,8 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 	isAuthenticated,
 	user,
 }) => {
+	const {t} = useTranslation();
+
 	return (
 		<Drawer anchor="left" color={color} open={isOpen} onClose={onClose}>
 			<List color="inherit" sx={{minWidth: 200, padding: 0, margin: 0}}>
@@ -50,24 +53,19 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
 					<ChevronLeftIcon sx={{color: `${color}.contrastText`}} />
 				</ListItemButton>
 				<ListItemButton component={NavLink} sx={linkSx} to="/" end>
-					<ListItemText color="inherit" primary="Home" />
+					<ListItemText color="inherit" primary={t('navbar.home')} />
 				</ListItemButton>
 				<ListItemButton component={NavLink} sx={linkSx} to="/careers">
-					<ListItemText color="inherit" primary="Careers" />
+					<ListItemText color="inherit" primary={t('navbar.careers')} />
 				</ListItemButton>
-				{isAuthenticated && (
-					<ListItemButton component={NavLink} sx={linkSx} to="/dashboard">
-						<ListItemText color="inherit" primary="Dashboard" />
-					</ListItemButton>
-				)}
 				{isAuthenticated && canManageResources(user ?? null) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/hr/dashboard">
-						<ListItemText color="inherit" primary="HR Panel" />
+						<ListItemText color="inherit" primary={t('navbar.hr_panel')} />
 					</ListItemButton>
 				)}
 				{isAuthenticated && isAdmin(user ?? null) && (
 					<ListItemButton component={NavLink} sx={linkSx} to="/admin">
-						<ListItemText color="inherit" primary="Admin Panel" />
+						<ListItemText color="inherit" primary={t('navbar.admin_panel')} />
 					</ListItemButton>
 				)}
 			</List>

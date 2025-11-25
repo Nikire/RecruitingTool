@@ -20,6 +20,7 @@ import {
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
 import {useForm, Controller} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useCreateHiringProcess} from '../../hooks/api/useHiringProcess';
 import {useCandidates, useCreateCandidate} from '../../hooks/api/useCandidates';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
@@ -121,9 +122,11 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 	const isLoading = loadingCandidates || loadingJobPositions;
 	const isSubmitting = isPending || isCreatingCandidate;
 
+	const {t} = useTranslation();
+
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Create New Hiring Process</DialogTitle>
+			<DialogTitle>{t('hiring_processes.create_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					{isLoading ? (
@@ -133,25 +136,25 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 					) : (
 						<>
 							<FormControl fullWidth margin="normal">
-								<InputLabel>Job Position</InputLabel>
+								<InputLabel>{t('job_positions.title')}</InputLabel>
 								<Controller
 									name="jobPositionUid"
 									control={control}
-									rules={{required: 'Job position is required'}}
+									rules={{required: t('validation.job_position_required')}}
 									render={({field}) => (
 										<Select
 											{...field}
-											label="Job Position"
+											label={t('job_positions.title')}
 											error={!!errors.jobPositionUid}
 										>
 											{jobPositions && jobPositions.length > 0 ? (
 												jobPositions.map((jp) => (
 													<MenuItem key={jp.uid} value={jp.uid}>
-														{jp.title} ({jp.status})
+														{jp.title} ({t(`status.${jp.status.toLowerCase()}`)})
 													</MenuItem>
 												))
 											) : (
-												<MenuItem disabled>No job positions available</MenuItem>
+												<MenuItem disabled>{t('job_positions.no_positions')}</MenuItem>
 											)}
 										</Select>
 									)}
@@ -167,7 +170,7 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 
 							<Box sx={{mb: 2}}>
 								<Typography variant="subtitle2" gutterBottom>
-									Candidate Selection
+									{t('hiring_processes.candidate_selection')}
 								</Typography>
 								<ToggleButtonGroup
 									value={candidateMode}
@@ -178,28 +181,28 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 								>
 									<ToggleButton value="existing">
 										<PersonIcon sx={{mr: 1}} />
-										Select Existing
+										{t('hiring_processes.select_existing')}
 									</ToggleButton>
 									<ToggleButton value="new">
 										<AddIcon sx={{mr: 1}} />
-										Create New
+										{t('hiring_processes.create_new')}
 									</ToggleButton>
 								</ToggleButtonGroup>
 							</Box>
 
 							{candidateMode === 'existing' ? (
 								<FormControl fullWidth margin="normal">
-									<InputLabel>Candidate</InputLabel>
+									<InputLabel>{t('candidates.title')}</InputLabel>
 									<Controller
 										name="candidateUid"
 										control={control}
 										rules={{
-											required: candidateMode === 'existing' ? 'Candidate is required' : false,
+											required: candidateMode === 'existing' ? t('validation.candidate_required') : false,
 										}}
 										render={({field}) => (
 											<Select
 												{...field}
-												label="Candidate"
+												label={t('candidates.title')}
 												error={!!errors.candidateUid}
 											>
 												{candidates && candidates.length > 0 ? (
@@ -209,7 +212,7 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 														</MenuItem>
 													))
 												) : (
-													<MenuItem disabled>No candidates available</MenuItem>
+													<MenuItem disabled>{t('candidates.no_candidates')}</MenuItem>
 												)}
 											</Select>
 										)}
@@ -223,29 +226,29 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 							) : (
 								<Box>
 									<TextField
-										label="Candidate Name"
+										label={t('candidates.name_label')}
 										fullWidth
 										margin="normal"
 										{...register('candidateName', {
-											required: candidateMode === 'new' ? 'Name is required' : false,
+											required: candidateMode === 'new' ? t('validation.name_required') : false,
 											minLength: {
 												value: 3,
-												message: 'Name must be at least 3 characters',
+												message: t('validation.name_min_length', {min: 3}),
 											},
 										})}
 										error={!!errors.candidateName}
 										helperText={errors.candidateName?.message}
 									/>
 									<TextField
-										label="Candidate Email"
+										label={t('candidates.email_label')}
 										type="email"
 										fullWidth
 										margin="normal"
 										{...register('candidateEmail', {
-											required: candidateMode === 'new' ? 'Email is required' : false,
+											required: candidateMode === 'new' ? t('validation.email_required') : false,
 											pattern: {
 												value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-												message: 'Invalid email address',
+												message: t('validation.email_invalid'),
 											},
 										})}
 										error={!!errors.candidateEmail}
@@ -255,28 +258,30 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 							)}
 
 							<Typography variant="caption" color="textSecondary" sx={{mt: 2, display: 'block'}}>
-								The hiring process title will be automatically generated as:
-								"[Job Position] - [Candidate Name]"
+								{t('hiring_processes.title_auto_generated')}
+								<br />
+								{t('hiring_processes.title_format')}
 							</Typography>
 						</>
 					)}
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to create hiring process. Please try again.
+							{t('errors.create_failed', {entity: t('hiring_processes.title').toLowerCase()})}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isSubmitting}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						type="submit"
 						variant="contained"
 						disabled={isSubmitting || isLoading}
+						startIcon={isSubmitting ? <CircularProgress size={20} color="inherit" /> : undefined}
 					>
-						{isSubmitting ? 'Creating...' : 'Create'}
+						{isSubmitting ? t('common.creating') : t('common.create')}
 					</Button>
 				</DialogActions>
 			</form>

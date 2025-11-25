@@ -11,8 +11,10 @@ import {
   Chip,
   Typography,
   Stack,
+  CircularProgress,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { useCreateEmailTemplate, useUpdateEmailTemplate } from '../../hooks/api/useEmailTemplates';
 import { EmailTemplate } from '../../types/emailTemplate.types';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
@@ -30,17 +32,19 @@ interface EmailTemplateFormData {
   isDefault: boolean;
 }
 
-const AVAILABLE_VARIABLES = [
-  { key: '{{candidateName}}', description: 'Candidate name' },
-  { key: '{{positionTitle}}', description: 'Position title' },
-  { key: '{{companyName}}', description: 'Company name' },
-  { key: '{{hrName}}', description: 'HR recruiter name' },
-  { key: '{{interviewDate}}', description: 'Interview date' },
-  { key: '{{interviewTime}}', description: 'Interview time' },
-];
-
 const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose, template }) => {
+  const { t } = useTranslation();
   const { user } = useUserAtom();
+
+  const AVAILABLE_VARIABLES = [
+    { key: '{{candidateName}}', description: t('email_template.variable_candidate_name') },
+    { key: '{{positionTitle}}', description: t('email_template.variable_position_title') },
+    { key: '{{companyName}}', description: t('email_template.variable_company_name') },
+    { key: '{{hrName}}', description: t('email_template.variable_hr_name') },
+    { key: '{{interviewDate}}', description: t('email_template.variable_interview_date') },
+    { key: '{{interviewTime}}', description: t('email_template.variable_interview_time') },
+  ];
+
   const {
     register,
     handleSubmit,
@@ -117,52 +121,52 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>{isEditMode ? 'Edit Email Template' : 'Create Email Template'}</DialogTitle>
+      <DialogTitle>{isEditMode ? t('email_template.edit_title') : t('email_template.create_title')}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <TextField
-            label="Template Name"
+            label={t('email_template.template_name')}
             fullWidth
             margin="normal"
             {...register('name', {
-              required: 'Template name is required',
+              required: t('email_template.name_required'),
               minLength: {
                 value: 3,
-                message: 'Name must be at least 3 characters',
+                message: t('email_template.name_min_length', {min: 3}),
               },
               maxLength: {
                 value: 200,
-                message: 'Name must be less than 200 characters',
+                message: t('email_template.name_max_length', {max: 200}),
               },
             })}
             error={!!errors.name}
             helperText={errors.name?.message}
-            placeholder="e.g., Interview Invitation"
+            placeholder={t('email_template.template_name_placeholder')}
           />
 
           <TextField
-            label="Subject"
+            label={t('email_template.subject')}
             fullWidth
             margin="normal"
             {...register('subject', {
-              required: 'Subject is required',
+              required: t('email_template.subject_required'),
               minLength: {
                 value: 3,
-                message: 'Subject must be at least 3 characters',
+                message: t('email_template.subject_min_length', {min: 3}),
               },
               maxLength: {
                 value: 500,
-                message: 'Subject must be less than 500 characters',
+                message: t('email_template.subject_max_length', {max: 500}),
               },
             })}
             error={!!errors.subject}
             helperText={errors.subject?.message}
-            placeholder="e.g., Interview Invitation - {{positionTitle}}"
+            placeholder={t('email_template.subject_placeholder')}
           />
 
           <Box sx={{ mt: 2, mb: 1 }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>
-              Available Variables (click to insert):
+              {t('email_template.available_variables')}
             </Typography>
             <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
               {AVAILABLE_VARIABLES.map((variable) => (
@@ -180,31 +184,31 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
           </Box>
 
           <TextField
-            label="Body"
+            label={t('email_template.body')}
             fullWidth
             margin="normal"
             multiline
             rows={12}
             {...register('body', {
-              required: 'Body is required',
+              required: t('email_template.body_required'),
             })}
             error={!!errors.body}
-            helperText={errors.body?.message || 'Use variables above for personalization'}
-            placeholder="Dear {{candidateName}},&#10;&#10;Thank you for applying to the {{positionTitle}} position at {{companyName}}..."
+            helperText={errors.body?.message || t('email_template.body_helper')}
+            placeholder={t('email_template.body_placeholder')}
           />
 
           <FormControlLabel
             control={<Checkbox {...register('isDefault')} defaultChecked={template?.isDefault || false} />}
-            label="Mark as default template"
+            label={t('email_template.mark_default')}
           />
         </DialogContent>
 
         <DialogActions>
           <Button onClick={handleClose} disabled={isPending}>
-            Cancel
+            {t('common.cancel')}
           </Button>
-          <Button type="submit" variant="contained" disabled={isPending}>
-            {isPending ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
+          <Button type="submit" variant="contained" disabled={isPending} startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : null}>
+            {isPending ? t('common.saving') : isEditMode ? t('common.update') : t('common.create')}
           </Button>
         </DialogActions>
       </form>

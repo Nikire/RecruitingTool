@@ -6,55 +6,69 @@ import {
 	InputLabel,
 	Select,
 	MenuItem,
-	Alert,
 	Paper,
 } from '@mui/material';
 import {useUserAtom} from '../../../hooks/api/state/useUserAtom';
 import {isAdmin} from '../../../utils/permissions';
 import {ApplicationStatus} from '../../../types/application.types';
 import ApplicationsTable from '../../../components/applications/ApplicationsTable';
+import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
+import { useTranslation } from 'react-i18next';
 
 const ApplicationsPage: React.FC = () => {
+	const { t } = useTranslation();
 	const {user} = useUserAtom();
 	const hasAdminAccess = isAdmin(user);
 	const [statusFilter, setStatusFilter] = useState<ApplicationStatus | ''>('');
 
 	// Check if user has admin access
 	if (!hasAdminAccess) {
-		return (
-			<Box>
-				<Alert severity="error" sx={{mb: 2}}>
-					Access Denied: You need ADMIN or SUPER_ADMIN role to view applications.
-				</Alert>
-				<Typography variant="body1">
-					Please contact your administrator if you believe you should have access to this page.
-				</Typography>
-			</Box>
-		);
+		return <AccessDeniedMessage requiredRoles={['ADMIN', 'SUPER_ADMIN']} />;
 	}
+
+	const ApplicationStatusOptions: {
+		value: ApplicationStatus | '';
+		label: string;
+	}[] = [
+		{value: '', label: t('applications_page.all_applications')},
+		{value: ApplicationStatus.PENDING, label: t('status.pending')},
+		{value: ApplicationStatus.REVIEWED, label: t('status.reviewed')},
+		{value: ApplicationStatus.ACCEPTED, label: t('status.accepted')},
+		{value: ApplicationStatus.REJECTED, label: t('status.rejected')},
+	];
 
 	return (
 		<Box>
-			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 8}}>
-				<Typography variant="h4">Job Applications</Typography>
+			<Box
+				sx={{
+					display: 'flex',
+					justifyContent: 'space-between',
+					alignItems: 'center',
+					mb: 3,
+					mt: 8,
+				}}
+			>
+				<Typography variant="h4">{t('applications_page.title')}</Typography>
 			</Box>
 
 			<Paper sx={{p: 2, mb: 3}}>
 				<Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
 					<FormControl sx={{minWidth: 200}}>
-						<InputLabel id="status-filter-label">Filter by Status</InputLabel>
+						<InputLabel id="status-filter-label">{t('applications_page.filter_by_status')}</InputLabel>
 						<Select
 							labelId="status-filter-label"
 							id="status-filter"
 							value={statusFilter}
-							label="Filter by Status"
-							onChange={(e) => setStatusFilter(e.target.value as ApplicationStatus | '')}
+							label={t('applications_page.filter_by_status')}
+							onChange={(e) =>
+								setStatusFilter(e.target.value as ApplicationStatus | '')
+							}
 						>
-							<MenuItem value="">All Applications</MenuItem>
-							<MenuItem value={ApplicationStatus.PENDING}>Pending</MenuItem>
-							<MenuItem value={ApplicationStatus.REVIEWED}>Reviewed</MenuItem>
-							<MenuItem value={ApplicationStatus.ACCEPTED}>Accepted</MenuItem>
-							<MenuItem value={ApplicationStatus.REJECTED}>Rejected</MenuItem>
+							{ApplicationStatusOptions.map((option) => (
+								<MenuItem key={option.value} value={option.value}>
+									{option.label}
+								</MenuItem>
+							))}
 						</Select>
 					</FormControl>
 				</Box>

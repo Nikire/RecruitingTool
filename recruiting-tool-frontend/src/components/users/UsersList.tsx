@@ -1,7 +1,5 @@
-import {useState} from 'react';
 import {
 	Box,
-	CircularProgress,
 	Typography,
 	Table,
 	TableBody,
@@ -10,12 +8,9 @@ import {
 	TableHead,
 	TableRow,
 	Paper,
-	IconButton,
-	Tooltip,
 	Chip,
 } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {useTranslation} from 'react-i18next';
 import {useListUsers, useDeleteUser} from '../../hooks/api/useUsers';
 import {User, UserRoles} from '../../types/user.types';
 import Pagination from '../pagination/Pagination';
@@ -23,6 +18,13 @@ import UpdateUserDialog from '../dialogs/UpdateUserDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {hasRole} from '../../utils/permissions';
+import LoadingSpinner from '../common/LoadingSpinner';
+import EmptyState from '../common/EmptyState';
+import ErrorMessage from '../common/ErrorMessage';
+import {useDialog} from '../../hooks/useDialog';
+import {useConfirmDelete} from '../../hooks/useConfirmDelete';
+import {TableRowActions} from '../tables';
+import {StatusChip} from '../common';
 
 interface UsersListProps {
 	page: number;
@@ -39,12 +41,14 @@ const UsersList: React.FC<UsersListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const {t} = useTranslation();
 	const {user: currentUser} = useUserAtom();
 	const isSuperAdmin = hasRole(currentUser, UserRoles.SUPER_ADMIN);
 
-	const [selectedUser, setSelectedUser] = useState<User | null>(null);
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	// Dialog state management using custom hooks
+	const updateDialog = useDialog<User>();
+	const deleteMutation = useDeleteUser();
+	const deleteConfirm = useConfirmDelete<User>(deleteMutation);
 
 	const {data, isLoading, error} = useListUsers({
 		page,
@@ -54,72 +58,16 @@ const UsersList: React.FC<UsersListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const {mutate: deleteUser, isPending: isDeleting} = useDeleteUser();
-
 	const users = data?.data;
 	const meta = data?.meta;
 
-	const handleEditClick = (user: User) => {
-		setSelectedUser(user);
-		setOpenUpdateDialog(true);
-	};
-
-	const handleDeleteClick = (user: User) => {
-		setSelectedUser(user);
-		setOpenDeleteDialog(true);
-	};
-
-	const handleConfirmDelete = () => {
-		if (selectedUser) {
-			deleteUser(selectedUser.uid, {
-				onSuccess: () => {
-					setOpenDeleteDialog(false);
-					setSelectedUser(null);
-				},
-			});
-		}
-	};
-
-	const handleCloseUpdateDialog = () => {
-		setOpenUpdateDialog(false);
-		setSelectedUser(null);
-	};
-
-	const handleCloseDeleteDialog = () => {
-		setOpenDeleteDialog(false);
-		setSelectedUser(null);
-	};
-
-	const getRoleColor = (role: UserRoles) => {
-		switch (role) {
-			case UserRoles.SUPER_ADMIN:
-				return 'error';
-			case UserRoles.ADMIN:
-				return 'warning';
-			case UserRoles.HR:
-				return 'info';
-			default:
-				return 'default';
-		}
-	};
-
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (error && !data) {
-		return (
-			<Box sx={{p: 4}}>
-				<Typography color="error">
-					Error loading users. Please try again.
-				</Typography>
-			</Box>
-		);
+		return <ErrorMessage message="users.error_loading" />;
 	}
 
 	return (
@@ -129,12 +77,12 @@ const UsersList: React.FC<UsersListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell><strong>Name</strong></TableCell>
-								<TableCell><strong>Email</strong></TableCell>
-								<TableCell><strong>Roles</strong></TableCell>
-								<TableCell><strong>Company</strong></TableCell>
-								<TableCell><strong>Created</strong></TableCell>
-								{isSuperAdmin && <TableCell align="right"><strong>Actions</strong></TableCell>}
+								<TableCell><strong>{t('users.name_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.email_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.roles_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.company_label')}</strong></TableCell>
+								<TableCell><strong>{t('users.created_label')}</strong></TableCell>
+								{isSuperAdmin && <TableCell align="right"><strong>{t('common.actions')}</strong></TableCell>}
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -145,11 +93,11 @@ const UsersList: React.FC<UsersListProps> = ({
 									<TableCell>
 										<Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap'}}>
 											{user.roles.map((role) => (
-												<Chip
+												<StatusChip
 													key={role}
-													label={role}
+													status={role}
+													type="userRole"
 													size="small"
-													color={getRoleColor(role)}
 												/>
 											))}
 										</Box>
@@ -160,24 +108,10 @@ const UsersList: React.FC<UsersListProps> = ({
 									</TableCell>
 									{isSuperAdmin && (
 										<TableCell align="right">
-											<Tooltip title="Edit user">
-												<IconButton
-													size="small"
-													color="primary"
-													onClick={() => handleEditClick(user)}
-												>
-													<EditIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
-											<Tooltip title="Delete user">
-												<IconButton
-													size="small"
-													color="error"
-													onClick={() => handleDeleteClick(user)}
-												>
-													<DeleteIcon fontSize="small" />
-												</IconButton>
-											</Tooltip>
+											<TableRowActions
+												onEdit={() => updateDialog.openWith(user)}
+												onDelete={() => deleteConfirm.confirmDelete(user)}
+											/>
 										</TableCell>
 									)}
 								</TableRow>
@@ -186,29 +120,25 @@ const UsersList: React.FC<UsersListProps> = ({
 					</Table>
 				</TableContainer>
 			) : (
-				<Paper sx={{p: 4, textAlign: 'center'}}>
-					<Typography variant="body1" color="textSecondary">
-						No users found.
-					</Typography>
-				</Paper>
+				<EmptyState message="users.no_users" />
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
 			<UpdateUserDialog
-				open={openUpdateDialog}
-				onClose={handleCloseUpdateDialog}
-				user={selectedUser}
+				open={updateDialog.isOpen}
+				onClose={updateDialog.close}
+				user={updateDialog.selectedItem}
 			/>
 
 			<ConfirmDeleteDialog
-				open={openDeleteDialog}
-				onClose={handleCloseDeleteDialog}
-				onConfirm={handleConfirmDelete}
-				title="Delete User"
-				message="Are you sure you want to delete this user?"
-				itemName={selectedUser?.name}
-				isDeleting={isDeleting}
+				open={deleteConfirm.isOpen}
+				onClose={deleteConfirm.handleCancel}
+				onConfirm={deleteConfirm.handleConfirm}
+				title={t('users.delete_user_title')}
+				message={t('users.delete_user_message')}
+				itemName={deleteConfirm.selectedItem?.name}
+				isDeleting={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

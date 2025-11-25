@@ -8,6 +8,7 @@ import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
+import { User } from '@prisma/client';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -41,8 +42,8 @@ export class CandidateController {
     status: 200,
     description: 'Returns paginated candidates list',
   })
-  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<CandidateResponseDto>> {
-    return this.candidateService.list(paginationDto);
+  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<CandidateResponseDto>> {
+    return this.candidateService.list(paginationDto, currentUser);
   }
 
   @Get()
@@ -52,8 +53,8 @@ export class CandidateController {
     description: 'Returns a list of candidates',
     type: [CandidateResponseDto],
   })
-  findAll(): Promise<Array<CandidateResponseDto>> {
-    return this.candidateService.findAll();
+  findAll(@CurrentUser() currentUser: User): Promise<Array<CandidateResponseDto>> {
+    return this.candidateService.findAll(currentUser);
   }
 
   @Get(':uid')
@@ -64,8 +65,8 @@ export class CandidateController {
     type: CandidateResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
-  findOne(@Param('uid') uid: string): Promise<CandidateResponseDto> {
-    return this.candidateService.findOne(uid);
+  findOne(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<CandidateResponseDto> {
+    return this.candidateService.findOne(uid, currentUser);
   }
 
   @Put(':uid')
@@ -77,8 +78,8 @@ export class CandidateController {
   })
   @ApiBody({ type: UpdateCandidateDto })
   @ApiParam({ name: 'uid', required: true })
-  update(@Param('uid') uid: string, @Body() updateCandidateDto: UpdateCandidateDto): Promise<CandidateResponseDto> {
-    return this.candidateService.update(uid, updateCandidateDto);
+  update(@Param('uid') uid: string, @Body() updateCandidateDto: UpdateCandidateDto, @CurrentUser() currentUser: User): Promise<CandidateResponseDto> {
+    return this.candidateService.update(uid, updateCandidateDto, currentUser);
   }
 
   @Delete(':uid')
@@ -89,8 +90,8 @@ export class CandidateController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
-  remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
-    return this.candidateService.remove(uid);
+  remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<MessageResponseDto> {
+    return this.candidateService.remove(uid, currentUser);
   }
 
   // Candidate Notes endpoints

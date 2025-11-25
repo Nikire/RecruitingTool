@@ -13,6 +13,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import {format} from 'date-fns';
+import {useTranslation} from 'react-i18next';
 import {
 	useCandidateNotes,
 	useCreateCandidateNote,
@@ -25,6 +26,7 @@ interface CandidateNotesProps {
 }
 
 const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
+	const {t} = useTranslation();
 	const [newNoteContent, setNewNoteContent] = useState('');
 	const [editingNoteUid, setEditingNoteUid] = useState<string | null>(null);
 	const [editContent, setEditContent] = useState('');
@@ -37,7 +39,7 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 	if (!candidateUid) {
 		return (
 			<Typography color="text.secondary">
-				Please save the candidate first before adding notes.
+				{t('notes.save_candidate_first')}
 			</Typography>
 		);
 	}
@@ -86,7 +88,7 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 	};
 
 	const handleDeleteNote = (noteUid: string) => {
-		if (confirm('Are you sure you want to delete this note?')) {
+		if (confirm(t('notes.delete_confirmation'))) {
 			deleteNote(noteUid);
 		}
 	};
@@ -104,13 +106,13 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 			{/* Add Note Form */}
 			<Box mb={3}>
 				<Typography variant="h6" gutterBottom>
-					Add New Note
+					{t('notes.add_new_note')}
 				</Typography>
 				<TextField
 					fullWidth
 					multiline
 					rows={3}
-					placeholder="Enter your note here..."
+					placeholder={t('notes.enter_note_placeholder')}
 					value={newNoteContent}
 					onChange={(e) => setNewNoteContent(e.target.value)}
 					sx={{mb: 1}}
@@ -120,14 +122,14 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 					onClick={handleCreateNote}
 					disabled={!newNoteContent.trim() || isCreating}
 				>
-					{isCreating ? 'Adding...' : 'Add Note'}
+					{isCreating ? t('notes.adding') : t('notes.add_note')}
 				</Button>
 			</Box>
 
 			{/* Notes List */}
 			<Box>
 				<Typography variant="h6" gutterBottom>
-					Notes ({notes?.length || 0})
+					{t('notes.notes_count', {count: notes?.length || 0})}
 				</Typography>
 
 				{notes && notes.length > 0 ? (
@@ -152,14 +154,14 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 													onClick={() => handleUpdateNote(note.uid)}
 													disabled={!editContent.trim() || isUpdating}
 												>
-													{isUpdating ? 'Saving...' : 'Save'}
+													{isUpdating ? t('common.saving') : t('common.save')}
 												</Button>
 												<Button
 													size="small"
 													onClick={handleCancelEdit}
 													disabled={isUpdating}
 												>
-													Cancel
+													{t('common.cancel')}
 												</Button>
 											</Stack>
 										</Box>
@@ -191,8 +193,10 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 											</Box>
 											<Box mt={1}>
 												<Typography variant="caption" color="text.secondary">
-													By {note.authorName} •{' '}
-													{format(new Date(note.createdAt), 'MMM d, yyyy h:mm a')}
+													{t('notes.by_author_date', {
+														author: note.authorName,
+														date: format(new Date(note.createdAt), 'MMM d, yyyy h:mm a')
+													})}
 												</Typography>
 											</Box>
 										</Box>
@@ -202,7 +206,7 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({candidateUid}) => {
 						))}
 					</Stack>
 				) : (
-					<Typography color="text.secondary">No notes yet. Add one above!</Typography>
+					<Typography color="text.secondary">{t('notes.no_notes_yet')}</Typography>
 				)}
 			</Box>
 		</Box>

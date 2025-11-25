@@ -1,5 +1,6 @@
 import React from 'react';
 import { Box, Card, CardContent, Chip, Typography, Divider } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { CustomQuestion, QuestionType, CustomAnswers } from '../../types/customQuestions';
 
 interface CustomAnswersDisplayProps {
@@ -8,9 +9,11 @@ interface CustomAnswersDisplayProps {
 }
 
 export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({ questions, answers }) => {
+	const { t } = useTranslation();
+
 	const renderAnswer = (question: CustomQuestion, answer: any) => {
 		if (!answer) {
-			return <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>No answer provided</Typography>;
+			return <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>{t('custom_questions.no_answer')}</Typography>;
 		}
 
 		switch (question.type) {
@@ -73,7 +76,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({ ques
 	return (
 		<Box sx={{ mt: 3 }}>
 			<Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
-				Screening Answers
+				{t('custom_questions.screening_questions')}
 			</Typography>
 			{questions.map((question, index) => (
 				<Card key={question.id} sx={{ mb: 2 }}>
@@ -83,7 +86,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({ ques
 								{index + 1}. {question.text}
 							</Typography>
 							{question.required && (
-								<Chip label="Required" size="small" color="primary" variant="outlined" />
+								<Chip label={t('custom_questions.required_chip')} size="small" color="primary" variant="outlined" />
 							)}
 						</Box>
 						<Divider sx={{ my: 1 }} />

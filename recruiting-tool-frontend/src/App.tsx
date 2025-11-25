@@ -1,4 +1,3 @@
-import Dashboard from './pages/dashboard/Dashboard';
 import {Route, Routes} from 'react-router-dom';
 import Login from './pages/auth/Login';
 import Signup from './pages/auth/Signup';
@@ -40,7 +39,6 @@ function App() {
 					</Route>
 
 					<Route element={<ProtectedRoute />}>
-						<Route path="/dashboard" element={<Dashboard />} />
 						<Route path="/profile" element={<ProfilePage />} />
 					</Route>
 				</Route>

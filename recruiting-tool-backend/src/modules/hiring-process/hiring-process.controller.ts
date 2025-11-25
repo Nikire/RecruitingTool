@@ -31,18 +31,18 @@ export class HiringProcessController {
     return this.hiringProcessService.create(createHiringProcessDto);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'ADMIN', 'USER'])
   @Get('list')
   @ApiOperation({ summary: 'Get paginated hiring processes list with filtering' })
   @ApiResponse({
     status: 200,
     description: 'Returns paginated hiring processes list',
   })
-  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<HiringProcessResponseDto>> {
-    return this.hiringProcessService.list(paginationDto);
+  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+    return this.hiringProcessService.list(paginationDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'ADMIN', 'USER'])
   @Get()
   @ApiOperation({ summary: 'Get hiring process list' })
   @ApiResponse({
@@ -50,10 +50,11 @@ export class HiringProcessController {
     description: 'Returns the hiring process details',
     type: [HiringProcessResponseDto],
   })
-  findAll(@Body() hiringProcessFindDto: HiringProcessFindDto): Promise<Array<HiringProcessResponseDto>> {
-    return this.hiringProcessService.findAll(hiringProcessFindDto);
+  findAll(@Body() hiringProcessFindDto: HiringProcessFindDto, @CurrentUser() currentUser: User): Promise<Array<HiringProcessResponseDto>> {
+    return this.hiringProcessService.findAll(hiringProcessFindDto, currentUser);
   }
 
+  @Auth(['HR', 'ADMIN', 'USER'])
   @Get(':uid')
   @ApiOperation({ summary: 'Get one hiring process' })
   @ApiResponse({
@@ -62,8 +63,8 @@ export class HiringProcessController {
     type: HiringProcessResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
-  findOne(@Param('uid') uid: string): Promise<HiringProcessResponseDto> {
-    return this.hiringProcessService.findOne(uid);
+  findOne(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<HiringProcessResponseDto> {
+    return this.hiringProcessService.findOne(uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -76,8 +77,8 @@ export class HiringProcessController {
   })
   @ApiBody({ type: UpdateHiringProcessDto })
   @ApiParam({ name: 'uid', required: true })
-  update(@Param('uid') uid: string, @Body() updateHiringProcessDto: UpdateHiringProcessDto): Promise<HiringProcessResponseDto> {
-    return this.hiringProcessService.update(uid, updateHiringProcessDto);
+  update(@Param('uid') uid: string, @Body() updateHiringProcessDto: UpdateHiringProcessDto, @CurrentUser() currentUser: User): Promise<HiringProcessResponseDto> {
+    return this.hiringProcessService.update(uid, updateHiringProcessDto, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -89,8 +90,8 @@ export class HiringProcessController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
-  remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
-    return this.hiringProcessService.remove(uid);
+  remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<MessageResponseDto> {
+    return this.hiringProcessService.remove(uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -101,8 +102,8 @@ export class HiringProcessController {
     description: 'Stage progressed successfully or hiring process completed',
   })
   @ApiParam({ name: 'uid', required: true, description: 'Hiring Process UID' })
-  progressStage(@Param('uid') uid: string) {
-    return this.hiringProcessService.progressToNextStage(uid);
+  progressStage(@Param('uid') uid: string, @CurrentUser() currentUser: User) {
+    return this.hiringProcessService.progressToNextStage(uid, currentUser);
   }
 
   @Auth(['HR', 'ADMIN'])
@@ -114,7 +115,7 @@ export class HiringProcessController {
   })
   @ApiParam({ name: 'uid', required: true, description: 'Hiring Process UID' })
   @ApiParam({ name: 'stageUid', required: true, description: 'Target Stage UID' })
-  moveToStage(@Param('uid') uid: string, @Param('stageUid') stageUid: string) {
-    return this.hiringProcessService.moveToSpecificStage(uid, stageUid);
+  moveToStage(@Param('uid') uid: string, @Param('stageUid') stageUid: string, @CurrentUser() currentUser: User) {
+    return this.hiringProcessService.moveToSpecificStage(uid, stageUid, currentUser);
   }
 }

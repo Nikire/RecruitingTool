@@ -18,11 +18,12 @@ import {
 	useMediaQuery,
 	useTheme,
 } from '@mui/material';
-import {useState} from 'react';
+import {useTranslation} from 'react-i18next';
 import {useListJobPositions} from '../../hooks/api/useJobPositions';
 import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
+import {useDialog} from '../../hooks/useDialog';
 
 interface JobPositionsListProps {
 	page: number;
@@ -51,8 +52,10 @@ const JobPositionCardView: React.FC<{
 	jobPosition: any;
 	onApplyClick: (uid: string, title: string) => void;
 	onViewDetails: (uid: string) => void;
-}> = ({jobPosition, onApplyClick, onViewDetails}) => (
-	<Card
+}> = ({jobPosition, onApplyClick, onViewDetails}) => {
+	const {t} = useTranslation();
+	return (
+		<Card
 		sx={{
 			mb: 2,
 			p: 2,
@@ -76,7 +79,7 @@ const JobPositionCardView: React.FC<{
 					sx={{fontSize: '0.85rem'}}
 				/>
 				<Chip
-					label={`${jobPosition.stages?.length || 0} Stages`}
+					label={`${jobPosition.stages?.length || 0} ${t('stages.title')}`}
 					variant="outlined"
 					size="small"
 					sx={{fontSize: '0.85rem'}}
@@ -85,13 +88,13 @@ const JobPositionCardView: React.FC<{
 
 			{jobPosition.companyName && (
 				<Typography variant="body2" color="textSecondary" sx={{mb: 1}}>
-					Company: {jobPosition.companyName}
+					{t('companies.title')}: {jobPosition.companyName}
 				</Typography>
 			)}
 
 			{jobPosition.createdBy && (
 				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 2}}>
-					Posted by {jobPosition.createdBy.name}
+					{t('job_positions.posted_by')}: {jobPosition.createdBy.name}
 				</Typography>
 			)}
 
@@ -114,7 +117,7 @@ const JobPositionCardView: React.FC<{
 						flex: {xs: '1 1 auto', sm: '0 1 auto'},
 					}}
 				>
-					View Details
+					{t('job_positions.view_details')}
 				</Button>
 				<Button
 					fullWidth
@@ -128,12 +131,13 @@ const JobPositionCardView: React.FC<{
 						flex: {xs: '1 1 auto', sm: '0 1 auto'},
 					}}
 				>
-					Apply
+					{t('common.apply')}
 				</Button>
 			</Box>
 		</CardContent>
 	</Card>
-);
+	);
+};
 
 const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	page,
@@ -142,11 +146,13 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const {t} = useTranslation();
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const navigate = useNavigate();
-	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
-	const [selectedJob, setSelectedJob] = useState<{uid: string; title: string} | null>(null);
+
+	// Dialog state management using custom hook
+	const applyDialog = useDialog<{uid: string; title: string}>();
 
 	const {data, isLoading, error} = useListJobPositions({
 		page,
@@ -160,13 +166,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	const meta = data?.meta;
 
 	const handleApplyClick = (jobUid: string, jobTitle: string) => {
-		setSelectedJob({uid: jobUid, title: jobTitle});
-		setApplyDialogOpen(true);
-	};
-
-	const handleCloseApplyDialog = () => {
-		setApplyDialogOpen(false);
-		setSelectedJob(null);
+		applyDialog.openWith({uid: jobUid, title: jobTitle});
 	};
 
 	const handleViewDetails = (uid: string) => {
@@ -194,7 +194,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 		return (
 			<Box sx={{p: {xs: 2, sm: 4}}}>
 				<Typography color="error" sx={{fontSize: {xs: '0.95rem', sm: '1rem'}}}>
-					Error loading job positions. Please try again.
+					{t('errors.fetch_failed')}
 				</Typography>
 			</Box>
 		);
@@ -218,7 +218,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 				) : (
 					<Paper sx={{p: {xs: 2, sm: 4}, textAlign: 'center'}}>
 						<Typography variant="body1" color="textSecondary">
-							No job positions found.
+							{t('job_positions.no_positions')}
 						</Typography>
 					</Paper>
 				)}
@@ -231,12 +231,12 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 					/>
 				)}
 
-				{selectedJob && (
+				{applyDialog.selectedItem && (
 					<ApplyToJobDialog
-						open={applyDialogOpen}
-						onClose={handleCloseApplyDialog}
-						jobUid={selectedJob.uid}
-						jobTitle={selectedJob.title}
+						open={applyDialog.isOpen}
+						onClose={applyDialog.close}
+						jobUid={applyDialog.selectedItem.uid}
+						jobTitle={applyDialog.selectedItem.title}
 					/>
 				)}
 			</>
@@ -251,12 +251,12 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell sx={{minWidth: 200}}><strong>Job Title</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Company</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>Status</strong></TableCell>
-								<TableCell sx={{minWidth: 80}}><strong>Stages</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Created By</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Actions</strong></TableCell>
+								<TableCell sx={{minWidth: 200}}><strong>{t('job_positions.job_title_label')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions.company')}</strong></TableCell>
+								<TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>
+								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -295,7 +295,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 												variant="outlined"
 												onClick={() => handleViewDetails(jobPosition.uid)}
 											>
-												View Details
+												{t('job_positions.view_details')}
 											</Button>
 											<Button
 												size="small"
@@ -303,7 +303,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 												onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
 												disabled={jobPosition.status !== 'OPEN'}
 											>
-												Apply
+												{t('common.apply')}
 											</Button>
 										</Box>
 									</TableCell>
@@ -315,19 +315,19 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 			) : (
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
-						No job positions found.
+						{t('job_positions.no_positions')}
 					</Typography>
 				</Paper>
 			)}
 
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
-			{selectedJob && (
+			{applyDialog.selectedItem && (
 				<ApplyToJobDialog
-					open={applyDialogOpen}
-					onClose={handleCloseApplyDialog}
-					jobUid={selectedJob.uid}
-					jobTitle={selectedJob.title}
+					open={applyDialog.isOpen}
+					onClose={applyDialog.close}
+					jobUid={applyDialog.selectedItem.uid}
+					jobTitle={applyDialog.selectedItem.title}
 				/>
 			)}
 		</>

@@ -1,0 +1,98 @@
+name: Improvement
+description: Suggest an improvement to existing functionality
+title: "[IMPROVEMENT]: "
+labels: ["improvement", "priority-low"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting an improvement!
+        This template is for enhancements to existing features, not new features.
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Current Behavior
+      description: Describe how the feature currently works
+      placeholder: "Currently, the feature..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposed-improvement
+    attributes:
+      label: Proposed Improvement
+      description: How should this feature be improved?
+      placeholder: "It would be better if..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: benefits
+    attributes:
+      label: Benefits
+      description: What are the benefits of this improvement?
+      placeholder: |
+        - Better user experience
+        - Improved performance
+        - More intuitive workflow
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area Affected
+      description: Which part of the application would be improved?
+      options:
+        - Backend API
+        - Frontend UI
+        - Database
+        - Authentication/Authorization
+        - Interview Scheduling
+        - Candidate Management
+        - Hiring Process
+        - Admin Panel
+        - Analytics/Reporting
+        - Performance
+        - Developer Experience
+        - Other
+    validations:
+      required: true
+
+  - type: dropdown
+    id: impact
+    attributes:
+      label: Impact Level
+      description: How much impact would this improvement have?
+      options:
+        - Low - Nice polish
+        - Medium - Noticeable improvement
+        - High - Significant enhancement
+    validations:
+      required: true
+
+  - type: textarea
+    id: implementation-ideas
+    attributes:
+      label: Implementation Ideas
+      description: Any thoughts on how this could be implemented?
+    validations:
+      required: false
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or Mockups
+      description: Add examples, mockups, or references to similar implementations
+      placeholder: "You can drag and drop images here"
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: Additional Context
+      description: Add any other context or related issues
+    validations:
+      required: false

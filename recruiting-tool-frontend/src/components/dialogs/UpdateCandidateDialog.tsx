@@ -10,8 +10,10 @@ import {
 	Tabs,
 	Tab,
 	Divider,
+	CircularProgress,
 } from '@mui/material';
 import {useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useUpdateCandidate} from '../../hooks/api/useCandidates';
 import {Candidate} from '../../types/candidate';
 import {useEffect, useState} from 'react';
@@ -35,6 +37,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 	onClose,
 	candidate,
 }) => {
+	const {t} = useTranslation();
 	const [activeTab, setActiveTab] = useState(0);
 
 	const {
@@ -87,12 +90,12 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-			<DialogTitle>Update Candidate</DialogTitle>
+			<DialogTitle>{t('candidates.update_title')}</DialogTitle>
 			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
 				<Tabs value={activeTab} onChange={handleTabChange}>
-					<Tab label="Candidate Info" />
-					<Tab label="Files" />
-					<Tab label="Notes" />
+					<Tab label={t('candidates.info_tab')} />
+					<Tab label={t('candidates.files_tab')} />
+					<Tab label={t('candidates.notes_tab')} />
 				</Tabs>
 			</Box>
 
@@ -100,18 +103,18 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<DialogContent>
 						<TextField
-							label="Candidate Name"
+							label={t('candidates.name_label')}
 							fullWidth
 							margin="normal"
 							{...register('name', {
-								required: 'Name is required',
+								required: t('validation.name_required'),
 								minLength: {
 									value: 3,
-									message: 'Name must be at least 3 characters',
+									message: t('validation.name_min_length', {min: 3}),
 								},
 								maxLength: {
 									value: 100,
-									message: 'Name must be less than 100 characters',
+									message: t('validation.name_max_length', {max: 100}),
 								},
 							})}
 							error={!!errors.name}
@@ -119,15 +122,15 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 						/>
 
 						<TextField
-							label="Email"
+							label={t('candidates.email_label')}
 							type="email"
 							fullWidth
 							margin="normal"
 							{...register('email', {
-								required: 'Email is required',
+								required: t('validation.email_required'),
 								pattern: {
 									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-									message: 'Invalid email address',
+									message: t('validation.email_invalid'),
 								},
 							})}
 							error={!!errors.email}
@@ -136,20 +139,21 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 
 						{isError && (
 							<Typography color="error" sx={{mt: 2}}>
-								Failed to update candidate. Please try again.
+								{t('errors.update_failed', {entity: t('candidates.title').toLowerCase()})}
 							</Typography>
 						)}
 					</DialogContent>
 					<DialogActions>
 						<Button onClick={handleClose} disabled={isPending}>
-							Cancel
+							{t('common.cancel')}
 						</Button>
 						<Button
 							type="submit"
 							variant="contained"
 							disabled={isPending}
+							startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : undefined}
 						>
-							{isPending ? 'Updating...' : 'Update'}
+							{isPending ? t('common.updating') : t('common.update')}
 						</Button>
 					</DialogActions>
 				</form>
@@ -160,7 +164,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 					<DialogContent>
 						<Box sx={{ mb: 3 }}>
 							<Typography variant="h6" gutterBottom>
-								Upload Files
+								{t('candidates.upload_files')}
 							</Typography>
 							<FileUpload candidateUid={candidate?.uid} />
 						</Box>
@@ -169,14 +173,14 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 
 						<Box>
 							<Typography variant="h6" gutterBottom>
-								Uploaded Files
+								{t('candidates.uploaded_files')}
 							</Typography>
 							<FileList candidateUid={candidate?.uid} />
 						</Box>
 					</DialogContent>
 					<DialogActions>
 						<Button onClick={handleClose}>
-							Close
+							{t('common.close')}
 						</Button>
 					</DialogActions>
 				</>
@@ -189,7 +193,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 					</DialogContent>
 					<DialogActions>
 						<Button onClick={handleClose}>
-							Close
+							{t('common.close')}
 						</Button>
 					</DialogActions>
 				</>

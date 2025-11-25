@@ -1,4 +1,3 @@
-import {useState} from 'react';
 import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, IconButton, Tooltip, Button} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -10,6 +9,9 @@ import UpdateJobPositionDialog from '../dialogs/UpdateJobPositionDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
+import {useDialog} from '../../hooks/useDialog';
+import {useConfirmDelete} from '../../hooks/useConfirmDelete';
+import { useTranslation } from 'react-i18next';
 
 interface JobPositionsManagementListProps {
 	page: number;
@@ -26,13 +28,15 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 	onPageChange,
 	onLimitChange,
 }) => {
+	const { t } = useTranslation();
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
 	const canManage = canManageResources(user);
 
-	const [selectedJobPosition, setSelectedJobPosition] = useState<JobPosition | null>(null);
-	const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	// Dialog state management using custom hooks
+	const updateDialog = useDialog<JobPosition>();
+	const deleteMutation = useDeleteJobPosition();
+	const deleteConfirm = useConfirmDelete<JobPosition>(deleteMutation);
 
 	const {data, isLoading, error} = useListJobPositions({
 		page,
@@ -42,41 +46,8 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const {mutate: deleteJobPosition, isPending: isDeleting} = useDeleteJobPosition();
-
 	const jobPositions = data?.data;
 	const meta = data?.meta;
-
-	const handleEditClick = (jobPosition: JobPosition) => {
-		setSelectedJobPosition(jobPosition);
-		setOpenUpdateDialog(true);
-	};
-
-	const handleDeleteClick = (jobPosition: JobPosition) => {
-		setSelectedJobPosition(jobPosition);
-		setOpenDeleteDialog(true);
-	};
-
-	const handleConfirmDelete = () => {
-		if (selectedJobPosition) {
-			deleteJobPosition(selectedJobPosition.uid, {
-				onSuccess: () => {
-					setOpenDeleteDialog(false);
-					setSelectedJobPosition(null);
-				},
-			});
-		}
-	};
-
-	const handleCloseUpdateDialog = () => {
-		setOpenUpdateDialog(false);
-		setSelectedJobPosition(null);
-	};
-
-	const handleCloseDeleteDialog = () => {
-		setOpenDeleteDialog(false);
-		setSelectedJobPosition(null);
-	};
 
 	// Only show loading spinner on INITIAL load, not on refetch
 	if (isLoading && !data) {
@@ -91,7 +62,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 		return (
 			<Box sx={{p: 4}}>
 				<Typography color="error">
-					Error loading job positions. Please try again.
+					{t('job_positions_table.error_loading')}
 				</Typography>
 			</Box>
 		);
@@ -104,13 +75,13 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 					<Table>
 						<TableHead>
 							<TableRow>
-								<TableCell sx={{minWidth: 200}}><strong>Job Title</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Company</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>Status</strong></TableCell>
-								<TableCell sx={{minWidth: 80}}><strong>Stages</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>Hiring Processes</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>Created By</strong></TableCell>
-								<TableCell sx={{minWidth: 180}}><strong>Actions</strong></TableCell>
+								<TableCell sx={{minWidth: 200}}><strong>{t('job_positions_table.header_job_title')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions_table.header_company')}</strong></TableCell>
+								<TableCell sx={{minWidth: 100}}><strong>{t('job_positions_table.header_status')}</strong></TableCell>
+								<TableCell sx={{minWidth: 80}}><strong>{t('job_positions_table.header_stages')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions_table.header_hiring_processes')}</strong></TableCell>
+								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions_table.header_created_by')}</strong></TableCell>
+								<TableCell sx={{minWidth: 180}}><strong>{t('job_positions_table.header_actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
 						<TableBody>
@@ -119,7 +90,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 									<TableCell sx={{maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
 										{jobPosition.title}
 									</TableCell>
-									<TableCell>{jobPosition.companyName || 'N/A'}</TableCell>
+									<TableCell>{jobPosition.companyName || t('common.n_a')}</TableCell>
 									<TableCell>
 										<Chip
 											label={jobPosition.status}
@@ -130,7 +101,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 									<TableCell>{jobPosition.stages?.length || 0}</TableCell>
 									<TableCell>
 										<Chip
-											label={`${jobPosition.hiringProcesses?.length || 0} processes`}
+											label={t('job_positions_table.processes_count', { count: jobPosition.hiringProcesses?.length || 0 })}
 											color="primary"
 											variant="outlined"
 											size="small"
@@ -147,7 +118,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 												</Typography>
 											</>
 										) : (
-											'N/A'
+											t('common.n_a')
 										)}
 									</TableCell>
 									<TableCell>
@@ -157,24 +128,24 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 												variant="outlined"
 												onClick={() => navigate(`/careers/${jobPosition.uid}`)}
 											>
-												View Details
+												{t('job_positions.view_details')}
 											</Button>
 											{canManage && (
 												<>
-													<Tooltip title="Edit job position">
+													<Tooltip title={t('job_positions_table.edit_tooltip')}>
 														<IconButton
 															size="small"
 															color="primary"
-															onClick={() => handleEditClick(jobPosition)}
+															onClick={() => updateDialog.openWith(jobPosition)}
 														>
 															<EditIcon fontSize="small" />
 														</IconButton>
 													</Tooltip>
-													<Tooltip title="Delete job position">
+													<Tooltip title={t('job_positions_table.delete_tooltip')}>
 														<IconButton
 															size="small"
 															color="error"
-															onClick={() => handleDeleteClick(jobPosition)}
+															onClick={() => deleteConfirm.confirmDelete(jobPosition)}
 														>
 															<DeleteIcon fontSize="small" />
 														</IconButton>
@@ -191,7 +162,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 			) : (
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
-						No job positions found.
+						{t('job_positions_table.no_positions')}
 					</Typography>
 				</Paper>
 			)}
@@ -199,19 +170,19 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
 
 			<UpdateJobPositionDialog
-				open={openUpdateDialog}
-				onClose={handleCloseUpdateDialog}
-				jobPosition={selectedJobPosition}
+				open={updateDialog.isOpen}
+				onClose={updateDialog.close}
+				jobPosition={updateDialog.selectedItem}
 			/>
 
 			<ConfirmDeleteDialog
-				open={openDeleteDialog}
-				onClose={handleCloseDeleteDialog}
-				onConfirm={handleConfirmDelete}
-				title="Delete Job Position"
-				message="Are you sure you want to delete this job position? This will also delete all associated stages and hiring processes."
-				itemName={selectedJobPosition?.title}
-				isDeleting={isDeleting}
+				open={deleteConfirm.isOpen}
+				onClose={deleteConfirm.handleCancel}
+				onConfirm={deleteConfirm.handleConfirm}
+				title={t('job_positions_table.delete_title')}
+				message={t('job_positions_table.delete_message')}
+				itemName={deleteConfirm.selectedItem?.title}
+				isDeleting={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

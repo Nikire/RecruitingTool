@@ -14,7 +14,7 @@ export const AuthGroupWrapper = styled.div`
 export const AuthPageWrapper = styled.div`
 	display: flex;
 	flex-direction: column;
-	min-height: 100vh;
+	min-height: calc(100vh - 64px);
 	justify-content: center;
 	align-items: center;
 `;

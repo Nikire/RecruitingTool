@@ -23,6 +23,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import { useTranslation } from 'react-i18next';
 import { CustomQuestion, QuestionType } from '../../types/customQuestions';
 
 interface CustomQuestionBuilderProps {
@@ -34,6 +35,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 	questions,
 	onQuestionsChange,
 }) => {
+	const { t } = useTranslation();
 	const [openDialog, setOpenDialog] = useState(false);
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const [formData, setFormData] = useState<CustomQuestion>({
@@ -68,12 +70,12 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 
 	const handleAddQuestion = () => {
 		if (!formData.text.trim()) {
-			alert('Question text is required');
+			alert(t('custom_questions.text_required_alert'));
 			return;
 		}
 
 		if ((formData.type === QuestionType.MULTIPLE_CHOICE || formData.type === QuestionType.CHECKBOX) && (!formData.options || formData.options.length < 2)) {
-			alert('Please add at least 2 options for multiple choice or checkbox questions');
+			alert(t('custom_questions.options_required_alert'));
 			return;
 		}
 
@@ -111,13 +113,13 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 	const getQuestionTypeLabel = (type: QuestionType): string => {
 		switch (type) {
 			case QuestionType.TEXT:
-				return 'Short Text';
+				return t('custom_questions.short_text');
 			case QuestionType.TEXTAREA:
-				return 'Long Text';
+				return t('custom_questions.long_text');
 			case QuestionType.MULTIPLE_CHOICE:
-				return 'Multiple Choice';
+				return t('custom_questions.multiple_choice');
 			case QuestionType.CHECKBOX:
-				return 'Checkboxes';
+				return t('custom_questions.checkboxes');
 			default:
 				return type;
 		}
@@ -126,9 +128,9 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 	return (
 		<Box sx={{ mt: 3 }}>
 			<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-				<Typography variant="h6">Custom Screening Questions</Typography>
+				<Typography variant="h6">{t('custom_questions.title')}</Typography>
 				<Button variant="contained" startIcon={<AddIcon />} onClick={() => handleOpenDialog()}>
-					Add Question
+					{t('custom_questions.add_question')}
 				</Button>
 			</Box>
 
@@ -145,10 +147,10 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 									<Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
 										{question.text}
 									</Typography>
-									{question.required && <Chip label="Required" size="small" color="primary" />}
+									{question.required && <Chip label={t('custom_questions.required_chip')} size="small" color="primary" />}
 								</Box>
 								<Typography variant="caption" color="text.secondary">
-									Type: {getQuestionTypeLabel(question.type)}
+									{t('custom_questions.type_label', { type: getQuestionTypeLabel(question.type) })}
 								</Typography>
 								{question.options && question.options.length > 0 && (
 									<Box sx={{ mt: 1, display: 'flex', gap: 0.5, flexWrap: 'wrap' }}>
@@ -180,20 +182,20 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 			</Box>
 
 			<Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-				<DialogTitle>{editingIndex !== null ? 'Edit Question' : 'Add Question'}</DialogTitle>
+				<DialogTitle>{editingIndex !== null ? t('custom_questions.edit_question') : t('custom_questions.add_question')}</DialogTitle>
 				<DialogContent sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
 					<TextField
 						fullWidth
-						label="Question Text"
+						label={t('custom_questions.question_text_label')}
 						value={formData.text}
 						onChange={(e) => setFormData({ ...formData, text: e.target.value })}
 						multiline
 						rows={2}
-						placeholder="e.g., Years of experience with React?"
+						placeholder={t('custom_questions.question_text_placeholder')}
 					/>
 
 					<FormControl fullWidth>
-						<InputLabel>Question Type</InputLabel>
+						<InputLabel>{t('custom_questions.question_type_label')}</InputLabel>
 						<Select
 							value={formData.type}
 							onChange={(e) => {
@@ -207,12 +209,12 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 										: undefined,
 								});
 							}}
-							label="Question Type"
+							label={t('custom_questions.question_type_label')}
 						>
-							<MenuItem value={QuestionType.TEXT}>Short Text</MenuItem>
-							<MenuItem value={QuestionType.TEXTAREA}>Long Text</MenuItem>
-							<MenuItem value={QuestionType.MULTIPLE_CHOICE}>Multiple Choice</MenuItem>
-							<MenuItem value={QuestionType.CHECKBOX}>Checkboxes</MenuItem>
+							<MenuItem value={QuestionType.TEXT}>{t('custom_questions.short_text')}</MenuItem>
+							<MenuItem value={QuestionType.TEXTAREA}>{t('custom_questions.long_text')}</MenuItem>
+							<MenuItem value={QuestionType.MULTIPLE_CHOICE}>{t('custom_questions.multiple_choice')}</MenuItem>
+							<MenuItem value={QuestionType.CHECKBOX}>{t('custom_questions.checkboxes')}</MenuItem>
 						</Select>
 					</FormControl>
 
@@ -223,13 +225,13 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 								onChange={(e) => setFormData({ ...formData, required: e.target.checked })}
 							/>
 						}
-						label="Required"
+						label={t('custom_questions.required_label')}
 					/>
 
 					{(formData.type === QuestionType.MULTIPLE_CHOICE || formData.type === QuestionType.CHECKBOX) && (
 						<Box>
 							<Typography variant="subtitle2" sx={{ mb: 1 }}>
-								Options
+								{t('custom_questions.options_label')}
 							</Typography>
 							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, mb: 2 }}>
 								{formData.options?.map((option, i) => (
@@ -246,7 +248,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 							<TextField
 								fullWidth
 								size="small"
-								placeholder="Add an option and press Enter"
+								placeholder={t('custom_questions.add_option_placeholder')}
 								onKeyPress={(e) => {
 									if (e.key === 'Enter') {
 										handleAddOption((e.target as HTMLInputElement).value);
@@ -258,9 +260,9 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 					)}
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleCloseDialog}>Cancel</Button>
+					<Button onClick={handleCloseDialog}>{t('common.cancel')}</Button>
 					<Button onClick={handleAddQuestion} variant="contained">
-						{editingIndex !== null ? 'Update' : 'Add'}
+						{editingIndex !== null ? t('custom_questions.update') : t('custom_questions.add')}
 					</Button>
 				</DialogActions>
 			</Dialog>

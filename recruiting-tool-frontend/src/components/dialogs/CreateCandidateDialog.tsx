@@ -6,13 +6,16 @@ import {
 	TextField,
 	Button,
 	Typography,
+	CircularProgress,
 } from '@mui/material';
 import {useForm} from 'react-hook-form';
+import {useTranslation} from 'react-i18next';
 import {useCreateCandidate} from '../../hooks/api/useCandidates';
 
 interface CreateCandidateDialogProps {
 	open: boolean;
 	onClose: () => void;
+	onSuccess?: () => void;
 }
 
 interface CandidateFormData {
@@ -23,7 +26,9 @@ interface CandidateFormData {
 const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 	open,
 	onClose,
+	onSuccess,
 }) => {
+	const {t} = useTranslation();
 	const {
 		register,
 		handleSubmit,
@@ -43,6 +48,7 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 			onSuccess: () => {
 				reset();
 				onClose();
+				onSuccess?.();
 			},
 		});
 	};
@@ -54,22 +60,22 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-			<DialogTitle>Create New Candidate</DialogTitle>
+			<DialogTitle>{t('candidates.create_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
 					<TextField
-						label="Candidate Name"
+						label={t('candidates.name_label')}
 						fullWidth
 						margin="normal"
 						{...register('name', {
-							required: 'Name is required',
+							required: t('validation.name_required'),
 							minLength: {
 								value: 3,
-								message: 'Name must be at least 3 characters',
+								message: t('validation.name_min_length', {min: 3}),
 							},
 							maxLength: {
 								value: 100,
-								message: 'Name must be less than 100 characters',
+								message: t('validation.name_max_length', {max: 100}),
 							},
 						})}
 						error={!!errors.name}
@@ -77,15 +83,15 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 					/>
 
 					<TextField
-						label="Email"
+						label={t('candidates.email_label')}
 						type="email"
 						fullWidth
 						margin="normal"
 						{...register('email', {
-							required: 'Email is required',
+							required: t('validation.email_required'),
 							pattern: {
 								value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-								message: 'Invalid email address',
+								message: t('validation.email_invalid'),
 							},
 						})}
 						error={!!errors.email}
@@ -94,20 +100,21 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 
 					{isError && (
 						<Typography color="error" sx={{mt: 2}}>
-							Failed to create candidate. Please try again.
+							{t('errors.create_failed', {entity: t('candidates.title').toLowerCase()})}
 						</Typography>
 					)}
 				</DialogContent>
 				<DialogActions>
 					<Button onClick={handleClose} disabled={isPending}>
-						Cancel
+						{t('common.cancel')}
 					</Button>
 					<Button
 						type="submit"
 						variant="contained"
 						disabled={isPending}
+						startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : undefined}
 					>
-						{isPending ? 'Creating...' : 'Create'}
+						{isPending ? t('common.creating') : t('common.create')}
 					</Button>
 				</DialogActions>
 			</form>

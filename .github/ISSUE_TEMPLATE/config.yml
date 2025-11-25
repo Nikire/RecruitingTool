@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Documentation
+    url: https://github.com/Nikire/RecruitingTool/tree/production/.claude/docs
+    about: Check the documentation for guidance on architecture, workflows, and coding standards
+  - name: Discussions
+    url: https://github.com/Nikire/RecruitingTool/discussions
+    about: Ask questions or discuss ideas with the community

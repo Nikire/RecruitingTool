@@ -9,23 +9,27 @@ import {
 	Paper,
 	Chip,
 	IconButton,
-	CircularProgress,
-	Alert,
 	Typography,
 	Box,
 	Tooltip,
 } from '@mui/material';
 import {Visibility as VisibilityIcon} from '@mui/icons-material';
 import {format} from 'date-fns';
+import {useTranslation} from 'react-i18next';
 import {useApplications} from '../../hooks/api/useApplications';
 import {Application, ApplicationStatus} from '../../types/application.types';
 import ApplicationDetailDialog from '../dialogs/ApplicationDetailDialog';
+import LoadingSpinner from '../common/LoadingSpinner';
+import EmptyState from '../common/EmptyState';
+import ErrorMessage from '../common/ErrorMessage';
+import {getApplicationStatusColor} from '../../utils/statusColors';
 
 interface ApplicationsTableProps {
 	statusFilter?: ApplicationStatus;
 }
 
 const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => {
+	const {t} = useTranslation();
 	const {data: applications, isLoading, isError} = useApplications(
 		statusFilter ? {status: statusFilter} : undefined
 	);
@@ -42,50 +46,19 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 		setSelectedApplication(null);
 	};
 
-	const getStatusColor = (status: ApplicationStatus) => {
-		switch (status) {
-			case ApplicationStatus.PENDING:
-				return 'warning';
-			case ApplicationStatus.REVIEWED:
-				return 'info';
-			case ApplicationStatus.ACCEPTED:
-				return 'success';
-			case ApplicationStatus.REJECTED:
-				return 'error';
-			default:
-				return 'default';
-		}
-	};
-
 	if (isLoading) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <LoadingSpinner />;
 	}
 
 	if (isError) {
-		return (
-			<Alert severity="error">
-				Failed to load applications. Please try again later.
-			</Alert>
-		);
+		return <ErrorMessage message="applications.error_loading" />;
 	}
 
 	if (!applications || applications.length === 0) {
-		return (
-			<Paper sx={{p: 4, textAlign: 'center'}}>
-				<Typography variant="h6" color="text.secondary" gutterBottom>
-					No Applications Found
-				</Typography>
-				<Typography variant="body2" color="text.secondary">
-					{statusFilter
-						? `No applications with status "${statusFilter}"`
-						: 'No job applications have been submitted yet.'}
-				</Typography>
-			</Paper>
-		);
+		const emptyMessage = statusFilter
+			? 'applications.no_applications_with_status'
+			: 'applications.no_applications_submitted';
+		return <EmptyState message={emptyMessage} />;
 	}
 
 	return (
@@ -93,7 +66,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 			<Paper sx={{mb: 2}}>
 				<Box sx={{p: 2, borderBottom: 1, borderColor: 'divider'}}>
 					<Typography variant="body2" color="text.secondary">
-						Total Applications: {applications.length}
+						{t('applications.total_applications', {count: applications.length})}
 					</Typography>
 				</Box>
 			</Paper>
@@ -102,13 +75,13 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 				<Table>
 					<TableHead>
 						<TableRow>
-							<TableCell>Applicant Name</TableCell>
-							<TableCell>Email</TableCell>
-							<TableCell>Phone</TableCell>
-							<TableCell>Job Position</TableCell>
-							<TableCell>Status</TableCell>
-							<TableCell>Applied Date</TableCell>
-							<TableCell align="center">Actions</TableCell>
+							<TableCell>{t('applications.applicant_name')}</TableCell>
+							<TableCell>{t('applications.email')}</TableCell>
+							<TableCell>{t('applications.phone')}</TableCell>
+							<TableCell>{t('applications.job_position')}</TableCell>
+							<TableCell>{t('applications.status')}</TableCell>
+							<TableCell>{t('applications.applied_date')}</TableCell>
+							<TableCell align="center">{t('common.actions')}</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -133,7 +106,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 								<TableCell>
 									<Chip
 										label={application.status}
-										color={getStatusColor(application.status)}
+										color={getApplicationStatusColor(application.status)}
 										size="small"
 									/>
 								</TableCell>
@@ -141,7 +114,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 									{format(new Date(application.appliedAt), 'MMM d, yyyy h:mm a')}
 								</TableCell>
 								<TableCell align="center">
-									<Tooltip title="View Details">
+									<Tooltip title={t('applications.view_details')}>
 										<IconButton
 											onClick={(e) => {
 												e.stopPropagation();
