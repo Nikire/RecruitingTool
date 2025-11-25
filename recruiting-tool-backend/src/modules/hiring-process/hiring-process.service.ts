@@ -73,19 +73,67 @@ export class HiringProcessService {
       );
     }}
 
-  async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+  async list(paginationDto: PaginationDto & { status?: string; companyUid?: string; positionUid?: string; candidateUid?: string; startDate?: string; endDate?: string }, user: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
     try {
-    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', status, companyUid, positionUid, candidateUid, startDate, endDate } = paginationDto;
     const skip = (page - 1) * pageSize;
 
     // Build where clause for search
     const where: any = search
       ? {
-          OR: [{ title: { contains: search, mode: 'insensitive' as const } }],
+          OR: [
+            { title: { contains: search, mode: 'insensitive' as const } },
+          ],
         }
       : {};
 
-    // Add company filter for HR and USER roles
+    // Add status filter
+    if (status) {
+      where.status = status;
+    }
+
+    // Add company filter by UID
+    if (companyUid) {
+      const company = await this.databaseService.company.findUnique({
+        where: { uid: companyUid },
+      });
+      if (company) {
+        where.companyId = company.id;
+      }
+    }
+
+    // Add job position filter by UID
+    if (positionUid) {
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { uid: positionUid },
+      });
+      if (jobPosition) {
+        where.jobPositionId = jobPosition.id;
+      }
+    }
+
+    // Add candidate filter by UID
+    if (candidateUid) {
+      const candidate = await this.databaseService.candidate.findUnique({
+        where: { uid: candidateUid },
+      });
+      if (candidate) {
+        where.candidateId = candidate.id;
+      }
+    }
+
+    // Add date range filters
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) {
+        where.createdAt.gte = new Date(startDate);
+      }
+      if (endDate) {
+        where.createdAt.lte = new Date(endDate);
+      }
+    }
+
+    // Add company filter for HR and USER roles (override if not admin/super admin)
     const userCompanyId = getUserCompanyId(user);
     if (userCompanyId !== null) {
       where.companyId = userCompanyId;
@@ -116,7 +164,7 @@ export class HiringProcessService {
         hasPreviousPage: page > 1,
       },
     };
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

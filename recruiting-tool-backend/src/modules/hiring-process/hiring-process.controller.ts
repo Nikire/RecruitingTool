@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
 import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto } from './dto/hiring-process.dto';
+import { HiringProcessFilterDto } from './dto/hiring-process-filter.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User, HiringProcessStatus } from '@prisma/client';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
@@ -33,13 +34,13 @@ export class HiringProcessController {
 
   @Auth(['HR', 'ADMIN', 'USER'])
   @Get('list')
-  @ApiOperation({ summary: 'Get paginated hiring processes list with filtering' })
+  @ApiOperation({ summary: 'Get paginated hiring processes list with advanced filtering and search' })
   @ApiResponse({
     status: 200,
-    description: 'Returns paginated hiring processes list',
+    description: 'Returns paginated hiring processes list with filters applied',
   })
-  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
-    return this.hiringProcessService.list(paginationDto, currentUser);
+  list(@Query() filterDto: HiringProcessFilterDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+    return this.hiringProcessService.list(filterDto, currentUser);
   }
 
   @Auth(['HR', 'ADMIN', 'USER'])

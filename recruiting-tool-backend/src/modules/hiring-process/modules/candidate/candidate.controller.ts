@@ -7,6 +7,7 @@ import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator'
 import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
+import { CandidateFilterDto } from './dto/candidate-filter.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { User } from '@prisma/client';
 import { CandidateJourneyResponseDto } from '../stages/dto/stage-time-tracking.dto';
@@ -38,16 +39,16 @@ export class CandidateController {
   }
 
   @Get('list')
-  @ApiOperation({ summary: 'Get paginated candidates list with filtering' })
+  @ApiOperation({ summary: 'Get paginated candidates list with advanced filtering and search' })
   @ApiResponse({
     status: 200,
-    description: 'Returns paginated candidates list',
+    description: 'Returns paginated candidates list with filters applied',
   })
   list(
-    @Query() paginationDto: PaginationDto & { source?: string },
+    @Query() filterDto: CandidateFilterDto,
     @CurrentUser() currentUser: User
   ): Promise<PaginatedResponse<CandidateResponseDto>> {
-    return this.candidateService.list(paginationDto, currentUser);
+    return this.candidateService.list(filterDto, currentUser);
   }
 
   @Get()

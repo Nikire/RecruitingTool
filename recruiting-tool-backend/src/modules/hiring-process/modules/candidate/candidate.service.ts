@@ -70,9 +70,9 @@ export class CandidateService {
       );
     }}
 
-  async list(paginationDto: PaginationDto & { source?: string }, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
+  async list(paginationDto: PaginationDto & { source?: string; skills?: string[]; startDate?: string; endDate?: string; status?: string }, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
     try {
-    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', source } = paginationDto;
+    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', source, skills, startDate, endDate, status } = paginationDto;
     const skip = (page - 1) * pageSize;
 
     // Build where clause for search
@@ -90,14 +90,44 @@ export class CandidateService {
       where.source = source;
     }
 
+    // Add date range filters
+    if (startDate || endDate) {
+      where.createdAt = {};
+      if (startDate) {
+        where.createdAt.gte = new Date(startDate);
+      }
+      if (endDate) {
+        where.createdAt.lte = new Date(endDate);
+      }
+    }
+
+    // Add skills filter - search in candidate files (resume text) or sourceDetails
+    if (skills && skills.length > 0) {
+      where.OR = where.OR || [];
+      skills.forEach(skill => {
+        where.OR.push(
+          { sourceDetails: { contains: skill, mode: 'insensitive' as const } }
+        );
+      });
+    }
+
+    // Add status filter - filter by hiring process status
+    if (status) {
+      where.hiringProcesses = where.hiringProcesses || {};
+      where.hiringProcesses.some = where.hiringProcesses.some || {};
+      where.hiringProcesses.some.status = status;
+    }
+
     // Add company filter for HR and USER roles (filter by hiring processes company)
     const userCompanyId = getUserCompanyId(user);
     if (userCompanyId !== null) {
-      where.hiringProcesses = {
-        some: {
-          companyId: userCompanyId,
-        },
-      };
+      if (!where.hiringProcesses) {
+        where.hiringProcesses = {};
+      }
+      if (!where.hiringProcesses.some) {
+        where.hiringProcesses.some = {};
+      }
+      where.hiringProcesses.some.companyId = userCompanyId;
     }
 
     // Get total count
@@ -125,7 +155,7 @@ export class CandidateService {
         hasPreviousPage: page > 1,
       },
     };
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

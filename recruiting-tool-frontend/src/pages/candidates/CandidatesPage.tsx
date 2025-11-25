@@ -7,7 +7,7 @@ import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandle
 import {useDialog} from '../../hooks/useDialog';
 import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
 import {canManageResources} from '../../utils/permissions';
-import SearchBar from '../../components/search/SearchBar';
+import {FilterBar, FilterBarFilters} from '../../components/filters';
 import CandidatesList from '../../components/candidates/CandidatesList';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
@@ -22,6 +22,14 @@ const CandidatesPage: React.FC = () => {
 
 	const {handleSearch, handlePageChange, handleLimitChange} =
 		useSearchPaginationHandlers(setSearchState);
+
+	// Handle filter changes from FilterBar
+	const handleFilterChange = (filters: FilterBarFilters) => {
+		setSearchState({
+			...searchState,
+			search: filters.search,
+		});
+	};
 
 	// Check if user has access (HR, ADMIN, or SUPER_ADMIN)
 	if (!canManage) {
@@ -59,9 +67,11 @@ const CandidatesPage: React.FC = () => {
 				)}
 			</Box>
 
-			<Box sx={{mb: 3, maxWidth: {xs: '100%', sm: 400}}}>
-				<SearchBar onSearch={handleSearch} placeholder={t('candidates.search_placeholder')} value={search} />
-			</Box>
+			<FilterBar
+				filters={{search}}
+				onChange={handleFilterChange}
+				searchPlaceholder={t('candidates.search_placeholder')}
+			/>
 
 			<CandidatesList
 				page={page}
