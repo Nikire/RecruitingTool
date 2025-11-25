@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { CandidateService } from './candidate.service';
-import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto } from './dto/candidate.dto';
+import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto, CreateManualCandidateDto } from './dto/candidate.dto';
 import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
@@ -11,6 +11,7 @@ import { CandidateFilterDto } from './dto/candidate-filter.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { User } from '@prisma/client';
 import { CandidateJourneyResponseDto } from '../stages/dto/stage-time-tracking.dto';
+import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -36,6 +37,24 @@ export class CandidateController {
   @ApiBody({ type: CreateCandidateDto })
   create(@Body() createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
     return this.candidateService.create(createCandidateDto);
+  }
+
+  @Post('manual')
+  @ApiOperation({
+    summary: 'Create a manual candidate and auto-create hiring process',
+    description: 'Creates a candidate from manual entry (phone call, referral, walk-in, etc.), automatically creates a hiring process, and sends a welcome email. Validates email uniqueness per company.'
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'The candidate and hiring process have been successfully created.',
+    type: HiringProcessResponseDto,
+  })
+  @ApiBody({ type: CreateManualCandidateDto })
+  createManual(
+    @Body() createManualCandidateDto: CreateManualCandidateDto,
+    @CurrentUser() currentUser: User
+  ): Promise<HiringProcessResponseDto> {
+    return this.candidateService.createManual(createManualCandidateDto, currentUser);
   }
 
   @Get('list')

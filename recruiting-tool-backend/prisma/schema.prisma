@@ -114,6 +114,7 @@ enum ApplicationSource {
   RECRUITER
   DIRECT_APPLY
   SOCIAL_MEDIA
+  MANUAL
   OTHER
 }
 

@@ -93,6 +93,48 @@ export class UpdateCandidateDto {
   sourceUrl?: string;
 }
 
+export class CreateManualCandidateDto {
+  @ApiProperty({ description: 'Name of the Candidate', example: 'John Doe' })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(100)
+  name: string;
+
+  @ApiProperty({ description: 'Email of the candidate', example: 'JohnDoe@example.com' })
+  @IsString()
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
+
+  @ApiProperty({
+    description: 'Phone number of the candidate (optional)',
+    example: '+1234567890',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  phoneNumber?: string;
+
+  @ApiProperty({
+    description: 'UID of the job position to link this candidate to',
+    example: '123e4567-e89b-12d3-a456-426614174000'
+  })
+  @IsString()
+  @IsNotEmpty()
+  jobPositionUid: string;
+
+  @ApiProperty({
+    description: 'Additional details about the source (e.g., "Phone call", "Referral from Jane Smith")',
+    example: 'Referral from Jane Smith',
+    required: false
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(500)
+  sourceDetails?: string;
+}
+
 export class CandidateResponseDto {
   @ApiProperty({ description: 'Name of the Candidate', example: 'John Doe' })
   name: string;

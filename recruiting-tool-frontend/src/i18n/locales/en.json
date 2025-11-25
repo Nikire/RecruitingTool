@@ -114,6 +114,9 @@
     "create_title": "Create New Candidate",
     "update_title": "Update Candidate",
     "create_candidate": "Create Candidate",
+    "create_from_application": "From Job Application",
+    "create_manual": "Add Manually",
+    "create_manual_hint": "For phone calls, referrals, walk-ins",
     "search_placeholder": "Search by name or email...",
     "name_label": "Candidate Name",
     "email_label": "Email",
@@ -572,6 +575,7 @@
     "view_all": "View All",
     "no_applications": "No applications yet",
     "applied_for": "Applied for",
+    "add_candidate": "Add Candidate Manually",
     "manage_positions": "Manage Job Positions",
     "review_applications": "Review Applications",
     "view_candidates": "View Candidates",
@@ -1121,5 +1125,23 @@
     "confirmed_message": "Your interview has been successfully scheduled. We look forward to meeting you!",
     "email_confirmation": "A confirmation email with interview details has been sent to your email address.",
     "calendar_instructions": "Please check your email for calendar invite and meeting details."
+  },
+  "manual_candidate": {
+    "create_title": "Add Candidate Manually",
+    "description": "Create a candidate record for phone calls, referrals, or walk-ins. You can optionally assign them to a job position to start the hiring process immediately.",
+    "source_manual": "Source: Manual Entry",
+    "name_label": "Full Name",
+    "email_label": "Email Address",
+    "phone_label": "Phone Number",
+    "phone_helper": "Optional - Format: +1-555-0123",
+    "job_position_label": "Assign to Job Position (Optional)",
+    "job_position_helper": "Select an open position to start hiring process",
+    "no_job_position": "None - Just create candidate",
+    "notes_label": "Initial Notes",
+    "notes_helper": "Optional - Add any relevant information about this candidate",
+    "notes_placeholder": "e.g., Referred by John Smith, Called interested in Software Engineer role, etc.",
+    "create_button": "Add Candidate",
+    "success_message": "Candidate added successfully!",
+    "success_with_hiring": "Candidate added and hiring process started!"
   }
 }

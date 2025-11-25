@@ -348,6 +348,14 @@
       "companyIndex": 1,
       "source": "RECRUITER",
       "sourceDetails": "Through external recruiter - TechTalent Agency"
+    },
+    {
+      "name": "Emma Martinez",
+      "email": "emma.martinez@example.com",
+      "jobPositionIndex": 0,
+      "companyIndex": 0,
+      "source": "MANUAL",
+      "sourceDetails": "Walk-in applicant, manually entered by HR"
     }
   ],
   "candidateNotes": [

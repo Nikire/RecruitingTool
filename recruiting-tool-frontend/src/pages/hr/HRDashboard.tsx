@@ -5,6 +5,7 @@ import {useTranslation} from 'react-i18next';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupIcon from '@mui/icons-material/Group';
 import WorkIcon from '@mui/icons-material/Work';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddIcon from '@mui/icons-material/Add';
 import {useApplications} from '../../hooks/api/useApplications';
 import {useCandidates} from '../../hooks/api/useCandidates';
@@ -12,7 +13,9 @@ import {useJobPositions} from '../../hooks/api/useJobPositions';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
 import {Navigate} from 'react-router-dom';
+import {useDialog} from '../../hooks/useDialog';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
+import ManualCandidateDialog from '../../components/dialogs/ManualCandidateDialog';
 import {Application} from '../../types/application.types';
 import {DashboardStatCard, ApplicationListItem, QuickActionButton} from '../../components/dashboard';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
@@ -26,6 +29,7 @@ const HRDashboard: React.FC = () => {
 	const {user} = useUserAtom();
 	const navigate = useNavigate();
 	const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+	const manualCandidateDialog = useDialog<never>();
 
 	// Permission check
 	const hasAccess = canManageResources(user);
@@ -87,6 +91,11 @@ const HRDashboard: React.FC = () => {
 
 	// Quick actions configuration
 	const quickActions = [
+		{
+			icon: <PersonAddIcon />,
+			label: 'dashboard.add_candidate',
+			onClick: () => manualCandidateDialog.open(),
+		},
 		{
 			icon: <WorkIcon />,
 			label: 'dashboard.manage_positions',
@@ -233,6 +242,12 @@ const HRDashboard: React.FC = () => {
 				open={!!selectedApplication}
 				onClose={() => setSelectedApplication(null)}
 				application={selectedApplication}
+			/>
+
+			{/* Manual Candidate Dialog */}
+			<ManualCandidateDialog
+				open={manualCandidateDialog.isOpen}
+				onClose={manualCandidateDialog.close}
 			/>
 		</Box>
 	);

@@ -1,18 +1,23 @@
-import { Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, InternalServerErrorException, ConflictException, forwardRef, Inject } from '@nestjs/common';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
-import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto } from './dto/candidate.dto';
+import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';
 import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
-import { User } from '@prisma/client';
+import { User, ApplicationSource } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CandidateJourneyResponseDto, CandidateJourneyStepDto } from '../stages/dto/stage-time-tracking.dto';
+import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
+import { EmailService } from 'src/modules/email/email.service';
 
 @Injectable()
 export class CandidateService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private emailService: EmailService,
+  ) {}
 
   async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
     try {
@@ -26,7 +31,7 @@ export class CandidateService {
       },
     });
     return CandidateMapper(candidate);
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -35,6 +40,163 @@ export class CandidateService {
         `Failed to create: ${error.message}`,
       );
     }}
+
+  /**
+   * Create a manual candidate (from phone call, referral, walk-in, etc.)
+   * - Creates candidate with source=MANUAL
+   * - Auto-creates hiring process linked to job position
+   * - Sends welcome email to candidate
+   * - Validates email uniqueness per company
+   */
+  async createManual(createManualCandidateDto: CreateManualCandidateDto, user: User): Promise<HiringProcessResponseDto> {
+    try {
+      const { name, email, phoneNumber, jobPositionUid, sourceDetails } = createManualCandidateDto;
+
+      // Get job position and verify it exists
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { uid: jobPositionUid },
+        include: {
+          company: true,
+          stages: {
+            orderBy: { position: 'asc' },
+          },
+        },
+      });
+
+      if (!jobPosition) {
+        throw new EntityNotFoundException('JobPosition', jobPositionUid);
+      }
+
+      if (!jobPosition.stages || jobPosition.stages.length === 0) {
+        throw new NotFoundException(`Job position ${jobPositionUid} has no stages configured`);
+      }
+
+      // Verify user has access to this company's job position
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null && jobPosition.companyId !== userCompanyId) {
+        throw new EntityNotFoundException('JobPosition', jobPositionUid);
+      }
+
+      // Check if candidate with this email already exists for this company
+      const existingCandidate = await this.databaseService.candidate.findUnique({
+        where: { email },
+        include: {
+          hiringProcesses: {
+            where: {
+              companyId: jobPosition.companyId,
+            },
+          },
+        },
+      });
+
+      if (existingCandidate && existingCandidate.hiringProcesses.length > 0) {
+        throw new ConflictException(
+          `A candidate with email ${email} already exists for this company`,
+        );
+      }
+
+      // Create candidate with MANUAL source
+      const candidate = await this.databaseService.candidate.create({
+        data: {
+          name,
+          email,
+          source: ApplicationSource.MANUAL,
+          sourceDetails: sourceDetails || 'Manual entry by HR',
+        },
+      });
+
+      // Auto-create hiring process
+      const hiringProcess = await this.databaseService.hiringProcess.create({
+        data: {
+          title: `${jobPosition.title} - ${candidate.name}`,
+          candidateId: candidate.id,
+          jobPositionId: jobPosition.id,
+          companyId: jobPosition.companyId,
+        },
+        include: {
+          candidate: true,
+          jobPosition: true,
+          company: true,
+          stages: true,
+        },
+      });
+
+      // Copy stages from job position template to hiring process
+      const copiedStages = jobPosition.stages.map((stage, index) => ({
+        title: stage.title,
+        type: stage.type,
+        description: stage.description,
+        position: index,
+        status: index === 0 ? 'CURRENT' : 'OPEN', // First stage is CURRENT
+        estimatedTime: stage.estimatedTime,
+        hiringProcessId: hiringProcess.id,
+        // jobPositionId is null - stages belong only to hiring process
+      }));
+
+      await this.databaseService.stage.createMany({
+        data: copiedStages,
+      });
+
+      // Fetch the complete hiring process with stages
+      const completeHiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { uid: hiringProcess.uid },
+        include: {
+          candidate: true,
+          jobPosition: true,
+          company: true,
+          stages: {
+            orderBy: { position: 'asc' },
+          },
+        },
+      });
+
+      // Send welcome email to candidate
+      try {
+        await this.emailService.sendWelcomeEmail(candidate.email, {
+          userName: candidate.name,
+          userEmail: candidate.email,
+          userRole: 'Candidate',
+          companyName: jobPosition.company.name,
+        });
+      } catch (emailError) {
+        // Log email error but don't fail the whole operation
+        console.error(`Failed to send welcome email: ${emailError.message}`);
+      }
+
+      // Map to response DTO (we'll need to create a mapper for this)
+      return {
+        uid: completeHiringProcess.uid,
+        title: completeHiringProcess.title,
+        status: completeHiringProcess.status,
+        candidateUid: completeHiringProcess.candidate.uid,
+        candidateName: completeHiringProcess.candidate.name,
+        jobPositionUid: completeHiringProcess.jobPosition.uid,
+        jobPositionTitle: completeHiringProcess.jobPosition.title,
+        companyUid: completeHiringProcess.company.uid,
+        companyName: completeHiringProcess.company.name,
+        createdAt: completeHiringProcess.createdAt,
+        updatedAt: completeHiringProcess.updatedAt,
+        stages: completeHiringProcess.stages.map((stage) => ({
+          uid: stage.uid,
+          title: stage.title,
+          type: stage.type,
+          description: stage.description,
+          status: stage.status,
+          position: stage.position,
+          estimatedTime: stage.estimatedTime,
+          createdAt: stage.createdAt,
+          updatedAt: stage.updatedAt,
+        })),
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create manual candidate: ${error.message}`,
+      );
+    }
+  }
 
   async findOne(uid: string, user?: User): Promise<CandidateResponseDto> {
     try {

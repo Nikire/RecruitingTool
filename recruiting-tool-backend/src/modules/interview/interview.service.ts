@@ -1,15 +1,19 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto } from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
 import { InterviewStatus } from '@prisma/client';
 import { EmailService } from '../email/email.service';
+import { GoogleCalendarService } from '../google-calendar/google-calendar.service';
 
 @Injectable()
 export class InterviewService {
+  private readonly logger = new Logger(InterviewService.name);
+
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly emailService: EmailService,
+    private readonly googleCalendarService: GoogleCalendarService,
   ) {}
 
   async create(createInterviewDto: CreateInterviewDto, scheduledByUid: string): Promise<InterviewResponseDto> {
@@ -76,7 +80,69 @@ export class InterviewService {
       await this.emailService.sendInterviewScheduled(stage.hiringProcess.candidate, scheduledBy, interview);
     }
 
+    // Create Google Calendar event if user has connected calendar
+    if (status === InterviewStatus.SCHEDULED && scheduledDate && scheduledTime) {
+      try {
+        const isCalendarConnected = await this.googleCalendarService.isCalendarConnected(scheduledBy.id);
+
+        if (isCalendarConnected) {
+          // Parse date and time to create ISO datetime strings
+          const startDateTime = this.combineDateTime(scheduledDate, scheduledTime);
+          const endDateTime = this.calculateEndTime(startDateTime, duration || 60);
+
+          const calendarEvent = await this.googleCalendarService.createCalendarEvent(scheduledBy.id, {
+            summary: `Interview: ${stage.hiringProcess.title}`,
+            description: `Interview with ${stage.hiringProcess.candidate.name}\n\nStage: ${stage.title}\n${notes ? `\nNotes: ${notes}` : ''}`,
+            startTime: startDateTime,
+            endTime: endDateTime,
+            location: location || undefined,
+            attendees: [
+              {
+                email: stage.hiringProcess.candidate.email,
+                displayName: stage.hiringProcess.candidate.name,
+              },
+            ],
+            createMeetLink: !meetingLink, // Only create Meet link if no meeting link provided
+          });
+
+          // Update interview with Google Calendar event ID and meeting link if created
+          if (calendarEvent.meetLink && !meetingLink) {
+            await this.databaseService.interview.update({
+              where: { id: interview.id },
+              data: {
+                meetingLink: calendarEvent.meetLink,
+              },
+            });
+          }
+
+          this.logger.log(`Created Google Calendar event for interview ${interview.uid}`);
+        }
+      } catch (error) {
+        // Log error but don't fail the interview creation
+        this.logger.error(`Failed to create Google Calendar event: ${error.message}`);
+      }
+    }
+
     return InterviewMapper(interview);
+  }
+
+  /**
+   * Combine date and time strings into ISO datetime
+   */
+  private combineDateTime(date: string, time: string): string {
+    const dateObj = new Date(date);
+    const [hours, minutes] = time.split(':');
+    dateObj.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+    return dateObj.toISOString();
+  }
+
+  /**
+   * Calculate end time by adding duration minutes
+   */
+  private calculateEndTime(startTime: string, durationMinutes: number): string {
+    const endDate = new Date(startTime);
+    endDate.setMinutes(endDate.getMinutes() + durationMinutes);
+    return endDate.toISOString();
   }
 
   async findOne(uid: string): Promise<InterviewResponseDto> {

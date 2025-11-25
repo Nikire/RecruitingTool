@@ -114,6 +114,9 @@
     "create_title": "Crear Nuevo Candidato",
     "update_title": "Actualizar Candidato",
     "create_candidate": "Crear Candidato",
+    "create_from_application": "Desde Aplicación de Trabajo",
+    "create_manual": "Agregar Manualmente",
+    "create_manual_hint": "Para llamadas telefónicas, referencias, visitas",
     "search_placeholder": "Buscar por nombre o correo...",
     "name_label": "Nombre del Candidato",
     "email_label": "Correo Electrónico",
@@ -570,6 +573,7 @@
     "view_all": "Ver Todas",
     "no_applications": "Aún no hay aplicaciones",
     "applied_for": "Aplicó para",
+    "add_candidate": "Agregar Candidato Manualmente",
     "manage_positions": "Gestionar Posiciones de Trabajo",
     "review_applications": "Revisar Aplicaciones",
     "view_candidates": "Ver Candidatos",
@@ -1119,5 +1123,23 @@
     "confirmed_message": "Tu entrevista ha sido programada exitosamente. ¡Esperamos verte pronto!",
     "email_confirmation": "Se ha enviado un correo de confirmación con los detalles de la entrevista a tu dirección de correo electrónico.",
     "calendar_instructions": "Por favor, revisa tu correo para la invitación de calendario y detalles de la reunión."
+  },
+  "manual_candidate": {
+    "create_title": "Agregar Candidato Manualmente",
+    "description": "Cree un registro de candidato para llamadas telefónicas, referencias o visitas presenciales. Opcionalmente puede asignarlo a una posición de trabajo para iniciar el proceso de contratación inmediatamente.",
+    "source_manual": "Fuente: Entrada Manual",
+    "name_label": "Nombre Completo",
+    "email_label": "Correo Electrónico",
+    "phone_label": "Número de Teléfono",
+    "phone_helper": "Opcional - Formato: +1-555-0123",
+    "job_position_label": "Asignar a Posición de Trabajo (Opcional)",
+    "job_position_helper": "Seleccione una posición abierta para iniciar el proceso de contratación",
+    "no_job_position": "Ninguna - Solo crear candidato",
+    "notes_label": "Notas Iniciales",
+    "notes_helper": "Opcional - Agregue cualquier información relevante sobre este candidato",
+    "notes_placeholder": "ej., Referido por Juan Pérez, Llamó interesado en el rol de Ingeniero de Software, etc.",
+    "create_button": "Agregar Candidato",
+    "success_message": "¡Candidato agregado exitosamente!",
+    "success_with_hiring": "¡Candidato agregado y proceso de contratación iniciado!"
   }
 }
