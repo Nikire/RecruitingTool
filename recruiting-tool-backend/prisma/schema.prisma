@@ -39,6 +39,7 @@ model User {
   updatedAt             DateTime        @updatedAt
   companyId             Int?
   company               Company?        @relation(fields: [companyId], references: [id])
+  profile               Profile?
   jobPositions          JobPosition[]   @relation("JobPositionsUser")
   fileUploads           FileUpload[]    @relation("FileUploadsUser")
   reviewedApplications  Application[]   @relation("ApplicationReviewer")
@@ -290,4 +291,20 @@ enum InterviewStatus {
   SCHEDULED
   COMPLETED
   CANCELLED
+}
+
+model Profile {
+  id          Int      @id @default(autoincrement())
+  uid         String   @unique @default(uuid()) @db.Uuid
+  bio         String?  @db.Text
+  phone       String?
+  location    String?
+  timezone    String?  @default("UTC")
+  preferences Json?    @default("{}")
+  userId      Int      @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId])
 }

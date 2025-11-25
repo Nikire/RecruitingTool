@@ -22,6 +22,14 @@ interface DummyDataStructure {
     linkedinUrl?: string;
     timezone?: string;
   }>;
+  profiles: Array<{
+    userIndex: number;
+    bio?: string;
+    phone?: string;
+    location?: string;
+    timezone?: string;
+    preferences?: Record<string, any>;
+  }>;
   jobPositions: Array<{
     title: string;
     description: string;
@@ -139,6 +147,22 @@ export class DummyService implements OnApplicationBootstrap {
       });
       createdUsers.push(created);
       console.log(`Created user: ${created.name} for ${createdCompanies[user.companyIndex].name}`);
+    }
+
+    // Create profiles
+    console.log('Creating user profiles...');
+    for (const profile of data.profiles) {
+      await this.databaseService.profile.create({
+        data: {
+          bio: profile.bio,
+          phone: profile.phone,
+          location: profile.location,
+          timezone: profile.timezone,
+          preferences: profile.preferences || {},
+          userId: createdUsers[profile.userIndex].id,
+        },
+      });
+      console.log(`Created profile for user: ${createdUsers[profile.userIndex].name}`);
     }
 
     // Create job positions with stages
