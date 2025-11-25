@@ -709,6 +709,18 @@
     "users": "Users",
     "aria_label": "admin navigation"
   },
+  "admin_dashboard": {
+    "title": "Admin Dashboard",
+    "welcome": "Welcome back, {{name}}! Manage your system from this central hub.",
+    "candidate_management": "Candidate Management",
+    "candidate_management_desc": "Manage candidates and their applications",
+    "company_management": "Company Management",
+    "company_management_desc": "Manage companies and their settings",
+    "user_management": "User Management",
+    "user_management_desc": "Manage user accounts, roles, and permissions",
+    "job_positions": "Job Positions",
+    "job_positions_desc": "View all job positions across companies"
+  },
   "language": {
     "select_language": "Select Language",
     "switch_to": "Switch to",

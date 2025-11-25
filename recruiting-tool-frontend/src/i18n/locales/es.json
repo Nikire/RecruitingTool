@@ -707,6 +707,18 @@
     "users": "Usuarios",
     "aria_label": "navegación de administración"
   },
+  "admin_dashboard": {
+    "title": "Panel de Administración",
+    "welcome": "¡Bienvenido de nuevo, {{name}}! Gestiona tu sistema desde este centro de control.",
+    "candidate_management": "Gestión de Candidatos",
+    "candidate_management_desc": "Gestionar candidatos y sus aplicaciones",
+    "company_management": "Gestión de Empresas",
+    "company_management_desc": "Gestionar empresas y sus configuraciones",
+    "user_management": "Gestión de Usuarios",
+    "user_management_desc": "Gestionar cuentas de usuario, roles y permisos",
+    "job_positions": "Posiciones de Trabajo",
+    "job_positions_desc": "Ver todas las posiciones de trabajo en todas las empresas"
+  },
   "language": {
     "select_language": "Seleccionar Idioma",
     "switch_to": "Cambiar a",
