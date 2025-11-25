@@ -19,6 +19,7 @@ import HRDashboard from './pages/hr/HRDashboard';
 import ProfilePage from './pages/profile/ProfilePage';
 import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
 import EmailTemplatesPage from './pages/admin/email-templates/EmailTemplatesPage';
+import AnalyticsPage from './pages/analytics/AnalyticsPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -50,6 +51,7 @@ function App() {
 						<Route path="/hr/applications" element={<ApplicationsPage />} />
 						<Route path="/hr/candidates" element={<CandidatesPage />} />
 						<Route path="/hr/job-positions" element={<JobPositionsPage />} />
+						<Route path="/hr/analytics" element={<AnalyticsPage />} />
 						<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
 					</Route>
 				</Route>

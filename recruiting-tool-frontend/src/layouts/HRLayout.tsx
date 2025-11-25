@@ -3,6 +3,7 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupIcon from '@mui/icons-material/Group';
 import WorkIcon from '@mui/icons-material/Work';
 import EmailIcon from '@mui/icons-material/Email';
+import AnalyticsIcon from '@mui/icons-material/Analytics';
 import {DashboardLayout, DashboardMenuItem} from '../components/layout';
 import { useTranslation } from 'react-i18next';
 
@@ -33,6 +34,11 @@ const HRLayout: React.FC = () => {
 			text: t('hr_layout.job_positions'),
 			icon: <WorkIcon />,
 			path: '/hr/job-positions',
+		},
+		{
+			text: t('hr_layout.analytics'),
+			icon: <AnalyticsIcon />,
+			path: '/hr/analytics',
 		},
 		{
 			text: t('hr_layout.email_templates'),
