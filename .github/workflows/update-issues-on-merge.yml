@@ -34,8 +34,11 @@ jobs:
           # Extract issue numbers using grep and regex
           ISSUE_NUMBERS=$(echo "$ALL_TEXT" | grep -oE '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s*#[0-9]+' -i | grep -oE '[0-9]+' | sort -u)
 
-          echo "Found issues: $ISSUE_NUMBERS"
-          echo "issues=$ISSUE_NUMBERS" >> $GITHUB_OUTPUT
+          # Convert newlines to spaces for GitHub Actions output format
+          ISSUE_NUMBERS_SINGLE_LINE=$(echo "$ISSUE_NUMBERS" | tr '\n' ' ' | xargs)
+
+          echo "Found issues: $ISSUE_NUMBERS_SINGLE_LINE"
+          echo "issues=$ISSUE_NUMBERS_SINGLE_LINE" >> $GITHUB_OUTPUT
 
       - name: Update issues for development branch
         if: github.event.pull_request.base.ref == 'development'
