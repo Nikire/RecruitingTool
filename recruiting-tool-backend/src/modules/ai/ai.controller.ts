@@ -4,6 +4,7 @@ import {
   Body,
   Get,
   Param,
+  Delete,
   UseGuards,
   HttpCode,
   HttpStatus,
@@ -17,6 +18,7 @@ import {
 } from '@nestjs/swagger';
 import { AiService } from './ai.service';
 import { ScoringService } from './scoring.service';
+import { BatchScoringService } from './batch-scoring.service';
 import {
   ParseResumeRequestDto,
   ParseResumeResponseDto,
@@ -26,9 +28,16 @@ import {
   CandidateScoreResponseDto,
   RankedCandidatesResponseDto,
 } from './dto/candidate-scoring.dto';
+import {
+  BatchScoreRequestDto,
+  BatchScoreResponseDto,
+  BatchScoreStatusDto,
+  BatchScoreResultDto,
+} from './dto/batch-scoring.dto';
 import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
 import { RolesGuard } from '../shared/guards/roles.guard';
 import { Auth } from '../shared/decorators/auth.decorator';
+import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
 
 @ApiTags('AI')
@@ -39,6 +48,7 @@ export class AiController {
   constructor(
     private readonly aiService: AiService,
     private readonly scoringService: ScoringService,
+    private readonly batchScoringService: BatchScoringService,
   ) {}
 
   @Post('parse-resume')
@@ -192,5 +202,167 @@ export class AiController {
     @Param('jobPositionUid') jobPositionUid: string,
   ): Promise<RankedCandidatesResponseDto> {
     return this.scoringService.getRankedCandidates(jobPositionUid);
+  }
+
+  @Post('batch-score')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({
+    summary: 'Start batch scoring for multiple candidates',
+    description:
+      'Create a batch job to score multiple candidates for a job position. If candidateUids are not provided, all candidates for the job position will be scored. The job runs asynchronously in the background.',
+  })
+  @ApiResponse({
+    status: 202,
+    description: 'Batch scoring job created and queued successfully',
+    type: BatchScoreResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input or AI quota exceeded',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Valid JWT token required',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Job position not found',
+  })
+  async startBatchScoring(
+    @Body() batchScoreDto: BatchScoreRequestDto,
+    @CurrentUser() user: any,
+  ): Promise<BatchScoreResponseDto> {
+    return this.batchScoringService.startBatchScoring(
+      batchScoreDto,
+      user.companyId,
+      user.id,
+    );
+  }
+
+  @Get('batch-score/:batchId/status')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({
+    summary: 'Get batch scoring job status',
+    description:
+      'Check the current status and progress of a batch scoring job.',
+  })
+  @ApiParam({
+    name: 'batchId',
+    description: 'UID of the batch scoring job',
+    example: '550e8400-e29b-41d4-a716-446655440003',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Batch job status retrieved successfully',
+    type: BatchScoreStatusDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Valid JWT token required',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Batch job not found',
+  })
+  async getBatchStatus(
+    @Param('batchId') batchId: string,
+  ): Promise<BatchScoreStatusDto> {
+    return this.batchScoringService.getBatchStatus(batchId);
+  }
+
+  @Get('batch-score/:batchId/results')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({
+    summary: 'Get batch scoring job results',
+    description:
+      'Retrieve the complete results of a completed batch scoring job, including all candidate scores and summary statistics. Only available once the batch job is completed.',
+  })
+  @ApiParam({
+    name: 'batchId',
+    description: 'UID of the batch scoring job',
+    example: '550e8400-e29b-41d4-a716-446655440003',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Batch job results retrieved successfully',
+    type: BatchScoreResultDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Batch job is still processing',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Valid JWT token required',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Batch job not found',
+  })
+  async getBatchResults(
+    @Param('batchId') batchId: string,
+  ): Promise<BatchScoreResultDto> {
+    return this.batchScoringService.getBatchResults(batchId);
+  }
+
+  @Delete('batch-score/:batchId')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Cancel a batch scoring job',
+    description:
+      'Cancel a pending or processing batch scoring job. Already completed jobs cannot be cancelled.',
+  })
+  @ApiParam({
+    name: 'batchId',
+    description: 'UID of the batch scoring job to cancel',
+    example: '550e8400-e29b-41d4-a716-446655440003',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Batch job cancelled successfully',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+          example: 'Batch job cancelled successfully',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Batch job is already completed or cancelled',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Valid JWT token required',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Batch job not found',
+  })
+  async cancelBatch(
+    @Param('batchId') batchId: string,
+  ): Promise<{ message: string }> {
+    return this.batchScoringService.cancelBatch(batchId);
   }
 }

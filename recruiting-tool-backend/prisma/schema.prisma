@@ -118,22 +118,23 @@ enum ApplicationSource {
 }
 
 model JobPosition {
-  id              Int               @id @default(autoincrement())
-  uid             String            @unique @default(uuid()) @db.Uuid
-  title           String
-  description     String?
-  customQuestions Json?             @default("[]")
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  createdById     Int
-  createdBy       User              @relation("JobPositionsUser", fields: [createdById], references: [id])
-  companyId       Int
-  company         Company           @relation(fields: [companyId], references: [id])
-  stages          Stage[]
-  status          JobPositionStatus @default(OPEN)
-  hiringProcesses HiringProcess[]
-  applications    Application[]
-  candidateScores CandidateScore[]  @relation("JobPositionScores")
+  id               Int                 @id @default(autoincrement())
+  uid              String              @unique @default(uuid()) @db.Uuid
+  title            String
+  description      String?
+  customQuestions  Json?               @default("[]")
+  createdAt        DateTime            @default(now())
+  updatedAt        DateTime            @updatedAt
+  createdById      Int
+  createdBy        User                @relation("JobPositionsUser", fields: [createdById], references: [id])
+  companyId        Int
+  company          Company             @relation(fields: [companyId], references: [id])
+  stages           Stage[]
+  status           JobPositionStatus   @default(OPEN)
+  hiringProcesses  HiringProcess[]
+  applications     Application[]
+  candidateScores  CandidateScore[]    @relation("JobPositionScores")
+  batchScoringJobs BatchScoringJob[]   @relation("BatchScoringJobs")
 }
 
 model HiringProcess {
@@ -558,4 +559,34 @@ model CandidateScore {
   @@index([jobPositionId])
   @@index([overallScore])
   @@index([candidateId])
+}
+
+model BatchScoringJob {
+  id              Int         @id @default(autoincrement())
+  uid             String      @unique @default(uuid()) @db.Uuid
+  jobPositionId   Int
+  jobPosition     JobPosition @relation("BatchScoringJobs", fields: [jobPositionId], references: [id], onDelete: Cascade)
+  status          BatchStatus @default(PENDING)
+  priority        String      @default("normal")
+  totalCandidates Int
+  processedCount  Int         @default(0)
+  failedCount     Int         @default(0)
+  candidateUids   Json
+  errors          Json?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@index([status])
+  @@index([jobPositionId])
+  @@index([priority])
+}
+
+enum BatchStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELLED
 }
