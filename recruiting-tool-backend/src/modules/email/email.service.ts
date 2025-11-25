@@ -2,6 +2,24 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
+import {
+  interviewScheduledTemplate,
+  InterviewScheduledData,
+  interviewReminderTemplate,
+  InterviewReminderData,
+  interviewCancelledTemplate,
+  InterviewCancelledData,
+  interviewRescheduledTemplate,
+  InterviewRescheduledData,
+  applicationReceivedTemplate,
+  ApplicationReceivedData,
+  applicationStatusUpdateTemplate,
+  ApplicationStatusUpdateData,
+  passwordResetTemplate,
+  PasswordResetData,
+  welcomeTemplate,
+  WelcomeData,
+} from './templates';
 
 @Injectable()
 export class EmailService {
@@ -170,181 +188,54 @@ The Recruiting Team
   }
 
   async sendInterviewScheduled(candidate: any, hr: any, interview: any): Promise<void> {
-    const candidateEmail = candidate.email;
-    const candidateName = candidate.name;
-    const hrName = hr.name;
-    const interviewDate = interview.scheduledDate ? new Date(interview.scheduledDate).toLocaleDateString() : 'TBD';
-    const interviewTime = interview.scheduledTime || 'TBD';
-    const duration = interview.duration ? `${interview.duration} minutes` : 'TBD';
-    const meetingLink = interview.meetingLink || 'Will be provided later';
+    const templateData: InterviewScheduledData = {
+      candidateName: candidate.name,
+      jobPosition: interview.jobPosition || 'Position',
+      date: interview.scheduledDate || new Date(),
+      time: interview.scheduledTime || 'TBD',
+      duration: interview.duration,
+      location: interview.location,
+      meetingLink: interview.meetingLink,
+      interviewers: hr.name ? [hr.name] : [],
+      notes: interview.notes,
+      hrName: hr.name,
+    };
 
-    const subject = `Interview Scheduled - ${interviewDate} at ${interviewTime}`;
-    const text = `
-Dear ${candidateName},
-
-Your interview has been scheduled!
-
-Date: ${interviewDate}
-Time: ${interviewTime}
-Duration: ${duration}
-${interview.meetingLink ? `Meeting Link: ${interview.meetingLink}` : ''}
-
-${interview.notes ? `Additional Notes: ${interview.notes}` : ''}
-
-Scheduled by: ${hrName}
-
-Please make sure you are available at the scheduled time. If you have any questions or need to reschedule, please contact us.
-
-Best regards,
-The Recruiting Team
-    `.trim();
-
-    const html = `
-      <h2>Interview Scheduled</h2>
-      <p>Dear ${candidateName},</p>
-      <p>Your interview has been scheduled!</p>
-      <br/>
-      <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Date:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${interviewDate}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Time:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${interviewTime}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Duration:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${duration}</td>
-        </tr>
-        ${interview.meetingLink ? `
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Meeting Link:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;"><a href="${interview.meetingLink}">${interview.meetingLink}</a></td>
-        </tr>
-        ` : ''}
-      </table>
-      <br/>
-      ${interview.notes ? `<p><strong>Additional Notes:</strong> ${interview.notes}</p>` : ''}
-      <p><small>Scheduled by: ${hrName}</small></p>
-      <br/>
-      <p>Please make sure you are available at the scheduled time. If you have any questions or need to reschedule, please contact us.</p>
-      <br/>
-      <p>Best regards,<br/>
-      The Recruiting Team</p>
-    `;
-
-    await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED', interview.uid);
+    const { subject, text, html } = interviewScheduledTemplate(templateData);
+    await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_SCHEDULED', interview.uid);
   }
 
   async sendInterviewCancelled(candidate: any, hr: any, interview: any, reason?: string): Promise<void> {
-    const candidateEmail = candidate.email;
-    const candidateName = candidate.name;
-    const hrName = hr.name;
-    const interviewDate = interview.scheduledDate ? new Date(interview.scheduledDate).toLocaleDateString() : 'TBD';
-    const interviewTime = interview.scheduledTime || 'TBD';
+    const templateData: InterviewCancelledData = {
+      candidateName: candidate.name,
+      jobPosition: interview.jobPosition || 'Position',
+      date: interview.scheduledDate || new Date(),
+      time: interview.scheduledTime || 'TBD',
+      reason,
+      hrName: hr.name,
+      willReschedule: true,
+    };
 
-    const subject = `Interview Cancelled - ${interviewDate} at ${interviewTime}`;
-    const text = `
-Dear ${candidateName},
-
-We regret to inform you that your scheduled interview has been cancelled.
-
-Original Schedule:
-Date: ${interviewDate}
-Time: ${interviewTime}
-
-${reason ? `Reason: ${reason}` : ''}
-
-We apologize for any inconvenience this may cause. Our team will be in touch with you shortly to reschedule.
-
-Best regards,
-The Recruiting Team
-    `.trim();
-
-    const html = `
-      <h2>Interview Cancelled</h2>
-      <p>Dear ${candidateName},</p>
-      <p>We regret to inform you that your scheduled interview has been <strong>cancelled</strong>.</p>
-      <br/>
-      <p><strong>Original Schedule:</strong></p>
-      <ul>
-        <li>Date: ${interviewDate}</li>
-        <li>Time: ${interviewTime}</li>
-      </ul>
-      ${reason ? `<p><strong>Reason:</strong> ${reason}</p>` : ''}
-      <br/>
-      <p>We apologize for any inconvenience this may cause. Our team will be in touch with you shortly to reschedule.</p>
-      <br/>
-      <p>Best regards,<br/>
-      The Recruiting Team</p>
-    `;
-
-    await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_CANCELLED', interview.uid);
+    const { subject, text, html } = interviewCancelledTemplate(templateData);
+    await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_CANCELLED', interview.uid);
   }
 
-  async sendInterviewReminder(candidate: any, hr: any, interview: any): Promise<void> {
-    const candidateEmail = candidate.email;
-    const candidateName = candidate.name;
-    const interviewDate = interview.scheduledDate ? new Date(interview.scheduledDate).toLocaleDateString() : 'TBD';
-    const interviewTime = interview.scheduledTime || 'TBD';
-    const duration = interview.duration ? `${interview.duration} minutes` : 'TBD';
-    const meetingLink = interview.meetingLink || 'Will be provided';
+  async sendInterviewReminder(candidate: any, hr: any, interview: any, reminderType: 'tomorrow' | 'today' | '1hour' = 'tomorrow'): Promise<void> {
+    const templateData: InterviewReminderData = {
+      candidateName: candidate.name,
+      jobPosition: interview.jobPosition || 'Position',
+      date: interview.scheduledDate || new Date(),
+      time: interview.scheduledTime || 'TBD',
+      duration: interview.duration,
+      location: interview.location,
+      meetingLink: interview.meetingLink,
+      interviewers: hr.name ? [hr.name] : [],
+      notes: interview.notes,
+      reminderType,
+    };
 
-    const subject = `Reminder: Interview Tomorrow - ${interviewDate} at ${interviewTime}`;
-    const text = `
-Dear ${candidateName},
-
-This is a friendly reminder about your upcoming interview scheduled for tomorrow.
-
-Date: ${interviewDate}
-Time: ${interviewTime}
-Duration: ${duration}
-${interview.meetingLink ? `Meeting Link: ${interview.meetingLink}` : ''}
-
-${interview.notes ? `Notes: ${interview.notes}` : ''}
-
-Please make sure you are prepared and available at the scheduled time.
-
-Best regards,
-The Recruiting Team
-    `.trim();
-
-    const html = `
-      <h2>Interview Reminder</h2>
-      <p>Dear ${candidateName},</p>
-      <p>This is a friendly reminder about your <strong>upcoming interview scheduled for tomorrow</strong>.</p>
-      <br/>
-      <table style="border-collapse: collapse; width: 100%; max-width: 500px;">
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Date:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${interviewDate}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Time:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${interviewTime}</td>
-        </tr>
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Duration:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;">${duration}</td>
-        </tr>
-        ${interview.meetingLink ? `
-        <tr>
-          <td style="padding: 8px; font-weight: bold; border: 1px solid #ddd;">Meeting Link:</td>
-          <td style="padding: 8px; border: 1px solid #ddd;"><a href="${interview.meetingLink}">${interview.meetingLink}</a></td>
-        </tr>
-        ` : ''}
-      </table>
-      <br/>
-      ${interview.notes ? `<p><strong>Notes:</strong> ${interview.notes}</p>` : ''}
-      <br/>
-      <p>Please make sure you are prepared and available at the scheduled time.</p>
-      <br/>
-      <p>Best regards,<br/>
-      The Recruiting Team</p>
-    `;
-
-    await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_REMINDER', interview.uid);
+    const { subject, text, html } = interviewReminderTemplate(templateData);
+    await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_REMINDER', interview.uid);
   }
 
   private async sendEmail(to: string, subject: string, text: string, html: string, emailType: string = 'GENERAL', relatedEntityId?: string): Promise<void> {
@@ -397,5 +288,49 @@ ${text}
     } catch (error) {
       this.logger.warn(`Failed to log email to database: ${error.message}`);
     }
+  }
+
+  /**
+   * Send interview rescheduled notification
+   */
+  async sendInterviewRescheduled(
+    candidateEmail: string,
+    data: InterviewRescheduledData,
+    interviewUid: string,
+  ): Promise<void> {
+    const { subject, text, html } = interviewRescheduledTemplate(data);
+    await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_RESCHEDULED', interviewUid);
+  }
+
+  /**
+   * Send application received confirmation (template-based version)
+   */
+  async sendApplicationReceivedV2(candidateEmail: string, data: ApplicationReceivedData): Promise<void> {
+    const { subject, text, html } = applicationReceivedTemplate(data);
+    await this.sendEmail(candidateEmail, subject, text, html, 'APPLICATION_RECEIVED', data.applicationUid);
+  }
+
+  /**
+   * Send application status update notification
+   */
+  async sendApplicationStatusUpdateV2(candidateEmail: string, data: ApplicationStatusUpdateData): Promise<void> {
+    const { subject, text, html } = applicationStatusUpdateTemplate(data);
+    await this.sendEmail(candidateEmail, subject, text, html, 'STATUS_CHANGE', data.applicationUid);
+  }
+
+  /**
+   * Send password reset email
+   */
+  async sendPasswordReset(userEmail: string, data: PasswordResetData): Promise<void> {
+    const { subject, text, html } = passwordResetTemplate(data);
+    await this.sendEmail(userEmail, subject, text, html, 'PASSWORD_RESET');
+  }
+
+  /**
+   * Send welcome email for new users
+   */
+  async sendWelcomeEmail(userEmail: string, data: WelcomeData): Promise<void> {
+    const { subject, text, html } = welcomeTemplate(data);
+    await this.sendEmail(userEmail, subject, text, html, 'WELCOME');
   }
 }
