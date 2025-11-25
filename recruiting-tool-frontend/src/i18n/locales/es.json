@@ -36,7 +36,8 @@
     "reset": "Restablecer",
     "retry": "Reintentar",
     "my_profile": "Mi Perfil",
-    "back_to_careers": "Volver a Carreras"
+    "back_to_careers": "Volver a Carreras",
+    "n_a": "N/A"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -435,5 +436,17 @@
     "denied": "Acceso Denegado",
     "denied_with_roles": "Acceso Denegado: Necesitas el rol {{roles}} para ver esta página.",
     "contact_admin": "Por favor contacta a tu administrador si crees que deberías tener acceso a esta página."
+  },
+  "dashboard": {
+    "title": "Panel de RRHH",
+    "recent_applications": "Aplicaciones Recientes",
+    "quick_actions": "Acciones Rápidas",
+    "view_all": "Ver Todas",
+    "no_applications": "Aún no hay aplicaciones",
+    "applied_for": "Aplicó para",
+    "manage_positions": "Gestionar Posiciones de Trabajo",
+    "review_applications": "Revisar Aplicaciones",
+    "view_candidates": "Ver Candidatos",
+    "create_position": "Crear Posición de Trabajo"
   }
 }

@@ -36,7 +36,8 @@
     "reset": "Reset",
     "retry": "Retry",
     "my_profile": "My Profile",
-    "back_to_careers": "Back to Careers"
+    "back_to_careers": "Back to Careers",
+    "n_a": "N/A"
   },
   "validation": {
     "required": "This field is required",
@@ -437,5 +438,17 @@
     "denied": "Access Denied",
     "denied_with_roles": "Access Denied: You need {{roles}} role to view this page.",
     "contact_admin": "Please contact your administrator if you believe you should have access to this page."
+  },
+  "dashboard": {
+    "title": "HR Dashboard",
+    "recent_applications": "Recent Applications",
+    "quick_actions": "Quick Actions",
+    "view_all": "View All",
+    "no_applications": "No applications yet",
+    "applied_for": "Applied for",
+    "manage_positions": "Manage Job Positions",
+    "review_applications": "Review Applications",
+    "view_candidates": "View Candidates",
+    "create_position": "Create Job Position"
   }
 }
