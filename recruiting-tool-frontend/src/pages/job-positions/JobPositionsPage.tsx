@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {Typography, Box, useTheme, useMediaQuery} from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import {JobPosition} from '../../types/jobPosition.types';
 import {JobPositionsPageWrapper} from './JobPositionsPage.styles';
 import ManageStagesDialog from '../../components/dialogs/ManageStagesDialog';
@@ -9,6 +10,7 @@ import JobPositionsList from '../../components/job-positions/JobPositionsList';
 import SearchBar from '../../components/search/SearchBar';
 
 const JobPositionsPage: React.FC = () => {
+	const {t} = useTranslation();
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const [selectedJobPosition, setSelectedJobPosition] =
@@ -25,8 +27,8 @@ const JobPositionsPage: React.FC = () => {
 	};
 
 	return (
-		<Box sx={{mt: 8}}>
-			<Box sx={{mb: {xs: 1.5, sm: 2}}}>
+		<Box>
+			<Box sx={{mb: {xs: 2, sm: 3}}}>
 				<Typography
 					variant={isMobile ? 'h5' : 'h4'}
 					sx={{
@@ -35,21 +37,21 @@ const JobPositionsPage: React.FC = () => {
 						mb: 0.5,
 					}}
 				>
-					Job Positions
+					{t('job_positions.title')}
 				</Typography>
 				<Typography
 					variant="body2"
 					color="textSecondary"
-					sx={{fontSize: {xs: '0.9rem', sm: '1rem'}}}
+					sx={{fontSize: {xs: '0.875rem', sm: '1rem'}}}
 				>
-					Create, manage, and monitor job openings for recruitment
+					{t('job_positions.subtitle')}
 				</Typography>
 			</Box>
 
 			<Box sx={{mb: {xs: 2, sm: 3}, maxWidth: {xs: '100%', md: 400}}}>
 				<SearchBar
 					onSearch={handleSearch}
-					placeholder="Search positions..."
+					placeholder={t('job_positions.search_placeholder')}
 					value={search}
 				/>
 			</Box>

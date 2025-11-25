@@ -103,6 +103,8 @@
     "title": "Candidatos",
     "create_title": "Crear Nuevo Candidato",
     "update_title": "Actualizar Candidato",
+    "create_candidate": "Crear Candidato",
+    "search_placeholder": "Buscar por nombre o correo...",
     "name_label": "Nombre del Candidato",
     "email_label": "Correo Electrónico",
     "phone_label": "Número de Teléfono",
@@ -121,6 +123,8 @@
     "title": "Posiciones de Trabajo",
     "create_title": "Crear Nueva Posición de Trabajo",
     "update_title": "Actualizar Posición de Trabajo",
+    "subtitle": "Crear, gestionar y monitorear ofertas de trabajo para reclutamiento",
+    "search_placeholder": "Buscar posiciones...",
     "job_title_label": "Título del Trabajo",
     "description_label": "Descripción",
     "status_label": "Estado",
@@ -150,6 +154,9 @@
     "title": "Empresas",
     "create_title": "Crear Nueva Empresa",
     "update_title": "Actualizar Empresa",
+    "add_company": "Agregar Empresa",
+    "search_placeholder": "Buscar empresas...",
+    "creating": "Creando...",
     "name_label": "Nombre de la Empresa",
     "description_label": "Descripción",
     "no_companies": "No hay empresas disponibles"
@@ -158,6 +165,9 @@
     "title": "Usuarios",
     "create_title": "Crear Nuevo Usuario",
     "update_title": "Actualizar Usuario",
+    "create_user": "Crear Usuario",
+    "search_placeholder": "Buscar por nombre o correo...",
+    "api_only_message": "La creación de usuarios actualmente solo está disponible a través de la API. Por favor use los endpoints de la API para crear nuevos usuarios.",
     "name_label": "Nombre del Usuario",
     "email_label": "Correo Electrónico",
     "password_label": "Contraseña",
@@ -770,5 +780,10 @@
       "subheadline": "Únete a miles de empresas que usan nuestra plataforma para encontrar y contratar el mejor talento",
       "button": "Comienza Tu Prueba Gratuita"
     }
+  },
+  "pagination": {
+    "showing": "Mostrando {{start}} a {{end}} de {{total}}",
+    "items": "Elementos",
+    "items_per_page": "Elementos por página"
   }
 }

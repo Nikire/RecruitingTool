@@ -1,4 +1,5 @@
 import {Typography, Button, Box} from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useCandidatesSearch} from '../../hooks/api/state/useSearchState';
@@ -11,6 +12,7 @@ import CandidatesList from '../../components/candidates/CandidatesList';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
 const CandidatesPage: React.FC = () => {
+	const {t} = useTranslation();
 	const createDialog = useDialog<never>();
 	const {user} = useUserAtom();
 	const [searchState, setSearchState] = useCandidatesSearch();
@@ -27,24 +29,37 @@ const CandidatesPage: React.FC = () => {
 	}
 
 	return (
-		<Box sx={{mt: 8}}>
-			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
-				<Typography variant="h4">
-					Candidates
+		<Box>
+			<Box
+				sx={{
+					display: 'flex',
+					flexDirection: {xs: 'column', sm: 'row'},
+					justifyContent: 'space-between',
+					alignItems: {xs: 'flex-start', sm: 'center'},
+					mb: {xs: 2, sm: 3},
+					gap: 2,
+				}}
+			>
+				<Typography variant="h4" sx={{fontSize: {xs: '1.5rem', sm: '2.125rem'}}}>
+					{t('candidates.title')}
 				</Typography>
 				{canManage && (
 					<Button
 						variant="contained"
 						startIcon={<AddIcon />}
 						onClick={createDialog.open}
+						sx={{
+							width: {xs: '100%', sm: 'auto'},
+							minHeight: '44px',
+						}}
 					>
-						Create Candidate
+						{t('candidates.create_candidate')}
 					</Button>
 				)}
 			</Box>
 
-			<Box sx={{mb: 3, maxWidth: 400}}>
-				<SearchBar onSearch={handleSearch} placeholder="Search by name or email..." value={search} />
+			<Box sx={{mb: 3, maxWidth: {xs: '100%', sm: 400}}}>
+				<SearchBar onSearch={handleSearch} placeholder={t('candidates.search_placeholder')} value={search} />
 			</Box>
 
 			<CandidatesList

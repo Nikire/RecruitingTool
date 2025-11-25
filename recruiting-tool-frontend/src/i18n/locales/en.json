@@ -103,6 +103,8 @@
     "title": "Candidates",
     "create_title": "Create New Candidate",
     "update_title": "Update Candidate",
+    "create_candidate": "Create Candidate",
+    "search_placeholder": "Search by name or email...",
     "name_label": "Candidate Name",
     "email_label": "Email",
     "phone_label": "Phone Number",
@@ -121,6 +123,8 @@
     "title": "Job Positions",
     "create_title": "Create New Job Position",
     "update_title": "Update Job Position",
+    "subtitle": "Create, manage, and monitor job openings for recruitment",
+    "search_placeholder": "Search positions...",
     "job_title_label": "Job Title",
     "description_label": "Description",
     "status_label": "Status",
@@ -152,6 +156,9 @@
     "title": "Companies",
     "create_title": "Create New Company",
     "update_title": "Update Company",
+    "add_company": "Add Company",
+    "search_placeholder": "Search companies...",
+    "creating": "Creating...",
     "name_label": "Company Name",
     "description_label": "Description",
     "no_companies": "No companies available"
@@ -160,6 +167,9 @@
     "title": "Users",
     "create_title": "Create New User",
     "update_title": "Update User",
+    "create_user": "Create User",
+    "search_placeholder": "Search by name or email...",
+    "api_only_message": "User creation is currently only available through the API. Please use the API endpoints to create new users.",
     "name_label": "User Name",
     "email_label": "Email",
     "password_label": "Password",
@@ -772,5 +782,10 @@
       "subheadline": "Join thousands of companies using our platform to find and hire the best talent",
       "button": "Start Your Free Trial"
     }
+  },
+  "pagination": {
+    "showing": "Showing {{start}} to {{end}} of {{total}}",
+    "items": "Items",
+    "items_per_page": "Items per page"
   }
 }
