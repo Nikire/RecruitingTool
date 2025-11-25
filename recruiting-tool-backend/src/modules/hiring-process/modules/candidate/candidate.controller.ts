@@ -42,7 +42,10 @@ export class CandidateController {
     status: 200,
     description: 'Returns paginated candidates list',
   })
-  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<CandidateResponseDto>> {
+  list(
+    @Query() paginationDto: PaginationDto & { source?: string },
+    @CurrentUser() currentUser: User
+  ): Promise<PaginatedResponse<CandidateResponseDto>> {
     return this.candidateService.list(paginationDto, currentUser);
   }
 

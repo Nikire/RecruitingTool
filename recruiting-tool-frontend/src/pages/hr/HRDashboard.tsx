@@ -105,22 +105,40 @@ const HRDashboard: React.FC = () => {
 	];
 
 	return (
-		<Box sx={{mt: 8}}>
-			<Box sx={{mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-				<Typography variant="h4" component="h1">
+		<Box>
+			<Box
+				sx={{
+					mb: {xs: 2, sm: 4},
+					display: 'flex',
+					flexDirection: {xs: 'column', sm: 'row'},
+					justifyContent: 'space-between',
+					alignItems: {xs: 'flex-start', sm: 'center'},
+					gap: 2,
+				}}
+			>
+				<Typography
+					variant="h4"
+					component="h1"
+					sx={{fontSize: {xs: '1.5rem', sm: '2.125rem'}}}
+				>
 					{t('dashboard.title')}
 				</Typography>
 				<Button
 					variant="contained"
 					startIcon={<AddIcon />}
 					onClick={() => navigate('/hr/job-positions')}
+					sx={{
+						width: {xs: '100%', sm: 'auto'},
+						minHeight: '44px', // Minimum touch target
+					}}
+					aria-label={t('dashboard.create_position')}
 				>
 					{t('dashboard.create_position')}
 				</Button>
 			</Box>
 
 			{/* Statistics Cards */}
-			<Grid container spacing={3} sx={{mb: 4}}>
+			<Grid container spacing={{xs: 2, sm: 3}} sx={{mb: {xs: 3, sm: 4}}}>
 				{statsData.map((stat, index) => (
 					<Grid item xs={12} sm={6} md={3} key={index}>
 						<DashboardStatCard
@@ -137,12 +155,31 @@ const HRDashboard: React.FC = () => {
 			</Grid>
 
 			{/* Recent Applications */}
-			<Paper sx={{p: 3}}>
-				<Box sx={{mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-					<Typography variant="h5" component="h2">
+			<Paper sx={{p: {xs: 2, sm: 3}}}>
+				<Box
+					sx={{
+						mb: {xs: 2, sm: 3},
+						display: 'flex',
+						flexDirection: {xs: 'column', sm: 'row'},
+						justifyContent: 'space-between',
+						alignItems: {xs: 'flex-start', sm: 'center'},
+						gap: 2,
+					}}
+				>
+					<Typography
+						variant="h5"
+						component="h2"
+						sx={{fontSize: {xs: '1.25rem', sm: '1.5rem'}}}
+					>
 						{t('dashboard.recent_applications')}
 					</Typography>
-					<Button onClick={() => navigate('/hr/applications')}>
+					<Button
+						onClick={() => navigate('/hr/applications')}
+						sx={{
+							width: {xs: '100%', sm: 'auto'},
+							minHeight: '44px',
+						}}
+					>
 						{t('dashboard.view_all')}
 					</Button>
 				</Box>
@@ -167,8 +204,15 @@ const HRDashboard: React.FC = () => {
 			</Paper>
 
 			{/* Quick Actions */}
-			<Box sx={{mt: 4}}>
-				<Typography variant="h5" component="h2" sx={{mb: 2}}>
+			<Box sx={{mt: {xs: 3, sm: 4}}}>
+				<Typography
+					variant="h5"
+					component="h2"
+					sx={{
+						mb: 2,
+						fontSize: {xs: '1.25rem', sm: '1.5rem'},
+					}}
+				>
 					{t('dashboard.quick_actions')}
 				</Typography>
 				<Grid container spacing={2}>

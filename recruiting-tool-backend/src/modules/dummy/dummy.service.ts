@@ -55,6 +55,9 @@ interface DummyDataStructure {
     email: string;
     jobPositionIndex: number;
     companyIndex: number;
+    source?: string;
+    sourceDetails?: string;
+    sourceUrl?: string;
   }>;
   candidateNotes: Array<{
     content: string;
@@ -205,10 +208,13 @@ export class DummyService implements OnApplicationBootstrap {
         data: {
           name: candidate.name,
           email: candidate.email,
+          source: candidate.source as any,
+          sourceDetails: candidate.sourceDetails,
+          sourceUrl: candidate.sourceUrl,
         },
       });
       createdCandidates.push(created);
-      console.log(`Created candidate: ${created.name}`);
+      console.log(`Created candidate: ${created.name} (source: ${candidate.source || 'DIRECT_APPLY'})`);
     }
 
     // Create hiring processes

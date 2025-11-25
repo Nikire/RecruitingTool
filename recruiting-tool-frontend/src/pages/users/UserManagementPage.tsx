@@ -49,6 +49,7 @@ const UserManagementPage: React.FC = () => {
 						width: {xs: '100%', sm: 'auto'},
 						minHeight: '44px',
 					}}
+					aria-label={t('users.create_user')}
 				>
 					{t('users.create_user')}
 				</Button>

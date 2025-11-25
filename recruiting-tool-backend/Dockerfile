@@ -1,4 +1,4 @@
-FROM node:18
+FROM node:20
 
 ARG API_PORT=4000
 
@@ -8,10 +8,12 @@ WORKDIR /app
 
 COPY package.json yarn.lock ./
 
-RUN yarn install
+RUN yarn install --frozen-lockfile
 
 COPY . .
 
+RUN npx prisma generate
+
 EXPOSE ${API_PORT}
 
-CMD ["yarn", "start"]
+CMD ["npx", "ts-node", "-r", "tsconfig-paths/register", "src/main.ts"]

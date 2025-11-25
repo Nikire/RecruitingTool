@@ -115,6 +115,7 @@ const StatusChip: React.FC<StatusChipProps> = ({
 			color={getColor()}
 			size={size}
 			variant={variant}
+			aria-label={`${t('aria.status')}: ${getLabel()}`}
 		/>
 	);
 };

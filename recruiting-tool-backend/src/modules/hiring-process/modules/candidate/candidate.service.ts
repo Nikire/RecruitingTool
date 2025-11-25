@@ -19,6 +19,9 @@ export class CandidateService {
       data: {
         name: createCandidateDto.name,
         email: createCandidateDto.email,
+        source: createCandidateDto.source,
+        sourceDetails: createCandidateDto.sourceDetails,
+        sourceUrl: createCandidateDto.sourceUrl,
       },
     });
     return CandidateMapper(candidate);
@@ -66,9 +69,9 @@ export class CandidateService {
       );
     }}
 
-  async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
+  async list(paginationDto: PaginationDto & { source?: string }, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
     try {
-    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', source } = paginationDto;
     const skip = (page - 1) * pageSize;
 
     // Build where clause for search
@@ -80,6 +83,11 @@ export class CandidateService {
           ],
         }
       : {};
+
+    // Add source filter if provided
+    if (source) {
+      where.source = source;
+    }
 
     // Add company filter for HR and USER roles (filter by hiring processes company)
     const userCompanyId = getUserCompanyId(user);

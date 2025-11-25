@@ -7,15 +7,12 @@ import {
   Body,
   Param,
   Query,
-  UseGuards,
-  Req,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { RolesGuard } from '../auth/roles.guard';
-import { Roles } from '../auth/roles.decorator';
-import { RolesType } from '@prisma/client';
+import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
+import { User } from '@prisma/client';
 import { ScorecardTemplateService } from './scorecard-template.service';
 import { ScorecardService } from './scorecard.service';
 import {
@@ -27,7 +24,6 @@ import {
 } from './dto/scorecard.dto';
 
 @Controller('scorecard')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class ScorecardController {
   constructor(
     private readonly templateService: ScorecardTemplateService,
@@ -35,26 +31,26 @@ export class ScorecardController {
   ) {}
 
   // Template endpoints
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
   @Get('templates')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
   async getTemplates(@Query('companyUid') companyUid?: string): Promise<ScorecardTemplateResponseDto[]> {
     return this.templateService.getTemplates(companyUid);
   }
 
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @Get('templates/:uid')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.USER)
   async getTemplateByUid(@Param('uid') uid: string): Promise<ScorecardTemplateResponseDto> {
     return this.templateService.getTemplateByUid(uid);
   }
 
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
   @Post('templates')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
   async createTemplate(@Body() dto: CreateScorecardTemplateDto): Promise<ScorecardTemplateResponseDto> {
     return this.templateService.createTemplate(dto);
   }
 
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
   @Put('templates/:uid')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
   async updateTemplate(
     @Param('uid') uid: string,
     @Body() dto: UpdateScorecardTemplateDto,
@@ -62,28 +58,28 @@ export class ScorecardController {
     return this.templateService.updateTemplate(uid, dto);
   }
 
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
   @Delete('templates/:uid')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteTemplate(@Param('uid') uid: string): Promise<void> {
     return this.templateService.deleteTemplate(uid);
   }
 
   // Scorecard submission endpoints
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @Post('submit')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.USER)
-  async submitScorecard(@Body() dto: SubmitScorecardDto, @Req() req: any): Promise<ScorecardResponseDto> {
-    return this.scorecardService.submitScorecard(dto, req.user.id);
+  async submitScorecard(@Body() dto: SubmitScorecardDto, @CurrentUser() user: User): Promise<ScorecardResponseDto> {
+    return this.scorecardService.submitScorecard(dto, user.id);
   }
 
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
   @Get('interview/:interviewUid')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
   async getScorecardsByInterview(@Param('interviewUid') interviewUid: string): Promise<ScorecardResponseDto[]> {
     return this.scorecardService.getScorecardsByInterview(interviewUid);
   }
 
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @Get(':uid')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.USER)
   async getScorecardByUid(@Param('uid') uid: string): Promise<ScorecardResponseDto> {
     return this.scorecardService.getScorecardByUid(uid);
   }

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../shared/prisma.service';
+import { PrismaService } from '../shared/modules/database/prisma.service';
 import {
   CreateScorecardTemplateDto,
   UpdateScorecardTemplateDto,

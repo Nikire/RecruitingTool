@@ -59,15 +59,20 @@ model User {
 }
 
 model Candidate {
-  id              Int              @id @default(autoincrement())
-  uid             String           @unique @default(uuid()) @db.Uuid
+  id              Int                 @id @default(autoincrement())
+  uid             String              @unique @default(uuid()) @db.Uuid
   name            String
-  email           String           @unique
-  hiringProcesses HiringProcess[]  @relation("HiringProcessCandidate")
-  files           FileUpload[]     @relation("CandidateFiles")
-  notes           CandidateNote[]  @relation("CandidateNotes")
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
+  email           String              @unique
+  source          ApplicationSource?  @default(DIRECT_APPLY)
+  sourceDetails   String?
+  sourceUrl       String?
+  hiringProcesses HiringProcess[]     @relation("HiringProcessCandidate")
+  files           FileUpload[]        @relation("CandidateFiles")
+  notes           CandidateNote[]     @relation("CandidateNotes")
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  @@index([source])
 }
 
 model CandidateNote {
@@ -90,6 +95,20 @@ enum RolesType {
   ADMIN
   SUPER_ADMIN
   HR
+}
+
+enum ApplicationSource {
+  WEBSITE
+  LINKEDIN
+  INDEED
+  GLASSDOOR
+  REFERRAL
+  JOB_FAIR
+  UNIVERSITY
+  RECRUITER
+  DIRECT_APPLY
+  SOCIAL_MEDIA
+  OTHER
 }
 
 model JobPosition {

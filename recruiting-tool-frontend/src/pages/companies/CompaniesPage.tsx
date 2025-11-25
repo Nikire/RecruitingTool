@@ -85,6 +85,7 @@ export const CompaniesPage: React.FC = () => {
             width: {xs: '100%', sm: 'auto'},
             minHeight: '44px',
           }}
+          aria-label={t('companies.add_company')}
         >
           {t('companies.add_company')}
         </Button>

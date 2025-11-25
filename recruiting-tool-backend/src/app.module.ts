@@ -18,9 +18,10 @@ import { ProfileModule } from './modules/profile/profile.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { HRScheduleModule } from './modules/hr-schedule/hr-schedule.module';
 import { ScorecardModule } from './modules/scorecard/scorecard.module';
+import { AiModule } from './modules/ai/ai.module';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule, InterviewModule, ProfileModule, AdminModule, HRScheduleModule, ScorecardModule],
+  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule, InterviewModule, ProfileModule, AdminModule, HRScheduleModule, ScorecardModule, AiModule],
   controllers: [AppController],
   providers: [AppService],
 })

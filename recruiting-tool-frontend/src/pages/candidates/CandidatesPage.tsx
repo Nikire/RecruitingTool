@@ -52,6 +52,7 @@ const CandidatesPage: React.FC = () => {
 							width: {xs: '100%', sm: 'auto'},
 							minHeight: '44px',
 						}}
+						aria-label={t('candidates.create_candidate')}
 					>
 						{t('candidates.create_candidate')}
 					</Button>

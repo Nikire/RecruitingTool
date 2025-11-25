@@ -313,31 +313,41 @@
       "name": "John Doe",
       "email": "john.doe@example.com",
       "jobPositionIndex": 0,
-      "companyIndex": 0
+      "companyIndex": 0,
+      "source": "LINKEDIN",
+      "sourceUrl": "https://www.linkedin.com/jobs/view/123456"
     },
     {
       "name": "Jane Smith",
       "email": "jane.smith@example.com",
       "jobPositionIndex": 0,
-      "companyIndex": 0
+      "companyIndex": 0,
+      "source": "REFERRAL",
+      "sourceDetails": "Referred by Alice Johnson"
     },
     {
       "name": "Mike Wilson",
       "email": "mike.wilson@example.com",
       "jobPositionIndex": 1,
-      "companyIndex": 0
+      "companyIndex": 0,
+      "source": "INDEED",
+      "sourceUrl": "https://www.indeed.com/viewjob?jk=789012"
     },
     {
       "name": "Sarah Davis",
       "email": "sarah.davis@example.com",
       "jobPositionIndex": 2,
-      "companyIndex": 1
+      "companyIndex": 1,
+      "source": "WEBSITE",
+      "sourceUrl": "https://digitalsolutions.com/careers"
     },
     {
       "name": "Tom Anderson",
       "email": "tom.anderson@example.com",
       "jobPositionIndex": 3,
-      "companyIndex": 1
+      "companyIndex": 1,
+      "source": "RECRUITER",
+      "sourceDetails": "Through external recruiter - TechTalent Agency"
     }
   ],
   "candidateNotes": [

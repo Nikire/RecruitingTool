@@ -64,6 +64,7 @@ export interface DashboardLayoutProps {
  * - App bar with user avatar
  * - Navigation menu items
  * - Profile and "Back to Careers" links
+ * - Mobile-optimized spacing and layout
  *
  * Used by HRLayout, AdminLayout, and other dashboard layouts.
  *
@@ -132,6 +133,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 										},
 									},
 								}}
+								onClick={() => setMobileOpen(false)} // Close mobile drawer on item click
+								aria-label={itemText}
 							>
 								<ListItemIcon>{item.icon}</ListItemIcon>
 								<ListItemText primary={itemText} />
@@ -143,7 +146,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 			<Divider />
 			<List>
 				<ListItem disablePadding>
-					<ListItemButton component={NavLink} to="/profile">
+					<ListItemButton
+						component={NavLink}
+						to="/profile"
+						onClick={() => setMobileOpen(false)}
+						aria-label={translate ? t('common.my_profile') : 'My Profile'}
+					>
 						<ListItemIcon>
 							<PersonIcon />
 						</ListItemIcon>
@@ -151,7 +159,13 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 					</ListItemButton>
 				</ListItem>
 				<ListItem disablePadding>
-					<ListItemButton onClick={() => navigate('/careers')}>
+					<ListItemButton
+						onClick={() => {
+							setMobileOpen(false);
+							navigate('/careers');
+						}}
+						aria-label={translate ? t('common.back_to_careers') : 'Back to Careers'}
+					>
 						<ListItemIcon>
 							<ArrowBackIcon />
 						</ListItemIcon>
@@ -182,6 +196,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 							display: {xs: 'block', sm: 'none'},
 							'& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
 						}}
+						aria-label={ariaLabel}
 					>
 						{drawer}
 					</Drawer>
@@ -194,6 +209,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 							'& .MuiDrawer-paper': {boxSizing: 'border-box', width: drawerWidth},
 						}}
 						open
+						aria-label={ariaLabel}
 					>
 						{drawer}
 					</Drawer>
@@ -206,22 +222,39 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 						width: {sm: `calc(100% - ${drawerWidth}px)`},
 						ml: {sm: `${drawerWidth}px`},
 					}}
+					component="div"
+					role="banner"
 				>
 					<Toolbar>
 						<IconButton
 							color="inherit"
-							aria-label="open drawer"
+							aria-label={mobileOpen ? t('aria.close_drawer') : t('aria.open_drawer')}
+							aria-expanded={mobileOpen}
+							aria-controls="dashboard-drawer"
 							edge="start"
 							onClick={handleDrawerToggle}
 							sx={{mr: 2, display: {sm: 'none'}}}
 						>
 							<MenuIcon />
 						</IconButton>
-						<Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
+						<Typography
+							variant="h6"
+							noWrap
+							component="div"
+							sx={{
+								flexGrow: 1,
+								fontSize: {xs: '1rem', sm: '1.25rem'},
+							}}
+						>
 							{displayTitle}
 						</Typography>
 						<LanguageSelector />
-						<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
+						<IconButton
+							component={NavLink}
+							to="/profile"
+							sx={{p: 0.5}}
+							aria-label={t('aria.user_profile')}
+						>
 							<UserAvatar name={user?.name} avatarUrl={user?.profilePicture} />
 						</IconButton>
 					</Toolbar>
@@ -233,9 +266,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 				component="main"
 				sx={{
 					ml: {sm: `${drawerWidth}px`},
-					p: 3,
+					p: {xs: 2, sm: 3},
 				}}
+				role="main"
+				aria-label={t('aria.main_content')}
 			>
+				<Toolbar /> {/* Spacer for fixed AppBar */}
 				{children || <Outlet />}
 			</Box>
 		</Box>
