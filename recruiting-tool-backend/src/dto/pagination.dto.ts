@@ -23,7 +23,7 @@ export class PaginationDto {
 	@Type(() => Number)
 	@IsInt()
 	@Min(1)
-	limit?: number = 10;
+	pageSize?: number = 10;
 
 	@ApiPropertyOptional({
 		description: 'Search term for filtering results',
@@ -51,10 +51,10 @@ export class PaginationDto {
 
 export interface PaginatedResponse<T> {
 	data: T[];
-	meta: {
+	pagination: {
 		total: number;
 		page: number;
-		limit: number;
+		pageSize: number;
 		totalPages: number;
 		hasNextPage: boolean;
 		hasPreviousPage: boolean;

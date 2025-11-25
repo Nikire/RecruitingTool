@@ -38,8 +38,8 @@ export class JobPositionService {
 
   async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<JobPositionResponseDto>> {
     try {
-    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
-    const skip = (page - 1) * limit;
+    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * pageSize;
 
     // Build where clause for search
     const where: any = search
@@ -61,7 +61,7 @@ export class JobPositionService {
     const jobPositions = await this.databaseService.jobPosition.findMany({
       where,
       skip,
-      take: limit,
+      take: pageSize,
       orderBy: { [sortBy]: sortOrder },
       include: {
         ...includeJobPosition,
@@ -73,14 +73,14 @@ export class JobPositionService {
       },
     });
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / pageSize);
 
     return {
       data: jobPositions.map((jp) => JobPositionOneMapper(jp)),
-      meta: {
+      pagination: {
         total,
         page,
-        limit,
+        pageSize,
         totalPages,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,

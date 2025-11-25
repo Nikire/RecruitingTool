@@ -68,8 +68,8 @@ export class CandidateService {
 
   async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
     try {
-    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
-    const skip = (page - 1) * limit;
+    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * pageSize;
 
     // Build where clause for search
     const where: any = search
@@ -98,19 +98,19 @@ export class CandidateService {
     const candidates = await this.databaseService.candidate.findMany({
       where,
       skip,
-      take: limit,
+      take: pageSize,
       orderBy: { [sortBy]: sortOrder },
       include: { hiringProcesses: true },
     });
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / pageSize);
 
     return {
       data: candidates.map((c) => CandidateMapper(c)),
-      meta: {
+      pagination: {
         total,
         page,
-        limit,
+        pageSize,
         totalPages,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,

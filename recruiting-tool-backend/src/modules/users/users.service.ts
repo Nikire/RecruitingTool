@@ -97,8 +97,8 @@ export class UsersService {
 
   async list(paginationDto: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
     try {
-    const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
-    const skip = (page - 1) * limit;
+    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * pageSize;
 
     // Build where clause for search
     const where = search
@@ -117,21 +117,21 @@ export class UsersService {
     const users = await this.databaseService.user.findMany({
       where,
       skip,
-      take: limit,
+      take: pageSize,
       orderBy: { [sortBy]: sortOrder },
       include: {
         company: true,
       },
     });
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / pageSize);
 
     return {
       data: users.map((user) => UserMapper(user)),
-      meta: {
+      pagination: {
         total,
         page,
-        limit,
+        pageSize,
         totalPages,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,

@@ -35,8 +35,8 @@ export class StagesService {
   }
 
   async list(paginationDto: PaginationDto): Promise<PaginatedResponse<StageResponseDto>> {
-    const { page = 1, limit = 10, search, sortBy = 'position', sortOrder = 'desc' } = paginationDto;
-    const skip = (page - 1) * limit;
+    const { page = 1, pageSize = 10, search, sortBy = 'position', sortOrder = 'desc' } = paginationDto;
+    const skip = (page - 1) * pageSize;
 
     // Build where clause for search
     const where = search
@@ -55,18 +55,18 @@ export class StagesService {
     const stages = await this.databaseService.stage.findMany({
       where,
       skip,
-      take: limit,
+      take: pageSize,
       orderBy: { [sortBy]: sortOrder },
     });
 
-    const totalPages = Math.ceil(total / limit);
+    const totalPages = Math.ceil(total / pageSize);
 
     return {
       data: stages.map((stage) => StageMapper(stage)),
-      meta: {
+      pagination: {
         total,
         page,
-        limit,
+        pageSize,
         totalPages,
         hasNextPage: page < totalPages,
         hasPreviousPage: page > 1,
