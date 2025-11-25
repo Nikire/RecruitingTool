@@ -13,7 +13,7 @@ export class InterviewService {
   ) {}
 
   async create(createInterviewDto: CreateInterviewDto, scheduledByUid: string): Promise<InterviewResponseDto> {
-    const { stageUid, scheduledDate, scheduledTime, duration, meetingLink, notes } = createInterviewDto;
+    const { stageUid, scheduledDate, scheduledTime, duration, meetingLink, location, notes } = createInterviewDto;
 
     // Look up the full user by UID
     const scheduledBy = await this.databaseService.user.findUnique({
@@ -54,6 +54,7 @@ export class InterviewService {
         duration,
         status,
         meetingLink,
+        location,
         notes,
         scheduledBy: {
           connect: { id: scheduledBy.id },
@@ -62,6 +63,11 @@ export class InterviewService {
       include: {
         scheduledBy: true,
         stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -79,6 +85,11 @@ export class InterviewService {
       include: {
         scheduledBy: true,
         stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -103,6 +114,11 @@ export class InterviewService {
       include: {
         scheduledBy: true,
         stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
       },
       orderBy: { createdAt: 'desc' },
     });
@@ -131,7 +147,7 @@ export class InterviewService {
       throw new NotFoundException(`Interview with UID ${uid} not found`);
     }
 
-    const { scheduledDate, scheduledTime, duration, meetingLink, notes, status } = updateInterviewDto;
+    const { scheduledDate, scheduledTime, duration, meetingLink, location, notes, status } = updateInterviewDto;
 
     // Auto-update status to SCHEDULED if date and time are provided
     let finalStatus = status;
@@ -146,12 +162,18 @@ export class InterviewService {
         ...(scheduledTime !== undefined && { scheduledTime }),
         ...(duration !== undefined && { duration }),
         ...(meetingLink !== undefined && { meetingLink }),
+        ...(location !== undefined && { location }),
         ...(notes !== undefined && { notes }),
         ...(finalStatus !== undefined && { status: finalStatus }),
       },
       include: {
         scheduledBy: true,
         stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -189,6 +211,11 @@ export class InterviewService {
       include: {
         scheduledBy: true,
         stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
       },
     });
 
@@ -198,6 +225,133 @@ export class InterviewService {
     }
 
     return InterviewMapper(interview);
+  }
+
+  async complete(uid: string): Promise<InterviewResponseDto> {
+    const existingInterview = await this.databaseService.interview.findUnique({
+      where: { uid },
+    });
+
+    if (!existingInterview) {
+      throw new NotFoundException(`Interview with UID ${uid} not found`);
+    }
+
+    if (existingInterview.status === InterviewStatus.COMPLETED) {
+      throw new BadRequestException('Interview is already completed');
+    }
+
+    if (existingInterview.status === InterviewStatus.CANCELLED) {
+      throw new BadRequestException('Cannot complete a cancelled interview');
+    }
+
+    const interview = await this.databaseService.interview.update({
+      where: { uid },
+      data: { status: InterviewStatus.COMPLETED },
+      include: {
+        scheduledBy: true,
+        stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    return InterviewMapper(interview);
+  }
+
+  async addInterviewer(interviewUid: string, userUid: string, role?: string): Promise<InterviewResponseDto> {
+    // Verify interview exists
+    const interview = await this.databaseService.interview.findUnique({
+      where: { uid: interviewUid },
+    });
+
+    if (!interview) {
+      throw new NotFoundException(`Interview with UID ${interviewUid} not found`);
+    }
+
+    // Verify user exists
+    const user = await this.databaseService.user.findUnique({
+      where: { uid: userUid },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+
+    // Check if interviewer already exists
+    const existingInterviewer = await this.databaseService.interviewInterviewer.findUnique({
+      where: {
+        interviewId_userId: {
+          interviewId: interview.id,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (existingInterviewer) {
+      throw new BadRequestException('User is already an interviewer for this interview');
+    }
+
+    // Add interviewer
+    await this.databaseService.interviewInterviewer.create({
+      data: {
+        interviewId: interview.id,
+        userId: user.id,
+        role,
+      },
+    });
+
+    // Return updated interview
+    return this.findOne(interviewUid);
+  }
+
+  async removeInterviewer(interviewUid: string, userUid: string): Promise<InterviewResponseDto> {
+    // Verify interview exists
+    const interview = await this.databaseService.interview.findUnique({
+      where: { uid: interviewUid },
+    });
+
+    if (!interview) {
+      throw new NotFoundException(`Interview with UID ${interviewUid} not found`);
+    }
+
+    // Verify user exists
+    const user = await this.databaseService.user.findUnique({
+      where: { uid: userUid },
+    });
+
+    if (!user) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+
+    // Check if interviewer exists
+    const interviewer = await this.databaseService.interviewInterviewer.findUnique({
+      where: {
+        interviewId_userId: {
+          interviewId: interview.id,
+          userId: user.id,
+        },
+      },
+    });
+
+    if (!interviewer) {
+      throw new NotFoundException('User is not an interviewer for this interview');
+    }
+
+    // Remove interviewer
+    await this.databaseService.interviewInterviewer.delete({
+      where: {
+        interviewId_userId: {
+          interviewId: interview.id,
+          userId: user.id,
+        },
+      },
+    });
+
+    // Return updated interview
+    return this.findOne(interviewUid);
   }
 
   async remove(uid: string): Promise<{ message: string }> {

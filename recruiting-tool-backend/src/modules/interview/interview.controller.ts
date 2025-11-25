@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InterviewService } from './interview.service';
-import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto } from './dto/interview.dto';
+import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, AddInterviewerDto } from './dto/interview.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -63,6 +63,41 @@ export class InterviewController {
   @ApiResponse({ status: 400, description: 'Interview is already cancelled' })
   async cancel(@Param('uid') uid: string): Promise<InterviewResponseDto> {
     return this.interviewService.cancel(uid);
+  }
+
+  @Put(':uid/complete')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Mark interview as completed' })
+  @ApiResponse({ status: 200, description: 'Interview marked as completed', type: InterviewResponseDto })
+  @ApiResponse({ status: 404, description: 'Interview not found' })
+  @ApiResponse({ status: 400, description: 'Interview is already completed or cancelled' })
+  async complete(@Param('uid') uid: string): Promise<InterviewResponseDto> {
+    return this.interviewService.complete(uid);
+  }
+
+  @Post(':uid/interviewers')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Add an interviewer to the interview' })
+  @ApiResponse({ status: 201, description: 'Interviewer added successfully', type: InterviewResponseDto })
+  @ApiResponse({ status: 404, description: 'Interview or user not found' })
+  @ApiResponse({ status: 400, description: 'User is already an interviewer' })
+  async addInterviewer(
+    @Param('uid') uid: string,
+    @Body() addInterviewerDto: AddInterviewerDto,
+  ): Promise<InterviewResponseDto> {
+    return this.interviewService.addInterviewer(uid, addInterviewerDto.userUid, addInterviewerDto.role);
+  }
+
+  @Delete(':uid/interviewers/:userUid')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Remove an interviewer from the interview' })
+  @ApiResponse({ status: 200, description: 'Interviewer removed successfully', type: InterviewResponseDto })
+  @ApiResponse({ status: 404, description: 'Interview, user, or interviewer relation not found' })
+  async removeInterviewer(
+    @Param('uid') uid: string,
+    @Param('userUid') userUid: string,
+  ): Promise<InterviewResponseDto> {
+    return this.interviewService.removeInterviewer(uid, userUid);
   }
 
   @Delete(':uid')

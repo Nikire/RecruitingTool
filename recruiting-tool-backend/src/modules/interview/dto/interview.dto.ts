@@ -49,6 +49,15 @@ export class CreateInterviewDto {
   meetingLink?: string;
 
   @ApiProperty({
+    description: 'Physical location of the interview',
+    example: 'Conference Room A, 5th Floor',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @ApiProperty({
     description: 'Additional notes for the interview',
     example: 'Prepare coding challenges',
     required: false
@@ -97,6 +106,15 @@ export class UpdateInterviewDto {
   meetingLink?: string;
 
   @ApiProperty({
+    description: 'Physical location of the interview',
+    example: 'Conference Room B, 3rd Floor',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @ApiProperty({
     description: 'Additional notes for the interview',
     example: 'Updated notes',
     required: false
@@ -114,6 +132,25 @@ export class UpdateInterviewDto {
   @IsOptional()
   @IsEnum(InterviewStatus)
   status?: InterviewStatus;
+}
+
+export class AddInterviewerDto {
+  @ApiProperty({
+    description: 'UID of the user to add as interviewer',
+    example: '123e4567-e89b-12d3-a456-426614174003'
+  })
+  @IsString()
+  @IsNotEmpty()
+  userUid: string;
+
+  @ApiProperty({
+    description: 'Role of the interviewer (e.g., Lead, Technical, HR)',
+    example: 'Lead Interviewer',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  role?: string;
 }
 
 export class InterviewResponseDto {
@@ -165,6 +202,13 @@ export class InterviewResponseDto {
   meetingLink: string | null;
 
   @ApiProperty({
+    description: 'Physical location of the interview',
+    example: 'Conference Room A, 5th Floor',
+    required: false
+  })
+  location: string | null;
+
+  @ApiProperty({
     description: 'Additional notes',
     example: 'Technical interview with coding exercises',
     required: false
@@ -182,6 +226,24 @@ export class InterviewResponseDto {
     example: 'John Doe'
   })
   scheduledByName: string;
+
+  @ApiProperty({
+    description: 'List of interviewers participating in this interview',
+    type: 'array',
+    items: {
+      type: 'object',
+      properties: {
+        userUid: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174003' },
+        userName: { type: 'string', example: 'Jane Smith' },
+        role: { type: 'string', example: 'Lead Interviewer', nullable: true }
+      }
+    }
+  })
+  interviewers: Array<{
+    userUid: string;
+    userName: string;
+    role: string | null;
+  }>;
 
   @ApiProperty({
     description: 'Creation timestamp',
