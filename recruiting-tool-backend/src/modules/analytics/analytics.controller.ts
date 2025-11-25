@@ -7,6 +7,10 @@ import {
   OverviewMetricsDto,
   SourceAnalyticsDto,
   DateRangeQueryDto,
+  PipelineFunnelDto,
+  TimeToHireDto,
+  SourceEffectivenessDto,
+  StageDurationDto,
 } from './dto/analytics.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -109,5 +113,81 @@ export class AnalyticsController {
     @CurrentUser() currentUser: User,
   ): Promise<SourceAnalyticsDto[]> {
     return this.analyticsService.getSourceAnalytics(queryDto, currentUser);
+  }
+
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
+  @Get('pipeline')
+  @ApiOperation({
+    summary: 'Get pipeline funnel data with conversion rates',
+    description:
+      'Returns detailed funnel analysis with stage-by-stage conversion and drop-off rates. SUPER_ADMIN can filter by company.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns pipeline funnel metrics',
+    type: PipelineFunnelDto,
+  })
+  getPipelineFunnel(
+    @Query() queryDto: DateRangeQueryDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<PipelineFunnelDto> {
+    return this.analyticsService.getPipelineFunnel(queryDto, currentUser);
+  }
+
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
+  @Get('time-to-hire')
+  @ApiOperation({
+    summary: 'Get time-to-hire metrics with trend data',
+    description:
+      'Returns comprehensive time-to-hire analysis including trends, median, fastest, and slowest times. SUPER_ADMIN can filter by company.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns time-to-hire analytics',
+    type: TimeToHireDto,
+  })
+  getTimeToHireAnalytics(
+    @Query() queryDto: DateRangeQueryDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<TimeToHireDto> {
+    return this.analyticsService.getTimeToHireAnalytics(queryDto, currentUser);
+  }
+
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
+  @Get('source-effectiveness')
+  @ApiOperation({
+    summary: 'Get source effectiveness with success rates',
+    description:
+      'Returns detailed source analysis including success rates, time to hire, and quality scores. SUPER_ADMIN can filter by company.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns source effectiveness metrics',
+    type: [SourceEffectivenessDto],
+  })
+  getSourceEffectiveness(
+    @Query() queryDto: DateRangeQueryDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<SourceEffectivenessDto[]> {
+    return this.analyticsService.getSourceEffectiveness(queryDto, currentUser);
+  }
+
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
+  @Get('stage-duration')
+  @ApiOperation({
+    summary: 'Get stage duration analysis',
+    description:
+      'Returns average time spent in each stage with bottleneck identification. SUPER_ADMIN can filter by company.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns stage duration metrics',
+    type: [StageDurationDto],
+  })
+  getStageDuration(
+    @Query() queryDto: DateRangeQueryDto,
+    @CurrentUser() currentUser: User,
+  ): Promise<StageDurationDto[]> {
+    return this.analyticsService.getStageDuration(queryDto, currentUser);
   }
 }

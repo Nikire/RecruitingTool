@@ -1,6 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { useTranslation } from 'react-i18next';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
@@ -18,6 +19,7 @@ interface MetricCardProps {
  */
 const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const getTrendIcon = () => {
     if (!data.trend) return null;
@@ -115,7 +117,7 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
               }}
             />
             <Typography variant="caption" color="text.secondary">
-              vs last period
+              {t('analytics.vs_last_period')}
             </Typography>
           </Box>
         )}
