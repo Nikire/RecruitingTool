@@ -9,51 +9,53 @@ datasource db {
 }
 
 model Company {
-  id              Int             @id @default(autoincrement())
-  uid             String          @unique @default(uuid()) @db.Uuid
-  name            String
-  description     String?
-  createdAt       DateTime        @default(now())
-  updatedAt       DateTime        @updatedAt
-  users           User[]
-  jobPositions    JobPosition[]
-  hiringProcesses HiringProcess[]
-  emailTemplates  EmailTemplate[]
+  id                 Int                  @id @default(autoincrement())
+  uid                String               @unique @default(uuid()) @db.Uuid
+  name               String
+  description        String?
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  users              User[]
+  jobPositions       JobPosition[]
+  hiringProcesses    HiringProcess[]
+  emailTemplates     EmailTemplate[]
+  scorecardTemplates ScorecardTemplate[]
 }
 
 model User {
-  id                    Int                    @id @default(autoincrement())
-  uid                   String                 @unique @default(uuid()) @db.Uuid
-  name                  String
-  email                 String                 @unique
-  password              String
-  roles                 RolesType[]            @default([USER])
-  profilePicture        String?
-  phoneNumber           String?
-  position              String?
-  department            String?
-  bio                   String?
-  linkedinUrl           String?
-  timezone              String?
-  isActive              Boolean                @default(true)
-  deactivatedAt         DateTime?
-  deactivatedBy         Int?
-  lastLoginAt           DateTime?
-  createdAt             DateTime               @default(now())
-  updatedAt             DateTime               @updatedAt
-  companyId             Int?
-  company               Company?               @relation(fields: [companyId], references: [id])
-  profile               Profile?
-  jobPositions          JobPosition[]          @relation("JobPositionsUser")
-  fileUploads           FileUpload[]           @relation("FileUploadsUser")
-  reviewedApplications  Application[]          @relation("ApplicationReviewer")
-  candidateNotes        CandidateNote[]        @relation("CandidateNoteAuthor")
-  emailTemplates        EmailTemplate[]        @relation("EmailTemplateCreatedBy")
-  scheduledInterviews   Interview[]            @relation("InterviewScheduledBy")
-  interviewParticipations InterviewInterviewer[] @relation("InterviewParticipations")
-  stageNotes            StageNote[]            @relation("StageNoteAuthor")
-  activityLogs          UserActivityLog[]      @relation("UserActivityLogs")
-  schedules             HRSchedule[]           @relation("UserSchedules")
+  id                      Int                      @id @default(autoincrement())
+  uid                     String                   @unique @default(uuid()) @db.Uuid
+  name                    String
+  email                   String                   @unique
+  password                String
+  roles                   RolesType[]              @default([USER])
+  profilePicture          String?
+  phoneNumber             String?
+  position                String?
+  department              String?
+  bio                     String?
+  linkedinUrl             String?
+  timezone                String?
+  isActive                Boolean                  @default(true)
+  deactivatedAt           DateTime?
+  deactivatedBy           Int?
+  lastLoginAt             DateTime?
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+  companyId               Int?
+  company                 Company?                 @relation(fields: [companyId], references: [id])
+  profile                 Profile?
+  jobPositions            JobPosition[]            @relation("JobPositionsUser")
+  fileUploads             FileUpload[]             @relation("FileUploadsUser")
+  reviewedApplications    Application[]            @relation("ApplicationReviewer")
+  candidateNotes          CandidateNote[]          @relation("CandidateNoteAuthor")
+  emailTemplates          EmailTemplate[]          @relation("EmailTemplateCreatedBy")
+  scheduledInterviews     Interview[]              @relation("InterviewScheduledBy")
+  interviewParticipations InterviewInterviewer[]   @relation("InterviewParticipations")
+  stageNotes              StageNote[]              @relation("StageNoteAuthor")
+  activityLogs            UserActivityLog[]        @relation("UserActivityLogs")
+  schedules               HRSchedule[]             @relation("UserSchedules")
+  scorecardEvaluations    Scorecard[]              @relation("ScorecardEvaluations")
 }
 
 model Candidate {
@@ -287,6 +289,7 @@ model Interview {
   scheduledById Int
   scheduledBy   User                   @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
   interviewers  InterviewInterviewer[] @relation("InterviewInterviewers")
+  scorecards    Scorecard[]
   createdAt     DateTime               @default(now())
   updatedAt     DateTime               @updatedAt
 
@@ -368,4 +371,83 @@ model HRSchedule {
   @@index([userId])
   @@index([dayOfWeek])
   @@index([specificDate])
+}
+
+model ScorecardTemplate {
+  id          Int                 @id @default(autoincrement())
+  uid         String              @unique @default(uuid()) @db.Uuid
+  name        String
+  description String?             @db.Text
+  companyId   Int?
+  company     Company?            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isActive    Boolean             @default(true)
+  categories  ScorecardCategory[]
+  submissions Scorecard[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  @@index([companyId])
+  @@index([isActive])
+}
+
+model ScorecardCategory {
+  id         Int                  @id @default(autoincrement())
+  uid        String               @unique @default(uuid()) @db.Uuid
+  templateId Int
+  template   ScorecardTemplate    @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  name       String
+  weight     Int
+  order      Int                  @default(0)
+  criteria   ScorecardCriterion[]
+  createdAt  DateTime             @default(now())
+
+  @@index([templateId])
+}
+
+model ScorecardCriterion {
+  id          Int               @id @default(autoincrement())
+  uid         String            @unique @default(uuid()) @db.Uuid
+  categoryId  Int
+  category    ScorecardCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name        String
+  description String?           @db.Text
+  maxScore    Int               @default(5)
+  order       Int               @default(0)
+  createdAt   DateTime          @default(now())
+
+  @@index([categoryId])
+}
+
+model Scorecard {
+  id           Int                @id @default(autoincrement())
+  uid          String             @unique @default(uuid()) @db.Uuid
+  templateId   Int
+  template     ScorecardTemplate  @relation(fields: [templateId], references: [id])
+  interviewId  Int
+  interview    Interview          @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  evaluatorId  Int
+  evaluator    User               @relation("ScorecardEvaluations", fields: [evaluatorId], references: [id])
+  overallScore Float?
+  notes        String?            @db.Text
+  scores       ScorecardScore[]
+  submittedAt  DateTime           @default(now())
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([templateId])
+  @@index([interviewId])
+  @@index([evaluatorId])
+}
+
+model ScorecardScore {
+  id          Int       @id @default(autoincrement())
+  scorecardId Int
+  scorecard   Scorecard @relation(fields: [scorecardId], references: [id], onDelete: Cascade)
+  criterionId Int
+  score       Int
+  notes       String?   @db.Text
+  createdAt   DateTime  @default(now())
+
+  @@unique([scorecardId, criterionId])
+  @@index([scorecardId])
 }
