@@ -1,6 +1,5 @@
 import {
 	Box,
-	Typography,
 	Table,
 	TableBody,
 	TableCell,
@@ -8,7 +7,6 @@ import {
 	TableHead,
 	TableRow,
 	Paper,
-	Chip,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {useListUsers, useDeleteUser} from '../../hooks/api/useUsers';
@@ -18,13 +16,13 @@ import UpdateUserDialog from '../dialogs/UpdateUserDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {hasRole} from '../../utils/permissions';
-import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 import {TableRowActions} from '../tables';
 import {StatusChip} from '../common';
+import TableSkeletonLoader from '../common/TableSkeletonLoader';
 
 interface UsersListProps {
 	page: number;
@@ -61,9 +59,9 @@ const UsersList: React.FC<UsersListProps> = ({
 	const users = data?.data;
 	const meta = data?.meta;
 
-	// Only show loading spinner on INITIAL load, not on refetch
+	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return <LoadingSpinner />;
+		return <TableSkeletonLoader rows={limit} columns={isSuperAdmin ? 6 : 5} />;
 	}
 
 	if (error && !data) {

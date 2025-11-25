@@ -1,6 +1,5 @@
 import {
 	Box,
-	CircularProgress,
 	Typography,
 	Table,
 	TableBody,
@@ -24,6 +23,7 @@ import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
 import {useDialog} from '../../hooks/useDialog';
+import TableSkeletonLoader from '../common/TableSkeletonLoader';
 
 interface JobPositionsListProps {
 	page: number;
@@ -173,10 +173,10 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 		navigate(`/careers/${uid}`);
 	};
 
-	// Only show loading spinner on INITIAL load, not on refetch
+	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
 		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: {xs: 2, sm: 4}}}>
+			<Box sx={{width: '100%'}}>
 				{isMobile ? (
 					<Box sx={{width: '100%'}}>
 						{[1, 2, 3].map((i) => (
@@ -184,7 +184,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 						))}
 					</Box>
 				) : (
-					<CircularProgress />
+					<TableSkeletonLoader rows={limit} columns={6} />
 				)}
 			</Box>
 		);

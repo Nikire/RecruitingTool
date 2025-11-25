@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 const { PORT, FRONTEND_URL } = process.env;
 
@@ -11,6 +12,9 @@ async function bootstrap() {
 
   // Register global exception filter for consistent error handling
   app.useGlobalFilters(new HttpExceptionFilter());
+
+  // Register global response interceptor for consistent success responses
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.enableCors({
     origin: FRONTEND_URL,

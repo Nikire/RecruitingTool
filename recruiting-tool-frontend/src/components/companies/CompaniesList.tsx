@@ -1,9 +1,10 @@
-import {Box, CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@mui/material';
+import {Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {useListCompanies} from '../../hooks/api/useCompanies';
 import {Company} from '../../types/company.types';
 import Pagination from '../pagination/Pagination';
 import {TableRowActions} from '../tables';
+import TableSkeletonLoader from '../common/TableSkeletonLoader';
 
 interface CompaniesListProps {
 	page: number;
@@ -36,13 +37,9 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 	const companies = data?.data;
 	const meta = data?.meta;
 
-	// Only show loading spinner on INITIAL load, not on refetch
+	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh'}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <TableSkeletonLoader rows={limit} columns={5} />;
 	}
 
 	return (

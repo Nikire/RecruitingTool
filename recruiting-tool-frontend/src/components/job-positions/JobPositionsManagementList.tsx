@@ -1,4 +1,4 @@
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, IconButton, Tooltip, Button} from '@mui/material';
+import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Chip, IconButton, Tooltip, Button} from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useListJobPositions, useDeleteJobPosition} from '../../hooks/api/useJobPositions';
@@ -12,6 +12,7 @@ import {canManageResources} from '../../utils/permissions';
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 import { useTranslation } from 'react-i18next';
+import TableSkeletonLoader from '../common/TableSkeletonLoader';
 
 interface JobPositionsManagementListProps {
 	page: number;
@@ -49,13 +50,9 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 	const jobPositions = data?.data;
 	const meta = data?.meta;
 
-	// Only show loading spinner on INITIAL load, not on refetch
+	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <TableSkeletonLoader rows={limit} columns={7} />;
 	}
 
 	if (error && !data) {

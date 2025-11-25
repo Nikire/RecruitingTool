@@ -1,4 +1,4 @@
-import {Box, Typography, Grid, CircularProgress, Button, Paper} from '@mui/material';
+import {Box, Typography, Grid, Button, Paper} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -15,6 +15,7 @@ import {Navigate} from 'react-router-dom';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
 import {Application} from '../../types/application.types';
 import {DashboardStatCard, ApplicationListItem, QuickActionButton} from '../../components/dashboard';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -147,9 +148,7 @@ const HRDashboard: React.FC = () => {
 				</Box>
 
 				{isLoading ? (
-					<Box sx={{display: 'flex', justifyContent: 'center', py: 4}}>
-						<CircularProgress />
-					</Box>
+					<SkeletonLoader variant="list" count={5} />
 				) : recentApplications.length === 0 ? (
 					<Typography color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
 						{t('dashboard.no_applications')}

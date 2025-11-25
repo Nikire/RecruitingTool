@@ -1,4 +1,4 @@
-import {Box, CircularProgress, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@mui/material';
+import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {useListCandidates, useDeleteCandidate} from '../../hooks/api/useCandidates';
 import {useDialog} from '../../hooks/useDialog';
@@ -10,6 +10,7 @@ import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
 import {TableRowActions} from '../tables';
+import TableSkeletonLoader from '../common/TableSkeletonLoader';
 
 interface CandidatesListProps {
 	page: number;
@@ -53,13 +54,9 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 		deleteConfirm.confirmDelete(candidate);
 	};
 
-	// Only show loading spinner on INITIAL load, not on refetch
+	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <TableSkeletonLoader rows={limit} columns={canManage ? 4 : 3} />;
 	}
 
 	if (error && !data) {
