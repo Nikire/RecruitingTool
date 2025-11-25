@@ -67,3 +67,27 @@ export const STAGE_TYPE_COLORS: Record<StageType, string> = {
 	FINAL_INTERVIEW: '#FF9800',
 	OFFER: '#4CAF50',
 };
+
+// Stage Notes Types
+export interface StageNoteAuthor {
+	uid: string;
+	name: string;
+	email: string;
+}
+
+export interface StageNote {
+	uid: string;
+	content: string;
+	stageUid: string;
+	author: StageNoteAuthor;
+	createdAt: string;
+	updatedAt: string;
+}
+
+export interface CreateStageNoteDto {
+	content: string;
+}
+
+export interface UpdateStageNoteDto {
+	content: string;
+}

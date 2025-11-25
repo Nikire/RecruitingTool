@@ -4,6 +4,7 @@ import { DatabaseService } from 'src/modules/shared/modules/database/database.se
 import { StageMapper } from './entities/stage.entity';
 import { StageStatus } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { CreateStageNoteDto, UpdateStageNoteDto, StageNoteResponseDto } from './dto/stage-note.dto';
 
 @Injectable()
 export class StagesService {
@@ -303,5 +304,138 @@ export class StagesService {
     });
 
     return updatedStages.map(StageMapper);
+  }
+
+  // Stage Notes methods
+  async createNote(stageUid: string, createNoteDto: CreateStageNoteDto, authorUserId: number): Promise<StageNoteResponseDto> {
+    // Find stage by UID to get the numeric ID
+    const stage = await this.databaseService.stage.findUnique({
+      where: { uid: stageUid },
+    });
+
+    if (!stage) {
+      throw new NotFoundException(`Stage ${stageUid} not found`);
+    }
+
+    const note = await this.databaseService.stageNote.create({
+      data: {
+        content: createNoteDto.content,
+        stageId: stage.id,
+        authorId: authorUserId,
+      },
+      include: {
+        author: true,
+        stage: true,
+      },
+    });
+
+    return {
+      uid: note.uid,
+      content: note.content,
+      stageUid: note.stage.uid,
+      author: {
+        uid: note.author.uid,
+        name: note.author.name,
+        email: note.author.email,
+      },
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  }
+
+  async findNotesByStageUid(stageUid: string): Promise<StageNoteResponseDto[]> {
+    const stage = await this.databaseService.stage.findUnique({
+      where: { uid: stageUid },
+    });
+
+    if (!stage) {
+      throw new NotFoundException(`Stage ${stageUid} not found`);
+    }
+
+    const notes = await this.databaseService.stageNote.findMany({
+      where: { stageId: stage.id },
+      include: {
+        author: true,
+        stage: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return notes.map((note) => ({
+      uid: note.uid,
+      content: note.content,
+      stageUid: note.stage.uid,
+      author: {
+        uid: note.author.uid,
+        name: note.author.name,
+        email: note.author.email,
+      },
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    }));
+  }
+
+  async updateNote(noteUid: string, updateNoteDto: UpdateStageNoteDto, authorUserId: number): Promise<StageNoteResponseDto> {
+    // First fetch the note to verify ownership
+    const existingNote = await this.databaseService.stageNote.findUnique({
+      where: { uid: noteUid },
+      include: {
+        author: true,
+        stage: true,
+      },
+    });
+
+    if (!existingNote) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    // Verify that the current user is the note author
+    if (existingNote.authorId !== authorUserId) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    const note = await this.databaseService.stageNote.update({
+      where: { uid: noteUid },
+      data: { content: updateNoteDto.content },
+      include: {
+        author: true,
+        stage: true,
+      },
+    });
+
+    return {
+      uid: note.uid,
+      content: note.content,
+      stageUid: note.stage.uid,
+      author: {
+        uid: note.author.uid,
+        name: note.author.name,
+        email: note.author.email,
+      },
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    };
+  }
+
+  async deleteNote(noteUid: string, authorUserId: number): Promise<{ message: string }> {
+    // First fetch the note to verify ownership
+    const existingNote = await this.databaseService.stageNote.findUnique({
+      where: { uid: noteUid },
+    });
+
+    if (!existingNote) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    // Verify that the current user is the note author
+    if (existingNote.authorId !== authorUserId) {
+      throw new NotFoundException(`Note ${noteUid} not found`);
+    }
+
+    await this.databaseService.stageNote.delete({
+      where: { uid: noteUid },
+    });
+
+    return { message: 'Note deleted successfully' };
   }
 }

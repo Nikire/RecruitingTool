@@ -1,17 +1,24 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { StagesService } from './stages.service';
 import { CreateStageDto, UpdateStageDto } from './dto/stages.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { StageResponseDto } from './dto/stages.dto';
+import { CreateStageNoteDto, UpdateStageNoteDto, StageNoteResponseDto } from './dto/stage-note.dto';
+import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
+import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
+import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @Auth(['HR', 'ADMIN'])
 @ApiBearerAuth()
 @ApiTags('Stages')
 @Controller('stages')
 export class StagesController {
-  constructor(private readonly stagesService: StagesService) {}
+  constructor(
+    private readonly stagesService: StagesService,
+    private readonly databaseService: DatabaseService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new stage' })
@@ -53,5 +60,80 @@ export class StagesController {
   @ApiParam({ name: 'uid', type: String, description: 'Stage UID' })
   remove(@Param('uid') uid: string) {
     return this.stagesService.remove(uid);
+  }
+
+  // Stage Notes endpoints
+  @Post(':stageUid/notes')
+  @ApiOperation({ summary: 'Create a note for a stage' })
+  @ApiResponse({
+    status: 201,
+    description: 'The note has been successfully created.',
+    type: StageNoteResponseDto,
+  })
+  @ApiParam({ name: 'stageUid', required: true, description: 'UID of the stage' })
+  @ApiBody({ type: CreateStageNoteDto })
+  async createNote(
+    @Param('stageUid') stageUid: string,
+    @Body() createNoteDto: CreateStageNoteDto,
+    @CurrentUser() user: any,
+  ): Promise<StageNoteResponseDto> {
+    // Look up the user's numeric ID from the UID stored in the token
+    const dbUser = await this.databaseService.user.findUnique({
+      where: { uid: user.uid },
+    });
+
+    return this.stagesService.createNote(stageUid, createNoteDto, dbUser.id);
+  }
+
+  @Get(':stageUid/notes')
+  @ApiOperation({ summary: 'Get all notes for a stage' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns a list of notes for the stage',
+    type: [StageNoteResponseDto],
+  })
+  @ApiParam({ name: 'stageUid', required: true, description: 'UID of the stage' })
+  findNotesByStageUid(@Param('stageUid') stageUid: string): Promise<StageNoteResponseDto[]> {
+    return this.stagesService.findNotesByStageUid(stageUid);
+  }
+
+  @Put('notes/:noteUid')
+  @ApiOperation({ summary: 'Update a note by UID (only by author)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the updated note',
+    type: StageNoteResponseDto,
+  })
+  @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
+  @ApiBody({ type: UpdateStageNoteDto })
+  async updateNote(
+    @Param('noteUid') noteUid: string,
+    @Body() updateNoteDto: UpdateStageNoteDto,
+    @CurrentUser() user: any,
+  ): Promise<StageNoteResponseDto> {
+    // Look up the user's numeric ID from the UID stored in the token
+    const dbUser = await this.databaseService.user.findUnique({
+      where: { uid: user.uid },
+    });
+    return this.stagesService.updateNote(noteUid, updateNoteDto, dbUser.id);
+  }
+
+  @Delete('notes/:noteUid')
+  @ApiOperation({ summary: 'Delete a note by UID (only by author)' })
+  @ApiResponse({
+    status: 200,
+    description: 'The note has been successfully deleted.',
+    type: MessageResponseDto,
+  })
+  @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
+  async removeNote(
+    @Param('noteUid') noteUid: string,
+    @CurrentUser() user: any,
+  ): Promise<MessageResponseDto> {
+    // Look up the user's numeric ID from the UID stored in the token
+    const dbUser = await this.databaseService.user.findUnique({
+      where: { uid: user.uid },
+    });
+    return this.stagesService.deleteNote(noteUid, dbUser.id);
   }
 }

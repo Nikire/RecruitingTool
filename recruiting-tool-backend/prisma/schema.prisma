@@ -45,6 +45,7 @@ model User {
   candidateNotes        CandidateNote[] @relation("CandidateNoteAuthor")
   emailTemplates        EmailTemplate[] @relation("EmailTemplateCreatedBy")
   scheduledInterviews   Interview[]     @relation("InterviewScheduledBy")
+  stageNotes            StageNote[]     @relation("StageNoteAuthor")
 }
 
 model Candidate {
@@ -145,8 +146,24 @@ model Stage {
   jobPositionId   Int?
   estimatedTime   Int?
   interviews      Interview[]    @relation("StageInterviews")
+  notes           StageNote[]    @relation("StageNotes")
 
   @@unique([hiringProcessId, position])
+}
+
+model StageNote {
+  id        Int      @id @default(autoincrement())
+  uid       String   @unique @default(uuid()) @db.Uuid
+  content   String   @db.Text
+  stageId   Int
+  stage     Stage    @relation("StageNotes", fields: [stageId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation("StageNoteAuthor", fields: [authorId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([stageId])
+  @@index([authorId])
 }
 
 enum StageStatus {
