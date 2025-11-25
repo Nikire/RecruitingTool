@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
@@ -6,6 +6,7 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 import { ApplicationStatus, StageStatus, User } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
+import { EntityNotFoundException } from 'src/common/exceptions';
 
 @Injectable()
 export class ApplicationService {
@@ -15,6 +16,7 @@ export class ApplicationService {
   ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
+    try {
     const jobPosition = await this.databaseService.jobPosition.findUnique({
       where: { uid: createApplicationDto.jobPositionUid },
       include: { company: true },
@@ -79,9 +81,18 @@ export class ApplicationService {
     }
 
     return ApplicationMapper(application);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create: ${error.message}`,
+      );
+    }}
 
   async findAll(filterDto: ApplicationFilterDto, user: User): Promise<ApplicationResponseDto[]> {
+    try {
     const where: any = {};
 
     if (filterDto.jobPositionUid) {
@@ -117,16 +128,25 @@ export class ApplicationService {
     });
 
     return applications.map(ApplicationMapper);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find all: ${error.message}`,
+      );
+    }}
 
   async findOne(uid: string, user?: User): Promise<ApplicationResponseDto> {
+    try {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
       include: includeApplication,
     });
 
     if (!application) {
-      throw new NotFoundException(`Application ${uid} not found`);
+      throw new EntityNotFoundException('Application', uid);
     }
 
     // Verify company access if user is provided (through job position)
@@ -135,16 +155,25 @@ export class ApplicationService {
     }
 
     return ApplicationMapper(application);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find one: ${error.message}`,
+      );
+    }}
 
   async update(uid: string, updateApplicationDto: UpdateApplicationDto, reviewerUid: string, user: User): Promise<ApplicationResponseDto> {
+    try {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
       include: { jobPosition: true },
     });
 
     if (!application) {
-      throw new NotFoundException(`Application ${uid} not found`);
+      throw new EntityNotFoundException('Application', uid);
     }
 
     // Verify company access before update (through job position)
@@ -187,7 +216,15 @@ export class ApplicationService {
     }
 
     return ApplicationMapper(updatedApplication);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to update: ${error.message}`,
+      );
+    }}
 
   private async sendStatusChangeEmail(
     email: string,
@@ -218,13 +255,14 @@ export class ApplicationService {
   }
 
   async remove(uid: string, user: User): Promise<MessageResponseDto> {
+    try {
     const application = await this.databaseService.application.findUnique({
       where: { uid },
       include: { jobPosition: true },
     });
 
     if (!application) {
-      throw new NotFoundException(`Application ${uid} not found`);
+      throw new EntityNotFoundException('Application', uid);
     }
 
     // Verify company access before delete (through job position)
@@ -235,9 +273,18 @@ export class ApplicationService {
     });
 
     return { message: 'Application successfully deleted' };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to remove: ${error.message}`,
+      );
+    }}
 
   async acceptApplication(applicationUid: string, user: User): Promise<ApplicationResponseDto> {
+    try {
     // Fetch the application with related data
     const application = await this.databaseService.application.findUnique({
       where: { uid: applicationUid },
@@ -247,7 +294,7 @@ export class ApplicationService {
     });
 
     if (!application) {
-      throw new NotFoundException(`Application ${applicationUid} not found`);
+      throw new EntityNotFoundException('Application', applicationUid);
     }
 
     // Verify company access before accepting (through job position)
@@ -329,5 +376,13 @@ export class ApplicationService {
     }
 
     return ApplicationMapper(updatedApplication);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to accept application: ${error.message}`,
+      );
+    }}
 }

@@ -1,8 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { StorageService } from './storage.service';
 import { FileUploadResponseDto } from './dto/file-upload.dto';
 import { randomUUID } from 'crypto';
+import { EntityNotFoundException } from 'src/common/exceptions';
 
 @Injectable()
 export class FilesService {
@@ -19,6 +20,7 @@ export class FilesService {
 		userUid: string,
 		candidateUid?: string,
 	): Promise<FileUploadResponseDto> {
+		try {
 		// Generate unique filename
 		const uniqueFilename = `${randomUUID()}-${file.originalname}`;
 
@@ -30,7 +32,7 @@ export class FilesService {
 			where: { uid: userUid },
 		});
 		if (!user) {
-			throw new NotFoundException(`User with UID ${userUid} not found`);
+			throw new EntityNotFoundException('User', userUid);
 		}
 
 		// Get candidate ID if provided
@@ -40,7 +42,7 @@ export class FilesService {
 				where: { uid: candidateUid },
 			});
 			if (!candidate) {
-				throw new NotFoundException(`Candidate with UID ${candidateUid} not found`);
+				throw new EntityNotFoundException('Candidate', candidateUid);
 			}
 			candidateId = candidate.id;
 		}
@@ -59,12 +61,21 @@ export class FilesService {
 		});
 
 		return this.mapToDto(fileUpload);
+		} catch (error) {
+			if (error instanceof HttpException) {
+				throw error;
+			}
+			throw new InternalServerErrorException(
+				`Failed to upload file: ${error.message}`,
+			);
+		}
 	}
 
 	/**
 	 * Get all files, optionally filtered by candidate
 	 */
 	async getFiles(candidateUid?: string): Promise<FileUploadResponseDto[]> {
+		try {
 		let candidateId: number | undefined;
 
 		if (candidateUid) {
@@ -72,7 +83,7 @@ export class FilesService {
 				where: { uid: candidateUid },
 			});
 			if (!candidate) {
-				throw new NotFoundException(`Candidate with UID ${candidateUid} not found`);
+				throw new EntityNotFoundException('Candidate', candidateUid);
 			}
 			candidateId = candidate.id;
 		}
@@ -83,33 +94,51 @@ export class FilesService {
 		});
 
 		return Promise.all(files.map((file) => this.mapToDto(file)));
+		} catch (error) {
+			if (error instanceof HttpException) {
+				throw error;
+			}
+			throw new InternalServerErrorException(
+				`Failed to get files: ${error.message}`,
+			);
+		}
 	}
 
 	/**
 	 * Get a single file by UID
 	 */
 	async getFileByUid(uid: string): Promise<FileUploadResponseDto> {
+		try {
 		const file = await this.database.fileUpload.findUnique({
 			where: { uid },
 		});
 
 		if (!file) {
-			throw new NotFoundException(`File with UID ${uid} not found`);
+			throw new EntityNotFoundException('File', uid);
 		}
 
 		return this.mapToDto(file);
+		} catch (error) {
+			if (error instanceof HttpException) {
+				throw error;
+			}
+			throw new InternalServerErrorException(
+				`Failed to get file: ${error.message}`,
+			);
+		}
 	}
 
 	/**
 	 * Download a file (returns stream)
 	 */
 	async downloadFile(uid: string) {
+		try {
 		const file = await this.database.fileUpload.findUnique({
 			where: { uid },
 		});
 
 		if (!file) {
-			throw new NotFoundException(`File with UID ${uid} not found`);
+			throw new EntityNotFoundException('File', uid);
 		}
 
 		const stream = await this.storageService.downloadFile(file.s3Key);
@@ -119,18 +148,27 @@ export class FilesService {
 			filename: file.originalName,
 			mimetype: file.mimetype,
 		};
+		} catch (error) {
+			if (error instanceof HttpException) {
+				throw error;
+			}
+			throw new InternalServerErrorException(
+				`Failed to download file: ${error.message}`,
+			);
+		}
 	}
 
 	/**
 	 * Delete a file
 	 */
 	async deleteFile(uid: string): Promise<void> {
+		try {
 		const file = await this.database.fileUpload.findUnique({
 			where: { uid },
 		});
 
 		if (!file) {
-			throw new NotFoundException(`File with UID ${uid} not found`);
+			throw new EntityNotFoundException('File', uid);
 		}
 
 		// Delete from S3/MinIO
@@ -140,6 +178,14 @@ export class FilesService {
 		await this.database.fileUpload.delete({
 			where: { uid },
 		});
+		} catch (error) {
+			if (error instanceof HttpException) {
+				throw error;
+			}
+			throw new InternalServerErrorException(
+				`Failed to delete file: ${error.message}`,
+			);
+		}
 	}
 
 	/**

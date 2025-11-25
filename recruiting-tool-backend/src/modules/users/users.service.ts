@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { CreateUserDto, CreateUserInternalDto, UpdateUserDto, UserResponseDto, UserWithPasswordResponseDto } from './dto/users.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -6,6 +6,7 @@ import { UserMapper, UserWithPasswordMapper } from './entities/users.entities';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { StorageService } from '../storage/storage.service';
 import * as bycrypt from 'bcryptjs';
+import { EntityNotFoundException } from 'src/common/exceptions';
 
 @Injectable()
 export class UsersService {
@@ -14,6 +15,7 @@ export class UsersService {
     private storageService: StorageService,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
+    try {
     try {
       let companyId: number | undefined = undefined;
       if (createUserDto.companyUid) {
@@ -41,9 +43,18 @@ export class UsersService {
       }
       throw error;
     }
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create: ${error.message}`,
+      );
+    }}
 
   async createInternal(createUserDto: CreateUserInternalDto): Promise<UserResponseDto> {
+    try {
     try {
       const newUser = await this.databaseService.user.create({
         data: { ...createUserDto, password: await bycrypt.hash(createUserDto.password, 10) },
@@ -56,18 +67,36 @@ export class UsersService {
       }
       throw error;
     }
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create internal: ${error.message}`,
+      );
+    }}
 
   async findAll(): Promise<Array<UserResponseDto>> {
+    try {
     const users = await this.databaseService.user.findMany({
       include: {
         company: true,
       },
     });
     return users.map((user) => UserMapper(user));
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find all: ${error.message}`,
+      );
+    }}
 
   async list(paginationDto: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
+    try {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * limit;
 
@@ -108,9 +137,18 @@ export class UsersService {
         hasPreviousPage: page > 1,
       },
     };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to list: ${error.message}`,
+      );
+    }}
 
   async findOne(uid: string): Promise<UserResponseDto> {
+    try {
     const user = await this.databaseService.user.findUnique({
       where: { uid },
       include: {
@@ -118,21 +156,30 @@ export class UsersService {
       },
     });
     if (!user) {
-      throw new NotFoundException(`User ${uid} not found`);
+      throw new EntityNotFoundException('User', uid);
     }
     return UserMapper(user);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find one: ${error.message}`,
+      );
+    }}
 
   async update(uid: string, updateUserDto: UpdateUserDto): Promise<UserResponseDto> {
+    try {
     if (!uid) {
-      throw new NotFoundException(`User ${uid} not found`);
+      throw new EntityNotFoundException('User', uid);
     }
     const existingUser = await this.databaseService.user.findUnique({
       where: { uid },
     });
 
     if (!existingUser) {
-      throw new NotFoundException(`User ${uid} not found`);
+      throw new EntityNotFoundException('User', uid);
     }
 
     // Delete old profile picture if a new one is being set
@@ -180,9 +227,18 @@ export class UsersService {
       },
     });
     return UserMapper(updatedUser);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to update: ${error.message}`,
+      );
+    }}
 
   async remove(uid: string): Promise<MessageResponseDto> {
+    try {
     const existingUser = await this.databaseService.user.findUnique({
       where: { uid },
     });
@@ -191,9 +247,18 @@ export class UsersService {
     }
     await this.databaseService.user.delete({ where: { uid } });
     return { message: `User deleted successfully` };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to remove: ${error.message}`,
+      );
+    }}
 
   async findByEmail(email: string): Promise<UserWithPasswordResponseDto> | null {
+    try {
     const user = await this.databaseService.user.findUnique({
       where: { email },
     });
@@ -203,5 +268,13 @@ export class UsersService {
     }
 
     return UserWithPasswordMapper(user);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find by email: ${error.message}`,
+      );
+    }}
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto } from './dto/candidate.dto';
@@ -7,12 +7,14 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 import { User } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
+import { EntityNotFoundException } from 'src/common/exceptions';
 
 @Injectable()
 export class CandidateService {
   constructor(private databaseService: DatabaseService) {}
 
   async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
+    try {
     const candidate = await this.databaseService.candidate.create({
       data: {
         name: createCandidateDto.name,
@@ -20,16 +22,25 @@ export class CandidateService {
       },
     });
     return CandidateMapper(candidate);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create: ${error.message}`,
+      );
+    }}
 
   async findOne(uid: string, user?: User): Promise<CandidateResponseDto> {
+    try {
     const candidate = await this.databaseService.candidate.findUnique({
       where: { uid },
       include: { hiringProcesses: true },
     });
 
     if (!candidate) {
-      throw new NotFoundException(`Candidate ${uid} not found`);
+      throw new EntityNotFoundException('Candidate', uid);
     }
 
     // Verify company access if user is provided (through hiring processes)
@@ -39,15 +50,24 @@ export class CandidateService {
         // Check if candidate has at least one hiring process for this company
         const hasAccessToCandidate = candidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
         if (!hasAccessToCandidate) {
-          throw new NotFoundException(`Candidate ${uid} not found`);
+          throw new EntityNotFoundException('Candidate', uid);
         }
       }
     }
 
     return CandidateMapper(candidate);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find one: ${error.message}`,
+      );
+    }}
 
   async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
+    try {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * limit;
 
@@ -96,9 +116,18 @@ export class CandidateService {
         hasPreviousPage: page > 1,
       },
     };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to list: ${error.message}`,
+      );
+    }}
 
   async findAll(user: User): Promise<Array<CandidateResponseDto>> {
+    try {
     const where: any = {};
 
     // Add company filter for HR and USER roles (filter by hiring processes company)
@@ -116,11 +145,20 @@ export class CandidateService {
       include: { hiringProcesses: true },
     });
     return candidates.map((c) => CandidateMapper(c));
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find all: ${error.message}`,
+      );
+    }}
 
   async update(uid: string, updateCandidateDto: UpdateCandidateDto, user: User): Promise<CandidateResponseDto> {
+    try {
     if (!uid) {
-      throw new NotFoundException(`Candidate ${uid} not found`);
+      throw new EntityNotFoundException('Candidate', uid);
     }
 
     // Verify company access before update (through hiring processes)
@@ -130,7 +168,7 @@ export class CandidateService {
     });
 
     if (!existingCandidate) {
-      throw new NotFoundException(`Candidate ${uid} not found`);
+      throw new EntityNotFoundException('Candidate', uid);
     }
 
     // Check if user has access to this candidate through any hiring process
@@ -139,7 +177,7 @@ export class CandidateService {
       if (userCompanyId !== null) {
         const hasAccessToCandidate = existingCandidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
         if (!hasAccessToCandidate) {
-          throw new NotFoundException(`Candidate ${uid} not found`);
+          throw new EntityNotFoundException('Candidate', uid);
         }
       }
     }
@@ -150,11 +188,20 @@ export class CandidateService {
     });
 
     return CandidateMapper(candidate);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to update: ${error.message}`,
+      );
+    }}
 
   async remove(uid: string, user: User): Promise<MessageResponseDto> {
+    try {
     if (!uid) {
-      throw new NotFoundException(`Candidate ${uid} not found`);
+      throw new EntityNotFoundException('Candidate', uid);
     }
 
     // Verify company access before delete (through hiring processes)
@@ -164,7 +211,7 @@ export class CandidateService {
     });
 
     if (!existingCandidate) {
-      throw new NotFoundException(`Candidate ${uid} not found`);
+      throw new EntityNotFoundException('Candidate', uid);
     }
 
     // Check if user has access to this candidate through any hiring process
@@ -173,7 +220,7 @@ export class CandidateService {
       if (userCompanyId !== null) {
         const hasAccessToCandidate = existingCandidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
         if (!hasAccessToCandidate) {
-          throw new NotFoundException(`Candidate ${uid} not found`);
+          throw new EntityNotFoundException('Candidate', uid);
         }
       }
     }
@@ -181,10 +228,19 @@ export class CandidateService {
     const candidate = await this.databaseService.candidate.delete({ where: { uid } });
 
     return { message: `Candidate deleted successfully` };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to remove: ${error.message}`,
+      );
+    }}
 
   // Candidate Notes methods
   async createNote(createNoteDto: CreateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
+    try {
     // Find candidate by UID to get the numeric ID
     const candidate = await this.databaseService.candidate.findUnique({
       where: { uid: createNoteDto.candidateUid },
@@ -215,15 +271,24 @@ export class CandidateService {
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
     };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create note: ${error.message}`,
+      );
+    }}
 
   async findNotesByCandidateUid(candidateUid: string): Promise<CandidateNoteResponseDto[]> {
+    try {
     const candidate = await this.databaseService.candidate.findUnique({
       where: { uid: candidateUid },
     });
 
     if (!candidate) {
-      throw new NotFoundException(`Candidate ${candidateUid} not found`);
+      throw new EntityNotFoundException('Candidate', candidateUid);
     }
 
     const notes = await this.databaseService.candidateNote.findMany({
@@ -244,9 +309,18 @@ export class CandidateService {
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
     }));
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find notes by candidate uid: ${error.message}`,
+      );
+    }}
 
   async updateNote(noteUid: string, updateNoteDto: UpdateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
+    try {
     // First fetch the note to verify ownership
     const existingNote = await this.databaseService.candidateNote.findUnique({
       where: { uid: noteUid },
@@ -257,12 +331,12 @@ export class CandidateService {
     });
 
     if (!existingNote) {
-      throw new NotFoundException(`Note ${noteUid} not found`);
+      throw new EntityNotFoundException('Note', noteUid);
     }
 
     // Verify that the current user is the note author
     if (existingNote.authorId !== authorUserId) {
-      throw new NotFoundException(`Note ${noteUid} not found`);
+      throw new EntityNotFoundException('Note', noteUid);
     }
 
     const note = await this.databaseService.candidateNote.update({
@@ -283,21 +357,30 @@ export class CandidateService {
       createdAt: note.createdAt,
       updatedAt: note.updatedAt,
     };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to update note: ${error.message}`,
+      );
+    }}
 
   async removeNote(noteUid: string, authorUserId: number): Promise<MessageResponseDto> {
+    try {
     // First fetch the note to verify ownership
     const existingNote = await this.databaseService.candidateNote.findUnique({
       where: { uid: noteUid },
     });
 
     if (!existingNote) {
-      throw new NotFoundException(`Note ${noteUid} not found`);
+      throw new EntityNotFoundException('Note', noteUid);
     }
 
     // Verify that the current user is the note author
     if (existingNote.authorId !== authorUserId) {
-      throw new NotFoundException(`Note ${noteUid} not found`);
+      throw new EntityNotFoundException('Note', noteUid);
     }
 
     const note = await this.databaseService.candidateNote.delete({
@@ -305,9 +388,17 @@ export class CandidateService {
     });
 
     if (!note) {
-      throw new NotFoundException(`Note ${noteUid} not found`);
+      throw new EntityNotFoundException('Note', noteUid);
     }
 
     return { message: 'Note deleted successfully' };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to remove note: ${error.message}`,
+      );
+    }}
 }

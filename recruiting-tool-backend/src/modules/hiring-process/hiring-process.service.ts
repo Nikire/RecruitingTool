@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { CreateHiringProcessDto, HiringProcessFindDto, HiringProcessResponseDto, UpdateHiringProcessDto } from './dto/hiring-process.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { HiringProcessOneMapper, includeHiringProcess } from './entities/hiring-process.entity';
@@ -9,6 +9,7 @@ import { StagesService } from './modules/stages/stages.service';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { User } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
+import { EntityNotFoundException } from 'src/common/exceptions';
 
 @Injectable()
 export class HiringProcessService {
@@ -20,6 +21,7 @@ export class HiringProcessService {
   ) {}
 
   async create(createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
+    try {
     const candidate = await this.candidateService.findOne(createHiringProcessDto.candidateUid);
 
     if (!candidate) {
@@ -61,9 +63,18 @@ export class HiringProcessService {
     await this.stagesService.bulkCreateStages(copiedStages);
 
     return HiringProcessOneMapper(newHiringProcess);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to create: ${error.message}`,
+      );
+    }}
 
   async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
+    try {
     const { page = 1, limit = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * limit;
 
@@ -105,9 +116,18 @@ export class HiringProcessService {
         hasPreviousPage: page > 1,
       },
     };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to list: ${error.message}`,
+      );
+    }}
 
   async findAll(hiringProcessFindDto: HiringProcessFindDto, user: User): Promise<Array<HiringProcessResponseDto>> {
+    try {
     const where: any = hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid } } : {};
 
     // Add company filter for HR and USER roles
@@ -121,16 +141,25 @@ export class HiringProcessService {
       where,
     });
     return hiringProcesses.map((hp) => HiringProcessOneMapper(hp));
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find all: ${error.message}`,
+      );
+    }}
 
   async findOne(uid: string, user?: User): Promise<HiringProcessResponseDto> {
+    try {
     const hiringProcess = await this.databaseService.hiringProcess.findUnique({
       where: { uid },
       include: includeHiringProcess,
     });
 
     if (!hiringProcess) {
-      throw new NotFoundException(`Hiring process ${uid} not found`);
+      throw new EntityNotFoundException('Hiring process', uid);
     }
 
     // Verify company access if user is provided
@@ -139,11 +168,20 @@ export class HiringProcessService {
     }
 
     return HiringProcessOneMapper(hiringProcess);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to find one: ${error.message}`,
+      );
+    }}
 
   async update(uid: string, updateHiringProcessDto: UpdateHiringProcessDto, user: User): Promise<HiringProcessResponseDto> {
+    try {
     if (!uid) {
-      throw new NotFoundException(`Hiring process ${uid} not found`);
+      throw new EntityNotFoundException('Hiring process', uid);
     }
 
     // Verify company access before update
@@ -152,7 +190,7 @@ export class HiringProcessService {
     });
 
     if (!existingHiringProcess) {
-      throw new NotFoundException(`Hiring process ${uid} not found`);
+      throw new EntityNotFoundException('Hiring process', uid);
     }
 
     verifyCompanyAccess(user, existingHiringProcess.companyId);
@@ -164,16 +202,25 @@ export class HiringProcessService {
     });
 
     return HiringProcessOneMapper(hiringProcess);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to update: ${error.message}`,
+      );
+    }}
 
   async remove(uid: string, user: User): Promise<MessageResponseDto> {
+    try {
     // Verify company access before delete
     const existingHiringProcess = await this.databaseService.hiringProcess.findUnique({
       where: { uid },
     });
 
     if (!existingHiringProcess) {
-      throw new NotFoundException(`Hiring process ${uid} not found`);
+      throw new EntityNotFoundException('Hiring process', uid);
     }
 
     verifyCompanyAccess(user, existingHiringProcess.companyId);
@@ -183,35 +230,61 @@ export class HiringProcessService {
     });
 
     return { message: `Hiring Process deleted successfully` };
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to remove: ${error.message}`,
+      );
+    }}
 
   async progressToNextStage(hiringProcessUid: string, user: User) {
+    try {
     // Verify company access before progressing stage
     const hiringProcess = await this.databaseService.hiringProcess.findUnique({
       where: { uid: hiringProcessUid },
     });
 
     if (!hiringProcess) {
-      throw new NotFoundException(`Hiring process ${hiringProcessUid} not found`);
+      throw new EntityNotFoundException('Hiring process', hiringProcessUid);
     }
 
     verifyCompanyAccess(user, hiringProcess.companyId);
 
     return this.stagesService.progressToNextStage(hiringProcessUid);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to progress to next stage: ${error.message}`,
+      );
+    }}
 
   async moveToSpecificStage(hiringProcessUid: string, targetStageUid: string, user: User) {
+    try {
     // Verify company access before moving to specific stage
     const hiringProcess = await this.databaseService.hiringProcess.findUnique({
       where: { uid: hiringProcessUid },
     });
 
     if (!hiringProcess) {
-      throw new NotFoundException(`Hiring process ${hiringProcessUid} not found`);
+      throw new EntityNotFoundException('Hiring process', hiringProcessUid);
     }
 
     verifyCompanyAccess(user, hiringProcess.companyId);
 
     return this.stagesService.moveToSpecificStage(hiringProcessUid, targetStageUid);
-  }
+  
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to move to specific stage: ${error.message}`,
+      );
+    }}
 }

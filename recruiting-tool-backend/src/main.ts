@@ -2,11 +2,15 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 
 const { PORT, FRONTEND_URL } = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Register global exception filter for consistent error handling
+  app.useGlobalFilters(new HttpExceptionFilter());
 
   app.enableCors({
     origin: FRONTEND_URL,
