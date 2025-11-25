@@ -5,12 +5,14 @@ import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/users.service';
 import { CreateUserDto, UserWithPasswordResponseDto } from 'src/modules/users/dto/users.dto';
 import { UserMapper } from 'src/modules/users/entities/users.entities';
+import { UserActivityService } from 'src/modules/users/services/user-activity.service';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
     private readonly jwtService: JwtService,
+    private readonly userActivityService: UserActivityService,
   ) {}
 
   async register({ name, email, password }: CreateUserDto): Promise<RegisteredUserDto> {
@@ -38,6 +40,11 @@ export class AuthService {
       throw new UnauthorizedException('Email is wrong');
     }
 
+    // Check if user is active
+    if (!foundUser.isActive) {
+      throw new UnauthorizedException('User account has been deactivated');
+    }
+
     const isPasswordValid = await bycrypt.compare(password, foundUser.password);
 
     if (!isPasswordValid) {
@@ -47,6 +54,15 @@ export class AuthService {
     const payload = foundUser;
 
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
+
+    // Update last login time
+    await this.usersService.updateLastLogin(foundUser.id);
+
+    // Log the login activity
+    await this.userActivityService.logActivity(foundUser.id, {
+      action: 'LOGIN',
+      metadata: { loginMethod: 'email' },
+    });
 
     return {
       user: { ...UserMapper(foundUser) },
@@ -63,6 +79,11 @@ export class AuthService {
 
       if (!freshUser) {
         throw new UnauthorizedException('User not found');
+      }
+
+      // Check if user is active
+      if (!freshUser.isActive) {
+        throw new UnauthorizedException('User account has been deactivated');
       }
 
       return freshUser;

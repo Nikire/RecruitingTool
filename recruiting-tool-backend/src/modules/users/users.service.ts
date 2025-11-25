@@ -1,4 +1,4 @@
-import { Injectable, ConflictException, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, ConflictException, NotFoundException, HttpException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { CreateUserDto, CreateUserInternalDto, UpdateUserDto, UserResponseDto, UserWithPasswordResponseDto } from './dto/users.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -7,12 +7,14 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { StorageService } from '../storage/storage.service';
 import * as bycrypt from 'bcryptjs';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { UserActivityService } from './services/user-activity.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     private databaseService: DatabaseService,
     private storageService: StorageService,
+    private userActivityService: UserActivityService,
   ) {}
   async create(createUserDto: CreateUserDto): Promise<UserResponseDto> {
     try {
@@ -268,7 +270,7 @@ export class UsersService {
     }
 
     return UserWithPasswordMapper(user);
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -277,4 +279,104 @@ export class UsersService {
         `Failed to find by email: ${error.message}`,
       );
     }}
+
+  async deactivateUser(uid: string, adminUserId: number): Promise<UserResponseDto> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { uid },
+      });
+
+      if (!user) {
+        throw new EntityNotFoundException('User', uid);
+      }
+
+      if (!user.isActive) {
+        throw new BadRequestException('User is already deactivated');
+      }
+
+      const updatedUser = await this.databaseService.user.update({
+        where: { uid },
+        data: {
+          isActive: false,
+          deactivatedAt: new Date(),
+          deactivatedBy: adminUserId,
+        },
+        include: {
+          company: true,
+        },
+      });
+
+      // Log the deactivation
+      await this.userActivityService.logActivity(user.id, {
+        action: 'DEACTIVATED',
+        metadata: { deactivatedBy: adminUserId },
+      });
+
+      return UserMapper(updatedUser);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to deactivate user: ${error.message}`,
+      );
+    }
+  }
+
+  async reactivateUser(uid: string, adminUserId: number): Promise<UserResponseDto> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { uid },
+      });
+
+      if (!user) {
+        throw new EntityNotFoundException('User', uid);
+      }
+
+      if (user.isActive) {
+        throw new BadRequestException('User is already active');
+      }
+
+      const updatedUser = await this.databaseService.user.update({
+        where: { uid },
+        data: {
+          isActive: true,
+          deactivatedAt: null,
+          deactivatedBy: null,
+        },
+        include: {
+          company: true,
+        },
+      });
+
+      // Log the reactivation
+      await this.userActivityService.logActivity(user.id, {
+        action: 'REACTIVATED',
+        metadata: { reactivatedBy: adminUserId },
+      });
+
+      return UserMapper(updatedUser);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to reactivate user: ${error.message}`,
+      );
+    }
+  }
+
+  async updateLastLogin(userId: number): Promise<void> {
+    try {
+      await this.databaseService.user.update({
+        where: { id: userId },
+        data: {
+          lastLoginAt: new Date(),
+        },
+      });
+    } catch (error) {
+      // Don't throw error here, just log it
+      console.error(`Failed to update last login for user ${userId}:`, error.message);
+    }
+  }
 }

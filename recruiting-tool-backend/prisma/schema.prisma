@@ -22,12 +22,12 @@ model Company {
 }
 
 model User {
-  id                    Int             @id @default(autoincrement())
-  uid                   String          @unique @default(uuid()) @db.Uuid
+  id                    Int                @id @default(autoincrement())
+  uid                   String             @unique @default(uuid()) @db.Uuid
   name                  String
-  email                 String          @unique
+  email                 String             @unique
   password              String
-  roles                 RolesType[]     @default([USER])
+  roles                 RolesType[]        @default([USER])
   profilePicture        String?
   phoneNumber           String?
   position              String?
@@ -35,18 +35,23 @@ model User {
   bio                   String?
   linkedinUrl           String?
   timezone              String?
-  createdAt             DateTime        @default(now())
-  updatedAt             DateTime        @updatedAt
+  isActive              Boolean            @default(true)
+  deactivatedAt         DateTime?
+  deactivatedBy         Int?
+  lastLoginAt           DateTime?
+  createdAt             DateTime           @default(now())
+  updatedAt             DateTime           @updatedAt
   companyId             Int?
-  company               Company?        @relation(fields: [companyId], references: [id])
+  company               Company?           @relation(fields: [companyId], references: [id])
   profile               Profile?
-  jobPositions          JobPosition[]   @relation("JobPositionsUser")
-  fileUploads           FileUpload[]    @relation("FileUploadsUser")
-  reviewedApplications  Application[]   @relation("ApplicationReviewer")
-  candidateNotes        CandidateNote[] @relation("CandidateNoteAuthor")
-  emailTemplates        EmailTemplate[] @relation("EmailTemplateCreatedBy")
-  scheduledInterviews   Interview[]     @relation("InterviewScheduledBy")
-  stageNotes            StageNote[]     @relation("StageNoteAuthor")
+  jobPositions          JobPosition[]      @relation("JobPositionsUser")
+  fileUploads           FileUpload[]       @relation("FileUploadsUser")
+  reviewedApplications  Application[]      @relation("ApplicationReviewer")
+  candidateNotes        CandidateNote[]    @relation("CandidateNoteAuthor")
+  emailTemplates        EmailTemplate[]    @relation("EmailTemplateCreatedBy")
+  scheduledInterviews   Interview[]        @relation("InterviewScheduledBy")
+  stageNotes            StageNote[]        @relation("StageNoteAuthor")
+  activityLogs          UserActivityLog[]  @relation("UserActivityLogs")
 }
 
 model Candidate {
@@ -307,4 +312,20 @@ model Profile {
   updatedAt   DateTime @updatedAt
 
   @@index([userId])
+}
+
+model UserActivityLog {
+  id        Int      @id @default(autoincrement())
+  uid       String   @unique @default(uuid()) @db.Uuid
+  userId    Int
+  user      User     @relation("UserActivityLogs", fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  ipAddress String?
+  userAgent String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
 }
