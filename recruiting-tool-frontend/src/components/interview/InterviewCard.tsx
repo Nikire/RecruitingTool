@@ -22,6 +22,7 @@ import {
   Person as PersonIcon,
 } from '@mui/icons-material';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 import { Interview, InterviewStatus } from '../../types/interview.types';
 import { useState } from 'react';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
@@ -33,6 +34,7 @@ interface InterviewCardProps {
 }
 
 const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
+  const { t } = useTranslation();
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
 
@@ -98,24 +100,24 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
   };
 
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return 'Not scheduled';
+    if (!dateString) return t('interview.not_scheduled');
     try {
       return format(new Date(dateString), 'MMM dd, yyyy');
     } catch {
-      return 'Invalid date';
+      return t('interview.invalid_date');
     }
   };
 
   const formatDuration = (minutes: number | null) => {
-    if (!minutes) return 'Not set';
+    if (!minutes) return t('interview.not_set');
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0 && mins > 0) {
       return `${hours}h ${mins}m`;
     } else if (hours > 0) {
-      return `${hours} hour${hours > 1 ? 's' : ''}`;
+      return `${hours} ${t(`interview.${hours > 1 ? 'hours' : 'hour'}`)}`;
     } else {
-      return `${mins} minute${mins > 1 ? 's' : ''}`;
+      return `${mins} ${t(`interview.${mins > 1 ? 'minutes' : 'minute'}`)}`;
     }
   };
 
@@ -136,7 +138,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
             <Box sx={{ flex: 1 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                 <Typography variant="h6" component="div">
-                  Interview
+                  {t('interview.title')}
                 </Typography>
                 <Chip
                   label={interview.status}
@@ -148,7 +150,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
 
             <Box sx={{ display: 'flex', gap: 0.5 }}>
               {interview.status === InterviewStatus.SCHEDULED && (
-                <Tooltip title="Mark as Completed">
+                <Tooltip title={t('interview.mark_completed_tooltip')}>
                   <IconButton
                     size="small"
                     color="success"
@@ -161,12 +163,12 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
               )}
               {interview.status !== InterviewStatus.CANCELLED && interview.status !== InterviewStatus.COMPLETED && (
                 <>
-                  <Tooltip title="Edit Interview">
+                  <Tooltip title={t('interview.edit_tooltip')}>
                     <IconButton size="small" color="primary" onClick={() => onEdit(interview)}>
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
-                  <Tooltip title="Cancel Interview">
+                  <Tooltip title={t('interview.cancel_tooltip')}>
                     <IconButton
                       size="small"
                       color="warning"
@@ -178,7 +180,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                   </Tooltip>
                 </>
               )}
-              <Tooltip title="Delete Interview">
+              <Tooltip title={t('interview.delete_tooltip')}>
                 <IconButton
                   size="small"
                   color="error"
@@ -195,21 +197,21 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <CalendarIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
-                <strong>Date:</strong> {formatDate(interview.scheduledDate)}
+                <strong>{t('interview.date_label')}</strong> {formatDate(interview.scheduledDate)}
               </Typography>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <TimeIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
-                <strong>Time:</strong> {interview.scheduledTime || 'Not set'}
+                <strong>{t('interview.time_label')}</strong> {interview.scheduledTime || t('interview.not_set')}
               </Typography>
             </Box>
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <DurationIcon fontSize="small" color="action" />
               <Typography variant="body2" color="text.secondary">
-                <strong>Duration:</strong> {formatDuration(interview.duration)}
+                <strong>{t('interview.duration_label')}</strong> {formatDuration(interview.duration)}
               </Typography>
             </Box>
 
@@ -226,7 +228,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                     rel="noopener noreferrer"
                     fullWidth
                   >
-                    Join Meeting
+                    {t('interview.join_meeting')}
                   </Button>
                 </Box>
               </>
@@ -237,7 +239,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                 <Divider sx={{ my: 1 }} />
                 <Box>
                   <Typography variant="body2" color="text.secondary" fontWeight="bold" gutterBottom>
-                    Notes:
+                    {t('interview.notes_label')}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     {interview.notes}
@@ -250,7 +252,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <PersonIcon fontSize="small" color="action" />
               <Typography variant="caption" color="text.secondary">
-                Scheduled by: {interview.scheduledByName}
+                {t('interview.scheduled_by', { name: interview.scheduledByName })}
               </Typography>
             </Box>
           </Stack>
@@ -261,16 +263,16 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}
         onConfirm={handleDelete}
-        title="Delete Interview"
-        message="Are you sure you want to delete this interview? This action cannot be undone."
+        title={t('interview.delete_title')}
+        message={t('interview.delete_confirmation')}
       />
 
       <ConfirmDeleteDialog
         open={confirmCancelOpen}
         onClose={() => setConfirmCancelOpen(false)}
         onConfirm={handleCancel}
-        title="Cancel Interview"
-        message="Are you sure you want to cancel this interview? An email notification will be sent to the candidate."
+        title={t('interview.cancel_title')}
+        message={t('interview.cancel_confirmation')}
       />
     </>
   );

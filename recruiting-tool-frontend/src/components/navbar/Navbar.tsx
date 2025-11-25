@@ -14,6 +14,7 @@ import {useTranslation} from 'react-i18next';
 import NavbarDrawer from './NavbarDrawer';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
+import LanguageSelector from '../common/LanguageSelector';
 
 const Navbar: React.FC = () => {
 	const {t} = useTranslation();
@@ -77,6 +78,7 @@ const Navbar: React.FC = () => {
 						</Typography>
 
 						<Box sx={{flexGrow: 1}} />
+						<LanguageSelector />
 						{isAuthenticated ? (
 							<Box sx={{display: 'flex', gap: 0.5, alignItems: 'center'}}>
 								<Button

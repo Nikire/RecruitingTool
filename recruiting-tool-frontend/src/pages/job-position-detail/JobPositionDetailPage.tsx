@@ -26,6 +26,7 @@ import {HiringProcessStatus} from '../../types/hiringProcess.types';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
 import {ApplyToJobDialog} from '../../components/dialogs/ApplyToJobDialog';
+import { useTranslation } from 'react-i18next';
 
 const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 'secondary' | 'error' | 'info' | 'success' | 'warning' => {
 	switch (status) {
@@ -45,6 +46,7 @@ const getStatusColor = (status: HiringProcessStatus): 'default' | 'primary' | 's
 };
 
 const JobPositionDetailPage: React.FC = () => {
+	const { t } = useTranslation();
 	const {uid} = useParams<{uid: string}>();
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
@@ -68,14 +70,14 @@ const JobPositionDetailPage: React.FC = () => {
 		return (
 			<Box sx={{p: 4}}>
 				<Typography color="error">
-					Error loading job position. Please try again.
+					{t('job_position_detail.error_loading')}
 				</Typography>
 				<Button
 					startIcon={<ArrowBackIcon />}
 					onClick={() => navigate('/job-positions')}
 					sx={{mt: 2}}
 				>
-					Back to Job Positions
+					{t('job_position_detail.back_to_positions')}
 				</Button>
 			</Box>
 		);
@@ -95,7 +97,7 @@ const JobPositionDetailPage: React.FC = () => {
 				onClick={() => navigate('/careers')}
 				sx={{mb: 3}}
 			>
-				Back to Careers
+				{t('common.back_to_careers')}
 			</Button>
 
 			<Paper sx={{p: 3, mb: 3}}>
@@ -103,7 +105,7 @@ const JobPositionDetailPage: React.FC = () => {
 					<Box>
 						<Typography variant="h4">{jobPosition.title}</Typography>
 						<Typography variant="subtitle1" color="textSecondary">
-							{canManage ? 'Hiring Processes Overview' : jobPosition.description || 'Job Posting'}
+							{canManage ? t('job_position_detail.hiring_overview') : jobPosition.description || t('job_position_detail.job_posting')}
 						</Typography>
 					</Box>
 					<Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
@@ -113,7 +115,7 @@ const JobPositionDetailPage: React.FC = () => {
 								variant="contained"
 								onClick={() => setApplyDialogOpen(true)}
 							>
-								Apply Now
+								{t('job_position_detail.apply_now')}
 							</Button>
 						)}
 					</Box>
@@ -124,18 +126,18 @@ const JobPositionDetailPage: React.FC = () => {
 				<Box sx={{display: 'flex', gap: 4}}>
 					<Box>
 						<Typography variant="body2" color="textSecondary">
-							Company
+							{t('job_position_detail.company')}
 						</Typography>
 						<Typography variant="body1" sx={{fontWeight: 500}}>
-							{jobPosition.companyName || 'N/A'}
+							{jobPosition.companyName || t('common.n_a')}
 						</Typography>
 					</Box>
 					<Box>
 						<Typography variant="body2" color="textSecondary">
-							Created By (HR)
+							{t('job_position_detail.created_by_hr')}
 						</Typography>
 						<Typography variant="body1">
-							{jobPosition.createdBy?.name || 'Unknown'}
+							{jobPosition.createdBy?.name || t('job_position_detail.unknown')}
 						</Typography>
 						{jobPosition.createdBy?.email && (
 							<Typography variant="caption" color="textSecondary">
@@ -145,7 +147,7 @@ const JobPositionDetailPage: React.FC = () => {
 					</Box>
 					<Box>
 						<Typography variant="body2" color="textSecondary">
-							Total Stages
+							{t('job_position_detail.total_stages')}
 						</Typography>
 						<Typography variant="body1">
 							{jobPosition.stages?.length || 0}
@@ -154,7 +156,7 @@ const JobPositionDetailPage: React.FC = () => {
 					{canManage && (
 						<Box>
 							<Typography variant="body2" color="textSecondary">
-								Active Hiring Processes
+								{t('job_position_detail.active_processes')}
 							</Typography>
 							<Typography variant="body1">
 								{jobPosition.hiringProcesses?.length || 0}
@@ -168,7 +170,10 @@ const JobPositionDetailPage: React.FC = () => {
 				<>
 					<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
 						<Typography variant="h5">
-							Hiring Processes ({filteredHiringProcesses.length} of {jobPosition.hiringProcesses?.length || 0})
+							{t('job_position_detail.hiring_processes_count', {
+								filtered: filteredHiringProcesses.length,
+								total: jobPosition.hiringProcesses?.length || 0
+							})}
 						</Typography>
 					</Box>
 
@@ -196,10 +201,10 @@ const JobPositionDetailPage: React.FC = () => {
 							<Table>
 								<TableHead>
 									<TableRow>
-										<TableCell><strong>Title</strong></TableCell>
-										<TableCell><strong>Status</strong></TableCell>
-										<TableCell><strong>Candidate</strong></TableCell>
-										<TableCell><strong>Actions</strong></TableCell>
+										<TableCell><strong>{t('job_position_detail.table_title')}</strong></TableCell>
+										<TableCell><strong>{t('job_position_detail.table_status')}</strong></TableCell>
+										<TableCell><strong>{t('job_position_detail.table_candidate')}</strong></TableCell>
+										<TableCell><strong>{t('job_position_detail.table_actions')}</strong></TableCell>
 									</TableRow>
 								</TableHead>
 								<TableBody>
@@ -224,7 +229,7 @@ const JobPositionDetailPage: React.FC = () => {
 													</>
 												) : (
 													<Typography variant="body2" color="error" sx={{fontWeight: 500}}>
-														No candidate assigned
+														{t('hiring_processes.no_candidate')}
 													</Typography>
 												)}
 											</TableCell>
@@ -234,7 +239,7 @@ const JobPositionDetailPage: React.FC = () => {
 													variant="outlined"
 													onClick={() => navigate(`/hiring-process/${process.uid}`)}
 												>
-													View Details
+													{t('job_positions.view_details')}
 												</Button>
 											</TableCell>
 										</TableRow>
@@ -246,14 +251,14 @@ const JobPositionDetailPage: React.FC = () => {
 						<Paper sx={{p: 4, textAlign: 'center'}}>
 							<Typography variant="body1" color="textSecondary">
 								{statusFilter === 'ALL'
-									? 'No active hiring processes for this job position.'
-									: `No hiring processes with status: ${statusFilter.replace(/_/g, ' ')}`}
+									? t('job_position_detail.no_processes')
+									: t('job_position_detail.no_processes_with_status', { status: statusFilter.replace(/_/g, ' ') })}
 							</Typography>
 						</Paper>
 					)}
 
 					<Typography variant="h5" sx={{mb: 2, mt: 5}}>
-						Stage Template
+						{t('job_position_detail.stage_template')}
 					</Typography>
 					<Card sx={{mb: 3}}>
 						<CardContent>
@@ -272,7 +277,7 @@ const JobPositionDetailPage: React.FC = () => {
 														{stage.description}
 													</Typography>
 													<Typography variant="caption" color="textSecondary">
-														Type: {stage.type.replace(/_/g, ' ')}
+														{t('job_position_detail.stage_type')}: {stage.type.replace(/_/g, ' ')}
 													</Typography>
 												</Box>
 											</Box>
@@ -280,7 +285,7 @@ const JobPositionDetailPage: React.FC = () => {
 								</Box>
 							) : (
 								<Typography color="textSecondary">
-									No stages defined for this job position yet.
+									{t('job_position_detail.no_stages')}
 								</Typography>
 							)}
 						</CardContent>

@@ -181,7 +181,20 @@
     "estimated_time": "Tiempo Estimado",
     "no_stages": "No hay etapas definidas",
     "manage": "Gestionar Etapas",
-    "builder_title": "Etapas de Contratación"
+    "builder_title": "Etapas de Contratación",
+    "stages_configured": "{{count}} etapa configurada",
+    "stages_configured_plural": "{{count}} etapas configuradas",
+    "total_time_minutes": "Tiempo total: {{time}} minutos",
+    "templates": "Plantillas",
+    "delete_stage_title": "Eliminar Etapa",
+    "delete_stage_message": "¿Está seguro que desea eliminar \"{{title}}\"?",
+    "no_stages_message": "No hay etapas configuradas aún. Agregue al menos {{count}} etapa para continuar. Puede usar una plantilla para configuración rápida.",
+    "no_stages_message_plural": "No hay etapas configuradas aún. Agregue al menos {{count}} etapas para continuar. Puede usar una plantilla para configuración rápida.",
+    "add_more_stages": "Por favor agregue al menos {{count}} etapa más.",
+    "add_more_stages_plural": "Por favor agregue al menos {{count}} etapas más.",
+    "template_basic": "Básico (3 etapas)",
+    "template_technical": "Técnico (4 etapas)",
+    "template_comprehensive": "Completo (5 etapas)"
   },
   "applications": {
     "title": "Aplicaciones",
@@ -222,7 +235,16 @@
     "title": "Perfil",
     "update_title": "Actualizar Perfil",
     "picture_upload": "Subir Foto de Perfil",
-    "change_password": "Cambiar Contraseña"
+    "change_password": "Cambiar Contraseña",
+    "remove_picture_tooltip": "Quitar foto",
+    "remove_picture_title": "Quitar Foto de Perfil",
+    "remove_picture_message": "¿Está seguro que desea quitar su foto de perfil?",
+    "change_picture": "Cambiar Foto",
+    "uploading": "Subiendo...",
+    "upload": "Subir",
+    "supported_formats": "Formatos soportados: JPG, PNG, GIF, WebP (Máx 2MB)",
+    "invalid_image_type": "Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF o WebP)",
+    "image_size_limit": "El tamaño de la imagen debe ser menor a 2MB"
   },
   "email_templates": {
     "title": "Plantillas de Correo",
@@ -448,5 +470,270 @@
     "review_applications": "Revisar Aplicaciones",
     "view_candidates": "Ver Candidatos",
     "create_position": "Crear Posición de Trabajo"
+  },
+  "notes": {
+    "save_candidate_first": "Por favor guarde el candidato primero antes de agregar notas.",
+    "add_new_note": "Agregar Nueva Nota",
+    "enter_note_placeholder": "Ingrese su nota aquí...",
+    "adding": "Agregando...",
+    "add_note": "Agregar Nota",
+    "notes_count": "Notas ({{count}})",
+    "by_author_date": "Por {{author}} • {{date}}",
+    "no_notes_yet": "Aún no hay notas. ¡Agregue una arriba!",
+    "delete_confirmation": "¿Está seguro que desea eliminar esta nota?"
+  },
+  "custom_questions": {
+    "title": "Preguntas de Evaluación Personalizadas",
+    "question_text_label": "Texto de la Pregunta",
+    "question_text_placeholder": "ej., ¿Años de experiencia con React?",
+    "question_type_label": "Tipo de Pregunta",
+    "short_text": "Texto Corto",
+    "long_text": "Texto Largo",
+    "multiple_choice": "Opción Múltiple",
+    "checkboxes": "Casillas de Verificación",
+    "required_label": "Obligatorio",
+    "options_label": "Opciones",
+    "add_option_placeholder": "Agregue una opción y presione Enter",
+    "edit_question": "Editar Pregunta",
+    "add_question": "Agregar Pregunta",
+    "update": "Actualizar",
+    "add": "Agregar",
+    "type_label": "Tipo: {{type}}",
+    "required_chip": "Obligatorio",
+    "text_required_alert": "El texto de la pregunta es obligatorio",
+    "options_required_alert": "Por favor agregue al menos 2 opciones para preguntas de opción múltiple o casillas de verificación",
+    "screening_questions": "Preguntas de Evaluación",
+    "answer_placeholder": "Ingrese su respuesta...",
+    "no_answer": "No se proporcionó respuesta"
+  },
+  "interview": {
+    "title": "Entrevista",
+    "not_scheduled": "No programada",
+    "invalid_date": "Fecha inválida",
+    "not_set": "No establecido",
+    "hour": "hora",
+    "hours": "horas",
+    "minute": "minuto",
+    "minutes": "minutos",
+    "mark_completed_tooltip": "Marcar como Completada",
+    "edit_tooltip": "Editar Entrevista",
+    "cancel_tooltip": "Cancelar Entrevista",
+    "delete_tooltip": "Eliminar Entrevista",
+    "date_label": "Fecha:",
+    "time_label": "Hora:",
+    "duration_label": "Duración:",
+    "join_meeting": "Unirse a la Reunión",
+    "notes_label": "Notas:",
+    "scheduled_by": "Programada por: {{name}}",
+    "delete_title": "Eliminar Entrevista",
+    "delete_confirmation": "¿Está seguro que desea eliminar esta entrevista? Esta acción no se puede deshacer.",
+    "cancel_title": "Cancelar Entrevista",
+    "cancel_confirmation": "¿Está seguro que desea cancelar esta entrevista? Se enviará una notificación por correo electrónico al candidato."
+  },
+  "stage_item": {
+    "edit_aria": "Editar etapa",
+    "delete_aria": "Eliminar etapa",
+    "estimated_time": "Estimado: {{time}} minutos"
+  },
+  "job_positions_table": {
+    "header_job_title": "Título del Trabajo",
+    "header_company": "Empresa",
+    "header_status": "Estado",
+    "header_stages": "Etapas",
+    "header_hiring_processes": "Procesos de Contratación",
+    "header_created_by": "Creado Por",
+    "header_actions": "Acciones",
+    "edit_tooltip": "Editar posición de trabajo",
+    "delete_tooltip": "Eliminar posición de trabajo",
+    "delete_title": "Eliminar Posición de Trabajo"
+  },
+  "profile_page": {
+    "no_user_data": "No hay datos de usuario disponibles",
+    "my_profile": "Mi Perfil",
+    "reset": "Restablecer",
+    "basic_info": "Información Básica",
+    "full_name": "Nombre Completo",
+    "email_address": "Correo Electrónico",
+    "phone_number": "Número de Teléfono",
+    "professional_info": "Información Profesional",
+    "position": "Posición",
+    "department": "Departamento",
+    "additional_info": "Información Adicional",
+    "timezone": "Zona Horaria",
+    "linkedin_profile": "Perfil de LinkedIn",
+    "about_you": "Sobre Ti",
+    "bio": "Biografía"
+  },
+  "applications_page": {
+    "title": "Aplicaciones de Trabajo",
+    "filter_by_status": "Filtrar por Estado"
+  },
+  "email_templates_page": {
+    "title": "Plantillas de Correo",
+    "search_placeholder": "Buscar plantillas por nombre, asunto o contenido...",
+    "table_name": "Nombre",
+    "table_subject": "Asunto",
+    "table_default": "Predeterminada",
+    "table_created_by": "Creada Por",
+    "table_created_at": "Creada el",
+    "table_actions": "Acciones",
+    "edit_tooltip": "Editar plantilla",
+    "delete_tooltip": "Eliminar plantilla"
+  },
+  "auth": {
+    "login_title": "Iniciar Sesión",
+    "signup_title": "Registrarse",
+    "logging_out": "Cerrando sesión...",
+    "email": "Correo Electrónico",
+    "password": "Contraseña",
+    "name": "Nombre",
+    "logging_in": "Iniciando sesión...",
+    "signing_up": "Registrando...",
+    "login_failed": "Error al iniciar sesión. Por favor intente nuevamente.",
+    "signup_failed": "Error al registrarse. Por favor intente nuevamente."
+  },
+  "companies_page": {
+    "title": "Gestión de Empresas",
+    "create_dialog_title": "Crear Nueva Empresa"
+  },
+  "hiring_process_page": {
+    "no_data_found": "No se encontraron datos",
+    "hiring_process": "Proceso de Contratación",
+    "no_candidate_assigned_title": "Sin Candidato Asignado",
+    "no_candidate_assigned_message": "Este proceso de contratación no tiene un candidato asignado todavía. Por favor asigne un candidato o verifique la configuración del proceso de contratación.",
+    "company": "Empresa",
+    "hr_manager": "Gerente de RRHH",
+    "candidate_information": "Información del Candidato",
+    "name": "Nombre",
+    "email": "Correo Electrónico",
+    "recruitment_stages": "Etapas de Reclutamiento",
+    "progress_stage": "Avanzar Etapa"
+  },
+  "job_position_detail": {
+    "table_title": "Título",
+    "table_status": "Estado",
+    "table_candidate": "Candidato",
+    "table_actions": "Acciones",
+    "error_loading": "Error al cargar la posición de trabajo. Por favor intente nuevamente.",
+    "back_to_positions": "Volver a Posiciones de Trabajo",
+    "hiring_overview": "Resumen de Procesos de Contratación",
+    "job_posting": "Oferta de Trabajo",
+    "apply_now": "Postular Ahora",
+    "company": "Empresa",
+    "created_by_hr": "Creado Por (RRHH)",
+    "unknown": "Desconocido",
+    "total_stages": "Etapas Totales",
+    "active_processes": "Procesos de Contratación Activos",
+    "hiring_processes_count": "Procesos de Contratación ({{filtered}} de {{total}})",
+    "no_processes": "No hay procesos de contratación activos para esta posición.",
+    "no_processes_with_status": "No hay procesos de contratación con estado: {{status}}",
+    "stage_template": "Plantilla de Etapas",
+    "stage_type": "Tipo",
+    "no_stages": "No hay etapas definidas para esta posición todavía."
+  },
+  "file_list": {
+    "error_loading": "Error al cargar archivos. Por favor intente nuevamente más tarde.",
+    "no_files": "No hay archivos subidos todavía",
+    "delete_title": "Eliminar Archivo",
+    "delete_message": "¿Está seguro que desea eliminar \"{{fileName}}\"? Esta acción no se puede deshacer."
+  },
+  "job_positions_table": {
+    "error_loading": "Error al cargar posiciones de trabajo. Por favor intente nuevamente.",
+    "processes_count": "{{count}} procesos",
+    "no_positions": "No se encontraron posiciones de trabajo.",
+    "delete_message": "¿Está seguro que desea eliminar esta posición de trabajo? Esto también eliminará todas las etapas y procesos de contratación asociados."
+  },
+  "applications_page": {
+    "all_applications": "Todas las Aplicaciones"
+  },
+  "email_templates_page": {
+    "create_template": "Crear Plantilla",
+    "search_placeholder": "Buscar plantillas por nombre, asunto o contenido...",
+    "default_label": "Predeterminada",
+    "delete_confirmation": "¿Está seguro que desea eliminar \"{{name}}\"?"
+  },
+  "hr_layout": {
+    "title": "Panel de RRHH",
+    "dashboard": "Dashboard de RRHH",
+    "applications": "Aplicaciones",
+    "candidates": "Candidatos",
+    "job_positions": "Posiciones de Trabajo",
+    "email_templates": "Plantillas de Correo",
+    "aria_label": "navegación de rrhh"
+  },
+  "admin_layout": {
+    "title": "Panel de Administración",
+    "dashboard": "Dashboard de Admin",
+    "companies": "Empresas",
+    "users": "Usuarios",
+    "aria_label": "navegación de administración"
+  },
+  "language": {
+    "select_language": "Seleccionar Idioma",
+    "switch_to": "Cambiar a",
+    "english": "English",
+    "spanish": "Español",
+    "current_language": "Idioma Actual"
+  },
+  "home": {
+    "hero": {
+      "headline": "Transforma Tu Proceso de Reclutamiento",
+      "subheadline": "Optimiza la contratación, encuentra el mejor talento y construye equipos excepcionales con nuestra plataforma integral de reclutamiento",
+      "cta_primary": "Comenzar Gratis",
+      "cta_secondary": "Explorar Carreras"
+    },
+    "features": {
+      "section_title": "Funcionalidades Poderosas para el Reclutamiento Moderno",
+      "section_subtitle": "Todo lo que necesitas para gestionar tu proceso completo de contratación desde una sola plataforma",
+      "candidate_management": {
+        "title": "Gestión de Candidatos",
+        "description": "Organiza y rastrea toda la información de candidatos, currículums y comunicaciones en una ubicación centralizada"
+      },
+      "interview_scheduling": {
+        "title": "Programación de Entrevistas",
+        "description": "Programa entrevistas sin esfuerzo, envía recordatorios automatizados y gestiona la disponibilidad de tu equipo de contratación"
+      },
+      "application_tracking": {
+        "title": "Seguimiento de Aplicaciones",
+        "description": "Monitorea las aplicaciones de trabajo en tiempo real con flujos de trabajo y seguimiento de estado personalizables"
+      },
+      "team_collaboration": {
+        "title": "Colaboración en Equipo",
+        "description": "Habilita la colaboración perfecta entre equipos de RRHH, gerentes de contratación y entrevistadores"
+      },
+      "analytics_reporting": {
+        "title": "Análisis e Informes",
+        "description": "Obtén información con análisis e informes completos sobre tus métricas de reclutamiento"
+      },
+      "multi_stage_hiring": {
+        "title": "Proceso de Contratación Multi-Etapa",
+        "description": "Crea y personaliza flujos de trabajo de contratación de múltiples etapas adaptados a las necesidades de tu organización"
+      }
+    },
+    "benefits": {
+      "section_title": "¿Por Qué Elegir Nuestra Herramienta de Reclutamiento?",
+      "section_subtitle": "Únete a cientos de empresas que han transformado su proceso de contratación",
+      "save_time": {
+        "title": "Ahorra Tiempo",
+        "description": "Reduce el tiempo de contratación hasta en un 40% con flujos de trabajo automatizados y procesos optimizados"
+      },
+      "streamline_hiring": {
+        "title": "Optimiza la Contratación",
+        "description": "Simplifica los procesos complejos de contratación con herramientas intuitivas y gestión automatizada de tareas"
+      },
+      "improve_collaboration": {
+        "title": "Mejora la Colaboración",
+        "description": "Fomenta un mejor trabajo en equipo con comunicación centralizada y evaluaciones compartidas de candidatos"
+      },
+      "data_driven": {
+        "title": "Decisiones Basadas en Datos",
+        "description": "Toma decisiones de contratación más inteligentes respaldadas por análisis e información completa"
+      }
+    },
+    "cta": {
+      "headline": "¿Listo para Transformar Tu Contratación?",
+      "subheadline": "Únete a miles de empresas que usan nuestra plataforma para encontrar y contratar el mejor talento",
+      "button": "Comienza Tu Prueba Gratuita"
+    }
   }
 }

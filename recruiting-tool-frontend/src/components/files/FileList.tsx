@@ -23,6 +23,7 @@ import {
 import { useFiles, useDownloadFile, useDeleteFile } from '../../hooks/api/useFiles';
 import { format } from 'date-fns';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
+import { useTranslation } from 'react-i18next';
 
 interface FileListProps {
 	candidateUid?: string;
@@ -30,6 +31,7 @@ interface FileListProps {
 }
 
 const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true }) => {
+	const { t } = useTranslation();
 	const { data: files, isLoading, isError } = useFiles(candidateUid);
 	const { mutate: downloadFile } = useDownloadFile();
 	const { mutate: deleteFile } = useDeleteFile();
@@ -91,7 +93,7 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 	if (isError) {
 		return (
 			<Alert severity="error">
-				Failed to load files. Please try again later.
+				{t('file_list.error_loading')}
 			</Alert>
 		);
 	}
@@ -101,7 +103,7 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 			<Paper sx={{ p: 4, textAlign: 'center' }}>
 				<FileIcon sx={{ fontSize: 48, color: 'text.secondary', mb: 2 }} />
 				<Typography variant="body1" color="text.secondary">
-					No files uploaded yet
+					{t('file_list.no_files')}
 				</Typography>
 			</Paper>
 		);
@@ -146,7 +148,7 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 							/>
 							{showActions && (
 								<ListItemSecondaryAction>
-									<Tooltip title="Download">
+									<Tooltip title={t('common.download')}>
 										<IconButton
 											edge="end"
 											onClick={() => handleDownload(file.uid, file.originalName)}
@@ -155,7 +157,7 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 											<DownloadIcon />
 										</IconButton>
 									</Tooltip>
-									<Tooltip title="Delete">
+									<Tooltip title={t('common.delete')}>
 										<IconButton
 											edge="end"
 											onClick={() => handleDeleteClick(file.uid, file.originalName)}
@@ -175,8 +177,8 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 				open={deleteDialogOpen}
 				onClose={handleCancelDelete}
 				onConfirm={handleConfirmDelete}
-				title="Delete File"
-				message={`Are you sure you want to delete "${fileToDelete?.name}"? This action cannot be undone.`}
+				title={t('file_list.delete_title')}
+				message={t('file_list.delete_message', { fileName: fileToDelete?.name })}
 			/>
 		</>
 	);

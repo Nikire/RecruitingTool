@@ -4,35 +4,38 @@ import GroupIcon from '@mui/icons-material/Group';
 import WorkIcon from '@mui/icons-material/Work';
 import EmailIcon from '@mui/icons-material/Email';
 import {DashboardLayout, DashboardMenuItem} from '../components/layout';
+import { useTranslation } from 'react-i18next';
 
 /**
  * HRLayout - Layout component for HR panel with dedicated navigation
  * Accessible to HR, ADMIN, and SUPER_ADMIN roles
  */
 const HRLayout: React.FC = () => {
+	const { t } = useTranslation();
+
 	const menuItems: DashboardMenuItem[] = [
 		{
-			text: 'HR Dashboard',
+			text: t('hr_layout.dashboard'),
 			icon: <DashboardIcon />,
 			path: '/hr/dashboard',
 		},
 		{
-			text: 'Applications',
+			text: t('hr_layout.applications'),
 			icon: <AssignmentIcon />,
 			path: '/hr/applications',
 		},
 		{
-			text: 'Candidates',
+			text: t('hr_layout.candidates'),
 			icon: <GroupIcon />,
 			path: '/hr/candidates',
 		},
 		{
-			text: 'Job Positions',
+			text: t('hr_layout.job_positions'),
 			icon: <WorkIcon />,
 			path: '/hr/job-positions',
 		},
 		{
-			text: 'Email Templates',
+			text: t('hr_layout.email_templates'),
 			icon: <EmailIcon />,
 			path: '/hr/email-templates',
 		},
@@ -40,9 +43,9 @@ const HRLayout: React.FC = () => {
 
 	return (
 		<DashboardLayout
-			title="HR Panel"
+			title={t('hr_layout.title')}
 			menuItems={menuItems}
-			ariaLabel="hr navigation"
+			ariaLabel={t('hr_layout.aria_label')}
 		/>
 	);
 };

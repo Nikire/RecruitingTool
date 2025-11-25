@@ -20,6 +20,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
 import {useTranslation} from 'react-i18next';
+import LanguageSelector from '../common/LanguageSelector';
 
 const drawerWidth = 240;
 
@@ -219,6 +220,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 						<Typography variant="h6" noWrap component="div" sx={{flexGrow: 1}}>
 							{displayTitle}
 						</Typography>
+						<LanguageSelector />
 						<IconButton component={NavLink} to="/profile" sx={{p: 0.5}}>
 							<UserAvatar name={user?.name} avatarUrl={user?.profilePicture} />
 						</IconButton>

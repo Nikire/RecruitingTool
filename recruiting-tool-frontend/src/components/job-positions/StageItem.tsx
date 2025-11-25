@@ -16,6 +16,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import {Stage, StageType, STAGE_TYPE_LABELS, STAGE_TYPE_COLORS} from '../../types/stage.types';
+import { useTranslation } from 'react-i18next';
 
 interface StageItemProps {
 	stage: Stage | Omit<Stage, 'uid' | 'status'>;
@@ -55,6 +56,7 @@ const StageItem: React.FC<StageItemProps> = ({
 	isDraggable = false,
 	showActions = true,
 }) => {
+	const { t } = useTranslation();
 	const stageColor = STAGE_TYPE_COLORS[stage.type];
 
 	return (
@@ -91,7 +93,7 @@ const StageItem: React.FC<StageItemProps> = ({
 								<IconButton
 									size="small"
 									onClick={onEdit}
-									aria-label="Edit stage"
+									aria-label={t('stage_item.edit_aria')}
 									sx={{color: 'primary.main'}}
 								>
 									<EditIcon fontSize="small" />
@@ -101,7 +103,7 @@ const StageItem: React.FC<StageItemProps> = ({
 								<IconButton
 									size="small"
 									onClick={onDelete}
-									aria-label="Delete stage"
+									aria-label={t('stage_item.delete_aria')}
 									sx={{color: 'error.main'}}
 								>
 									<DeleteIcon fontSize="small" />
@@ -140,7 +142,7 @@ const StageItem: React.FC<StageItemProps> = ({
 					<Box sx={{display: 'flex', alignItems: 'center', gap: 0.5}}>
 						<AccessTimeIcon sx={{fontSize: 16, color: 'text.secondary'}} />
 						<Typography variant="caption" color="text.secondary">
-							Estimated: {stage.estimatedTime} minutes
+							{t('stage_item.estimated_time', { time: stage.estimatedTime })}
 						</Typography>
 					</Box>
 				)}

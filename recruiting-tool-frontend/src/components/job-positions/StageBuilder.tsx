@@ -11,6 +11,7 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import AutoFixHighIcon from '@mui/icons-material/AutoFixHigh';
 import PersonSearchIcon from '@mui/icons-material/PersonSearch';
@@ -152,6 +153,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 	maxStages,
 	error,
 }) => {
+	const {t} = useTranslation();
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
@@ -230,11 +232,11 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 			<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
 				<Box>
 					<Typography variant="h6" component="div" gutterBottom>
-						Hiring Stages {minStages > 0 && <Typography component="span" color="error">*</Typography>}
+						{t('stages.builder_title')} {minStages > 0 && <Typography component="span" color="error">*</Typography>}
 					</Typography>
 					<Typography variant="caption" color="text.secondary">
-						{stages.length} stage{stages.length !== 1 ? 's' : ''} configured
-						{stages.length > 0 && ` • Total time: ${getTotalEstimatedTime()} minutes`}
+						{t(stages.length === 1 ? 'stages.stages_configured' : 'stages.stages_configured_plural', {count: stages.length})}
+						{stages.length > 0 && ` • ${t('stages.total_time_minutes', {time: getTotalEstimatedTime()})}`}
 					</Typography>
 				</Box>
 
@@ -245,7 +247,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 						onClick={(e) => setTemplateMenuAnchor(e.currentTarget)}
 						disabled={stages.length > 0}
 					>
-						Templates
+						{t('stages.templates')}
 					</Button>
 					<Button
 						size="small"
@@ -257,7 +259,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 						}}
 						disabled={!canAddMore}
 					>
-						Add Stage
+						{t('stages.add_stage')}
 					</Button>
 				</Stack>
 			</Box>
@@ -268,10 +270,10 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 				open={Boolean(templateMenuAnchor)}
 				onClose={() => setTemplateMenuAnchor(null)}
 			>
-				{STAGE_TEMPLATES.map((template) => (
+				{STAGE_TEMPLATES.map((template, index) => (
 					<MenuItem key={template.name} onClick={() => handleLoadTemplate(template)}>
 						<ListItemIcon>{template.icon}</ListItemIcon>
-						<ListItemText>{template.name}</ListItemText>
+						<ListItemText>{t(`stages.template_${index === 0 ? 'basic' : index === 1 ? 'technical' : 'comprehensive'}`)}</ListItemText>
 					</MenuItem>
 				))}
 			</Menu>
@@ -288,8 +290,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 			{/* Empty State */}
 			{stages.length === 0 && (
 				<Alert severity="info" sx={{mb: 2}}>
-					No stages configured yet. Add at least {minStages} stage{minStages !== 1 ? 's' : ''} to continue.
-					You can use a template for quick setup.
+					{t(minStages === 1 ? 'stages.no_stages_message' : 'stages.no_stages_message_plural', {count: minStages})}
 				</Alert>
 			)}
 
@@ -348,7 +349,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 			{/* Info about minimum stages */}
 			{stages.length < minStages && (
 				<Alert severity="warning" sx={{mt: 2}}>
-					Please add at least {minStages - stages.length} more stage{minStages - stages.length !== 1 ? 's' : ''}.
+					{t((minStages - stages.length) === 1 ? 'stages.add_more_stages' : 'stages.add_more_stages_plural', {count: minStages - stages.length})}
 				</Alert>
 			)}
 
@@ -369,10 +370,10 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 				open={deleteIndex !== null}
 				onClose={() => setDeleteIndex(null)}
 				onConfirm={handleDeleteStage}
-				title="Delete Stage"
+				title={t('stages.delete_stage_title')}
 				message={
 					deleteIndex !== null
-						? `Are you sure you want to delete "${stages[deleteIndex]?.title}"?`
+						? t('stages.delete_stage_message', {title: stages[deleteIndex]?.title})
 						: ''
 				}
 			/>

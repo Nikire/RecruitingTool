@@ -11,6 +11,7 @@ import {
 	Radio,
 	Typography,
 } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { CustomQuestion, QuestionType, CustomAnswers } from '../../types/customQuestions';
 
 interface CustomQuestionRendererProps {
@@ -28,6 +29,7 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
 	errors = {},
 	showRequiredIndicator = true,
 }) => {
+	const { t } = useTranslation();
 	const renderQuestion = (question: CustomQuestion) => {
 		const value = answers[question.id] || '';
 		const error = errors[question.id];
@@ -45,7 +47,7 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
 						error={!!error}
 						helperText={error}
 						required={question.required}
-						placeholder="Enter your answer..."
+						placeholder={t('custom_questions.answer_placeholder')}
 						sx={{
 							'& .MuiInputBase-input': {
 								fontSize: { xs: '1rem', sm: '1rem' },
@@ -67,7 +69,7 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
 						multiline
 						rows={4}
 						required={question.required}
-						placeholder="Enter your answer..."
+						placeholder={t('custom_questions.answer_placeholder')}
 						sx={{
 							'& .MuiInputBase-input': {
 								fontSize: { xs: '1rem', sm: '1rem' },
@@ -163,7 +165,7 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
 	return (
 		<Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
 			<Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-				Screening Questions
+				{t('custom_questions.screening_questions')}
 			</Typography>
 			{questions.map((question) => (
 				<Box key={question.id} sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>

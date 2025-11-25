@@ -183,7 +183,20 @@
     "estimated_time": "Estimated Time",
     "no_stages": "No stages defined",
     "manage": "Manage Stages",
-    "builder_title": "Hiring Stages"
+    "builder_title": "Hiring Stages",
+    "stages_configured": "{{count}} stage configured",
+    "stages_configured_plural": "{{count}} stages configured",
+    "total_time_minutes": "Total time: {{time}} minutes",
+    "templates": "Templates",
+    "delete_stage_title": "Delete Stage",
+    "delete_stage_message": "Are you sure you want to delete \"{{title}}\"?",
+    "no_stages_message": "No stages configured yet. Add at least {{count}} stage to continue. You can use a template for quick setup.",
+    "no_stages_message_plural": "No stages configured yet. Add at least {{count}} stages to continue. You can use a template for quick setup.",
+    "add_more_stages": "Please add at least {{count}} more stage.",
+    "add_more_stages_plural": "Please add at least {{count}} more stages.",
+    "template_basic": "Basic (3 stages)",
+    "template_technical": "Technical (4 stages)",
+    "template_comprehensive": "Comprehensive (5 stages)"
   },
   "applications": {
     "title": "Applications",
@@ -224,7 +237,16 @@
     "title": "Profile",
     "update_title": "Update Profile",
     "picture_upload": "Upload Profile Picture",
-    "change_password": "Change Password"
+    "change_password": "Change Password",
+    "remove_picture_tooltip": "Remove picture",
+    "remove_picture_title": "Remove Profile Picture",
+    "remove_picture_message": "Are you sure you want to remove your profile picture?",
+    "change_picture": "Change Picture",
+    "uploading": "Uploading...",
+    "upload": "Upload",
+    "supported_formats": "Supported formats: JPG, PNG, GIF, WebP (Max 2MB)",
+    "invalid_image_type": "Please select a valid image file (JPG, PNG, GIF, or WebP)",
+    "image_size_limit": "Image size must be less than 2MB"
   },
   "email_templates": {
     "title": "Email Templates",
@@ -450,5 +472,270 @@
     "review_applications": "Review Applications",
     "view_candidates": "View Candidates",
     "create_position": "Create Job Position"
+  },
+  "notes": {
+    "save_candidate_first": "Please save the candidate first before adding notes.",
+    "add_new_note": "Add New Note",
+    "enter_note_placeholder": "Enter your note here...",
+    "adding": "Adding...",
+    "add_note": "Add Note",
+    "notes_count": "Notes ({{count}})",
+    "by_author_date": "By {{author}} • {{date}}",
+    "no_notes_yet": "No notes yet. Add one above!",
+    "delete_confirmation": "Are you sure you want to delete this note?"
+  },
+  "custom_questions": {
+    "title": "Custom Screening Questions",
+    "question_text_label": "Question Text",
+    "question_text_placeholder": "e.g., Years of experience with React?",
+    "question_type_label": "Question Type",
+    "short_text": "Short Text",
+    "long_text": "Long Text",
+    "multiple_choice": "Multiple Choice",
+    "checkboxes": "Checkboxes",
+    "required_label": "Required",
+    "options_label": "Options",
+    "add_option_placeholder": "Add an option and press Enter",
+    "edit_question": "Edit Question",
+    "add_question": "Add Question",
+    "update": "Update",
+    "add": "Add",
+    "type_label": "Type: {{type}}",
+    "required_chip": "Required",
+    "text_required_alert": "Question text is required",
+    "options_required_alert": "Please add at least 2 options for multiple choice or checkbox questions",
+    "screening_questions": "Screening Questions",
+    "answer_placeholder": "Enter your answer...",
+    "no_answer": "No answer provided"
+  },
+  "interview": {
+    "title": "Interview",
+    "not_scheduled": "Not scheduled",
+    "invalid_date": "Invalid date",
+    "not_set": "Not set",
+    "hour": "hour",
+    "hours": "hours",
+    "minute": "minute",
+    "minutes": "minutes",
+    "mark_completed_tooltip": "Mark as Completed",
+    "edit_tooltip": "Edit Interview",
+    "cancel_tooltip": "Cancel Interview",
+    "delete_tooltip": "Delete Interview",
+    "date_label": "Date:",
+    "time_label": "Time:",
+    "duration_label": "Duration:",
+    "join_meeting": "Join Meeting",
+    "notes_label": "Notes:",
+    "scheduled_by": "Scheduled by: {{name}}",
+    "delete_title": "Delete Interview",
+    "delete_confirmation": "Are you sure you want to delete this interview? This action cannot be undone.",
+    "cancel_title": "Cancel Interview",
+    "cancel_confirmation": "Are you sure you want to cancel this interview? An email notification will be sent to the candidate."
+  },
+  "stage_item": {
+    "edit_aria": "Edit stage",
+    "delete_aria": "Delete stage",
+    "estimated_time": "Estimated: {{time}} minutes"
+  },
+  "job_positions_table": {
+    "header_job_title": "Job Title",
+    "header_company": "Company",
+    "header_status": "Status",
+    "header_stages": "Stages",
+    "header_hiring_processes": "Hiring Processes",
+    "header_created_by": "Created By",
+    "header_actions": "Actions",
+    "edit_tooltip": "Edit job position",
+    "delete_tooltip": "Delete job position",
+    "delete_title": "Delete Job Position"
+  },
+  "profile_page": {
+    "no_user_data": "No user data available",
+    "my_profile": "My Profile",
+    "reset": "Reset",
+    "basic_info": "Basic Information",
+    "full_name": "Full Name",
+    "email_address": "Email Address",
+    "phone_number": "Phone Number",
+    "professional_info": "Professional Information",
+    "position": "Position",
+    "department": "Department",
+    "additional_info": "Additional Information",
+    "timezone": "Timezone",
+    "linkedin_profile": "LinkedIn Profile",
+    "about_you": "About You",
+    "bio": "Bio"
+  },
+  "applications_page": {
+    "title": "Job Applications",
+    "filter_by_status": "Filter by Status"
+  },
+  "email_templates_page": {
+    "title": "Email Templates",
+    "search_placeholder": "Search templates by name, subject, or content...",
+    "table_name": "Name",
+    "table_subject": "Subject",
+    "table_default": "Default",
+    "table_created_by": "Created By",
+    "table_created_at": "Created At",
+    "table_actions": "Actions",
+    "edit_tooltip": "Edit template",
+    "delete_tooltip": "Delete template"
+  },
+  "auth": {
+    "login_title": "Login",
+    "signup_title": "Sign Up",
+    "logging_out": "Logging out...",
+    "email": "Email",
+    "password": "Password",
+    "name": "Name",
+    "logging_in": "Logging in...",
+    "signing_up": "Signing up...",
+    "login_failed": "Login failed. Please try again.",
+    "signup_failed": "Signup failed. Please try again."
+  },
+  "companies_page": {
+    "title": "Company Management",
+    "create_dialog_title": "Create New Company"
+  },
+  "hiring_process_page": {
+    "no_data_found": "No data found",
+    "hiring_process": "Hiring Process",
+    "no_candidate_assigned_title": "No Candidate Assigned",
+    "no_candidate_assigned_message": "This hiring process does not have a candidate assigned yet. Please assign a candidate or check the hiring process configuration.",
+    "company": "Company",
+    "hr_manager": "HR Manager",
+    "candidate_information": "Candidate Information",
+    "name": "Name",
+    "email": "Email",
+    "recruitment_stages": "Recruitment Stages",
+    "progress_stage": "Progress Stage"
+  },
+  "job_position_detail": {
+    "table_title": "Title",
+    "table_status": "Status",
+    "table_candidate": "Candidate",
+    "table_actions": "Actions",
+    "error_loading": "Error loading job position. Please try again.",
+    "back_to_positions": "Back to Job Positions",
+    "hiring_overview": "Hiring Processes Overview",
+    "job_posting": "Job Posting",
+    "apply_now": "Apply Now",
+    "company": "Company",
+    "created_by_hr": "Created By (HR)",
+    "unknown": "Unknown",
+    "total_stages": "Total Stages",
+    "active_processes": "Active Hiring Processes",
+    "hiring_processes_count": "Hiring Processes ({{filtered}} of {{total}})",
+    "no_processes": "No active hiring processes for this job position.",
+    "no_processes_with_status": "No hiring processes with status: {{status}}",
+    "stage_template": "Stage Template",
+    "stage_type": "Type",
+    "no_stages": "No stages defined for this job position yet."
+  },
+  "file_list": {
+    "error_loading": "Failed to load files. Please try again later.",
+    "no_files": "No files uploaded yet",
+    "delete_title": "Delete File",
+    "delete_message": "Are you sure you want to delete \"{{fileName}}\"? This action cannot be undone."
+  },
+  "job_positions_table": {
+    "error_loading": "Error loading job positions. Please try again.",
+    "processes_count": "{{count}} processes",
+    "no_positions": "No job positions found.",
+    "delete_message": "Are you sure you want to delete this job position? This will also delete all associated stages and hiring processes."
+  },
+  "applications_page": {
+    "all_applications": "All Applications"
+  },
+  "email_templates_page": {
+    "create_template": "Create Template",
+    "search_placeholder": "Search templates by name, subject, or content...",
+    "default_label": "Default",
+    "delete_confirmation": "Are you sure you want to delete \"{{name}}\"?"
+  },
+  "hr_layout": {
+    "title": "HR Panel",
+    "dashboard": "HR Dashboard",
+    "applications": "Applications",
+    "candidates": "Candidates",
+    "job_positions": "Job Positions",
+    "email_templates": "Email Templates",
+    "aria_label": "hr navigation"
+  },
+  "admin_layout": {
+    "title": "Admin Panel",
+    "dashboard": "Admin Dashboard",
+    "companies": "Companies",
+    "users": "Users",
+    "aria_label": "admin navigation"
+  },
+  "language": {
+    "select_language": "Select Language",
+    "switch_to": "Switch to",
+    "english": "English",
+    "spanish": "Español",
+    "current_language": "Current Language"
+  },
+  "home": {
+    "hero": {
+      "headline": "Transform Your Recruitment Process",
+      "subheadline": "Streamline hiring, find top talent, and build exceptional teams with our comprehensive recruiting platform",
+      "cta_primary": "Get Started Free",
+      "cta_secondary": "Explore Careers"
+    },
+    "features": {
+      "section_title": "Powerful Features for Modern Recruiting",
+      "section_subtitle": "Everything you need to manage your entire hiring process from one platform",
+      "candidate_management": {
+        "title": "Candidate Management",
+        "description": "Organize and track all candidate information, resumes, and communications in one centralized location"
+      },
+      "interview_scheduling": {
+        "title": "Interview Scheduling",
+        "description": "Effortlessly schedule interviews, send automated reminders, and manage your hiring team's availability"
+      },
+      "application_tracking": {
+        "title": "Application Tracking",
+        "description": "Monitor job applications in real-time with customizable workflows and status tracking"
+      },
+      "team_collaboration": {
+        "title": "Team Collaboration",
+        "description": "Enable seamless collaboration between HR teams, hiring managers, and interviewers"
+      },
+      "analytics_reporting": {
+        "title": "Analytics & Reporting",
+        "description": "Gain insights with comprehensive analytics and reports on your recruitment metrics"
+      },
+      "multi_stage_hiring": {
+        "title": "Multi-Stage Hiring Process",
+        "description": "Create and customize multi-stage hiring workflows tailored to your organization's needs"
+      }
+    },
+    "benefits": {
+      "section_title": "Why Choose Our Recruiting Tool?",
+      "section_subtitle": "Join hundreds of companies that have transformed their hiring process",
+      "save_time": {
+        "title": "Save Time",
+        "description": "Reduce time-to-hire by up to 40% with automated workflows and streamlined processes"
+      },
+      "streamline_hiring": {
+        "title": "Streamline Hiring",
+        "description": "Simplify complex hiring processes with intuitive tools and automated task management"
+      },
+      "improve_collaboration": {
+        "title": "Improve Collaboration",
+        "description": "Foster better teamwork with centralized communication and shared candidate evaluations"
+      },
+      "data_driven": {
+        "title": "Data-Driven Decisions",
+        "description": "Make smarter hiring decisions backed by comprehensive analytics and insights"
+      }
+    },
+    "cta": {
+      "headline": "Ready to Transform Your Hiring?",
+      "subheadline": "Join thousands of companies using our platform to find and hire the best talent",
+      "button": "Start Your Free Trial"
+    }
   }
 }

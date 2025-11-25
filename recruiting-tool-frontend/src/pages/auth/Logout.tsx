@@ -1,9 +1,11 @@
 import {useEffect} from 'react';
 import {useNavigate} from 'react-router-dom';
 import {Box, CircularProgress, Typography} from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import {useLogout} from '../../hooks/api/useAuth';
 
 const Logout: React.FC = () => {
+	const {t} = useTranslation();
 	const navigate = useNavigate();
 	const logout = useLogout();
 
@@ -30,7 +32,7 @@ const Logout: React.FC = () => {
 			}}
 		>
 			<CircularProgress />
-			<Typography variant="h6">Logging out...</Typography>
+			<Typography variant="h6">{t('auth.logging_out')}</Typography>
 		</Box>
 	);
 };

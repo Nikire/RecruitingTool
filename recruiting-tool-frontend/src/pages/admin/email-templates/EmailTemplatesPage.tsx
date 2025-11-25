@@ -26,8 +26,10 @@ import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage'
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
 import ErrorMessage from '../../../components/common/ErrorMessage';
 import EmptyState from '../../../components/common/EmptyState';
+import { useTranslation } from 'react-i18next';
 
 const EmailTemplatesPage: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useUserAtom();
   const hasAccess = canManageResources(user);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -64,7 +66,7 @@ const EmailTemplatesPage: React.FC = () => {
   };
 
   const handleDelete = (uid: string, name: string) => {
-    if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
+    if (window.confirm(t('email_templates_page.delete_confirmation', { name }))) {
       deleteTemplate(uid);
     }
   };
@@ -72,16 +74,16 @@ const EmailTemplatesPage: React.FC = () => {
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, mt: 8 }}>
-        <Typography variant="h4">Email Templates</Typography>
+        <Typography variant="h4">{t('email_templates_page.title')}</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={() => handleOpenDialog()}>
-          Create Template
+          {t('email_templates_page.create_template')}
         </Button>
       </Box>
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <TextField
           fullWidth
-          placeholder="Search templates by name, subject, or content..."
+          placeholder={t('email_templates_page.search_placeholder')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           InputProps={{
@@ -109,12 +111,12 @@ const EmailTemplatesPage: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Subject</TableCell>
-                <TableCell>Default</TableCell>
-                <TableCell>Created By</TableCell>
-                <TableCell>Created At</TableCell>
-                <TableCell align="right">Actions</TableCell>
+                <TableCell>{t('email_templates_page.table_name')}</TableCell>
+                <TableCell>{t('email_templates_page.table_subject')}</TableCell>
+                <TableCell>{t('email_templates_page.table_default')}</TableCell>
+                <TableCell>{t('email_templates_page.table_created_by')}</TableCell>
+                <TableCell>{t('email_templates_page.table_created_at')}</TableCell>
+                <TableCell align="right">{t('email_templates_page.table_actions')}</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -131,7 +133,7 @@ const EmailTemplatesPage: React.FC = () => {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    {template.isDefault && <Chip label="Default" color="primary" size="small" />}
+                    {template.isDefault && <Chip label={t('email_templates_page.default_label')} color="primary" size="small" />}
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2">{template.createdByName}</Typography>
@@ -146,7 +148,7 @@ const EmailTemplatesPage: React.FC = () => {
                       size="small"
                       color="primary"
                       onClick={() => handleOpenDialog(template)}
-                      title="Edit template"
+                      title={t('email_templates_page.edit_tooltip')}
                     >
                       <Edit />
                     </IconButton>
@@ -154,7 +156,7 @@ const EmailTemplatesPage: React.FC = () => {
                       size="small"
                       color="error"
                       onClick={() => handleDelete(template.uid, template.name)}
-                      title="Delete template"
+                      title={t('email_templates_page.delete_tooltip')}
                     >
                       <Delete />
                     </IconButton>

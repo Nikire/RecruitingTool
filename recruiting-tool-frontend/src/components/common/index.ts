@@ -4,3 +4,4 @@ export {default as AccessDeniedMessage} from './AccessDeniedMessage';
 export {default as EmptyState} from './EmptyState';
 export {default as ErrorMessage} from './ErrorMessage';
 export {default as LoadingSpinner} from './LoadingSpinner';
+export {default as LanguageSelector} from './LanguageSelector';
