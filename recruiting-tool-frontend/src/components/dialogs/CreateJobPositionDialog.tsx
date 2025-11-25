@@ -9,13 +9,17 @@ import {
 	Box,
 	Divider,
 	CircularProgress,
+	InputAdornment,
 } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
 import {useForm} from 'react-hook-form';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useCreateJobPosition} from '../../hooks/api/useJobPositions';
 import {Stage} from '../../types/stage.types';
 import StageBuilder from '../job-positions/StageBuilder';
+import {useValidationRules} from '../../utils/validation';
+import FormErrorSummary from '../common/FormErrorSummary';
 
 interface CreateJobPositionDialogProps {
 	open: boolean;
@@ -32,6 +36,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	onClose,
 }) => {
 	const {t} = useTranslation();
+	const validationRules = useValidationRules();
 	const [stages, setStages] = useState<Omit<Stage, 'uid' | 'status'>[]>([]);
 	const [stageError, setStageError] = useState<string>('');
 
@@ -91,6 +96,8 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 			<DialogTitle>{t('job_positions.create_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
+					<FormErrorSummary errors={errors} />
+
 					<Box sx={{mb: 3}}>
 						<Typography variant="subtitle2" color="text.secondary" gutterBottom>
 							{t('job_positions.details')}
@@ -100,16 +107,20 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							label={t('job_positions.job_title_label')}
 							fullWidth
 							margin="normal"
-							{...register('title', {
-								required: t('validation.title_required'),
-								minLength: {
-									value: 3,
-									message: t('validation.min_length', {min: 3}),
-								},
-							})}
+							{...register('title', validationRules.combine(
+								validationRules.required(t('job_positions.job_title_label')),
+								validationRules.minLength(3),
+							))}
 							error={!!errors.title}
 							helperText={errors.title?.message}
 							placeholder={t('job_positions.title_placeholder')}
+							InputProps={{
+								endAdornment: errors.title ? (
+									<InputAdornment position="end">
+										<ErrorIcon color="error" />
+									</InputAdornment>
+								) : null,
+							}}
 						/>
 
 						<TextField
@@ -118,15 +129,17 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							margin="normal"
 							multiline
 							rows={3}
-							{...register('description', {
-								maxLength: {
-									value: 1000,
-									message: t('validation.description_max_length', {max: 1000}),
-								},
-							})}
+							{...register('description', validationRules.maxLength(1000))}
 							error={!!errors.description}
 							helperText={errors.description?.message}
 							placeholder={t('job_positions.description_placeholder')}
+							InputProps={{
+								endAdornment: errors.description ? (
+									<InputAdornment position="end">
+										<ErrorIcon color="error" />
+									</InputAdornment>
+								) : null,
+							}}
 						/>
 					</Box>
 

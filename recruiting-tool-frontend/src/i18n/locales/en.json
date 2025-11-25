@@ -41,6 +41,7 @@
   },
   "validation": {
     "required": "This field is required",
+    "field_required": "{{field}} is required",
     "email_required": "Email is required",
     "email_invalid": "Invalid email address",
     "name_required": "Name is required",
@@ -58,7 +59,10 @@
     "status_required": "Status is required",
     "job_position_required": "Job position is required",
     "candidate_required": "Candidate is required",
-    "stage_required": "At least one hiring stage is required"
+    "stage_required": "At least one hiring stage is required",
+    "form_errors": "Please fix the following errors:",
+    "numeric_only": "Only numbers are allowed",
+    "positive_number": "Must be a positive number"
   },
   "errors": {
     "operation_failed": "Operation Failed",

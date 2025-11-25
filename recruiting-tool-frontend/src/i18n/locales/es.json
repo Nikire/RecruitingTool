@@ -41,6 +41,7 @@
   },
   "validation": {
     "required": "Este campo es obligatorio",
+    "field_required": "{{field}} es requerido",
     "email_required": "El correo electrónico es obligatorio",
     "email_invalid": "Correo electrónico inválido",
     "name_required": "El nombre es obligatorio",
@@ -58,7 +59,10 @@
     "status_required": "El estado es obligatorio",
     "job_position_required": "La posición de trabajo es obligatoria",
     "candidate_required": "El candidato es obligatorio",
-    "stage_required": "Se requiere al menos una etapa de contratación"
+    "stage_required": "Se requiere al menos una etapa de contratación",
+    "form_errors": "Por favor corrija los siguientes errores:",
+    "numeric_only": "Solo se permiten números",
+    "positive_number": "Debe ser un número positivo"
   },
   "errors": {
     "operation_failed": "Operación Fallida",

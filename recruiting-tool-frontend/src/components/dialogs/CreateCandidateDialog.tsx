@@ -7,10 +7,14 @@ import {
 	Button,
 	Typography,
 	CircularProgress,
+	InputAdornment,
 } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
 import {useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {useCreateCandidate} from '../../hooks/api/useCandidates';
+import {useValidationRules} from '../../utils/validation';
+import FormErrorSummary from '../common/FormErrorSummary';
 
 interface CreateCandidateDialogProps {
 	open: boolean;
@@ -29,6 +33,7 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 	onSuccess,
 }) => {
 	const {t} = useTranslation();
+	const validationRules = useValidationRules();
 	const {
 		register,
 		handleSubmit,
@@ -63,23 +68,26 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 			<DialogTitle>{t('candidates.create_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
+					<FormErrorSummary errors={errors} />
+
 					<TextField
 						label={t('candidates.name_label')}
 						fullWidth
 						margin="normal"
-						{...register('name', {
-							required: t('validation.name_required'),
-							minLength: {
-								value: 3,
-								message: t('validation.name_min_length', {min: 3}),
-							},
-							maxLength: {
-								value: 100,
-								message: t('validation.name_max_length', {max: 100}),
-							},
-						})}
+						{...register('name', validationRules.combine(
+							validationRules.required(t('candidates.name_label')),
+							validationRules.minLength(3),
+							validationRules.maxLength(100),
+						))}
 						error={!!errors.name}
 						helperText={errors.name?.message}
+						InputProps={{
+							endAdornment: errors.name ? (
+								<InputAdornment position="end">
+									<ErrorIcon color="error" />
+								</InputAdornment>
+							) : null,
+						}}
 					/>
 
 					<TextField
@@ -87,15 +95,16 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 						type="email"
 						fullWidth
 						margin="normal"
-						{...register('email', {
-							required: t('validation.email_required'),
-							pattern: {
-								value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-								message: t('validation.email_invalid'),
-							},
-						})}
+						{...register('email', validationRules.email())}
 						error={!!errors.email}
 						helperText={errors.email?.message}
+						InputProps={{
+							endAdornment: errors.email ? (
+								<InputAdornment position="end">
+									<ErrorIcon color="error" />
+								</InputAdornment>
+							) : null,
+						}}
 					/>
 
 					{isError && (
