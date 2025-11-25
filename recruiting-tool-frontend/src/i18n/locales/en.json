@@ -677,6 +677,12 @@
     "spanish": "Español",
     "current_language": "Current Language"
   },
+  "status_editor": {
+    "click_to_edit": "Click to edit status",
+    "select_status": "Select a status",
+    "change_job_position_status": "Change job position status",
+    "change_hiring_process_status": "Change hiring process status"
+  },
   "home": {
     "hero": {
       "headline": "Transform Your Recruitment Process",

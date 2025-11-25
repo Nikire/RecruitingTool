@@ -5,20 +5,15 @@ import {
 	DialogActions,
 	TextField,
 	Button,
-	FormControl,
-	InputLabel,
-	Select,
-	MenuItem,
 	Typography,
 	Box,
 	Divider,
 	CircularProgress,
 } from '@mui/material';
-import {useForm, Controller} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useCreateJobPosition} from '../../hooks/api/useJobPositions';
-import {JobPositionStatus} from '../../types/jobPosition.types';
 import {Stage} from '../../types/stage.types';
 import StageBuilder from '../job-positions/StageBuilder';
 
@@ -29,7 +24,6 @@ interface CreateJobPositionDialogProps {
 
 interface JobPositionFormData {
 	title: string;
-	status: JobPositionStatus;
 	description?: string;
 }
 
@@ -44,13 +38,11 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	const {
 		register,
 		handleSubmit,
-		control,
 		reset,
 		formState: {errors},
 	} = useForm<JobPositionFormData>({
 		defaultValues: {
 			title: '',
-			status: 'OPEN',
 			description: '',
 		},
 	});
@@ -64,9 +56,10 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 			return;
 		}
 
-		// Prepare data with stages
+		// Prepare data with stages and default status
 		const jobPositionData = {
 			...data,
+			status: 'OPEN' as const, // Default to OPEN for new positions
 			stages: stages.map((stage) => ({
 				title: stage.title,
 				type: stage.type,
@@ -135,27 +128,6 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							helperText={errors.description?.message}
 							placeholder={t('job_positions.description_placeholder')}
 						/>
-
-						<FormControl fullWidth margin="normal">
-							<InputLabel>{t('job_positions.status_label')}</InputLabel>
-							<Controller
-								name="status"
-								control={control}
-								rules={{required: t('validation.status_required')}}
-								render={({field}) => (
-									<Select {...field} label={t('job_positions.status_label')} error={!!errors.status}>
-										<MenuItem value="OPEN">{t('status.open')}</MenuItem>
-										<MenuItem value="CLOSED">{t('status.closed')}</MenuItem>
-										<MenuItem value="CANCELLED">{t('status.cancelled')}</MenuItem>
-									</Select>
-								)}
-							/>
-							{errors.status && (
-								<Typography color="error" variant="caption">
-									{errors.status.message}
-								</Typography>
-							)}
-						</FormControl>
 					</Box>
 
 					<Divider sx={{my: 3}} />

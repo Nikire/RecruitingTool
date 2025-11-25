@@ -675,6 +675,12 @@
     "spanish": "Español",
     "current_language": "Idioma Actual"
   },
+  "status_editor": {
+    "click_to_edit": "Haz clic para editar el estado",
+    "select_status": "Selecciona un estado",
+    "change_job_position_status": "Cambiar el estado de la posición de trabajo",
+    "change_hiring_process_status": "Cambiar el estado del proceso de contratación"
+  },
   "home": {
     "hero": {
       "headline": "Transforma Tu Proceso de Reclutamiento",

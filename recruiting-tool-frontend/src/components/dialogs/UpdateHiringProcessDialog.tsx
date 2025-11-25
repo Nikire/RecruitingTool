@@ -6,18 +6,16 @@ import {
 	TextField,
 	Button,
 	Typography,
-	FormControl,
-	InputLabel,
-	Select,
-	MenuItem,
 	Box,
 	CircularProgress,
+	Divider,
 } from '@mui/material';
-import {useForm, Controller} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {useUpdateHiringProcess} from '../../hooks/api/useHiringProcess';
-import {HiringProcess} from '../../types/hiringProcess.types';
-import {useEffect} from 'react';
+import {HiringProcess, HiringProcessStatus} from '../../types/hiringProcess.types';
+import {useEffect, useState} from 'react';
+import StatusBadgeEditor, {StatusOption} from '../common/StatusBadgeEditor';
 
 interface UpdateHiringProcessDialogProps {
 	open: boolean;
@@ -27,15 +25,15 @@ interface UpdateHiringProcessDialogProps {
 
 interface HiringProcessFormData {
 	title: string;
-	status: string;
 }
 
-const hiringProcessStatuses = [
-	{value: 'OPEN', labelKey: 'update_hiring_process.status_open'},
-	{value: 'IN_PROGRESS', labelKey: 'update_hiring_process.status_in_progress'},
-	{value: 'CLOSED', labelKey: 'update_hiring_process.status_closed'},
-	{value: 'CANCELLED', labelKey: 'update_hiring_process.status_cancelled'},
-	{value: 'REJECTED', labelKey: 'update_hiring_process.status_rejected'},
+// Hiring Process status options for StatusBadgeEditor
+const HIRING_PROCESS_STATUS_OPTIONS: StatusOption[] = [
+	{value: 'OPEN', labelKey: 'status.open', color: 'success'},
+	{value: 'IN_PROGRESS', labelKey: 'status.in_progress', color: 'primary'},
+	{value: 'CLOSED', labelKey: 'status.closed', color: 'default'},
+	{value: 'CANCELLED', labelKey: 'status.cancelled', color: 'warning'},
+	{value: 'REJECTED', labelKey: 'status.rejected', color: 'error'},
 ];
 
 const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
@@ -44,16 +42,16 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 	hiringProcess,
 }) => {
 	const {t} = useTranslation();
+	const [currentStatus, setCurrentStatus] = useState<HiringProcessStatus>('OPEN');
+
 	const {
 		register,
 		handleSubmit,
 		reset,
-		control,
 		formState: {errors},
 	} = useForm<HiringProcessFormData>({
 		defaultValues: {
 			title: '',
-			status: 'OPEN',
 		},
 	});
 
@@ -64,16 +62,22 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 		if (hiringProcess) {
 			reset({
 				title: hiringProcess.title,
-				status: hiringProcess.status,
 			});
+			setCurrentStatus(hiringProcess.status);
 		}
 	}, [hiringProcess, reset]);
 
 	const onSubmit = (data: HiringProcessFormData) => {
 		if (!hiringProcess) return;
 
+		// Include status in the update data
+		const updateData = {
+			...data,
+			status: currentStatus,
+		};
+
 		updateHiringProcess(
-			{uid: hiringProcess.uid, data},
+			{uid: hiringProcess.uid, data: updateData},
 			{
 				onSuccess: () => {
 					reset();
@@ -93,7 +97,22 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 			<DialogTitle>{t('update_hiring_process.title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
-					<Box sx={{display: 'flex', flexDirection: 'column', gap: 2, pt: 1}}>
+					{/* Status Badge Editor */}
+					<Box sx={{mb: 3, display: 'flex', justifyContent: 'flex-start'}}>
+						<StatusBadgeEditor
+							currentStatus={currentStatus}
+							statusOptions={HIRING_PROCESS_STATUS_OPTIONS}
+							onChange={(newStatus) => setCurrentStatus(newStatus as HiringProcessStatus)}
+							disabled={isPending}
+							size="medium"
+							label={t('update_hiring_process.status_label')}
+							ariaLabel={t('status_editor.change_hiring_process_status')}
+						/>
+					</Box>
+
+					<Divider sx={{mb: 3}} />
+
+					<Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
 						<TextField
 							label={t('update_hiring_process.title_label')}
 							fullWidth
@@ -111,29 +130,6 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
 							error={!!errors.title}
 							helperText={errors.title?.message}
 						/>
-
-						<FormControl fullWidth error={!!errors.status}>
-							<InputLabel>{t('update_hiring_process.status_label')}</InputLabel>
-							<Controller
-								name="status"
-								control={control}
-								rules={{required: t('validation.status_required')}}
-								render={({field}) => (
-									<Select {...field} label={t('update_hiring_process.status_label')}>
-										{hiringProcessStatuses.map((status) => (
-											<MenuItem key={status.value} value={status.value}>
-												{t(status.labelKey)}
-											</MenuItem>
-										))}
-									</Select>
-								)}
-							/>
-							{errors.status && (
-								<Typography color="error" variant="caption">
-									{errors.status.message}
-								</Typography>
-							)}
-						</FormControl>
 
 						<Typography variant="caption" color="textSecondary">
 							{t('update_hiring_process.note')}
