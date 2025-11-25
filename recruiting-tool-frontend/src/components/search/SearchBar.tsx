@@ -1,6 +1,7 @@
 import {useState, useEffect, useRef} from 'react';
 import {TextField, InputAdornment} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import {useTranslation} from 'react-i18next';
 
 interface SearchBarProps {
 	onSearch: (value: string) => void;
@@ -10,6 +11,7 @@ interface SearchBarProps {
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({onSearch, placeholder = 'Search...', debounceMs = 300, value = ''}) => {
+	const {t} = useTranslation();
 	const [localValue, setLocalValue] = useState(value);
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -54,11 +56,12 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, placeholder = 'Search...
 				style: {
 					fontSize: 'clamp(0.9rem, 2vw, 1rem)',
 				},
+				'aria-label': t('aria.search'),
 			}}
 			InputProps={{
 				startAdornment: (
 					<InputAdornment position="start">
-						<SearchIcon sx={{fontSize: {xs: 20, sm: 24}}} />
+						<SearchIcon sx={{fontSize: {xs: 20, sm: 24}}} aria-hidden="true" />
 					</InputAdornment>
 				),
 			}}
