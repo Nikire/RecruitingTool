@@ -1,6 +1,7 @@
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import BusinessIcon from '@mui/icons-material/Business';
 import PeopleIcon from '@mui/icons-material/People';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {useUserAtom} from '../hooks/api/state/useUserAtom';
 import {hasRole} from '../utils/permissions';
 import {UserRoles} from '../types/user.types';
@@ -33,6 +34,12 @@ const AdminLayout: React.FC = () => {
 			text: t('admin_layout.users'),
 			icon: <PeopleIcon />,
 			path: '/admin/users',
+			requiresSuperAdmin: true,
+		},
+		{
+			text: t('admin_layout.settings'),
+			icon: <SettingsIcon />,
+			path: '/admin/settings',
 			requiresSuperAdmin: true,
 		},
 	];

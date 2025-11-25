@@ -173,3 +173,45 @@ export class ScorecardResponseDto {
   submittedAt: Date;
   createdAt: Date;
 }
+
+// Consensus/Summary DTOs
+export class CriterionConsensusDto {
+  criterionUid: string;
+  criterionName: string;
+  averageScore: number;
+  maxScore: number;
+  variance: number;
+  evaluatorScores: Array<{
+    evaluatorUid: string;
+    evaluatorName: string;
+    score: number;
+    notes?: string;
+  }>;
+}
+
+export class CategoryConsensusDto {
+  categoryName: string;
+  weight: number;
+  averageScore: number;
+  variance: number;
+  criteria: CriterionConsensusDto[];
+}
+
+export class ScorecardSummaryDto {
+  interviewUid: string;
+  totalEvaluators: number;
+  averageOverallScore: number;
+  variance: number;
+  categoryConsensus: CategoryConsensusDto[];
+  highVarianceItems: Array<{
+    criterionName: string;
+    variance: number;
+    averageScore: number;
+  }>;
+  evaluatorScorecards: Array<{
+    evaluatorUid: string;
+    evaluatorName: string;
+    overallScore: number;
+    submittedAt: Date;
+  }>;
+}

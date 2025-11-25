@@ -74,3 +74,41 @@ export const useDeleteUser = () => {
 		},
 	});
 };
+
+export const useDeactivateUser = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (uid: string) => usersApi.deactivate(uid),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
+			showSuccessToast('User deactivated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to deactivate user');
+		},
+	});
+};
+
+export const useReactivateUser = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (uid: string) => usersApi.reactivate(uid),
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
+			showSuccessToast('User reactivated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to reactivate user');
+		},
+	});
+};
+
+export const useUserActivity = (uid: string) => {
+	return useQuery({
+		queryKey: [USERS_KEY, uid, 'activity'],
+		queryFn: () => usersApi.getActivity(uid),
+		enabled: !!uid,
+	});
+};

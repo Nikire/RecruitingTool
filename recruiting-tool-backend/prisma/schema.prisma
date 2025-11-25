@@ -303,28 +303,61 @@ model EmailLog {
 }
 
 model Interview {
-  id            Int                    @id @default(autoincrement())
-  uid           String                 @unique @default(uuid()) @db.Uuid
+  id            Int                      @id @default(autoincrement())
+  uid           String                   @unique @default(uuid()) @db.Uuid
   stageId       Int
-  stage         Stage                  @relation("StageInterviews", fields: [stageId], references: [id], onDelete: Cascade)
+  stage         Stage                    @relation("StageInterviews", fields: [stageId], references: [id], onDelete: Cascade)
   scheduledDate DateTime?
   scheduledTime String?
   duration      Int?
-  status        InterviewStatus        @default(PENDING)
-  meetingLink   String?                @db.Text
+  status        InterviewStatus          @default(PENDING)
+  meetingLink   String?                  @db.Text
   location      String?
-  notes         String?                @db.Text
+  notes         String?                  @db.Text
   scheduledById Int
-  scheduledBy   User                   @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
-  interviewers  InterviewInterviewer[] @relation("InterviewInterviewers")
+  scheduledBy   User                     @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
+  interviewers  InterviewInterviewer[]   @relation("InterviewInterviewers")
   scorecards    Scorecard[]
-  createdAt     DateTime               @default(now())
-  updatedAt     DateTime               @updatedAt
+  timeSlots     InterviewTimeSlot[]      @relation("InterviewTimeSlots")
+  bookingTokens InterviewBookingToken[]  @relation("InterviewBookingTokens")
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
 
   @@index([stageId])
   @@index([scheduledById])
   @@index([status])
   @@index([scheduledDate])
+}
+
+model InterviewTimeSlot {
+  id          Int       @id @default(autoincrement())
+  uid         String    @unique @default(uuid()) @db.Uuid
+  interviewId Int
+  interview   Interview @relation("InterviewTimeSlots", fields: [interviewId], references: [id], onDelete: Cascade)
+  startTime   DateTime
+  endTime     DateTime
+  isAvailable Boolean   @default(true)
+  selectedAt  DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([interviewId])
+  @@index([startTime])
+  @@index([isAvailable])
+}
+
+model InterviewBookingToken {
+  id          Int       @id @default(autoincrement())
+  uid         String    @unique @default(uuid()) @db.Uuid
+  token       String    @unique
+  interviewId Int
+  interview   Interview @relation("InterviewBookingTokens", fields: [interviewId], references: [id], onDelete: Cascade)
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime  @default(now())
+
+  @@index([token])
+  @@index([interviewId])
+  @@index([expiresAt])
 }
 
 model InterviewInterviewer {

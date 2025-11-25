@@ -21,6 +21,7 @@ import {
   SubmitScorecardDto,
   ScorecardTemplateResponseDto,
   ScorecardResponseDto,
+  ScorecardSummaryDto,
 } from './dto/scorecard.dto';
 
 @Controller('scorecard')
@@ -82,5 +83,11 @@ export class ScorecardController {
   @Get(':uid')
   async getScorecardByUid(@Param('uid') uid: string): Promise<ScorecardResponseDto> {
     return this.scorecardService.getScorecardByUid(uid);
+  }
+
+  @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
+  @Get('interview/:interviewUid/summary')
+  async getInterviewSummary(@Param('interviewUid') interviewUid: string): Promise<ScorecardSummaryDto> {
+    return this.scorecardService.getInterviewSummary(interviewUid);
   }
 }

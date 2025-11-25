@@ -32,4 +32,19 @@ export const usersApi = {
 		const response = await axiosInstance.delete<{message: string}>(`/users/${uid}`);
 		return response.data;
 	},
+
+	deactivate: async (uid: string): Promise<User> => {
+		const response = await axiosInstance.put<User>(`/users/${uid}/deactivate`);
+		return response.data;
+	},
+
+	reactivate: async (uid: string): Promise<User> => {
+		const response = await axiosInstance.put<User>(`/users/${uid}/reactivate`);
+		return response.data;
+	},
+
+	getActivity: async (uid: string): Promise<any[]> => {
+		const response = await axiosInstance.get<any[]>(`/users/${uid}/activity`);
+		return response.data;
+	},
 };

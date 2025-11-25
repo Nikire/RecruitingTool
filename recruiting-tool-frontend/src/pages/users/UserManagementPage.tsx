@@ -1,4 +1,4 @@
-import {Box, Button, Typography, Alert} from '@mui/material';
+import {Box, Button, Typography} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {Add as AddIcon} from '@mui/icons-material';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
@@ -6,15 +6,18 @@ import {useUsersSearch} from '../../hooks/api/state/useSearchState';
 import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandlers';
 import {hasRole} from '../../utils/permissions';
 import {UserRoles} from '../../types/user.types';
+import {useState} from 'react';
 import SearchBar from '../../components/search/SearchBar';
 import UsersList from '../../components/users/UsersList';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
+import CreateUserDialog from '../../components/dialogs/CreateUserDialog';
 
 const UserManagementPage: React.FC = () => {
 	const {t} = useTranslation();
 	const {user} = useUserAtom();
 	const [searchState, setSearchState] = useUsersSearch();
 	const {page, limit, search} = searchState;
+	const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
 	const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
 
@@ -44,7 +47,7 @@ const UserManagementPage: React.FC = () => {
 				<Button
 					variant="contained"
 					startIcon={<AddIcon />}
-					disabled
+					onClick={() => setCreateDialogOpen(true)}
 					sx={{
 						width: {xs: '100%', sm: 'auto'},
 						minHeight: '44px',
@@ -54,10 +57,6 @@ const UserManagementPage: React.FC = () => {
 					{t('users.create_user')}
 				</Button>
 			</Box>
-
-			<Alert severity="info" sx={{mb: 3}}>
-				{t('users.api_only_message')}
-			</Alert>
 
 			<Box sx={{mb: 3, maxWidth: {xs: '100%', sm: 400}}}>
 				<SearchBar onSearch={handleSearch} placeholder={t('users.search_placeholder')} value={search} />
@@ -70,6 +69,8 @@ const UserManagementPage: React.FC = () => {
 				onPageChange={handlePageChange}
 				onLimitChange={handleLimitChange}
 			/>
+
+			<CreateUserDialog open={createDialogOpen} onClose={() => setCreateDialogOpen(false)} />
 		</Box>
 	);
 };

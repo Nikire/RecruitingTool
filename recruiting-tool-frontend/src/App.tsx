@@ -20,6 +20,9 @@ import ProfilePage from './pages/profile/ProfilePage';
 import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
 import EmailTemplatesPage from './pages/admin/email-templates/EmailTemplatesPage';
 import AnalyticsPage from './pages/analytics/AnalyticsPage';
+import SystemSettingsPage from './pages/admin/SystemSettingsPage';
+import BookInterviewPage from './pages/booking/BookInterviewPage';
+import BookingConfirmedPage from './pages/booking/BookingConfirmedPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -34,6 +37,8 @@ function App() {
 					<Route path="/logout" element={<Logout />} />
 					<Route path="/careers" element={<JobPositionsPage />} />
 					<Route path="/careers/:uid" element={<JobPositionDetailPage />} />
+					<Route path="/book-interview/:token" element={<BookInterviewPage />} />
+					<Route path="/booking-confirmed/:token" element={<BookingConfirmedPage />} />
 
 					<Route element={<DocumentContainer />}>
 						<Route path="/hiring-process/:uid" element={<HiringProcessPage />} />
@@ -62,6 +67,7 @@ function App() {
 						<Route path="/admin" element={<AdminDashboard />} />
 						<Route path="/admin/companies" element={<CompaniesPage />} />
 						<Route path="/admin/users" element={<UserManagementPage />} />
+						<Route path="/admin/settings" element={<SystemSettingsPage />} />
 					</Route>
 				</Route>
 			</Routes>

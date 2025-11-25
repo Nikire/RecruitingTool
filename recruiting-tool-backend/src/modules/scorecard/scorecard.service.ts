@@ -5,6 +5,9 @@ import {
   ScorecardResponseDto,
   CategoryScoreResponseDto,
   CriterionScoreResponseDto,
+  ScorecardSummaryDto,
+  CategoryConsensusDto,
+  CriterionConsensusDto,
 } from './dto/scorecard.dto';
 
 @Injectable()
@@ -223,5 +226,133 @@ export class ScorecardService {
       submittedAt: scorecard.submittedAt,
       createdAt: scorecard.createdAt,
     };
+  }
+
+  async getInterviewSummary(interviewUid: string): Promise<ScorecardSummaryDto> {
+    const interview = await this.prisma.interview.findUnique({
+      where: { uid: interviewUid },
+    });
+
+    if (!interview) {
+      throw new NotFoundException('Interview not found');
+    }
+
+    const scorecards = await this.prisma.scorecard.findMany({
+      where: { interviewId: interview.id },
+      include: {
+        template: {
+          include: {
+            categories: {
+              include: {
+                criteria: true,
+              },
+              orderBy: { order: 'asc' },
+            },
+          },
+        },
+        evaluator: true,
+        scores: true,
+      },
+      orderBy: { submittedAt: 'desc' },
+    });
+
+    if (scorecards.length === 0) {
+      throw new NotFoundException('No scorecards found for this interview');
+    }
+
+    // Calculate average overall score and variance
+    const overallScores = scorecards.map((s) => s.overallScore);
+    const averageOverallScore = this.calculateMean(overallScores);
+    const overallVariance = this.calculateVariance(overallScores);
+
+    // Get template (assuming all scorecards use the same template)
+    const template = scorecards[0].template;
+
+    // Calculate consensus for each category
+    const categoryConsensus: CategoryConsensusDto[] = template.categories.map((category) => {
+      const criteriaConsensus: CriterionConsensusDto[] = category.criteria.map((criterion) => {
+        // Collect all scores for this criterion across all evaluators
+        const evaluatorScores = scorecards.map((scorecard) => {
+          const score = scorecard.scores.find((s) => s.criterionId === criterion.id);
+          return {
+            evaluatorUid: scorecard.evaluator.uid,
+            evaluatorName: scorecard.evaluator.name,
+            score: score?.score || 0,
+            notes: score?.notes,
+          };
+        });
+
+        const scores = evaluatorScores.map((es) => es.score);
+        const averageScore = this.calculateMean(scores);
+        const variance = this.calculateVariance(scores);
+
+        return {
+          criterionUid: criterion.uid,
+          criterionName: criterion.name,
+          averageScore: Math.round(averageScore * 100) / 100,
+          maxScore: criterion.maxScore,
+          variance: Math.round(variance * 100) / 100,
+          evaluatorScores,
+        };
+      });
+
+      // Calculate category average
+      const categoryScores = criteriaConsensus.map((c) => c.averageScore);
+      const categoryAverage = this.calculateMean(categoryScores);
+      const categoryVariance = this.calculateVariance(categoryScores);
+
+      return {
+        categoryName: category.name,
+        weight: category.weight,
+        averageScore: Math.round(categoryAverage * 100) / 100,
+        variance: Math.round(categoryVariance * 100) / 100,
+        criteria: criteriaConsensus,
+      };
+    });
+
+    // Identify high variance items (variance > 1.5 or 30% of max score)
+    const highVarianceItems = categoryConsensus
+      .flatMap((cat) =>
+        cat.criteria
+          .filter((crit) => crit.variance > 1.5)
+          .map((crit) => ({
+            criterionName: crit.criterionName,
+            variance: crit.variance,
+            averageScore: crit.averageScore,
+          })),
+      )
+      .sort((a, b) => b.variance - a.variance)
+      .slice(0, 5); // Top 5 high variance items
+
+    // Build evaluator summaries
+    const evaluatorScorecards = scorecards.map((scorecard) => ({
+      evaluatorUid: scorecard.evaluator.uid,
+      evaluatorName: scorecard.evaluator.name,
+      overallScore: scorecard.overallScore,
+      submittedAt: scorecard.submittedAt,
+    }));
+
+    return {
+      interviewUid,
+      totalEvaluators: scorecards.length,
+      averageOverallScore: Math.round(averageOverallScore * 100) / 100,
+      variance: Math.round(overallVariance * 100) / 100,
+      categoryConsensus,
+      highVarianceItems,
+      evaluatorScorecards,
+    };
+  }
+
+  private calculateMean(values: number[]): number {
+    if (values.length === 0) return 0;
+    const sum = values.reduce((acc, val) => acc + val, 0);
+    return sum / values.length;
+  }
+
+  private calculateVariance(values: number[]): number {
+    if (values.length < 2) return 0;
+    const mean = this.calculateMean(values);
+    const squaredDiffs = values.map((val) => Math.pow(val - mean, 2));
+    return this.calculateMean(squaredDiffs);
   }
 }
