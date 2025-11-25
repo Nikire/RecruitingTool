@@ -9,6 +9,7 @@ import { CreateStageNoteDto, UpdateStageNoteDto, StageNoteResponseDto } from './
 import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { StageMetricsResponseDto } from './dto/stage-time-tracking.dto';
 
 @Auth(['HR', 'ADMIN'])
 @ApiBearerAuth()
@@ -135,5 +136,18 @@ export class StagesController {
       where: { uid: user.uid },
     });
     return this.stagesService.deleteNote(noteUid, dbUser.id);
+  }
+
+  // Time Tracking Analytics endpoints
+  @Get(':uid/metrics')
+  @ApiOperation({ summary: 'Get time tracking metrics for a stage' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns time metrics for the stage (average, min, max time)',
+    type: StageMetricsResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the stage' })
+  getStageMetrics(@Param('uid') uid: string): Promise<StageMetricsResponseDto> {
+    return this.stagesService.getStageMetrics(uid);
   }
 }

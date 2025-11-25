@@ -8,6 +8,7 @@ import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDt
 import { User } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { CandidateJourneyResponseDto, CandidateJourneyStepDto } from '../stages/dto/stage-time-tracking.dto';
 
 @Injectable()
 export class CandidateService {
@@ -400,7 +401,7 @@ export class CandidateService {
     }
 
     return { message: 'Note deleted successfully' };
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -409,4 +410,89 @@ export class CandidateService {
         `Failed to remove note: ${error.message}`,
       );
     }}
+
+  // Candidate Journey Tracking
+  async getCandidateJourney(candidateUid: string, user?: User): Promise<CandidateJourneyResponseDto[]> {
+    try {
+      const candidate = await this.databaseService.candidate.findUnique({
+        where: { uid: candidateUid },
+        include: {
+          hiringProcesses: {
+            include: {
+              stages: {
+                orderBy: { position: 'asc' },
+              },
+            },
+          },
+          stageTimeLogs: {
+            include: {
+              stage: true,
+            },
+            orderBy: { enteredAt: 'asc' },
+          },
+        },
+      });
+
+      if (!candidate) {
+        throw new EntityNotFoundException('Candidate', candidateUid);
+      }
+
+      // Verify company access if user is provided
+      if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
+        const userCompanyId = getUserCompanyId(user);
+        if (userCompanyId !== null) {
+          const hasAccessToCandidate = candidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
+          if (!hasAccessToCandidate) {
+            throw new EntityNotFoundException('Candidate', candidateUid);
+          }
+        }
+      }
+
+      // Build journey for each hiring process
+      const journeys: CandidateJourneyResponseDto[] = candidate.hiringProcesses.map((hiringProcess) => {
+        // Get time logs for this hiring process stages
+        const stageTimeLogs = candidate.stageTimeLogs.filter((log) =>
+          hiringProcess.stages.some((stage) => stage.id === log.stageId)
+        );
+
+        // Build stage steps
+        const stageSteps: CandidateJourneyStepDto[] = hiringProcess.stages.map((stage) => {
+          const timeLog = stageTimeLogs.find((log) => log.stageId === stage.id);
+
+          return {
+            stageUid: stage.uid,
+            stageTitle: stage.title,
+            stagePosition: stage.position,
+            enteredAt: timeLog?.enteredAt || new Date(),
+            exitedAt: timeLog?.exitedAt || null,
+            durationMinutes: timeLog?.duration || null,
+            isCurrent: stage.status === 'CURRENT',
+          };
+        });
+
+        // Calculate total time
+        const totalTimeMinutes = stageTimeLogs
+          .filter((log) => log.duration !== null)
+          .reduce((sum, log) => sum + (log.duration || 0), 0);
+
+        return {
+          candidateUid: candidate.uid,
+          candidateName: candidate.name,
+          hiringProcessUid: hiringProcess.uid,
+          hiringProcessTitle: hiringProcess.title,
+          totalTimeMinutes: totalTimeMinutes > 0 ? totalTimeMinutes : null,
+          stages: stageSteps,
+        };
+      });
+
+      return journeys;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to get candidate journey: ${error.message}`,
+      );
+    }
+  }
 }

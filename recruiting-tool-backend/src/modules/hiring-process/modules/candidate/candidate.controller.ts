@@ -9,6 +9,7 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { User } from '@prisma/client';
+import { CandidateJourneyResponseDto } from '../stages/dto/stage-time-tracking.dto';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -172,5 +173,21 @@ export class CandidateController {
       where: { uid: user.uid },
     });
     return this.candidateService.removeNote(noteUid, dbUser.id);
+  }
+
+  // Candidate Journey Tracking endpoint
+  @Get(':uid/journey')
+  @ApiOperation({ summary: 'Get candidate journey through all stages with time tracking' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the candidate journey across all hiring processes',
+    type: [CandidateJourneyResponseDto],
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
+  getCandidateJourney(
+    @Param('uid') uid: string,
+    @CurrentUser() currentUser: User,
+  ): Promise<CandidateJourneyResponseDto[]> {
+    return this.candidateService.getCandidateJourney(uid, currentUser);
   }
 }

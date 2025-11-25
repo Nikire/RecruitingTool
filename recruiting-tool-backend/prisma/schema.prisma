@@ -20,6 +20,8 @@ model Company {
   hiringProcesses    HiringProcess[]
   emailTemplates     EmailTemplate[]
   scorecardTemplates ScorecardTemplate[]
+  aiQuotas           AIQuota[]
+  aiUsageLogs        AIUsageLog[]
 }
 
 model User {
@@ -36,6 +38,7 @@ model User {
   bio                     String?
   linkedinUrl             String?
   timezone                String?
+  googleRefreshToken      String?
   isActive                Boolean                  @default(true)
   deactivatedAt           DateTime?
   deactivatedBy           Int?
@@ -56,6 +59,7 @@ model User {
   activityLogs            UserActivityLog[]        @relation("UserActivityLogs")
   schedules               HRSchedule[]             @relation("UserSchedules")
   scorecardEvaluations    Scorecard[]              @relation("ScorecardEvaluations")
+  aiUsageLogs             AIUsageLog[]             @relation("UserAIUsageLogs")
 }
 
 model Candidate {
@@ -69,6 +73,8 @@ model Candidate {
   hiringProcesses HiringProcess[]     @relation("HiringProcessCandidate")
   files           FileUpload[]        @relation("CandidateFiles")
   notes           CandidateNote[]     @relation("CandidateNotes")
+  stageTimeLogs   StageTimeLog[]      @relation("CandidateStageTimeLogs")
+  scores          CandidateScore[]    @relation("CandidateScores")
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
@@ -127,6 +133,7 @@ model JobPosition {
   status          JobPositionStatus @default(OPEN)
   hiringProcesses HiringProcess[]
   applications    Application[]
+  candidateScores CandidateScore[]  @relation("JobPositionScores")
 }
 
 model HiringProcess {
@@ -160,22 +167,23 @@ enum JobPositionStatus {
 }
 
 model Stage {
-  id              Int            @id @default(autoincrement())
-  uid             String         @unique @default(uuid()) @db.Uuid
+  id              Int              @id @default(autoincrement())
+  uid             String           @unique @default(uuid()) @db.Uuid
   title           String
   type            StageType
   description     String
-  status          StageStatus    @default(OPEN)
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
+  status          StageStatus      @default(OPEN)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  hiringProcess   HiringProcess?   @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
   hiringProcessId Int?
   position        Int
-  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
+  JobPosition     JobPosition?     @relation(fields: [jobPositionId], references: [id])
   jobPositionId   Int?
   estimatedTime   Int?
-  interviews      Interview[]    @relation("StageInterviews")
-  notes           StageNote[]    @relation("StageNotes")
+  interviews      Interview[]      @relation("StageInterviews")
+  notes           StageNote[]      @relation("StageNotes")
+  timeLogs        StageTimeLog[]   @relation("StageTimeLogs")
 
   @@unique([hiringProcessId, position])
 }
@@ -469,4 +477,85 @@ model ScorecardScore {
 
   @@unique([scorecardId, criterionId])
   @@index([scorecardId])
+}
+
+model AIQuota {
+  id        Int       @id @default(autoincrement())
+  uid       String    @unique @default(uuid()) @db.Uuid
+  companyId Int
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  quotaType QuotaType
+  limit     Int
+  used      Int       @default(0)
+  resetDate DateTime
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@index([companyId])
+  @@index([quotaType])
+  @@unique([companyId, quotaType])
+}
+
+enum QuotaType {
+  RESUME_PARSING
+  CANDIDATE_SCORING
+  BATCH_SCORING
+}
+
+model AIUsageLog {
+  id        Int       @id @default(autoincrement())
+  uid       String    @unique @default(uuid()) @db.Uuid
+  companyId Int
+  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId    Int
+  user      User      @relation("UserAIUsageLogs", fields: [userId], references: [id], onDelete: Cascade)
+  operation QuotaType
+  tokensUsed Int?
+  cost      Float?
+  createdAt DateTime  @default(now())
+
+  @@index([companyId])
+  @@index([userId])
+  @@index([operation])
+  @@index([createdAt])
+}
+
+model StageTimeLog {
+  id          Int       @id @default(autoincrement())
+  uid         String    @unique @default(uuid()) @db.Uuid
+  stageId     Int
+  stage       Stage     @relation("StageTimeLogs", fields: [stageId], references: [id], onDelete: Cascade)
+  candidateId Int
+  candidate   Candidate @relation("CandidateStageTimeLogs", fields: [candidateId], references: [id], onDelete: Cascade)
+  enteredAt   DateTime  @default(now())
+  exitedAt    DateTime?
+  duration    Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([stageId])
+  @@index([candidateId])
+  @@index([enteredAt])
+}
+
+model CandidateScore {
+  id              Int         @id @default(autoincrement())
+  uid             String      @unique @default(uuid()) @db.Uuid
+  candidateId     Int
+  candidate       Candidate   @relation("CandidateScores", fields: [candidateId], references: [id], onDelete: Cascade)
+  jobPositionId   Int
+  jobPosition     JobPosition @relation("JobPositionScores", fields: [jobPositionId], references: [id], onDelete: Cascade)
+  overallScore    Float
+  skillsScore     Float
+  experienceScore Float
+  educationScore  Float
+  analysis        Json?
+  scoredAt        DateTime    @default(now())
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@unique([candidateId, jobPositionId])
+  @@index([jobPositionId])
+  @@index([overallScore])
+  @@index([candidateId])
 }

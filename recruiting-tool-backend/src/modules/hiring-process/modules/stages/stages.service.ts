@@ -6,6 +6,7 @@ import { StageStatus } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CreateStageNoteDto, UpdateStageNoteDto, StageNoteResponseDto } from './dto/stage-note.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { StageMetricsResponseDto } from './dto/stage-time-tracking.dto';
 
 @Injectable()
 export class StagesService {
@@ -170,13 +171,16 @@ export class StagesService {
       jobPositionId = jobPosition?.id;
     }
 
-    // Get hiringProcessId if hiringProcessUid is provided
+    // Get hiringProcessId and candidateId if hiringProcessUid is provided
     let hiringProcessId: number | undefined = undefined;
+    let candidateId: number | undefined = undefined;
     if (hiringProcessUid) {
       const hiringProcess = await this.databaseService.hiringProcess.findUnique({
         where: { uid: hiringProcessUid },
+        include: { candidate: true },
       });
       hiringProcessId = hiringProcess?.id;
+      candidateId = hiringProcess?.candidateId ?? undefined;
     }
 
     const createdStages = await this.databaseService.stage.createManyAndReturn({
@@ -192,6 +196,12 @@ export class StagesService {
       })),
     });
 
+    // Create time log for first stage (CURRENT) if this is for a hiring process with a candidate
+    if (hiringProcessId && candidateId && createdStages.length > 0) {
+      const firstStage = createdStages[0];
+      await this.createTimeLog(firstStage.id, candidateId);
+    }
+
     return createdStages.map(StageMapper);
   }
 
@@ -202,6 +212,7 @@ export class StagesService {
         stages: {
           orderBy: { position: 'asc' },
         },
+        candidate: true,
       },
     });
 
@@ -218,6 +229,11 @@ export class StagesService {
     const nextStage = hiringProcess.stages.find(
       (stage) => stage.position === currentStage.position + 1,
     );
+
+    // Exit time log for current stage (if candidate exists)
+    if (hiringProcess.candidateId) {
+      await this.exitTimeLog(currentStage.id, hiringProcess.candidateId);
+    }
 
     if (!nextStage) {
       // No next stage, mark current as done and hiring process as completed
@@ -247,6 +263,11 @@ export class StagesService {
       }),
     ]);
 
+    // Create time log for next stage (if candidate exists)
+    if (hiringProcess.candidateId) {
+      await this.createTimeLog(nextStage.id, hiringProcess.candidateId);
+    }
+
     const updatedStages = await this.databaseService.stage.findMany({
       where: { hiringProcessId: hiringProcess.id },
       orderBy: { position: 'asc' },
@@ -262,6 +283,7 @@ export class StagesService {
         stages: {
           orderBy: { position: 'asc' },
         },
+        candidate: true,
       },
     });
 
@@ -273,6 +295,12 @@ export class StagesService {
 
     if (!targetStage) {
       throw new NotFoundException(`Target stage with UID ${targetStageUid} not found in this hiring process`);
+    }
+
+    // Find current stage and exit its time log
+    const currentStage = hiringProcess.stages.find((stage) => stage.status === StageStatus.CURRENT);
+    if (currentStage && hiringProcess.candidateId) {
+      await this.exitTimeLog(currentStage.id, hiringProcess.candidateId);
     }
 
     // Reset all stages to OPEN first
@@ -298,6 +326,11 @@ export class StagesService {
     }).filter(Boolean);
 
     await this.databaseService.$transaction(updates);
+
+    // Create time log for target stage
+    if (hiringProcess.candidateId) {
+      await this.createTimeLog(targetStage.id, hiringProcess.candidateId);
+    }
 
     const updatedStages = await this.databaseService.stage.findMany({
       where: { hiringProcessId: hiringProcess.id },
@@ -438,5 +471,96 @@ export class StagesService {
     });
 
     return { message: 'Note deleted successfully' };
+  }
+
+  // Stage Time Tracking methods
+  async createTimeLog(stageId: number, candidateId: number): Promise<void> {
+    // Check if there's already an active time log for this candidate in this stage
+    const existingLog = await this.databaseService.stageTimeLog.findFirst({
+      where: {
+        stageId,
+        candidateId,
+        exitedAt: null,
+      },
+    });
+
+    // If no active log exists, create one
+    if (!existingLog) {
+      await this.databaseService.stageTimeLog.create({
+        data: {
+          stageId,
+          candidateId,
+          enteredAt: new Date(),
+        },
+      });
+    }
+  }
+
+  async exitTimeLog(stageId: number, candidateId: number): Promise<void> {
+    // Find the active time log
+    const activeLog = await this.databaseService.stageTimeLog.findFirst({
+      where: {
+        stageId,
+        candidateId,
+        exitedAt: null,
+      },
+    });
+
+    if (activeLog) {
+      const exitedAt = new Date();
+      const durationMs = exitedAt.getTime() - activeLog.enteredAt.getTime();
+      const durationMinutes = Math.round(durationMs / (1000 * 60)); // Convert to minutes
+
+      await this.databaseService.stageTimeLog.update({
+        where: { id: activeLog.id },
+        data: {
+          exitedAt,
+          duration: durationMinutes,
+        },
+      });
+    }
+  }
+
+  async getStageMetrics(stageUid: string): Promise<StageMetricsResponseDto> {
+    const stage = await this.databaseService.stage.findUnique({
+      where: { uid: stageUid },
+      include: {
+        timeLogs: {
+          where: {
+            exitedAt: { not: null },
+          },
+        },
+      },
+    });
+
+    if (!stage) {
+      throw new NotFoundException(`Stage with UID ${stageUid} not found`);
+    }
+
+    // Count candidates currently in this stage
+    const candidatesInStage = await this.databaseService.stageTimeLog.count({
+      where: {
+        stageId: stage.id,
+        exitedAt: null,
+      },
+    });
+
+    // Calculate metrics from completed time logs
+    const completedLogs = stage.timeLogs.filter((log) => log.duration !== null);
+    const durations = completedLogs.map((log) => log.duration as number);
+
+    const metrics: StageMetricsResponseDto = {
+      stageUid: stage.uid,
+      stageTitle: stage.title,
+      totalCandidates: completedLogs.length,
+      candidatesInStage,
+      averageTimeMinutes: durations.length > 0
+        ? Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length)
+        : null,
+      minTimeMinutes: durations.length > 0 ? Math.min(...durations) : null,
+      maxTimeMinutes: durations.length > 0 ? Math.max(...durations) : null,
+    };
+
+    return metrics;
   }
 }
