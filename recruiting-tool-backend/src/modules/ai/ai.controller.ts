@@ -14,7 +14,9 @@ import {
   ApiResponse,
   ApiBearerAuth,
   ApiParam,
+  ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
 import { ScoringService } from './scoring.service';
 import { BatchScoringService } from './batch-scoring.service';
@@ -49,6 +51,7 @@ export class AiController {
 
   @Post('parse-resume')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Throttle({ default: { limit: 10, ttl: 3600000 } }) // 10 requests per hour
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Parse resume using AI',
@@ -72,6 +75,9 @@ export class AiController {
     status: 403,
     description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
   })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many AI requests. Maximum 10 requests per hour per IP.',
+  })
   @ApiResponse({
     status: 500,
     description: 'Internal server error - OpenAI API error or configuration issue',
@@ -84,6 +90,7 @@ export class AiController {
 
   @Post('score-candidate')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Throttle({ default: { limit: 10, ttl: 3600000 } }) // 10 requests per hour
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Score a candidate for a job position using AI',
@@ -106,6 +113,9 @@ export class AiController {
   @ApiResponse({
     status: 403,
     description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many AI requests. Maximum 10 requests per hour per IP.',
   })
   @ApiResponse({
     status: 404,
@@ -202,6 +212,7 @@ export class AiController {
 
   @Post('batch-score')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Throttle({ default: { limit: 5, ttl: 3600000 } }) // 5 batch jobs per hour
   @HttpCode(HttpStatus.ACCEPTED)
   @ApiOperation({
     summary: 'Start batch scoring for multiple candidates',
@@ -224,6 +235,9 @@ export class AiController {
   @ApiResponse({
     status: 403,
     description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many batch scoring requests. Maximum 5 batch jobs per hour per IP.',
   })
   @ApiResponse({
     status: 404,

@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { ApplicationService } from './application.service';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Applications')
 @Controller('applications')
@@ -13,11 +14,15 @@ export class ApplicationController {
   constructor(private readonly applicationService: ApplicationService) {}
 
   @Post()
+  @Throttle({ default: { limit: 5, ttl: 3600000 } }) // 5 applications per hour per IP
   @ApiOperation({ summary: 'Submit job application (Public - No auth required)' })
   @ApiResponse({
     status: 201,
     description: 'Application submitted successfully',
     type: ApplicationResponseDto,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many application submissions. Maximum 5 applications per hour per IP.',
   })
   @ApiBody({ type: CreateApplicationDto })
   create(@Body() createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {

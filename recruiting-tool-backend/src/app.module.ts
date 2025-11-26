@@ -3,7 +3,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
 import { UsersModule } from './modules/users/users.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { HiringProcessModule } from './modules/hiring-process/hiring-process.module';
 import { StagesModule } from './modules/hiring-process/modules/stages/stages.module';
 import { CandidateModule } from './modules/hiring-process/modules/candidate/candidate.module';
@@ -26,10 +26,75 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { TimeSlotsModule } from './modules/time-slots/time-slots.module';
 import { SseModule } from './modules/sse/sse.module';
 import { BackupModule } from './modules/backup/backup.module';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { CustomThrottlerGuard } from './common/guards/throttler.guard';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule, InterviewModule, ProfileModule, AdminModule, HRScheduleModule, ScorecardModule, AiModule, GoogleCalendarModule, AIQuotaModule, AnalyticsModule, WebhooksModule, TimeSlotsModule, SseModule, BackupModule],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
+    ThrottlerModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (config: ConfigService) => [
+        {
+          name: 'default',
+          ttl: parseInt(config.get('THROTTLE_TTL', '900000')), // 15 minutes in ms
+          limit: parseInt(config.get('THROTTLE_LIMIT', '100')), // 100 requests
+        },
+        {
+          name: 'auth',
+          ttl: parseInt(config.get('THROTTLE_AUTH_TTL', '900000')), // 15 minutes
+          limit: parseInt(config.get('THROTTLE_AUTH_LIMIT', '5')), // 5 requests
+        },
+        {
+          name: 'register',
+          ttl: parseInt(config.get('THROTTLE_REGISTER_TTL', '3600000')), // 1 hour
+          limit: parseInt(config.get('THROTTLE_REGISTER_LIMIT', '3')), // 3 requests
+        },
+        {
+          name: 'ai',
+          ttl: parseInt(config.get('THROTTLE_AI_TTL', '3600000')), // 1 hour
+          limit: parseInt(config.get('THROTTLE_AI_LIMIT', '10')), // 10 requests
+        },
+        {
+          name: 'application',
+          ttl: parseInt(config.get('THROTTLE_APPLICATION_TTL', '3600000')), // 1 hour
+          limit: parseInt(config.get('THROTTLE_APPLICATION_LIMIT', '5')), // 5 requests
+        },
+      ],
+    }),
+    UsersModule,
+    SharedModule,
+    CompanyModule,
+    HiringProcessModule,
+    StagesModule,
+    CandidateModule,
+    JobPositionModule,
+    DummyModule,
+    StorageModule,
+    ApplicationModule,
+    EmailTemplatesModule,
+    InterviewModule,
+    ProfileModule,
+    AdminModule,
+    HRScheduleModule,
+    ScorecardModule,
+    AiModule,
+    GoogleCalendarModule,
+    AIQuotaModule,
+    AnalyticsModule,
+    WebhooksModule,
+    TimeSlotsModule,
+    SseModule,
+    BackupModule,
+  ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard,
+    },
+  ],
 })
 export class AppModule {}

@@ -2,7 +2,9 @@ import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LoginDto, RegisteredUserDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
-import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiTooManyRequestsResponse } from '@nestjs/swagger';
+import { Throttle } from '@nestjs/throttler';
+import { SkipThrottle } from 'src/common/decorators/throttle.decorator';
 
 @ApiTags('Auth')
 @ApiResponse({
@@ -17,7 +19,11 @@ export class AuthController {
   @ApiBadRequestResponse({
     description: 'User already exists',
   })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many registration attempts. Maximum 3 registrations per hour per IP.',
+  })
   @ApiBody({ type: CreateUserDto })
+  @Throttle({ default: { limit: 3, ttl: 3600000 } }) // 3 registrations per hour
   @Post('register')
   register(
     @Body()
@@ -30,7 +36,11 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Email is wrong or Password is wrong',
   })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many login attempts. Maximum 5 attempts per 15 minutes per IP.',
+  })
   @ApiBody({ type: LoginDto })
+  @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 login attempts per 15 minutes
   @Post('sign-in')
   async login(
     @Body()
@@ -40,6 +50,7 @@ export class AuthController {
   }
 
   @Get('me')
+  @SkipThrottle() // Skip throttling for token verification
   @ApiOperation({ summary: 'Get current authenticated user' })
   @ApiResponse({
     status: 200,
