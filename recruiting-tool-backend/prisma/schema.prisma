@@ -62,6 +62,10 @@ model User {
   scorecardEvaluations    Scorecard[]            @relation("ScorecardEvaluations")
   aiUsageLogs             AIUsageLog[]           @relation("UserAIUsageLogs")
   candidateActivities     CandidateActivity[]    @relation("CandidateActivityUser")
+
+  @@index([email])
+  @@index([companyId])
+  @@index([isActive])
 }
 
 model Candidate {
@@ -81,6 +85,7 @@ model Candidate {
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
+  @@index([email])
   @@index([source])
 }
 
@@ -140,6 +145,11 @@ model JobPosition {
   applications     Application[]
   candidateScores  CandidateScore[]  @relation("JobPositionScores")
   batchScoringJobs BatchScoringJob[] @relation("BatchScoringJobs")
+
+  @@index([status])
+  @@index([companyId])
+  @@index([createdById])
+  @@index([companyId, status])
 }
 
 model HiringProcess {
@@ -156,6 +166,12 @@ model HiringProcess {
   jobPositionId Int
   companyId     Int
   company       Company             @relation(fields: [companyId], references: [id])
+
+  @@index([status])
+  @@index([jobPositionId])
+  @@index([candidateId])
+  @@index([companyId])
+  @@index([companyId, status])
 }
 
 enum HiringProcessStatus {
@@ -192,6 +208,11 @@ model Stage {
   timeLogs        StageTimeLog[] @relation("StageTimeLogs")
 
   @@unique([hiringProcessId, position])
+  @@index([hiringProcessId])
+  @@index([jobPositionId])
+  @@index([status])
+  @@index([position])
+  @@index([hiringProcessId, position])
 }
 
 model StageNote {
@@ -238,6 +259,9 @@ model FileUpload {
   applicationResumes Application[] @relation("ApplicationResume")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
+
+  @@index([candidateId])
+  @@index([uploadedById])
 }
 
 model Application {
@@ -260,6 +284,12 @@ model Application {
   notes          String?           @db.Text
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
+
+  @@index([status])
+  @@index([jobPositionId])
+  @@index([applicantEmail])
+  @@index([reviewedById])
+  @@index([jobPositionId, status])
 }
 
 enum ApplicationStatus {
