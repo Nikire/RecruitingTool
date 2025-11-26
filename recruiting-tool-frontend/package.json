@@ -9,7 +9,16 @@
 		"build:vite": "vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"format": "prettier --write \"src/**/*.{ts,tsx}\"",
+		"docker:build": "docker-compose up -d --build frontend",
+		"docker:rebuild": "docker-compose up -d --build",
+		"docker:logs": "docker-compose logs frontend --tail 100",
+		"docker:logs:follow": "docker-compose logs frontend --follow",
+		"docker:restart": "docker-compose restart frontend",
+		"checks": "npm run typecheck && npm run lint",
+		"checks:fix": "npm run format && npm run lint",
+		"agent:log": "node -e \"const fs=require('fs');const msg=process.argv[1];const date=new Date().toISOString().slice(0,19).replace('T',' ');fs.appendFileSync('../.claude/logs/agent-activity.log','['+date+'] [npm-script] '+msg+'\\n---\\n');\""
 	},
 	"dependencies": {
 		"@emotion/react": "^11.14.0",
