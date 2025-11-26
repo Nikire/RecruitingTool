@@ -10,6 +10,9 @@ const { PORT, FRONTEND_URL } = process.env;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Set global API prefix
+  app.setGlobalPrefix('api');
+
   // Register global exception filter for consistent error handling
   app.useGlobalFilters(new HttpExceptionFilter());
 

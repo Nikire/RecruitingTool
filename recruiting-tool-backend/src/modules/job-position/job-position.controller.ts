@@ -9,16 +9,25 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('Job Position')
-@ApiBearerAuth()
 @Controller('job-position')
-@ApiUnauthorizedResponse({
-  description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
-})
 export class JobPositionController {
   constructor(private readonly jobPositionService: JobPositionService) {}
-@Get('public/all')  @ApiOperation({ summary: 'Get all open job positions (Public - No auth required)' })  @ApiResponse({    status: 200,    description: 'Returns list of open job positions',  })  findAllPublic() {    return this.jobPositionService.findAllPublic();  }
+
+  @Get('public/all')
+  @ApiOperation({ summary: 'Get all open job positions (Public - No auth required)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns list of open job positions',
+  })
+  findAllPublic() {
+    return this.jobPositionService.findAllPublic();
+  }
 
   @Auth(['HR', 'ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
   @Post()
   @ApiOperation({ summary: 'Creates a Job position - HR role required' })
   @ApiResponse({
@@ -32,6 +41,10 @@ export class JobPositionController {
   }
 
   @Auth(['HR', 'ADMIN', 'USER'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
   @Get('list')
   @ApiOperation({ summary: 'Get paginated job positions list with filtering' })
   @ApiResponse({
@@ -43,6 +56,10 @@ export class JobPositionController {
   }
 
   @Auth(['HR', 'ADMIN', 'USER'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
   @Get()
   @ApiOperation({ summary: 'Get job position list' })
   @ApiResponse({
@@ -55,6 +72,10 @@ export class JobPositionController {
   }
 
   @Auth(['HR', 'ADMIN', 'USER'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
   @Get(':uid')
   @ApiOperation({ summary: 'Get job position process' })
   @ApiResponse({
@@ -68,6 +89,10 @@ export class JobPositionController {
   }
 
   @Auth(['HR', 'ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
   @Put(':uid')
   @ApiOperation({ summary: 'Update one job position' })
   @ApiResponse({
@@ -82,6 +107,10 @@ export class JobPositionController {
   }
 
   @Auth(['HR', 'ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete one job position - HR role required' })
   @ApiResponse({

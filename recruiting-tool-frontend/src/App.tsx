@@ -7,6 +7,7 @@ import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 import DocumentContainer from './layouts/DocumentContainer';
 import MainLayout from './layouts/MainLayout';
+import LandingPageLayout from './layouts/LandingPageLayout';
 import AdminLayout from './layouts/AdminLayout';
 import HRLayout from './layouts/HRLayout';
 import JobPositionsPage from './pages/job-positions/JobPositionsPage';
@@ -30,8 +31,13 @@ function App() {
 		<>
 			<Toaster />
 			<Routes>
-				<Route element={<MainLayout />}>
+				{/* Landing Page Layout - for Home page with custom styling */}
+				<Route element={<LandingPageLayout />}>
 					<Route index element={<Home />} />
+				</Route>
+
+				{/* Main Layout - for other public pages */}
+				<Route element={<MainLayout />}>
 					<Route path="/login" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
 					<Route path="/logout" element={<Logout />} />

@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { Readable } from 'stream';
-import * as csv from 'csv-parser';
+import csv from 'csv-parser';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';

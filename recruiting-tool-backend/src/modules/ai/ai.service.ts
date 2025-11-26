@@ -7,9 +7,23 @@ import {
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import axios from 'axios';
-const pdfParse = require('pdf-parse');
 import * as mammoth from 'mammoth';
 import { ParseResumeResponseDto, ParsedResumeDataDto } from './dto/parse-resume.dto';
+
+// Lazy load pdf-parse to avoid DOMMatrix issues in Node.js
+// This defers loading until the function is actually called
+type PdfParseResult = { text: string; numpages: number; info: unknown };
+type PdfParseFn = (buffer: Buffer) => Promise<PdfParseResult>;
+let pdfParseFn: PdfParseFn | null = null;
+
+const loadPdfParse = async (): Promise<PdfParseFn> => {
+  if (!pdfParseFn) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pdfParseModule = await import('pdf-parse');
+    pdfParseFn = pdfParseModule.default as unknown as PdfParseFn;
+  }
+  return pdfParseFn;
+};
 
 @Injectable()
 export class AiService {
@@ -132,10 +146,11 @@ export class AiService {
    */
   private async extractTextFromPdf(buffer: Buffer): Promise<string> {
     try {
-      const data = await pdfParse(buffer);
+      const parsePdf = await loadPdfParse();
+      const data = await parsePdf(buffer);
       return data.text;
     } catch (error) {
-      throw new BadRequestException(`Failed to parse PDF: ${error.message}`);
+      throw new BadRequestException(`Failed to parse PDF: ${(error as Error).message}`);
     }
   }
 

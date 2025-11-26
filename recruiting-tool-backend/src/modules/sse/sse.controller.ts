@@ -7,6 +7,7 @@ import { SSEEventDto } from './dto/sse-event.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 import { SseService } from './sse.service';
+import { UserWithPasswordResponseDto } from '../users/dto/users.dto';
 
 export interface MessageEvent {
   data: string | object;
@@ -41,10 +42,10 @@ export class SseController {
     status: 401,
     description: 'Unauthorized - Invalid or missing token',
   })
-  events(@Req() request: Request): Observable<MessageEvent> {
-    const user = request.user as any;
+  events(@Req() request: Request & { currentUser?: UserWithPasswordResponseDto }): Observable<MessageEvent> {
+    const user = request.currentUser;
     const userUid = user?.uid;
-    const companyUid = user?.company?.uid;
+    const companyUid = user?.companyUid;
 
     this.logger.log(`SSE connection established for user: ${userUid}, company: ${companyUid}`);
 

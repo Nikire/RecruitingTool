@@ -3,6 +3,7 @@ import {
 	createJobPosition,
 	deleteJobPosition,
 	getJobPositions,
+	getPublicJobPositions,
 	listJobPositions,
 	updateJobPosition,
 } from '../../api/jobPositions';
@@ -12,6 +13,14 @@ import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const JOB_POSITIONS_KEY = 'jobPositions';
 
+export function usePublicJobPositions(options?: { enabled?: boolean }) {
+	return useQuery({
+		queryKey: [JOB_POSITIONS_KEY, 'public'],
+		queryFn: getPublicJobPositions,
+		enabled: options?.enabled !== false,
+	});
+}
+
 export function useJobPositions(uid?: string) {
 	return useQuery({
 		queryKey: uid ? [JOB_POSITIONS_KEY, uid] : [JOB_POSITIONS_KEY],
@@ -19,10 +28,11 @@ export function useJobPositions(uid?: string) {
 	});
 }
 
-export function useListJobPositions(params: PaginationParams) {
+export function useListJobPositions(params: PaginationParams, options?: { enabled?: boolean }) {
 	return useQuery({
 		queryKey: [JOB_POSITIONS_KEY, 'list', params],
 		queryFn: () => listJobPositions(params),
+		enabled: options?.enabled !== false,
 	});
 }
 

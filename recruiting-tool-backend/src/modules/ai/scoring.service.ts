@@ -6,8 +6,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { Prisma } from '@prisma/client';
 import OpenAI from 'openai';
-import { PrismaService } from '../shared/database/prisma.service';
+import { DatabaseService } from '../shared/modules/database/database.service';
 import {
   CandidateScoreResponseDto,
   RankedCandidatesResponseDto,
@@ -23,7 +24,7 @@ export class ScoringService {
 
   constructor(
     private configService: ConfigService,
-    private prisma: PrismaService,
+    private databaseService: DatabaseService,
     private sseService: SseService,
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
@@ -58,7 +59,7 @@ export class ScoringService {
       );
 
       // Fetch candidate details
-      const candidate = await this.prisma.candidate.findUnique({
+      const candidate = await this.databaseService.candidate.findUnique({
         where: { uid: candidateUid },
         include: {
           files: true,
@@ -76,7 +77,7 @@ export class ScoringService {
       }
 
       // Fetch job position details
-      const jobPosition = await this.prisma.jobPosition.findUnique({
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
         where: { uid: jobPositionUid },
         include: {
           stages: true,
@@ -90,7 +91,7 @@ export class ScoringService {
       }
 
       // Check if score already exists (update existing or create new)
-      const existingScore = await this.prisma.candidateScore.findUnique({
+      const existingScore = await this.databaseService.candidateScore.findUnique({
         where: {
           candidateId_jobPositionId: {
             candidateId: candidate.id,
@@ -106,28 +107,32 @@ export class ScoringService {
       );
 
       // Save or update the score
-      const scoreData = {
-        candidateId: candidate.id,
-        jobPositionId: jobPosition.id,
-        overallScore: scores.overall,
-        skillsScore: scores.skills,
-        experienceScore: scores.experience,
-        educationScore: scores.education,
-        analysis: analysis,
-      };
-
       let savedScore;
       if (existingScore) {
-        savedScore = await this.prisma.candidateScore.update({
+        savedScore = await this.databaseService.candidateScore.update({
           where: { id: existingScore.id },
-          data: scoreData,
+          data: {
+            overallScore: scores.overall,
+            skillsScore: scores.skills,
+            experienceScore: scores.experience,
+            educationScore: scores.education,
+            analysis: analysis as unknown as Prisma.JsonValue,
+          },
         });
         this.logger.log(
           `Updated existing score for candidate ${candidateUid} and job ${jobPositionUid}`,
         );
       } else {
-        savedScore = await this.prisma.candidateScore.create({
-          data: scoreData,
+        savedScore = await this.databaseService.candidateScore.create({
+          data: {
+            candidate: { connect: { id: candidate.id } },
+            jobPosition: { connect: { id: jobPosition.id } },
+            overallScore: scores.overall,
+            skillsScore: scores.skills,
+            experienceScore: scores.experience,
+            educationScore: scores.education,
+            analysis: analysis as unknown as Prisma.JsonValue,
+          },
         });
         this.logger.log(
           `Created new score for candidate ${candidateUid} and job ${jobPositionUid}`,
@@ -135,7 +140,7 @@ export class ScoringService {
       }
 
       // Emit SSE event for score updated
-      const hiringProcess = await this.prisma.hiringProcess.findFirst({
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
         where: {
           candidateId: candidate.id,
           jobPositionId: jobPosition.id,
@@ -188,7 +193,7 @@ export class ScoringService {
   ): Promise<CandidateScoreResponseDto> {
     try {
       // Find candidate
-      const candidate = await this.prisma.candidate.findUnique({
+      const candidate = await this.databaseService.candidate.findUnique({
         where: { uid: candidateUid },
       });
 
@@ -197,7 +202,7 @@ export class ScoringService {
       }
 
       // Find job position
-      const jobPosition = await this.prisma.jobPosition.findUnique({
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
         where: { uid: jobPositionUid },
       });
 
@@ -208,7 +213,7 @@ export class ScoringService {
       }
 
       // Find score
-      const score = await this.prisma.candidateScore.findUnique({
+      const score = await this.databaseService.candidateScore.findUnique({
         where: {
           candidateId_jobPositionId: {
             candidateId: candidate.id,
@@ -248,7 +253,7 @@ export class ScoringService {
   ): Promise<RankedCandidatesResponseDto> {
     try {
       // Find job position
-      const jobPosition = await this.prisma.jobPosition.findUnique({
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
         where: { uid: jobPositionUid },
       });
 
@@ -259,7 +264,7 @@ export class ScoringService {
       }
 
       // Fetch all scores for this job position, sorted by overall score descending
-      const scores = await this.prisma.candidateScore.findMany({
+      const scores = await this.databaseService.candidateScore.findMany({
         where: {
           jobPositionId: jobPosition.id,
         },

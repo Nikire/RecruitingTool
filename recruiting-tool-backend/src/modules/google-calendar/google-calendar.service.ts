@@ -1,6 +1,6 @@
 import { Injectable, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { DatabaseService } from '../shared/modules/database/database.service';
 import { google, calendar_v3 } from 'googleapis';
 import { OAuth2Client, Credentials } from 'google-auth-library';
 import {
@@ -23,7 +23,7 @@ export class GoogleCalendarService {
 
   constructor(
     private readonly configService: ConfigService,
-    private readonly prisma: PrismaService,
+    private readonly databaseService: DatabaseService,
   ) {
     const clientId = this.configService.get<string>('GOOGLE_CLIENT_ID');
     const clientSecret = this.configService.get<string>('GOOGLE_CLIENT_SECRET');
@@ -69,7 +69,7 @@ export class GoogleCalendarService {
       }
 
       // Store refresh token in database
-      await this.prisma.user.update({
+      await this.databaseService.user.update({
         where: { id: userId },
         data: { googleRefreshToken: tokens.refresh_token },
       });
@@ -85,7 +85,7 @@ export class GoogleCalendarService {
    * Get valid access token for user (refresh if needed)
    */
   private async getAccessToken(userId: number): Promise<string> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.databaseService.user.findUnique({
       where: { id: userId },
       select: { googleRefreshToken: true },
     });
@@ -264,7 +264,7 @@ export class GoogleCalendarService {
     try {
       const calendar = await this.getCalendarClient(userId);
 
-      const user = await this.prisma.user.findUnique({
+      const user = await this.databaseService.user.findUnique({
         where: { id: userId },
         select: { email: true },
       });
@@ -380,7 +380,7 @@ export class GoogleCalendarService {
    * Check if user has connected Google Calendar
    */
   async isCalendarConnected(userId: number): Promise<boolean> {
-    const user = await this.prisma.user.findUnique({
+    const user = await this.databaseService.user.findUnique({
       where: { id: userId },
       select: { googleRefreshToken: true },
     });
@@ -392,7 +392,7 @@ export class GoogleCalendarService {
    * Disconnect Google Calendar (remove refresh token)
    */
   async disconnectCalendar(userId: number): Promise<void> {
-    await this.prisma.user.update({
+    await this.databaseService.user.update({
       where: { id: userId },
       data: { googleRefreshToken: null },
     });

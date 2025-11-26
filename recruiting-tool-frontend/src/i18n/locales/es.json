@@ -848,14 +848,14 @@
   },
   "home": {
     "hero": {
-      "headline": "Transforma Tu Proceso de Reclutamiento",
-      "subheadline": "Optimiza la contratación, encuentra el mejor talento y construye equipos excepcionales con nuestra plataforma integral de reclutamiento",
-      "cta_primary": "Comenzar Gratis",
+      "headline": "Plataforma Moderna de Reclutamiento para Empresas en Crecimiento",
+      "subheadline": "Únete a nuestro programa de adoptadores tempranos y obtén beneficios exclusivos mientras ayudas a dar forma al futuro de la tecnología de reclutamiento",
+      "cta_primary": "Únete como Adoptador Temprano",
       "cta_secondary": "Explorar Carreras"
     },
     "features": {
-      "section_title": "Funcionalidades Poderosas para el Reclutamiento Moderno",
-      "section_subtitle": "Todo lo que necesitas para gestionar tu proceso completo de contratación desde una sola plataforma",
+      "section_title": "Diseñado para Equipos de Reclutamiento Modernos",
+      "section_subtitle": "Herramientas esenciales para gestionar todo tu proceso de contratación de manera eficiente",
       "candidate_management": {
         "title": "Gestión de Candidatos",
         "description": "Organiza y rastrea toda la información de candidatos, currículums y comunicaciones en una ubicación centralizada"
@@ -882,29 +882,29 @@
       }
     },
     "benefits": {
-      "section_title": "¿Por Qué Elegir Nuestra Herramienta de Reclutamiento?",
-      "section_subtitle": "Únete a cientos de empresas que han transformado su proceso de contratación",
+      "section_title": "Beneficios para Adoptadores Tempranos",
+      "section_subtitle": "Sé de las primeras empresas en unirse y disfruta de ventajas exclusivas",
       "save_time": {
-        "title": "Ahorra Tiempo",
-        "description": "Reduce el tiempo de contratación hasta en un 40% con flujos de trabajo automatizados y procesos optimizados"
+        "title": "Soporte Prioritario",
+        "description": "Obtén soporte dedicado y acceso directo a nuestro equipo de desarrollo para tus comentarios y necesidades"
       },
       "streamline_hiring": {
-        "title": "Optimiza la Contratación",
-        "description": "Simplifica los procesos complejos de contratación con herramientas intuitivas y gestión automatizada de tareas"
+        "title": "Precio Exclusivo",
+        "description": "Asegura precios especiales de adoptador temprano con descuentos de por vida por ser un colaborador inicial"
       },
       "improve_collaboration": {
-        "title": "Mejora la Colaboración",
-        "description": "Fomenta un mejor trabajo en equipo con comunicación centralizada y evaluaciones compartidas de candidatos"
+        "title": "Da Forma al Producto",
+        "description": "Tus comentarios influyen directamente en nuevas funciones y mejoras mientras crecemos juntos"
       },
       "data_driven": {
-        "title": "Decisiones Basadas en Datos",
-        "description": "Toma decisiones de contratación más inteligentes respaldadas por análisis e información completa"
+        "title": "Sin Compromiso a Largo Plazo",
+        "description": "Términos flexibles mientras refinamos la plataforma - pausa o cancela en cualquier momento durante el período de acceso temprano"
       }
     },
     "cta": {
-      "headline": "¿Listo para Transformar Tu Contratación?",
-      "subheadline": "Únete a miles de empresas que usan nuestra plataforma para encontrar y contratar el mejor talento",
-      "button": "Comienza Tu Prueba Gratuita"
+      "headline": "¿Listo para Unirte a Nuestro Programa de Adoptadores Tempranos?",
+      "subheadline": "Sé parte de construir el futuro de la tecnología de reclutamiento y disfruta de beneficios exclusivos",
+      "button": "Obtener Acceso Temprano"
     }
   },
   "pagination": {
@@ -1204,7 +1204,7 @@
     "create_button": "Agregar Candidato",
     "success_message": "¡Candidato agregado exitosamente!",
     "success_with_hiring": "¡Candidato agregado y proceso de contratación iniciado!"
-  }
+  },
   "candidate_activity": {
     "load_error": "Error al cargar el historial de actividad",
     "no_activities": "Sin historial de actividad aún",
@@ -1220,5 +1220,5 @@
       "application_received": "Aplicación Recibida",
       "email_sent": "Correo Enviado"
     }
-  },
+  }
 }

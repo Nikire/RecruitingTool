@@ -850,14 +850,14 @@
   },
   "home": {
     "hero": {
-      "headline": "Transform Your Recruitment Process",
-      "subheadline": "Streamline hiring, find top talent, and build exceptional teams with our comprehensive recruiting platform",
-      "cta_primary": "Get Started Free",
+      "headline": "Modern Recruiting Platform for Growing Companies",
+      "subheadline": "Join our early adopter program and get exclusive benefits while helping shape the future of recruitment technology",
+      "cta_primary": "Join as Early Adopter",
       "cta_secondary": "Explore Careers"
     },
     "features": {
-      "section_title": "Powerful Features for Modern Recruiting",
-      "section_subtitle": "Everything you need to manage your entire hiring process from one platform",
+      "section_title": "Built for Modern Recruiting Teams",
+      "section_subtitle": "Essential tools to manage your entire hiring process efficiently",
       "candidate_management": {
         "title": "Candidate Management",
         "description": "Organize and track all candidate information, resumes, and communications in one centralized location"
@@ -884,29 +884,29 @@
       }
     },
     "benefits": {
-      "section_title": "Why Choose Our Recruiting Tool?",
-      "section_subtitle": "Join hundreds of companies that have transformed their hiring process",
+      "section_title": "Early Adopter Benefits",
+      "section_subtitle": "Be among the first companies to join and enjoy exclusive advantages",
       "save_time": {
-        "title": "Save Time",
-        "description": "Reduce time-to-hire by up to 40% with automated workflows and streamlined processes"
+        "title": "Priority Support",
+        "description": "Get dedicated support and direct access to our development team for your feedback and needs"
       },
       "streamline_hiring": {
-        "title": "Streamline Hiring",
-        "description": "Simplify complex hiring processes with intuitive tools and automated task management"
+        "title": "Exclusive Pricing",
+        "description": "Lock in special early adopter pricing with lifetime discounts for being an early supporter"
       },
       "improve_collaboration": {
-        "title": "Improve Collaboration",
-        "description": "Foster better teamwork with centralized communication and shared candidate evaluations"
+        "title": "Shape the Product",
+        "description": "Your feedback directly influences new features and improvements as we grow together"
       },
       "data_driven": {
-        "title": "Data-Driven Decisions",
-        "description": "Make smarter hiring decisions backed by comprehensive analytics and insights"
+        "title": "No Long-Term Commitment",
+        "description": "Flexible terms as we refine the platform - pause or cancel anytime during the early access period"
       }
     },
     "cta": {
-      "headline": "Ready to Transform Your Hiring?",
-      "subheadline": "Join thousands of companies using our platform to find and hire the best talent",
-      "button": "Start Your Free Trial"
+      "headline": "Ready to Join Our Early Adopter Program?",
+      "subheadline": "Be part of building the future of recruitment technology and enjoy exclusive benefits",
+      "button": "Get Early Access"
     }
   },
   "pagination": {
@@ -1206,7 +1206,7 @@
     "create_button": "Add Candidate",
     "success_message": "Candidate added successfully!",
     "success_with_hiring": "Candidate added and hiring process started!"
-  }
+  },
   "candidate_activity": {
     "load_error": "Failed to load activity timeline",
     "no_activities": "No activity history yet",
@@ -1222,5 +1222,5 @@
       "application_received": "Application Received",
       "email_sent": "Email Sent"
     }
-  },
+  }
 }

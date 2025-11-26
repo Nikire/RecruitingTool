@@ -5,7 +5,7 @@ import {
   Logger,
   BadRequestException,
 } from '@nestjs/common';
-import { PrismaService } from '../shared/database/prisma.service';
+import { DatabaseService } from '../shared/modules/database/database.service';
 import { ScoringService } from './scoring.service';
 import {
   BatchScoreRequestDto,
@@ -25,7 +25,7 @@ export class BatchScoringService {
   private processingQueue: Map<string, boolean> = new Map();
 
   constructor(
-    private prisma: PrismaService,
+    private databaseService: DatabaseService,
     private scoringService: ScoringService,
   ) {}
 
@@ -43,7 +43,7 @@ export class BatchScoringService {
       );
 
       // Find job position
-      const jobPosition = await this.prisma.jobPosition.findUnique({
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
         where: { uid: dto.jobPositionUid },
         include: {
           hiringProcesses: {
@@ -66,7 +66,7 @@ export class BatchScoringService {
       if (dto.candidateUids && dto.candidateUids.length > 0) {
         // Verify all provided candidate UIDs exist
         candidateUids = dto.candidateUids;
-        const candidates = await this.prisma.candidate.findMany({
+        const candidates = await this.databaseService.candidate.findMany({
           where: {
             uid: { in: candidateUids },
           },
@@ -102,7 +102,7 @@ export class BatchScoringService {
       );
 
       // Create batch job record
-      const batchJob = await this.prisma.batchScoringJob.create({
+      const batchJob = await this.databaseService.batchScoringJob.create({
         data: {
           jobPositionId: jobPosition.id,
           status: BatchStatus.PENDING,
@@ -157,7 +157,7 @@ export class BatchScoringService {
    */
   async getBatchStatus(batchId: string): Promise<BatchScoreStatusDto> {
     try {
-      const batchJob = await this.prisma.batchScoringJob.findUnique({
+      const batchJob = await this.databaseService.batchScoringJob.findUnique({
         where: { uid: batchId },
       });
 
@@ -210,7 +210,7 @@ export class BatchScoringService {
    */
   async getBatchResults(batchId: string): Promise<BatchScoreResultDto> {
     try {
-      const batchJob = await this.prisma.batchScoringJob.findUnique({
+      const batchJob = await this.databaseService.batchScoringJob.findUnique({
         where: { uid: batchId },
         include: {
           jobPosition: true,
@@ -229,7 +229,7 @@ export class BatchScoringService {
 
       // Fetch all scores for candidates in this batch
       const candidateUids = batchJob.candidateUids as string[];
-      const candidates = await this.prisma.candidate.findMany({
+      const candidates = await this.databaseService.candidate.findMany({
         where: {
           uid: { in: candidateUids },
         },
@@ -237,7 +237,7 @@ export class BatchScoringService {
 
       const candidateIds = candidates.map((c) => c.id);
 
-      const scores = await this.prisma.candidateScore.findMany({
+      const scores = await this.databaseService.candidateScore.findMany({
         where: {
           candidateId: { in: candidateIds },
           jobPositionId: batchJob.jobPositionId,
@@ -309,7 +309,7 @@ export class BatchScoringService {
    */
   async cancelBatch(batchId: string): Promise<{ message: string }> {
     try {
-      const batchJob = await this.prisma.batchScoringJob.findUnique({
+      const batchJob = await this.databaseService.batchScoringJob.findUnique({
         where: { uid: batchId },
       });
 
@@ -327,7 +327,7 @@ export class BatchScoringService {
         throw new BadRequestException('Batch job is already cancelled');
       }
 
-      await this.prisma.batchScoringJob.update({
+      await this.databaseService.batchScoringJob.update({
         where: { uid: batchId },
         data: {
           status: BatchStatus.CANCELLED,
@@ -379,7 +379,7 @@ export class BatchScoringService {
 
     try {
       // Update status to processing
-      await this.prisma.batchScoringJob.update({
+      await this.databaseService.batchScoringJob.update({
         where: { uid: batchJobUid },
         data: {
           status: BatchStatus.PROCESSING,
@@ -399,7 +399,7 @@ export class BatchScoringService {
       for (const candidateUid of candidateUids) {
         try {
           // Check if job was cancelled
-          const currentJob = await this.prisma.batchScoringJob.findUnique({
+          const currentJob = await this.databaseService.batchScoringJob.findUnique({
             where: { uid: batchJobUid },
           });
 
@@ -417,7 +417,7 @@ export class BatchScoringService {
           processedCount++;
 
           // Update progress
-          await this.prisma.batchScoringJob.update({
+          await this.databaseService.batchScoringJob.update({
             where: { uid: batchJobUid },
             data: {
               processedCount,
@@ -448,7 +448,7 @@ export class BatchScoringService {
           : BatchStatus.COMPLETED;
 
       // Update final status
-      await this.prisma.batchScoringJob.update({
+      await this.databaseService.batchScoringJob.update({
         where: { uid: batchJobUid },
         data: {
           status: finalStatus,
@@ -469,7 +469,7 @@ export class BatchScoringService {
       );
 
       // Mark batch as failed
-      await this.prisma.batchScoringJob.update({
+      await this.databaseService.batchScoringJob.update({
         where: { uid: batchJobUid },
         data: {
           status: BatchStatus.FAILED,
@@ -527,7 +527,7 @@ export class BatchScoringService {
     quotaType: QuotaType,
     count: number,
   ): Promise<void> {
-    const quota = await this.prisma.aIQuota.findUnique({
+    const quota = await this.databaseService.aIQuota.findUnique({
       where: {
         companyId_quotaType: {
           companyId,
@@ -550,7 +550,7 @@ export class BatchScoringService {
     }
 
     // Reserve quota
-    await this.prisma.aIQuota.update({
+    await this.databaseService.aIQuota.update({
       where: {
         companyId_quotaType: {
           companyId,
@@ -578,7 +578,7 @@ export class BatchScoringService {
     operation: QuotaType,
   ): Promise<void> {
     try {
-      await this.prisma.aIUsageLog.create({
+      await this.databaseService.aIUsageLog.create({
         data: {
           companyId,
           userId,

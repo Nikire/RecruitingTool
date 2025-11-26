@@ -6,8 +6,8 @@ import {
 	ListItemIcon,
 	ListItemText,
 	Tooltip,
+	Box,
 } from '@mui/material';
-import LanguageIcon from '@mui/icons-material/Language';
 import { useTranslation } from 'react-i18next';
 
 /**
@@ -16,22 +16,22 @@ import { useTranslation } from 'react-i18next';
 interface LanguageOption {
 	code: string;
 	label: string;
-	flag: string;
+	flagClass: string;
 }
 
 /**
- * Available languages with flags
+ * Available languages with flag icon CSS classes
  */
 const LANGUAGES: LanguageOption[] = [
-	{ code: 'en', label: 'English', flag: '🇺🇸' },
-	{ code: 'es', label: 'Español', flag: '🇪🇸' },
+	{ code: 'en', label: 'English', flagClass: 'fi fi-us' },
+	{ code: 'es', label: 'Español', flagClass: 'fi fi-es' },
 ];
 
 /**
  * LanguageSelector - Component for switching between English and Spanish
  *
  * Features:
- * - Material-UI design with flag icons
+ * - Material-UI design with SVG flag icons (flag-icons library)
  * - IconButton with dropdown menu
  * - Persists language preference to localStorage
  * - Uses react-i18next for language switching
@@ -95,7 +95,15 @@ const LanguageSelector: React.FC = () => {
 					aria-expanded={open ? 'true' : undefined}
 					sx={{ ml: 1 }}
 				>
-					<LanguageIcon />
+					<Box
+						component="span"
+						className={currentLanguage.flagClass}
+						sx={{
+							width: '1.5em',
+							height: '1.5em',
+							display: 'inline-block',
+						}}
+					/>
 				</IconButton>
 			</Tooltip>
 
@@ -125,9 +133,15 @@ const LanguageSelector: React.FC = () => {
 						aria-label={`${t('language.switch_to')} ${language.label}`}
 					>
 						<ListItemIcon sx={{ minWidth: 36 }}>
-							<span role="img" aria-label={language.label} style={{ fontSize: '1.5rem' }}>
-								{language.flag}
-							</span>
+							<Box
+								component="span"
+								className={language.flagClass}
+								sx={{
+									width: '1.5em',
+									height: '1.5em',
+									display: 'inline-block',
+								}}
+							/>
 						</ListItemIcon>
 						<ListItemText
 							primary={language.label}

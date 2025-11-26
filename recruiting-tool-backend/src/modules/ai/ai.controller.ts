@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Delete,
-  UseGuards,
   HttpCode,
   HttpStatus,
 } from '@nestjs/common';
@@ -34,15 +33,12 @@ import {
   BatchScoreStatusDto,
   BatchScoreResultDto,
 } from './dto/batch-scoring.dto';
-import { JwtAuthGuard } from '../shared/guards/jwt-auth.guard';
-import { RolesGuard } from '../shared/guards/roles.guard';
-import { Auth } from '../shared/decorators/auth.decorator';
+import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
 
 @ApiTags('AI')
 @Controller('ai')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
 export class AiController {
   constructor(

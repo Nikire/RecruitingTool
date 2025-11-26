@@ -62,6 +62,7 @@ const JobPositionsPage: React.FC = () => {
 				search={search}
 				onPageChange={handlePageChange}
 				onLimitChange={handleLimitChange}
+				publicMode={true}
 			/>
 
 			{selectedJobPosition && (

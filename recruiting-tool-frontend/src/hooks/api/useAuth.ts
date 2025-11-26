@@ -48,6 +48,7 @@ export function useLogin() {
 		onSuccess: (data) => {
 			// Only store the token
 			localStorage.setItem('authToken', data.token);
+
 			// Invalidate to fetch user data
 			queryClient.invalidateQueries({queryKey: [AUTH_KEY, 'me']});
 			showSuccessToast('Login successful! Welcome back.');

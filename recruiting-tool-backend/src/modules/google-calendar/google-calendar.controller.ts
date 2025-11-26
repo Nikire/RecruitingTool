@@ -7,8 +7,6 @@ import {
   Body,
   Param,
   Query,
-  UseGuards,
-  Req,
   Redirect,
   BadRequestException,
 } from '@nestjs/common';
@@ -21,21 +19,18 @@ import {
   CalendarEventResponseDto,
   AvailabilityResponseDto,
 } from './dto/calendar.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../auth/guards/roles.guard';
-import { Roles } from '../auth/decorators/roles.decorator';
-import { RolesType } from '@prisma/client';
-import { Request } from 'express';
+import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
+import { RolesType, User } from '@prisma/client';
 
 @ApiTags('google-calendar')
 @Controller('google-calendar')
-@UseGuards(JwtAuthGuard, RolesGuard)
 @ApiBearerAuth()
 export class GoogleCalendarController {
   constructor(private readonly googleCalendarService: GoogleCalendarService) {}
 
   @Get('auth-url')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Get Google Calendar OAuth authorization URL' })
   @ApiResponse({
     status: 200,
@@ -47,9 +42,8 @@ export class GoogleCalendarController {
       },
     },
   })
-  getAuthUrl(@Req() req: Request) {
-    const userId = req.user['id'];
-    const authUrl = this.googleCalendarService.getAuthUrl(userId);
+  getAuthUrl(@CurrentUser() user: User) {
+    const authUrl = this.googleCalendarService.getAuthUrl(user.id);
 
     return {
       authUrl,
@@ -90,7 +84,7 @@ export class GoogleCalendarController {
   }
 
   @Get('status')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Check if Google Calendar is connected' })
   @ApiResponse({
     status: 200,
@@ -101,23 +95,21 @@ export class GoogleCalendarController {
       },
     },
   })
-  async getConnectionStatus(@Req() req: Request) {
-    const userId = req.user['id'];
-    const connected = await this.googleCalendarService.isCalendarConnected(userId);
+  async getConnectionStatus(@CurrentUser() user: User) {
+    const connected = await this.googleCalendarService.isCalendarConnected(user.id);
 
     return { connected };
   }
 
   @Delete('disconnect')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Disconnect Google Calendar' })
   @ApiResponse({
     status: 200,
     description: 'Calendar disconnected successfully',
   })
-  async disconnect(@Req() req: Request) {
-    const userId = req.user['id'];
-    await this.googleCalendarService.disconnectCalendar(userId);
+  async disconnect(@CurrentUser() user: User) {
+    await this.googleCalendarService.disconnectCalendar(user.id);
 
     return {
       message: 'Google Calendar disconnected successfully',
@@ -125,7 +117,7 @@ export class GoogleCalendarController {
   }
 
   @Post('events')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Create a new calendar event with Google Meet' })
   @ApiResponse({
     status: 201,
@@ -137,15 +129,14 @@ export class GoogleCalendarController {
     description: 'User has not connected Google Calendar',
   })
   async createEvent(
-    @Req() req: Request,
+    @CurrentUser() user: User,
     @Body() dto: CreateCalendarEventDto,
   ): Promise<CalendarEventResponseDto> {
-    const userId = req.user['id'];
-    return this.googleCalendarService.createCalendarEvent(userId, dto);
+    return this.googleCalendarService.createCalendarEvent(user.id, dto);
   }
 
   @Put('events/:eventId')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Update an existing calendar event' })
   @ApiResponse({
     status: 200,
@@ -157,16 +148,15 @@ export class GoogleCalendarController {
     description: 'User has not connected Google Calendar',
   })
   async updateEvent(
-    @Req() req: Request,
+    @CurrentUser() user: User,
     @Param('eventId') eventId: string,
     @Body() dto: UpdateCalendarEventDto,
   ): Promise<CalendarEventResponseDto> {
-    const userId = req.user['id'];
-    return this.googleCalendarService.updateCalendarEvent(userId, eventId, dto);
+    return this.googleCalendarService.updateCalendarEvent(user.id, eventId, dto);
   }
 
   @Delete('events/:eventId')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Delete a calendar event' })
   @ApiResponse({
     status: 200,
@@ -177,11 +167,10 @@ export class GoogleCalendarController {
     description: 'User has not connected Google Calendar',
   })
   async deleteEvent(
-    @Req() req: Request,
+    @CurrentUser() user: User,
     @Param('eventId') eventId: string,
   ) {
-    const userId = req.user['id'];
-    await this.googleCalendarService.deleteCalendarEvent(userId, eventId);
+    await this.googleCalendarService.deleteCalendarEvent(user.id, eventId);
 
     return {
       message: 'Calendar event deleted successfully',
@@ -189,7 +178,7 @@ export class GoogleCalendarController {
   }
 
   @Get('availability')
-  @Roles(RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN)
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Get user availability (free/busy times)' })
   @ApiResponse({
     status: 200,
@@ -201,10 +190,9 @@ export class GoogleCalendarController {
     description: 'User has not connected Google Calendar',
   })
   async getAvailability(
-    @Req() req: Request,
+    @CurrentUser() user: User,
     @Query() dto: GetAvailabilityDto,
   ): Promise<AvailabilityResponseDto> {
-    const userId = req.user['id'];
-    return this.googleCalendarService.getAvailability(userId, dto);
+    return this.googleCalendarService.getAvailability(user.id, dto);
   }
 }

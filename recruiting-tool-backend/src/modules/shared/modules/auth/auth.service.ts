@@ -51,7 +51,14 @@ export class AuthService {
       throw new UnauthorizedException('Password is wrong');
     }
 
-    const payload = foundUser;
+    // Create minimal JWT payload (don't include sensitive data like password!)
+    const payload = {
+      sub: foundUser.id,     // Standard JWT claim for user ID
+      id: foundUser.id,
+      email: foundUser.email,
+      roles: foundUser.roles,
+      companyUid: foundUser.companyUid,
+    };
 
     const token = await this.jwtService.signAsync(payload, { expiresIn: '1d' });
 

@@ -22,8 +22,8 @@ const MainLayout = () => {
 		}
 	}, [isError, navigate]);
 
-	// Use wider container for pages with tables
-	const widePages = ['/companies', '/candidates', '/careers'];
+	// Use wider container for pages with tables or rich content
+	const widePages = ['/', '/companies', '/candidates', '/careers'];
 	const isWidePage = widePages.includes(location.pathname);
 	const maxWidth = isWidePage ? 'xl' : 'md';
 

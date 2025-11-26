@@ -1,19 +1,19 @@
 import { Injectable, Logger, BadRequestException } from '@nestjs/common';
-import { PrismaService } from '../shared/modules/database/prisma.service';
+import { DatabaseService } from '../shared/modules/database/database.service';
 import { StorageService } from '../storage/storage.service';
 import {
 	ExportRequestDto,
 	ExportEntity,
 	ExportFormat,
+	ExportFiltersDto,
 } from './dto/export-request.dto';
 import { ExportResponseDto } from './dto/export-response.dto';
 import {
 	ExportTemplatesResponseDto,
 	ExportTemplateDto,
-	ColumnDefinitionDto,
 } from './dto/export-templates.dto';
 import { stringify } from 'csv-stringify/sync';
-import * as PdfPrinter from 'pdfmake';
+import PdfPrinter from 'pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -22,7 +22,7 @@ export class ExportService {
 	private readonly logger = new Logger(ExportService.name);
 
 	constructor(
-		private readonly prisma: PrismaService,
+		private readonly databaseService: DatabaseService,
 		private readonly storage: StorageService,
 	) {}
 
@@ -37,9 +37,8 @@ export class ExportService {
 					{ key: 'uid', label: 'UID', type: 'string' },
 					{ key: 'name', label: 'Name', type: 'string' },
 					{ key: 'email', label: 'Email', type: 'string' },
-					{ key: 'phone', label: 'Phone', type: 'string' },
-					{ key: 'status', label: 'Status', type: 'string' },
-					{ key: 'experience', label: 'Experience (years)', type: 'number' },
+					{ key: 'source', label: 'Source', type: 'string' },
+					{ key: 'sourceDetails', label: 'Source Details', type: 'string' },
 					{ key: 'createdAt', label: 'Created At', type: 'date' },
 				],
 			},
@@ -48,9 +47,7 @@ export class ExportService {
 				columns: [
 					{ key: 'uid', label: 'UID', type: 'string' },
 					{ key: 'name', label: 'Company Name', type: 'string' },
-					{ key: 'industry', label: 'Industry', type: 'string' },
-					{ key: 'size', label: 'Company Size', type: 'string' },
-					{ key: 'location', label: 'Location', type: 'string' },
+					{ key: 'description', label: 'Description', type: 'string' },
 					{ key: 'createdAt', label: 'Created At', type: 'date' },
 				],
 			},
@@ -59,9 +56,7 @@ export class ExportService {
 				columns: [
 					{ key: 'uid', label: 'UID', type: 'string' },
 					{ key: 'title', label: 'Job Title', type: 'string' },
-					{ key: 'department', label: 'Department', type: 'string' },
-					{ key: 'location', label: 'Location', type: 'string' },
-					{ key: 'employmentType', label: 'Employment Type', type: 'string' },
+					{ key: 'description', label: 'Description', type: 'string' },
 					{ key: 'status', label: 'Status', type: 'string' },
 					{ key: 'createdAt', label: 'Created At', type: 'date' },
 				],
@@ -142,9 +137,9 @@ export class ExportService {
 	private async fetchData(
 		entity: ExportEntity,
 		companyId: number,
-		filters?: any,
-	): Promise<any[]> {
-		let where: any = { companyId };
+		filters?: ExportFiltersDto,
+	): Promise<unknown[]> {
+		const where: Record<string, unknown> = { companyId };
 
 		// Apply filters if provided
 		if (filters) {
@@ -161,7 +156,7 @@ export class ExportService {
 
 			if (filters.companyUid) {
 				// Convert companyUid to companyId
-				const company = await this.prisma.company.findUnique({
+				const company = await this.databaseService.company.findUnique({
 					where: { uid: filters.companyUid },
 				});
 				if (company) {
@@ -191,16 +186,27 @@ export class ExportService {
 	/**
 	 * Export candidates
 	 */
-	private async exportCandidates(where: any): Promise<any[]> {
-		return this.prisma.candidate.findMany({
-			where,
+	private async exportCandidates(where: Record<string, unknown>): Promise<unknown[]> {
+		// Candidates don't have companyId directly - they're linked through hiringProcesses
+		// For now, we'll export all candidates that have a hiring process with this company
+		const companyId = where.companyId;
+		delete where.companyId;
+
+		return this.databaseService.candidate.findMany({
+			where: {
+				...where,
+				hiringProcesses: {
+					some: {
+						companyId: companyId as number,
+					},
+				},
+			},
 			select: {
 				uid: true,
 				name: true,
 				email: true,
-				phone: true,
-				status: true,
-				experience: true,
+				source: true,
+				sourceDetails: true,
 				createdAt: true,
 			},
 			orderBy: { createdAt: 'desc' },
@@ -210,18 +216,16 @@ export class ExportService {
 	/**
 	 * Export companies
 	 */
-	private async exportCompanies(where: any): Promise<any[]> {
+	private async exportCompanies(where: Record<string, unknown>): Promise<unknown[]> {
 		// Remove companyId filter for companies export (they don't have companyId)
 		const { companyId, ...restWhere } = where;
 
-		return this.prisma.company.findMany({
+		return this.databaseService.company.findMany({
 			where: restWhere,
 			select: {
 				uid: true,
 				name: true,
-				industry: true,
-				size: true,
-				location: true,
+				description: true,
 				createdAt: true,
 			},
 			orderBy: { createdAt: 'desc' },
@@ -231,15 +235,13 @@ export class ExportService {
 	/**
 	 * Export job positions
 	 */
-	private async exportJobPositions(where: any): Promise<any[]> {
-		return this.prisma.jobPosition.findMany({
+	private async exportJobPositions(where: Record<string, unknown>): Promise<unknown[]> {
+		return this.databaseService.jobPosition.findMany({
 			where,
 			select: {
 				uid: true,
 				title: true,
-				department: true,
-				location: true,
-				employmentType: true,
+				description: true,
 				status: true,
 				createdAt: true,
 			},
@@ -250,14 +252,10 @@ export class ExportService {
 	/**
 	 * Export hiring processes
 	 */
-	private async exportHiringProcesses(where: any): Promise<any[]> {
-		const processes = await this.prisma.hiringProcess.findMany({
+	private async exportHiringProcesses(where: Record<string, unknown>): Promise<unknown[]> {
+		const processes = await this.databaseService.hiringProcess.findMany({
 			where,
-			select: {
-				uid: true,
-				title: true,
-				status: true,
-				createdAt: true,
+			include: {
 				candidate: {
 					select: {
 						name: true,
@@ -269,9 +267,9 @@ export class ExportService {
 					},
 				},
 				stages: {
-					where: { isActive: true },
+					where: { status: 'CURRENT' },
 					select: {
-						name: true,
+						title: true,
 					},
 					orderBy: { position: 'asc' },
 					take: 1,
@@ -284,10 +282,10 @@ export class ExportService {
 		return processes.map((p) => ({
 			uid: p.uid,
 			title: p.title,
-			candidateName: p.candidate.name,
-			jobPositionTitle: p.jobPosition.title,
+			candidateName: p.candidate?.name || 'N/A',
+			jobPositionTitle: p.jobPosition?.title || 'N/A',
 			status: p.status,
-			currentStage: p.stages[0]?.name || 'N/A',
+			currentStage: p.stages[0]?.title || 'N/A',
 			createdAt: p.createdAt,
 		}));
 	}
@@ -296,24 +294,25 @@ export class ExportService {
 	 * Transform data for export (filter columns, format dates)
 	 */
 	private transformData(
-		data: any[],
+		data: unknown[],
 		entity: ExportEntity,
 		columns?: string[],
-	): any[] {
+	): Record<string, unknown>[] {
 		return data.map((record) => {
-			let transformed: any = {};
+			const rec = record as Record<string, unknown>;
+			const transformed: Record<string, unknown> = {};
 
 			// If specific columns requested, only include those
 			if (columns && columns.length > 0) {
 				columns.forEach((col) => {
-					if (record[col] !== undefined) {
-						transformed[col] = this.formatValue(record[col]);
+					if (rec[col] !== undefined) {
+						transformed[col] = this.formatValue(rec[col]);
 					}
 				});
 			} else {
 				// Include all columns
-				Object.keys(record).forEach((key) => {
-					transformed[key] = this.formatValue(record[key]);
+				Object.keys(rec).forEach((key) => {
+					transformed[key] = this.formatValue(rec[key]);
 				});
 			}
 
@@ -324,7 +323,7 @@ export class ExportService {
 	/**
 	 * Format values for export (dates, booleans, etc.)
 	 */
-	private formatValue(value: any): any {
+	private formatValue(value: unknown): unknown {
 		if (value instanceof Date) {
 			return value.toISOString();
 		}
@@ -340,7 +339,7 @@ export class ExportService {
 	/**
 	 * Generate CSV file
 	 */
-	private async generateCsv(data: any[]): Promise<Buffer> {
+	private async generateCsv(data: Record<string, unknown>[]): Promise<Buffer> {
 		try {
 			// Add UTF-8 BOM for Excel compatibility
 			const BOM = '\uFEFF';
@@ -354,7 +353,7 @@ export class ExportService {
 
 			return Buffer.from(BOM + csv, 'utf-8');
 		} catch (error) {
-			this.logger.error(`Error generating CSV: ${error.message}`);
+			this.logger.error(`Error generating CSV: ${(error as Error).message}`);
 			throw new Error('Failed to generate CSV file');
 		}
 	}
@@ -362,14 +361,15 @@ export class ExportService {
 	/**
 	 * Generate PDF file
 	 */
-	private async generatePdf(data: any[], entity: ExportEntity): Promise<Buffer> {
+	private async generatePdf(data: Record<string, unknown>[], entity: ExportEntity): Promise<Buffer> {
 		try {
+			const vfs = require('pdfmake/build/vfs_fonts');
 			const fonts = {
 				Roboto: {
-					normal: Buffer.from(require('pdfmake/build/vfs_fonts').pdfMake.vfs['Roboto-Regular.ttf'], 'base64'),
-					bold: Buffer.from(require('pdfmake/build/vfs_fonts').pdfMake.vfs['Roboto-Medium.ttf'], 'base64'),
-					italics: Buffer.from(require('pdfmake/build/vfs_fonts').pdfMake.vfs['Roboto-Italic.ttf'], 'base64'),
-					bolditalics: Buffer.from(require('pdfmake/build/vfs_fonts').pdfMake.vfs['Roboto-MediumItalic.ttf'], 'base64'),
+					normal: Buffer.from(vfs.pdfMake.vfs['Roboto-Regular.ttf'], 'base64'),
+					bold: Buffer.from(vfs.pdfMake.vfs['Roboto-Medium.ttf'], 'base64'),
+					italics: Buffer.from(vfs.pdfMake.vfs['Roboto-Italic.ttf'], 'base64'),
+					bolditalics: Buffer.from(vfs.pdfMake.vfs['Roboto-MediumItalic.ttf'], 'base64'),
 				},
 			};
 
@@ -433,7 +433,7 @@ export class ExportService {
 							body: tableBody,
 						},
 						layout: {
-							fillColor: (rowIndex) => (rowIndex === 0 ? '#4CAF50' : rowIndex % 2 === 0 ? '#f9f9f9' : null),
+							fillColor: (rowIndex: number) => (rowIndex === 0 ? '#4CAF50' : rowIndex % 2 === 0 ? '#f9f9f9' : null),
 							hLineWidth: () => 0.5,
 							vLineWidth: () => 0.5,
 							hLineColor: () => '#ddd',
@@ -470,14 +470,14 @@ export class ExportService {
 				const chunks: Buffer[] = [];
 				const pdfDoc = printer.createPdfKitDocument(docDefinition);
 
-				pdfDoc.on('data', (chunk) => chunks.push(chunk));
+				pdfDoc.on('data', (chunk: Buffer) => chunks.push(chunk));
 				pdfDoc.on('end', () => resolve(Buffer.concat(chunks)));
 				pdfDoc.on('error', reject);
 
 				pdfDoc.end();
 			});
 		} catch (error) {
-			this.logger.error(`Error generating PDF: ${error.message}`);
+			this.logger.error(`Error generating PDF: ${(error as Error).message}`);
 			throw new Error('Failed to generate PDF file');
 		}
 	}

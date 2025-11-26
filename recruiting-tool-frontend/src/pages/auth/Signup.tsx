@@ -15,14 +15,14 @@ interface SignupFormData {
 const Signup: React.FC = () => {
 	const {t} = useTranslation();
 	const navigate = useNavigate();
-	const {user} = useUserAtom();
 	const {register, handleSubmit} = useForm<SignupFormData>();
 	const {mutate: registerUser, isPending, isError} = useRegister();
 
 	const onSubmit = (data: SignupFormData) => {
 		registerUser(data, {
-			onSuccess: () => {
-				navigate(getDefaultDashboard(user));
+			onSuccess: (response) => {
+				// Navigate using the user data from the registration response
+				navigate(getDefaultDashboard(response.user));
 			},
 		});
 	};

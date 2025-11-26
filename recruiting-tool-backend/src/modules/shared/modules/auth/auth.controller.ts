@@ -32,7 +32,7 @@ export class AuthController {
   })
   @ApiBody({ type: LoginDto })
   @Post('sign-in')
-  login(
+  async login(
     @Body()
     loginDto: LoginDto,
   ): Promise<RegisteredUserDto> {

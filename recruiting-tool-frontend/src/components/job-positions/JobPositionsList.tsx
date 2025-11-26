@@ -18,7 +18,7 @@ import {
 	useTheme,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
-import {useListJobPositions} from '../../hooks/api/useJobPositions';
+import {useListJobPositions, usePublicJobPositions} from '../../hooks/api/useJobPositions';
 import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
@@ -31,6 +31,7 @@ interface JobPositionsListProps {
 	search: string;
 	onPageChange: (page: number) => void;
 	onLimitChange: (limit: number) => void;
+	publicMode?: boolean;
 }
 
 // Skeleton loader for loading state
@@ -145,6 +146,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	search,
 	onPageChange,
 	onLimitChange,
+	publicMode = false,
 }) => {
 	const {t} = useTranslation();
 	const theme = useTheme();
@@ -154,13 +156,49 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	// Dialog state management using custom hook
 	const applyDialog = useDialog<{uid: string; title: string}>();
 
-	const {data, isLoading, error} = useListJobPositions({
-		page,
-		limit,
-		search,
-		sortBy: 'createdAt',
-		sortOrder: 'desc',
-	});
+	// Use public endpoint if in public mode, otherwise use authenticated endpoint
+	const publicQuery = usePublicJobPositions({ enabled: publicMode });
+	const authQuery = useListJobPositions(
+		{
+			page,
+			limit,
+			search,
+			sortBy: 'createdAt',
+			sortOrder: 'desc',
+		},
+		{ enabled: !publicMode } // Only run authenticated query when NOT in public mode
+	);
+
+	// Process data based on mode
+	let data, isLoading, error;
+
+	if (publicMode) {
+		// Public mode - use public endpoint with client-side filtering
+		isLoading = publicQuery.isLoading;
+		error = publicQuery.error;
+
+		if (publicQuery.data && Array.isArray(publicQuery.data)) {
+			const filteredData = publicQuery.data.filter((jp) =>
+				jp.title.toLowerCase().includes(search.toLowerCase())
+			);
+			const paginatedData = filteredData.slice((page - 1) * limit, page * limit);
+
+			data = {
+				data: paginatedData,
+				meta: {
+					total: filteredData.length,
+					page,
+					limit,
+					totalPages: Math.ceil(filteredData.length / limit),
+				},
+			};
+		}
+	} else {
+		// Authenticated mode - use server-side pagination
+		data = authQuery.data;
+		isLoading = authQuery.isLoading;
+		error = authQuery.error;
+	}
 
 	const jobPositions = data?.data;
 	const meta = data?.meta;
