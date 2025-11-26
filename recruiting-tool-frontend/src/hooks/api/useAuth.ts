@@ -46,15 +46,22 @@ export function useLogin() {
 	return useMutation({
 		mutationFn: login,
 		onSuccess: (data) => {
-			// Validate token before storing
+			// Validate tokens before storing
 			if (!data.token || typeof data.token !== 'string' || data.token === 'null' || data.token === 'undefined') {
-				console.error('[AUTH] Invalid token received:', data.token);
+				console.error('[AUTH] Invalid access token received:', data.token);
 				showErrorToast(new Error('Invalid authentication token received'), 'Authentication failed');
 				return;
 			}
 
-			// Store the token
+			if (!data.refreshToken || typeof data.refreshToken !== 'string' || data.refreshToken === 'null' || data.refreshToken === 'undefined') {
+				console.error('[AUTH] Invalid refresh token received:', data.refreshToken);
+				showErrorToast(new Error('Invalid refresh token received'), 'Authentication failed');
+				return;
+			}
+
+			// Store both tokens
 			localStorage.setItem('authToken', data.token);
+			localStorage.setItem('refreshToken', data.refreshToken);
 
 			// Invalidate to fetch user data
 			queryClient.invalidateQueries({queryKey: [AUTH_KEY, 'me']});
@@ -72,15 +79,23 @@ export function useRegister() {
 	return useMutation({
 		mutationFn: register,
 		onSuccess: (data) => {
-			// Validate token before storing
+			// Validate tokens before storing
 			if (!data.token || typeof data.token !== 'string' || data.token === 'null' || data.token === 'undefined') {
-				console.error('[AUTH] Invalid token received during registration:', data.token);
+				console.error('[AUTH] Invalid access token received during registration:', data.token);
 				showErrorToast(new Error('Invalid authentication token received'), 'Registration failed');
 				return;
 			}
 
-			// Store the token
+			if (!data.refreshToken || typeof data.refreshToken !== 'string' || data.refreshToken === 'null' || data.refreshToken === 'undefined') {
+				console.error('[AUTH] Invalid refresh token received during registration:', data.refreshToken);
+				showErrorToast(new Error('Invalid refresh token received'), 'Registration failed');
+				return;
+			}
+
+			// Store both tokens
 			localStorage.setItem('authToken', data.token);
+			localStorage.setItem('refreshToken', data.refreshToken);
+
 			// Invalidate to fetch user data
 			queryClient.invalidateQueries({queryKey: [AUTH_KEY, 'me']});
 			showSuccessToast('Account created successfully! Welcome aboard.');
@@ -96,7 +111,9 @@ export function useLogout() {
 	const {setUser} = useUserAtom();
 
 	return () => {
+		// Clear both tokens
 		localStorage.removeItem('authToken');
+		localStorage.removeItem('refreshToken');
 		setUser(null);
 		queryClient.removeQueries({queryKey: [AUTH_KEY, 'me']});
 	};

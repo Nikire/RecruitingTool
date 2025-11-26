@@ -8,7 +8,7 @@ export function getCurrentUser(): Promise<User> {
 export function login(data: {
 	email: string;
 	password: string;
-}): Promise<{user: User; token: string}> {
+}): Promise<{user: User; token: string; refreshToken: string}> {
 	return api.post('/auth/sign-in', data).then((res) => res.data);
 }
 
@@ -16,6 +16,18 @@ export function register(data: {
 	name: string;
 	email: string;
 	password: string;
-}): Promise<{user: User; token: string}> {
+}): Promise<{user: User; token: string; refreshToken: string}> {
 	return api.post('/auth/register', data).then((res) => res.data);
+}
+
+export function refreshToken(refreshToken: string): Promise<{
+	accessToken: string;
+	refreshToken: string;
+	expiresIn: number;
+}> {
+	return api.post('/auth/refresh', { refreshToken }).then((res) => res.data);
+}
+
+export function logout(refreshToken: string): Promise<{message: string}> {
+	return api.post('/auth/logout', { refreshToken }).then((res) => res.data);
 }

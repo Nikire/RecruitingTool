@@ -62,10 +62,12 @@ model User {
   scorecardEvaluations    Scorecard[]            @relation("ScorecardEvaluations")
   aiUsageLogs             AIUsageLog[]           @relation("UserAIUsageLogs")
   candidateActivities     CandidateActivity[]    @relation("CandidateActivityUser")
+  refreshTokens           RefreshToken[]         @relation("UserRefreshTokens")
 
   @@index([email])
   @@index([companyId])
   @@index([isActive])
+  @@map("User")
 }
 
 model Candidate {
@@ -87,6 +89,7 @@ model Candidate {
 
   @@index([email])
   @@index([source])
+  @@map("Candidate")
 }
 
 model CandidateNote {
@@ -136,9 +139,9 @@ model JobPosition {
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   createdById      Int
-  createdBy        User              @relation("JobPositionsUser", fields: [createdById], references: [id])
+  createdBy        User              @relation("JobPositionsUser", fields: [createdById], references: [id], onDelete: Restrict)
   companyId        Int
-  company          Company           @relation(fields: [companyId], references: [id])
+  company          Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
   stages           Stage[]
   status           JobPositionStatus @default(OPEN)
   hiringProcesses  HiringProcess[]
@@ -160,12 +163,12 @@ model HiringProcess {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   candidateId   Int?
-  candidate     Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id])
+  candidate     Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id], onDelete: Restrict)
   stages        Stage[]
   jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
   jobPositionId Int
   companyId     Int
-  company       Company             @relation(fields: [companyId], references: [id])
+  company       Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   @@index([status])
   @@index([jobPositionId])
@@ -200,7 +203,7 @@ model Stage {
   hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
   hiringProcessId Int?
   position        Int
-  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
+  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
   jobPositionId   Int?
   estimatedTime   Int?
   interviews      Interview[]    @relation("StageInterviews")
@@ -255,7 +258,7 @@ model FileUpload {
   uploadedById       Int
   uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id])
   candidateId        Int?
-  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id])
+  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
   applicationResumes Application[] @relation("ApplicationResume")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
@@ -273,23 +276,25 @@ model Application {
   applicantEmail String
   applicantPhone String
   resumeFileId   Int?
-  resumeFile     FileUpload?       @relation("ApplicationResume", fields: [resumeFileId], references: [id])
+  resumeFile     FileUpload?       @relation("ApplicationResume", fields: [resumeFileId], references: [id], onDelete: SetNull)
   coverLetter    String?           @db.Text
   customAnswers  Json?             @default("{}")
   status         ApplicationStatus @default(PENDING)
   appliedAt      DateTime          @default(now())
   reviewedAt     DateTime?
   reviewedById   Int?
-  reviewedBy     User?             @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
+  reviewedBy     User?             @relation("ApplicationReviewer", fields: [reviewedById], references: [id], onDelete: SetNull)
   notes          String?           @db.Text
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
 
+  @@unique([jobPositionId, applicantEmail])
   @@index([status])
   @@index([jobPositionId])
   @@index([applicantEmail])
   @@index([reviewedById])
   @@index([jobPositionId, status])
+  @@map("Application")
 }
 
 enum ApplicationStatus {
@@ -712,4 +717,20 @@ model CandidateActivity {
   @@index([type])
   @@index([createdAt])
   @@index([userId])
+}
+
+model RefreshToken {
+  id         Int       @id @default(autoincrement())
+  uid        String    @unique @default(uuid()) @db.Uuid
+  token      String    @unique
+  userId     Int
+  user       User      @relation("UserRefreshTokens", fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt  DateTime
+  createdAt  DateTime  @default(now())
+  revokedAt  DateTime?
+  replacedBy String?
+
+  @@index([userId])
+  @@index([token])
+  @@index([expiresAt])
 }

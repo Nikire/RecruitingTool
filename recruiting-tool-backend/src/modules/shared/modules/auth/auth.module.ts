@@ -4,6 +4,7 @@ import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { jwtConstants } from './constants/jwt.constants';
 import { UsersModule } from 'src/modules/users/users.module';
+import { TokenCleanupService } from './services/token-cleanup.service';
 
 @Global()
 @Module({
@@ -16,7 +17,7 @@ import { UsersModule } from 'src/modules/users/users.module';
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, TokenCleanupService],
   exports: [AuthService],
 })
 export class AuthModule {}
