@@ -1,7 +1,8 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaClient } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
+import * as Handlebars from 'handlebars';
 import {
   interviewScheduledTemplate,
   InterviewScheduledData,
@@ -332,5 +333,47 @@ ${text}
   async sendWelcomeEmail(userEmail: string, data: WelcomeData): Promise<void> {
     const { subject, text, html } = welcomeTemplate(data);
     await this.sendEmail(userEmail, subject, text, html, 'WELCOME');
+  }
+
+  /**
+   * Send email using a template from database
+   * Renders the template with provided variables using Handlebars
+   */
+  async sendEmailFromTemplate(
+    recipientEmail: string,
+    recipientName: string,
+    templateUid: string,
+    variables: Record<string, any>,
+    relatedEntityId?: string,
+  ): Promise<void> {
+    // Fetch the email template from database
+    const emailTemplate = await this.prisma.emailTemplate.findUnique({
+      where: { uid: templateUid },
+    });
+
+    if (!emailTemplate) {
+      throw new NotFoundException(`Email template ${templateUid} not found`);
+    }
+
+    // Render subject and body with Handlebars
+    const subjectTemplate = Handlebars.compile(emailTemplate.subject);
+    const bodyTemplate = Handlebars.compile(emailTemplate.body);
+
+    const renderedSubject = subjectTemplate(variables);
+    const renderedBody = bodyTemplate(variables);
+
+    // Convert rendered body to HTML (preserve line breaks)
+    const htmlBody = renderedBody.replace(/\n/g, '<br>');
+
+    await this.sendEmail(
+      recipientEmail,
+      renderedSubject,
+      renderedBody,
+      htmlBody,
+      'TEMPLATE_EMAIL',
+      relatedEntityId,
+    );
+
+    this.logger.log(`Email sent using template "${emailTemplate.name}" to ${recipientEmail}`);
   }
 }

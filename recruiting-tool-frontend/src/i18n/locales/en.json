@@ -513,7 +513,14 @@
     "subject_required": "Subject is required",
     "subject_min_length": "Subject must be at least {{min}} characters",
     "subject_max_length": "Subject must be less than {{max}} characters",
-    "body_required": "Body is required"
+    "body_required": "Body is required",
+    "preview": "Preview",
+    "previewing": "Loading preview...",
+    "preview_title": "Email Preview",
+    "preview_info": "This is how the email will look with sample data. Variables are replaced with example values.",
+    "preview_subject": "Subject",
+    "preview_body": "Body",
+    "hide_preview": "Hide Preview"
   },
   "add_stage": {
     "add_title": "Add New Stage",

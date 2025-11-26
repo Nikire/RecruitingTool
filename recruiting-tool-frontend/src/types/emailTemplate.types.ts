@@ -25,3 +25,12 @@ export interface UpdateEmailTemplateDto {
   body?: string;
   isDefault?: boolean;
 }
+
+export interface PreviewEmailTemplateDto {
+  variables?: Record<string, any>;
+}
+
+export interface PreviewEmailTemplateResponse {
+  renderedSubject: string;
+  renderedBody: string;
+}

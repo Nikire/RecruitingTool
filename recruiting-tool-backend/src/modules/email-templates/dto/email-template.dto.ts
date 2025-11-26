@@ -99,3 +99,17 @@ export class EmailTemplateResponseDto {
   @ApiProperty({ description: 'Last update timestamp' })
   updatedAt: Date;
 }
+
+export class PreviewEmailTemplateDto {
+  @ApiProperty({ description: 'Variables to use in template rendering', example: { candidateName: 'John Doe', positionTitle: 'Software Engineer' }, required: false })
+  @IsOptional()
+  variables?: Record<string, any>;
+}
+
+export class PreviewEmailTemplateResponseDto {
+  @ApiProperty({ description: 'Rendered email subject with variables replaced', example: 'Interview Invitation - Software Engineer at Tech Corp' })
+  renderedSubject: string;
+
+  @ApiProperty({ description: 'Rendered email body with variables replaced', example: 'Dear John Doe,\n\nWe are pleased to invite you...' })
+  renderedBody: string;
+}

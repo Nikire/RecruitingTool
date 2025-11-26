@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody, ApiUnauthorizedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { EmailTemplatesService } from './email-templates.service';
-import { CreateEmailTemplateDto, UpdateEmailTemplateDto, EmailTemplateResponseDto } from './dto/email-template.dto';
+import { CreateEmailTemplateDto, UpdateEmailTemplateDto, EmailTemplateResponseDto, PreviewEmailTemplateDto, PreviewEmailTemplateResponseDto } from './dto/email-template.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -76,5 +76,18 @@ export class EmailTemplatesController {
   @ApiParam({ name: 'uid', required: true, description: 'UID of the email template' })
   remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.emailTemplatesService.remove(uid);
+  }
+
+  @Post(':uid/preview')
+  @ApiOperation({ summary: 'Preview an email template with sample or provided data' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the rendered template with variables replaced',
+    type: PreviewEmailTemplateResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the email template' })
+  @ApiBody({ type: PreviewEmailTemplateDto, required: false })
+  preview(@Param('uid') uid: string, @Body() previewDto?: PreviewEmailTemplateDto): Promise<PreviewEmailTemplateResponseDto> {
+    return this.emailTemplatesService.preview(uid, previewDto?.variables);
   }
 }

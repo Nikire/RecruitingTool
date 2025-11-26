@@ -511,7 +511,14 @@
     "subject_required": "El asunto es obligatorio",
     "subject_min_length": "El asunto debe tener al menos {{min}} caracteres",
     "subject_max_length": "El asunto debe tener menos de {{max}} caracteres",
-    "body_required": "El cuerpo es obligatorio"
+    "body_required": "El cuerpo es obligatorio",
+    "preview": "Vista Previa",
+    "previewing": "Cargando vista previa...",
+    "preview_title": "Vista Previa del Correo",
+    "preview_info": "Así es como se verá el correo con datos de ejemplo. Las variables son reemplazadas con valores de muestra.",
+    "preview_subject": "Asunto",
+    "preview_body": "Cuerpo",
+    "hide_preview": "Ocultar Vista Previa"
   },
   "add_stage": {
     "add_title": "Agregar Nueva Etapa",
