@@ -14,6 +14,7 @@ import {
   RankedCandidateDto,
   ScoreAnalysisDto,
 } from './dto/candidate-scoring.dto';
+import { SseService } from '../sse/sse.service';
 
 @Injectable()
 export class ScoringService {
@@ -23,6 +24,7 @@ export class ScoringService {
   constructor(
     private configService: ConfigService,
     private prisma: PrismaService,
+    private sseService: SseService,
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
@@ -129,6 +131,30 @@ export class ScoringService {
         });
         this.logger.log(
           `Created new score for candidate ${candidateUid} and job ${jobPositionUid}`,
+        );
+      }
+
+      // Emit SSE event for score updated
+      const hiringProcess = await this.prisma.hiringProcess.findFirst({
+        where: {
+          candidateId: candidate.id,
+          jobPositionId: jobPosition.id,
+        },
+        include: {
+          company: true,
+        },
+      });
+
+      if (hiringProcess) {
+        this.sseService.emitScoreUpdated(
+          candidate.uid,
+          candidate.name,
+          hiringProcess.uid,
+          scores.overall,
+          'AI',
+          jobPosition.title,
+          undefined, // userUid - send to all users
+          hiringProcess.company?.uid, // companyUid - filter by company
         );
       }
 

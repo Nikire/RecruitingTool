@@ -4,9 +4,10 @@ import { ScoringService } from './scoring.service';
 import { BatchScoringService } from './batch-scoring.service';
 import { AiController } from './ai.controller';
 import { SharedModule } from '../shared/shared.module';
+import { SseModule } from '../sse/sse.module';
 
 @Module({
-  imports: [SharedModule],
+  imports: [SharedModule, SseModule],
   controllers: [AiController],
   providers: [AiService, ScoringService, BatchScoringService],
   exports: [AiService, ScoringService, BatchScoringService],

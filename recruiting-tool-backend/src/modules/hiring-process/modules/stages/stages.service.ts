@@ -7,10 +7,14 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CreateStageNoteDto, UpdateStageNoteDto, StageNoteResponseDto } from './dto/stage-note.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { StageMetricsResponseDto } from './dto/stage-time-tracking.dto';
+import { SseService } from 'src/modules/sse/sse.service';
 
 @Injectable()
 export class StagesService {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private readonly databaseService: DatabaseService,
+    private readonly sseService: SseService,
+  ) {}
   async create(createStageDto: CreateStageDto) {
     const { jobPositionUid, title, type, description, estimatedTime } = createStageDto;
 
@@ -273,6 +277,28 @@ export class StagesService {
       orderBy: { position: 'asc' },
     });
 
+    // Emit SSE event for candidate status changed
+    if (hiringProcess.candidate) {
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { id: hiringProcess.jobPositionId },
+        include: { company: true },
+      });
+
+      if (jobPosition) {
+        this.sseService.emitCandidateStatusChanged(
+          hiringProcess.candidate.uid,
+          hiringProcess.candidate.name,
+          hiringProcess.uid,
+          currentStage.title,
+          nextStage.title,
+          jobPosition.title,
+          jobPosition.uid,
+          undefined, // userUid - send to all users
+          jobPosition.company?.uid, // companyUid - filter by company
+        );
+      }
+    }
+
     return updatedStages.map(StageMapper);
   }
 
@@ -336,6 +362,28 @@ export class StagesService {
       where: { hiringProcessId: hiringProcess.id },
       orderBy: { position: 'asc' },
     });
+
+    // Emit SSE event for candidate status changed
+    if (hiringProcess.candidate) {
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { id: hiringProcess.jobPositionId },
+        include: { company: true },
+      });
+
+      if (jobPosition) {
+        this.sseService.emitCandidateStatusChanged(
+          hiringProcess.candidate.uid,
+          hiringProcess.candidate.name,
+          hiringProcess.uid,
+          currentStage?.title,
+          targetStage.title,
+          jobPosition.title,
+          jobPosition.uid,
+          undefined, // userUid - send to all users
+          jobPosition.company?.uid, // companyUid - filter by company
+        );
+      }
+    }
 
     return updatedStages.map(StageMapper);
   }

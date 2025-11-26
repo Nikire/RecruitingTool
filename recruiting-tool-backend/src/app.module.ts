@@ -24,9 +24,11 @@ import { AIQuotaModule } from './modules/ai-quota/ai-quota.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { TimeSlotsModule } from './modules/time-slots/time-slots.module';
+import { SseModule } from './modules/sse/sse.module';
+import { BackupModule } from './modules/backup/backup.module';
 
 @Module({
-  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule, InterviewModule, ProfileModule, AdminModule, HRScheduleModule, ScorecardModule, AiModule, GoogleCalendarModule, AIQuotaModule, AnalyticsModule, WebhooksModule, TimeSlotsModule],
+  imports: [UsersModule, SharedModule, ConfigModule.forRoot({ isGlobal: true }), CompanyModule, HiringProcessModule, StagesModule, CandidateModule, JobPositionModule, DummyModule, StorageModule, ApplicationModule, EmailTemplatesModule, InterviewModule, ProfileModule, AdminModule, HRScheduleModule, ScorecardModule, AiModule, GoogleCalendarModule, AIQuotaModule, AnalyticsModule, WebhooksModule, TimeSlotsModule, SseModule, BackupModule],
   controllers: [AppController],
   providers: [AppService],
 })

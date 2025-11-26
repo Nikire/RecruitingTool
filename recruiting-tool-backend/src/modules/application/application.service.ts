@@ -7,12 +7,14 @@ import { ApplicationStatus, StageStatus, User } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { SseService } from '../sse/sse.service';
 
 @Injectable()
 export class ApplicationService {
   constructor(
     private databaseService: DatabaseService,
     private emailService: EmailService,
+    private sseService: SseService,
   ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
@@ -79,6 +81,18 @@ export class ApplicationService {
         application.uid,
       );
     }
+
+    // Emit SSE event for new application
+    this.sseService.emitNewApplication(
+      application.uid,
+      application.applicantName,
+      application.applicantEmail,
+      jobPosition.uid,
+      jobPosition.title,
+      new Date().toISOString(),
+      undefined, // userUid - send to all users
+      jobPosition.company?.uid, // companyUid - filter by company
+    );
 
     return ApplicationMapper(application);
   

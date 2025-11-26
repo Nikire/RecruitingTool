@@ -5,6 +5,7 @@ import { InterviewMapper } from './entities/interview.entity';
 import { InterviewStatus } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { GoogleCalendarService } from '../google-calendar/google-calendar.service';
+import { SseService } from '../sse/sse.service';
 
 @Injectable()
 export class InterviewService {
@@ -14,6 +15,7 @@ export class InterviewService {
     private readonly databaseService: DatabaseService,
     private readonly emailService: EmailService,
     private readonly googleCalendarService: GoogleCalendarService,
+    private readonly sseService: SseService,
   ) {}
 
   async create(createInterviewDto: CreateInterviewDto, scheduledByUid: string): Promise<InterviewResponseDto> {
@@ -120,6 +122,29 @@ export class InterviewService {
       } catch (error) {
         // Log error but don't fail the interview creation
         this.logger.error(`Failed to create Google Calendar event: ${error.message}`);
+      }
+    }
+
+    // Emit SSE event for interview scheduled
+    if (status === InterviewStatus.SCHEDULED && stage.hiringProcess?.candidate) {
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { id: stage.hiringProcess.jobPositionId },
+        include: { company: true },
+      });
+
+      if (jobPosition) {
+        this.sseService.emitInterviewScheduled(
+          interview.uid,
+          stage.hiringProcess.candidate.uid,
+          stage.hiringProcess.candidate.name,
+          scheduledBy.name,
+          scheduledDate || '',
+          location || 'TBD',
+          jobPosition.title,
+          stage.hiringProcess.uid,
+          undefined, // userUid - send to all users
+          jobPosition.company?.uid, // companyUid - filter by company
+        );
       }
     }
 

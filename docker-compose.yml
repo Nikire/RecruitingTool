@@ -53,6 +53,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/recruiting_tool_db
     volumes:
       - ./recruiting-tool-backend:/app
+      - backup_data:/backups
     networks:
       - app-network
     entrypoint: ['/bin/sh', '/app/docker-entrypoint.sh']
@@ -122,3 +123,4 @@ volumes:
   pgadmin_data:
   minio_data:
   n8n_data:
+  backup_data:
