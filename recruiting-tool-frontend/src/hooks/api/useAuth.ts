@@ -46,7 +46,14 @@ export function useLogin() {
 	return useMutation({
 		mutationFn: login,
 		onSuccess: (data) => {
-			// Only store the token
+			// Validate token before storing
+			if (!data.token || typeof data.token !== 'string' || data.token === 'null' || data.token === 'undefined') {
+				console.error('[AUTH] Invalid token received:', data.token);
+				showErrorToast(new Error('Invalid authentication token received'), 'Authentication failed');
+				return;
+			}
+
+			// Store the token
 			localStorage.setItem('authToken', data.token);
 
 			// Invalidate to fetch user data
@@ -65,7 +72,14 @@ export function useRegister() {
 	return useMutation({
 		mutationFn: register,
 		onSuccess: (data) => {
-			// Only store the token
+			// Validate token before storing
+			if (!data.token || typeof data.token !== 'string' || data.token === 'null' || data.token === 'undefined') {
+				console.error('[AUTH] Invalid token received during registration:', data.token);
+				showErrorToast(new Error('Invalid authentication token received'), 'Registration failed');
+				return;
+			}
+
+			// Store the token
 			localStorage.setItem('authToken', data.token);
 			// Invalidate to fetch user data
 			queryClient.invalidateQueries({queryKey: [AUTH_KEY, 'me']});
