@@ -9,9 +9,6 @@ import {
 	UseInterceptors,
 	Res,
 	HttpStatus,
-	ParseFilePipe,
-	MaxFileSizeValidator,
-	FileTypeValidator,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -21,6 +18,7 @@ import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { ApiTags, ApiOperation, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import { FileValidationPipe } from './pipes/file-validation.pipe';
 
 @ApiTags('Files')
 @Controller('files')
@@ -30,7 +28,10 @@ export class FilesController {
 	@Post('upload')
 	@Auth([RolesType.USER])
 	@UseInterceptors(FileInterceptor('file'))
-	@ApiOperation({ summary: 'Upload a document file' })
+	@ApiOperation({
+		summary: 'Upload a document file',
+		description: 'Upload a document file (PDF, DOC, DOCX, TXT). Max size: 10MB. File type validation includes MIME type, extension, and magic number verification.',
+	})
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
@@ -39,6 +40,7 @@ export class FilesController {
 				file: {
 					type: 'string',
 					format: 'binary',
+					description: 'Document file (PDF, DOC, DOCX, TXT) - Max 10MB',
 				},
 				candidateUid: {
 					type: 'string',
@@ -48,14 +50,7 @@ export class FilesController {
 		},
 	})
 	async uploadFile(
-		@UploadedFile(
-			new ParseFilePipe({
-				validators: [
-					new MaxFileSizeValidator({ maxSize: 10 * 1024 * 1024 }), // 10MB max
-					new FileTypeValidator({ fileType: /(pdf|msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document|plain)/ }), // PDF, DOC, DOCX, TXT
-				],
-			}),
-		)
+		@UploadedFile(new FileValidationPipe('document'))
 		file: Express.Multer.File,
 		@CurrentUser() currentUser: any,
 		@Query('candidateUid') candidateUid?: string,
@@ -66,7 +61,10 @@ export class FilesController {
 	@Post('upload-image')
 	@Auth([RolesType.USER])
 	@UseInterceptors(FileInterceptor('file'))
-	@ApiOperation({ summary: 'Upload an image file (for profile pictures, etc.)' })
+	@ApiOperation({
+		summary: 'Upload an image file (for profile pictures, etc.)',
+		description: 'Upload an image file (JPG, PNG, GIF, WebP). Max size: 2MB. File type validation includes MIME type, extension, and magic number verification.',
+	})
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
@@ -75,20 +73,13 @@ export class FilesController {
 				file: {
 					type: 'string',
 					format: 'binary',
-					description: 'Image file (JPG, PNG, GIF, WebP)',
+					description: 'Image file (JPG, PNG, GIF, WebP) - Max 2MB',
 				},
 			},
 		},
 	})
 	async uploadImage(
-		@UploadedFile(
-			new ParseFilePipe({
-				validators: [
-					new MaxFileSizeValidator({ maxSize: 2 * 1024 * 1024 }), // 2MB max for images
-					new FileTypeValidator({ fileType: /(jpg|jpeg|png|gif|webp)$/i }), // Only images
-				],
-			}),
-		)
+		@UploadedFile(new FileValidationPipe('image'))
 		file: Express.Multer.File,
 		@CurrentUser() currentUser: any,
 	): Promise<FileUploadResponseDto> {
