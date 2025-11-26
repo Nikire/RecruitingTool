@@ -9,7 +9,7 @@ export function login(data: {
 	email: string;
 	password: string;
 }): Promise<{user: User; token: string}> {
-	return api.post('/auth/sign-in', data).then((res) => res.data.data);
+	return api.post('/auth/sign-in', data).then((res) => res.data);
 }
 
 export function register(data: {
@@ -17,5 +17,5 @@ export function register(data: {
 	email: string;
 	password: string;
 }): Promise<{user: User; token: string}> {
-	return api.post('/auth/register', data).then((res) => res.data.data);
+	return api.post('/auth/register', data).then((res) => res.data);
 }

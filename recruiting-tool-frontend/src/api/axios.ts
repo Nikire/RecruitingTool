@@ -1,4 +1,8 @@
 import axios from 'axios';
+import {
+	enhancedResponseNormalizer,
+	errorNormalizerInterceptor,
+} from './responseNormalizer';
 
 const api = axios.create({
 	baseURL: import.meta.env.VITE_API_URL,
@@ -8,6 +12,7 @@ const api = axios.create({
 	withCredentials: true,
 });
 
+// Request interceptor - adds JWT token to requests
 api.interceptors.request.use((config) => {
 	const token = localStorage.getItem('authToken');
 	if (token) {
@@ -15,5 +20,12 @@ api.interceptors.request.use((config) => {
 	}
 	return config;
 });
+
+// Response interceptor - unwraps backend's normalized response structure
+// Converts response.data.data → response.data automatically
+api.interceptors.response.use(
+	enhancedResponseNormalizer,
+	errorNormalizerInterceptor
+);
 
 export default api;
