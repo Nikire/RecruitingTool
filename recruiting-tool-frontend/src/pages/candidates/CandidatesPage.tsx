@@ -3,6 +3,7 @@ import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {useState} from 'react';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useCandidatesSearch} from '../../hooks/api/state/useSearchState';
@@ -10,6 +11,7 @@ import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandle
 import {useDialog} from '../../hooks/useDialog';
 import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
 import ManualCandidateDialog from '../../components/dialogs/ManualCandidateDialog';
+import ImportCandidatesDialog from '../../components/dialogs/ImportCandidatesDialog';
 import {canManageResources} from '../../utils/permissions';
 import {FilterBar, FilterBarFilters} from '../../components/filters';
 import CandidatesList from '../../components/candidates/CandidatesList';
@@ -19,6 +21,7 @@ const CandidatesPage: React.FC = () => {
 	const {t} = useTranslation();
 	const createDialog = useDialog<never>();
 	const manualDialog = useDialog<never>();
+	const importDialog = useDialog<never>();
 	const {user} = useUserAtom();
 	const [searchState, setSearchState] = useCandidatesSearch();
 	const {page, limit, search} = searchState;
@@ -45,6 +48,11 @@ const CandidatesPage: React.FC = () => {
 	const handleCreateManual = () => {
 		handleMenuClose();
 		manualDialog.open();
+	};
+
+	const handleImportCSV = () => {
+		handleMenuClose();
+		importDialog.open();
 	};
 
 	// Handle filter changes from FilterBar
@@ -119,6 +127,15 @@ const CandidatesPage: React.FC = () => {
 									secondary={t('candidates.create_manual_hint')}
 								/>
 							</MenuItem>
+							<MenuItem onClick={handleImportCSV}>
+								<ListItemIcon>
+									<UploadFileIcon fontSize="small" />
+								</ListItemIcon>
+								<ListItemText
+									primary={t('candidates.import_csv')}
+									secondary={t('candidates.import_csv_hint')}
+								/>
+							</MenuItem>
 						</Menu>
 					</Box>
 				)}
@@ -146,6 +163,11 @@ const CandidatesPage: React.FC = () => {
 			<ManualCandidateDialog
 				open={manualDialog.isOpen}
 				onClose={manualDialog.close}
+			/>
+
+			<ImportCandidatesDialog
+				open={importDialog.isOpen}
+				onClose={importDialog.close}
 			/>
 		</Box>
 	);

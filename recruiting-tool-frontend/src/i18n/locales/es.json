@@ -76,13 +76,15 @@
     "interview_schedule_failed": "Error al programar la entrevista",
     "interview_update_failed": "Error al actualizar la entrevista",
     "interview_cancel_failed": "Error al cancelar la entrevista",
-    "interview_delete_failed": "Error al eliminar la entrevista"
+    "interview_delete_failed": "Error al eliminar la entrevista",
+    "interview_reschedule_failed": "Error al reprogramar la entrevista"
   },
   "success": {
     "interview_scheduled": "Entrevista programada exitosamente",
     "interview_updated": "Entrevista actualizada exitosamente",
     "interview_cancelled": "Entrevista cancelada exitosamente",
-    "interview_deleted": "Entrevista eliminada exitosamente"
+    "interview_deleted": "Entrevista eliminada exitosamente",
+    "interview_rescheduled": "Entrevista reprogramada exitosamente"
   },
   "dialogs": {
     "delete_confirmation": "Confirmar Eliminación",
@@ -117,6 +119,8 @@
     "create_from_application": "Desde Aplicación de Trabajo",
     "create_manual": "Agregar Manualmente",
     "create_manual_hint": "Para llamadas telefónicas, referencias, visitas",
+    "import_csv": "Importar desde CSV",
+    "import_csv_hint": "Importación masiva de candidatos desde un archivo CSV",
     "search_placeholder": "Buscar por nombre o correo...",
     "name_label": "Nombre del Candidato",
     "email_label": "Correo Electrónico",
@@ -131,6 +135,30 @@
     "no_candidates": "No hay candidatos disponibles",
     "add_note": "Agregar Nota",
     "internal_notes": "Notas Internas"
+  },
+  "candidate_import": {
+    "title": "Importar Candidatos desde CSV",
+    "download_template": "Descargar Plantilla CSV",
+    "template_help": "Descarga una plantilla con datos de ejemplo y columnas requeridas",
+    "select_file": "Seleccionar Archivo CSV",
+    "change_file": "Cambiar Archivo",
+    "selected_file": "Archivo seleccionado",
+    "preview_title": "Vista Previa de Importación",
+    "total_rows": "Total de filas",
+    "valid_rows": "Filas válidas",
+    "invalid_rows": "Filas inválidas",
+    "view_errors": "Ver Errores",
+    "row_number": "Fila",
+    "name": "Nombre",
+    "email": "Correo",
+    "errors": "Errores",
+    "import": "Importar Candidatos",
+    "importing": "Importando...",
+    "import_successful": "Importación Exitosa",
+    "import_completed_with_errors": "Importación Completada con Errores",
+    "imported_count": "Importados exitosamente",
+    "failed_count": "Fallaron al importar",
+    "import_errors": "Errores de Importación"
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -323,6 +351,21 @@
     "pending": "Pendiente",
     "cancel_interview": "Cancelar Entrevista",
     "reschedule": "Reprogramar",
+    "reschedule_interview": "Reprogramar Entrevista",
+    "reschedule_title": "Reprogramar Entrevista",
+    "new_date": "Nueva Fecha",
+    "new_time": "Nueva Hora",
+    "reschedule_reason": "Motivo de Reprogramación",
+    "reschedule_reason_placeholder": "ej., Candidato solicitó horario diferente, Entrevistador no disponible, etc.",
+    "reschedule_history": "Historial de Reprogramaciones",
+    "view_reschedule_history": "Ver Historial de Reprogramaciones",
+    "rescheduled_count": "Reprogramada {{count}} vez",
+    "rescheduled_count_plural": "Reprogramada {{count}} veces",
+    "original_date": "Fecha Original",
+    "previous_date": "Fecha Anterior",
+    "rescheduled_by": "Reprogramada Por",
+    "rescheduled_at": "Reprogramada El",
+    "no_reschedule_history": "Esta entrevista no ha sido reprogramada",
     "no_interviews": "No hay entrevistas programadas",
     "no_interviewers": "No hay entrevistadores asignados",
     "select_candidate": "Seleccione un candidato",
@@ -1162,4 +1205,20 @@
     "success_message": "¡Candidato agregado exitosamente!",
     "success_with_hiring": "¡Candidato agregado y proceso de contratación iniciado!"
   }
+  "candidate_activity": {
+    "load_error": "Error al cargar el historial de actividad",
+    "no_activities": "Sin historial de actividad aún",
+    "type": {
+      "created": "Candidato Creado",
+      "stage_changed": "Etapa Cambiada",
+      "status_changed": "Estado Cambiado",
+      "interview_scheduled": "Entrevista Programada",
+      "interview_updated": "Entrevista Actualizada",
+      "interview_cancelled": "Entrevista Cancelada",
+      "interview_completed": "Entrevista Completada",
+      "note_added": "Nota Agregada",
+      "application_received": "Aplicación Recibida",
+      "email_sent": "Correo Enviado"
+    }
+  },
 }

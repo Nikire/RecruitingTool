@@ -153,6 +153,109 @@ export class AddInterviewerDto {
   role?: string;
 }
 
+export class RescheduleInterviewDto {
+  @ApiProperty({
+    description: 'New scheduled date for the interview (ISO 8601 format)',
+    example: '2025-12-20T00:00:00.000Z'
+  })
+  @IsDateString()
+  @IsNotEmpty()
+  newScheduledDate: string;
+
+  @ApiProperty({
+    description: 'New scheduled time for the interview (24-hour format)',
+    example: '15:30'
+  })
+  @IsString()
+  @IsNotEmpty()
+  newScheduledTime: string;
+
+  @ApiProperty({
+    description: 'Reason for rescheduling',
+    example: 'Candidate requested different time',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  reason?: string;
+
+  @ApiProperty({
+    description: 'Duration of the interview in minutes',
+    example: 60,
+    required: false
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(1)
+  duration?: number;
+
+  @ApiProperty({
+    description: 'Meeting link (Zoom, Google Meet, etc.)',
+    example: 'https://zoom.us/j/1234567890',
+    required: false
+  })
+  @IsOptional()
+  @IsString()
+  meetingLink?: string;
+}
+
+export class InterviewRescheduleHistoryDto {
+  @ApiProperty({
+    description: 'The UID of the reschedule record',
+    example: '123e4567-e89b-12d3-a456-426614174005'
+  })
+  uid: string;
+
+  @ApiProperty({
+    description: 'Previous scheduled date',
+    example: '2025-12-15T00:00:00.000Z'
+  })
+  oldScheduledDate: Date;
+
+  @ApiProperty({
+    description: 'Previous scheduled time',
+    example: '14:00'
+  })
+  oldScheduledTime: string;
+
+  @ApiProperty({
+    description: 'New scheduled date',
+    example: '2025-12-20T00:00:00.000Z'
+  })
+  newScheduledDate: Date;
+
+  @ApiProperty({
+    description: 'New scheduled time',
+    example: '15:30'
+  })
+  newScheduledTime: string;
+
+  @ApiProperty({
+    description: 'Reason for rescheduling',
+    example: 'Candidate requested different time',
+    required: false
+  })
+  reason: string | null;
+
+  @ApiProperty({
+    description: 'UID of the user who rescheduled',
+    example: '123e4567-e89b-12d3-a456-426614174002'
+  })
+  rescheduledByUid: string;
+
+  @ApiProperty({
+    description: 'Name of the user who rescheduled',
+    example: 'John Doe'
+  })
+  rescheduledByName: string;
+
+  @ApiProperty({
+    description: 'When the reschedule occurred',
+    example: '2025-11-25T16:30:00.000Z'
+  })
+  rescheduledAt: Date;
+}
+
 export class InterviewResponseDto {
   @ApiProperty({
     description: 'The UID of the interview',
@@ -244,6 +347,34 @@ export class InterviewResponseDto {
     userName: string;
     role: string | null;
   }>;
+
+  @ApiProperty({
+    description: 'Number of times this interview has been rescheduled',
+    example: 2,
+    default: 0
+  })
+  rescheduledCount: number;
+
+  @ApiProperty({
+    description: 'Original scheduled date before any rescheduling',
+    example: '2025-12-15T00:00:00.000Z',
+    required: false
+  })
+  originalScheduledDate: string | null;
+
+  @ApiProperty({
+    description: 'Timestamp of the last reschedule',
+    example: '2025-11-25T16:30:00.000Z',
+    required: false
+  })
+  lastRescheduledAt: string | null;
+
+  @ApiProperty({
+    description: 'Reason for the last reschedule',
+    example: 'Candidate requested different time',
+    required: false
+  })
+  rescheduledReason: string | null;
 
   @ApiProperty({
     description: 'Creation timestamp',

@@ -1,0 +1,41 @@
+# Schema updates for Issue #50 - Candidate Activity Timeline
+
+## 1. Add relation to User model (line 62, after aiUsageLogs)
+  interviewReschedules    InterviewReschedule[]    @relation("InterviewReschedules")
+  candidateActivities     CandidateActivity[]      @relation("CandidateActivityUser")
+
+## 2. Add relation to Candidate model (line 77, after scores)
+  activities      CandidateActivity[] @relation("CandidateActivities")
+
+## 3. Add CandidateActivity model (after CandidateNote model, around line 98)
+model CandidateActivity {
+  id          Int                     @id @default(autoincrement())
+  uid         String                  @unique @default(uuid()) @db.Uuid
+  candidateId Int
+  candidate   Candidate               @relation("CandidateActivities", fields: [candidateId], references: [id], onDelete: Cascade)
+  type        CandidateActivityType
+  description String
+  metadata    Json?
+  userId      Int?
+  user        User?                   @relation("CandidateActivityUser", fields: [userId], references: [id])
+  createdAt   DateTime                @default(now())
+
+  @@index([candidateId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId])
+}
+
+## 4. Add CandidateActivityType enum (after ApplicationSource enum, around line 119)
+enum CandidateActivityType {
+  CREATED
+  STAGE_CHANGED
+  STATUS_CHANGED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_UPDATED
+  INTERVIEW_CANCELLED
+  INTERVIEW_COMPLETED
+  NOTE_ADDED
+  APPLICATION_RECEIVED
+  EMAIL_SENT
+}

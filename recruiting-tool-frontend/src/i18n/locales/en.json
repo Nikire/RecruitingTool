@@ -76,13 +76,15 @@
     "interview_schedule_failed": "Failed to schedule interview",
     "interview_update_failed": "Failed to update interview",
     "interview_cancel_failed": "Failed to cancel interview",
-    "interview_delete_failed": "Failed to delete interview"
+    "interview_delete_failed": "Failed to delete interview",
+    "interview_reschedule_failed": "Failed to reschedule interview"
   },
   "success": {
     "interview_scheduled": "Interview scheduled successfully",
     "interview_updated": "Interview updated successfully",
     "interview_cancelled": "Interview cancelled successfully",
-    "interview_deleted": "Interview deleted successfully"
+    "interview_deleted": "Interview deleted successfully",
+    "interview_rescheduled": "Interview rescheduled successfully"
   },
   "dialogs": {
     "delete_confirmation": "Confirm Deletion",
@@ -117,6 +119,8 @@
     "create_from_application": "From Job Application",
     "create_manual": "Add Manually",
     "create_manual_hint": "For phone calls, referrals, walk-ins",
+    "import_csv": "Import from CSV",
+    "import_csv_hint": "Bulk import candidates from a CSV file",
     "search_placeholder": "Search by name or email...",
     "name_label": "Candidate Name",
     "email_label": "Email",
@@ -131,6 +135,30 @@
     "no_candidates": "No candidates available",
     "add_note": "Add Note",
     "internal_notes": "Internal Notes"
+  },
+  "candidate_import": {
+    "title": "Import Candidates from CSV",
+    "download_template": "Download CSV Template",
+    "template_help": "Download a template with example data and required columns",
+    "select_file": "Select CSV File",
+    "change_file": "Change File",
+    "selected_file": "Selected file",
+    "preview_title": "Import Preview",
+    "total_rows": "Total rows",
+    "valid_rows": "Valid rows",
+    "invalid_rows": "Invalid rows",
+    "view_errors": "View Errors",
+    "row_number": "Row",
+    "name": "Name",
+    "email": "Email",
+    "errors": "Errors",
+    "import": "Import Candidates",
+    "importing": "Importing...",
+    "import_successful": "Import Successful",
+    "import_completed_with_errors": "Import Completed with Errors",
+    "imported_count": "Successfully imported",
+    "failed_count": "Failed to import",
+    "import_errors": "Import Errors"
   },
   "job_positions": {
     "title": "Job Positions",
@@ -325,6 +353,21 @@
     "pending": "Pending",
     "cancel_interview": "Cancel Interview",
     "reschedule": "Reschedule",
+    "reschedule_interview": "Reschedule Interview",
+    "reschedule_title": "Reschedule Interview",
+    "new_date": "New Date",
+    "new_time": "New Time",
+    "reschedule_reason": "Reason for Rescheduling",
+    "reschedule_reason_placeholder": "e.g., Candidate requested different time, Interviewer unavailable, etc.",
+    "reschedule_history": "Reschedule History",
+    "view_reschedule_history": "View Reschedule History",
+    "rescheduled_count": "Rescheduled {{count}} time",
+    "rescheduled_count_plural": "Rescheduled {{count}} times",
+    "original_date": "Original Date",
+    "previous_date": "Previous Date",
+    "rescheduled_by": "Rescheduled By",
+    "rescheduled_at": "Rescheduled At",
+    "no_reschedule_history": "This interview has not been rescheduled",
     "no_interviews": "No interviews scheduled",
     "no_interviewers": "No interviewers assigned",
     "select_candidate": "Select a candidate",
@@ -1164,4 +1207,20 @@
     "success_message": "Candidate added successfully!",
     "success_with_hiring": "Candidate added and hiring process started!"
   }
+  "candidate_activity": {
+    "load_error": "Failed to load activity timeline",
+    "no_activities": "No activity history yet",
+    "type": {
+      "created": "Candidate Created",
+      "stage_changed": "Stage Changed",
+      "status_changed": "Status Changed",
+      "interview_scheduled": "Interview Scheduled",
+      "interview_updated": "Interview Updated",
+      "interview_cancelled": "Interview Cancelled",
+      "interview_completed": "Interview Completed",
+      "note_added": "Note Added",
+      "application_received": "Application Received",
+      "email_sent": "Email Sent"
+    }
+  },
 }

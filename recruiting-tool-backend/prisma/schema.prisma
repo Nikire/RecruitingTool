@@ -9,12 +9,12 @@ datasource db {
 }
 
 model Company {
-  id                 Int                  @id @default(autoincrement())
-  uid                String               @unique @default(uuid()) @db.Uuid
+  id                 Int                 @id @default(autoincrement())
+  uid                String              @unique @default(uuid()) @db.Uuid
   name               String
   description        String?
-  createdAt          DateTime             @default(now())
-  updatedAt          DateTime             @updatedAt
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
   users              User[]
   jobPositions       JobPosition[]
   hiringProcesses    HiringProcess[]
@@ -25,12 +25,12 @@ model Company {
 }
 
 model User {
-  id                      Int                      @id @default(autoincrement())
-  uid                     String                   @unique @default(uuid()) @db.Uuid
+  id                      Int                    @id @default(autoincrement())
+  uid                     String                 @unique @default(uuid()) @db.Uuid
   name                    String
-  email                   String                   @unique
+  email                   String                 @unique
   password                String
-  roles                   RolesType[]              @default([USER])
+  roles                   RolesType[]            @default([USER])
   profilePicture          String?
   phoneNumber             String?
   position                String?
@@ -39,27 +39,29 @@ model User {
   linkedinUrl             String?
   timezone                String?
   googleRefreshToken      String?
-  isActive                Boolean                  @default(true)
+  isActive                Boolean                @default(true)
   deactivatedAt           DateTime?
   deactivatedBy           Int?
   lastLoginAt             DateTime?
-  createdAt               DateTime                 @default(now())
-  updatedAt               DateTime                 @updatedAt
+  createdAt               DateTime               @default(now())
+  updatedAt               DateTime               @updatedAt
   companyId               Int?
-  company                 Company?                 @relation(fields: [companyId], references: [id])
+  company                 Company?               @relation(fields: [companyId], references: [id])
   profile                 Profile?
-  jobPositions            JobPosition[]            @relation("JobPositionsUser")
-  fileUploads             FileUpload[]             @relation("FileUploadsUser")
-  reviewedApplications    Application[]            @relation("ApplicationReviewer")
-  candidateNotes          CandidateNote[]          @relation("CandidateNoteAuthor")
-  emailTemplates          EmailTemplate[]          @relation("EmailTemplateCreatedBy")
-  scheduledInterviews     Interview[]              @relation("InterviewScheduledBy")
-  interviewParticipations InterviewInterviewer[]   @relation("InterviewParticipations")
-  stageNotes              StageNote[]              @relation("StageNoteAuthor")
-  activityLogs            UserActivityLog[]        @relation("UserActivityLogs")
-  schedules               HRSchedule[]             @relation("UserSchedules")
-  scorecardEvaluations    Scorecard[]              @relation("ScorecardEvaluations")
-  aiUsageLogs             AIUsageLog[]             @relation("UserAIUsageLogs")
+  jobPositions            JobPosition[]          @relation("JobPositionsUser")
+  fileUploads             FileUpload[]           @relation("FileUploadsUser")
+  reviewedApplications    Application[]          @relation("ApplicationReviewer")
+  candidateNotes          CandidateNote[]        @relation("CandidateNoteAuthor")
+  emailTemplates          EmailTemplate[]        @relation("EmailTemplateCreatedBy")
+  scheduledInterviews     Interview[]            @relation("InterviewScheduledBy")
+  interviewParticipations InterviewInterviewer[] @relation("InterviewParticipations")
+  interviewReschedules    InterviewReschedule[]  @relation("InterviewReschedules")
+  stageNotes              StageNote[]            @relation("StageNoteAuthor")
+  activityLogs            UserActivityLog[]      @relation("UserActivityLogs")
+  schedules               HRSchedule[]           @relation("UserSchedules")
+  scorecardEvaluations    Scorecard[]            @relation("ScorecardEvaluations")
+  aiUsageLogs             AIUsageLog[]           @relation("UserAIUsageLogs")
+  candidateActivities     CandidateActivity[]    @relation("CandidateActivityUser")
 }
 
 model Candidate {
@@ -75,6 +77,7 @@ model Candidate {
   notes           CandidateNote[]     @relation("CandidateNotes")
   stageTimeLogs   StageTimeLog[]      @relation("CandidateStageTimeLogs")
   scores          CandidateScore[]    @relation("CandidateScores")
+  activities      CandidateActivity[] @relation("CandidateActivities")
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
 
@@ -115,27 +118,28 @@ enum ApplicationSource {
   DIRECT_APPLY
   SOCIAL_MEDIA
   MANUAL
+  CSV_IMPORT
   OTHER
 }
 
 model JobPosition {
-  id               Int                 @id @default(autoincrement())
-  uid              String              @unique @default(uuid()) @db.Uuid
+  id               Int               @id @default(autoincrement())
+  uid              String            @unique @default(uuid()) @db.Uuid
   title            String
   description      String?
-  customQuestions  Json?               @default("[]")
-  createdAt        DateTime            @default(now())
-  updatedAt        DateTime            @updatedAt
+  customQuestions  Json?             @default("[]")
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
   createdById      Int
-  createdBy        User                @relation("JobPositionsUser", fields: [createdById], references: [id])
+  createdBy        User              @relation("JobPositionsUser", fields: [createdById], references: [id])
   companyId        Int
-  company          Company             @relation(fields: [companyId], references: [id])
+  company          Company           @relation(fields: [companyId], references: [id])
   stages           Stage[]
-  status           JobPositionStatus   @default(OPEN)
+  status           JobPositionStatus @default(OPEN)
   hiringProcesses  HiringProcess[]
   applications     Application[]
-  candidateScores  CandidateScore[]    @relation("JobPositionScores")
-  batchScoringJobs BatchScoringJob[]   @relation("BatchScoringJobs")
+  candidateScores  CandidateScore[]  @relation("JobPositionScores")
+  batchScoringJobs BatchScoringJob[] @relation("BatchScoringJobs")
 }
 
 model HiringProcess {
@@ -169,23 +173,23 @@ enum JobPositionStatus {
 }
 
 model Stage {
-  id              Int              @id @default(autoincrement())
-  uid             String           @unique @default(uuid()) @db.Uuid
+  id              Int            @id @default(autoincrement())
+  uid             String         @unique @default(uuid()) @db.Uuid
   title           String
   type            StageType
   description     String
-  status          StageStatus      @default(OPEN)
-  createdAt       DateTime         @default(now())
-  updatedAt       DateTime         @updatedAt
-  hiringProcess   HiringProcess?   @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
+  status          StageStatus    @default(OPEN)
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
   hiringProcessId Int?
   position        Int
-  JobPosition     JobPosition?     @relation(fields: [jobPositionId], references: [id])
+  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
   jobPositionId   Int?
   estimatedTime   Int?
-  interviews      Interview[]      @relation("StageInterviews")
-  notes           StageNote[]      @relation("StageNotes")
-  timeLogs        StageTimeLog[]   @relation("StageTimeLogs")
+  interviews      Interview[]    @relation("StageInterviews")
+  notes           StageNote[]    @relation("StageNotes")
+  timeLogs        StageTimeLog[] @relation("StageTimeLogs")
 
   @@unique([hiringProcessId, position])
 }
@@ -220,20 +224,20 @@ enum StageType {
 }
 
 model FileUpload {
-  id                 Int            @id @default(autoincrement())
-  uid                String         @unique @default(uuid()) @db.Uuid
+  id                 Int           @id @default(autoincrement())
+  uid                String        @unique @default(uuid()) @db.Uuid
   filename           String
   originalName       String
   mimetype           String
   size               Int
   s3Key              String
   uploadedById       Int
-  uploadedBy         User           @relation("FileUploadsUser", fields: [uploadedById], references: [id])
+  uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id])
   candidateId        Int?
-  candidate          Candidate?     @relation("CandidateFiles", fields: [candidateId], references: [id])
-  applicationResumes Application[]  @relation("ApplicationResume")
-  createdAt          DateTime       @default(now())
-  updatedAt          DateTime       @updatedAt
+  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id])
+  applicationResumes Application[] @relation("ApplicationResume")
+  createdAt          DateTime      @default(now())
+  updatedAt          DateTime      @updatedAt
 }
 
 model Application {
@@ -284,18 +288,18 @@ model EmailTemplate {
 }
 
 model EmailLog {
-  id              Int       @id @default(autoincrement())
-  uid             String    @unique @default(uuid()) @db.Uuid
+  id              Int      @id @default(autoincrement())
+  uid             String   @unique @default(uuid()) @db.Uuid
   recipientEmail  String
   recipientName   String
   subject         String
-  template        String    @db.Text
-  status          String    @default("SENT")
+  template        String   @db.Text
+  status          String   @default("SENT")
   emailType       String
   relatedEntity   String?
   relatedEntityId String?
-  sentAt          DateTime  @default(now())
-  createdAt       DateTime  @default(now())
+  sentAt          DateTime @default(now())
+  createdAt       DateTime @default(now())
 
   @@index([recipientEmail])
   @@index([sentAt])
@@ -304,30 +308,54 @@ model EmailLog {
 }
 
 model Interview {
-  id            Int                      @id @default(autoincrement())
-  uid           String                   @unique @default(uuid()) @db.Uuid
-  stageId       Int
-  stage         Stage                    @relation("StageInterviews", fields: [stageId], references: [id], onDelete: Cascade)
-  scheduledDate DateTime?
-  scheduledTime String?
-  duration      Int?
-  status        InterviewStatus          @default(PENDING)
-  meetingLink   String?                  @db.Text
-  location      String?
-  notes         String?                  @db.Text
-  scheduledById Int
-  scheduledBy   User                     @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
-  interviewers  InterviewInterviewer[]   @relation("InterviewInterviewers")
-  scorecards    Scorecard[]
-  timeSlots     InterviewTimeSlot[]      @relation("InterviewTimeSlots")
-  bookingTokens InterviewBookingToken[]  @relation("InterviewBookingTokens")
-  createdAt     DateTime                 @default(now())
-  updatedAt     DateTime                 @updatedAt
+  id                    Int                     @id @default(autoincrement())
+  uid                   String                  @unique @default(uuid()) @db.Uuid
+  stageId               Int
+  stage                 Stage                   @relation("StageInterviews", fields: [stageId], references: [id], onDelete: Cascade)
+  scheduledDate         DateTime?
+  scheduledTime         String?
+  duration              Int?
+  status                InterviewStatus         @default(PENDING)
+  meetingLink           String?                 @db.Text
+  location              String?
+  notes                 String?                 @db.Text
+  scheduledById         Int
+  scheduledBy           User                    @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
+  interviewers          InterviewInterviewer[]  @relation("InterviewInterviewers")
+  scorecards            Scorecard[]
+  timeSlots             InterviewTimeSlot[]     @relation("InterviewTimeSlots")
+  bookingTokens         InterviewBookingToken[] @relation("InterviewBookingTokens")
+  rescheduledCount      Int                     @default(0)
+  originalScheduledDate DateTime?
+  lastRescheduledAt     DateTime?
+  rescheduledReason     String?                 @db.Text
+  reschedules           InterviewReschedule[]   @relation("InterviewReschedules")
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
 
   @@index([stageId])
   @@index([scheduledById])
   @@index([status])
   @@index([scheduledDate])
+}
+
+model InterviewReschedule {
+  id               Int       @id @default(autoincrement())
+  uid              String    @unique @default(uuid()) @db.Uuid
+  interviewId      Int
+  interview        Interview @relation("InterviewReschedules", fields: [interviewId], references: [id], onDelete: Cascade)
+  oldScheduledDate DateTime
+  oldScheduledTime String
+  newScheduledDate DateTime
+  newScheduledTime String
+  reason           String?   @db.Text
+  rescheduledById  Int
+  rescheduledBy    User      @relation("InterviewReschedules", fields: [rescheduledById], references: [id])
+  rescheduledAt    DateTime  @default(now())
+
+  @@index([interviewId])
+  @@index([rescheduledById])
+  @@index([rescheduledAt])
 }
 
 model InterviewTimeSlot {
@@ -481,20 +509,20 @@ model ScorecardCriterion {
 }
 
 model Scorecard {
-  id           Int                @id @default(autoincrement())
-  uid          String             @unique @default(uuid()) @db.Uuid
+  id           Int               @id @default(autoincrement())
+  uid          String            @unique @default(uuid()) @db.Uuid
   templateId   Int
-  template     ScorecardTemplate  @relation(fields: [templateId], references: [id])
+  template     ScorecardTemplate @relation(fields: [templateId], references: [id])
   interviewId  Int
-  interview    Interview          @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  interview    Interview         @relation(fields: [interviewId], references: [id], onDelete: Cascade)
   evaluatorId  Int
-  evaluator    User               @relation("ScorecardEvaluations", fields: [evaluatorId], references: [id])
+  evaluator    User              @relation("ScorecardEvaluations", fields: [evaluatorId], references: [id])
   overallScore Float?
-  notes        String?            @db.Text
+  notes        String?           @db.Text
   scores       ScorecardScore[]
-  submittedAt  DateTime           @default(now())
-  createdAt    DateTime           @default(now())
-  updatedAt    DateTime           @updatedAt
+  submittedAt  DateTime          @default(now())
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@index([templateId])
   @@index([interviewId])
@@ -526,9 +554,9 @@ model AIQuota {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt
 
+  @@unique([companyId, quotaType])
   @@index([companyId])
   @@index([quotaType])
-  @@unique([companyId, quotaType])
 }
 
 enum QuotaType {
@@ -538,16 +566,16 @@ enum QuotaType {
 }
 
 model AIUsageLog {
-  id        Int       @id @default(autoincrement())
-  uid       String    @unique @default(uuid()) @db.Uuid
-  companyId Int
-  company   Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  userId    Int
-  user      User      @relation("UserAIUsageLogs", fields: [userId], references: [id], onDelete: Cascade)
-  operation QuotaType
+  id         Int       @id @default(autoincrement())
+  uid        String    @unique @default(uuid()) @db.Uuid
+  companyId  Int
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId     Int
+  user       User      @relation("UserAIUsageLogs", fields: [userId], references: [id], onDelete: Cascade)
+  operation  QuotaType
   tokensUsed Int?
-  cost      Float?
-  createdAt DateTime  @default(now())
+  cost       Float?
+  createdAt  DateTime  @default(now())
 
   @@index([companyId])
   @@index([userId])
@@ -623,4 +651,35 @@ enum BatchStatus {
   COMPLETED
   FAILED
   CANCELLED
+}
+
+enum CandidateActivityType {
+  CREATED
+  STAGE_CHANGED
+  STATUS_CHANGED
+  INTERVIEW_SCHEDULED
+  INTERVIEW_UPDATED
+  INTERVIEW_CANCELLED
+  INTERVIEW_COMPLETED
+  NOTE_ADDED
+  APPLICATION_RECEIVED
+  EMAIL_SENT
+}
+
+model CandidateActivity {
+  id          Int                   @id @default(autoincrement())
+  uid         String                @unique @default(uuid()) @db.Uuid
+  candidateId Int
+  candidate   Candidate             @relation("CandidateActivities", fields: [candidateId], references: [id], onDelete: Cascade)
+  type        CandidateActivityType
+  description String
+  metadata    Json?
+  userId      Int?
+  user        User?                 @relation("CandidateActivityUser", fields: [userId], references: [id])
+  createdAt   DateTime              @default(now())
+
+  @@index([candidateId])
+  @@index([type])
+  @@index([createdAt])
+  @@index([userId])
 }

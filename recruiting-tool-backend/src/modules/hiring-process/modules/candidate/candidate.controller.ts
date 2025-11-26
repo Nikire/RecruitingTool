@@ -1,7 +1,13 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseInterceptors, UploadedFile, Res, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 import { CandidateService } from './candidate.service';
+import { CandidateImportService } from './candidate-import.service';
 import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto, CreateManualCandidateDto } from './dto/candidate.dto';
-import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { CandidateActivityService } from './services/candidate-activity.service';
+import { CandidateActivityResponseDto } from './dto/candidate-activity.dto';
+import { CandidateImportPreviewDto, CandidateImportResultDto } from './dto/candidate-import.dto';
+import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
@@ -24,6 +30,8 @@ import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
 export class CandidateController {
   constructor(
     private readonly candidateService: CandidateService,
+    private readonly candidateActivityService: CandidateActivityService,
+    private readonly candidateImportService: CandidateImportService,
     private readonly databaseService: DatabaseService,
   ) {}
 
@@ -209,5 +217,94 @@ export class CandidateController {
     @CurrentUser() currentUser: User,
   ): Promise<CandidateJourneyResponseDto[]> {
     return this.candidateService.getCandidateJourney(uid, currentUser);
+  }
+
+  // Candidate Activity Timeline endpoint
+  @Get(':uid/activities')
+  @ApiOperation({ summary: 'Get candidate activity timeline/history' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the candidate activity timeline',
+    type: [CandidateActivityResponseDto],
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
+  getCandidateActivities(
+    @Param('uid') uid: string,
+  ): Promise<CandidateActivityResponseDto[]> {
+    return this.candidateActivityService.getCandidateActivities(uid);
+  }
+
+  // Bulk Import endpoints
+  @Post('import/preview')
+  @ApiOperation({
+    summary: 'Preview CSV import - validate without creating candidates',
+    description: 'Upload a CSV file to validate format and data before importing. Returns preview with valid and invalid rows.'
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 200,
+    description: 'Returns preview of import with validation results',
+    type: CandidateImportPreviewDto,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async previewImport(
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<CandidateImportPreviewDto> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    if (file.mimetype !== 'text/csv' && !file.originalname.endsWith('.csv')) {
+      throw new BadRequestException('File must be a CSV');
+    }
+
+    return this.candidateImportService.previewImport(file.buffer);
+  }
+
+  @Post('import')
+  @ApiOperation({
+    summary: 'Import candidates from CSV file',
+    description: 'Upload a CSV file to bulk import candidates. Returns import results with success and error counts.'
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 201,
+    description: 'Candidates imported successfully',
+    type: CandidateImportResultDto,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async importCandidates(
+    @UploadedFile() file: Express.Multer.File,
+    @CurrentUser() currentUser: User,
+  ): Promise<CandidateImportResultDto> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    if (file.mimetype !== 'text/csv' && !file.originalname.endsWith('.csv')) {
+      throw new BadRequestException('File must be a CSV');
+    }
+
+    // Get user's company ID for duplicate checking
+    const companyId = currentUser.companyId || undefined;
+
+    return this.candidateImportService.importCandidates(file.buffer, companyId);
+  }
+
+  @Get('import/template')
+  @ApiOperation({
+    summary: 'Download CSV template',
+    description: 'Download a CSV template file with headers and example data for importing candidates.'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'CSV template downloaded successfully',
+  })
+  downloadTemplate(@Res() res: Response): void {
+    const csvContent = this.candidateImportService.generateTemplateCSV();
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="candidate-import-template.csv"');
+    res.send(csvContent);
   }
 }

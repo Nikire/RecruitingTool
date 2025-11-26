@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
-import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto } from './dto/interview.dto';
+import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, RescheduleInterviewDto } from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
 import { InterviewStatus } from '@prisma/client';
@@ -459,5 +459,137 @@ export class InterviewService {
     });
 
     return { message: `Interview ${uid} deleted successfully` };
+  }
+
+  async reschedule(uid: string, rescheduleDto: RescheduleInterviewDto, userUid: string): Promise<InterviewResponseDto> {
+    const { newScheduledDate, newScheduledTime, reason, duration, meetingLink } = rescheduleDto;
+
+    // Get existing interview with full details
+    const existingInterview = await this.databaseService.interview.findUnique({
+      where: { uid },
+      include: {
+        scheduledBy: true,
+        stage: {
+          include: {
+            hiringProcess: {
+              include: {
+                candidate: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!existingInterview) {
+      throw new NotFoundException(`Interview with UID ${uid} not found`);
+    }
+
+    if (existingInterview.status === InterviewStatus.CANCELLED) {
+      throw new BadRequestException('Cannot reschedule a cancelled interview');
+    }
+
+    if (existingInterview.status === InterviewStatus.COMPLETED) {
+      throw new BadRequestException('Cannot reschedule a completed interview');
+    }
+
+    if (!existingInterview.scheduledDate || !existingInterview.scheduledTime) {
+      throw new BadRequestException('Interview must be scheduled before it can be rescheduled');
+    }
+
+    // Get the user who is rescheduling
+    const rescheduledBy = await this.databaseService.user.findUnique({
+      where: { uid: userUid },
+    });
+
+    if (!rescheduledBy) {
+      throw new NotFoundException(`User with UID ${userUid} not found`);
+    }
+
+    // Create reschedule history record
+    await this.databaseService.interviewReschedule.create({
+      data: {
+        interview: { connect: { id: existingInterview.id } },
+        oldScheduledDate: existingInterview.scheduledDate,
+        oldScheduledTime: existingInterview.scheduledTime,
+        newScheduledDate: new Date(newScheduledDate),
+        newScheduledTime,
+        reason: reason || null,
+        rescheduledBy: { connect: { id: rescheduledBy.id } },
+      },
+    });
+
+    // Store original scheduled date if this is the first reschedule
+    const originalScheduledDate = existingInterview.originalScheduledDate || existingInterview.scheduledDate;
+
+    // Update interview with new schedule
+    const updatedInterview = await this.databaseService.interview.update({
+      where: { uid },
+      data: {
+        scheduledDate: new Date(newScheduledDate),
+        scheduledTime: newScheduledTime,
+        ...(duration !== undefined && { duration }),
+        ...(meetingLink !== undefined && { meetingLink }),
+        rescheduledCount: existingInterview.rescheduledCount + 1,
+        originalScheduledDate,
+        lastRescheduledAt: new Date(),
+        rescheduledReason: reason || null,
+      },
+      include: {
+        scheduledBy: true,
+        stage: true,
+        interviewers: {
+          include: {
+            user: true,
+          },
+        },
+      },
+    });
+
+    // Send reschedule notification email
+    if (existingInterview.stage.hiringProcess?.candidate) {
+      const candidate = existingInterview.stage.hiringProcess.candidate;
+      await this.emailService.sendInterviewRescheduled(
+        candidate.email,
+        {
+          candidateName: candidate.name,
+          jobPosition: existingInterview.stage.hiringProcess.title,
+          oldDate: existingInterview.scheduledDate,
+          oldTime: existingInterview.scheduledTime,
+          newDate: new Date(newScheduledDate),
+          newTime: newScheduledTime,
+          duration: duration || existingInterview.duration || undefined,
+          location: updatedInterview.location || undefined,
+          meetingLink: meetingLink || updatedInterview.meetingLink || undefined,
+          interviewers: rescheduledBy.name ? [rescheduledBy.name] : [],
+          reason: reason || undefined,
+          hrName: rescheduledBy.name,
+        },
+        updatedInterview.uid,
+      );
+    }
+
+    return InterviewMapper(updatedInterview);
+  }
+
+  async getRescheduleHistory(uid: string): Promise<any[]> {
+    const interview = await this.databaseService.interview.findUnique({
+      where: { uid },
+    });
+
+    if (!interview) {
+      throw new NotFoundException(`Interview with UID ${uid} not found`);
+    }
+
+    const reschedules = await this.databaseService.interviewReschedule.findMany({
+      where: { interviewId: interview.id },
+      include: {
+        rescheduledBy: true,
+      },
+      orderBy: { rescheduledAt: 'desc' },
+    });
+
+    const { InterviewRescheduleMapper } = await import('./entities/interview.entity');
+    return reschedules.map(InterviewRescheduleMapper);
   }
 }

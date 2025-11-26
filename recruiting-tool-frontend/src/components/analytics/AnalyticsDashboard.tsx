@@ -8,7 +8,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import TimerIcon from '@mui/icons-material/Timer';
 import MetricCard from './MetricCard';
 import ConversionFunnel from './ConversionFunnel';
-import TimeToHireChart from './TimeToHireChart';
+// import TimeToHireChart from './TimeToHireChart'; // TODO: File doesn't exist - needs to be created
 import HiringTrendsChart from './HiringTrendsChart';
 import SourceDistributionChart from './SourceDistributionChart';
 import { AnalyticsData, MetricCardData, MetricTrend } from '../../types/analytics';
@@ -143,9 +143,10 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </Grid>
 
           {/* Time to Hire Chart */}
-          <Grid item xs={12} lg={6}>
+          {/* TODO: TimeToHireChart component needs to be created */}
+          {/* <Grid item xs={12} lg={6}>
             <TimeToHireChart data={data.hiring.timeToHireByPosition} />
-          </Grid>
+          </Grid> */}
 
           {/* Hiring Trends */}
           <Grid item xs={12}>

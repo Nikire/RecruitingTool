@@ -5,33 +5,50 @@ import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto, CreateMan
 import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
-import { User, ApplicationSource } from '@prisma/client';
+import { User, ApplicationSource, StageStatus } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CandidateJourneyResponseDto, CandidateJourneyStepDto } from '../stages/dto/stage-time-tracking.dto';
 import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
 import { EmailService } from 'src/modules/email/email.service';
+import { CandidateActivityService } from './services/candidate-activity.service';
+import { CandidateActivityType } from '@prisma/client';
 
 @Injectable()
 export class CandidateService {
   constructor(
+    private candidateActivityService: CandidateActivityService,
     private databaseService: DatabaseService,
     private emailService: EmailService,
   ) {}
 
   async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
     try {
-    const candidate = await this.databaseService.candidate.create({
-      data: {
-        name: createCandidateDto.name,
-        email: createCandidateDto.email,
-        source: createCandidateDto.source,
-        sourceDetails: createCandidateDto.sourceDetails,
-        sourceUrl: createCandidateDto.sourceUrl,
-      },
-    });
-    return CandidateMapper(candidate);
+      const candidate = await this.databaseService.candidate.create({
+        data: {
+          name: createCandidateDto.name,
+          email: createCandidateDto.email,
+          source: createCandidateDto.source,
+          sourceDetails: createCandidateDto.sourceDetails,
+          sourceUrl: createCandidateDto.sourceUrl,
+        },
+      });
 
+      // Log candidate creation activity
+      try {
+        await this.candidateActivityService.logActivity(
+          candidate.id,
+          CandidateActivityType.CREATED,
+          `Candidate profile created from source: ${candidate.source || 'UNKNOWN'}`,
+          null, // System event, no user
+          { source: candidate.source, email: candidate.email }
+        );
+      } catch (error) {
+        // Log error but don't fail candidate creation
+        console.error('Failed to log candidate creation activity:', error.message);
+      }
+
+      return CandidateMapper(candidate);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -39,7 +56,8 @@ export class CandidateService {
       throw new InternalServerErrorException(
         `Failed to create: ${error.message}`,
       );
-    }}
+    }
+  }
 
   /**
    * Create a manual candidate (from phone call, referral, walk-in, etc.)
@@ -127,7 +145,7 @@ export class CandidateService {
         type: stage.type,
         description: stage.description,
         position: index,
-        status: index === 0 ? 'CURRENT' : 'OPEN', // First stage is CURRENT
+        status: index === 0 ? StageStatus.CURRENT : StageStatus.OPEN, // First stage is CURRENT
         estimatedTime: stage.estimatedTime,
         hiringProcessId: hiringProcess.id,
         // jobPositionId is null - stages belong only to hiring process
