@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, BadRequestException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
@@ -11,10 +12,13 @@ import { SseService } from '../sse/sse.service';
 
 @Injectable()
 export class ApplicationService {
+  private readonly logger = new Logger(ApplicationService.name);
+
   constructor(
     private databaseService: DatabaseService,
     private emailService: EmailService,
     private sseService: SseService,
+    private configService: ConfigService,
   ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
@@ -58,28 +62,56 @@ export class ApplicationService {
     });
 
     // Send confirmation email to applicant
-    await this.emailService.sendApplicationConfirmation(
-      application.applicantEmail,
-      application.applicantName,
-      jobPosition.title,
-      application.uid,
-    );
-
-    // Send notification to HR (find first HR user)
-    const hrUsers = await this.databaseService.user.findMany({
-      where: {
-        roles: { has: "HR" },
-      },
-      take: 1,
-    });
-
-    if (hrUsers.length > 0) {
-      await this.emailService.sendNewApplicationNotification(
-        hrUsers[0].email,
+    try {
+      await this.emailService.sendApplicationConfirmation(
+        application.applicantEmail,
         application.applicantName,
         jobPosition.title,
         application.uid,
+        jobPosition.company?.name,
       );
+      this.logger.log(`Confirmation email sent to ${application.applicantEmail} for application ${application.uid}`);
+    } catch (error) {
+      this.logger.error(`Failed to send confirmation email for application ${application.uid}: ${error.message}`);
+    }
+
+    // Send notification to HR
+    try {
+      // Use configured HR email or fallback to first HR user
+      const hrEmail = this.configService.get<string>('HR_NOTIFICATION_EMAIL');
+
+      if (hrEmail && hrEmail !== 'hr@company.com') {
+        // Use configured email
+        await this.emailService.sendNewApplicationNotification(
+          hrEmail,
+          application.applicantName,
+          jobPosition.title,
+          application.uid,
+        );
+        this.logger.log(`HR notification sent to ${hrEmail} for application ${application.uid}`);
+      } else {
+        // Fallback: find first HR user in database
+        const hrUsers = await this.databaseService.user.findMany({
+          where: {
+            roles: { has: "HR" },
+          },
+          take: 1,
+        });
+
+        if (hrUsers.length > 0) {
+          await this.emailService.sendNewApplicationNotification(
+            hrUsers[0].email,
+            application.applicantName,
+            jobPosition.title,
+            application.uid,
+          );
+          this.logger.log(`HR notification sent to ${hrUsers[0].email} for application ${application.uid}`);
+        } else {
+          this.logger.warn(`No HR users found to notify for application ${application.uid}`);
+        }
+      }
+    } catch (error) {
+      this.logger.error(`Failed to send HR notification for application ${application.uid}: ${error.message}`);
     }
 
     // Emit SSE event for new application
@@ -219,6 +251,7 @@ export class ApplicationService {
 
     // Send status change email if status changed
     if (updateApplicationDto.status && updateApplicationDto.status !== oldStatus) {
+      this.logger.log(`Application status changed from ${oldStatus} to ${updateApplicationDto.status} for ${updatedApplication.uid}`);
       await this.sendStatusChangeEmail(
         updatedApplication.applicantEmail,
         updatedApplication.applicantName,
@@ -252,19 +285,23 @@ export class ApplicationService {
       switch (newStatus) {
         case ApplicationStatus.REVIEWED:
           await this.emailService.sendApplicationUnderReview(email, name, jobTitle, applicationUid);
+          this.logger.log(`Sent REVIEWED status email to ${email} for application ${applicationUid}`);
           break;
         case ApplicationStatus.ACCEPTED:
           await this.emailService.sendApplicationAcceptance(email, name, jobTitle);
+          this.logger.log(`Sent ACCEPTED status email to ${email} for application ${applicationUid}`);
           break;
         case ApplicationStatus.REJECTED:
           await this.emailService.sendApplicationRejection(email, name, jobTitle, applicationUid);
+          this.logger.log(`Sent REJECTED status email to ${email} for application ${applicationUid}`);
           break;
         default:
+          this.logger.debug(`No email sent for status change to ${newStatus} for application ${applicationUid}`);
           break;
       }
     } catch (error) {
       // Log error but don't throw - email sending shouldn't fail the main update
-      console.error(`Failed to send status change email for application ${applicationUid}:`, error);
+      this.logger.error(`Failed to send status change email for application ${applicationUid}: ${error.message}`, error.stack);
     }
   }
 

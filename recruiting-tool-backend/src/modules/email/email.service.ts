@@ -44,39 +44,55 @@ export class EmailService {
     }
   }
 
-  async sendApplicationConfirmation(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string): Promise<void> {
+  async sendApplicationConfirmation(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string, companyName?: string): Promise<void> {
+    const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
+
+    if (!emailsEnabled) {
+      this.logger.log(`Application emails disabled - skipping confirmation email for ${applicantEmail}`);
+      return;
+    }
+
     const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@recruiting.com');
+    const teamName = companyName ? `${companyName} Recruiting Team` : 'The Recruiting Team';
 
     const subject = `Application Received: ${jobTitle}`;
     const text = `
 Dear ${applicantName},
 
-Thank you for applying for the position of ${jobTitle}.
+Thank you for applying for the position of ${jobTitle}${companyName ? ` at ${companyName}` : ''}.
 
 We have successfully received your application (Reference: ${applicationUid}).
 
 Our team will review your application and get back to you soon.
 
 Best regards,
-The Recruiting Team
+${teamName}
     `.trim();
 
     const html = `
       <h2>Application Received</h2>
       <p>Dear ${applicantName},</p>
-      <p>Thank you for applying for the position of <strong>${jobTitle}</strong>.</p>
+      <p>Thank you for applying for the position of <strong>${jobTitle}</strong>${companyName ? ` at <strong>${companyName}</strong>` : ''}.</p>
       <p>We have successfully received your application.<br/>
       Reference: <code>${applicationUid}</code></p>
       <p>Our team will review your application and get back to you soon.</p>
       <br/>
       <p>Best regards,<br/>
-      The Recruiting Team</p>
+      ${teamName}</p>
     `;
 
-    await this.sendEmail(applicantEmail, subject, text, html);
+    this.logger.log(`Sending application confirmation email to ${applicantEmail} for ${jobTitle}`);
+    await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_CONFIRMATION', applicationUid);
   }
 
   async sendNewApplicationNotification(hrEmail: string, applicantName: string, jobTitle: string, applicationUid: string): Promise<void> {
+    const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
+
+    if (!emailsEnabled) {
+      this.logger.log(`Application emails disabled - skipping HR notification for ${hrEmail}`);
+      return;
+    }
+
     const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@recruiting.com');
 
     const subject = `New Application: ${jobTitle}`;
@@ -99,10 +115,18 @@ Please log in to the admin panel to review this application.
       <p>Please log in to the admin panel to review this application.</p>
     `;
 
-    await this.sendEmail(hrEmail, subject, text, html);
+    this.logger.log(`Sending HR notification to ${hrEmail} for new application by ${applicantName}`);
+    await this.sendEmail(hrEmail, subject, text, html, 'HR_NOTIFICATION', applicationUid);
   }
 
   async sendApplicationAcceptance(applicantEmail: string, applicantName: string, jobTitle: string): Promise<void> {
+    const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
+
+    if (!emailsEnabled) {
+      this.logger.log(`Application emails disabled - skipping acceptance email for ${applicantEmail}`);
+      return;
+    }
+
     const subject = `Congratulations: Your Application for ${jobTitle} Has Been Accepted`;
     const text = `
 Dear ${applicantName},
@@ -125,10 +149,18 @@ The Recruiting Team
       The Recruiting Team</p>
     `;
 
-    await this.sendEmail(applicantEmail, subject, text, html);
+    this.logger.log(`Sending acceptance email to ${applicantEmail} for ${jobTitle}`);
+    await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_ACCEPTED');
   }
 
   async sendApplicationUnderReview(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string): Promise<void> {
+    const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
+
+    if (!emailsEnabled) {
+      this.logger.log(`Application emails disabled - skipping review email for ${applicantEmail}`);
+      return;
+    }
+
     const subject = `Your Application for ${jobTitle} is Under Review`;
     const text = `
 Dear ${applicantName},
@@ -155,10 +187,18 @@ The Recruiting Team
       The Recruiting Team</p>
     `;
 
+    this.logger.log(`Sending review notification to ${applicantEmail} for ${jobTitle}`);
     await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
   }
 
   async sendApplicationRejection(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string): Promise<void> {
+    const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
+
+    if (!emailsEnabled) {
+      this.logger.log(`Application emails disabled - skipping rejection email for ${applicantEmail}`);
+      return;
+    }
+
     const subject = `Update on Your Application for ${jobTitle}`;
     const text = `
 Dear ${applicantName},
@@ -185,6 +225,7 @@ The Recruiting Team
       The Recruiting Team</p>
     `;
 
+    this.logger.log(`Sending rejection notification to ${applicantEmail} for ${jobTitle}`);
     await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
   }
 
