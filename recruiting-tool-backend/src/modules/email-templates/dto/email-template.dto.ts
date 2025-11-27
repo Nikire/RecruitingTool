@@ -24,10 +24,10 @@ export class CreateEmailTemplateDto {
   @IsNotEmpty()
   body: string;
 
-  @ApiProperty({ description: 'UID of the company', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @ApiProperty({ description: 'UID of the company (optional for system-wide templates)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   @IsUUID()
-  @IsNotEmpty()
-  companyUid: string;
+  @IsOptional()
+  companyUid?: string;
 
   @ApiProperty({ description: 'Is this a default template', example: false, required: false })
   @IsBoolean()
@@ -81,8 +81,8 @@ export class EmailTemplateResponseDto {
   })
   body: string;
 
-  @ApiProperty({ description: 'UID of the company', example: '123e4567-e89b-12d3-a456-426614174001' })
-  companyUid: string;
+  @ApiProperty({ description: 'UID of the company (null for system-wide templates)', example: '123e4567-e89b-12d3-a456-426614174001', nullable: true })
+  companyUid: string | null;
 
   @ApiProperty({ description: 'UID of the user who created the template', example: '123e4567-e89b-12d3-a456-426614174001' })
   createdByUid: string;

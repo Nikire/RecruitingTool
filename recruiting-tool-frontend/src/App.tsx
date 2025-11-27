@@ -19,7 +19,7 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import HRDashboard from './pages/hr/HRDashboard';
 import ProfilePage from './pages/profile/ProfilePage';
 import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
-import EmailTemplatesPage from './pages/admin/email-templates/EmailTemplatesPage';
+import EmailTemplatesPage from './pages/email-templates/EmailTemplatesPage';
 import AnalyticsPage from './pages/analytics/AnalyticsPage';
 import SystemSettingsPage from './pages/admin/SystemSettingsPage';
 import BookInterviewPage from './pages/booking/BookInterviewPage';

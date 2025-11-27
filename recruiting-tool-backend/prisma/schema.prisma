@@ -310,8 +310,8 @@ model EmailTemplate {
   name        String
   subject     String
   body        String   @db.Text
-  companyId   Int
-  company     Company  @relation(fields: [companyId], references: [id])
+  companyId   Int?
+  company     Company? @relation(fields: [companyId], references: [id])
   createdById Int
   createdBy   User     @relation("EmailTemplateCreatedBy", fields: [createdById], references: [id])
   isDefault   Boolean  @default(false)
@@ -320,6 +320,7 @@ model EmailTemplate {
 
   @@index([companyId])
   @@index([createdById])
+  @@index([isDefault])
 }
 
 model EmailLog {

@@ -12,7 +12,7 @@ export const EmailTemplateMapper = (emailTemplate: EmailTemplateWithRelations): 
     name: emailTemplate.name,
     subject: emailTemplate.subject,
     body: emailTemplate.body,
-    companyUid: emailTemplate.company?.uid || '',
+    companyUid: emailTemplate.company?.uid || null,
     createdByUid: emailTemplate.createdBy?.uid || '',
     createdByName: emailTemplate.createdBy?.name || '',
     isDefault: emailTemplate.isDefault,

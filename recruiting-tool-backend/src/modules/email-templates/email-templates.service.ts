@@ -10,13 +10,19 @@ export class EmailTemplatesService {
   constructor(private databaseService: DatabaseService) {}
 
   async create(createDto: CreateEmailTemplateDto, userId: number): Promise<EmailTemplateResponseDto> {
-    // Find company by UID to get numeric ID
-    const company = await this.databaseService.company.findUnique({
-      where: { uid: createDto.companyUid },
-    });
+    let companyId: number | null = null;
 
-    if (!company) {
-      throw new NotFoundException(`Company ${createDto.companyUid} not found`);
+    // Find company by UID if provided
+    if (createDto.companyUid) {
+      const company = await this.databaseService.company.findUnique({
+        where: { uid: createDto.companyUid },
+      });
+
+      if (!company) {
+        throw new NotFoundException(`Company ${createDto.companyUid} not found`);
+      }
+
+      companyId = company.id;
     }
 
     // Verify user exists
@@ -33,7 +39,7 @@ export class EmailTemplatesService {
         name: createDto.name,
         subject: createDto.subject,
         body: createDto.body,
-        companyId: company.id,
+        companyId: companyId,
         createdById: userId,
         isDefault: createDto.isDefault || false,
       },
