@@ -53,6 +53,7 @@ services:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/recruiting_tool_db
     volumes:
       - ./recruiting-tool-backend:/app
+      - backend_node_modules:/app/node_modules
       - backup_data:/backups
     networks:
       - app-network
@@ -124,3 +125,4 @@ volumes:
   minio_data:
   n8n_data:
   backup_data:
+  backend_node_modules:
