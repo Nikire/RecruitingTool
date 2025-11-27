@@ -9,6 +9,8 @@ import { Request, Response } from 'express';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly isProduction = process.env.NODE_ENV === 'production';
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -31,29 +33,43 @@ export class HttpExceptionFilter implements ExceptionFilter {
         error = (exceptionResponse as any).error || exception.name;
       }
     } else if (exception instanceof Error) {
-      message = exception.message;
-      error = exception.name;
+      // In production, hide detailed error messages for non-HTTP exceptions
+      message = this.isProduction
+        ? 'An unexpected error occurred. Please try again later.'
+        : exception.message;
+      error = this.isProduction ? 'InternalServerError' : exception.name;
     }
 
-    // Log error for debugging
+    // Log full error details server-side (always, regardless of environment)
     console.error(
       `[${new Date().toISOString()}] ${request.method} ${request.url}`,
       {
         status,
-        error,
-        message,
+        error: exception instanceof Error ? exception.name : error,
+        message: exception instanceof Error ? exception.message : message,
         stack: exception instanceof Error ? exception.stack : undefined,
+        // Log request details for debugging
+        userAgent: request.headers['user-agent'],
+        ip: request.ip,
       },
     );
 
-    // Send formatted response
-    response.status(status).json({
+    // Build response object
+    const errorResponse: any = {
       success: false,
       statusCode: status,
       message,
       error,
       timestamp: new Date().toISOString(),
       path: request.url,
-    });
+    };
+
+    // Only include stack trace in development
+    if (!this.isProduction && exception instanceof Error) {
+      errorResponse.stack = exception.stack;
+    }
+
+    // Send formatted response
+    response.status(status).json(errorResponse);
   }
 }

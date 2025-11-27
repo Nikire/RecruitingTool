@@ -13,6 +13,7 @@ import { Prisma } from '@prisma/client';
  */
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
+  private readonly isProduction = process.env.NODE_ENV === 'production';
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -100,7 +101,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       }
     }
 
-    // Log error for debugging
+    // Log full error details server-side (always, regardless of environment)
     console.error(
       `[${new Date().toISOString()}] ${request.method} ${request.url}`,
       {
@@ -109,18 +110,30 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         message,
         prismaCode: exception.code,
         meta: exception.meta,
+        // Log request details for debugging
+        userAgent: request.headers['user-agent'],
+        ip: request.ip,
       },
     );
 
-    // Send formatted response
-    response.status(status).json({
+    // Build response object
+    const errorResponse: any = {
       success: false,
       statusCode: status,
       message,
       error,
       timestamp: new Date().toISOString(),
       path: request.url,
-    });
+    };
+
+    // Only include Prisma metadata in development (contains sensitive database info)
+    if (!this.isProduction) {
+      errorResponse.prismaCode = exception.code;
+      errorResponse.prismaTarget = exception.meta?.target;
+    }
+
+    // Send formatted response
+    response.status(status).json(errorResponse);
   }
 
   /**
