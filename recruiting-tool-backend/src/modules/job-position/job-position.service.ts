@@ -1,6 +1,6 @@
 import { forwardRef, Inject, NotFoundException, ForbiddenException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto } from './dto/job-position.dto';
+import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto } from './dto/job-position.dto';
 import { includeJobPosition, JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
@@ -265,7 +265,7 @@ export class JobPositionService {
       );
     }}
 
-  async findAllPublic(): Promise<Array<any>> {
+  async findAllPublic(): Promise<Array<PublicJobPositionResponseDto>> {
     try {
     const jobPositions = await this.databaseService.jobPosition.findMany({
       where: {
@@ -283,6 +283,9 @@ export class JobPositionService {
       title: jp.title,
       description: jp.description,
       companyName: jp.company?.name || "Unknown Company",
+      companyDescription: jp.company?.description,
+      createdAt: jp.createdAt,
+      customQuestions: jp.customQuestions as any,
     }));
   
     } catch (error) {
@@ -293,4 +296,52 @@ export class JobPositionService {
         `Failed to find all public: ${error.message}`,
       );
     }}
+
+  async findOnePublic(uid: string): Promise<PublicJobPositionResponseDto> {
+    try {
+      const jobPosition = await this.databaseService.jobPosition.findFirst({
+        where: {
+          uid,
+          status: "OPEN",
+        },
+        include: {
+          company: true,
+          stages: {
+            orderBy: {
+              position: 'asc',
+            },
+          },
+        },
+      });
+
+      if (\!jobPosition) {
+        throw new NotFoundException(\);
+      }
+
+      return {
+        uid: jobPosition.uid,
+        title: jobPosition.title,
+        description: jobPosition.description,
+        companyName: jobPosition.company?.name || "Unknown Company",
+        companyDescription: jobPosition.company?.description,
+        createdAt: jobPosition.createdAt,
+        customQuestions: jobPosition.customQuestions as any,
+        stages: jobPosition.stages.map(stage => ({
+          uid: stage.uid,
+          title: stage.title,
+          type: stage.type,
+          description: stage.description,
+          estimatedTime: stage.estimatedTime,
+          position: stage.position,
+        })),
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        \,
+      );
+    }}
+
 }

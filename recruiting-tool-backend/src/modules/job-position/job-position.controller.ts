@@ -4,7 +4,7 @@ import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { JobPositionService } from './job-position.service';
 import { User } from '@prisma/client';
-import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto } from './dto/job-position.dto';
+import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto } from './dto/job-position.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 
@@ -21,6 +21,20 @@ export class JobPositionController {
   })
   findAllPublic() {
     return this.jobPositionService.findAllPublic();
+  }
+
+  @Get('public/:uid')
+  @ApiOperation({ summary: 'Get single job position details (Public - No auth required)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns job position details',
+    type: PublicJobPositionResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true })
+  findOnePublic(@Param('uid') uid: string) {
+    return this.jobPositionService.findOnePublic(uid);
+  }
+
   }
 
   @Auth(['HR', 'ADMIN'])

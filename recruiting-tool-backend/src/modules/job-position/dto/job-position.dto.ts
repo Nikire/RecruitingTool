@@ -130,4 +130,17 @@ export class PublicJobPositionResponseDto {
 
   @ApiProperty({ description: "The company name", example: "Tech Corp" })
   companyName: string;
+
+  @ApiProperty({ description: "The company description", example: "A leading tech company", required: false })
+  companyDescription?: string;
+
+  @ApiProperty({ description: "When the job position was created", example: "2025-01-15T10:30:00Z" })
+  createdAt: Date;
+
+  @ApiProperty({ description: "Custom screening questions for this job position", type: [CustomQuestionDto], required: false })
+  @IsOptional()
+  customQuestions?: CustomQuestionDto[];
+
+  @ApiProperty({ description: "The stages of the job position", type: [StageResponseDto], required: false })
+  stages?: StageResponseDto[];
 }
