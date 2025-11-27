@@ -307,15 +307,21 @@ export class JobPositionService {
         include: {
           company: true,
           stages: {
+            where: {
+              hiringProcessId: null,
+            },
             orderBy: {
               position: 'asc',
+            },
+            include: {
+              hiringProcess: true,
             },
           },
         },
       });
 
-      if (\!jobPosition) {
-        throw new NotFoundException(\);
+      if (!jobPosition) {
+        throw new NotFoundException(`Job position with UID ${uid} not found or is not open`);
       }
 
       return {
@@ -333,6 +339,9 @@ export class JobPositionService {
           description: stage.description,
           estimatedTime: stage.estimatedTime,
           position: stage.position,
+          status: stage.status,
+          jobPositionUid: stage.jobPositionId ? jobPosition.uid : undefined,
+          hiringProcessUid: stage.hiringProcess?.uid,
         })),
       };
     } catch (error) {
@@ -340,7 +349,7 @@ export class JobPositionService {
         throw error;
       }
       throw new InternalServerErrorException(
-        \,
+        `Failed to find one public: ${error.message}`,
       );
     }}
 

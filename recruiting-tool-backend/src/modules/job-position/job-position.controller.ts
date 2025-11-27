@@ -35,8 +35,6 @@ export class JobPositionController {
     return this.jobPositionService.findOnePublic(uid);
   }
 
-  }
-
   @Auth(['HR', 'ADMIN'])
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({

@@ -105,7 +105,9 @@ api.interceptors.response.use(
 					{ headers: { 'Content-Type': 'application/json' } }
 				);
 
-				const { accessToken, refreshToken: newRefreshToken } = response.data;
+				// Handle both normalized (response.data.data) and non-normalized (response.data) responses
+			const responseData = response.data.data || response.data;
+			const { accessToken, refreshToken: newRefreshToken } = responseData;
 
 				// Validate new tokens before storing
 				if (!accessToken || !isValidToken(accessToken)) {
