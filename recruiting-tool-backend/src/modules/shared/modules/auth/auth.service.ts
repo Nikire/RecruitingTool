@@ -63,7 +63,7 @@ export class AuthService {
     }
 
     // Generate access and refresh tokens
-    const { accessToken, refreshToken } = await this.generateTokens(foundUser.id, foundUser.email, foundUser.roles, foundUser.companyUid);
+    const { accessToken, refreshToken } = await this.generateTokens(foundUser.id, foundUser.email, foundUser.roles, foundUser.companyId);
 
     // Update last login time
     await this.usersService.updateLastLogin(foundUser.id);
@@ -110,7 +110,7 @@ export class AuthService {
     userId: number,
     email: string,
     roles: any[],
-    companyUid: string | null,
+    companyId: number | null,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     // Create minimal JWT payload for access token
     const payload = {
@@ -118,7 +118,7 @@ export class AuthService {
       id: userId,
       email,
       roles,
-      companyUid,
+      companyId,
     };
 
     // Generate short-lived access token
@@ -183,7 +183,7 @@ export class AuthService {
       storedToken.userId,
       storedToken.user.email,
       storedToken.user.roles,
-      storedToken.user.companyUid,
+      storedToken.user.companyId,
     );
 
     // Revoke old refresh token and mark it as replaced (token rotation)

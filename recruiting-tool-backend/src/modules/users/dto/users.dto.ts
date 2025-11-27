@@ -161,8 +161,9 @@ export class UserWithPasswordResponseDto extends UserResponseDto {
   })
   password: string;
 
-  // Internal ID (not exposed in API, used internally only)
+  // Internal fields (not exposed in API, used internally only)
   id?: number;
+  companyId?: number;
 }
 
 export class CreateUserInternalDto extends CreateUserDto {
