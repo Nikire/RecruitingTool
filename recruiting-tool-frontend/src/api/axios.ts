@@ -86,8 +86,10 @@ api.interceptors.response.use(
 
 			const refreshToken = localStorage.getItem('refreshToken');
 
-			if (!refreshToken) {
-				// No refresh token available, logout
+			// Validate refresh token before using it
+			if (!refreshToken || !isValidToken(refreshToken)) {
+				// Invalid or missing refresh token, logout
+				console.warn('[AUTH] Invalid or missing refresh token, clearing auth state');
 				isRefreshing = false;
 				localStorage.removeItem('authToken');
 				localStorage.removeItem('refreshToken');
@@ -104,6 +106,17 @@ api.interceptors.response.use(
 				);
 
 				const { accessToken, refreshToken: newRefreshToken } = response.data;
+
+				// Validate new tokens before storing
+				if (!accessToken || !isValidToken(accessToken)) {
+				console.error('[AUTH] Invalid access token received from refresh endpoint');
+				throw new Error('Invalid access token received');
+				}
+
+				if (!newRefreshToken || !isValidToken(newRefreshToken)) {
+				console.error('[AUTH] Invalid refresh token received from refresh endpoint');
+				throw new Error('Invalid refresh token received');
+				}
 
 				// Store new tokens
 				localStorage.setItem('authToken', accessToken);
