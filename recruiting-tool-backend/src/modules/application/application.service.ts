@@ -139,7 +139,7 @@ export class ApplicationService {
 
   async findAll(filterDto: ApplicationFilterDto, user: User): Promise<ApplicationResponseDto[]> {
     try {
-    const where: any = {};
+    const where: any = { deletedAt: null };
 
     if (filterDto.jobPositionUid) {
       const jobPosition = await this.databaseService.jobPosition.findUnique({
@@ -186,8 +186,8 @@ export class ApplicationService {
 
   async findOne(uid: string, user?: User): Promise<ApplicationResponseDto> {
     try {
-    const application = await this.databaseService.application.findUnique({
-      where: { uid },
+    const application = await this.databaseService.application.findFirst({
+      where: { uid, deletedAt: null },
       include: includeApplication,
     });
 
@@ -316,15 +316,17 @@ export class ApplicationService {
       throw new EntityNotFoundException('Application', uid);
     }
 
-    // Verify company access before delete (through job position)
+    // Verify company access before soft delete (through job position)
     verifyCompanyAccess(user, application.jobPosition.companyId);
 
-    await this.databaseService.application.delete({
+    // Soft delete: Set deletedAt instead of hard delete
+    await this.databaseService.application.update({
       where: { uid },
+      data: { deletedAt: new Date() },
     });
 
-    return { message: 'Application successfully deleted' };
-  
+    return { message: 'Application soft deleted successfully' };
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -337,8 +339,8 @@ export class ApplicationService {
   async acceptApplication(applicationUid: string, user: User): Promise<ApplicationResponseDto> {
     try {
     // Fetch the application with related data
-    const application = await this.databaseService.application.findUnique({
-      where: { uid: applicationUid },
+    const application = await this.databaseService.application.findFirst({
+      where: { uid: applicationUid, deletedAt: null },
       include: {
         jobPosition: { include: { stages: { orderBy: { position: 'asc' } }, company: true } },
       },

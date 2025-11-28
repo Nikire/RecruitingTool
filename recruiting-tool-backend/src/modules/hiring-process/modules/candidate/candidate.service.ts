@@ -218,8 +218,8 @@ export class CandidateService {
 
   async findOne(uid: string, user?: User): Promise<CandidateResponseDto> {
     try {
-    const candidate = await this.databaseService.candidate.findUnique({
-      where: { uid },
+    const candidate = await this.databaseService.candidate.findFirst({
+      where: { uid, deletedAt: null },
       include: { hiringProcesses: true },
     });
 
@@ -264,6 +264,9 @@ export class CandidateService {
           ],
         }
       : {};
+
+    // Exclude soft-deleted records
+    where.deletedAt = null;
 
     // Add source filter if provided
     if (source) {
@@ -347,7 +350,7 @@ export class CandidateService {
 
   async findAll(user: User): Promise<Array<CandidateResponseDto>> {
     try {
-    const where: any = {};
+    const where: any = { deletedAt: null };
 
     // Add company filter for HR and USER roles (filter by hiring processes company)
     const userCompanyId = getUserCompanyId(user);
@@ -423,7 +426,7 @@ export class CandidateService {
       throw new EntityNotFoundException('Candidate', uid);
     }
 
-    // Verify company access before delete (through hiring processes)
+    // Verify company access before soft delete (through hiring processes)
     const existingCandidate = await this.databaseService.candidate.findUnique({
       where: { uid },
       include: { hiringProcesses: true },
@@ -444,10 +447,14 @@ export class CandidateService {
       }
     }
 
-    const candidate = await this.databaseService.candidate.delete({ where: { uid } });
+    // Soft delete: Set deletedAt instead of hard delete
+    await this.databaseService.candidate.update({
+      where: { uid },
+      data: { deletedAt: new Date() },
+    });
 
-    return { message: `Candidate deleted successfully` };
-  
+    return { message: `Candidate soft deleted successfully` };
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -457,12 +464,45 @@ export class CandidateService {
       );
     }}
 
+  /**
+   * GDPR Compliance: Permanently delete candidate data (hard delete)
+   * Only accessible by SUPER_ADMIN for "right to be forgotten" requests
+   */
+  async purge(uid: string): Promise<MessageResponseDto> {
+    try {
+      if (!uid) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
+
+      const existingCandidate = await this.databaseService.candidate.findUnique({
+        where: { uid },
+      });
+
+      if (!existingCandidate) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
+
+      // Hard delete: Permanently remove candidate from database
+      await this.databaseService.candidate.delete({ where: { uid } });
+
+      return { message: `Candidate permanently deleted (GDPR purge)` };
+
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(
+        `Failed to purge: ${error.message}`,
+      );
+    }
+  }
+
   // Candidate Notes methods
   async createNote(createNoteDto: CreateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
     try {
     // Find candidate by UID to get the numeric ID
-    const candidate = await this.databaseService.candidate.findUnique({
-      where: { uid: createNoteDto.candidateUid },
+    const candidate = await this.databaseService.candidate.findFirst({
+      where: { uid: createNoteDto.candidateUid, deletedAt: null },
     });
 
     if (!candidate) {
@@ -502,8 +542,8 @@ export class CandidateService {
 
   async findNotesByCandidateUid(candidateUid: string): Promise<CandidateNoteResponseDto[]> {
     try {
-    const candidate = await this.databaseService.candidate.findUnique({
-      where: { uid: candidateUid },
+    const candidate = await this.databaseService.candidate.findFirst({
+      where: { uid: candidateUid, deletedAt: null },
     });
 
     if (!candidate) {
@@ -624,8 +664,8 @@ export class CandidateService {
   // Candidate Journey Tracking
   async getCandidateJourney(candidateUid: string, user?: User): Promise<CandidateJourneyResponseDto[]> {
     try {
-      const candidate = await this.databaseService.candidate.findUnique({
-        where: { uid: candidateUid },
+      const candidate = await this.databaseService.candidate.findFirst({
+        where: { uid: candidateUid, deletedAt: null },
         include: {
           hiringProcesses: {
             include: {

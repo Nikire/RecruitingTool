@@ -78,6 +78,7 @@ model Candidate {
   source          ApplicationSource?  @default(DIRECT_APPLY)
   sourceDetails   String?
   sourceUrl       String?
+  deletedAt       DateTime?
   hiringProcesses HiringProcess[]     @relation("HiringProcessCandidate")
   files           FileUpload[]        @relation("CandidateFiles")
   notes           CandidateNote[]     @relation("CandidateNotes")
@@ -89,6 +90,7 @@ model Candidate {
 
   @@index([email])
   @@index([source])
+  @@index([deletedAt])
   @@map("Candidate")
 }
 
@@ -99,7 +101,7 @@ model CandidateNote {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   candidateId Int
-  candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: SetNull)
   authorId    Int
   author      User      @relation("CandidateNoteAuthor", fields: [authorId], references: [id])
 
@@ -136,6 +138,7 @@ model JobPosition {
   title            String
   description      String?
   customQuestions  Json?             @default("[]")
+  deletedAt        DateTime?
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   createdById      Int
@@ -153,6 +156,7 @@ model JobPosition {
   @@index([companyId])
   @@index([createdById])
   @@index([companyId, status])
+  @@index([deletedAt])
 }
 
 model HiringProcess {
@@ -163,9 +167,9 @@ model HiringProcess {
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
   candidateId   Int?
-  candidate     Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id], onDelete: Restrict)
+  candidate     Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id], onDelete: SetNull)
   stages        Stage[]
-  jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
+  jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
   jobPositionId Int
   companyId     Int
   company       Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
@@ -204,7 +208,7 @@ model Stage {
   hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
   hiringProcessId Int?
   position        Int
-  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
+  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
   jobPositionId   Int?
   estimatedTime   Int?
   interviews      Interview[]    @relation("StageInterviews")
@@ -259,7 +263,7 @@ model FileUpload {
   uploadedById       Int
   uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id])
   candidateId        Int?
-  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: SetNull)
   applicationResumes Application[] @relation("ApplicationResume")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
@@ -281,6 +285,7 @@ model Application {
   coverLetter    String?           @db.Text
   customAnswers  Json?             @default("{}")
   status         ApplicationStatus @default(PENDING)
+  deletedAt      DateTime?
   appliedAt      DateTime          @default(now())
   reviewedAt     DateTime?
   reviewedById   Int?
@@ -295,6 +300,7 @@ model Application {
   @@index([applicantEmail])
   @@index([reviewedById])
   @@index([jobPositionId, status])
+  @@index([deletedAt])
   @@map("Application")
 }
 
@@ -353,6 +359,7 @@ model Interview {
   scheduledTime         String?
   duration              Int?
   status                InterviewStatus         @default(PENDING)
+  deletedAt             DateTime?
   meetingLink           String?                 @db.Text
   location              String?
   notes                 String?                 @db.Text
@@ -374,6 +381,7 @@ model Interview {
   @@index([scheduledById])
   @@index([status])
   @@index([scheduledDate])
+  @@index([deletedAt])
 }
 
 model InterviewReschedule {
@@ -632,7 +640,7 @@ model StageTimeLog {
   stageId     Int
   stage       Stage     @relation("StageTimeLogs", fields: [stageId], references: [id], onDelete: Cascade)
   candidateId Int
-  candidate   Candidate @relation("CandidateStageTimeLogs", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate   Candidate @relation("CandidateStageTimeLogs", fields: [candidateId], references: [id], onDelete: SetNull)
   enteredAt   DateTime  @default(now())
   exitedAt    DateTime?
   duration    Int?
@@ -649,7 +657,7 @@ model CandidateScore {
   id              Int         @id @default(autoincrement())
   uid             String      @unique @default(uuid()) @db.Uuid
   candidateId     Int
-  candidate       Candidate   @relation("CandidateScores", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate       Candidate   @relation("CandidateScores", fields: [candidateId], references: [id], onDelete: SetNull)
   jobPositionId   Int
   jobPosition     JobPosition @relation("JobPositionScores", fields: [jobPositionId], references: [id], onDelete: Cascade)
   overallScore    Float
@@ -716,7 +724,7 @@ model CandidateActivity {
   id          Int                   @id @default(autoincrement())
   uid         String                @unique @default(uuid()) @db.Uuid
   candidateId Int
-  candidate   Candidate             @relation("CandidateActivities", fields: [candidateId], references: [id], onDelete: Cascade)
+  candidate   Candidate             @relation("CandidateActivities", fields: [candidateId], references: [id], onDelete: SetNull)
   type        CandidateActivityType
   description String
   metadata    Json?

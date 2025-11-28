@@ -54,7 +54,8 @@ CREATE INDEX IF NOT EXISTS "InterviewBookingToken_uid_idx" ON "InterviewBookingT
 CREATE INDEX IF NOT EXISTS "Profile_uid_idx" ON "Profile"("uid");
 
 -- CreateIndex
-CREATE INDEX IF NOT EXISTS "UserActivityLog_uid_idx" ON "UserActivityLog"("uid");
+-- CREATE INDEX IF NOT EXISTS "UserActivityLog_uid_idx" ON "UserActivityLog"("uid");
+-- Note: UserActivityLog table does not exist yet, commenting out to prevent migration failure
 
 -- CreateIndex
 CREATE INDEX IF NOT EXISTS "ScorecardTemplate_uid_idx" ON "ScorecardTemplate"("uid");

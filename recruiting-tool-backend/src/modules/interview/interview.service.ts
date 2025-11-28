@@ -171,8 +171,8 @@ export class InterviewService {
   }
 
   async findOne(uid: string): Promise<InterviewResponseDto> {
-    const interview = await this.databaseService.interview.findUnique({
-      where: { uid },
+    const interview = await this.databaseService.interview.findFirst({
+      where: { uid, deletedAt: null },
       include: {
         scheduledBy: true,
         stage: true,
@@ -201,7 +201,7 @@ export class InterviewService {
     }
 
     const interviews = await this.databaseService.interview.findMany({
-      where: { stageId: stage.id },
+      where: { stageId: stage.id, deletedAt: null },
       include: {
         scheduledBy: true,
         stage: true,
@@ -454,11 +454,13 @@ export class InterviewService {
       throw new NotFoundException(`Interview with UID ${uid} not found`);
     }
 
-    await this.databaseService.interview.delete({
+    // Soft delete: Set deletedAt instead of hard delete
+    await this.databaseService.interview.update({
       where: { uid },
+      data: { deletedAt: new Date() },
     });
 
-    return { message: `Interview ${uid} deleted successfully` };
+    return { message: `Interview soft deleted successfully` };
   }
 
   async reschedule(uid: string, rescheduleDto: RescheduleInterviewDto, userUid: string): Promise<InterviewResponseDto> {

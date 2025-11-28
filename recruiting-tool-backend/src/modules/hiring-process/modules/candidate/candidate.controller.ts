@@ -115,15 +115,31 @@ export class CandidateController {
   }
 
   @Delete(':uid')
-  @ApiOperation({ summary: 'Delete a candidate by UID' })
+  @ApiOperation({ summary: 'Soft delete a candidate by UID' })
   @ApiResponse({
     status: 200,
-    description: 'The candidate has been successfully deleted.',
+    description: 'The candidate has been soft deleted (can be restored).',
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
   remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<MessageResponseDto> {
     return this.candidateService.remove(uid, currentUser);
+  }
+
+  @Delete(':uid/purge')
+  @Auth(['SUPER_ADMIN'])
+  @ApiOperation({
+    summary: 'GDPR Purge - Permanently delete candidate data (SUPER_ADMIN only)',
+    description: 'Hard deletes a candidate and all associated data. This operation is irreversible and should only be used for GDPR "right to be forgotten" requests.'
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The candidate has been permanently deleted from the database.',
+    type: MessageResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate to purge' })
+  purge(@Param('uid') uid: string): Promise<MessageResponseDto> {
+    return this.candidateService.purge(uid);
   }
 
   // Candidate Notes endpoints

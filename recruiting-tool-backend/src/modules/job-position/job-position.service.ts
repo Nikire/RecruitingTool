@@ -23,10 +23,10 @@ export class JobPositionService {
     try {
     const jobPositions = await this.databaseService.jobPosition.findMany({
       include: includeJobPosition,
-      where,
+      where: { ...where, deletedAt: null }, // Exclude soft-deleted records
     });
     return jobPositions.map((jp) => JobPositionOneMapper(jp));
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -47,6 +47,9 @@ export class JobPositionService {
           OR: [{ title: { contains: search, mode: 'insensitive' as const } }],
         }
       : {};
+
+    // Exclude soft-deleted records
+    where.deletedAt = null;
 
     // Add company filter for HR and USER roles
     const userCompanyId = getUserCompanyId(user);
@@ -98,7 +101,7 @@ export class JobPositionService {
 
   async findAll(user: User): Promise<Array<JobPositionResponseDto>> {
     try {
-    const where: any = {};
+    const where: any = { deletedAt: null }; // Exclude soft-deleted records
 
     // Add company filter for HR and USER roles
     const userCompanyId = getUserCompanyId(user);
@@ -118,7 +121,7 @@ export class JobPositionService {
       },
     });
     return jobPositions.map((jp) => JobPositionOneMapper(jp));
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -130,8 +133,8 @@ export class JobPositionService {
 
   async findOne(uid: string, user?: User): Promise<JobPositionResponseDto> {
     try {
-    const jobPosition = await this.databaseService.jobPosition.findUnique({
-      where: { uid },
+    const jobPosition = await this.databaseService.jobPosition.findFirst({
+      where: { uid, deletedAt: null }, // Exclude soft-deleted records
       include: includeJobPosition,
     });
 
@@ -145,7 +148,7 @@ export class JobPositionService {
     }
 
     return JobPositionOneMapper(jobPosition);
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -239,7 +242,7 @@ export class JobPositionService {
 
   async remove(uid: string, user: User): Promise<MessageResponseDto> {
     try {
-    // Verify company access before delete
+    // Verify company access before soft delete
     const existingJobPosition = await this.databaseService.jobPosition.findUnique({
       where: { uid },
     });
@@ -250,12 +253,14 @@ export class JobPositionService {
 
     verifyCompanyAccess(user, existingJobPosition.companyId);
 
-    const jobPosition = await this.databaseService.jobPosition.delete({
+    // Soft delete: Set deletedAt instead of hard delete
+    await this.databaseService.jobPosition.update({
       where: { uid },
+      data: { deletedAt: new Date() },
     });
 
-    return { message: `Job position deleted successfully` };
-  
+    return { message: `Job position soft deleted successfully` };
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -270,6 +275,7 @@ export class JobPositionService {
     const jobPositions = await this.databaseService.jobPosition.findMany({
       where: {
         status: "OPEN",
+        deletedAt: null, // Exclude soft-deleted records
       },
       include: {
         company: true,
@@ -287,7 +293,7 @@ export class JobPositionService {
       createdAt: jp.createdAt,
       customQuestions: jp.customQuestions as any,
     }));
-  
+
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -303,6 +309,7 @@ export class JobPositionService {
         where: {
           uid,
           status: "OPEN",
+          deletedAt: null, // Exclude soft-deleted records
         },
         include: {
           company: true,
