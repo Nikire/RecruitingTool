@@ -117,9 +117,7 @@ const UserActivityTimeline: React.FC<UserActivityTimelineProps> = ({userUid}) =>
 							}}
 						>
 							<Typography variant="h6" component="span" sx={{fontSize: '1rem'}}>
-								{t(`users.activity_${activity.action.toLowerCase()}`, {
-									defaultValue: activity.action,
-								})}
+								{t(`users.activity_${activity.action.toLowerCase()}`)}
 							</Typography>
 							{activity.details && (
 								<Typography variant="body2" color="textSecondary" sx={{mt: 1}}>

@@ -162,7 +162,7 @@ const AnalyticsPage: React.FC = () => {
                   )
                 }
               >
-                {t('common.refresh', { defaultValue: 'Refresh' })}
+                {t('common.refresh')}
               </Button>
             </Box>
           </Box>

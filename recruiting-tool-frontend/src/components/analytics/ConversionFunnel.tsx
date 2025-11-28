@@ -183,9 +183,7 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
         }}
       >
         <Typography variant="caption" color="text.secondary">
-          {t('analytics.funnel_summary', {
-            defaultValue: 'Overall conversion rate from application to hire',
-          })}
+          {t('analytics.funnel_summary')}
         </Typography>
       </Box>
     </Paper>
