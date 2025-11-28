@@ -189,6 +189,13 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     }
 
     if (target.includes('candidateId') && target.includes('jobPositionId')) {
+      // Check if this is a HiringProcess constraint or CandidateScore constraint
+      const constraintName = exception.meta?.constraint_name as string | undefined;
+
+      if (constraintName && constraintName.includes('HiringProcess')) {
+        return 'This candidate has already applied to this job position.';
+      }
+
       return 'A score already exists for this candidate and job position combination.';
     }
 

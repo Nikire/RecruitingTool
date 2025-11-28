@@ -170,6 +170,7 @@ model HiringProcess {
   companyId     Int
   company       Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
+  @@unique([candidateId, jobPositionId])
   @@index([status])
   @@index([jobPositionId])
   @@index([candidateId])
@@ -514,6 +515,7 @@ model ScorecardTemplate {
 
   @@index([companyId])
   @@index([isActive])
+  @@index([uid])
 }
 
 model ScorecardCategory {
@@ -528,6 +530,7 @@ model ScorecardCategory {
   createdAt  DateTime             @default(now())
 
   @@index([templateId])
+  @@index([uid])
 }
 
 model ScorecardCriterion {
@@ -542,6 +545,7 @@ model ScorecardCriterion {
   createdAt   DateTime          @default(now())
 
   @@index([categoryId])
+  @@index([uid])
 }
 
 model Scorecard {
@@ -563,6 +567,7 @@ model Scorecard {
   @@index([templateId])
   @@index([interviewId])
   @@index([evaluatorId])
+  @@index([uid])
 }
 
 model ScorecardScore {
@@ -593,6 +598,7 @@ model AIQuota {
   @@unique([companyId, quotaType])
   @@index([companyId])
   @@index([quotaType])
+  @@index([uid])
 }
 
 enum QuotaType {
@@ -617,6 +623,7 @@ model AIUsageLog {
   @@index([userId])
   @@index([operation])
   @@index([createdAt])
+  @@index([uid])
 }
 
 model StageTimeLog {
@@ -635,6 +642,7 @@ model StageTimeLog {
   @@index([stageId])
   @@index([candidateId])
   @@index([enteredAt])
+  @@index([uid])
 }
 
 model CandidateScore {
@@ -657,6 +665,7 @@ model CandidateScore {
   @@index([jobPositionId])
   @@index([overallScore])
   @@index([candidateId])
+  @@index([uid])
 }
 
 model BatchScoringJob {
@@ -679,6 +688,7 @@ model BatchScoringJob {
   @@index([status])
   @@index([jobPositionId])
   @@index([priority])
+  @@index([uid])
 }
 
 enum BatchStatus {
@@ -718,6 +728,7 @@ model CandidateActivity {
   @@index([type])
   @@index([createdAt])
   @@index([userId])
+  @@index([uid])
 }
 
 model RefreshToken {
@@ -734,4 +745,5 @@ model RefreshToken {
   @@index([userId])
   @@index([token])
   @@index([expiresAt])
+  @@index([uid])
 }
