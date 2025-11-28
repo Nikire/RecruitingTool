@@ -99,15 +99,22 @@ api.interceptors.response.use(
 
 			try {
 				// Attempt to refresh the token
+				// Note: We use raw axios here instead of 'api' to avoid circular dependency
+				// and because we can't use the Authorization header during token refresh
 				const response = await axios.post(
 					`${import.meta.env.VITE_API_URL}/auth/refresh`,
 					{ refreshToken },
-					{ headers: { 'Content-Type': 'application/json' } }
+					{
+						headers: { 'Content-Type': 'application/json' },
+						withCredentials: true
+					}
 				);
 
-				// Handle both normalized (response.data.data) and non-normalized (response.data) responses
-			const responseData = response.data.data || response.data;
-			const { accessToken, refreshToken: newRefreshToken } = responseData;
+				// Response normalizer doesn't apply to raw axios calls
+				// Backend returns: { data: { accessToken, refreshToken }, success, statusCode }
+				// So we need to unwrap manually here
+				const responseData = response.data.data || response.data;
+				const { accessToken, refreshToken: newRefreshToken } = responseData;
 
 				// Validate new tokens before storing
 				if (!accessToken || !isValidToken(accessToken)) {
