@@ -24,6 +24,22 @@ export interface FileListParams {
 }
 
 /**
+ * Upload a resume file without authentication (for job applications)
+ */
+export const uploadResumePublic = async (file: File): Promise<FileUploadResponse> => {
+	const formData = new FormData();
+	formData.append('file', file);
+
+	const response = await axios.post<FileUploadResponse>('/files/upload-resume-public', formData, {
+		headers: {
+			'Content-Type': 'multipart/form-data',
+		},
+	});
+
+	return response.data;
+};
+
+/**
  * Upload a document file (optionally associate with a candidate)
  */
 export const uploadFile = async ({ file, candidateUid }: UploadFileParams): Promise<FileUploadResponse> => {

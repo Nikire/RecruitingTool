@@ -176,7 +176,9 @@
   "careers": {
     "title": "Open Positions",
     "subtitle": "Explore our current job openings and apply today",
-    "search_placeholder": "Search jobs..."
+    "search_placeholder": "Search jobs...",
+    "posted": "Posted",
+    "posted_date": "Posted Date"
   },
   "job_positions": {
     "title": "Job Positions",

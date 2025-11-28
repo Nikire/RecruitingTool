@@ -22,12 +22,16 @@ export interface PublicJobPosition {
 	title: string;
 	description?: string;
 	companyName?: string;
-	stages: Array<{
+	companyDescription?: string;
+	customQuestions?: Array<CustomQuestion>;
+	stages?: Array<{
 		uid: string;
 		title: string;
 		description?: string;
 		type: string;
 		estimatedTime?: number;
+		position: number;
+		status?: string;
 	}>;
 	createdAt: Date | string;
 }

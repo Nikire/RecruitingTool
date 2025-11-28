@@ -14,6 +14,33 @@ import { FileValidationPipe } from './pipes/file-validation.pipe';
 export class FilesController {
   constructor(private readonly filesService: FilesService) {}
 
+  @Post('upload-resume-public')
+  @UseInterceptors(FileInterceptor('file'))
+  @ApiOperation({
+    summary: 'Upload a resume file (Public - No auth required)',
+    description: 'Upload a resume file for job application (PDF, DOC, DOCX). Max size: 10MB. No authentication required.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Resume file (PDF, DOC, DOCX) - Max 10MB',
+        },
+      },
+    },
+  })
+  async uploadResumePublic(
+    @UploadedFile(new FileValidationPipe('document'))
+    file: Express.Multer.File,
+  ): Promise<FileUploadResponseDto> {
+    // For public uploads, use a system identifier since there's no logged-in user
+    return this.filesService.uploadFile(file, 'public-applicant');
+  }
+
   @Post('upload')
   @Auth([RolesType.USER])
   @UseInterceptors(FileInterceptor('file'))

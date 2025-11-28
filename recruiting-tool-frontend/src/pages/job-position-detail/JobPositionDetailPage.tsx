@@ -133,19 +133,31 @@ const JobPositionDetailPage: React.FC = () => {
 							{jobPosition.companyName || t('common.n_a')}
 						</Typography>
 					</Box>
-					<Box>
-						<Typography variant="body2" color="textSecondary">
-							{t('job_position_detail.created_by_hr')}
-						</Typography>
-						<Typography variant="body1">
-							{jobPosition.createdBy?.name || t('job_position_detail.unknown')}
-						</Typography>
-						{jobPosition.createdBy?.email && (
-							<Typography variant="caption" color="textSecondary">
-								{jobPosition.createdBy.email}
+					{jobPosition.createdAt && (
+						<Box>
+							<Typography variant="body2" color="textSecondary">
+								{t('careers.posted_date')}
 							</Typography>
-						)}
-					</Box>
+							<Typography variant="body1">
+								{new Date(jobPosition.createdAt).toLocaleDateString()}
+							</Typography>
+						</Box>
+					)}
+					{canManage && jobPosition.createdBy && (
+						<Box>
+							<Typography variant="body2" color="textSecondary">
+								{t('job_position_detail.created_by_hr')}
+							</Typography>
+							<Typography variant="body1">
+								{jobPosition.createdBy.name}
+							</Typography>
+							{jobPosition.createdBy.email && (
+								<Typography variant="caption" color="textSecondary">
+									{jobPosition.createdBy.email}
+								</Typography>
+							)}
+						</Box>
+					)}
 					<Box>
 						<Typography variant="body2" color="textSecondary">
 							{t('job_position_detail.total_stages')}

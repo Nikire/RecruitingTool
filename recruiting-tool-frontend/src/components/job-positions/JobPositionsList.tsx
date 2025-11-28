@@ -93,6 +93,12 @@ const JobPositionCardView: React.FC<{
 				</Typography>
 			)}
 
+			{jobPosition.createdAt && (
+				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 1}}>
+					{t('careers.posted')}: {new Date(jobPosition.createdAt).toLocaleDateString()}
+				</Typography>
+			)}
+
 			{jobPosition.createdBy && (
 				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 2}}>
 					{t('job_positions.posted_by')}: {jobPosition.createdBy.name}
@@ -293,7 +299,8 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions.company')}</strong></TableCell>
 								<TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>
 								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>
+								{!publicMode && <TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>}
+								<TableCell sx={{minWidth: 120}}><strong>{t('careers.posted_date')}</strong></TableCell>
 								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
@@ -312,19 +319,24 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 										/>
 									</TableCell>
 									<TableCell>{jobPosition.stages?.length || 0}</TableCell>
-									<TableCell sx={{maxWidth: 180}}>
-										{jobPosition.createdBy ? (
-											<>
-												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-													{jobPosition.createdBy.name}
-												</Typography>
-												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-													{jobPosition.createdBy.email}
-												</Typography>
-											</>
-										) : (
-											'N/A'
-										)}
+									{!publicMode && (
+										<TableCell sx={{maxWidth: 180}}>
+											{jobPosition.createdBy ? (
+												<>
+													<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+														{jobPosition.createdBy.name}
+													</Typography>
+													<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
+														{jobPosition.createdBy.email}
+													</Typography>
+												</>
+											) : (
+												'N/A'
+											)}
+										</TableCell>
+									)}
+									<TableCell>
+										{jobPosition.createdAt ? new Date(jobPosition.createdAt).toLocaleDateString() : 'N/A'}
 									</TableCell>
 									<TableCell>
 										<Box sx={{display: 'flex', gap: 1}}>

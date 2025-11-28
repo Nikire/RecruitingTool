@@ -176,7 +176,9 @@
   "careers": {
     "title": "Posiciones Abiertas",
     "subtitle": "Explora nuestras ofertas de trabajo actuales y aplica hoy",
-    "search_placeholder": "Buscar trabajos..."
+    "search_placeholder": "Buscar trabajos...",
+    "posted": "Publicado",
+    "posted_date": "Fecha de Publicación"
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
