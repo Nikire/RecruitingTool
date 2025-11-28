@@ -7,6 +7,7 @@ import { CandidateService } from '../hiring-process/modules/candidate/candidate.
 import { HiringProcessService } from '../hiring-process/hiring-process.service';
 import { StagesService } from '../hiring-process/modules/stages/stages.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
+import { CacheService } from '../cache/cache.service';
 import { Prisma, User } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
@@ -19,6 +20,7 @@ export class JobPositionService {
     private readonly candidateService: CandidateService,
     private readonly stagesService: StagesService,
     private readonly auditLogService: AuditLogService,
+    private readonly cacheService: CacheService,
   ) {}
 
   async find(where: Prisma.JobPositionWhereInput): Promise<Array<JobPositionResponseDto>> {
@@ -183,6 +185,9 @@ export class JobPositionService {
         await this.stagesService.bulkCreateStages(stages);
       }
 
+      // Invalidate job positions cache after creation
+      await this.cacheService.invalidatePattern('job-position');
+
       return JobPositionMapper(newJobPosition);
     } catch (error) {
       if (error instanceof HttpException) {
@@ -220,6 +225,10 @@ export class JobPositionService {
         data: updateData,
         include: includeJobPosition,
       });
+
+      // Invalidate cache for this specific job position and all job positions
+      await this.cacheService.invalidate(`job-position:${uid}`);
+      await this.cacheService.invalidatePattern('job-position');
 
       return JobPositionMapper(jobPosition);
     } catch (error) {
@@ -270,6 +279,9 @@ export class JobPositionService {
           companyId: existingJobPosition.companyId,
         },
       });
+
+      // Invalidate cache after deletion
+      await this.cacheService.invalidatePattern('job-position');
 
       return { message: `Job position soft deleted successfully` };
     } catch (error) {

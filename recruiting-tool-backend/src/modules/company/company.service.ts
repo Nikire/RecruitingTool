@@ -5,10 +5,14 @@ import { CompanyMapper, includeCompany } from './entities/company.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class CompanyService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private cacheService: CacheService,
+  ) {}
 
   async create(createCompanyDto: CreateCompanyDto): Promise<CompanyResponseDto> {
     try {
@@ -19,6 +23,9 @@ export class CompanyService {
         },
         include: includeCompany,
       });
+
+      // Invalidate companies cache after creation
+      await this.cacheService.invalidate('company');
 
       return CompanyMapper(newCompany);
     } catch (error) {
@@ -120,6 +127,10 @@ export class CompanyService {
         throw new EntityNotFoundException('Company', uid);
       }
 
+      // Invalidate cache for this specific company and all companies
+      await this.cacheService.invalidate(`company:${uid}`);
+      await this.cacheService.invalidate('company');
+
       return CompanyMapper(company);
     } catch (error) {
       if (error instanceof HttpException) {
@@ -138,6 +149,9 @@ export class CompanyService {
       if (!company) {
         throw new EntityNotFoundException('Company', uid);
       }
+
+      // Invalidate cache after deletion
+      await this.cacheService.invalidate('company');
 
       return { message: `Company deleted successfully` };
     } catch (error) {

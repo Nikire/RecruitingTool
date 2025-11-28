@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { StagesService } from './stages.service';
 import { CreateStageDto, UpdateStageDto } from './dto/stages.dto';
@@ -42,6 +43,8 @@ export class StagesController {
   }
 
   @Get(':uid')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // Cache for 5 minutes - stage templates rarely change
   @ApiOperation({ summary: 'Get a stage by UID' })
   @ApiParam({ name: 'uid', type: String, description: 'Stage UID' })
   findOne(@Param('uid') uid: string) {

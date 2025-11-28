@@ -3,11 +3,15 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { CreateEmailTemplateDto, UpdateEmailTemplateDto, EmailTemplateResponseDto } from './dto/email-template.dto';
 import { EmailTemplateMapper } from './entities/email-template.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { CacheService } from '../cache/cache.service';
 import * as Handlebars from 'handlebars';
 
 @Injectable()
 export class EmailTemplatesService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private cacheService: CacheService,
+  ) {}
 
   async create(createDto: CreateEmailTemplateDto, userId: number): Promise<EmailTemplateResponseDto> {
     let companyId: number | null = null;
@@ -48,6 +52,9 @@ export class EmailTemplatesService {
         createdBy: true,
       },
     });
+
+    // Invalidate email templates cache after creation
+    await this.cacheService.invalidate('email-templates');
 
     return EmailTemplateMapper(emailTemplate);
   }
@@ -122,6 +129,10 @@ export class EmailTemplatesService {
       },
     });
 
+    // Invalidate cache for this specific template and all templates
+    await this.cacheService.invalidate(`email-templates:${uid}`);
+    await this.cacheService.invalidate('email-templates');
+
     return EmailTemplateMapper(emailTemplate);
   }
 
@@ -138,6 +149,9 @@ export class EmailTemplatesService {
     await this.databaseService.emailTemplate.delete({
       where: { uid },
     });
+
+    // Invalidate cache after deletion
+    await this.cacheService.invalidate('email-templates');
 
     return { message: 'Email template deleted successfully' };
   }

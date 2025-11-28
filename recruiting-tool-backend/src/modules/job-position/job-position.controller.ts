@@ -1,5 +1,6 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { JobPositionService } from './job-position.service';
@@ -14,6 +15,8 @@ export class JobPositionController {
   constructor(private readonly jobPositionService: JobPositionService) {}
 
   @Get('public/all')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(600000) // Cache for 10 minutes (600 seconds * 1000ms)
   @ApiOperation({ summary: 'Get all open job positions (Public - No auth required)' })
   @ApiResponse({
     status: 200,
@@ -24,6 +27,8 @@ export class JobPositionController {
   }
 
   @Get('public/:uid')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(600000) // Cache for 10 minutes
   @ApiOperation({ summary: 'Get single job position details (Public - No auth required)' })
   @ApiResponse({
     status: 200,
@@ -73,6 +78,8 @@ export class JobPositionController {
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
   })
   @Get()
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(60000) // Cache for 1 minute (internal endpoints need fresher data)
   @ApiOperation({ summary: 'Get job position list' })
   @ApiResponse({
     status: 200,

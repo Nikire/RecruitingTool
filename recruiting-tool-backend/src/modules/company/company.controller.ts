@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors } from '@nestjs/common';
+import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto } from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
@@ -29,6 +30,8 @@ export class CompanyController {
 
   @Get()
   @Auth(['SUPER_ADMIN'])
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // Cache for 5 minutes - companies rarely change
   @ApiOperation({ summary: 'Get all companies (SUPER_ADMIN only)' })
   @ApiResponse({ status: 200, description: 'Companies retrieved successfully', type: [CompanyResponseDto] })
   findAll(): Promise<Array<CompanyResponseDto>> {
@@ -37,6 +40,8 @@ export class CompanyController {
 
   @Get(':uid')
   @Auth(['SUPER_ADMIN'])
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(300000) // Cache for 5 minutes
   @ApiOperation({ summary: 'Get a company by UID (SUPER_ADMIN only)' })
   @ApiResponse({ status: 200, description: 'Company retrieved successfully', type: CompanyResponseDto })
   findOne(@Param('uid') uid: string): Promise<CompanyResponseDto> {
