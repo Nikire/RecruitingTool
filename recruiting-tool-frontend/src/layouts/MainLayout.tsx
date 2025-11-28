@@ -1,4 +1,4 @@
-import {Container} from '@mui/material';
+import {Container, Toolbar} from '@mui/material';
 import {Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {useEffect} from 'react';
 import Navbar from '../components/navbar/Navbar';
@@ -30,6 +30,7 @@ const MainLayout = () => {
 	return (
 		<>
 			<Navbar />
+			<Toolbar /> {/* Offset spacer for fixed AppBar */}
 			<Container sx={{paddingTop: 2}} maxWidth={maxWidth}>
 				<Outlet />
 			</Container>

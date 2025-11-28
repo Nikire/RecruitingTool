@@ -1,4 +1,4 @@
-import { Box } from '@mui/material';
+import { Box, Toolbar } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
 
@@ -17,6 +17,7 @@ const LandingPageLayout = () => {
 	return (
 		<>
 			<Navbar />
+			<Toolbar /> {/* Offset spacer for fixed AppBar */}
 			<Box sx={{ width: '100%' }}>
 				<Outlet />
 			</Box>
