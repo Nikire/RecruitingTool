@@ -13,10 +13,7 @@ export class UserActivityService {
    * @param createActivityLogDto - Activity log data
    * @returns Promise<UserActivityLogResponseDto>
    */
-  async logActivity(
-    userId: number,
-    createActivityLogDto: CreateUserActivityLogDto,
-  ): Promise<UserActivityLogResponseDto> {
+  async logActivity(userId: number, createActivityLogDto: CreateUserActivityLogDto): Promise<UserActivityLogResponseDto> {
     try {
       const activityLog = await this.databaseService.userActivityLog.create({
         data: {
@@ -36,9 +33,7 @@ export class UserActivityService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to log activity: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to log activity: ${error.message}`);
     }
   }
 
@@ -71,9 +66,7 @@ export class UserActivityService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get user activity: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get user activity: ${error.message}`);
     }
   }
 

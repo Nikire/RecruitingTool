@@ -26,9 +26,7 @@ export class AnalyticsService {
    */
   private getDateRange(queryDto: DateRangeQueryDto): { startDate: Date; endDate: Date } {
     const endDate = queryDto.endDate ? new Date(queryDto.endDate) : new Date();
-    const startDate = queryDto.startDate
-      ? new Date(queryDto.startDate)
-      : new Date(new Date().setDate(endDate.getDate() - 30));
+    const startDate = queryDto.startDate ? new Date(queryDto.startDate) : new Date(new Date().setDate(endDate.getDate() - 30));
 
     return { startDate, endDate };
   }
@@ -87,8 +85,7 @@ export class AnalyticsService {
         const days = Math.floor((hp.updatedAt.getTime() - hp.createdAt.getTime()) / (1000 * 60 * 60 * 24));
         return days;
       });
-      const averageTimeToHire =
-        timeToHireValues.length > 0 ? timeToHireValues.reduce((a, b) => a + b, 0) / timeToHireValues.length : 0;
+      const averageTimeToHire = timeToHireValues.length > 0 ? timeToHireValues.reduce((a, b) => a + b, 0) / timeToHireValues.length : 0;
 
       // Calculate time to first interview
       const processesWithInterviews = hiringProcesses.filter((hp) => hp.stages.length > 0);
@@ -98,10 +95,7 @@ export class AnalyticsService {
         const days = Math.floor((firstStage.createdAt.getTime() - hp.createdAt.getTime()) / (1000 * 60 * 60 * 24));
         return days;
       });
-      const timeToFirstInterview =
-        timeToFirstInterviewValues.length > 0
-          ? timeToFirstInterviewValues.reduce((a, b) => a + b, 0) / timeToFirstInterviewValues.length
-          : 0;
+      const timeToFirstInterview = timeToFirstInterviewValues.length > 0 ? timeToFirstInterviewValues.reduce((a, b) => a + b, 0) / timeToFirstInterviewValues.length : 0;
 
       // Calculate average time per stage type
       const stagesByType: Record<string, number[]> = {};
@@ -126,10 +120,13 @@ export class AnalyticsService {
       return {
         averageTimeToHire: Math.round(averageTimeToHire * 10) / 10,
         timeToFirstInterview: Math.round(timeToFirstInterview * 10) / 10,
-        averageTimePerStage: Object.keys(averageTimePerStage).reduce((acc, key) => {
-          acc[key] = Math.round(averageTimePerStage[key] * 10) / 10;
-          return acc;
-        }, {} as Record<string, number>),
+        averageTimePerStage: Object.keys(averageTimePerStage).reduce(
+          (acc, key) => {
+            acc[key] = Math.round(averageTimePerStage[key] * 10) / 10;
+            return acc;
+          },
+          {} as Record<string, number>,
+        ),
       };
     } catch (error) {
       if (error instanceof HttpException) {
@@ -182,9 +179,7 @@ export class AnalyticsService {
 
       // Count processes that reached each stage
       const reachedScreening = hiringProcesses.filter((hp) => hp.stages.length > 0).length;
-      const reachedInterview = hiringProcesses.filter((hp) =>
-        hp.stages.some((s) => s.type === 'INTERVIEW' || s.type === 'TECHNICAL_INTERVIEW'),
-      ).length;
+      const reachedInterview = hiringProcesses.filter((hp) => hp.stages.some((s) => s.type === 'INTERVIEW' || s.type === 'TECHNICAL_INTERVIEW')).length;
       const reachedOffer = hiringProcesses.filter((hp) => hp.stages.some((s) => s.type === 'OFFER')).length;
       const hired = hiringProcesses.filter((hp) => hp.status === HiringProcessStatus.CLOSED).length;
 
@@ -391,8 +386,7 @@ export class AnalyticsService {
       // Convert to DTO array
       const result: SourceAnalyticsDto[] = Object.entries(sourceMap).map(([source, data]) => {
         const conversionRate = data.count > 0 ? (data.hiredCount / data.count) * 100 : 0;
-        const averageTimeToHire =
-          data.hiredProcesses > 0 ? data.totalTimeToHire / data.hiredProcesses : 0;
+        const averageTimeToHire = data.hiredProcesses > 0 ? data.totalTimeToHire / data.hiredProcesses : 0;
 
         return {
           source,
@@ -588,9 +582,7 @@ export class AnalyticsService {
       // Median
       const sortedTimes = [...timeToHireValues].map((v) => v.days).sort((a, b) => a - b);
       const median =
-        sortedTimes.length % 2 === 0
-          ? (sortedTimes[sortedTimes.length / 2 - 1] + sortedTimes[sortedTimes.length / 2]) / 2
-          : sortedTimes[Math.floor(sortedTimes.length / 2)];
+        sortedTimes.length % 2 === 0 ? (sortedTimes[sortedTimes.length / 2 - 1] + sortedTimes[sortedTimes.length / 2]) / 2 : sortedTimes[Math.floor(sortedTimes.length / 2)];
 
       // Fastest and slowest
       const fastest = Math.min(...sortedTimes);
@@ -715,10 +707,7 @@ export class AnalyticsService {
       const result: SourceEffectivenessDto[] = Object.entries(sourceMap).map(([source, data]) => {
         const successRate = data.totalApplications > 0 ? (data.hires / data.totalApplications) * 100 : 0;
         const averageTimeToHire = data.hiredCount > 0 ? data.totalTimeToHire / data.hiredCount : 0;
-        const averageQualityScore =
-          data.qualityScores.length > 0
-            ? data.qualityScores.reduce((sum, score) => sum + score, 0) / data.qualityScores.length
-            : undefined;
+        const averageQualityScore = data.qualityScores.length > 0 ? data.qualityScores.reduce((sum, score) => sum + score, 0) / data.qualityScores.length : undefined;
 
         return {
           source,

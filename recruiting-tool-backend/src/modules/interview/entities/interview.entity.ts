@@ -25,7 +25,7 @@ export const InterviewMapper = (interview: InterviewWithRelations): InterviewRes
     scheduledByUid: interview.scheduledBy.uid,
     scheduledByName: interview.scheduledBy.name,
     interviewers: interview.interviewers
-      ? interview.interviewers.map(interviewer => ({
+      ? interview.interviewers.map((interviewer) => ({
           userUid: interviewer.user.uid,
           userName: interviewer.user.name,
           role: interviewer.role,

@@ -12,7 +12,7 @@ export class HRScheduleService {
   async getMySchedule(userUid: string): Promise<HRScheduleResponseDto[]> {
     // Look up user to get numeric ID
     const user = await this.prisma.user.findUnique({
-      where: { uid: userUid }
+      where: { uid: userUid },
     });
 
     if (!user) {
@@ -23,16 +23,13 @@ export class HRScheduleService {
       where: { userId: user.id },
       include: {
         user: {
-          select: { uid: true }
-        }
+          select: { uid: true },
+        },
       },
-      orderBy: [
-        { dayOfWeek: 'asc' },
-        { startTime: 'asc' }
-      ]
+      orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
     });
 
-    return schedules.map(schedule => this.toResponseDto(schedule));
+    return schedules.map((schedule) => this.toResponseDto(schedule));
   }
 
   /**
@@ -40,7 +37,7 @@ export class HRScheduleService {
    */
   async getScheduleByUserUid(userUid: string): Promise<HRScheduleResponseDto[]> {
     const user = await this.prisma.user.findUnique({
-      where: { uid: userUid }
+      where: { uid: userUid },
     });
 
     if (!user) {
@@ -51,16 +48,13 @@ export class HRScheduleService {
       where: { userId: user.id },
       include: {
         user: {
-          select: { uid: true }
-        }
+          select: { uid: true },
+        },
       },
-      orderBy: [
-        { dayOfWeek: 'asc' },
-        { startTime: 'asc' }
-      ]
+      orderBy: [{ dayOfWeek: 'asc' }, { startTime: 'asc' }],
     });
 
-    return schedules.map(schedule => this.toResponseDto(schedule));
+    return schedules.map((schedule) => this.toResponseDto(schedule));
   }
 
   /**
@@ -69,7 +63,7 @@ export class HRScheduleService {
   async createScheduleSlot(userUid: string, dto: CreateHRScheduleDto): Promise<HRScheduleResponseDto> {
     // Look up user to get numeric ID
     const user = await this.prisma.user.findUnique({
-      where: { uid: userUid }
+      where: { uid: userUid },
     });
 
     if (!user) {
@@ -89,13 +83,13 @@ export class HRScheduleService {
         startTime: dto.startTime,
         endTime: dto.endTime,
         isRecurring: dto.isRecurring ?? true,
-        specificDate: dto.specificDate ? new Date(dto.specificDate) : null
+        specificDate: dto.specificDate ? new Date(dto.specificDate) : null,
       },
       include: {
         user: {
-          select: { uid: true }
-        }
-      }
+          select: { uid: true },
+        },
+      },
     });
 
     return this.toResponseDto(schedule);
@@ -107,7 +101,7 @@ export class HRScheduleService {
   async updateScheduleSlot(uid: string, userUid: string, dto: UpdateHRScheduleDto): Promise<HRScheduleResponseDto> {
     // Look up user to get numeric ID
     const user = await this.prisma.user.findUnique({
-      where: { uid: userUid }
+      where: { uid: userUid },
     });
 
     if (!user) {
@@ -118,9 +112,9 @@ export class HRScheduleService {
       where: { uid },
       include: {
         user: {
-          select: { id: true }
-        }
-      }
+          select: { id: true },
+        },
+      },
     });
 
     if (!schedule) {
@@ -145,13 +139,13 @@ export class HRScheduleService {
         ...(dto.startTime && { startTime: dto.startTime }),
         ...(dto.endTime && { endTime: dto.endTime }),
         ...(dto.isRecurring !== undefined && { isRecurring: dto.isRecurring }),
-        ...(dto.specificDate && { specificDate: new Date(dto.specificDate) })
+        ...(dto.specificDate && { specificDate: new Date(dto.specificDate) }),
       },
       include: {
         user: {
-          select: { uid: true }
-        }
-      }
+          select: { uid: true },
+        },
+      },
     });
 
     return this.toResponseDto(updatedSchedule);
@@ -163,7 +157,7 @@ export class HRScheduleService {
   async deleteScheduleSlot(uid: string, userUid: string): Promise<void> {
     // Look up user to get numeric ID
     const user = await this.prisma.user.findUnique({
-      where: { uid: userUid }
+      where: { uid: userUid },
     });
 
     if (!user) {
@@ -171,7 +165,7 @@ export class HRScheduleService {
     }
 
     const schedule = await this.prisma.hRSchedule.findUnique({
-      where: { uid }
+      where: { uid },
     });
 
     if (!schedule) {
@@ -183,7 +177,7 @@ export class HRScheduleService {
     }
 
     await this.prisma.hRSchedule.delete({
-      where: { uid }
+      where: { uid },
     });
   }
 
@@ -192,7 +186,7 @@ export class HRScheduleService {
    */
   async getAvailableSlots(userUid: string, date: string): Promise<HRScheduleResponseDto[]> {
     const user = await this.prisma.user.findUnique({
-      where: { uid: userUid }
+      where: { uid: userUid },
     });
 
     if (!user) {
@@ -210,25 +204,25 @@ export class HRScheduleService {
         OR: [
           {
             isRecurring: true,
-            dayOfWeek: dayOfWeek
+            dayOfWeek: dayOfWeek,
           },
           {
             specificDate: {
               gte: new Date(targetDate.setHours(0, 0, 0, 0)),
-              lt: new Date(targetDate.setHours(23, 59, 59, 999))
-            }
-          }
-        ]
+              lt: new Date(targetDate.setHours(23, 59, 59, 999)),
+            },
+          },
+        ],
       },
       include: {
         user: {
-          select: { uid: true }
-        }
+          select: { uid: true },
+        },
       },
-      orderBy: { startTime: 'asc' }
+      orderBy: { startTime: 'asc' },
     });
 
-    return schedules.map(schedule => this.toResponseDto(schedule));
+    return schedules.map((schedule) => this.toResponseDto(schedule));
   }
 
   /**
@@ -255,16 +249,14 @@ export class HRScheduleService {
         userId,
         dayOfWeek: dto.dayOfWeek,
         ...(dto.specificDate && {
-          specificDate: new Date(dto.specificDate)
-        })
-      }
+          specificDate: new Date(dto.specificDate),
+        }),
+      },
     });
 
     for (const existing of existingSchedules) {
       if (this.timesOverlap(dto.startTime, dto.endTime, existing.startTime, existing.endTime)) {
-        throw new BadRequestException(
-          `Time slot overlaps with existing schedule: ${existing.startTime} - ${existing.endTime}`
-        );
+        throw new BadRequestException(`Time slot overlaps with existing schedule: ${existing.startTime} - ${existing.endTime}`);
       }
     }
   }
@@ -300,7 +292,7 @@ export class HRScheduleService {
       specificDate: schedule.specificDate?.toISOString().split('T')[0],
       isAvailable: schedule.isAvailable,
       createdAt: schedule.createdAt,
-      updatedAt: schedule.updatedAt
+      updatedAt: schedule.updatedAt,
     };
   }
 }

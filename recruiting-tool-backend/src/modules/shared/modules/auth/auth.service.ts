@@ -106,12 +106,7 @@ export class AuthService {
   /**
    * Generate both access and refresh tokens for a user
    */
-  private async generateTokens(
-    userId: number,
-    email: string,
-    roles: any[],
-    companyId: number | null,
-  ): Promise<{ accessToken: string; refreshToken: string }> {
+  private async generateTokens(userId: number, email: string, roles: any[], companyId: number | null): Promise<{ accessToken: string; refreshToken: string }> {
     // Create minimal JWT payload for access token
     const payload = {
       sub: userId,

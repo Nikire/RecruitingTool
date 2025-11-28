@@ -1,9 +1,4 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpStatus,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
 
@@ -13,6 +8,7 @@ import { Prisma } from '@prisma/client';
  */
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(PrismaExceptionFilter.name);
   private readonly isProduction = process.env.NODE_ENV === 'production';
   catch(exception: Prisma.PrismaClientKnownRequestError, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -77,8 +73,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
       case 'P2014': {
         status = HttpStatus.CONFLICT;
         error = 'DependentRecordsExist';
-        message =
-          'Cannot delete this record because other records depend on it.';
+        message = 'Cannot delete this record because other records depend on it.';
         break;
       }
 
@@ -92,7 +87,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
       default: {
         // Log unknown Prisma errors for debugging
-        console.error('Unknown Prisma error:', {
+        this.logger.error('Unknown Prisma error:', {
           code: exception.code,
           message: exception.message,
           meta: exception.meta,
@@ -102,9 +97,9 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     }
 
     // Log full error details server-side (always, regardless of environment)
-    console.error(
+    this.logger.error(
       `[${new Date().toISOString()}] ${request.method} ${request.url}`,
-      {
+      JSON.stringify({
         status,
         error,
         message,
@@ -113,7 +108,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         // Log request details for debugging
         userAgent: request.headers['user-agent'],
         ip: request.ip,
-      },
+      }),
     );
 
     // Build response object
@@ -139,9 +134,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
   /**
    * Handle unique constraint violations with user-friendly messages
    */
-  private handleUniqueConstraintViolation(
-    exception: Prisma.PrismaClientKnownRequestError,
-  ): string {
+  private handleUniqueConstraintViolation(exception: Prisma.PrismaClientKnownRequestError): string {
     const target = exception.meta?.target as string[] | undefined;
 
     if (!target || target.length === 0) {
@@ -211,9 +204,7 @@ export class PrismaExceptionFilter implements ExceptionFilter {
   /**
    * Handle check constraint violations with user-friendly messages
    */
-  private handleCheckConstraintViolation(
-    exception: Prisma.PrismaClientKnownRequestError,
-  ): string {
+  private handleCheckConstraintViolation(exception: Prisma.PrismaClientKnownRequestError): string {
     const constraintMessage = exception.message;
 
     // Extract constraint name from error message

@@ -1,40 +1,12 @@
-import {
-  Controller,
-  Post,
-  Body,
-  Get,
-  Param,
-  Delete,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-  ApiTooManyRequestsResponse,
-} from '@nestjs/swagger';
+import { Controller, Post, Body, Get, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
 import { ScoringService } from './scoring.service';
 import { BatchScoringService } from './batch-scoring.service';
-import {
-  ParseResumeRequestDto,
-  ParseResumeResponseDto,
-} from './dto/parse-resume.dto';
-import {
-  ScoreCandidateDto,
-  CandidateScoreResponseDto,
-  RankedCandidatesResponseDto,
-} from './dto/candidate-scoring.dto';
-import {
-  BatchScoreRequestDto,
-  BatchScoreResponseDto,
-  BatchScoreStatusDto,
-  BatchScoreResultDto,
-} from './dto/batch-scoring.dto';
+import { ParseResumeRequestDto, ParseResumeResponseDto } from './dto/parse-resume.dto';
+import { ScoreCandidateDto, CandidateScoreResponseDto, RankedCandidatesResponseDto } from './dto/candidate-scoring.dto';
+import { BatchScoreRequestDto, BatchScoreResponseDto, BatchScoreStatusDto, BatchScoreResultDto } from './dto/batch-scoring.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
@@ -55,8 +27,7 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Parse resume using AI',
-    description:
-      'Upload a resume file URL and extract structured data using OpenAI. Supports PDF, DOCX, and TXT formats.',
+    description: 'Upload a resume file URL and extract structured data using OpenAI. Supports PDF, DOCX, and TXT formats.',
   })
   @ApiResponse({
     status: 200,
@@ -82,9 +53,7 @@ export class AiController {
     status: 500,
     description: 'Internal server error - OpenAI API error or configuration issue',
   })
-  async parseResume(
-    @Body() parseResumeDto: ParseResumeRequestDto,
-  ): Promise<ParseResumeResponseDto> {
+  async parseResume(@Body() parseResumeDto: ParseResumeRequestDto): Promise<ParseResumeResponseDto> {
     return this.aiService.parseResume(parseResumeDto.fileUrl);
   }
 
@@ -94,8 +63,7 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Score a candidate for a job position using AI',
-    description:
-      'Analyze a candidate against job requirements and generate scores for skills, experience, and education match. Includes detailed AI analysis.',
+    description: 'Analyze a candidate against job requirements and generate scores for skills, experience, and education match. Includes detailed AI analysis.',
   })
   @ApiResponse({
     status: 200,
@@ -125,21 +93,15 @@ export class AiController {
     status: 500,
     description: 'Internal server error - OpenAI API error or configuration issue',
   })
-  async scoreCandidate(
-    @Body() scoreCandidateDto: ScoreCandidateDto,
-  ): Promise<CandidateScoreResponseDto> {
-    return this.scoringService.scoreCandidate(
-      scoreCandidateDto.candidateUid,
-      scoreCandidateDto.jobPositionUid,
-    );
+  async scoreCandidate(@Body() scoreCandidateDto: ScoreCandidateDto): Promise<CandidateScoreResponseDto> {
+    return this.scoringService.scoreCandidate(scoreCandidateDto.candidateUid, scoreCandidateDto.jobPositionUid);
   }
 
   @Get('score/:candidateUid/:jobPositionUid')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({
     summary: 'Get existing score and analysis for a candidate',
-    description:
-      'Retrieve previously calculated score and detailed analysis for a specific candidate and job position combination.',
+    description: 'Retrieve previously calculated score and detailed analysis for a specific candidate and job position combination.',
   })
   @ApiParam({
     name: 'candidateUid',
@@ -168,10 +130,7 @@ export class AiController {
     status: 404,
     description: 'Score not found for this candidate and job position',
   })
-  async getScoreAnalysis(
-    @Param('candidateUid') candidateUid: string,
-    @Param('jobPositionUid') jobPositionUid: string,
-  ): Promise<CandidateScoreResponseDto> {
+  async getScoreAnalysis(@Param('candidateUid') candidateUid: string, @Param('jobPositionUid') jobPositionUid: string): Promise<CandidateScoreResponseDto> {
     return this.scoringService.getScoreAnalysis(candidateUid, jobPositionUid);
   }
 
@@ -179,8 +138,7 @@ export class AiController {
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({
     summary: 'Get ranked list of candidates for a job position',
-    description:
-      'Retrieve all scored candidates for a job position, ranked by overall score in descending order.',
+    description: 'Retrieve all scored candidates for a job position, ranked by overall score in descending order.',
   })
   @ApiParam({
     name: 'jobPositionUid',
@@ -204,9 +162,7 @@ export class AiController {
     status: 404,
     description: 'Job position not found',
   })
-  async getRankedCandidates(
-    @Param('jobPositionUid') jobPositionUid: string,
-  ): Promise<RankedCandidatesResponseDto> {
+  async getRankedCandidates(@Param('jobPositionUid') jobPositionUid: string): Promise<RankedCandidatesResponseDto> {
     return this.scoringService.getRankedCandidates(jobPositionUid);
   }
 
@@ -243,23 +199,15 @@ export class AiController {
     status: 404,
     description: 'Job position not found',
   })
-  async startBatchScoring(
-    @Body() batchScoreDto: BatchScoreRequestDto,
-    @CurrentUser() user: any,
-  ): Promise<BatchScoreResponseDto> {
-    return this.batchScoringService.startBatchScoring(
-      batchScoreDto,
-      user.companyId,
-      user.id,
-    );
+  async startBatchScoring(@Body() batchScoreDto: BatchScoreRequestDto, @CurrentUser() user: any): Promise<BatchScoreResponseDto> {
+    return this.batchScoringService.startBatchScoring(batchScoreDto, user.companyId, user.id);
   }
 
   @Get('batch-score/:batchId/status')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({
     summary: 'Get batch scoring job status',
-    description:
-      'Check the current status and progress of a batch scoring job.',
+    description: 'Check the current status and progress of a batch scoring job.',
   })
   @ApiParam({
     name: 'batchId',
@@ -283,9 +231,7 @@ export class AiController {
     status: 404,
     description: 'Batch job not found',
   })
-  async getBatchStatus(
-    @Param('batchId') batchId: string,
-  ): Promise<BatchScoreStatusDto> {
+  async getBatchStatus(@Param('batchId') batchId: string): Promise<BatchScoreStatusDto> {
     return this.batchScoringService.getBatchStatus(batchId);
   }
 
@@ -322,9 +268,7 @@ export class AiController {
     status: 404,
     description: 'Batch job not found',
   })
-  async getBatchResults(
-    @Param('batchId') batchId: string,
-  ): Promise<BatchScoreResultDto> {
+  async getBatchResults(@Param('batchId') batchId: string): Promise<BatchScoreResultDto> {
     return this.batchScoringService.getBatchResults(batchId);
   }
 
@@ -333,8 +277,7 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Cancel a batch scoring job',
-    description:
-      'Cancel a pending or processing batch scoring job. Already completed jobs cannot be cancelled.',
+    description: 'Cancel a pending or processing batch scoring job. Already completed jobs cannot be cancelled.',
   })
   @ApiParam({
     name: 'batchId',
@@ -370,9 +313,7 @@ export class AiController {
     status: 404,
     description: 'Batch job not found',
   })
-  async cancelBatch(
-    @Param('batchId') batchId: string,
-  ): Promise<{ message: string }> {
+  async cancelBatch(@Param('batchId') batchId: string): Promise<{ message: string }> {
     return this.batchScoringService.cancelBatch(batchId);
   }
 }

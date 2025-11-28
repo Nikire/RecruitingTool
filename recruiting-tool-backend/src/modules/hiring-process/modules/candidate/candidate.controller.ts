@@ -50,7 +50,8 @@ export class CandidateController {
   @Post('manual')
   @ApiOperation({
     summary: 'Create a manual candidate and auto-create hiring process',
-    description: 'Creates a candidate from manual entry (phone call, referral, walk-in, etc.), automatically creates a hiring process, and sends a welcome email. Validates email uniqueness per company.'
+    description:
+      'Creates a candidate from manual entry (phone call, referral, walk-in, etc.), automatically creates a hiring process, and sends a welcome email. Validates email uniqueness per company.',
   })
   @ApiResponse({
     status: 201,
@@ -58,10 +59,7 @@ export class CandidateController {
     type: HiringProcessResponseDto,
   })
   @ApiBody({ type: CreateManualCandidateDto })
-  createManual(
-    @Body() createManualCandidateDto: CreateManualCandidateDto,
-    @CurrentUser() currentUser: User
-  ): Promise<HiringProcessResponseDto> {
+  createManual(@Body() createManualCandidateDto: CreateManualCandidateDto, @CurrentUser() currentUser: User): Promise<HiringProcessResponseDto> {
     return this.candidateService.createManual(createManualCandidateDto, currentUser);
   }
 
@@ -71,10 +69,7 @@ export class CandidateController {
     status: 200,
     description: 'Returns paginated candidates list with filters applied',
   })
-  list(
-    @Query() filterDto: CandidateFilterDto,
-    @CurrentUser() currentUser: User
-  ): Promise<PaginatedResponse<CandidateResponseDto>> {
+  list(@Query() filterDto: CandidateFilterDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<CandidateResponseDto>> {
     return this.candidateService.list(filterDto, currentUser);
   }
 
@@ -130,7 +125,7 @@ export class CandidateController {
   @Auth(['SUPER_ADMIN'])
   @ApiOperation({
     summary: 'GDPR Purge - Permanently delete candidate data (SUPER_ADMIN only)',
-    description: 'Hard deletes a candidate and all associated data. This operation is irreversible and should only be used for GDPR "right to be forgotten" requests.'
+    description: 'Hard deletes a candidate and all associated data. This operation is irreversible and should only be used for GDPR "right to be forgotten" requests.',
   })
   @ApiResponse({
     status: 200,
@@ -152,11 +147,7 @@ export class CandidateController {
   })
   @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
   @ApiBody({ type: CreateCandidateNoteDto })
-  async createNote(
-    @Param('candidateUid') candidateUid: string,
-    @Body() createNoteDto: CreateCandidateNoteDto,
-    @CurrentUser() user: any,
-  ): Promise<CandidateNoteResponseDto> {
+  async createNote(@Param('candidateUid') candidateUid: string, @Body() createNoteDto: CreateCandidateNoteDto, @CurrentUser() user: any): Promise<CandidateNoteResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -188,11 +179,7 @@ export class CandidateController {
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
   @ApiBody({ type: UpdateCandidateNoteDto })
-  async updateNote(
-    @Param('noteUid') noteUid: string,
-    @Body() updateNoteDto: UpdateCandidateNoteDto,
-    @CurrentUser() user: any,
-  ): Promise<CandidateNoteResponseDto> {
+  async updateNote(@Param('noteUid') noteUid: string, @Body() updateNoteDto: UpdateCandidateNoteDto, @CurrentUser() user: any): Promise<CandidateNoteResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -208,10 +195,7 @@ export class CandidateController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
-  async removeNote(
-    @Param('noteUid') noteUid: string,
-    @CurrentUser() user: any,
-  ): Promise<MessageResponseDto> {
+  async removeNote(@Param('noteUid') noteUid: string, @CurrentUser() user: any): Promise<MessageResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -228,10 +212,7 @@ export class CandidateController {
     type: [CandidateJourneyResponseDto],
   })
   @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
-  getCandidateJourney(
-    @Param('uid') uid: string,
-    @CurrentUser() currentUser: User,
-  ): Promise<CandidateJourneyResponseDto[]> {
+  getCandidateJourney(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<CandidateJourneyResponseDto[]> {
     return this.candidateService.getCandidateJourney(uid, currentUser);
   }
 
@@ -244,9 +225,7 @@ export class CandidateController {
     type: [CandidateActivityResponseDto],
   })
   @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
-  getCandidateActivities(
-    @Param('uid') uid: string,
-  ): Promise<CandidateActivityResponseDto[]> {
+  getCandidateActivities(@Param('uid') uid: string): Promise<CandidateActivityResponseDto[]> {
     return this.candidateActivityService.getCandidateActivities(uid);
   }
 
@@ -254,7 +233,7 @@ export class CandidateController {
   @Post('import/preview')
   @ApiOperation({
     summary: 'Preview CSV import - validate without creating candidates',
-    description: 'Upload a CSV file to validate format and data before importing. Returns preview with valid and invalid rows.'
+    description: 'Upload a CSV file to validate format and data before importing. Returns preview with valid and invalid rows.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
@@ -263,9 +242,7 @@ export class CandidateController {
     type: CandidateImportPreviewDto,
   })
   @UseInterceptors(FileInterceptor('file'))
-  async previewImport(
-    @UploadedFile() file: Express.Multer.File,
-  ): Promise<CandidateImportPreviewDto> {
+  async previewImport(@UploadedFile() file: Express.Multer.File): Promise<CandidateImportPreviewDto> {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -280,7 +257,7 @@ export class CandidateController {
   @Post('import')
   @ApiOperation({
     summary: 'Import candidates from CSV file',
-    description: 'Upload a CSV file to bulk import candidates. Returns import results with success and error counts.'
+    description: 'Upload a CSV file to bulk import candidates. Returns import results with success and error counts.',
   })
   @ApiConsumes('multipart/form-data')
   @ApiResponse({
@@ -289,10 +266,7 @@ export class CandidateController {
     type: CandidateImportResultDto,
   })
   @UseInterceptors(FileInterceptor('file'))
-  async importCandidates(
-    @UploadedFile() file: Express.Multer.File,
-    @CurrentUser() currentUser: User,
-  ): Promise<CandidateImportResultDto> {
+  async importCandidates(@UploadedFile() file: Express.Multer.File, @CurrentUser() currentUser: User): Promise<CandidateImportResultDto> {
     if (!file) {
       throw new BadRequestException('No file uploaded');
     }
@@ -310,7 +284,7 @@ export class CandidateController {
   @Get('import/template')
   @ApiOperation({
     summary: 'Download CSV template',
-    description: 'Download a CSV template file with headers and example data for importing candidates.'
+    description: 'Download a CSV template file with headers and example data for importing candidates.',
   })
   @ApiResponse({
     status: 200,

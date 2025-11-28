@@ -18,10 +18,7 @@ export class InterviewController {
   @ApiOperation({ summary: 'Create a new interview for a stage' })
   @ApiResponse({ status: 201, description: 'Interview created successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Stage not found' })
-  async create(
-    @Body() createInterviewDto: CreateInterviewDto,
-    @CurrentUser() user: UserResponseDto,
-  ): Promise<InterviewResponseDto> {
+  async create(@Body() createInterviewDto: CreateInterviewDto, @CurrentUser() user: UserResponseDto): Promise<InterviewResponseDto> {
     return this.interviewService.create(createInterviewDto, user.uid);
   }
 
@@ -48,10 +45,7 @@ export class InterviewController {
   @ApiOperation({ summary: 'Update an interview' })
   @ApiResponse({ status: 200, description: 'Interview updated successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async update(
-    @Param('uid') uid: string,
-    @Body() updateInterviewDto: UpdateInterviewDto,
-  ): Promise<InterviewResponseDto> {
+  async update(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto): Promise<InterviewResponseDto> {
     return this.interviewService.update(uid, updateInterviewDto);
   }
 
@@ -81,10 +75,7 @@ export class InterviewController {
   @ApiResponse({ status: 201, description: 'Interviewer added successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview or user not found' })
   @ApiResponse({ status: 400, description: 'User is already an interviewer' })
-  async addInterviewer(
-    @Param('uid') uid: string,
-    @Body() addInterviewerDto: AddInterviewerDto,
-  ): Promise<InterviewResponseDto> {
+  async addInterviewer(@Param('uid') uid: string, @Body() addInterviewerDto: AddInterviewerDto): Promise<InterviewResponseDto> {
     return this.interviewService.addInterviewer(uid, addInterviewerDto.userUid, addInterviewerDto.role);
   }
 
@@ -93,10 +84,7 @@ export class InterviewController {
   @ApiOperation({ summary: 'Remove an interviewer from the interview' })
   @ApiResponse({ status: 200, description: 'Interviewer removed successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview, user, or interviewer relation not found' })
-  async removeInterviewer(
-    @Param('uid') uid: string,
-    @Param('userUid') userUid: string,
-  ): Promise<InterviewResponseDto> {
+  async removeInterviewer(@Param('uid') uid: string, @Param('userUid') userUid: string): Promise<InterviewResponseDto> {
     return this.interviewService.removeInterviewer(uid, userUid);
   }
 
@@ -106,11 +94,7 @@ export class InterviewController {
   @ApiResponse({ status: 200, description: 'Interview rescheduled successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
   @ApiResponse({ status: 400, description: 'Interview cannot be rescheduled (cancelled, completed, or not scheduled)' })
-  async reschedule(
-    @Param('uid') uid: string,
-    @Body() rescheduleDto: RescheduleInterviewDto,
-    @CurrentUser() user: UserResponseDto,
-  ): Promise<InterviewResponseDto> {
+  async reschedule(@Param('uid') uid: string, @Body() rescheduleDto: RescheduleInterviewDto, @CurrentUser() user: UserResponseDto): Promise<InterviewResponseDto> {
     return this.interviewService.reschedule(uid, rescheduleDto, user.uid);
   }
 

@@ -14,6 +14,7 @@ import {Provider as JotaiProvider} from 'jotai';
 import {BrowserRouter} from 'react-router';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import recruitingToolPalette from './palette.ts';
+import ErrorBoundary from './components/error/ErrorBoundary.tsx';
 
 import './i18n/i18n.ts';
 
@@ -23,16 +24,18 @@ const theme = createTheme(recruitingToolPalette);
 
 createRoot(document.getElementById('root')!).render(
 	<StrictMode>
-		<QueryClientProvider client={queryClient}>
-			<MuiThemeProvider theme={theme}>
-				<StyledThemeProvider theme={theme}>
-					<JotaiProvider>
-						<BrowserRouter>
-							<App />
-						</BrowserRouter>
-					</JotaiProvider>
-				</StyledThemeProvider>
-			</MuiThemeProvider>
-		</QueryClientProvider>
+		<ErrorBoundary>
+			<QueryClientProvider client={queryClient}>
+				<MuiThemeProvider theme={theme}>
+					<StyledThemeProvider theme={theme}>
+						<JotaiProvider>
+							<BrowserRouter>
+								<App />
+							</BrowserRouter>
+						</JotaiProvider>
+					</StyledThemeProvider>
+				</MuiThemeProvider>
+			</QueryClientProvider>
+		</ErrorBoundary>
 	</StrictMode>
 );

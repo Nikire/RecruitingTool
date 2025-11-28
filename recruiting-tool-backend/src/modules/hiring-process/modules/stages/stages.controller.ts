@@ -73,11 +73,7 @@ export class StagesController {
   })
   @ApiParam({ name: 'stageUid', required: true, description: 'UID of the stage' })
   @ApiBody({ type: CreateStageNoteDto })
-  async createNote(
-    @Param('stageUid') stageUid: string,
-    @Body() createNoteDto: CreateStageNoteDto,
-    @CurrentUser() user: any,
-  ): Promise<StageNoteResponseDto> {
+  async createNote(@Param('stageUid') stageUid: string, @Body() createNoteDto: CreateStageNoteDto, @CurrentUser() user: any): Promise<StageNoteResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -107,11 +103,7 @@ export class StagesController {
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
   @ApiBody({ type: UpdateStageNoteDto })
-  async updateNote(
-    @Param('noteUid') noteUid: string,
-    @Body() updateNoteDto: UpdateStageNoteDto,
-    @CurrentUser() user: any,
-  ): Promise<StageNoteResponseDto> {
+  async updateNote(@Param('noteUid') noteUid: string, @Body() updateNoteDto: UpdateStageNoteDto, @CurrentUser() user: any): Promise<StageNoteResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -127,10 +119,7 @@ export class StagesController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
-  async removeNote(
-    @Param('noteUid') noteUid: string,
-    @CurrentUser() user: any,
-  ): Promise<MessageResponseDto> {
+  async removeNote(@Param('noteUid') noteUid: string, @CurrentUser() user: any): Promise<MessageResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },

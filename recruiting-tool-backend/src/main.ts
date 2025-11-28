@@ -16,10 +16,7 @@ async function bootstrap() {
 
   // Register global exception filters for consistent error handling
   // Order matters: Prisma filter should be registered first to catch Prisma-specific errors
-  app.useGlobalFilters(
-    new PrismaExceptionFilter(),
-    new HttpExceptionFilter(),
-  );
+  app.useGlobalFilters(new PrismaExceptionFilter(), new HttpExceptionFilter());
 
   // Register global response interceptor for consistent success responses
   app.useGlobalInterceptors(new ResponseInterceptor());

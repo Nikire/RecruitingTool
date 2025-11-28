@@ -78,7 +78,16 @@
     "interview_update_failed": "Failed to update interview",
     "interview_cancel_failed": "Failed to cancel interview",
     "interview_delete_failed": "Failed to delete interview",
-    "interview_reschedule_failed": "Failed to reschedule interview"
+    "interview_reschedule_failed": "Failed to reschedule interview",
+    "boundary": {
+      "title": "Something went wrong",
+      "message": "An unexpected error occurred. Please try reloading the page or go back to the home page.",
+      "reload": "Reload Page",
+      "home": "Go Home",
+      "details": "Error Details (Development Mode Only)",
+      "component_stack": "Component Stack",
+      "support_message": "If this problem persists, please contact support."
+    }
   },
   "success": {
     "interview_scheduled": "Interview scheduled successfully",

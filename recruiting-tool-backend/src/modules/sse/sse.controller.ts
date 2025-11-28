@@ -31,8 +31,7 @@ export class SseController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Subscribe to real-time events',
-    description:
-      'Server-Sent Events endpoint for receiving real-time notifications. Requires authentication via Bearer token in Authorization header or token query parameter.',
+    description: 'Server-Sent Events endpoint for receiving real-time notifications. Requires authentication via Bearer token in Authorization header or token query parameter.',
   })
   @ApiResponse({
     status: 200,
@@ -57,8 +56,7 @@ export class SseController {
         // 1. No userUid/companyUid specified (broadcast to all)
         // 2. Event's userUid matches this user
         // 3. Event's companyUid matches this user's company
-        const shouldReceive =
-          !event.userUid && !event.companyUid ? true : event.userUid === userUid || event.companyUid === companyUid;
+        const shouldReceive = !event.userUid && !event.companyUid ? true : event.userUid === userUid || event.companyUid === companyUid;
 
         if (shouldReceive) {
           this.logger.debug(`Sending event ${event.type} to user ${userUid}`);

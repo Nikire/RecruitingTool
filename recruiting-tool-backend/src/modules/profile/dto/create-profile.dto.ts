@@ -5,7 +5,7 @@ export class CreateProfileDto {
   @ApiProperty({
     description: 'Professional bio',
     example: 'Experienced HR professional with 5+ years in recruitment',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -14,7 +14,7 @@ export class CreateProfileDto {
   @ApiProperty({
     description: 'Phone number',
     example: '+1-555-0123',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -23,7 +23,7 @@ export class CreateProfileDto {
   @ApiProperty({
     description: 'Location',
     example: 'New York, NY',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -32,7 +32,7 @@ export class CreateProfileDto {
   @ApiProperty({
     description: 'User timezone',
     example: 'America/New_York',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -41,7 +41,7 @@ export class CreateProfileDto {
   @ApiProperty({
     description: 'User preferences as JSON object',
     example: { theme: 'dark', notifications: true },
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsObject()

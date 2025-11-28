@@ -1,14 +1,9 @@
-import {
-  ExceptionFilter,
-  Catch,
-  ArgumentsHost,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, HttpException, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(HttpExceptionFilter.name);
   private readonly isProduction = process.env.NODE_ENV === 'production';
 
   catch(exception: unknown, host: ArgumentsHost) {
@@ -34,16 +29,14 @@ export class HttpExceptionFilter implements ExceptionFilter {
       }
     } else if (exception instanceof Error) {
       // In production, hide detailed error messages for non-HTTP exceptions
-      message = this.isProduction
-        ? 'An unexpected error occurred. Please try again later.'
-        : exception.message;
+      message = this.isProduction ? 'An unexpected error occurred. Please try again later.' : exception.message;
       error = this.isProduction ? 'InternalServerError' : exception.name;
     }
 
     // Log full error details server-side (always, regardless of environment)
-    console.error(
+    this.logger.error(
       `[${new Date().toISOString()}] ${request.method} ${request.url}`,
-      {
+      JSON.stringify({
         status,
         error: exception instanceof Error ? exception.name : error,
         message: exception instanceof Error ? exception.message : message,
@@ -51,7 +44,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         // Log request details for debugging
         userAgent: request.headers['user-agent'],
         ip: request.ip,
-      },
+      }),
     );
 
     // Build response object

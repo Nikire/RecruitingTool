@@ -8,10 +8,10 @@ export const includeHiringProcess = {
   jobPosition: {
     include: {
       createdBy: true,
-      company: true
-    }
+      company: true,
+    },
   },
-  company: true
+  company: true,
 };
 
 type HiringProcessWithRelations = Prisma.HiringProcessGetPayload<{
@@ -26,19 +26,25 @@ export function HiringProcessOneMapper(hiringProcess: HiringProcessWithRelations
     jobPositionUid: hiringProcess.jobPosition?.uid,
     stages: Array.isArray(hiringProcess.stages) ? hiringProcess.stages.map((stage) => StageMapper(stage)) : [],
     candidate: hiringProcess.candidate ? CandidateMapper(hiringProcess.candidate) : null,
-    company: hiringProcess.company ? {
-      uid: hiringProcess.company.uid,
-      name: hiringProcess.company.name,
-    } : null,
-    jobPosition: hiringProcess.jobPosition ? {
-      uid: hiringProcess.jobPosition.uid,
-      title: hiringProcess.jobPosition.title,
-      createdBy: hiringProcess.jobPosition.createdBy ? {
-        uid: hiringProcess.jobPosition.createdBy.uid,
-        name: hiringProcess.jobPosition.createdBy.name,
-        email: hiringProcess.jobPosition.createdBy.email,
-      } : null,
-    } : null,
+    company: hiringProcess.company
+      ? {
+          uid: hiringProcess.company.uid,
+          name: hiringProcess.company.name,
+        }
+      : null,
+    jobPosition: hiringProcess.jobPosition
+      ? {
+          uid: hiringProcess.jobPosition.uid,
+          title: hiringProcess.jobPosition.title,
+          createdBy: hiringProcess.jobPosition.createdBy
+            ? {
+                uid: hiringProcess.jobPosition.createdBy.uid,
+                name: hiringProcess.jobPosition.createdBy.name,
+                email: hiringProcess.jobPosition.createdBy.email,
+              }
+            : null,
+        }
+      : null,
   };
 }
 

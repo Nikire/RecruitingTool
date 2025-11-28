@@ -5,9 +5,9 @@ import { FilesController } from './files.controller';
 import { DatabaseModule } from '../shared/modules/database/database.module';
 
 @Module({
-	imports: [DatabaseModule],
-	controllers: [FilesController],
-	providers: [StorageService, FilesService],
-	exports: [StorageService, FilesService],
+  imports: [DatabaseModule],
+  controllers: [FilesController],
+  providers: [StorageService, FilesService],
+  exports: [StorageService, FilesService],
 })
 export class StorageModule {}

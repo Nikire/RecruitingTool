@@ -1,13 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import {
-  IsUUID,
-  IsOptional,
-  IsArray,
-  IsEnum,
-  IsString,
-  IsNumber,
-  Min,
-} from 'class-validator';
+import { IsUUID, IsOptional, IsArray, IsEnum, IsString, IsNumber, Min } from 'class-validator';
 import { CandidateScoreResponseDto } from './candidate-scoring.dto';
 
 export enum BatchPriority {
@@ -33,12 +25,8 @@ export class BatchScoreRequestDto {
   jobPositionUid: string;
 
   @ApiPropertyOptional({
-    description:
-      'Optional array of candidate UIDs to score. If not provided, all candidates for this job position will be scored.',
-    example: [
-      '550e8400-e29b-41d4-a716-446655440000',
-      '550e8400-e29b-41d4-a716-446655440002',
-    ],
+    description: 'Optional array of candidate UIDs to score. If not provided, all candidates for this job position will be scored.',
+    example: ['550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440002'],
     type: [String],
   })
   @IsOptional()

@@ -1,13 +1,6 @@
 import { Injectable, InternalServerErrorException, HttpException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import {
-  AdminStatsResponseDto,
-  UserStatsResponseDto,
-  CompanyStatsResponseDto,
-  RecentActivityResponseDto,
-  UsersByRoleDto,
-  RecentLoginDto,
-} from './dto/admin-stats.dto';
+import { AdminStatsResponseDto, UserStatsResponseDto, CompanyStatsResponseDto, RecentActivityResponseDto, UsersByRoleDto, RecentLoginDto } from './dto/admin-stats.dto';
 
 @Injectable()
 export class AdminService {
@@ -15,14 +8,7 @@ export class AdminService {
 
   async getOverviewStats(): Promise<AdminStatsResponseDto> {
     try {
-      const [
-        userStats,
-        companyStats,
-        candidateStats,
-        jobPositionStats,
-        hiringProcessStats,
-        recentActivity,
-      ] = await Promise.all([
+      const [userStats, companyStats, candidateStats, jobPositionStats, hiringProcessStats, recentActivity] = await Promise.all([
         this.getUserStats(),
         this.getCompanyStats(),
         this.getCandidateStats(),
@@ -43,9 +29,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get overview stats: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get overview stats: ${error.message}`);
     }
   }
 
@@ -97,9 +81,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get user stats: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get user stats: ${error.message}`);
     }
   }
 
@@ -126,9 +108,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get company stats: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get company stats: ${error.message}`);
     }
   }
 
@@ -159,9 +139,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get candidate stats: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get candidate stats: ${error.message}`);
     }
   }
 
@@ -190,9 +168,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get job position stats: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get job position stats: ${error.message}`);
     }
   }
 
@@ -220,9 +196,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get hiring process stats: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get hiring process stats: ${error.message}`);
     }
   }
 
@@ -260,9 +234,7 @@ export class AdminService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get recent activity: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get recent activity: ${error.message}`);
     }
   }
 }

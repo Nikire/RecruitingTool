@@ -15,7 +15,7 @@ export class HRScheduleController {
 
   @Get('me')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
-  @ApiOperation({ summary: 'Get current user\'s schedule' })
+  @ApiOperation({ summary: "Get current user's schedule" })
   @ApiResponse({ status: 200, description: 'Schedule retrieved successfully', type: [HRScheduleResponseDto] })
   async getMySchedule(@CurrentUser() user: UserResponseDto): Promise<HRScheduleResponseDto[]> {
     return this.hrScheduleService.getMySchedule(user.uid);
@@ -26,10 +26,7 @@ export class HRScheduleController {
   @ApiOperation({ summary: 'Create availability slot' })
   @ApiResponse({ status: 201, description: 'Schedule slot created successfully', type: HRScheduleResponseDto })
   @ApiResponse({ status: 400, description: 'Invalid time format or overlapping schedule' })
-  async createScheduleSlot(
-    @CurrentUser() user: UserResponseDto,
-    @Body() dto: CreateHRScheduleDto
-  ): Promise<HRScheduleResponseDto> {
+  async createScheduleSlot(@CurrentUser() user: UserResponseDto, @Body() dto: CreateHRScheduleDto): Promise<HRScheduleResponseDto> {
     return this.hrScheduleService.createScheduleSlot(user.uid, dto);
   }
 
@@ -39,12 +36,8 @@ export class HRScheduleController {
   @ApiParam({ name: 'uid', description: 'Schedule UID' })
   @ApiResponse({ status: 200, description: 'Schedule slot updated successfully', type: HRScheduleResponseDto })
   @ApiResponse({ status: 404, description: 'Schedule not found' })
-  @ApiResponse({ status: 403, description: 'Cannot update another user\'s schedule' })
-  async updateScheduleSlot(
-    @CurrentUser() user: UserResponseDto,
-    @Param('uid') uid: string,
-    @Body() dto: UpdateHRScheduleDto
-  ): Promise<HRScheduleResponseDto> {
+  @ApiResponse({ status: 403, description: "Cannot update another user's schedule" })
+  async updateScheduleSlot(@CurrentUser() user: UserResponseDto, @Param('uid') uid: string, @Body() dto: UpdateHRScheduleDto): Promise<HRScheduleResponseDto> {
     return this.hrScheduleService.updateScheduleSlot(uid, user.uid, dto);
   }
 
@@ -54,18 +47,15 @@ export class HRScheduleController {
   @ApiParam({ name: 'uid', description: 'Schedule UID' })
   @ApiResponse({ status: 200, description: 'Schedule slot deleted successfully' })
   @ApiResponse({ status: 404, description: 'Schedule not found' })
-  @ApiResponse({ status: 403, description: 'Cannot delete another user\'s schedule' })
-  async deleteScheduleSlot(
-    @CurrentUser() user: UserResponseDto,
-    @Param('uid') uid: string
-  ): Promise<{ message: string }> {
+  @ApiResponse({ status: 403, description: "Cannot delete another user's schedule" })
+  async deleteScheduleSlot(@CurrentUser() user: UserResponseDto, @Param('uid') uid: string): Promise<{ message: string }> {
     await this.hrScheduleService.deleteScheduleSlot(uid, user.uid);
     return { message: 'Schedule slot deleted successfully' };
   }
 
   @Get('user/:uid')
   @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN])
-  @ApiOperation({ summary: 'Get user\'s schedule (ADMIN only)' })
+  @ApiOperation({ summary: "Get user's schedule (ADMIN only)" })
   @ApiParam({ name: 'uid', description: 'User UID' })
   @ApiResponse({ status: 200, description: 'Schedule retrieved successfully', type: [HRScheduleResponseDto] })
   @ApiResponse({ status: 404, description: 'User not found' })
@@ -80,10 +70,7 @@ export class HRScheduleController {
   @ApiQuery({ name: 'date', description: 'Date in YYYY-MM-DD format', example: '2025-01-15' })
   @ApiResponse({ status: 200, description: 'Available slots retrieved successfully', type: [HRScheduleResponseDto] })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async getAvailableSlots(
-    @Param('uid') uid: string,
-    @Query('date') date: string
-  ): Promise<HRScheduleResponseDto[]> {
+  async getAvailableSlots(@Param('uid') uid: string, @Query('date') date: string): Promise<HRScheduleResponseDto[]> {
     return this.hrScheduleService.getAvailableSlots(uid, date);
   }
 }

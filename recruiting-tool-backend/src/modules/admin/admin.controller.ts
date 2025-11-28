@@ -1,19 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import {
-  AdminStatsResponseDto,
-  UserStatsResponseDto,
-  CompanyStatsResponseDto,
-  RecentActivityResponseDto,
-} from './dto/admin-stats.dto';
+import { AdminStatsResponseDto, UserStatsResponseDto, CompanyStatsResponseDto, RecentActivityResponseDto } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 @ApiTags('Admin')
 @ApiBearerAuth()

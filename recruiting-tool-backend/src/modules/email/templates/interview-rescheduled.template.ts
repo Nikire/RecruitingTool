@@ -46,7 +46,7 @@ ${data.location ? `Location: ${data.location}` : ''}
 ${data.meetingLink ? `Meeting Link: ${data.meetingLink}` : ''}
 
 Interviewers:
-${data.interviewers.map(name => `- ${name}`).join('\n')}
+${data.interviewers.map((name) => `- ${name}`).join('\n')}
 
 ${data.notes ? `Additional Notes:\n${data.notes}` : ''}
 
@@ -70,11 +70,15 @@ ${data.hrName || 'The Recruiting Team'}
           <strong style="color: #f57c00;">rescheduled</strong>.
         </p>
 
-        ${data.reason ? `
+        ${
+          data.reason
+            ? `
         <p style="${emailBaseStyles.text}">
           <strong>Reason:</strong> ${data.reason}
         </p>
-        ` : ''}
+        `
+            : ''
+        }
 
         <h2 style="${emailBaseStyles.subheader}">Previous Schedule</h2>
         <table style="${emailBaseStyles.table}">
@@ -102,31 +106,43 @@ ${data.hrName || 'The Recruiting Team'}
             <td style="${emailBaseStyles.tableCellBold}">Duration</td>
             <td style="${emailBaseStyles.tableCell}">${durationText}</td>
           </tr>
-          ${data.location ? `
+          ${
+            data.location
+              ? `
           <tr>
             <td style="${emailBaseStyles.tableCellBold}">Location</td>
             <td style="${emailBaseStyles.tableCell}">${data.location}</td>
           </tr>
-          ` : ''}
-          ${data.meetingLink ? `
+          `
+              : ''
+          }
+          ${
+            data.meetingLink
+              ? `
           <tr>
             <td style="${emailBaseStyles.tableCellBold}">Meeting Link</td>
             <td style="${emailBaseStyles.tableCell}">
               <a href="${data.meetingLink}" style="${emailBaseStyles.link}">${data.meetingLink}</a>
             </td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
         </table>
 
         <h2 style="${emailBaseStyles.subheader}">Interviewers</h2>
         <ul style="${emailBaseStyles.text}">
-          ${data.interviewers.map(name => `<li>${name}</li>`).join('')}
+          ${data.interviewers.map((name) => `<li>${name}</li>`).join('')}
         </ul>
 
-        ${data.notes ? `
+        ${
+          data.notes
+            ? `
         <h2 style="${emailBaseStyles.subheader}">Additional Notes</h2>
         <p style="${emailBaseStyles.text}">${data.notes}</p>
-        ` : ''}
+        `
+            : ''
+        }
 
         <hr style="${emailBaseStyles.divider}">
 

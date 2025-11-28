@@ -1,33 +1,10 @@
-import {
-  Controller,
-  Get,
-  Put,
-  Post,
-  Body,
-  Param,
-  Query,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Put, Post, Body, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { QuotaType, RolesType } from '@prisma/client';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { AIQuotaService } from './ai-quota.service';
-import {
-  AIQuotaResponseDto,
-  AIUsageLogResponseDto,
-  SetQuotaLimitDto,
-  UseQuotaDto,
-  GetUsageHistoryDto,
-} from './dto/ai-quota.dto';
+import { AIQuotaResponseDto, AIUsageLogResponseDto, SetQuotaLimitDto, UseQuotaDto, GetUsageHistoryDto } from './dto/ai-quota.dto';
 
 @ApiTags('AI Quota')
 @ApiBearerAuth()
@@ -43,9 +20,7 @@ export class AIQuotaController {
     description: 'Returns all quotas for the authenticated user company',
     type: [AIQuotaResponseDto],
   })
-  async getMyCompanyQuotas(
-    @CurrentUser() user: any,
-  ): Promise<AIQuotaResponseDto[]> {
+  async getMyCompanyQuotas(@CurrentUser() user: any): Promise<AIQuotaResponseDto[]> {
     return this.aiQuotaService.getAllQuotas(user.company.uid);
   }
 
@@ -63,10 +38,7 @@ export class AIQuotaController {
     type: AIQuotaResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Quota not found' })
-  async getMyCompanyQuota(
-    @CurrentUser() user: any,
-    @Param('quotaType') quotaType: QuotaType,
-  ): Promise<AIQuotaResponseDto> {
+  async getMyCompanyQuota(@CurrentUser() user: any, @Param('quotaType') quotaType: QuotaType): Promise<AIQuotaResponseDto> {
     return this.aiQuotaService.getQuota(user.company.uid, quotaType);
   }
 
@@ -81,10 +53,7 @@ export class AIQuotaController {
   })
   @ApiResponse({ status: 403, description: 'Insufficient quota' })
   @ApiResponse({ status: 404, description: 'Quota not found' })
-  async useQuota(
-    @CurrentUser() user: any,
-    @Body() dto: UseQuotaDto,
-  ): Promise<AIQuotaResponseDto> {
+  async useQuota(@CurrentUser() user: any, @Body() dto: UseQuotaDto): Promise<AIQuotaResponseDto> {
     return this.aiQuotaService.useQuota(user.company.uid, user.uid, dto);
   }
 
@@ -112,16 +81,8 @@ export class AIQuotaController {
     description: 'Returns usage history',
     type: [AIUsageLogResponseDto],
   })
-  async getMyCompanyUsageHistory(
-    @CurrentUser() user: any,
-    @Query() query: GetUsageHistoryDto,
-  ): Promise<AIUsageLogResponseDto[]> {
-    return this.aiQuotaService.getUsageHistory(
-      user.company.uid,
-      query.startDate,
-      query.endDate,
-      query.operation,
-    );
+  async getMyCompanyUsageHistory(@CurrentUser() user: any, @Query() query: GetUsageHistoryDto): Promise<AIUsageLogResponseDto[]> {
+    return this.aiQuotaService.getUsageHistory(user.company.uid, query.startDate, query.endDate, query.operation);
   }
 
   @Get(':companyUid')
@@ -140,9 +101,7 @@ export class AIQuotaController {
     type: [AIQuotaResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Company not found' })
-  async getCompanyQuotas(
-    @Param('companyUid') companyUid: string,
-  ): Promise<AIQuotaResponseDto[]> {
+  async getCompanyQuotas(@Param('companyUid') companyUid: string): Promise<AIQuotaResponseDto[]> {
     return this.aiQuotaService.getAllQuotas(companyUid);
   }
 
@@ -166,10 +125,7 @@ export class AIQuotaController {
     type: AIQuotaResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Company or quota not found' })
-  async getCompanyQuota(
-    @Param('companyUid') companyUid: string,
-    @Param('quotaType') quotaType: QuotaType,
-  ): Promise<AIQuotaResponseDto> {
+  async getCompanyQuota(@Param('companyUid') companyUid: string, @Param('quotaType') quotaType: QuotaType): Promise<AIQuotaResponseDto> {
     return this.aiQuotaService.getQuota(companyUid, quotaType);
   }
 
@@ -189,10 +145,7 @@ export class AIQuotaController {
     type: AIQuotaResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Company not found' })
-  async setQuotaLimit(
-    @Param('companyUid') companyUid: string,
-    @Body() dto: SetQuotaLimitDto,
-  ): Promise<AIQuotaResponseDto> {
+  async setQuotaLimit(@Param('companyUid') companyUid: string, @Body() dto: SetQuotaLimitDto): Promise<AIQuotaResponseDto> {
     return this.aiQuotaService.setQuotaLimit(companyUid, dto);
   }
 
@@ -227,15 +180,7 @@ export class AIQuotaController {
     type: [AIUsageLogResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Company not found' })
-  async getCompanyUsageHistory(
-    @Param('companyUid') companyUid: string,
-    @Query() query: GetUsageHistoryDto,
-  ): Promise<AIUsageLogResponseDto[]> {
-    return this.aiQuotaService.getUsageHistory(
-      companyUid,
-      query.startDate,
-      query.endDate,
-      query.operation,
-    );
+  async getCompanyUsageHistory(@Param('companyUid') companyUid: string, @Query() query: GetUsageHistoryDto): Promise<AIUsageLogResponseDto[]> {
+    return this.aiQuotaService.getUsageHistory(companyUid, query.startDate, query.endDate, query.operation);
   }
 }

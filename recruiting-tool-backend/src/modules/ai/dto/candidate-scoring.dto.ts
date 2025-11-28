@@ -32,7 +32,7 @@ export class ScoreAnalysisDto {
 
   @ApiPropertyOptional({
     description: 'Detailed analysis of education match',
-    example: 'Bachelor\'s degree in Computer Science from a reputable institution...',
+    example: "Bachelor's degree in Computer Science from a reputable institution...",
   })
   educationAnalysis?: string;
 

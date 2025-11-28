@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ScoringService } from './scoring.service';
 import {
@@ -32,15 +26,9 @@ export class BatchScoringService {
   /**
    * Start a batch scoring job
    */
-  async startBatchScoring(
-    dto: BatchScoreRequestDto,
-    companyId: number,
-    userId: number,
-  ): Promise<BatchScoreResponseDto> {
+  async startBatchScoring(dto: BatchScoreRequestDto, companyId: number, userId: number): Promise<BatchScoreResponseDto> {
     try {
-      this.logger.log(
-        `Starting batch scoring for job position: ${dto.jobPositionUid}`,
-      );
+      this.logger.log(`Starting batch scoring for job position: ${dto.jobPositionUid}`);
 
       // Find job position
       const jobPosition = await this.databaseService.jobPosition.findUnique({
@@ -55,9 +43,7 @@ export class BatchScoringService {
       });
 
       if (!jobPosition) {
-        throw new NotFoundException(
-          `Job Position with UID ${dto.jobPositionUid} not found`,
-        );
+        throw new NotFoundException(`Job Position with UID ${dto.jobPositionUid} not found`);
       }
 
       // Determine which candidates to score
@@ -73,33 +59,21 @@ export class BatchScoringService {
         });
 
         if (candidates.length !== candidateUids.length) {
-          throw new BadRequestException(
-            'One or more candidate UIDs are invalid or not found',
-          );
+          throw new BadRequestException('One or more candidate UIDs are invalid or not found');
         }
       } else {
         // Score all candidates for this job position
-        const hiringProcesses = jobPosition.hiringProcesses.filter(
-          (hp) => hp.candidateId !== null,
-        );
+        const hiringProcesses = jobPosition.hiringProcesses.filter((hp) => hp.candidateId !== null);
 
         if (hiringProcesses.length === 0) {
-          throw new BadRequestException(
-            'No candidates found for this job position',
-          );
+          throw new BadRequestException('No candidates found for this job position');
         }
 
-        candidateUids = hiringProcesses
-          .map((hp) => hp.candidate?.uid)
-          .filter((uid): uid is string => uid !== undefined);
+        candidateUids = hiringProcesses.map((hp) => hp.candidate?.uid).filter((uid): uid is string => uid !== undefined);
       }
 
       // Check AI quota before starting
-      await this.checkAndConsumeQuota(
-        companyId,
-        QuotaType.BATCH_SCORING,
-        candidateUids.length,
-      );
+      await this.checkAndConsumeQuota(companyId, QuotaType.BATCH_SCORING, candidateUids.length);
 
       // Create batch job record
       const batchJob = await this.databaseService.batchScoringJob.create({
@@ -113,42 +87,27 @@ export class BatchScoringService {
         },
       });
 
-      this.logger.log(
-        `Batch job created with UID: ${batchJob.uid}, total candidates: ${candidateUids.length}`,
-      );
+      this.logger.log(`Batch job created with UID: ${batchJob.uid}, total candidates: ${candidateUids.length}`);
 
       // Start processing asynchronously
-      this.processBatch(batchJob.uid, jobPosition.uid, candidateUids, companyId, userId)
-        .catch((error) => {
-          this.logger.error(
-            `Batch processing failed for job ${batchJob.uid}: ${error.message}`,
-            error.stack,
-          );
-        });
+      this.processBatch(batchJob.uid, jobPosition.uid, candidateUids, companyId, userId).catch((error) => {
+        this.logger.error(`Batch processing failed for job ${batchJob.uid}: ${error.message}`, error.stack);
+      });
 
       return {
         batchId: batchJob.uid,
         status: BatchStatusEnum.PENDING,
         totalCandidates: candidateUids.length,
-        message:
-          'Batch scoring job created successfully and queued for processing',
+        message: 'Batch scoring job created successfully and queued for processing',
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to start batch scoring: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to start batch scoring: ${error.message}`, error.stack);
 
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to start batch scoring: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to start batch scoring: ${error.message}`);
     }
   }
 
@@ -165,18 +124,9 @@ export class BatchScoringService {
         throw new NotFoundException(`Batch job with ID ${batchId} not found`);
       }
 
-      const progress =
-        batchJob.totalCandidates > 0
-          ? Math.round(
-              (batchJob.processedCount / batchJob.totalCandidates) * 100,
-            )
-          : 0;
+      const progress = batchJob.totalCandidates > 0 ? Math.round((batchJob.processedCount / batchJob.totalCandidates) * 100) : 0;
 
-      const errors = batchJob.errors
-        ? Array.isArray(batchJob.errors)
-          ? batchJob.errors
-          : []
-        : [];
+      const errors = batchJob.errors ? (Array.isArray(batchJob.errors) ? batchJob.errors : []) : [];
 
       return {
         batchId: batchJob.uid,
@@ -190,18 +140,13 @@ export class BatchScoringService {
         progress,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to get batch status: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to get batch status: ${error.message}`, error.stack);
 
       if (error instanceof NotFoundException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to get batch status: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get batch status: ${error.message}`);
     }
   }
 
@@ -222,9 +167,7 @@ export class BatchScoringService {
       }
 
       if (batchJob.status === BatchStatus.PENDING || batchJob.status === BatchStatus.PROCESSING) {
-        throw new BadRequestException(
-          'Batch job is still processing. Please check status endpoint for progress.',
-        );
+        throw new BadRequestException('Batch job is still processing. Please check status endpoint for progress.');
       }
 
       // Fetch all scores for candidates in this batch
@@ -269,11 +212,7 @@ export class BatchScoringService {
       // Calculate summary statistics
       const summary = this.calculateSummary(results);
 
-      const errors = batchJob.errors
-        ? Array.isArray(batchJob.errors)
-          ? batchJob.errors
-          : []
-        : [];
+      const errors = batchJob.errors ? (Array.isArray(batchJob.errors) ? batchJob.errors : []) : [];
 
       return {
         batchId: batchJob.uid,
@@ -286,21 +225,13 @@ export class BatchScoringService {
         errors: errors as string[],
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to get batch results: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to get batch results: ${error.message}`, error.stack);
 
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to get batch results: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get batch results: ${error.message}`);
     }
   }
 
@@ -318,9 +249,7 @@ export class BatchScoringService {
       }
 
       if (batchJob.status === BatchStatus.COMPLETED) {
-        throw new BadRequestException(
-          'Cannot cancel a batch job that has already completed',
-        );
+        throw new BadRequestException('Cannot cancel a batch job that has already completed');
       }
 
       if (batchJob.status === BatchStatus.CANCELLED) {
@@ -341,34 +270,20 @@ export class BatchScoringService {
         message: 'Batch job cancelled successfully',
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to cancel batch job: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to cancel batch job: ${error.message}`, error.stack);
 
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to cancel batch job: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to cancel batch job: ${error.message}`);
     }
   }
 
   /**
    * Process batch job (runs asynchronously)
    */
-  private async processBatch(
-    batchJobUid: string,
-    jobPositionUid: string,
-    candidateUids: string[],
-    companyId: number,
-    userId: number,
-  ): Promise<void> {
+  private async processBatch(batchJobUid: string, jobPositionUid: string, candidateUids: string[], companyId: number, userId: number): Promise<void> {
     // Prevent duplicate processing
     if (this.processingQueue.get(batchJobUid)) {
       this.logger.warn(`Batch job ${batchJobUid} is already being processed`);
@@ -387,9 +302,7 @@ export class BatchScoringService {
         },
       });
 
-      this.logger.log(
-        `Started processing batch job ${batchJobUid} with ${candidateUids.length} candidates`,
-      );
+      this.logger.log(`Started processing batch job ${batchJobUid} with ${candidateUids.length} candidates`);
 
       const errors: string[] = [];
       let processedCount = 0;
@@ -424,28 +337,19 @@ export class BatchScoringService {
             },
           });
 
-          this.logger.log(
-            `Batch job ${batchJobUid}: Scored candidate ${candidateUid} (${processedCount}/${candidateUids.length})`,
-          );
+          this.logger.log(`Batch job ${batchJobUid}: Scored candidate ${candidateUid} (${processedCount}/${candidateUids.length})`);
 
           // Small delay to avoid rate limits (100ms between requests)
           await new Promise((resolve) => setTimeout(resolve, 100));
         } catch (error) {
-          this.logger.error(
-            `Failed to score candidate ${candidateUid} in batch ${batchJobUid}: ${error.message}`,
-          );
+          this.logger.error(`Failed to score candidate ${candidateUid} in batch ${batchJobUid}: ${error.message}`);
           failedCount++;
-          errors.push(
-            `Candidate ${candidateUid}: ${error.message || 'Unknown error'}`,
-          );
+          errors.push(`Candidate ${candidateUid}: ${error.message || 'Unknown error'}`);
         }
       }
 
       // Determine final status
-      const finalStatus =
-        failedCount === candidateUids.length
-          ? BatchStatus.FAILED
-          : BatchStatus.COMPLETED;
+      const finalStatus = failedCount === candidateUids.length ? BatchStatus.FAILED : BatchStatus.COMPLETED;
 
       // Update final status
       await this.databaseService.batchScoringJob.update({
@@ -459,14 +363,9 @@ export class BatchScoringService {
         },
       });
 
-      this.logger.log(
-        `Batch job ${batchJobUid} completed with status ${finalStatus}. Processed: ${processedCount}, Failed: ${failedCount}`,
-      );
+      this.logger.log(`Batch job ${batchJobUid} completed with status ${finalStatus}. Processed: ${processedCount}, Failed: ${failedCount}`);
     } catch (error) {
-      this.logger.error(
-        `Critical error in batch processing ${batchJobUid}: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Critical error in batch processing ${batchJobUid}: ${error.message}`, error.stack);
 
       // Mark batch as failed
       await this.databaseService.batchScoringJob.update({
@@ -485,9 +384,7 @@ export class BatchScoringService {
   /**
    * Calculate summary statistics
    */
-  private calculateSummary(
-    results: CandidateScoreResponseDto[],
-  ): BatchScoreSummaryDto {
+  private calculateSummary(results: CandidateScoreResponseDto[]): BatchScoreSummaryDto {
     if (results.length === 0) {
       return {
         totalScored: 0,
@@ -522,11 +419,7 @@ export class BatchScoringService {
   /**
    * Check AI quota before processing
    */
-  private async checkAndConsumeQuota(
-    companyId: number,
-    quotaType: QuotaType,
-    count: number,
-  ): Promise<void> {
+  private async checkAndConsumeQuota(companyId: number, quotaType: QuotaType, count: number): Promise<void> {
     const quota = await this.databaseService.aIQuota.findUnique({
       where: {
         companyId_quotaType: {
@@ -537,16 +430,12 @@ export class BatchScoringService {
     });
 
     if (!quota) {
-      this.logger.warn(
-        `No AI quota found for company ${companyId} and type ${quotaType}. Allowing operation.`,
-      );
+      this.logger.warn(`No AI quota found for company ${companyId} and type ${quotaType}. Allowing operation.`);
       return;
     }
 
     if (quota.used + count > quota.limit) {
-      throw new BadRequestException(
-        `AI quota exceeded. Used: ${quota.used}, Limit: ${quota.limit}, Requested: ${count}`,
-      );
+      throw new BadRequestException(`AI quota exceeded. Used: ${quota.used}, Limit: ${quota.limit}, Requested: ${count}`);
     }
 
     // Reserve quota
@@ -564,19 +453,13 @@ export class BatchScoringService {
       },
     });
 
-    this.logger.log(
-      `Reserved ${count} quota units for company ${companyId}, type ${quotaType}`,
-    );
+    this.logger.log(`Reserved ${count} quota units for company ${companyId}, type ${quotaType}`);
   }
 
   /**
    * Log AI usage
    */
-  private async logAIUsage(
-    companyId: number,
-    userId: number,
-    operation: QuotaType,
-  ): Promise<void> {
+  private async logAIUsage(companyId: number, userId: number, operation: QuotaType): Promise<void> {
     try {
       await this.databaseService.aIUsageLog.create({
         data: {

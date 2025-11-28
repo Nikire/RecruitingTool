@@ -5,16 +5,7 @@ import { ProfileResponseDto } from './dto/profile-response.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiNotFoundResponse,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 @ApiTags('Profile')
 @ApiBearerAuth()
@@ -46,10 +37,7 @@ export class ProfileController {
     type: ProfileResponseDto,
   })
   @ApiBody({ type: UpdateProfileDto })
-  updateMyProfile(
-    @CurrentUser() currentUser: User,
-    @Body() updateProfileDto: UpdateProfileDto,
-  ): Promise<ProfileResponseDto> {
+  updateMyProfile(@CurrentUser() currentUser: User, @Body() updateProfileDto: UpdateProfileDto): Promise<ProfileResponseDto> {
     return this.profileService.updateMyProfile(currentUser.id, updateProfileDto);
   }
 

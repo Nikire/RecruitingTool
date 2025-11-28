@@ -64,11 +64,7 @@ export class ApplicationController {
   })
   @ApiBody({ type: UpdateApplicationDto })
   @ApiParam({ name: 'uid', required: true, description: 'Application UID' })
-  update(
-    @Param('uid') uid: string,
-    @Body() updateApplicationDto: UpdateApplicationDto,
-    @CurrentUser() currentUser: User,
-  ): Promise<ApplicationResponseDto> {
+  update(@Param('uid') uid: string, @Body() updateApplicationDto: UpdateApplicationDto, @CurrentUser() currentUser: User): Promise<ApplicationResponseDto> {
     return this.applicationService.update(uid, updateApplicationDto, currentUser.uid, currentUser);
   }
 

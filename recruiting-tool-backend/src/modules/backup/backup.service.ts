@@ -4,13 +4,7 @@ import { promises as fs } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as path from 'path';
-import {
-  BackupHistoryResponseDto,
-  BackupStatusResponseDto,
-  BackupType,
-  BackupStatus,
-  BackupHistoryItemDto,
-} from './dto/backup.dto';
+import { BackupHistoryResponseDto, BackupStatusResponseDto, BackupType, BackupStatus, BackupHistoryItemDto } from './dto/backup.dto';
 
 const execAsync = promisify(exec);
 
@@ -393,9 +387,7 @@ export class BackupService {
       }
 
       // Sort by creation date (newest first)
-      this.backupHistory = backups.sort(
-        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-      );
+      this.backupHistory = backups.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
       await this.saveBackupHistory();
     } catch (error) {
@@ -426,11 +418,7 @@ export class BackupService {
    */
   private getTimestamp(): string {
     const now = new Date();
-    return now
-      .toISOString()
-      .replace(/:/g, '-')
-      .replace(/\..+/, '')
-      .replace('T', '-');
+    return now.toISOString().replace(/:/g, '-').replace(/\..+/, '').replace('T', '-');
   }
 
   /**
@@ -441,6 +429,6 @@ export class BackupService {
     const k = 1024;
     const sizes = ['Bytes', 'KB', 'MB', 'GB'];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   }
 }

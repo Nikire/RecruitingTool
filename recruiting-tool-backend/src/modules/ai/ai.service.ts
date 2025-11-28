@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  BadRequestException,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 import axios from 'axios';
@@ -33,9 +28,7 @@ export class AiService {
   constructor(private configService: ConfigService) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
-      this.logger.warn(
-        'OpenAI API key not configured. AI features will be disabled.',
-      );
+      this.logger.warn('OpenAI API key not configured. AI features will be disabled.');
       this.openai = null;
     } else {
       this.openai = new OpenAI({
@@ -49,9 +42,7 @@ export class AiService {
    */
   async parseResume(fileUrl: string): Promise<ParseResumeResponseDto> {
     if (!this.openai) {
-      throw new InternalServerErrorException(
-        'OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.',
-      );
+      throw new InternalServerErrorException('OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.');
     }
 
     try {
@@ -61,9 +52,7 @@ export class AiService {
       const rawText = await this.extractTextFromFile(fileUrl);
 
       if (!rawText || rawText.trim().length === 0) {
-        throw new BadRequestException(
-          'Could not extract text from the resume file',
-        );
+        throw new BadRequestException('Could not extract text from the resume file');
       }
 
       // Step 2: Analyze with AI
@@ -72,9 +61,7 @@ export class AiService {
       // Step 3: Calculate confidence score based on completeness
       const confidence = this.calculateConfidence(parsedData);
 
-      this.logger.log(
-        `Resume parsing completed with confidence: ${confidence}%`,
-      );
+      this.logger.log(`Resume parsing completed with confidence: ${confidence}%`);
 
       return {
         success: true,
@@ -85,16 +72,11 @@ export class AiService {
     } catch (error) {
       this.logger.error(`Resume parsing failed: ${error.message}`, error.stack);
 
-      if (
-        error instanceof BadRequestException ||
-        error instanceof InternalServerErrorException
-      ) {
+      if (error instanceof BadRequestException || error instanceof InternalServerErrorException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to parse resume: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to parse resume: ${error.message}`);
     }
   }
 
@@ -114,30 +96,18 @@ export class AiService {
       // Determine file type and extract text accordingly
       if (contentType.includes('pdf') || fileUrl.toLowerCase().endsWith('.pdf')) {
         return await this.extractTextFromPdf(buffer);
-      } else if (
-        contentType.includes('word') ||
-        contentType.includes('document') ||
-        fileUrl.toLowerCase().endsWith('.docx') ||
-        fileUrl.toLowerCase().endsWith('.doc')
-      ) {
+      } else if (contentType.includes('word') || contentType.includes('document') || fileUrl.toLowerCase().endsWith('.docx') || fileUrl.toLowerCase().endsWith('.doc')) {
         return await this.extractTextFromDocx(buffer);
-      } else if (
-        contentType.includes('text') ||
-        fileUrl.toLowerCase().endsWith('.txt')
-      ) {
+      } else if (contentType.includes('text') || fileUrl.toLowerCase().endsWith('.txt')) {
         return buffer.toString('utf-8');
       } else {
-        throw new BadRequestException(
-          'Unsupported file format. Please upload PDF, DOCX, or TXT files.',
-        );
+        throw new BadRequestException('Unsupported file format. Please upload PDF, DOCX, or TXT files.');
       }
     } catch (error) {
       if (error instanceof BadRequestException) {
         throw error;
       }
-      throw new BadRequestException(
-        `Failed to download or process file: ${error.message}`,
-      );
+      throw new BadRequestException(`Failed to download or process file: ${error.message}`);
     }
   }
 
@@ -169,9 +139,7 @@ export class AiService {
   /**
    * Analyze resume text with OpenAI and extract structured data
    */
-  private async analyzeResumeWithAI(
-    text: string,
-  ): Promise<ParsedResumeDataDto> {
+  private async analyzeResumeWithAI(text: string): Promise<ParsedResumeDataDto> {
     const model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
 
     const prompt = `
@@ -217,8 +185,7 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
         messages: [
           {
             role: 'system',
-            content:
-              'You are a resume parsing assistant. You extract structured data from resumes and return it as valid JSON.',
+            content: 'You are a resume parsing assistant. You extract structured data from resumes and return it as valid JSON.',
           },
           {
             role: 'user',
@@ -245,13 +212,8 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
         certifications: parsedData.certifications || [],
       };
     } catch (error) {
-      this.logger.error(
-        `OpenAI API error: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to analyze resume with AI: ${error.message}`,
-      );
+      this.logger.error(`OpenAI API error: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to analyze resume with AI: ${error.message}`);
     }
   }
 

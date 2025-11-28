@@ -1,18 +1,7 @@
 import { Controller, Post, Body, UseGuards, Get, HttpCode } from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiSecurity,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiSecurity, ApiBearerAuth } from '@nestjs/swagger';
 import { WebhooksService } from './webhooks.service';
-import {
-  CandidateCreatedWebhookDto,
-  InterviewScheduledWebhookDto,
-  StageChangedWebhookDto,
-  ApplicationStatusChangedWebhookDto,
-} from './dto/webhook.dto';
+import { CandidateCreatedWebhookDto, InterviewScheduledWebhookDto, StageChangedWebhookDto, ApplicationStatusChangedWebhookDto } from './dto/webhook.dto';
 import { WebhookAuthGuard } from './guards/webhook-auth.guard';
 
 @ApiTags('Webhooks')
@@ -25,8 +14,7 @@ export class WebhooksController {
   @Get('health')
   @ApiOperation({
     summary: 'Check webhook service health',
-    description:
-      'Returns the health status of the webhook service and available webhook endpoints',
+    description: 'Returns the health status of the webhook service and available webhook endpoints',
   })
   @ApiResponse({
     status: 200,
@@ -108,9 +96,7 @@ export class WebhooksController {
     status: 401,
     description: 'Invalid or missing API key',
   })
-  async applicationStatusChanged(
-    @Body() data: ApplicationStatusChangedWebhookDto,
-  ) {
+  async applicationStatusChanged(@Body() data: ApplicationStatusChangedWebhookDto) {
     return this.webhooksService.processApplicationStatusChanged(data);
   }
 }

@@ -101,7 +101,7 @@ model CandidateNote {
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   candidateId Int
-  candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: SetNull)
+  candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: Cascade)
   authorId    Int
   author      User      @relation("CandidateNoteAuthor", fields: [authorId], references: [id])
 
@@ -263,7 +263,7 @@ model FileUpload {
   uploadedById       Int
   uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id])
   candidateId        Int?
-  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: SetNull)
+  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
   applicationResumes Application[] @relation("ApplicationResume")
   createdAt          DateTime      @default(now())
   updatedAt          DateTime      @updatedAt
@@ -275,8 +275,8 @@ model FileUpload {
 model Application {
   id             Int               @id @default(autoincrement())
   uid            String            @unique @default(uuid()) @db.Uuid
-  jobPositionId  Int
-  jobPosition    JobPosition       @relation(fields: [jobPositionId], references: [id], onDelete: Cascade)
+  jobPositionId  Int?
+  jobPosition    JobPosition?      @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
   applicantName  String
   applicantEmail String
   applicantPhone String
@@ -561,8 +561,8 @@ model Scorecard {
   uid          String            @unique @default(uuid()) @db.Uuid
   templateId   Int
   template     ScorecardTemplate @relation(fields: [templateId], references: [id])
-  interviewId  Int
-  interview    Interview         @relation(fields: [interviewId], references: [id], onDelete: Cascade)
+  interviewId  Int?
+  interview    Interview?        @relation(fields: [interviewId], references: [id], onDelete: SetNull)
   evaluatorId  Int
   evaluator    User              @relation("ScorecardEvaluations", fields: [evaluatorId], references: [id])
   overallScore Float?
@@ -654,20 +654,20 @@ model StageTimeLog {
 }
 
 model CandidateScore {
-  id              Int         @id @default(autoincrement())
-  uid             String      @unique @default(uuid()) @db.Uuid
-  candidateId     Int
-  candidate       Candidate   @relation("CandidateScores", fields: [candidateId], references: [id], onDelete: SetNull)
-  jobPositionId   Int
-  jobPosition     JobPosition @relation("JobPositionScores", fields: [jobPositionId], references: [id], onDelete: Cascade)
+  id              Int          @id @default(autoincrement())
+  uid             String       @unique @default(uuid()) @db.Uuid
+  candidateId     Int?
+  candidate       Candidate?   @relation("CandidateScores", fields: [candidateId], references: [id], onDelete: SetNull)
+  jobPositionId   Int?
+  jobPosition     JobPosition? @relation("JobPositionScores", fields: [jobPositionId], references: [id], onDelete: SetNull)
   overallScore    Float
   skillsScore     Float
   experienceScore Float
   educationScore  Float
   analysis        Json?
-  scoredAt        DateTime    @default(now())
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  scoredAt        DateTime     @default(now())
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   @@unique([candidateId, jobPositionId])
   @@index([jobPositionId])
@@ -677,21 +677,21 @@ model CandidateScore {
 }
 
 model BatchScoringJob {
-  id              Int         @id @default(autoincrement())
-  uid             String      @unique @default(uuid()) @db.Uuid
-  jobPositionId   Int
-  jobPosition     JobPosition @relation("BatchScoringJobs", fields: [jobPositionId], references: [id], onDelete: Cascade)
-  status          BatchStatus @default(PENDING)
-  priority        String      @default("normal")
+  id              Int          @id @default(autoincrement())
+  uid             String       @unique @default(uuid()) @db.Uuid
+  jobPositionId   Int?
+  jobPosition     JobPosition? @relation("BatchScoringJobs", fields: [jobPositionId], references: [id], onDelete: SetNull)
+  status          BatchStatus  @default(PENDING)
+  priority        String       @default("normal")
   totalCandidates Int
-  processedCount  Int         @default(0)
-  failedCount     Int         @default(0)
+  processedCount  Int          @default(0)
+  failedCount     Int          @default(0)
   candidateUids   Json
   errors          Json?
   startedAt       DateTime?
   completedAt     DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
 
   @@index([status])
   @@index([jobPositionId])
@@ -724,7 +724,7 @@ model CandidateActivity {
   id          Int                   @id @default(autoincrement())
   uid         String                @unique @default(uuid()) @db.Uuid
   candidateId Int
-  candidate   Candidate             @relation("CandidateActivities", fields: [candidateId], references: [id], onDelete: SetNull)
+  candidate   Candidate             @relation("CandidateActivities", fields: [candidateId], references: [id], onDelete: Cascade)
   type        CandidateActivityType
   description String
   metadata    Json?

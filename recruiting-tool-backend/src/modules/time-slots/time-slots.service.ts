@@ -1,17 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import {
-  GenerateTimeSlotsDto,
-  GenerateCustomTimeSlotsDto,
-  SelectTimeSlotDto,
-  TimeSlotResponseDto,
-  BookingTokenResponseDto,
-} from './dto/time-slots.dto';
+import { GenerateTimeSlotsDto, GenerateCustomTimeSlotsDto, SelectTimeSlotDto, TimeSlotResponseDto, BookingTokenResponseDto } from './dto/time-slots.dto';
 import { randomBytes } from 'crypto';
 import { InterviewStatus } from '@prisma/client';
 
@@ -48,12 +37,7 @@ export class TimeSlotsService {
     });
 
     // Generate time slots based on HR schedule
-    const slots = this.generateSlotsFromSchedule(
-      hrSchedule,
-      new Date(dto.startDate),
-      new Date(dto.endDate),
-      dto.duration,
-    );
+    const slots = this.generateSlotsFromSchedule(hrSchedule, new Date(dto.startDate), new Date(dto.endDate), dto.duration);
 
     // Create time slots in database
     const createdSlots = await Promise.all(
@@ -326,12 +310,7 @@ export class TimeSlotsService {
   /**
    * Helper: Generate slots from HR schedule
    */
-  private generateSlotsFromSchedule(
-    hrSchedule: any,
-    startDate: Date,
-    endDate: Date,
-    slotDuration: number,
-  ): Array<{ startTime: Date; endTime: Date }> {
+  private generateSlotsFromSchedule(hrSchedule: any, startDate: Date, endDate: Date, slotDuration: number): Array<{ startTime: Date; endTime: Date }> {
     const slots: Array<{ startTime: Date; endTime: Date }> = [];
     const currentDate = new Date(startDate);
 

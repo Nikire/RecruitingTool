@@ -5,7 +5,7 @@ import { InterviewStatus } from '@prisma/client';
 export class CreateInterviewDto {
   @ApiProperty({
     description: 'The UID of the stage for this interview',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsString()
   @IsNotEmpty()
@@ -14,7 +14,7 @@ export class CreateInterviewDto {
   @ApiProperty({
     description: 'The scheduled date for the interview (ISO 8601 format)',
     example: '2025-12-15T00:00:00.000Z',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsDateString()
@@ -23,7 +23,7 @@ export class CreateInterviewDto {
   @ApiProperty({
     description: 'The scheduled time for the interview (24-hour format)',
     example: '14:00',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -32,7 +32,7 @@ export class CreateInterviewDto {
   @ApiProperty({
     description: 'Duration of the interview in minutes',
     example: 60,
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsInt()
@@ -42,7 +42,7 @@ export class CreateInterviewDto {
   @ApiProperty({
     description: 'Meeting link (Zoom, Google Meet, etc.)',
     example: 'https://zoom.us/j/1234567890',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -51,7 +51,7 @@ export class CreateInterviewDto {
   @ApiProperty({
     description: 'Physical location of the interview',
     example: 'Conference Room A, 5th Floor',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -60,7 +60,7 @@ export class CreateInterviewDto {
   @ApiProperty({
     description: 'Additional notes for the interview',
     example: 'Prepare coding challenges',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -71,7 +71,7 @@ export class UpdateInterviewDto {
   @ApiProperty({
     description: 'The scheduled date for the interview (ISO 8601 format)',
     example: '2025-12-15T00:00:00.000Z',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsDateString()
@@ -80,7 +80,7 @@ export class UpdateInterviewDto {
   @ApiProperty({
     description: 'The scheduled time for the interview (24-hour format)',
     example: '15:30',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -89,7 +89,7 @@ export class UpdateInterviewDto {
   @ApiProperty({
     description: 'Duration of the interview in minutes',
     example: 90,
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsInt()
@@ -99,7 +99,7 @@ export class UpdateInterviewDto {
   @ApiProperty({
     description: 'Meeting link (Zoom, Google Meet, etc.)',
     example: 'https://meet.google.com/abc-defg-hij',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -108,7 +108,7 @@ export class UpdateInterviewDto {
   @ApiProperty({
     description: 'Physical location of the interview',
     example: 'Conference Room B, 3rd Floor',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -117,7 +117,7 @@ export class UpdateInterviewDto {
   @ApiProperty({
     description: 'Additional notes for the interview',
     example: 'Updated notes',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -127,7 +127,7 @@ export class UpdateInterviewDto {
     description: 'Status of the interview',
     example: InterviewStatus.SCHEDULED,
     enum: InterviewStatus,
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsEnum(InterviewStatus)
@@ -137,7 +137,7 @@ export class UpdateInterviewDto {
 export class AddInterviewerDto {
   @ApiProperty({
     description: 'UID of the user to add as interviewer',
-    example: '123e4567-e89b-12d3-a456-426614174003'
+    example: '123e4567-e89b-12d3-a456-426614174003',
   })
   @IsString()
   @IsNotEmpty()
@@ -146,7 +146,7 @@ export class AddInterviewerDto {
   @ApiProperty({
     description: 'Role of the interviewer (e.g., Lead, Technical, HR)',
     example: 'Lead Interviewer',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -156,7 +156,7 @@ export class AddInterviewerDto {
 export class RescheduleInterviewDto {
   @ApiProperty({
     description: 'New scheduled date for the interview (ISO 8601 format)',
-    example: '2025-12-20T00:00:00.000Z'
+    example: '2025-12-20T00:00:00.000Z',
   })
   @IsDateString()
   @IsNotEmpty()
@@ -164,7 +164,7 @@ export class RescheduleInterviewDto {
 
   @ApiProperty({
     description: 'New scheduled time for the interview (24-hour format)',
-    example: '15:30'
+    example: '15:30',
   })
   @IsString()
   @IsNotEmpty()
@@ -173,7 +173,7 @@ export class RescheduleInterviewDto {
   @ApiProperty({
     description: 'Reason for rescheduling',
     example: 'Candidate requested different time',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -182,7 +182,7 @@ export class RescheduleInterviewDto {
   @ApiProperty({
     description: 'Duration of the interview in minutes',
     example: 60,
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsInt()
@@ -192,7 +192,7 @@ export class RescheduleInterviewDto {
   @ApiProperty({
     description: 'Meeting link (Zoom, Google Meet, etc.)',
     example: 'https://zoom.us/j/1234567890',
-    required: false
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -202,56 +202,56 @@ export class RescheduleInterviewDto {
 export class InterviewRescheduleHistoryDto {
   @ApiProperty({
     description: 'The UID of the reschedule record',
-    example: '123e4567-e89b-12d3-a456-426614174005'
+    example: '123e4567-e89b-12d3-a456-426614174005',
   })
   uid: string;
 
   @ApiProperty({
     description: 'Previous scheduled date',
-    example: '2025-12-15T00:00:00.000Z'
+    example: '2025-12-15T00:00:00.000Z',
   })
   oldScheduledDate: Date;
 
   @ApiProperty({
     description: 'Previous scheduled time',
-    example: '14:00'
+    example: '14:00',
   })
   oldScheduledTime: string;
 
   @ApiProperty({
     description: 'New scheduled date',
-    example: '2025-12-20T00:00:00.000Z'
+    example: '2025-12-20T00:00:00.000Z',
   })
   newScheduledDate: Date;
 
   @ApiProperty({
     description: 'New scheduled time',
-    example: '15:30'
+    example: '15:30',
   })
   newScheduledTime: string;
 
   @ApiProperty({
     description: 'Reason for rescheduling',
     example: 'Candidate requested different time',
-    required: false
+    required: false,
   })
   reason: string | null;
 
   @ApiProperty({
     description: 'UID of the user who rescheduled',
-    example: '123e4567-e89b-12d3-a456-426614174002'
+    example: '123e4567-e89b-12d3-a456-426614174002',
   })
   rescheduledByUid: string;
 
   @ApiProperty({
     description: 'Name of the user who rescheduled',
-    example: 'John Doe'
+    example: 'John Doe',
   })
   rescheduledByName: string;
 
   @ApiProperty({
     description: 'When the reschedule occurred',
-    example: '2025-11-25T16:30:00.000Z'
+    example: '2025-11-25T16:30:00.000Z',
   })
   rescheduledAt: Date;
 }
@@ -259,74 +259,74 @@ export class InterviewRescheduleHistoryDto {
 export class InterviewResponseDto {
   @ApiProperty({
     description: 'The UID of the interview',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   uid: string;
 
   @ApiProperty({
     description: 'The UID of the stage',
-    example: '123e4567-e89b-12d3-a456-426614174001'
+    example: '123e4567-e89b-12d3-a456-426614174001',
   })
   stageUid: string;
 
   @ApiProperty({
     description: 'The scheduled date for the interview',
     example: '2025-12-15T00:00:00.000Z',
-    required: false
+    required: false,
   })
   scheduledDate: string | null;
 
   @ApiProperty({
     description: 'The scheduled time for the interview',
     example: '14:00',
-    required: false
+    required: false,
   })
   scheduledTime: string | null;
 
   @ApiProperty({
     description: 'Duration in minutes',
     example: 60,
-    required: false
+    required: false,
   })
   duration: number | null;
 
   @ApiProperty({
     description: 'Status of the interview',
     example: InterviewStatus.SCHEDULED,
-    enum: InterviewStatus
+    enum: InterviewStatus,
   })
   status: InterviewStatus;
 
   @ApiProperty({
     description: 'Meeting link',
     example: 'https://zoom.us/j/1234567890',
-    required: false
+    required: false,
   })
   meetingLink: string | null;
 
   @ApiProperty({
     description: 'Physical location of the interview',
     example: 'Conference Room A, 5th Floor',
-    required: false
+    required: false,
   })
   location: string | null;
 
   @ApiProperty({
     description: 'Additional notes',
     example: 'Technical interview with coding exercises',
-    required: false
+    required: false,
   })
   notes: string | null;
 
   @ApiProperty({
     description: 'UID of the user who scheduled this interview',
-    example: '123e4567-e89b-12d3-a456-426614174002'
+    example: '123e4567-e89b-12d3-a456-426614174002',
   })
   scheduledByUid: string;
 
   @ApiProperty({
     description: 'Name of the user who scheduled this interview',
-    example: 'John Doe'
+    example: 'John Doe',
   })
   scheduledByName: string;
 
@@ -338,9 +338,9 @@ export class InterviewResponseDto {
       properties: {
         userUid: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174003' },
         userName: { type: 'string', example: 'Jane Smith' },
-        role: { type: 'string', example: 'Lead Interviewer', nullable: true }
-      }
-    }
+        role: { type: 'string', example: 'Lead Interviewer', nullable: true },
+      },
+    },
   })
   interviewers: Array<{
     userUid: string;
@@ -351,40 +351,40 @@ export class InterviewResponseDto {
   @ApiProperty({
     description: 'Number of times this interview has been rescheduled',
     example: 2,
-    default: 0
+    default: 0,
   })
   rescheduledCount: number;
 
   @ApiProperty({
     description: 'Original scheduled date before any rescheduling',
     example: '2025-12-15T00:00:00.000Z',
-    required: false
+    required: false,
   })
   originalScheduledDate: string | null;
 
   @ApiProperty({
     description: 'Timestamp of the last reschedule',
     example: '2025-11-25T16:30:00.000Z',
-    required: false
+    required: false,
   })
   lastRescheduledAt: string | null;
 
   @ApiProperty({
     description: 'Reason for the last reschedule',
     example: 'Candidate requested different time',
-    required: false
+    required: false,
   })
   rescheduledReason: string | null;
 
   @ApiProperty({
     description: 'Creation timestamp',
-    example: '2025-11-20T10:00:00.000Z'
+    example: '2025-11-20T10:00:00.000Z',
   })
   createdAt: Date;
 
   @ApiProperty({
     description: 'Last update timestamp',
-    example: '2025-11-20T15:30:00.000Z'
+    example: '2025-11-20T15:30:00.000Z',
   })
   updatedAt: Date;
 }

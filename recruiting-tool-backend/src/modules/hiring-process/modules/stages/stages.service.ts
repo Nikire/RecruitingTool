@@ -46,10 +46,7 @@ export class StagesService {
     // Build where clause for search
     const where = search
       ? {
-          OR: [
-            { title: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } },
-          ],
+          OR: [{ title: { contains: search, mode: 'insensitive' as const } }, { description: { contains: search, mode: 'insensitive' as const } }],
         }
       : {};
 
@@ -230,9 +227,7 @@ export class StagesService {
       throw new NotFoundException('No current stage found in this hiring process');
     }
 
-    const nextStage = hiringProcess.stages.find(
-      (stage) => stage.position === currentStage.position + 1,
-    );
+    const nextStage = hiringProcess.stages.find((stage) => stage.position === currentStage.position + 1);
 
     // Exit time log for current stage (if candidate exists)
     if (hiringProcess.candidateId) {
@@ -336,20 +331,22 @@ export class StagesService {
     });
 
     // Mark all stages before target as DONE, and target as CURRENT
-    const updates = hiringProcess.stages.map((stage) => {
-      if (stage.position < targetStage.position) {
-        return this.databaseService.stage.update({
-          where: { id: stage.id },
-          data: { status: StageStatus.DONE },
-        });
-      } else if (stage.id === targetStage.id) {
-        return this.databaseService.stage.update({
-          where: { id: stage.id },
-          data: { status: StageStatus.CURRENT },
-        });
-      }
-      return null;
-    }).filter(Boolean);
+    const updates = hiringProcess.stages
+      .map((stage) => {
+        if (stage.position < targetStage.position) {
+          return this.databaseService.stage.update({
+            where: { id: stage.id },
+            data: { status: StageStatus.DONE },
+          });
+        } else if (stage.id === targetStage.id) {
+          return this.databaseService.stage.update({
+            where: { id: stage.id },
+            data: { status: StageStatus.CURRENT },
+          });
+        }
+        return null;
+      })
+      .filter(Boolean);
 
     await this.databaseService.$transaction(updates);
 
@@ -602,9 +599,7 @@ export class StagesService {
       stageTitle: stage.title,
       totalCandidates: completedLogs.length,
       candidatesInStage,
-      averageTimeMinutes: durations.length > 0
-        ? Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length)
-        : null,
+      averageTimeMinutes: durations.length > 0 ? Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length) : null,
       minTimeMinutes: durations.length > 0 ? Math.min(...durations) : null,
       maxTimeMinutes: durations.length > 0 ? Math.max(...durations) : null,
     };

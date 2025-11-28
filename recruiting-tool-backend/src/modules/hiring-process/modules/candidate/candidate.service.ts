@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, InternalServerErrorException, ConflictException, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, HttpException, InternalServerErrorException, ConflictException, forwardRef, Inject } from '@nestjs/common';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';
@@ -17,6 +17,8 @@ import { StorageService } from 'src/modules/storage/storage.service';
 
 @Injectable()
 export class CandidateService {
+  private readonly logger = new Logger(CandidateService.name);
+
   constructor(
     private candidateActivityService: CandidateActivityService,
     private databaseService: DatabaseService,
@@ -43,11 +45,11 @@ export class CandidateService {
           CandidateActivityType.CREATED,
           `Candidate profile created from source: ${candidate.source || 'UNKNOWN'}`,
           null, // System event, no user
-          { source: candidate.source, email: candidate.email }
+          { source: candidate.source, email: candidate.email },
         );
       } catch (error) {
         // Log error but don't fail candidate creation
-        console.error('Failed to log candidate creation activity:', error.message);
+        this.logger.error('Failed to log candidate creation activity:', error.message);
       }
 
       return CandidateMapper(candidate);
@@ -55,9 +57,7 @@ export class CandidateService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to create: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to create: ${error.message}`);
     }
   }
 
@@ -110,9 +110,7 @@ export class CandidateService {
       });
 
       if (existingCandidate && existingCandidate.hiringProcesses.length > 0) {
-        throw new ConflictException(
-          `A candidate with email ${email} already exists for this company`,
-        );
+        throw new ConflictException(`A candidate with email ${email} already exists for this company`);
       }
 
       // Create candidate with MANUAL source
@@ -180,7 +178,7 @@ export class CandidateService {
         });
       } catch (emailError) {
         // Log email error but don't fail the whole operation
-        console.error(`Failed to send welcome email: ${emailError.message}`);
+        this.logger.error(`Failed to send welcome email: ${emailError.message}`);
       }
 
       // Map to response DTO (we'll need to create a mapper for this)
@@ -212,259 +210,245 @@ export class CandidateService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to create manual candidate: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to create manual candidate: ${error.message}`);
     }
   }
 
   async findOne(uid: string, user?: User): Promise<CandidateResponseDto> {
     try {
-    const candidate = await this.databaseService.candidate.findFirst({
-      where: { uid, deletedAt: null },
-      include: { hiringProcesses: true },
-    });
+      const candidate = await this.databaseService.candidate.findFirst({
+        where: { uid, deletedAt: null },
+        include: { hiringProcesses: true },
+      });
 
-    if (!candidate) {
-      throw new EntityNotFoundException('Candidate', uid);
+      if (!candidate) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
+
+      // Verify company access if user is provided (through hiring processes)
+      if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
+        const userCompanyId = getUserCompanyId(user);
+        if (userCompanyId !== null) {
+          // Check if candidate has at least one hiring process for this company
+          const hasAccessToCandidate = candidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
+          if (!hasAccessToCandidate) {
+            throw new EntityNotFoundException('Candidate', uid);
+          }
+        }
+      }
+
+      return CandidateMapper(candidate);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to find one: ${error.message}`);
     }
+  }
 
-    // Verify company access if user is provided (through hiring processes)
-    if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
+  async list(
+    paginationDto: PaginationDto & { source?: string; skills?: string[]; startDate?: string; endDate?: string; status?: string },
+    user: User,
+  ): Promise<PaginatedResponse<CandidateResponseDto>> {
+    try {
+      const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', source, skills, startDate, endDate, status } = paginationDto;
+      const skip = (page - 1) * pageSize;
+
+      // Build where clause for search
+      const where: any = search
+        ? {
+            OR: [{ name: { contains: search, mode: 'insensitive' as const } }, { email: { contains: search, mode: 'insensitive' as const } }],
+          }
+        : {};
+
+      // Exclude soft-deleted records
+      where.deletedAt = null;
+
+      // Add source filter if provided
+      if (source) {
+        where.source = source;
+      }
+
+      // Add date range filters
+      if (startDate || endDate) {
+        where.createdAt = {};
+        if (startDate) {
+          where.createdAt.gte = new Date(startDate);
+        }
+        if (endDate) {
+          where.createdAt.lte = new Date(endDate);
+        }
+      }
+
+      // Add skills filter - search in candidate files (resume text) or sourceDetails
+      if (skills && skills.length > 0) {
+        where.OR = where.OR || [];
+        skills.forEach((skill) => {
+          where.OR.push({ sourceDetails: { contains: skill, mode: 'insensitive' as const } });
+        });
+      }
+
+      // Add status filter - filter by hiring process status
+      if (status) {
+        where.hiringProcesses = where.hiringProcesses || {};
+        where.hiringProcesses.some = where.hiringProcesses.some || {};
+        where.hiringProcesses.some.status = status;
+      }
+
+      // Add company filter for HR and USER roles (filter by hiring processes company)
       const userCompanyId = getUserCompanyId(user);
       if (userCompanyId !== null) {
-        // Check if candidate has at least one hiring process for this company
-        const hasAccessToCandidate = candidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
-        if (!hasAccessToCandidate) {
-          throw new EntityNotFoundException('Candidate', uid);
+        if (!where.hiringProcesses) {
+          where.hiringProcesses = {};
         }
-      }
-    }
-
-    return CandidateMapper(candidate);
-  
-    } catch (error) {
-      if (error instanceof HttpException) {
-        throw error;
-      }
-      throw new InternalServerErrorException(
-        `Failed to find one: ${error.message}`,
-      );
-    }}
-
-  async list(paginationDto: PaginationDto & { source?: string; skills?: string[]; startDate?: string; endDate?: string; status?: string }, user: User): Promise<PaginatedResponse<CandidateResponseDto>> {
-    try {
-    const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', source, skills, startDate, endDate, status } = paginationDto;
-    const skip = (page - 1) * pageSize;
-
-    // Build where clause for search
-    const where: any = search
-      ? {
-          OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { email: { contains: search, mode: 'insensitive' as const } },
-          ],
+        if (!where.hiringProcesses.some) {
+          where.hiringProcesses.some = {};
         }
-      : {};
-
-    // Exclude soft-deleted records
-    where.deletedAt = null;
-
-    // Add source filter if provided
-    if (source) {
-      where.source = source;
-    }
-
-    // Add date range filters
-    if (startDate || endDate) {
-      where.createdAt = {};
-      if (startDate) {
-        where.createdAt.gte = new Date(startDate);
+        where.hiringProcesses.some.companyId = userCompanyId;
       }
-      if (endDate) {
-        where.createdAt.lte = new Date(endDate);
-      }
-    }
 
-    // Add skills filter - search in candidate files (resume text) or sourceDetails
-    if (skills && skills.length > 0) {
-      where.OR = where.OR || [];
-      skills.forEach(skill => {
-        where.OR.push(
-          { sourceDetails: { contains: skill, mode: 'insensitive' as const } }
-        );
+      // Get total count
+      const total = await this.databaseService.candidate.count({ where });
+
+      // Get paginated data
+      const candidates = await this.databaseService.candidate.findMany({
+        where,
+        skip,
+        take: pageSize,
+        orderBy: { [sortBy]: sortOrder },
+        include: { hiringProcesses: true },
       });
-    }
 
-    // Add status filter - filter by hiring process status
-    if (status) {
-      where.hiringProcesses = where.hiringProcesses || {};
-      where.hiringProcesses.some = where.hiringProcesses.some || {};
-      where.hiringProcesses.some.status = status;
-    }
+      const totalPages = Math.ceil(total / pageSize);
 
-    // Add company filter for HR and USER roles (filter by hiring processes company)
-    const userCompanyId = getUserCompanyId(user);
-    if (userCompanyId !== null) {
-      if (!where.hiringProcesses) {
-        where.hiringProcesses = {};
-      }
-      if (!where.hiringProcesses.some) {
-        where.hiringProcesses.some = {};
-      }
-      where.hiringProcesses.some.companyId = userCompanyId;
-    }
-
-    // Get total count
-    const total = await this.databaseService.candidate.count({ where });
-
-    // Get paginated data
-    const candidates = await this.databaseService.candidate.findMany({
-      where,
-      skip,
-      take: pageSize,
-      orderBy: { [sortBy]: sortOrder },
-      include: { hiringProcesses: true },
-    });
-
-    const totalPages = Math.ceil(total / pageSize);
-
-    return {
-      data: candidates.map((c) => CandidateMapper(c)),
-      pagination: {
-        total,
-        page,
-        pageSize,
-        totalPages,
-        hasNextPage: page < totalPages,
-        hasPreviousPage: page > 1,
-      },
-    };
-
+      return {
+        data: candidates.map((c) => CandidateMapper(c)),
+        pagination: {
+          total,
+          page,
+          pageSize,
+          totalPages,
+          hasNextPage: page < totalPages,
+          hasPreviousPage: page > 1,
+        },
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to list: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to list: ${error.message}`);
+    }
+  }
 
   async findAll(user: User): Promise<Array<CandidateResponseDto>> {
     try {
-    const where: any = { deletedAt: null };
+      const where: any = { deletedAt: null };
 
-    // Add company filter for HR and USER roles (filter by hiring processes company)
-    const userCompanyId = getUserCompanyId(user);
-    if (userCompanyId !== null) {
-      where.hiringProcesses = {
-        some: {
-          companyId: userCompanyId,
-        },
-      };
-    }
+      // Add company filter for HR and USER roles (filter by hiring processes company)
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        where.hiringProcesses = {
+          some: {
+            companyId: userCompanyId,
+          },
+        };
+      }
 
-    const candidates = await this.databaseService.candidate.findMany({
-      where,
-      include: { hiringProcesses: true },
-    });
-    return candidates.map((c) => CandidateMapper(c));
-  
+      const candidates = await this.databaseService.candidate.findMany({
+        where,
+        include: { hiringProcesses: true },
+      });
+      return candidates.map((c) => CandidateMapper(c));
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to find all: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to find all: ${error.message}`);
+    }
+  }
 
   async update(uid: string, updateCandidateDto: UpdateCandidateDto, user: User): Promise<CandidateResponseDto> {
     try {
-    if (!uid) {
-      throw new EntityNotFoundException('Candidate', uid);
-    }
+      if (!uid) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
 
-    // Verify company access before update (through hiring processes)
-    const existingCandidate = await this.databaseService.candidate.findUnique({
-      where: { uid },
-      include: { hiringProcesses: true },
-    });
+      // Verify company access before update (through hiring processes)
+      const existingCandidate = await this.databaseService.candidate.findUnique({
+        where: { uid },
+        include: { hiringProcesses: true },
+      });
 
-    if (!existingCandidate) {
-      throw new EntityNotFoundException('Candidate', uid);
-    }
+      if (!existingCandidate) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
 
-    // Check if user has access to this candidate through any hiring process
-    if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
-      const userCompanyId = getUserCompanyId(user);
-      if (userCompanyId !== null) {
-        const hasAccessToCandidate = existingCandidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
-        if (!hasAccessToCandidate) {
-          throw new EntityNotFoundException('Candidate', uid);
+      // Check if user has access to this candidate through any hiring process
+      if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
+        const userCompanyId = getUserCompanyId(user);
+        if (userCompanyId !== null) {
+          const hasAccessToCandidate = existingCandidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
+          if (!hasAccessToCandidate) {
+            throw new EntityNotFoundException('Candidate', uid);
+          }
         }
       }
-    }
 
-    const candidate = await this.databaseService.candidate.update({
-      where: { uid },
-      data: { ...updateCandidateDto },
-    });
+      const candidate = await this.databaseService.candidate.update({
+        where: { uid },
+        data: { ...updateCandidateDto },
+      });
 
-    return CandidateMapper(candidate);
-  
+      return CandidateMapper(candidate);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to update: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to update: ${error.message}`);
+    }
+  }
 
   async remove(uid: string, user: User): Promise<MessageResponseDto> {
     try {
-    if (!uid) {
-      throw new EntityNotFoundException('Candidate', uid);
-    }
+      if (!uid) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
 
-    // Verify company access before soft delete (through hiring processes)
-    const existingCandidate = await this.databaseService.candidate.findUnique({
-      where: { uid },
-      include: { hiringProcesses: true },
-    });
+      // Verify company access before soft delete (through hiring processes)
+      const existingCandidate = await this.databaseService.candidate.findUnique({
+        where: { uid },
+        include: { hiringProcesses: true },
+      });
 
-    if (!existingCandidate) {
-      throw new EntityNotFoundException('Candidate', uid);
-    }
+      if (!existingCandidate) {
+        throw new EntityNotFoundException('Candidate', uid);
+      }
 
-    // Check if user has access to this candidate through any hiring process
-    if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
-      const userCompanyId = getUserCompanyId(user);
-      if (userCompanyId !== null) {
-        const hasAccessToCandidate = existingCandidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
-        if (!hasAccessToCandidate) {
-          throw new EntityNotFoundException('Candidate', uid);
+      // Check if user has access to this candidate through any hiring process
+      if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
+        const userCompanyId = getUserCompanyId(user);
+        if (userCompanyId !== null) {
+          const hasAccessToCandidate = existingCandidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
+          if (!hasAccessToCandidate) {
+            throw new EntityNotFoundException('Candidate', uid);
+          }
         }
       }
-    }
 
-    // Soft delete: Set deletedAt instead of hard delete
-    await this.databaseService.candidate.update({
-      where: { uid },
-      data: { deletedAt: new Date() },
-    });
+      // Soft delete: Set deletedAt instead of hard delete
+      await this.databaseService.candidate.update({
+        where: { uid },
+        data: { deletedAt: new Date() },
+      });
 
-    return { message: `Candidate soft deleted successfully` };
-
+      return { message: `Candidate soft deleted successfully` };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to remove: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to remove: ${error.message}`);
+    }
+  }
 
   /**
    * GDPR Compliance: Permanently delete candidate data (hard delete)
@@ -513,7 +497,7 @@ export class CandidateService {
 
       // 1. Collect files directly associated with candidate
       if (existingCandidate.files && existingCandidate.files.length > 0) {
-        existingCandidate.files.forEach(file => {
+        existingCandidate.files.forEach((file) => {
           if (file.s3Key) {
             s3KeysToDelete.push(file.s3Key);
           }
@@ -524,11 +508,9 @@ export class CandidateService {
       if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
         for (const hiringProcess of existingCandidate.hiringProcesses) {
           if (hiringProcess.jobPosition && hiringProcess.jobPosition.applications) {
-            const candidateApplications = hiringProcess.jobPosition.applications.filter(
-              app => app.applicantEmail.toLowerCase() === existingCandidate.email.toLowerCase()
-            );
+            const candidateApplications = hiringProcess.jobPosition.applications.filter((app) => app.applicantEmail.toLowerCase() === existingCandidate.email.toLowerCase());
 
-            candidateApplications.forEach(app => {
+            candidateApplications.forEach((app) => {
               if (app.resumeFile && app.resumeFile.s3Key) {
                 s3KeysToDelete.push(app.resumeFile.s3Key);
               }
@@ -545,7 +527,7 @@ export class CandidateService {
         } catch (deleteError) {
           // Log error but continue with other deletions
           deletionErrors.push(`Failed to delete ${s3Key}: ${deleteError.message}`);
-          console.error(`Error deleting file ${s3Key} from storage:`, deleteError.message);
+          this.logger.error(`Error deleting file ${s3Key} from storage:`, deleteError.message);
         }
       }
 
@@ -560,180 +542,169 @@ export class CandidateService {
       }
 
       return { message };
-
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to purge: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to purge: ${error.message}`);
     }
   }
 
   // Candidate Notes methods
   async createNote(createNoteDto: CreateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
     try {
-    // Find candidate by UID to get the numeric ID
-    const candidate = await this.databaseService.candidate.findFirst({
-      where: { uid: createNoteDto.candidateUid, deletedAt: null },
-    });
+      // Find candidate by UID to get the numeric ID
+      const candidate = await this.databaseService.candidate.findFirst({
+        where: { uid: createNoteDto.candidateUid, deletedAt: null },
+      });
 
-    if (!candidate) {
-      throw new NotFoundException(`Candidate ${createNoteDto.candidateUid} not found`);
-    }
+      if (!candidate) {
+        throw new NotFoundException(`Candidate ${createNoteDto.candidateUid} not found`);
+      }
 
-    const note = await this.databaseService.candidateNote.create({
-      data: {
-        content: createNoteDto.content,
-        candidateId: candidate.id,
-        authorId: authorUserId,
-      },
-      include: {
-        author: true,
-        candidate: true,
-      },
-    });
+      const note = await this.databaseService.candidateNote.create({
+        data: {
+          content: createNoteDto.content,
+          candidateId: candidate.id,
+          authorId: authorUserId,
+        },
+        include: {
+          author: true,
+          candidate: true,
+        },
+      });
 
-    return {
-      uid: note.uid,
-      content: note.content,
-      candidateUid: note.candidate.uid,
-      authorUid: note.author.uid,
-      authorName: note.author.name,
-      createdAt: note.createdAt,
-      updatedAt: note.updatedAt,
-    };
-  
+      return {
+        uid: note.uid,
+        content: note.content,
+        candidateUid: note.candidate.uid,
+        authorUid: note.author.uid,
+        authorName: note.author.name,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to create note: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to create note: ${error.message}`);
+    }
+  }
 
   async findNotesByCandidateUid(candidateUid: string): Promise<CandidateNoteResponseDto[]> {
     try {
-    const candidate = await this.databaseService.candidate.findFirst({
-      where: { uid: candidateUid, deletedAt: null },
-    });
+      const candidate = await this.databaseService.candidate.findFirst({
+        where: { uid: candidateUid, deletedAt: null },
+      });
 
-    if (!candidate) {
-      throw new EntityNotFoundException('Candidate', candidateUid);
-    }
+      if (!candidate) {
+        throw new EntityNotFoundException('Candidate', candidateUid);
+      }
 
-    const notes = await this.databaseService.candidateNote.findMany({
-      where: { candidateId: candidate.id },
-      include: {
-        author: true,
-        candidate: true,
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+      const notes = await this.databaseService.candidateNote.findMany({
+        where: { candidateId: candidate.id },
+        include: {
+          author: true,
+          candidate: true,
+        },
+        orderBy: { createdAt: 'desc' },
+      });
 
-    return notes.map((note) => ({
-      uid: note.uid,
-      content: note.content,
-      candidateUid: note.candidate.uid,
-      authorUid: note.author.uid,
-      authorName: note.author.name,
-      createdAt: note.createdAt,
-      updatedAt: note.updatedAt,
-    }));
-  
+      return notes.map((note) => ({
+        uid: note.uid,
+        content: note.content,
+        candidateUid: note.candidate.uid,
+        authorUid: note.author.uid,
+        authorName: note.author.name,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
+      }));
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to find notes by candidate uid: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to find notes by candidate uid: ${error.message}`);
+    }
+  }
 
   async updateNote(noteUid: string, updateNoteDto: UpdateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
     try {
-    // First fetch the note to verify ownership
-    const existingNote = await this.databaseService.candidateNote.findUnique({
-      where: { uid: noteUid },
-      include: {
-        author: true,
-        candidate: true,
-      },
-    });
+      // First fetch the note to verify ownership
+      const existingNote = await this.databaseService.candidateNote.findUnique({
+        where: { uid: noteUid },
+        include: {
+          author: true,
+          candidate: true,
+        },
+      });
 
-    if (!existingNote) {
-      throw new EntityNotFoundException('Note', noteUid);
-    }
+      if (!existingNote) {
+        throw new EntityNotFoundException('Note', noteUid);
+      }
 
-    // Verify that the current user is the note author
-    if (existingNote.authorId !== authorUserId) {
-      throw new EntityNotFoundException('Note', noteUid);
-    }
+      // Verify that the current user is the note author
+      if (existingNote.authorId !== authorUserId) {
+        throw new EntityNotFoundException('Note', noteUid);
+      }
 
-    const note = await this.databaseService.candidateNote.update({
-      where: { uid: noteUid },
-      data: { content: updateNoteDto.content },
-      include: {
-        author: true,
-        candidate: true,
-      },
-    });
+      const note = await this.databaseService.candidateNote.update({
+        where: { uid: noteUid },
+        data: { content: updateNoteDto.content },
+        include: {
+          author: true,
+          candidate: true,
+        },
+      });
 
-    return {
-      uid: note.uid,
-      content: note.content,
-      candidateUid: note.candidate.uid,
-      authorUid: note.author.uid,
-      authorName: note.author.name,
-      createdAt: note.createdAt,
-      updatedAt: note.updatedAt,
-    };
-  
+      return {
+        uid: note.uid,
+        content: note.content,
+        candidateUid: note.candidate.uid,
+        authorUid: note.author.uid,
+        authorName: note.author.name,
+        createdAt: note.createdAt,
+        updatedAt: note.updatedAt,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to update note: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to update note: ${error.message}`);
+    }
+  }
 
   async removeNote(noteUid: string, authorUserId: number): Promise<MessageResponseDto> {
     try {
-    // First fetch the note to verify ownership
-    const existingNote = await this.databaseService.candidateNote.findUnique({
-      where: { uid: noteUid },
-    });
+      // First fetch the note to verify ownership
+      const existingNote = await this.databaseService.candidateNote.findUnique({
+        where: { uid: noteUid },
+      });
 
-    if (!existingNote) {
-      throw new EntityNotFoundException('Note', noteUid);
-    }
+      if (!existingNote) {
+        throw new EntityNotFoundException('Note', noteUid);
+      }
 
-    // Verify that the current user is the note author
-    if (existingNote.authorId !== authorUserId) {
-      throw new EntityNotFoundException('Note', noteUid);
-    }
+      // Verify that the current user is the note author
+      if (existingNote.authorId !== authorUserId) {
+        throw new EntityNotFoundException('Note', noteUid);
+      }
 
-    const note = await this.databaseService.candidateNote.delete({
-      where: { uid: noteUid },
-    });
+      const note = await this.databaseService.candidateNote.delete({
+        where: { uid: noteUid },
+      });
 
-    if (!note) {
-      throw new EntityNotFoundException('Note', noteUid);
-    }
+      if (!note) {
+        throw new EntityNotFoundException('Note', noteUid);
+      }
 
-    return { message: 'Note deleted successfully' };
-
+      return { message: 'Note deleted successfully' };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to remove note: ${error.message}`,
-      );
-    }}
+      throw new InternalServerErrorException(`Failed to remove note: ${error.message}`);
+    }
+  }
 
   // Candidate Journey Tracking
   async getCandidateJourney(candidateUid: string, user?: User): Promise<CandidateJourneyResponseDto[]> {
@@ -765,7 +736,7 @@ export class CandidateService {
       if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
         const userCompanyId = getUserCompanyId(user);
         if (userCompanyId !== null) {
-          const hasAccessToCandidate = candidate.hiringProcesses.some(hp => hp.companyId === userCompanyId);
+          const hasAccessToCandidate = candidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
           if (!hasAccessToCandidate) {
             throw new EntityNotFoundException('Candidate', candidateUid);
           }
@@ -775,9 +746,7 @@ export class CandidateService {
       // Build journey for each hiring process
       const journeys: CandidateJourneyResponseDto[] = candidate.hiringProcesses.map((hiringProcess) => {
         // Get time logs for this hiring process stages
-        const stageTimeLogs = candidate.stageTimeLogs.filter((log) =>
-          hiringProcess.stages.some((stage) => stage.id === log.stageId)
-        );
+        const stageTimeLogs = candidate.stageTimeLogs.filter((log) => hiringProcess.stages.some((stage) => stage.id === log.stageId));
 
         // Build stage steps
         const stageSteps: CandidateJourneyStepDto[] = hiringProcess.stages.map((stage) => {
@@ -795,9 +764,7 @@ export class CandidateService {
         });
 
         // Calculate total time
-        const totalTimeMinutes = stageTimeLogs
-          .filter((log) => log.duration !== null)
-          .reduce((sum, log) => sum + (log.duration || 0), 0);
+        const totalTimeMinutes = stageTimeLogs.filter((log) => log.duration !== null).reduce((sum, log) => sum + (log.duration || 0), 0);
 
         return {
           candidateUid: candidate.uid,
@@ -814,9 +781,7 @@ export class CandidateService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get candidate journey: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get candidate journey: ${error.message}`);
     }
   }
 }

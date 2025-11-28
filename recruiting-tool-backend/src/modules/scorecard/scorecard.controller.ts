@@ -1,15 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
@@ -52,10 +41,7 @@ export class ScorecardController {
 
   @Auth(['HR', 'ADMIN', 'SUPER_ADMIN'])
   @Put('templates/:uid')
-  async updateTemplate(
-    @Param('uid') uid: string,
-    @Body() dto: UpdateScorecardTemplateDto,
-  ): Promise<ScorecardTemplateResponseDto> {
+  async updateTemplate(@Param('uid') uid: string, @Body() dto: UpdateScorecardTemplateDto): Promise<ScorecardTemplateResponseDto> {
     return this.templateService.updateTemplate(uid, dto);
   }
 

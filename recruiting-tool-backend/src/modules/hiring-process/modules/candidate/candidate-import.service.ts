@@ -4,12 +4,7 @@ import csv from 'csv-parser';
 import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
-import {
-  CandidateImportRowDto,
-  CandidateImportErrorDto,
-  CandidateImportResultDto,
-  CandidateImportPreviewDto
-} from './dto/candidate-import.dto';
+import { CandidateImportRowDto, CandidateImportErrorDto, CandidateImportResultDto, CandidateImportPreviewDto } from './dto/candidate-import.dto';
 import { ApplicationSource } from '@prisma/client';
 
 @Injectable()
@@ -25,14 +20,16 @@ export class CandidateImportService {
       const stream = Readable.from(buffer);
 
       stream
-        .pipe(csv({
-          mapHeaders: ({ header }) => header.trim().toLowerCase(),
-          skipLines: 0,
-        }))
+        .pipe(
+          csv({
+            mapHeaders: ({ header }) => header.trim().toLowerCase(),
+            skipLines: 0,
+          }),
+        )
         .on('data', (row) => {
           // Trim all values
           const trimmedRow: any = {};
-          Object.keys(row).forEach(key => {
+          Object.keys(row).forEach((key) => {
             trimmedRow[key] = typeof row[key] === 'string' ? row[key].trim() : row[key];
           });
           rows.push(trimmedRow);
@@ -70,9 +67,9 @@ export class CandidateImportService {
     const validationErrors = await validate(dto);
 
     if (validationErrors.length > 0) {
-      validationErrors.forEach(error => {
+      validationErrors.forEach((error) => {
         if (error.constraints) {
-          Object.values(error.constraints).forEach(message => {
+          Object.values(error.constraints).forEach((message) => {
             errors.push(message);
           });
         }
@@ -182,9 +179,11 @@ export class CandidateImportService {
           const existingCandidate = await this.databaseService.candidate.findUnique({
             where: { email: validation.data.email },
             include: {
-              hiringProcesses: companyId ? {
-                where: { companyId },
-              } : true,
+              hiringProcesses: companyId
+                ? {
+                    where: { companyId },
+                  }
+                : true,
             },
           });
 
@@ -245,10 +244,12 @@ export class CandidateImportService {
     }
 
     const header = 'Row,Name,Email,Errors\n';
-    const rows = errors.map(error => {
-      const errorMessages = error.errors.join('; ');
-      return `${error.row},"${error.name || ''}","${error.email || ''}","${errorMessages}"`;
-    }).join('\n');
+    const rows = errors
+      .map((error) => {
+        const errorMessages = error.errors.join('; ');
+        return `${error.row},"${error.name || ''}","${error.email || ''}","${errorMessages}"`;
+      })
+      .join('\n');
 
     return header + rows;
   }

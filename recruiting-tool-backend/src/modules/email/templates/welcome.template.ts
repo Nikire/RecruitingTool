@@ -60,22 +60,30 @@ The Recruiting Team
               <td style="padding: 8px 0;"><strong>Role:</strong></td>
               <td style="padding: 8px 0;">${data.userRole}</td>
             </tr>
-            ${data.companyName ? `
+            ${
+              data.companyName
+                ? `
             <tr>
               <td style="padding: 8px 0;"><strong>Company:</strong></td>
               <td style="padding: 8px 0;">${data.companyName}</td>
             </tr>
-            ` : ''}
+            `
+                : ''
+            }
           </table>
         </div>
 
-        ${data.loginUrl ? `
+        ${
+          data.loginUrl
+            ? `
         <div style="text-align: center; margin: 30px 0;">
           <a href="${data.loginUrl}" style="${emailBaseStyles.button}">
             Access the Platform
           </a>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
 
         <h2 style="${emailBaseStyles.subheader}">Get Started</h2>
         <ul style="${emailBaseStyles.text}">

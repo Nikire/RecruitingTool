@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -17,9 +12,7 @@ export class WebhookAuthGuard implements CanActivate {
     const validApiKey = this.configService.get<string>('WEBHOOK_API_KEY');
 
     if (!validApiKey) {
-      throw new UnauthorizedException(
-        'Webhook API key is not configured on the server',
-      );
+      throw new UnauthorizedException('Webhook API key is not configured on the server');
     }
 
     if (!apiKey || apiKey !== validApiKey) {

@@ -1,9 +1,4 @@
-import {
-  Injectable,
-  NestInterceptor,
-  ExecutionContext,
-  CallHandler,
-} from '@nestjs/common';
+import { Injectable, NestInterceptor, ExecutionContext, CallHandler } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Response } from 'express';
@@ -29,13 +24,8 @@ export interface StandardResponse<T> {
  * Does not affect file downloads (StreamableFile is handled differently)
  */
 @Injectable()
-export class ResponseInterceptor<T>
-  implements NestInterceptor<T, StandardResponse<T>>
-{
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<StandardResponse<T>> {
+export class ResponseInterceptor<T> implements NestInterceptor<T, StandardResponse<T>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<StandardResponse<T>> {
     const ctx = context.switchToHttp();
     const request = ctx.getRequest();
     const response = ctx.getResponse<Response>();

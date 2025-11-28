@@ -5,9 +5,9 @@ import { DatabaseModule } from '../shared/modules/database/database.module';
 import { StorageModule } from '../storage/storage.module';
 
 @Module({
-	imports: [DatabaseModule, StorageModule],
-	controllers: [ExportController],
-	providers: [ExportService],
-	exports: [ExportService],
+  imports: [DatabaseModule, StorageModule],
+  controllers: [ExportController],
+  providers: [ExportService],
+  exports: [ExportService],
 })
 export class ExportModule {}

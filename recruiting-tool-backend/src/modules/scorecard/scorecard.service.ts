@@ -56,9 +56,7 @@ export class ScorecardService {
         throw new BadRequestException(`Invalid criterion UID: ${score.criterionUid}`);
       }
       if (score.score < 0 || score.score > criterion.maxScore) {
-        throw new BadRequestException(
-          `Score for ${criterion.name} must be between 0 and ${criterion.maxScore}`,
-        );
+        throw new BadRequestException(`Score for ${criterion.name} must be between 0 and ${criterion.maxScore}`);
       }
     }
 

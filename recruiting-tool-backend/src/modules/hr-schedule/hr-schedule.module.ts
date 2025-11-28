@@ -7,6 +7,6 @@ import { SharedModule } from '../shared/shared.module';
   imports: [SharedModule],
   controllers: [HRScheduleController],
   providers: [HRScheduleService],
-  exports: [HRScheduleService]
+  exports: [HRScheduleService],
 })
 export class HRScheduleModule {}

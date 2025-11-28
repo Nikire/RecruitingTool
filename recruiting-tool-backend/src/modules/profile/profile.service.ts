@@ -30,9 +30,7 @@ export class ProfileService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get profile by user UID: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get profile by user UID: ${error.message}`);
     }
   }
 
@@ -66,9 +64,7 @@ export class ProfileService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get my profile: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get my profile: ${error.message}`);
     }
   }
 
@@ -113,9 +109,7 @@ export class ProfileService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to update my profile: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to update my profile: ${error.message}`);
     }
   }
 
@@ -156,9 +150,7 @@ export class ProfileService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to create profile: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to create profile: ${error.message}`);
     }
   }
 }

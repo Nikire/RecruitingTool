@@ -1,20 +1,8 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Logger } from '@nestjs/common';
 import { BackupService } from './backup.service';
-import {
-  BackupHistoryResponseDto,
-  BackupStatusResponseDto,
-  TriggerBackupDto,
-  TriggerBackupResponseDto,
-} from './dto/backup.dto';
+import { BackupHistoryResponseDto, BackupStatusResponseDto, TriggerBackupDto, TriggerBackupResponseDto } from './dto/backup.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  ApiUnauthorizedResponse,
-  ApiForbiddenResponse,
-} from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 
 @ApiTags('Backup')
 @ApiBearerAuth()
@@ -27,6 +15,8 @@ import {
 })
 @Auth(['SUPER_ADMIN'])
 export class BackupController {
+  private readonly logger = new Logger(BackupController.name);
+
   constructor(private readonly backupService: BackupService) {}
 
   @Post('trigger')
@@ -49,7 +39,7 @@ export class BackupController {
 
     // Start backup asynchronously (don't await to avoid timeout)
     this.backupService.triggerBackup(type).catch((error) => {
-      console.error('Backup failed:', error);
+      this.logger.error('Backup failed:', error);
     });
 
     return {

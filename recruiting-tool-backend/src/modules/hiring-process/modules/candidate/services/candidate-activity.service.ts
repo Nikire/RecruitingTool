@@ -17,13 +17,7 @@ export class CandidateActivityService {
    * @param metadata - Additional metadata (optional)
    * @returns Promise<CandidateActivityResponseDto>
    */
-  async logActivity(
-    candidateId: number,
-    type: CandidateActivityType,
-    description: string,
-    userId?: number,
-    metadata?: any,
-  ): Promise<CandidateActivityResponseDto> {
+  async logActivity(candidateId: number, type: CandidateActivityType, description: string, userId?: number, metadata?: any): Promise<CandidateActivityResponseDto> {
     try {
       const activity = await this.databaseService.candidateActivity.create({
         data: {
@@ -44,9 +38,7 @@ export class CandidateActivityService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to log activity: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to log activity: ${error.message}`);
     }
   }
 
@@ -79,9 +71,7 @@ export class CandidateActivityService {
       if (error instanceof HttpException) {
         throw error;
       }
-      throw new InternalServerErrorException(
-        `Failed to get candidate activities: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get candidate activities: ${error.message}`);
     }
   }
 

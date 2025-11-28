@@ -7,8 +7,8 @@ export const includeCompany = {
     select: {
       users: true,
       jobPositions: true,
-    }
-  }
+    },
+  },
 };
 
 type CompanyWithRelations = Prisma.CompanyGetPayload<{

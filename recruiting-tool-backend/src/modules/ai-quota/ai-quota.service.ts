@@ -1,30 +1,19 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import { QuotaType } from '@prisma/client';
 import { PrismaService } from '../shared/modules/database/prisma.service';
-import {
-  AIQuotaResponseDto,
-  AIUsageLogResponseDto,
-  SetQuotaLimitDto,
-  UseQuotaDto,
-} from './dto/ai-quota.dto';
+import { AIQuotaResponseDto, AIUsageLogResponseDto, SetQuotaLimitDto, UseQuotaDto } from './dto/ai-quota.dto';
 
 @Injectable()
 export class AIQuotaService {
+  private readonly logger = new Logger(AIQuotaService.name);
+
   constructor(private readonly prisma: PrismaService) {}
 
   /**
    * Get quota status for a company by quota type
    */
-  async getQuota(
-    companyUid: string,
-    quotaType: QuotaType,
-  ): Promise<AIQuotaResponseDto> {
+  async getQuota(companyUid: string, quotaType: QuotaType): Promise<AIQuotaResponseDto> {
     const company = await this.prisma.company.findUnique({
       where: { uid: companyUid },
     });
@@ -48,9 +37,7 @@ export class AIQuotaService {
     });
 
     if (!quota) {
-      throw new NotFoundException(
-        `Quota for ${quotaType} not found for this company`,
-      );
+      throw new NotFoundException(`Quota for ${quotaType} not found for this company`);
     }
 
     return this.mapToQuotaResponse(quota);
@@ -84,11 +71,7 @@ export class AIQuotaService {
   /**
    * Check if company has available quota
    */
-  async checkQuota(
-    companyUid: string,
-    quotaType: QuotaType,
-    amount = 1,
-  ): Promise<boolean> {
+  async checkQuota(companyUid: string, quotaType: QuotaType, amount = 1): Promise<boolean> {
     try {
       const quota = await this.getQuota(companyUid, quotaType);
       return quota.remaining >= amount;
@@ -101,11 +84,7 @@ export class AIQuotaService {
   /**
    * Use quota (decrement) and log usage
    */
-  async useQuota(
-    companyUid: string,
-    userUid: string,
-    dto: UseQuotaDto,
-  ): Promise<AIQuotaResponseDto> {
+  async useQuota(companyUid: string, userUid: string, dto: UseQuotaDto): Promise<AIQuotaResponseDto> {
     const company = await this.prisma.company.findUnique({
       where: { uid: companyUid },
     });
@@ -133,17 +112,13 @@ export class AIQuotaService {
     });
 
     if (!quota) {
-      throw new NotFoundException(
-        `Quota for ${dto.operation} not found for this company`,
-      );
+      throw new NotFoundException(`Quota for ${dto.operation} not found for this company`);
     }
 
     // Check if enough quota is available
     const remaining = quota.limit - quota.used;
     if (remaining < dto.amount) {
-      throw new ForbiddenException(
-        `Insufficient quota. Requested: ${dto.amount}, Available: ${remaining}`,
-      );
+      throw new ForbiddenException(`Insufficient quota. Requested: ${dto.amount}, Available: ${remaining}`);
     }
 
     // Use quota and log usage in a transaction
@@ -183,10 +158,7 @@ export class AIQuotaService {
   /**
    * Set or update quota limit for a company (Admin only)
    */
-  async setQuotaLimit(
-    companyUid: string,
-    dto: SetQuotaLimitDto,
-  ): Promise<AIQuotaResponseDto> {
+  async setQuotaLimit(companyUid: string, dto: SetQuotaLimitDto): Promise<AIQuotaResponseDto> {
     const company = await this.prisma.company.findUnique({
       where: { uid: companyUid },
     });
@@ -229,12 +201,7 @@ export class AIQuotaService {
   /**
    * Get usage history for a company
    */
-  async getUsageHistory(
-    companyUid: string,
-    startDate?: string,
-    endDate?: string,
-    operation?: QuotaType,
-  ): Promise<AIUsageLogResponseDto[]> {
+  async getUsageHistory(companyUid: string, startDate?: string, endDate?: string, operation?: QuotaType): Promise<AIUsageLogResponseDto[]> {
     const company = await this.prisma.company.findUnique({
       where: { uid: companyUid },
     });
@@ -283,7 +250,7 @@ export class AIQuotaService {
    */
   @Cron(CronExpression.EVERY_1ST_DAY_OF_MONTH_AT_MIDNIGHT)
   async resetQuotas(): Promise<void> {
-    console.log('[AIQuotaService] Running monthly quota reset...');
+    this.logger.log('Running monthly quota reset...');
 
     const now = new Date();
     const nextResetDate = new Date(now.getFullYear(), now.getMonth() + 1, 1);
@@ -301,7 +268,7 @@ export class AIQuotaService {
       },
     });
 
-    console.log(`[AIQuotaService] Reset ${result.count} quotas`);
+    this.logger.log(`Reset ${result.count} quotas`);
   }
 
   /**

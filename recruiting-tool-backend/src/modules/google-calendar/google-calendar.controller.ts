@@ -1,24 +1,7 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  Redirect,
-  BadRequestException,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Redirect, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { GoogleCalendarService } from './google-calendar.service';
-import {
-  CreateCalendarEventDto,
-  UpdateCalendarEventDto,
-  GetAvailabilityDto,
-  CalendarEventResponseDto,
-  AvailabilityResponseDto,
-} from './dto/calendar.dto';
+import { CreateCalendarEventDto, UpdateCalendarEventDto, GetAvailabilityDto, CalendarEventResponseDto, AvailabilityResponseDto } from './dto/calendar.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType, User } from '@prisma/client';
@@ -60,10 +43,7 @@ export class GoogleCalendarController {
     description: 'Redirects to frontend after successful authorization',
   })
   @Redirect()
-  async handleCallback(
-    @Query('code') code: string,
-    @Query('state') state: string,
-  ) {
+  async handleCallback(@Query('code') code: string, @Query('state') state: string) {
     if (!code || !state) {
       throw new BadRequestException('Missing authorization code or state');
     }
@@ -128,10 +108,7 @@ export class GoogleCalendarController {
     status: 400,
     description: 'User has not connected Google Calendar',
   })
-  async createEvent(
-    @CurrentUser() user: User,
-    @Body() dto: CreateCalendarEventDto,
-  ): Promise<CalendarEventResponseDto> {
+  async createEvent(@CurrentUser() user: User, @Body() dto: CreateCalendarEventDto): Promise<CalendarEventResponseDto> {
     return this.googleCalendarService.createCalendarEvent(user.id, dto);
   }
 
@@ -147,11 +124,7 @@ export class GoogleCalendarController {
     status: 400,
     description: 'User has not connected Google Calendar',
   })
-  async updateEvent(
-    @CurrentUser() user: User,
-    @Param('eventId') eventId: string,
-    @Body() dto: UpdateCalendarEventDto,
-  ): Promise<CalendarEventResponseDto> {
+  async updateEvent(@CurrentUser() user: User, @Param('eventId') eventId: string, @Body() dto: UpdateCalendarEventDto): Promise<CalendarEventResponseDto> {
     return this.googleCalendarService.updateCalendarEvent(user.id, eventId, dto);
   }
 
@@ -166,10 +139,7 @@ export class GoogleCalendarController {
     status: 400,
     description: 'User has not connected Google Calendar',
   })
-  async deleteEvent(
-    @CurrentUser() user: User,
-    @Param('eventId') eventId: string,
-  ) {
+  async deleteEvent(@CurrentUser() user: User, @Param('eventId') eventId: string) {
     await this.googleCalendarService.deleteCalendarEvent(user.id, eventId);
 
     return {
@@ -189,10 +159,7 @@ export class GoogleCalendarController {
     status: 400,
     description: 'User has not connected Google Calendar',
   })
-  async getAvailability(
-    @CurrentUser() user: User,
-    @Query() dto: GetAvailabilityDto,
-  ): Promise<AvailabilityResponseDto> {
+  async getAvailability(@CurrentUser() user: User, @Query() dto: GetAvailabilityDto): Promise<AvailabilityResponseDto> {
     return this.googleCalendarService.getAvailability(user.id, dto);
   }
 }

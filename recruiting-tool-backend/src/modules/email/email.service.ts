@@ -335,11 +335,7 @@ ${text}
   /**
    * Send interview rescheduled notification
    */
-  async sendInterviewRescheduled(
-    candidateEmail: string,
-    data: InterviewRescheduledData,
-    interviewUid: string,
-  ): Promise<void> {
+  async sendInterviewRescheduled(candidateEmail: string, data: InterviewRescheduledData, interviewUid: string): Promise<void> {
     const { subject, text, html } = interviewRescheduledTemplate(data);
     await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_RESCHEDULED', interviewUid);
   }
@@ -380,13 +376,7 @@ ${text}
    * Send email using a template from database
    * Renders the template with provided variables using Handlebars
    */
-  async sendEmailFromTemplate(
-    recipientEmail: string,
-    recipientName: string,
-    templateUid: string,
-    variables: Record<string, any>,
-    relatedEntityId?: string,
-  ): Promise<void> {
+  async sendEmailFromTemplate(recipientEmail: string, recipientName: string, templateUid: string, variables: Record<string, any>, relatedEntityId?: string): Promise<void> {
     // Fetch the email template from database
     const emailTemplate = await this.prisma.emailTemplate.findUnique({
       where: { uid: templateUid },
@@ -406,14 +396,7 @@ ${text}
     // Convert rendered body to HTML (preserve line breaks)
     const htmlBody = renderedBody.replace(/\n/g, '<br>');
 
-    await this.sendEmail(
-      recipientEmail,
-      renderedSubject,
-      renderedBody,
-      htmlBody,
-      'TEMPLATE_EMAIL',
-      relatedEntityId,
-    );
+    await this.sendEmail(recipientEmail, renderedSubject, renderedBody, htmlBody, 'TEMPLATE_EMAIL', relatedEntityId);
 
     this.logger.log(`Email sent using template "${emailTemplate.name}" to ${recipientEmail}`);
   }

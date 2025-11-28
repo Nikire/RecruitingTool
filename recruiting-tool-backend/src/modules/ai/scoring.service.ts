@@ -1,20 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  InternalServerErrorException,
-  Logger,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import OpenAI from 'openai';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import {
-  CandidateScoreResponseDto,
-  RankedCandidatesResponseDto,
-  RankedCandidateDto,
-  ScoreAnalysisDto,
-} from './dto/candidate-scoring.dto';
+import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { SseService } from '../sse/sse.service';
 
 @Injectable()
@@ -29,9 +18,7 @@ export class ScoringService {
   ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
     if (!apiKey) {
-      this.logger.warn(
-        'OpenAI API key not configured. AI scoring features will be disabled.',
-      );
+      this.logger.warn('OpenAI API key not configured. AI scoring features will be disabled.');
       this.openai = null;
     } else {
       this.openai = new OpenAI({
@@ -43,20 +30,13 @@ export class ScoringService {
   /**
    * Score a candidate for a specific job position using AI
    */
-  async scoreCandidate(
-    candidateUid: string,
-    jobPositionUid: string,
-  ): Promise<CandidateScoreResponseDto> {
+  async scoreCandidate(candidateUid: string, jobPositionUid: string): Promise<CandidateScoreResponseDto> {
     if (!this.openai) {
-      throw new InternalServerErrorException(
-        'OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.',
-      );
+      throw new InternalServerErrorException('OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.');
     }
 
     try {
-      this.logger.log(
-        `Starting candidate scoring: ${candidateUid} for job ${jobPositionUid}`,
-      );
+      this.logger.log(`Starting candidate scoring: ${candidateUid} for job ${jobPositionUid}`);
 
       // Fetch candidate details
       const candidate = await this.databaseService.candidate.findUnique({
@@ -85,9 +65,7 @@ export class ScoringService {
       });
 
       if (!jobPosition) {
-        throw new NotFoundException(
-          `Job Position with UID ${jobPositionUid} not found`,
-        );
+        throw new NotFoundException(`Job Position with UID ${jobPositionUid} not found`);
       }
 
       // Check if score already exists (update existing or create new)
@@ -101,10 +79,7 @@ export class ScoringService {
       });
 
       // Generate AI scoring
-      const { scores, analysis } = await this.generateAIScoring(
-        candidate,
-        jobPosition,
-      );
+      const { scores, analysis } = await this.generateAIScoring(candidate, jobPosition);
 
       // Save or update the score
       let savedScore;
@@ -119,9 +94,7 @@ export class ScoringService {
             analysis: analysis as unknown as Prisma.JsonValue,
           },
         });
-        this.logger.log(
-          `Updated existing score for candidate ${candidateUid} and job ${jobPositionUid}`,
-        );
+        this.logger.log(`Updated existing score for candidate ${candidateUid} and job ${jobPositionUid}`);
       } else {
         savedScore = await this.databaseService.candidateScore.create({
           data: {
@@ -134,9 +107,7 @@ export class ScoringService {
             analysis: analysis as unknown as Prisma.JsonValue,
           },
         });
-        this.logger.log(
-          `Created new score for candidate ${candidateUid} and job ${jobPositionUid}`,
-        );
+        this.logger.log(`Created new score for candidate ${candidateUid} and job ${jobPositionUid}`);
       }
 
       // Emit SSE event for score updated
@@ -165,32 +136,20 @@ export class ScoringService {
 
       return this.mapToResponseDto(savedScore);
     } catch (error) {
-      this.logger.error(
-        `Candidate scoring failed: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Candidate scoring failed: ${error.message}`, error.stack);
 
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException ||
-        error instanceof InternalServerErrorException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException || error instanceof InternalServerErrorException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to score candidate: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to score candidate: ${error.message}`);
     }
   }
 
   /**
    * Get score and analysis for a specific candidate and job position
    */
-  async getScoreAnalysis(
-    candidateUid: string,
-    jobPositionUid: string,
-  ): Promise<CandidateScoreResponseDto> {
+  async getScoreAnalysis(candidateUid: string, jobPositionUid: string): Promise<CandidateScoreResponseDto> {
     try {
       // Find candidate
       const candidate = await this.databaseService.candidate.findUnique({
@@ -207,9 +166,7 @@ export class ScoringService {
       });
 
       if (!jobPosition) {
-        throw new NotFoundException(
-          `Job Position with UID ${jobPositionUid} not found`,
-        );
+        throw new NotFoundException(`Job Position with UID ${jobPositionUid} not found`);
       }
 
       // Find score
@@ -223,34 +180,25 @@ export class ScoringService {
       });
 
       if (!score) {
-        throw new NotFoundException(
-          `No score found for candidate ${candidateUid} and job position ${jobPositionUid}`,
-        );
+        throw new NotFoundException(`No score found for candidate ${candidateUid} and job position ${jobPositionUid}`);
       }
 
       return this.mapToResponseDto(score);
     } catch (error) {
-      this.logger.error(
-        `Failed to get score analysis: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to get score analysis: ${error.message}`, error.stack);
 
       if (error instanceof NotFoundException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to get score analysis: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get score analysis: ${error.message}`);
     }
   }
 
   /**
    * Get ranked list of candidates for a job position
    */
-  async getRankedCandidates(
-    jobPositionUid: string,
-  ): Promise<RankedCandidatesResponseDto> {
+  async getRankedCandidates(jobPositionUid: string): Promise<RankedCandidatesResponseDto> {
     try {
       // Find job position
       const jobPosition = await this.databaseService.jobPosition.findUnique({
@@ -258,9 +206,7 @@ export class ScoringService {
       });
 
       if (!jobPosition) {
-        throw new NotFoundException(
-          `Job Position with UID ${jobPositionUid} not found`,
-        );
+        throw new NotFoundException(`Job Position with UID ${jobPositionUid} not found`);
       }
 
       // Fetch all scores for this job position, sorted by overall score descending
@@ -277,20 +223,18 @@ export class ScoringService {
       });
 
       // Map to ranked candidates
-      const rankedCandidates: RankedCandidateDto[] = scores.map(
-        (score, index) => ({
-          candidateUid: score.candidate.uid,
-          candidateName: score.candidate.name,
-          candidateEmail: score.candidate.email,
-          overallScore: score.overallScore,
-          skillsScore: score.skillsScore,
-          experienceScore: score.experienceScore,
-          educationScore: score.educationScore,
-          rank: index + 1,
-          scoreUid: score.uid,
-          scoredAt: score.scoredAt,
-        }),
-      );
+      const rankedCandidates: RankedCandidateDto[] = scores.map((score, index) => ({
+        candidateUid: score.candidate.uid,
+        candidateName: score.candidate.name,
+        candidateEmail: score.candidate.email,
+        overallScore: score.overallScore,
+        skillsScore: score.skillsScore,
+        experienceScore: score.experienceScore,
+        educationScore: score.educationScore,
+        rank: index + 1,
+        scoreUid: score.uid,
+        scoredAt: score.scoredAt,
+      }));
 
       return {
         jobPositionUid: jobPosition.uid,
@@ -299,18 +243,13 @@ export class ScoringService {
         rankedCandidates,
       };
     } catch (error) {
-      this.logger.error(
-        `Failed to get ranked candidates: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to get ranked candidates: ${error.message}`, error.stack);
 
       if (error instanceof NotFoundException) {
         throw error;
       }
 
-      throw new InternalServerErrorException(
-        `Failed to get ranked candidates: ${error.message}`,
-      );
+      throw new InternalServerErrorException(`Failed to get ranked candidates: ${error.message}`);
     }
   }
 
@@ -329,8 +268,7 @@ export class ScoringService {
     };
     analysis: ScoreAnalysisDto;
   }> {
-    const model =
-      this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
+    const model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
 
     const prompt = `
 You are an expert HR recruiter and candidate evaluator. Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
@@ -417,13 +355,8 @@ IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
         analysis: result.analysis,
       };
     } catch (error) {
-      this.logger.error(
-        `OpenAI API error during scoring: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to generate AI scoring: ${error.message}`,
-      );
+      this.logger.error(`OpenAI API error during scoring: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to generate AI scoring: ${error.message}`);
     }
   }
 

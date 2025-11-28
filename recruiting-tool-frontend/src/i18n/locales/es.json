@@ -78,7 +78,16 @@
     "interview_update_failed": "Error al actualizar la entrevista",
     "interview_cancel_failed": "Error al cancelar la entrevista",
     "interview_delete_failed": "Error al eliminar la entrevista",
-    "interview_reschedule_failed": "Error al reprogramar la entrevista"
+    "interview_reschedule_failed": "Error al reprogramar la entrevista",
+    "boundary": {
+      "title": "Algo salió mal",
+      "message": "Ocurrió un error inesperado. Por favor intente recargar la página o vuelva a la página de inicio.",
+      "reload": "Recargar Página",
+      "home": "Ir al Inicio",
+      "details": "Detalles del Error (Solo Modo de Desarrollo)",
+      "component_stack": "Pila de Componentes",
+      "support_message": "Si este problema persiste, por favor contacte a soporte."
+    }
   },
   "success": {
     "interview_scheduled": "Entrevista programada exitosamente",

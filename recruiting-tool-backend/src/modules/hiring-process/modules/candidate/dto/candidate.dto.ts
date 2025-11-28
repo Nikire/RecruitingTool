@@ -21,7 +21,7 @@ export class CreateCandidateDto {
     description: 'Source of the candidate application',
     enum: ApplicationSource,
     example: 'LINKEDIN',
-    required: false
+    required: false,
   })
   @IsEnum(ApplicationSource)
   @IsOptional()
@@ -30,7 +30,7 @@ export class CreateCandidateDto {
   @ApiProperty({
     description: 'Additional details about the source (e.g., referrer name)',
     example: 'Referred by Jane Smith',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -40,7 +40,7 @@ export class CreateCandidateDto {
   @ApiProperty({
     description: 'URL of the source if from online platform',
     example: 'https://www.linkedin.com/jobs/view/123456',
-    required: false
+    required: false,
   })
   @IsUrl()
   @IsOptional()
@@ -67,7 +67,7 @@ export class UpdateCandidateDto {
     description: 'Source of the candidate application',
     enum: ApplicationSource,
     example: 'LINKEDIN',
-    required: false
+    required: false,
   })
   @IsEnum(ApplicationSource)
   @IsOptional()
@@ -76,7 +76,7 @@ export class UpdateCandidateDto {
   @ApiProperty({
     description: 'Additional details about the source (e.g., referrer name)',
     example: 'Referred by Jane Smith',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -86,7 +86,7 @@ export class UpdateCandidateDto {
   @ApiProperty({
     description: 'URL of the source if from online platform',
     example: 'https://www.linkedin.com/jobs/view/123456',
-    required: false
+    required: false,
   })
   @IsUrl()
   @IsOptional()
@@ -110,7 +110,7 @@ export class CreateManualCandidateDto {
   @ApiProperty({
     description: 'Phone number of the candidate (optional)',
     example: '+1234567890',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -118,7 +118,7 @@ export class CreateManualCandidateDto {
 
   @ApiProperty({
     description: 'UID of the job position to link this candidate to',
-    example: '123e4567-e89b-12d3-a456-426614174000'
+    example: '123e4567-e89b-12d3-a456-426614174000',
   })
   @IsString()
   @IsNotEmpty()
@@ -127,7 +127,7 @@ export class CreateManualCandidateDto {
   @ApiProperty({
     description: 'Additional details about the source (e.g., "Phone call", "Referral from Jane Smith")',
     example: 'Referral from Jane Smith',
-    required: false
+    required: false,
   })
   @IsString()
   @IsOptional()
@@ -149,21 +149,21 @@ export class CandidateResponseDto {
     description: 'Source of the candidate application',
     enum: ApplicationSource,
     example: 'LINKEDIN',
-    required: false
+    required: false,
   })
   source?: ApplicationSource;
 
   @ApiProperty({
     description: 'Additional details about the source',
     example: 'Referred by Jane Smith',
-    required: false
+    required: false,
   })
   sourceDetails?: string;
 
   @ApiProperty({
     description: 'URL of the source if from online platform',
     example: 'https://www.linkedin.com/jobs/view/123456',
-    required: false
+    required: false,
   })
   sourceUrl?: string;
 

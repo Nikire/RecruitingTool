@@ -28,9 +28,10 @@ Time: ${formattedTime}
 
 ${data.reason ? `Reason: ${data.reason}` : ''}
 
-${data.willReschedule
-  ? 'We apologize for any inconvenience this may cause. Our team will be in touch with you shortly to reschedule the interview.'
-  : 'We apologize for any inconvenience this may cause. If you have any questions, please feel free to contact us.'
+${
+  data.willReschedule
+    ? 'We apologize for any inconvenience this may cause. Our team will be in touch with you shortly to reschedule the interview.'
+    : 'We apologize for any inconvenience this may cause. If you have any questions, please feel free to contact us.'
 }
 
 Best regards,
@@ -60,20 +61,25 @@ ${data.hrName || 'The Recruiting Team'}
             <td style="${emailBaseStyles.tableCellBold}">Time</td>
             <td style="${emailBaseStyles.tableCell}">${formattedTime}</td>
           </tr>
-          ${data.reason ? `
+          ${
+            data.reason
+              ? `
           <tr>
             <td style="${emailBaseStyles.tableCellBold}">Reason</td>
             <td style="${emailBaseStyles.tableCell}">${data.reason}</td>
           </tr>
-          ` : ''}
+          `
+              : ''
+          }
         </table>
 
         <hr style="${emailBaseStyles.divider}">
 
         <p style="${emailBaseStyles.text}">
-          ${data.willReschedule
-            ? 'We apologize for any inconvenience this may cause. Our team will be in touch with you shortly to reschedule the interview.'
-            : 'We apologize for any inconvenience this may cause. If you have any questions, please feel free to contact us.'
+          ${
+            data.willReschedule
+              ? 'We apologize for any inconvenience this may cause. Our team will be in touch with you shortly to reschedule the interview.'
+              : 'We apologize for any inconvenience this may cause. If you have any questions, please feel free to contact us.'
           }
         </p>
 

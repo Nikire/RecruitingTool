@@ -3,23 +3,13 @@ import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { google, calendar_v3 } from 'googleapis';
 import { OAuth2Client, Credentials } from 'google-auth-library';
-import {
-  CreateCalendarEventDto,
-  UpdateCalendarEventDto,
-  GetAvailabilityDto,
-  CalendarEventResponseDto,
-  AvailabilityResponseDto,
-  AvailabilitySlotDto,
-} from './dto/calendar.dto';
+import { CreateCalendarEventDto, UpdateCalendarEventDto, GetAvailabilityDto, CalendarEventResponseDto, AvailabilityResponseDto, AvailabilitySlotDto } from './dto/calendar.dto';
 
 @Injectable()
 export class GoogleCalendarService {
   private readonly logger = new Logger(GoogleCalendarService.name);
   private oauth2Client: OAuth2Client;
-  private readonly scopes = [
-    'https://www.googleapis.com/auth/calendar',
-    'https://www.googleapis.com/auth/calendar.events',
-  ];
+  private readonly scopes = ['https://www.googleapis.com/auth/calendar', 'https://www.googleapis.com/auth/calendar.events'];
 
   constructor(
     private readonly configService: ConfigService,
@@ -33,11 +23,7 @@ export class GoogleCalendarService {
       this.logger.warn('Google Calendar credentials not configured');
     }
 
-    this.oauth2Client = new google.auth.OAuth2(
-      clientId,
-      clientSecret,
-      redirectUri,
-    );
+    this.oauth2Client = new google.auth.OAuth2(clientId, clientSecret, redirectUri);
   }
 
   /**
@@ -63,9 +49,7 @@ export class GoogleCalendarService {
       const { tokens } = await this.oauth2Client.getToken(code);
 
       if (!tokens.refresh_token) {
-        throw new BadRequestException(
-          'No refresh token received. User may have already authorized.',
-        );
+        throw new BadRequestException('No refresh token received. User may have already authorized.');
       }
 
       // Store refresh token in database
@@ -91,9 +75,7 @@ export class GoogleCalendarService {
     });
 
     if (!user?.googleRefreshToken) {
-      throw new BadRequestException(
-        'User has not connected Google Calendar. Please authorize first.',
-      );
+      throw new BadRequestException('User has not connected Google Calendar. Please authorize first.');
     }
 
     this.oauth2Client.setCredentials({
@@ -120,10 +102,7 @@ export class GoogleCalendarService {
   /**
    * Create calendar event with optional Google Meet link
    */
-  async createCalendarEvent(
-    userId: number,
-    dto: CreateCalendarEventDto,
-  ): Promise<CalendarEventResponseDto> {
+  async createCalendarEvent(userId: number, dto: CreateCalendarEventDto): Promise<CalendarEventResponseDto> {
     try {
       const calendar = await this.getCalendarClient(userId);
 
@@ -182,11 +161,7 @@ export class GoogleCalendarService {
   /**
    * Update existing calendar event
    */
-  async updateCalendarEvent(
-    userId: number,
-    eventId: string,
-    dto: UpdateCalendarEventDto,
-  ): Promise<CalendarEventResponseDto> {
+  async updateCalendarEvent(userId: number, eventId: string, dto: UpdateCalendarEventDto): Promise<CalendarEventResponseDto> {
     try {
       const calendar = await this.getCalendarClient(userId);
 
@@ -257,10 +232,7 @@ export class GoogleCalendarService {
   /**
    * Get user availability (free/busy) for a date range
    */
-  async getAvailability(
-    userId: number,
-    dto: GetAvailabilityDto,
-  ): Promise<AvailabilityResponseDto> {
+  async getAvailability(userId: number, dto: GetAvailabilityDto): Promise<AvailabilityResponseDto> {
     try {
       const calendar = await this.getCalendarClient(userId);
 
@@ -281,11 +253,7 @@ export class GoogleCalendarService {
       const busySlots = response.data.calendars?.[user.email]?.busy || [];
 
       // Calculate available slots (inverse of busy slots)
-      const availableSlots = this.calculateAvailableSlots(
-        dto.startDate,
-        dto.endDate,
-        busySlots,
-      );
+      const availableSlots = this.calculateAvailableSlots(dto.startDate, dto.endDate, busySlots);
 
       return {
         busy: busySlots.length > 0,
@@ -300,11 +268,7 @@ export class GoogleCalendarService {
   /**
    * Calculate available time slots from busy periods
    */
-  private calculateAvailableSlots(
-    startDate: string,
-    endDate: string,
-    busySlots: calendar_v3.Schema$TimePeriod[],
-  ): AvailabilitySlotDto[] {
+  private calculateAvailableSlots(startDate: string, endDate: string, busySlots: calendar_v3.Schema$TimePeriod[]): AvailabilitySlotDto[] {
     const available: AvailabilitySlotDto[] = [];
     const startTime = new Date(startDate);
     const endTime = new Date(endDate);
@@ -319,9 +283,7 @@ export class GoogleCalendarService {
     }
 
     // Sort busy slots by start time
-    const sortedBusy = [...busySlots].sort(
-      (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
-    );
+    const sortedBusy = [...busySlots].sort((a, b) => new Date(a.start).getTime() - new Date(b.start).getTime());
 
     let currentTime = startTime;
 
@@ -362,9 +324,7 @@ export class GoogleCalendarService {
       startTime: event.start?.dateTime || event.start?.date,
       endTime: event.end?.dateTime || event.end?.date,
       timeZone: event.start?.timeZone,
-      meetLink: event.hangoutLink || event.conferenceData?.entryPoints?.find(
-        (ep) => ep.entryPointType === 'video',
-      )?.uri,
+      meetLink: event.hangoutLink || event.conferenceData?.entryPoints?.find((ep) => ep.entryPointType === 'video')?.uri,
       location: event.location,
       attendees: event.attendees?.map((attendee) => ({
         email: attendee.email,

@@ -6,12 +6,7 @@ export function calculatePagination(page: number = 1, pageSize: number = 10) {
   return { skip, take };
 }
 
-export function createPaginatedResponse<T>(
-  data: T[],
-  total: number,
-  page: number,
-  pageSize: number,
-): PaginatedResponse<T> {
+export function createPaginatedResponse<T>(data: T[], total: number, page: number, pageSize: number): PaginatedResponse<T> {
   return {
     data,
     pagination: {

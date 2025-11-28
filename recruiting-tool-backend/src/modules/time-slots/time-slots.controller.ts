@@ -1,22 +1,7 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Delete,
-  Body,
-  Param,
-  HttpCode,
-  HttpStatus,
-} from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { TimeSlotsService } from './time-slots.service';
-import {
-  GenerateTimeSlotsDto,
-  GenerateCustomTimeSlotsDto,
-  SelectTimeSlotDto,
-  TimeSlotResponseDto,
-  BookingTokenResponseDto,
-} from './dto/time-slots.dto';
+import { GenerateTimeSlotsDto, GenerateCustomTimeSlotsDto, SelectTimeSlotDto, TimeSlotResponseDto, BookingTokenResponseDto } from './dto/time-slots.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 
@@ -36,9 +21,7 @@ export class TimeSlotsController {
     type: [TimeSlotResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Interview or HR Schedule not found' })
-  async generateTimeSlots(
-    @Body() dto: GenerateTimeSlotsDto,
-  ): Promise<TimeSlotResponseDto[]> {
+  async generateTimeSlots(@Body() dto: GenerateTimeSlotsDto): Promise<TimeSlotResponseDto[]> {
     return this.timeSlotsService.generateTimeSlots(dto);
   }
 
@@ -51,9 +34,7 @@ export class TimeSlotsController {
     type: [TimeSlotResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async generateCustomTimeSlots(
-    @Body() dto: GenerateCustomTimeSlotsDto,
-  ): Promise<TimeSlotResponseDto[]> {
+  async generateCustomTimeSlots(@Body() dto: GenerateCustomTimeSlotsDto): Promise<TimeSlotResponseDto[]> {
     return this.timeSlotsService.generateCustomTimeSlots(dto);
   }
 
@@ -67,9 +48,7 @@ export class TimeSlotsController {
     type: BookingTokenResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async generateBookingToken(
-    @Param('interviewUid') interviewUid: string,
-  ): Promise<BookingTokenResponseDto> {
+  async generateBookingToken(@Param('interviewUid') interviewUid: string): Promise<BookingTokenResponseDto> {
     return this.timeSlotsService.generateBookingToken(interviewUid);
   }
 
@@ -83,9 +62,7 @@ export class TimeSlotsController {
     type: [TimeSlotResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async getTimeSlotsByInterview(
-    @Param('interviewUid') interviewUid: string,
-  ): Promise<TimeSlotResponseDto[]> {
+  async getTimeSlotsByInterview(@Param('interviewUid') interviewUid: string): Promise<TimeSlotResponseDto[]> {
     return this.timeSlotsService.getTimeSlotsByInterview(interviewUid);
   }
 
@@ -99,9 +76,7 @@ export class TimeSlotsController {
     description: 'Time slot selection cancelled successfully',
   })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async cancelSlotSelection(
-    @Param('interviewUid') interviewUid: string,
-  ): Promise<void> {
+  async cancelSlotSelection(@Param('interviewUid') interviewUid: string): Promise<void> {
     return this.timeSlotsService.cancelSlotSelection(interviewUid);
   }
 
@@ -117,9 +92,7 @@ export class TimeSlotsController {
   })
   @ApiResponse({ status: 404, description: 'Invalid booking token' })
   @ApiResponse({ status: 403, description: 'Token expired or already used' })
-  async getAvailableSlots(
-    @Param('token') token: string,
-  ): Promise<TimeSlotResponseDto[]> {
+  async getAvailableSlots(@Param('token') token: string): Promise<TimeSlotResponseDto[]> {
     return this.timeSlotsService.getAvailableSlots(token);
   }
 
@@ -135,10 +108,7 @@ export class TimeSlotsController {
   @ApiResponse({ status: 404, description: 'Invalid booking token or time slot' })
   @ApiResponse({ status: 400, description: 'Time slot not available' })
   @ApiResponse({ status: 403, description: 'Token expired or already used' })
-  async selectSlot(
-    @Param('token') token: string,
-    @Body() dto: SelectTimeSlotDto,
-  ): Promise<TimeSlotResponseDto> {
+  async selectSlot(@Param('token') token: string, @Body() dto: SelectTimeSlotDto): Promise<TimeSlotResponseDto> {
     return this.timeSlotsService.selectSlot(token, dto);
   }
 }
