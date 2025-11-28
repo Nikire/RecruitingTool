@@ -1,8 +1,18 @@
 import { Component, ErrorInfo, ReactNode } from 'react';
-import { Box, Button, Typography, Paper, Container } from '@mui/material';
+import {
+	Box,
+	Button,
+	Typography,
+	Paper,
+	Container,
+	Accordion,
+	AccordionSummary,
+	AccordionDetails,
+} from '@mui/material';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import HomeIcon from '@mui/icons-material/Home';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useTranslation } from 'react-i18next';
 
 interface Props {
@@ -106,18 +116,27 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
           sx={{
             p: 4,
             borderRadius: 2,
-            maxWidth: '600px',
+            maxWidth: '700px',
             width: '100%',
+            borderTop: 4,
+            borderColor: 'error.main',
           }}
         >
           {/* Error Icon */}
-          <ErrorOutlineIcon
+          <Box
             sx={{
-              fontSize: 80,
-              color: 'error.main',
-              mb: 2,
+              display: 'flex',
+              justifyContent: 'center',
+              mb: 3,
             }}
-          />
+          >
+            <ErrorOutlineIcon
+              sx={{
+                fontSize: 80,
+                color: 'error.main',
+              }}
+            />
+          </Box>
 
           {/* Error Title */}
           <Typography variant="h4" gutterBottom color="error">
@@ -125,41 +144,9 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
           </Typography>
 
           {/* Error Message */}
-          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+          <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4 }}>
             {t('errors.boundary.message')}
           </Typography>
-
-          {/* Error Details (Development Only) */}
-          {isDevelopment && error && (
-            <Paper
-              variant="outlined"
-              sx={{
-                p: 2,
-                mb: 3,
-                textAlign: 'left',
-                backgroundColor: 'grey.100',
-                maxHeight: '300px',
-                overflow: 'auto',
-              }}
-            >
-              <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold' }}>
-                {t('errors.boundary.details')}
-              </Typography>
-              <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                {error.toString()}
-              </Typography>
-              {errorInfo?.componentStack && (
-                <>
-                  <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 'bold', mt: 2 }}>
-                    {t('errors.boundary.component_stack')}
-                  </Typography>
-                  <Typography variant="body2" sx={{ fontFamily: 'monospace', fontSize: '0.75rem', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
-                    {errorInfo.componentStack}
-                  </Typography>
-                </>
-              )}
-            </Paper>
-          )}
 
           {/* Recovery Actions */}
           <Box
@@ -168,6 +155,7 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
               gap: 2,
               justifyContent: 'center',
               flexWrap: 'wrap',
+              mb: 4,
             }}
           >
             <Button
@@ -190,8 +178,69 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
             </Button>
           </Box>
 
+          {/* Error Details (Development Only) - Collapsible Accordion */}
+          {isDevelopment && error && (
+            <Box sx={{ mt: 4, textAlign: 'left' }}>
+              <Accordion>
+                <AccordionSummary
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="error-details-content"
+                  id="error-details-header"
+                >
+                  <Typography color="error" variant="subtitle1">
+                    {t('errors.boundary.details')}
+                  </Typography>
+                </AccordionSummary>
+                <AccordionDetails>
+                  {/* Error Message */}
+                  <Box sx={{ mb: 2 }}>
+                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                      Error:
+                    </Typography>
+                    <Paper
+                      sx={{
+                        p: 2,
+                        bgcolor: 'grey.100',
+                        fontFamily: 'monospace',
+                        fontSize: '0.875rem',
+                        overflow: 'auto',
+                      }}
+                    >
+                      <Typography variant="body2" component="pre">
+                        {error.toString()}
+                      </Typography>
+                    </Paper>
+                  </Box>
+
+                  {/* Component Stack */}
+                  {errorInfo?.componentStack && (
+                    <Box>
+                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                        {t('errors.boundary.component_stack')}:
+                      </Typography>
+                      <Paper
+                        sx={{
+                          p: 2,
+                          bgcolor: 'grey.100',
+                          fontFamily: 'monospace',
+                          fontSize: '0.75rem',
+                          overflow: 'auto',
+                          maxHeight: 300,
+                        }}
+                      >
+                        <Typography variant="body2" component="pre">
+                          {errorInfo.componentStack}
+                        </Typography>
+                      </Paper>
+                    </Box>
+                  )}
+                </AccordionDetails>
+              </Accordion>
+            </Box>
+          )}
+
           {/* Support Message */}
-          <Typography variant="caption" color="text.secondary" sx={{ mt: 3, display: 'block' }}>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 4 }}>
             {t('errors.boundary.support_message')}
           </Typography>
         </Paper>

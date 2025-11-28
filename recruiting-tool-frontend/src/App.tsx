@@ -25,6 +25,7 @@ import AnalyticsPage from './pages/analytics/AnalyticsPage';
 import SystemSettingsPage from './pages/admin/SystemSettingsPage';
 import BookInterviewPage from './pages/booking/BookInterviewPage';
 import BookingConfirmedPage from './pages/booking/BookingConfirmedPage';
+import ErrorBoundaryTest from './pages/test/ErrorBoundaryTest';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -36,6 +37,13 @@ function App() {
 				<Route element={<LandingPageLayout />}>
 					<Route index element={<Home />} />
 				</Route>
+
+				{/* Test Routes - Development Only */}
+				{import.meta.env.DEV && (
+					<Route element={<MainLayout />}>
+						<Route path="/test/error-boundary" element={<ErrorBoundaryTest />} />
+					</Route>
+				)}
 
 				{/* Main Layout - for other public pages */}
 				<Route element={<MainLayout />}>
