@@ -57,35 +57,39 @@ const HRDashboard: React.FC = () => {
 	// Dashboard stat cards data
 	const statsData = [
 		{
-			title: 'Applications',
+			title: 'dashboard.stats.applications',
 			value: totalApplications,
-			subtitle: `${pendingApplications} pending review`,
+			subtitle: t('dashboard.stats.pending_review_count', {count: pendingApplications}),
 			icon: <AssignmentIcon />,
 			iconColor: 'primary.main',
 			onClick: () => navigate('/hr/applications'),
+			translate: true,
 		},
 		{
-			title: 'Candidates',
+			title: 'dashboard.stats.candidates',
 			value: totalCandidates,
-			subtitle: 'Active in hiring processes',
+			subtitle: t('dashboard.stats.active_in_hiring'),
 			icon: <GroupIcon />,
 			iconColor: 'success.main',
 			onClick: () => navigate('/hr/candidates'),
+			translate: true,
 		},
 		{
-			title: t('dashboard.stats.job_positions'),
+			title: 'dashboard.stats.job_positions',
 			value: totalJobPositions,
-			subtitle: `${openPositions} currently open`,
+			subtitle: t('dashboard.stats.currently_open', {count: openPositions}),
 			icon: <WorkIcon />,
 			iconColor: 'info.main',
 			onClick: () => navigate('/hr/job-positions'),
+			translate: true,
 		},
 		{
-			title: t('dashboard.stats.pending_review'),
+			title: 'dashboard.stats.pending_review',
 			value: pendingApplications,
-			subtitle: 'Applications need attention',
+			subtitle: t('dashboard.stats.applications_need_attention'),
 			icon: <AssignmentIcon />,
 			iconColor: 'warning.main',
+			translate: true,
 		},
 	];
 

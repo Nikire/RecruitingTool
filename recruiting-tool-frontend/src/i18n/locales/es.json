@@ -707,8 +707,14 @@
     "view_candidates": "Ver Candidatos",
     "create_position": "Crear Posición de Trabajo",
     "stats": {
+      "applications": "Aplicaciones",
+      "candidates": "Candidatos",
       "job_positions": "Posiciones de Trabajo",
-      "pending_review": "Revisión Pendiente"
+      "pending_review": "Revisión Pendiente",
+      "pending_review_count": "{{count}} pendiente de revisión",
+      "active_in_hiring": "Activos en procesos de contratación",
+      "currently_open": "{{count}} actualmente abiertas",
+      "applications_need_attention": "Aplicaciones que requieren atención"
     }
   },
   "notes": {

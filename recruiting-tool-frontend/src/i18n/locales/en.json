@@ -709,8 +709,14 @@
     "view_candidates": "View Candidates",
     "create_position": "Create Job Position",
     "stats": {
+      "applications": "Applications",
+      "candidates": "Candidates",
       "job_positions": "Job Positions",
-      "pending_review": "Pending Review"
+      "pending_review": "Pending Review",
+      "pending_review_count": "{{count}} pending review",
+      "active_in_hiring": "Active in hiring processes",
+      "currently_open": "{{count}} currently open",
+      "applications_need_attention": "Applications need attention"
     }
   },
   "notes": {
