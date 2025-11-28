@@ -148,4 +148,22 @@ export class StorageService {
       throw new Error(`Failed to generate signed URL: ${error.message}`);
     }
   }
+
+  /**
+   * Check storage connection health
+   * Used by health check endpoints to verify MinIO/S3 connectivity
+   * @returns Promise<boolean> - true if connection is healthy
+   * @throws Error if connection check fails
+   */
+  async checkConnection(): Promise<boolean> {
+    try {
+      // Test MinIO connection by checking if bucket exists
+      await this.s3Client.send(new HeadBucketCommand({ Bucket: this.bucketName }));
+      this.logger.log('Storage health check: OK');
+      return true;
+    } catch (error) {
+      this.logger.error(`Storage health check failed: ${error.message}`);
+      throw new Error(`Storage connection failed: ${error.message}`);
+    }
+  }
 }

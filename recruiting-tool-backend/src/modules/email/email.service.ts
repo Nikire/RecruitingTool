@@ -400,4 +400,26 @@ ${text}
 
     this.logger.log(`Email sent using template "${emailTemplate.name}" to ${recipientEmail}`);
   }
+
+  /**
+   * Check if email service is properly configured
+   * Used by health check endpoints to verify email service availability
+   * @returns boolean - true if email service is configured
+   */
+  isConfigured(): boolean {
+    const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
+
+    if (smtpEnabled) {
+      // Check if SMTP configuration is complete
+      const smtpHost = this.configService.get<string>('SMTP_HOST');
+      const smtpPort = this.configService.get<number>('SMTP_PORT');
+      const smtpUser = this.configService.get<string>('SMTP_USER');
+      const smtpPassword = this.configService.get<string>('SMTP_PASSWORD');
+
+      return !!(smtpHost && smtpPort && smtpUser && smtpPassword);
+    }
+
+    // Email service works in development mode (logs to console)
+    return true;
+  }
 }

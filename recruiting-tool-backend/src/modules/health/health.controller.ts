@@ -1,60 +1,76 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { DatabaseService } from '../shared/modules/database/database.service';
-
-interface HealthCheckResponse {
-  status: string;
-  timestamp: string;
-  services: {
-    database: {
-      status: string;
-      connectionPool: any;
-    };
-  };
-}
-
-interface DatabaseHealthResponse {
-  healthy: boolean;
-  timestamp: string;
-  connectionPool: any;
-}
+import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
+import { DatabaseHealthIndicator } from './indicators/database.health';
+import { StorageHealthIndicator } from './indicators/storage.health';
+import { EmailHealthIndicator } from './indicators/email.health';
 
 @ApiTags('Health')
 @Controller('health')
 export class HealthController {
-  constructor(private readonly databaseService: DatabaseService) {}
+  constructor(
+    private health: HealthCheckService,
+    private db: DatabaseHealthIndicator,
+    private storage: StorageHealthIndicator,
+    private email: EmailHealthIndicator,
+  ) {}
 
   @Get()
-  @ApiOperation({ summary: 'Health check endpoint' })
+  @HealthCheck()
+  @ApiOperation({ summary: 'Overall application health check' })
   @ApiResponse({ status: 200, description: 'Service is healthy' })
   @ApiResponse({ status: 503, description: 'Service is unhealthy' })
-  async check(): Promise<HealthCheckResponse> {
-    const dbHealthy = await this.databaseService.checkHealth();
-    const poolStats = await this.databaseService.getConnectionPoolStats();
-
-    return {
-      status: dbHealthy ? 'ok' : 'degraded',
-      timestamp: new Date().toISOString(),
-      services: {
-        database: {
-          status: dbHealthy ? 'ok' : 'error',
-          connectionPool: poolStats,
-        },
-      },
-    };
+  check() {
+    return this.health.check([
+      () => this.db.isHealthy('database'),
+      () => this.storage.isHealthy('storage'),
+      () => this.email.isHealthy('email'),
+    ]);
   }
 
   @Get('database')
-  @ApiOperation({ summary: 'Database health and connection pool status' })
-  @ApiResponse({ status: 200, description: 'Database connection pool stats' })
-  async database(): Promise<DatabaseHealthResponse> {
-    const isHealthy = await this.databaseService.checkHealth();
-    const poolStats = await this.databaseService.getConnectionPoolStats();
+  @HealthCheck()
+  @ApiOperation({ summary: 'Database health check' })
+  @ApiResponse({ status: 200, description: 'Database is healthy' })
+  @ApiResponse({ status: 503, description: 'Database is unhealthy' })
+  checkDatabase() {
+    return this.health.check([() => this.db.isHealthy('database')]);
+  }
 
+  @Get('storage')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Storage (MinIO) health check' })
+  @ApiResponse({ status: 200, description: 'Storage is healthy' })
+  @ApiResponse({ status: 503, description: 'Storage is unhealthy' })
+  checkStorage() {
+    return this.health.check([() => this.storage.isHealthy('storage')]);
+  }
+
+  @Get('email')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Email service health check' })
+  @ApiResponse({ status: 200, description: 'Email service is healthy' })
+  @ApiResponse({ status: 503, description: 'Email service is unhealthy' })
+  checkEmail() {
+    return this.health.check([() => this.email.isHealthy('email')]);
+  }
+
+  @Get('liveness')
+  @ApiOperation({ summary: 'Kubernetes liveness probe' })
+  @ApiResponse({ status: 200, description: 'Application is alive' })
+  liveness() {
     return {
-      healthy: isHealthy,
+      status: 'ok',
       timestamp: new Date().toISOString(),
-      connectionPool: poolStats,
     };
+  }
+
+  @Get('readiness')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Kubernetes readiness probe' })
+  @ApiResponse({ status: 200, description: 'Application is ready to serve traffic' })
+  @ApiResponse({ status: 503, description: 'Application is not ready' })
+  readiness() {
+    return this.health.check([() => this.db.isHealthy('database')]);
   }
 }
