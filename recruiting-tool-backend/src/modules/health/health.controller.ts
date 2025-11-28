@@ -4,7 +4,6 @@ import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 import { DatabaseHealthIndicator } from './indicators/database.health';
 import { StorageHealthIndicator } from './indicators/storage.health';
 import { EmailHealthIndicator } from './indicators/email.health';
-import { CacheService } from '../cache/cache.service';
 
 @ApiTags('Health')
 @Controller('health')
@@ -14,7 +13,6 @@ export class HealthController {
     private db: DatabaseHealthIndicator,
     private storage: StorageHealthIndicator,
     private email: EmailHealthIndicator,
-    private cacheService: CacheService,
   ) {}
 
   @Get()
@@ -76,40 +74,26 @@ export class HealthController {
     return this.health.check([() => this.db.isHealthy('database')]);
   }
 
-  @Get('cache')
-  @ApiOperation({ summary: 'Cache health and statistics' })
-  @ApiResponse({ status: 200, description: 'Cache is healthy and operational' })
-  async checkCache() {
-    try {
-      // Test cache read/write
-      const testKey = 'health-check-test';
-      const testValue = { timestamp: new Date().toISOString() };
+  @Get('detailed')
+  @HealthCheck()
+  @ApiOperation({ summary: 'Detailed health status with all system information' })
+  @ApiResponse({ status: 200, description: 'Detailed system health information' })
+  @ApiResponse({ status: 503, description: 'One or more services are unhealthy' })
+  async getDetailedHealth() {
+    const healthCheckResult = await this.health.check([
+      () => this.db.isHealthy('database'),
+      () => this.storage.isHealthy('storage'),
+      () => this.email.isHealthy('email'),
+    ]);
 
-      await this.cacheService.set(testKey, testValue, 10000); // 10 seconds TTL
-      const retrieved = await this.cacheService.get(testKey);
-
-      const isWorking = retrieved !== undefined;
-
-      return {
-        status: isWorking ? 'ok' : 'degraded',
-        type: 'in-memory',
+    return {
+      ...healthCheckResult,
+      info: {
+        version: process.env.npm_package_version || '1.0.0',
+        environment: process.env.NODE_ENV || 'development',
+        uptime: process.uptime(),
         timestamp: new Date().toISOString(),
-        testPassed: isWorking,
-        details: {
-          message: isWorking ? 'Cache read/write test successful' : 'Cache read/write test failed',
-        },
-      };
-    } catch (error) {
-      return {
-        status: 'error',
-        type: 'in-memory',
-        timestamp: new Date().toISOString(),
-        testPassed: false,
-        details: {
-          message: 'Cache health check failed',
-          error: error.message,
-        },
-      };
-    }
+      },
+    };
   }
 }
