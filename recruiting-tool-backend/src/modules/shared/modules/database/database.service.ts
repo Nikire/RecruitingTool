@@ -1,13 +1,102 @@
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { Injectable, OnModuleDestroy, OnModuleInit, Logger } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class DatabaseService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  private readonly logger = new Logger(DatabaseService.name);
+
+  constructor() {
+    super({
+      datasources: {
+        db: {
+          url: process.env.DATABASE_URL,
+        },
+      },
+      log: process.env.NODE_ENV === 'development'
+        ? ['query', 'error', 'warn']
+        : ['error'],
+    });
+  }
+
   async onModuleInit() {
-    await this.$connect();
+    try {
+      await this.$connect();
+      this.logger.log('Database connected with connection pooling');
+
+      // Log connection pool configuration in development
+      if (process.env.NODE_ENV === 'development') {
+        const poolStats = await this.getConnectionPoolStats();
+        this.logger.debug(`Initial connection pool stats: ${JSON.stringify(poolStats)}`);
+      }
+    } catch (error) {
+      this.logger.error('Failed to connect to database', error);
+      throw error;
+    }
   }
 
   async onModuleDestroy() {
-    await this.$disconnect();
+    try {
+      await this.$disconnect();
+      this.logger.log('Database disconnected');
+    } catch (error) {
+      this.logger.error('Error disconnecting from database', error);
+    }
+  }
+
+  /**
+   * Get current connection pool statistics
+   * Useful for monitoring and debugging connection pool usage
+   */
+  async getConnectionPoolStats() {
+    try {
+      const result = await this.$queryRaw<Array<{
+        total_connections: bigint;
+        active_connections: bigint;
+        idle_connections: bigint;
+      }>>`
+        SELECT
+          count(*) as total_connections,
+          count(*) FILTER (WHERE state = 'active') as active_connections,
+          count(*) FILTER (WHERE state = 'idle') as idle_connections
+        FROM pg_stat_activity
+        WHERE datname = current_database()
+      `;
+
+      if (result && result.length > 0) {
+        return {
+          total: Number(result[0].total_connections),
+          active: Number(result[0].active_connections),
+          idle: Number(result[0].idle_connections),
+        };
+      }
+
+      return {
+        total: 0,
+        active: 0,
+        idle: 0,
+      };
+    } catch (error) {
+      this.logger.error('Failed to get connection pool stats', error);
+      return {
+        total: 0,
+        active: 0,
+        idle: 0,
+        error: error.message,
+      };
+    }
+  }
+
+  /**
+   * Check database health
+   * Returns true if database is reachable
+   */
+  async checkHealth(): Promise<boolean> {
+    try {
+      await this.$queryRaw`SELECT 1`;
+      return true;
+    } catch (error) {
+      this.logger.error('Database health check failed', error);
+      return false;
+    }
   }
 }

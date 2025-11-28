@@ -19,7 +19,10 @@ export class StagesService {
     const { jobPositionUid, title, type, description, estimatedTime } = createStageDto;
 
     const maxPosition = await this.databaseService.stage.aggregate({
-      where: { JobPosition: { uid: jobPositionUid } },
+      where: {
+        JobPosition: { uid: jobPositionUid },
+        deletedAt: null, // Exclude soft-deleted stages when calculating position
+      },
       _max: { position: true },
     });
 
@@ -43,12 +46,15 @@ export class StagesService {
     const { page = 1, pageSize = 10, search, sortBy = 'position', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * pageSize;
 
-    // Build where clause for search
-    const where = search
+    // Build where clause for search and exclude soft-deleted stages
+    const where: any = search
       ? {
           OR: [{ title: { contains: search, mode: 'insensitive' as const } }, { description: { contains: search, mode: 'insensitive' as const } }],
         }
       : {};
+
+    // Exclude soft-deleted stages
+    where.deletedAt = null;
 
     // Get total count
     const total = await this.databaseService.stage.count({ where });
@@ -77,8 +83,8 @@ export class StagesService {
   }
 
   async findOne(uid: string) {
-    const stage = await this.databaseService.stage.findUnique({
-      where: { uid },
+    const stage = await this.databaseService.stage.findFirst({
+      where: { uid, deletedAt: null },
     });
 
     if (!stage) {
@@ -89,8 +95,8 @@ export class StagesService {
   }
 
   async update(uid: string, updateStageDto: UpdateStageDto) {
-    const stage = await this.databaseService.stage.findUnique({
-      where: { uid },
+    const stage = await this.databaseService.stage.findFirst({
+      where: { uid, deletedAt: null },
     });
 
     if (!stage) {
@@ -107,6 +113,7 @@ export class StagesService {
             where: {
               hiringProcessId,
               position: { gte: position, lt: stage.position },
+              deletedAt: null, // Exclude soft-deleted stages from position adjustment
             },
             data: { position: { increment: 1 } },
           });
@@ -115,6 +122,7 @@ export class StagesService {
             where: {
               hiringProcessId,
               position: { gt: stage.position, lte: position },
+              deletedAt: null, // Exclude soft-deleted stages from position adjustment
             },
             data: { position: { decrement: 1 } },
           });
@@ -133,8 +141,8 @@ export class StagesService {
   }
 
   async remove(uid: string) {
-    const stageToDelete = await this.databaseService.stage.findUnique({
-      where: { uid },
+    const stageToDelete = await this.databaseService.stage.findFirst({
+      where: { uid, deletedAt: null },
     });
 
     if (!stageToDelete) throw new NotFoundException(`Stage with UID ${uid} not found`);
@@ -149,6 +157,7 @@ export class StagesService {
         where: {
           hiringProcessId,
           position: { gt: deletedPosition },
+          deletedAt: null, // Exclude soft-deleted stages from position adjustment
         },
         data: { position: { decrement: 1 } },
       });
@@ -388,8 +397,8 @@ export class StagesService {
   // Stage Notes methods
   async createNote(stageUid: string, createNoteDto: CreateStageNoteDto, authorUserId: number): Promise<StageNoteResponseDto> {
     // Find stage by UID to get the numeric ID
-    const stage = await this.databaseService.stage.findUnique({
-      where: { uid: stageUid },
+    const stage = await this.databaseService.stage.findFirst({
+      where: { uid: stageUid, deletedAt: null },
     });
 
     if (!stage) {
@@ -423,8 +432,8 @@ export class StagesService {
   }
 
   async findNotesByStageUid(stageUid: string): Promise<StageNoteResponseDto[]> {
-    const stage = await this.databaseService.stage.findUnique({
-      where: { uid: stageUid },
+    const stage = await this.databaseService.stage.findFirst({
+      where: { uid: stageUid, deletedAt: null },
     });
 
     if (!stage) {
@@ -567,8 +576,8 @@ export class StagesService {
   }
 
   async getStageMetrics(stageUid: string): Promise<StageMetricsResponseDto> {
-    const stage = await this.databaseService.stage.findUnique({
-      where: { uid: stageUid },
+    const stage = await this.databaseService.stage.findFirst({
+      where: { uid: stageUid, deletedAt: null },
       include: {
         timeLogs: {
           where: {

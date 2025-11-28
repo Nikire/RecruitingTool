@@ -38,6 +38,46 @@ services:
     networks:
       - app-network
 
+  pgbouncer:
+    image: pgbouncer/pgbouncer:latest
+    container_name: recruiting_pgbouncer
+    environment:
+      # PostgreSQL connection
+      - DATABASES_HOST=db
+      - DATABASES_PORT=5432
+      - DATABASES_USER=${POSTGRES_USER}
+      - DATABASES_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASES_DBNAME=recruiting_tool_db
+      # PgBouncer pooling configuration
+      # transaction mode: Best for Prisma and stateless applications
+      # Connections are returned to pool after each transaction
+      - PGBOUNCER_POOL_MODE=transaction
+      # Maximum client connections allowed
+      - PGBOUNCER_MAX_CLIENT_CONN=100
+      # Default pool size per database
+      - PGBOUNCER_DEFAULT_POOL_SIZE=20
+      # Minimum pool size to keep alive
+      - PGBOUNCER_MIN_POOL_SIZE=5
+      # Reserve pool for high-priority connections
+      - PGBOUNCER_RESERVE_POOL_SIZE=5
+      # Maximum database connections
+      - PGBOUNCER_MAX_DB_CONNECTIONS=20
+      # Enable verbose logging for debugging (disable in production)
+      - PGBOUNCER_VERBOSE=0
+    ports:
+      - '6432:6432'
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'pg_isready', '-h', 'localhost', '-p', '6432', '-U', '${POSTGRES_USER}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
   backend:
     build:
       context: ./recruiting-tool-backend
@@ -47,10 +87,20 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      # Uncomment to use PgBouncer in production (recommended for high-load scenarios)
+      # pgbouncer:
+      #   condition: service_healthy
     env_file:
       - ./recruiting-tool-backend/.env
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/recruiting_tool_db
+      # Database connection with connection pooling
+      # OPTION 1: Direct connection to PostgreSQL (current setup)
+      # connection_limit: Max connections (20 for production Docker environment)
+      # pool_timeout: Timeout in seconds for acquiring connection (15s)
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/recruiting_tool_db?schema=public&connection_limit=20&pool_timeout=15
+      # OPTION 2: Use PgBouncer for advanced pooling (recommended for production)
+      # Uncomment below and comment out the line above to use PgBouncer
+      # - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@pgbouncer:6432/recruiting_tool_db?schema=public
     volumes:
       - ./recruiting-tool-backend:/app
       - backend_node_modules:/app/node_modules
