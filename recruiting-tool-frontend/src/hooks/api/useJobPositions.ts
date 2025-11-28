@@ -4,6 +4,7 @@ import {
 	deleteJobPosition,
 	getJobPositions,
 	getPublicJobPositions,
+	getPublicJobPosition,
 	listJobPositions,
 	updateJobPosition,
 } from '../../api/jobPositions';
@@ -18,6 +19,14 @@ export function usePublicJobPositions(options?: { enabled?: boolean }) {
 		queryKey: [JOB_POSITIONS_KEY, 'public'],
 		queryFn: getPublicJobPositions,
 		enabled: options?.enabled !== false,
+	});
+}
+
+export function usePublicJobPosition(uid: string, options?: { enabled?: boolean }) {
+	return useQuery({
+		queryKey: [JOB_POSITIONS_KEY, 'public', uid],
+		queryFn: () => getPublicJobPosition(uid),
+		enabled: options?.enabled !== false && !!uid,
 	});
 }
 

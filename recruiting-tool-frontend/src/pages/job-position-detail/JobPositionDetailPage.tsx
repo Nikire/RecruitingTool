@@ -19,7 +19,7 @@ import {
 	Alert,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {useJobPositions} from '../../hooks/api/useJobPositions';
+import {usePublicJobPosition} from '../../hooks/api/useJobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
 import StatusLabel from '../../components/StatusLabel';
 import {HiringProcessStatus} from '../../types/hiringProcess.types';
@@ -50,7 +50,7 @@ const JobPositionDetailPage: React.FC = () => {
 	const {uid} = useParams<{uid: string}>();
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
-	const {data: jobPositionData, isLoading, error} = useJobPositions(uid);
+	const {data: jobPositionData, isLoading, error} = usePublicJobPosition(uid || '');
 	const [statusFilter, setStatusFilter] = useState<HiringProcessStatus | 'ALL'>('ALL');
 	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
 

@@ -160,6 +160,11 @@
     "failed_count": "Fallaron al importar",
     "import_errors": "Errores de Importación"
   },
+  "careers": {
+    "title": "Posiciones Abiertas",
+    "subtitle": "Explora nuestras ofertas de trabajo actuales y aplica hoy",
+    "search_placeholder": "Buscar trabajos..."
+  },
   "job_positions": {
     "title": "Posiciones de Trabajo",
     "create_title": "Crear Nueva Posición de Trabajo",

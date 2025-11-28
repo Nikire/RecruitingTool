@@ -160,6 +160,11 @@
     "failed_count": "Failed to import",
     "import_errors": "Import Errors"
   },
+  "careers": {
+    "title": "Open Positions",
+    "subtitle": "Explore our current job openings and apply today",
+    "search_placeholder": "Search jobs..."
+  },
   "job_positions": {
     "title": "Job Positions",
     "create_title": "Create New Job Position",

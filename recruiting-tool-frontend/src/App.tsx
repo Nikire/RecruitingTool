@@ -12,6 +12,7 @@ import AdminLayout from './layouts/AdminLayout';
 import HRLayout from './layouts/HRLayout';
 import JobPositionsPage from './pages/job-positions/JobPositionsPage';
 import JobPositionDetailPage from './pages/job-position-detail/JobPositionDetailPage';
+import CareersPage from './pages/careers/CareersPage';
 import CandidatesPage from './pages/candidates/CandidatesPage';
 import { CompaniesPage } from './pages/companies/CompaniesPage';
 import UserManagementPage from './pages/users/UserManagementPage';
@@ -41,7 +42,7 @@ function App() {
 					<Route path="/login" element={<Login />} />
 					<Route path="/signup" element={<Signup />} />
 					<Route path="/logout" element={<Logout />} />
-					<Route path="/careers" element={<JobPositionsPage />} />
+					<Route path="/careers" element={<CareersPage />} />
 					<Route path="/careers/:uid" element={<JobPositionDetailPage />} />
 					<Route path="/book-interview/:token" element={<BookInterviewPage />} />
 					<Route path="/booking-confirmed/:token" element={<BookingConfirmedPage />} />

@@ -9,6 +9,12 @@ export function getPublicJobPositions(): Promise<JobPosition[]> {
 		.then((res) => res.data);
 }
 
+export function getPublicJobPosition(uid: string): Promise<JobPosition> {
+	return api
+		.get(`/job-position/public/${uid}`)
+		.then((res) => res.data);
+}
+
 export function getJobPositions(
 	uid?: string
 ): Promise<JobPosition | JobPosition[]> {
