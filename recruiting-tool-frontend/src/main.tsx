@@ -18,7 +18,38 @@ import ErrorBoundary from './components/error/ErrorBoundary.tsx';
 
 import './i18n/i18n.ts';
 
-const queryClient = new QueryClient();
+/**
+ * React Query Client Configuration
+ *
+ * Default options for all queries and mutations in the application.
+ * These settings provide optimal performance and user experience.
+ */
+const queryClient = new QueryClient({
+	defaultOptions: {
+		queries: {
+			// Retry failed queries once before giving up
+			retry: 1,
+
+			// Don't refetch on window focus to reduce unnecessary API calls
+			refetchOnWindowFocus: false,
+
+			// Consider data stale after 5 minutes
+			staleTime: 5 * 60 * 1000,
+
+			// Keep unused data in cache for 10 minutes
+			gcTime: 10 * 60 * 1000,
+
+			// Global error handler for queries
+			// Individual queries can override this with their own onError
+			throwOnError: false,
+		},
+		mutations: {
+			// Global error handler for mutations
+			// Individual mutations should handle errors with onError
+			throwOnError: false,
+		},
+	},
+});
 
 const theme = createTheme(recruitingToolPalette);
 

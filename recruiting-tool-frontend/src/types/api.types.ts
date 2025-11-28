@@ -12,6 +12,7 @@ export interface ApiResponse<T = any> {
 	data: T;
 	success: boolean;
 	statusCode: number;
+	message?: string; // Optional success message
 }
 
 /**
@@ -21,6 +22,32 @@ export interface ApiErrorResponse {
 	message: string | string[];
 	error?: string;
 	statusCode: number;
+	errors?: ValidationErrors; // Field-level validation errors
+}
+
+/**
+ * Validation errors structure
+ * Maps field names to arrays of error messages
+ *
+ * Example:
+ * {
+ *   email: ['Invalid email format', 'Email already exists'],
+ *   password: ['Password must be at least 8 characters']
+ * }
+ */
+export interface ValidationErrors {
+	[field: string]: string[];
+}
+
+/**
+ * Normalized error structure for frontend consumption
+ * This is what the error interceptor provides to components
+ */
+export interface NormalizedError {
+	message: string;
+	statusCode: number;
+	errors?: ValidationErrors;
+	originalError?: any;
 }
 
 /**

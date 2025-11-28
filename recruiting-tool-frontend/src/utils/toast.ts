@@ -1,4 +1,5 @@
 import toast from 'react-hot-toast';
+import { ValidationErrors } from '../types/api.types';
 
 /**
  * Toast notification utilities with consistent styling
@@ -21,11 +22,44 @@ export const showSuccessToast = (message: string) => {
   });
 };
 
+/**
+ * Extract validation errors from error object
+ */
+function extractValidationErrors(error: any): ValidationErrors | null {
+  if (!error || typeof error !== 'object') return null;
+
+  // Check response.data.errors
+  if (error.response?.data?.errors && typeof error.response.data.errors === 'object') {
+    return error.response.data.errors;
+  }
+
+  return null;
+}
+
+/**
+ * Format validation errors for display
+ */
+function formatValidationErrors(errors: ValidationErrors): string {
+  const errorMessages: string[] = [];
+
+  for (const [field, messages] of Object.entries(errors)) {
+    if (Array.isArray(messages)) {
+      errorMessages.push(`${field}: ${messages.join(', ')}`);
+    }
+  }
+
+  return errorMessages.join('\n');
+}
+
 export const showErrorToast = (error: unknown, defaultMessage = 'An error occurred') => {
   let errorMessage = defaultMessage;
+  let validationErrors: ValidationErrors | null = null;
 
   // Extract error message from different error formats
   if (error && typeof error === 'object') {
+    // Extract validation errors first
+    validationErrors = extractValidationErrors(error);
+
     if ('response' in error && error.response && typeof error.response === 'object') {
       const response = error.response as any;
 
@@ -53,6 +87,14 @@ export const showErrorToast = (error: unknown, defaultMessage = 'An error occurr
     errorMessage = error;
   }
 
+  // If we have validation errors, append them to the message
+  if (validationErrors) {
+    const validationErrorsText = formatValidationErrors(validationErrors);
+    if (validationErrorsText) {
+      errorMessage = `${errorMessage}\n\n${validationErrorsText}`;
+    }
+  }
+
   toast.error(errorMessage, {
     duration: 5000,
     position: 'top-right',
@@ -61,6 +103,7 @@ export const showErrorToast = (error: unknown, defaultMessage = 'An error occurr
       color: '#fff',
       padding: '16px',
       borderRadius: '8px',
+      whiteSpace: 'pre-line', // Preserve line breaks
     },
     iconTheme: {
       primary: '#fff',
