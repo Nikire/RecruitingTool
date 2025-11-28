@@ -677,6 +677,8 @@
     "required_chip": "Required",
     "text_required_alert": "Question text is required",
     "options_required_alert": "Please add at least 2 options for multiple choice or checkbox questions",
+    "question_added": "Question added successfully",
+    "question_updated": "Question updated successfully",
     "screening_questions": "Screening Questions",
     "answer_placeholder": "Enter your answer...",
     "no_answer": "No answer provided"
@@ -804,7 +806,9 @@
     "no_processes_with_status": "No hiring processes with status: {{status}}",
     "stage_template": "Stage Template",
     "stage_type": "Type",
-    "no_stages": "No stages defined for this job position yet."
+    "no_stages": "No stages defined for this job position yet.",
+    "custom_questions": "Custom Screening Questions",
+    "no_custom_questions": "No custom screening questions have been added to this job position. Applicants will only need to provide standard information."
   },
   "file_list": {
     "error_loading": "Failed to load files. Please try again later.",

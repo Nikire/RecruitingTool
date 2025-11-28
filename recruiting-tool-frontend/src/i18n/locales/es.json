@@ -675,6 +675,8 @@
     "required_chip": "Obligatorio",
     "text_required_alert": "El texto de la pregunta es obligatorio",
     "options_required_alert": "Por favor agregue al menos 2 opciones para preguntas de opción múltiple o casillas de verificación",
+    "question_added": "Pregunta agregada exitosamente",
+    "question_updated": "Pregunta actualizada exitosamente",
     "screening_questions": "Preguntas de Evaluación",
     "answer_placeholder": "Ingrese su respuesta...",
     "no_answer": "No se proporcionó respuesta"
@@ -802,7 +804,9 @@
     "no_processes_with_status": "No hay procesos de contratación con estado: {{status}}",
     "stage_template": "Plantilla de Etapas",
     "stage_type": "Tipo",
-    "no_stages": "No hay etapas definidas para esta posición todavía."
+    "no_stages": "No hay etapas definidas para esta posición todavía.",
+    "custom_questions": "Preguntas de Selección Personalizadas",
+    "no_custom_questions": "No se han agregado preguntas de selección personalizadas a esta posición de trabajo. Los postulantes solo necesitarán proporcionar información estándar."
   },
   "file_list": {
     "error_loading": "Error al cargar archivos. Por favor intente nuevamente más tarde.",

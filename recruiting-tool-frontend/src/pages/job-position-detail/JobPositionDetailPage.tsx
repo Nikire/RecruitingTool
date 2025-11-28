@@ -291,6 +291,49 @@ const JobPositionDetailPage: React.FC = () => {
 							)}
 						</CardContent>
 					</Card>
+
+					<Typography variant="h5" sx={{mb: {xs: 1.5, sm: 2}, mt: {xs: 3, sm: 4}, fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
+						{t('job_position_detail.custom_questions')}
+					</Typography>
+					<Card sx={{mb: {xs: 2, sm: 3}}}>
+						<CardContent sx={{p: {xs: 2, sm: 3}}}>
+							{jobPosition.customQuestions && jobPosition.customQuestions.length > 0 ? (
+								<Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+									{jobPosition.customQuestions.map((question, index) => (
+										<Box key={question.id} sx={{display: 'flex', alignItems: 'flex-start', gap: 2}}>
+											<Chip label={index + 1} size="small" color="secondary" />
+											<Box sx={{flex: 1}}>
+												<Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 0.5}}>
+													<Typography variant="body1" fontWeight="bold">
+														{question.text}
+													</Typography>
+													{question.required && (
+														<Chip label={t('custom_questions.required_chip')} size="small" color="primary" variant="outlined" />
+													)}
+												</Box>
+												<Typography variant="caption" color="textSecondary" display="block" sx={{mb: 1}}>
+													{t('custom_questions.type_label', {type: question.type.replace(/_/g, ' ')})}
+												</Typography>
+												{question.options && question.options.length > 0 && (
+													<Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap'}}>
+														{question.options.map((option, optIndex) => (
+															<Chip key={optIndex} label={option} size="small" variant="outlined" />
+														))}
+													</Box>
+												)}
+											</Box>
+										</Box>
+									))}
+								</Box>
+							) : (
+								<Alert severity="info">
+									<Typography variant="body2">
+										{t('job_position_detail.no_custom_questions')}
+									</Typography>
+								</Alert>
+							)}
+						</CardContent>
+					</Card>
 				</>
 			)}
 

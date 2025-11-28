@@ -20,6 +20,8 @@ import {Stage} from '../../types/stage.types';
 import StageBuilder from '../job-positions/StageBuilder';
 import {useValidationRules} from '../../utils/validation';
 import FormErrorSummary from '../common/FormErrorSummary';
+import {CustomQuestionBuilder} from '../forms/CustomQuestionBuilder';
+import {CustomQuestion} from '../../types/customQuestions';
 
 interface CreateJobPositionDialogProps {
 	open: boolean;
@@ -39,6 +41,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	const validationRules = useValidationRules();
 	const [stages, setStages] = useState<Omit<Stage, 'uid' | 'status'>[]>([]);
 	const [stageError, setStageError] = useState<string>('');
+	const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
 
 	const {
 		register,
@@ -61,7 +64,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 			return;
 		}
 
-		// Prepare data with stages and default status
+		// Prepare data with stages, custom questions, and default status
 		const jobPositionData = {
 			...data,
 			status: 'OPEN' as const, // Default to OPEN for new positions
@@ -72,12 +75,14 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 				position: stage.position,
 				estimatedTime: stage.estimatedTime,
 			})),
+			customQuestions: customQuestions.length > 0 ? customQuestions : undefined,
 		};
 
 		createJobPosition(jobPositionData, {
 			onSuccess: () => {
 				reset();
 				setStages([]);
+				setCustomQuestions([]);
 				setStageError('');
 				onClose();
 			},
@@ -87,6 +92,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	const handleClose = () => {
 		reset();
 		setStages([]);
+		setCustomQuestions([]);
 		setStageError('');
 		onClose();
 	};
@@ -157,6 +163,16 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							}}
 							minStages={1}
 							error={stageError}
+						/>
+					</Box>
+
+					<Divider sx={{my: 3}} />
+
+					{/* Custom Questions Builder */}
+					<Box sx={{mb: 2}}>
+						<CustomQuestionBuilder
+							questions={customQuestions}
+							onQuestionsChange={setCustomQuestions}
 						/>
 					</Box>
 
