@@ -13,6 +13,7 @@ import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
 import { EmailService } from 'src/modules/email/email.service';
 import { CandidateActivityService } from './services/candidate-activity.service';
 import { CandidateActivityType } from '@prisma/client';
+import { StorageService } from 'src/modules/storage/storage.service';
 
 @Injectable()
 export class CandidateService {
@@ -20,6 +21,7 @@ export class CandidateService {
     private candidateActivityService: CandidateActivityService,
     private databaseService: DatabaseService,
     private emailService: EmailService,
+    private storageService: StorageService,
   ) {}
 
   async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
@@ -467,6 +469,11 @@ export class CandidateService {
   /**
    * GDPR Compliance: Permanently delete candidate data (hard delete)
    * Only accessible by SUPER_ADMIN for "right to be forgotten" requests
+   *
+   * This method:
+   * 1. Finds all files associated with the candidate (resumes, documents)
+   * 2. Deletes all files from MinIO storage
+   * 3. Permanently deletes the candidate record from database (cascade deletes related data)
    */
   async purge(uid: string): Promise<MessageResponseDto> {
     try {
@@ -476,16 +483,83 @@ export class CandidateService {
 
       const existingCandidate = await this.databaseService.candidate.findUnique({
         where: { uid },
+        include: {
+          files: true, // Include files directly associated with candidate
+          hiringProcesses: {
+            include: {
+              jobPosition: {
+                include: {
+                  applications: {
+                    where: {
+                      applicantEmail: { equals: '' }, // Will be replaced with candidate email
+                    },
+                    include: {
+                      resumeFile: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       });
 
       if (!existingCandidate) {
         throw new EntityNotFoundException('Candidate', uid);
       }
 
+      // Collect all S3 keys to delete
+      const s3KeysToDelete: string[] = [];
+
+      // 1. Collect files directly associated with candidate
+      if (existingCandidate.files && existingCandidate.files.length > 0) {
+        existingCandidate.files.forEach(file => {
+          if (file.s3Key) {
+            s3KeysToDelete.push(file.s3Key);
+          }
+        });
+      }
+
+      // 2. Collect resume files from applications (if candidate applied through public careers page)
+      if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
+        for (const hiringProcess of existingCandidate.hiringProcesses) {
+          if (hiringProcess.jobPosition && hiringProcess.jobPosition.applications) {
+            const candidateApplications = hiringProcess.jobPosition.applications.filter(
+              app => app.applicantEmail.toLowerCase() === existingCandidate.email.toLowerCase()
+            );
+
+            candidateApplications.forEach(app => {
+              if (app.resumeFile && app.resumeFile.s3Key) {
+                s3KeysToDelete.push(app.resumeFile.s3Key);
+              }
+            });
+          }
+        }
+      }
+
+      // Delete all files from MinIO storage
+      const deletionErrors: string[] = [];
+      for (const s3Key of s3KeysToDelete) {
+        try {
+          await this.storageService.deleteFile(s3Key);
+        } catch (deleteError) {
+          // Log error but continue with other deletions
+          deletionErrors.push(`Failed to delete ${s3Key}: ${deleteError.message}`);
+          console.error(`Error deleting file ${s3Key} from storage:`, deleteError.message);
+        }
+      }
+
       // Hard delete: Permanently remove candidate from database
+      // This will cascade delete related data (hiring processes, notes, activities, etc.)
       await this.databaseService.candidate.delete({ where: { uid } });
 
-      return { message: `Candidate permanently deleted (GDPR purge)` };
+      // Build response message
+      let message = `Candidate permanently deleted (GDPR purge). Deleted ${s3KeysToDelete.length} file(s) from storage.`;
+      if (deletionErrors.length > 0) {
+        message += ` Warning: ${deletionErrors.length} file(s) failed to delete from storage.`;
+      }
+
+      return { message };
 
     } catch (error) {
       if (error instanceof HttpException) {
