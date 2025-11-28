@@ -4,6 +4,7 @@ import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 import { DatabaseHealthIndicator } from './indicators/database.health';
 import { StorageHealthIndicator } from './indicators/storage.health';
 import { EmailHealthIndicator } from './indicators/email.health';
+import { DatabaseService } from '../shared/modules/database/database.service';
 
 @ApiTags('Health')
 @Controller('health')
@@ -13,6 +14,7 @@ export class HealthController {
     private db: DatabaseHealthIndicator,
     private storage: StorageHealthIndicator,
     private email: EmailHealthIndicator,
+    private databaseService: DatabaseService,
   ) {}
 
   @Get()
@@ -94,6 +96,43 @@ export class HealthController {
         uptime: process.uptime(),
         timestamp: new Date().toISOString(),
       },
+    };
+  }
+
+  @Get('database/pool')
+  @ApiOperation({ summary: 'Database connection pool statistics' })
+  @ApiResponse({
+    status: 200,
+    description: 'Connection pool statistics',
+    schema: {
+      type: 'object',
+      properties: {
+        total: { type: 'number', description: 'Total connections to database' },
+        active: { type: 'number', description: 'Active connections executing queries' },
+        idle: { type: 'number', description: 'Idle connections available for use' },
+        waiting: { type: 'number', description: 'Connections waiting for locks' },
+        maxConnections: { type: 'number', description: 'PostgreSQL max_connections setting' },
+        poolMax: { type: 'number', description: 'Application pool max size (DATABASE_POOL_MAX)' },
+        utilizationPercent: { type: 'number', description: 'Pool utilization percentage (active/poolMax)' },
+        timestamp: { type: 'string', format: 'date-time', description: 'Timestamp of statistics' },
+      },
+    },
+  })
+  async getConnectionPoolStats() {
+    const stats = await this.databaseService.getConnectionPoolStats();
+    return {
+      ...stats,
+      timestamp: new Date().toISOString(),
+      healthy: stats.utilizationPercent < 90,
+      warning: stats.utilizationPercent >= 80 && stats.utilizationPercent < 90,
+      recommendations:
+        stats.utilizationPercent > 80
+          ? [
+              'Connection pool utilization is high',
+              `Consider increasing DATABASE_POOL_MAX (current: ${stats.poolMax})`,
+              'Monitor slow queries and optimize if necessary',
+            ]
+          : [],
     };
   }
 }

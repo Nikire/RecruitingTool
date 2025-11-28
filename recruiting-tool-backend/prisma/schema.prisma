@@ -3,6 +3,26 @@ generator client {
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
+// Database connection with connection pooling
+// Connection pool is configured via DATABASE_URL query parameters or PrismaClient options
+// See: https://www.prisma.io/docs/concepts/components/prisma-client/working-with-prismaclient/connection-management
+//
+// Recommended DATABASE_URL format with connection pooling:
+// postgresql://user:password@host:5432/dbname?connection_limit=10&pool_timeout=60&connect_timeout=10
+//
+// Connection pool configuration (via environment variables):
+// - DATABASE_POOL_MIN: Minimum connections to maintain (default: 2)
+// - DATABASE_POOL_MAX: Maximum connections allowed (dev: 10, prod: 20)
+// - DATABASE_POOL_ACQUIRE_TIMEOUT: Time to wait for available connection (default: 60s)
+// - DATABASE_POOL_IDLE_TIMEOUT: Time before idle connection is closed (default: 10min)
+// - DATABASE_POOL_MAX_LIFETIME: Time before connection is recycled (default: 30min)
+//
+// PostgreSQL connection limits:
+// - PostgreSQL default max_connections: 100
+// - Docker container default: 100
+// - Reserve ~30% for other connections (pgAdmin, migrations, etc.)
+// - Development pool max: 10 connections
+// - Production pool max: 20 connections
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
