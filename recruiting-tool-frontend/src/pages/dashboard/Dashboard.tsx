@@ -37,7 +37,7 @@ const Dashboard: React.FC = () => {
 			</Box>
 
 			<Box sx={{mb: 3, maxWidth: 400}}>
-				<SearchBar onSearch={handleSearch} placeholder="Search job positions..." value={search} />
+				<SearchBar onSearch={handleSearch} placeholder={t('job_positions.search_placeholder')} value={search} />
 			</Box>
 
 			<JobPositionsManagementList

@@ -38,7 +38,8 @@
     "refresh": "Actualizar",
     "my_profile": "Mi Perfil",
     "back_to_careers": "Volver a Carreras",
-    "n_a": "N/A"
+    "n_a": "N/A",
+    "unknown_user": "Usuario Desconocido"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -144,7 +145,9 @@
     "uploaded_files": "Archivos Subidos",
     "no_candidates": "No hay candidatos disponibles",
     "add_note": "Agregar Nota",
-    "internal_notes": "Notas Internas"
+    "internal_notes": "Notas Internas",
+    "delete_title": "Eliminar Candidato",
+    "delete_message": "¿Está seguro que desea eliminar este candidato?"
   },
   "candidate_import": {
     "title": "Importar Candidatos desde CSV",
@@ -193,7 +196,8 @@
     "view_details": "Ver Detalles",
     "company": "Empresa",
     "created_by": "Creado Por",
-    "stages_count": "Etapas"
+    "stages_count": "Etapas",
+    "in_progress_count": "En Progreso: {{count}}"
   },
   "hiring_processes": {
     "title": "Procesos de Contratación",
@@ -287,7 +291,66 @@
     "add_more_stages_plural": "Por favor agregue al menos {{count}} etapas más.",
     "template_basic": "Básico (3 etapas)",
     "template_technical": "Técnico (4 etapas)",
-    "template_comprehensive": "Completo (5 etapas)"
+    "template_comprehensive": "Completo (5 etapas)",
+    "template_data": {
+      "basic": {
+        "name": "Básico (3 etapas)",
+        "screening": {
+          "title": "Evaluación Inicial",
+          "description": "Revisar aplicación y realizar evaluación telefónica inicial"
+        },
+        "interview": {
+          "title": "Entrevista",
+          "description": "Entrevista en profundidad con el gerente de contratación"
+        },
+        "offer": {
+          "title": "Oferta",
+          "description": "Extender oferta de trabajo al candidato"
+        }
+      },
+      "technical": {
+        "name": "Técnico (4 etapas)",
+        "review": {
+          "title": "Revisión de Aplicación",
+          "description": "Revisar currículum y portafolio"
+        },
+        "technical": {
+          "title": "Entrevista Técnica",
+          "description": "Desafío de código y evaluación técnica"
+        },
+        "final": {
+          "title": "Entrevista Final",
+          "description": "Entrevista de ajuste cultural y de equipo"
+        },
+        "offer": {
+          "title": "Oferta",
+          "description": "Extender oferta de trabajo al candidato"
+        }
+      },
+      "comprehensive": {
+        "name": "Completo (5 etapas)",
+        "review": {
+          "title": "Revisión de Aplicación",
+          "description": "Revisión inicial de materiales de aplicación"
+        },
+        "phone": {
+          "title": "Evaluación Telefónica",
+          "description": "Breve conversación telefónica para evaluar ajuste básico"
+        },
+        "assessment": {
+          "title": "Evaluación Técnica",
+          "description": "Evaluación técnica en profundidad con ejercicios de código"
+        },
+        "onsite": {
+          "title": "Entrevista Presencial",
+          "description": "Entrevistas presenciales de día completo con miembros del equipo"
+        },
+        "offer": {
+          "title": "Oferta",
+          "description": "Extender oferta final y negociar términos"
+        }
+      }
+    }
   },
   "stage_notes": {
     "title": "Notas de Etapa",
@@ -642,7 +705,11 @@
     "manage_positions": "Gestionar Posiciones de Trabajo",
     "review_applications": "Revisar Aplicaciones",
     "view_candidates": "Ver Candidatos",
-    "create_position": "Crear Posición de Trabajo"
+    "create_position": "Crear Posición de Trabajo",
+    "stats": {
+      "job_positions": "Posiciones de Trabajo",
+      "pending_review": "Revisión Pendiente"
+    }
   },
   "notes": {
     "save_candidate_first": "Por favor guarde el candidato primero antes de agregar notas.",
@@ -1168,6 +1235,7 @@
     "integrations": "Integraciones",
     "system_health": "Salud del Sistema",
     "application_name": "Nombre de la Aplicación",
+    "default_app_name": "Herramienta de Reclutamiento",
     "default_timezone": "Zona Horaria Predeterminada",
     "default_language": "Idioma Predeterminado",
     "date_format": "Formato de Fecha",

@@ -73,7 +73,7 @@ const HRDashboard: React.FC = () => {
 			onClick: () => navigate('/hr/candidates'),
 		},
 		{
-			title: 'Job Positions',
+			title: t('dashboard.stats.job_positions'),
 			value: totalJobPositions,
 			subtitle: `${openPositions} currently open`,
 			icon: <WorkIcon />,
@@ -81,7 +81,7 @@ const HRDashboard: React.FC = () => {
 			onClick: () => navigate('/hr/job-positions'),
 		},
 		{
-			title: 'Pending Review',
+			title: t('dashboard.stats.pending_review'),
 			value: pendingApplications,
 			subtitle: 'Applications need attention',
 			icon: <AssignmentIcon />,

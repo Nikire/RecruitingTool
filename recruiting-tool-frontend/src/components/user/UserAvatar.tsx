@@ -13,7 +13,7 @@ type UserAvatarType = {
 
 const UserAvatar: React.FC<UserAvatarType> = ({avatarUrl, name}) => {
 	const {t} = useTranslation();
-	const userName = name || 'Unknown User';
+	const userName = name || t('common.unknown_user');
 
 	return (
 		<Avatar

@@ -232,8 +232,8 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 					open={deleteConfirm.isOpen}
 					onClose={deleteConfirm.handleCancel}
 					onConfirm={deleteConfirm.handleConfirm}
-					title="Delete Candidate"
-					message="Are you sure you want to delete this candidate?"
+					title={t('candidates.delete_title')}
+					message={t('candidates.delete_message')}
 					itemName={deleteConfirm.selectedItem?.name}
 					isDeleting={deleteConfirm.isDeleting}
 				/>
@@ -298,8 +298,8 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 				open={deleteConfirm.isOpen}
 				onClose={deleteConfirm.handleCancel}
 				onConfirm={deleteConfirm.handleConfirm}
-				title="Delete Candidate"
-				message="Are you sure you want to delete this candidate?"
+				title={t('candidates.delete_title')}
+				message={t('candidates.delete_message')}
 				itemName={deleteConfirm.selectedItem?.name}
 				isDeleting={deleteConfirm.isDeleting}
 			/>
