@@ -124,11 +124,16 @@ export class DummyService implements OnApplicationBootstrap {
     // Update admin user to belong to first company
     const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
     if (adminEmail) {
-      await this.databaseService.user.update({
+      const adminUser = await this.databaseService.user.findFirst({
         where: { email: adminEmail },
-        data: { companyId: createdCompanies[0].id },
       });
-      this.logger.log(`Updated admin user to belong to ${createdCompanies[0].name}`);
+      if (adminUser) {
+        await this.databaseService.user.update({
+          where: { id: adminUser.id },
+          data: { companyId: createdCompanies[0].id },
+        });
+        this.logger.log(`Updated admin user to belong to ${createdCompanies[0].name}`);
+      }
     }
 
     // Create users

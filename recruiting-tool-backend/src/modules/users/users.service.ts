@@ -246,7 +246,7 @@ export class UsersService {
 
   async findByEmail(email: string): Promise<UserWithPasswordResponseDto> | null {
     try {
-      const user = await this.databaseService.user.findUnique({
+      const user = await this.databaseService.user.findFirst({
         where: { email },
       });
 

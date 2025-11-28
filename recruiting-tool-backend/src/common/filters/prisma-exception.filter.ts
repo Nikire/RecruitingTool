@@ -145,6 +145,10 @@ export class PrismaExceptionFilter implements ExceptionFilter {
     if (target.some((field) => field.toLowerCase().includes('email'))) {
       const constraintName = target.join('_');
 
+      if (constraintName.includes('User_email') && target.includes('companyId')) {
+        return 'A user with this email address already exists in this company.';
+      }
+
       if (constraintName.includes('User_email')) {
         return 'A user with this email address already exists (case-insensitive).';
       }
@@ -194,6 +198,16 @@ export class PrismaExceptionFilter implements ExceptionFilter {
 
     if (target.includes('companyId') && target.includes('quotaType')) {
       return 'A quota of this type already exists for this company.';
+    }
+
+    if (target.includes('name') && target.includes('companyId')) {
+      const constraintName = exception.meta?.constraint_name as string | undefined;
+
+      if (constraintName && constraintName.includes('EmailTemplate')) {
+        return 'An email template with this name already exists in this company.';
+      }
+
+      return 'A record with this name already exists in this company.';
     }
 
     // Generic fallback

@@ -22,13 +22,17 @@ model Company {
   scorecardTemplates ScorecardTemplate[]
   aiQuotas           AIQuota[]
   aiUsageLogs        AIUsageLog[]
+
+  @@index([uid])
+  @@index([name])
+  @@index([createdAt])
 }
 
 model User {
   id                      Int                    @id @default(autoincrement())
   uid                     String                 @unique @default(uuid()) @db.Uuid
   name                    String
-  email                   String                 @unique
+  email                   String
   password                String
   roles                   RolesType[]            @default([USER])
   profilePicture          String?
@@ -65,9 +69,15 @@ model User {
   refreshTokens           RefreshToken[]         @relation("UserRefreshTokens")
   auditLogs               AuditLog[]             @relation("UserAuditLogs")
 
+  @@unique([email, companyId])
   @@index([email])
   @@index([companyId])
   @@index([isActive])
+  @@index([roles])
+  @@index([uid])
+  @@index([companyId, isActive])
+  @@index([createdAt])
+  @@index([lastLoginAt])
   @@map("User")
 }
 
@@ -92,6 +102,8 @@ model Candidate {
   @@index([email])
   @@index([source])
   @@index([deletedAt])
+  @@index([createdAt])
+  @@index([uid])
   @@map("Candidate")
 }
 
@@ -108,6 +120,8 @@ model CandidateNote {
 
   @@index([candidateId])
   @@index([authorId])
+  @@index([uid])
+  @@index([createdAt])
 }
 
 enum RolesType {
@@ -158,6 +172,10 @@ model JobPosition {
   @@index([createdById])
   @@index([companyId, status])
   @@index([deletedAt])
+  @@index([createdAt])
+  @@index([companyId, deletedAt])
+  @@index([uid])
+  @@index([title])
 }
 
 model HiringProcess {
@@ -181,6 +199,10 @@ model HiringProcess {
   @@index([candidateId])
   @@index([companyId])
   @@index([companyId, status])
+  @@index([createdAt])
+  @@index([uid])
+  @@index([jobPositionId, status])
+  @@index([candidateId, status])
 }
 
 enum HiringProcessStatus {
@@ -224,6 +246,9 @@ model Stage {
   @@index([position])
   @@index([hiringProcessId, position])
   @@index([deletedAt])
+  @@index([uid])
+  @@index([type])
+  @@index([createdAt])
 }
 
 model StageNote {
@@ -239,6 +264,8 @@ model StageNote {
 
   @@index([stageId])
   @@index([authorId])
+  @@index([uid])
+  @@index([createdAt])
 }
 
 enum StageStatus {
@@ -273,6 +300,8 @@ model FileUpload {
 
   @@index([candidateId])
   @@index([uploadedById])
+  @@index([uid])
+  @@index([createdAt])
 }
 
 model Application {
@@ -304,6 +333,9 @@ model Application {
   @@index([reviewedById])
   @@index([jobPositionId, status])
   @@index([deletedAt])
+  @@index([createdAt])
+  @@index([uid])
+  @@index([appliedAt])
   @@map("Application")
 }
 
@@ -328,9 +360,12 @@ model EmailTemplate {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
+  @@unique([name, companyId])
   @@index([companyId])
   @@index([createdById])
   @@index([isDefault])
+  @@index([uid])
+  @@index([createdAt])
 }
 
 model EmailLog {
@@ -351,6 +386,8 @@ model EmailLog {
   @@index([sentAt])
   @@index([emailType])
   @@index([relatedEntityId])
+  @@index([uid])
+  @@index([status])
 }
 
 model Interview {
@@ -385,6 +422,9 @@ model Interview {
   @@index([status])
   @@index([scheduledDate])
   @@index([deletedAt])
+  @@index([uid])
+  @@index([createdAt])
+  @@index([stageId, status])
 }
 
 model InterviewReschedule {
@@ -404,6 +444,7 @@ model InterviewReschedule {
   @@index([interviewId])
   @@index([rescheduledById])
   @@index([rescheduledAt])
+  @@index([uid])
 }
 
 model InterviewTimeSlot {
@@ -420,6 +461,7 @@ model InterviewTimeSlot {
   @@index([interviewId])
   @@index([startTime])
   @@index([isAvailable])
+  @@index([uid])
 }
 
 model InterviewBookingToken {
@@ -435,6 +477,7 @@ model InterviewBookingToken {
   @@index([token])
   @@index([interviewId])
   @@index([expiresAt])
+  @@index([uid])
 }
 
 model InterviewInterviewer {
@@ -474,6 +517,7 @@ model Profile {
   updatedAt   DateTime @updatedAt
 
   @@index([userId])
+  @@index([createdAt])
 }
 
 model UserActivityLog {
@@ -490,6 +534,7 @@ model UserActivityLog {
   @@index([userId])
   @@index([action])
   @@index([createdAt])
+  @@index([uid])
 }
 
 model HRSchedule {
@@ -509,6 +554,8 @@ model HRSchedule {
   @@index([userId])
   @@index([dayOfWeek])
   @@index([specificDate])
+  @@index([uid])
+  @@index([isAvailable])
 }
 
 model ScorecardTemplate {
@@ -527,6 +574,8 @@ model ScorecardTemplate {
   @@index([companyId])
   @@index([isActive])
   @@index([uid])
+  @@index([createdAt])
+  @@index([name])
 }
 
 model ScorecardCategory {
@@ -542,6 +591,7 @@ model ScorecardCategory {
 
   @@index([templateId])
   @@index([uid])
+  @@index([order])
 }
 
 model ScorecardCriterion {
@@ -557,6 +607,7 @@ model ScorecardCriterion {
 
   @@index([categoryId])
   @@index([uid])
+  @@index([order])
 }
 
 model Scorecard {
@@ -579,6 +630,8 @@ model Scorecard {
   @@index([interviewId])
   @@index([evaluatorId])
   @@index([uid])
+  @@index([submittedAt])
+  @@index([createdAt])
 }
 
 model ScorecardScore {
@@ -592,6 +645,7 @@ model ScorecardScore {
 
   @@unique([scorecardId, criterionId])
   @@index([scorecardId])
+  @@index([score])
 }
 
 model AIQuota {
@@ -779,4 +833,6 @@ model AuditLog {
   @@index([timestamp])
   @@index([action])
   @@index([uid])
+  @@index([entityType])
+  @@index([entityUid])
 }
