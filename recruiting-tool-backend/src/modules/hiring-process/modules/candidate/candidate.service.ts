@@ -480,24 +480,14 @@ export class CandidateService {
         throw new EntityNotFoundException('Candidate', uid);
       }
 
+      // Fetch candidate with all file relations
       const existingCandidate = await this.databaseService.candidate.findUnique({
         where: { uid },
         include: {
-          files: true, // Include files directly associated with candidate
+          files: true, // Files directly associated with candidate
           hiringProcesses: {
             include: {
-              jobPosition: {
-                include: {
-                  applications: {
-                    where: {
-                      applicantEmail: { equals: '' }, // Will be replaced with candidate email
-                    },
-                    include: {
-                      resumeFile: true,
-                    },
-                  },
-                },
-              },
+              jobPosition: true,
             },
           },
         },
@@ -507,41 +497,73 @@ export class CandidateService {
         throw new EntityNotFoundException('Candidate', uid);
       }
 
+      this.logger.log(`Starting GDPR purge for candidate ${existingCandidate.uid} (${existingCandidate.email})`);
+
       // Collect all S3 keys to delete
       const s3KeysToDelete: string[] = [];
+      const fileDetails: Array<{ type: string; filename: string; s3Key: string }> = [];
 
       // 1. Collect files directly associated with candidate
       if (existingCandidate.files && existingCandidate.files.length > 0) {
+        this.logger.log(`Found ${existingCandidate.files.length} file(s) directly associated with candidate`);
         existingCandidate.files.forEach((file) => {
           if (file.s3Key) {
             s3KeysToDelete.push(file.s3Key);
+            fileDetails.push({
+              type: 'candidate_file',
+              filename: file.originalName,
+              s3Key: file.s3Key,
+            });
           }
         });
       }
 
       // 2. Collect resume files from applications (if candidate applied through public careers page)
-      if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
-        for (const hiringProcess of existingCandidate.hiringProcesses) {
-          if (hiringProcess.jobPosition && hiringProcess.jobPosition.applications) {
-            const candidateApplications = hiringProcess.jobPosition.applications.filter((app) => app.applicantEmail.toLowerCase() === existingCandidate.email.toLowerCase());
+      // Query applications separately for better performance
+      const applications = await this.databaseService.application.findMany({
+        where: {
+          applicantEmail: {
+            equals: existingCandidate.email,
+            mode: 'insensitive', // Case-insensitive match
+          },
+          resumeFileId: {
+            not: null, // Only applications with resumes
+          },
+        },
+        include: {
+          resumeFile: true,
+        },
+      });
 
-            candidateApplications.forEach((app) => {
-              if (app.resumeFile && app.resumeFile.s3Key) {
-                s3KeysToDelete.push(app.resumeFile.s3Key);
-              }
+      if (applications.length > 0) {
+        this.logger.log(`Found ${applications.length} application(s) with resume files for candidate email ${existingCandidate.email}`);
+        applications.forEach((app) => {
+          if (app.resumeFile && app.resumeFile.s3Key) {
+            s3KeysToDelete.push(app.resumeFile.s3Key);
+            fileDetails.push({
+              type: 'application_resume',
+              filename: app.resumeFile.originalName,
+              s3Key: app.resumeFile.s3Key,
             });
           }
-        }
+        });
       }
+
+      this.logger.log(`Total files to delete from storage: ${s3KeysToDelete.length}`);
 
       // Delete all files from MinIO storage
       const deletionErrors: string[] = [];
+      const successfulDeletions: string[] = [];
+
       for (const s3Key of s3KeysToDelete) {
         try {
           await this.storageService.deleteFile(s3Key);
+          successfulDeletions.push(s3Key);
+          this.logger.log(`Successfully deleted file from storage: ${s3Key}`);
         } catch (deleteError) {
           // Log error but continue with other deletions
-          deletionErrors.push(`Failed to delete ${s3Key}: ${deleteError.message}`);
+          const errorMsg = `Failed to delete ${s3Key}: ${deleteError.message}`;
+          deletionErrors.push(errorMsg);
           this.logger.error(`Error deleting file ${s3Key} from storage:`, deleteError.message);
         }
       }
@@ -556,19 +578,26 @@ export class CandidateService {
         metadata: {
           name: existingCandidate.name,
           email: existingCandidate.email,
-          filesDeleted: s3KeysToDelete.length,
+          totalFiles: s3KeysToDelete.length,
+          filesDeleted: successfulDeletions.length,
           deletionErrors: deletionErrors.length,
+          fileDetails: fileDetails.map((f) => ({ type: f.type, filename: f.filename })),
+          hiringProcessCount: existingCandidate.hiringProcesses?.length || 0,
         },
       });
 
       // Hard delete: Permanently remove candidate from database
       // This will cascade delete related data (hiring processes, notes, activities, etc.)
+      // FileUpload records with candidateId will also be cascade deleted
       await this.databaseService.candidate.delete({ where: { uid } });
 
+      this.logger.log(`Candidate ${existingCandidate.uid} permanently deleted from database (GDPR purge complete)`);
+
       // Build response message
-      let message = `Candidate permanently deleted (GDPR purge). Deleted ${s3KeysToDelete.length} file(s) from storage.`;
+      let message = `Candidate permanently deleted (GDPR purge). Successfully deleted ${successfulDeletions.length}/${s3KeysToDelete.length} file(s) from storage.`;
       if (deletionErrors.length > 0) {
-        message += ` Warning: ${deletionErrors.length} file(s) failed to delete from storage.`;
+        message += ` Warning: ${deletionErrors.length} file(s) failed to delete from storage. Check logs for details.`;
+        this.logger.warn(`GDPR purge completed with ${deletionErrors.length} file deletion errors`);
       }
 
       return { message };
@@ -576,6 +605,7 @@ export class CandidateService {
       if (error instanceof HttpException) {
         throw error;
       }
+      this.logger.error(`Failed to purge candidate ${uid}:`, error.message);
       throw new InternalServerErrorException(`Failed to purge: ${error.message}`);
     }
   }
