@@ -50,7 +50,7 @@ model User {
   createdAt               DateTime               @default(now())
   updatedAt               DateTime               @updatedAt
   companyId               Int?
-  company                 Company?               @relation(fields: [companyId], references: [id])
+  company                 Company?               @relation(fields: [companyId], references: [id], onDelete: Restrict)
   profile                 Profile?
   jobPositions            JobPosition[]          @relation("JobPositionsUser")
   fileUploads             FileUpload[]           @relation("FileUploadsUser")
@@ -116,7 +116,7 @@ model CandidateNote {
   candidateId Int
   candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: Cascade)
   authorId    Int
-  author      User      @relation("CandidateNoteAuthor", fields: [authorId], references: [id])
+  author      User      @relation("CandidateNoteAuthor", fields: [authorId], references: [id], onDelete: Restrict)
 
   @@index([candidateId])
   @@index([authorId])
@@ -258,7 +258,7 @@ model StageNote {
   stageId   Int
   stage     Stage    @relation("StageNotes", fields: [stageId], references: [id], onDelete: Cascade)
   authorId  Int
-  author    User     @relation("StageNoteAuthor", fields: [authorId], references: [id])
+  author    User     @relation("StageNoteAuthor", fields: [authorId], references: [id], onDelete: Restrict)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -291,7 +291,7 @@ model FileUpload {
   size               Int
   s3Key              String
   uploadedById       Int
-  uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id])
+  uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
   candidateId        Int?
   candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
   applicationResumes Application[] @relation("ApplicationResume")
@@ -353,9 +353,9 @@ model EmailTemplate {
   subject     String
   body        String   @db.Text
   companyId   Int?
-  company     Company? @relation(fields: [companyId], references: [id])
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdById Int
-  createdBy   User     @relation("EmailTemplateCreatedBy", fields: [createdById], references: [id])
+  createdBy   User     @relation("EmailTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
   isDefault   Boolean  @default(false)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
@@ -404,7 +404,7 @@ model Interview {
   location              String?
   notes                 String?                 @db.Text
   scheduledById         Int
-  scheduledBy           User                    @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
+  scheduledBy           User                    @relation("InterviewScheduledBy", fields: [scheduledById], references: [id], onDelete: Restrict)
   interviewers          InterviewInterviewer[]  @relation("InterviewInterviewers")
   scorecards            Scorecard[]
   timeSlots             InterviewTimeSlot[]     @relation("InterviewTimeSlots")
@@ -438,7 +438,7 @@ model InterviewReschedule {
   newScheduledTime String
   reason           String?   @db.Text
   rescheduledById  Int
-  rescheduledBy    User      @relation("InterviewReschedules", fields: [rescheduledById], references: [id])
+  rescheduledBy    User      @relation("InterviewReschedules", fields: [rescheduledById], references: [id], onDelete: Restrict)
   rescheduledAt    DateTime  @default(now())
 
   @@index([interviewId])
@@ -485,7 +485,7 @@ model InterviewInterviewer {
   interviewId Int
   interview   Interview @relation("InterviewInterviewers", fields: [interviewId], references: [id], onDelete: Cascade)
   userId      Int
-  user        User      @relation("InterviewParticipations", fields: [userId], references: [id])
+  user        User      @relation("InterviewParticipations", fields: [userId], references: [id], onDelete: Cascade)
   role        String?
   createdAt   DateTime  @default(now())
 
@@ -614,11 +614,11 @@ model Scorecard {
   id           Int               @id @default(autoincrement())
   uid          String            @unique @default(uuid()) @db.Uuid
   templateId   Int
-  template     ScorecardTemplate @relation(fields: [templateId], references: [id])
+  template     ScorecardTemplate @relation(fields: [templateId], references: [id], onDelete: Restrict)
   interviewId  Int?
   interview    Interview?        @relation(fields: [interviewId], references: [id], onDelete: SetNull)
   evaluatorId  Int
-  evaluator    User              @relation("ScorecardEvaluations", fields: [evaluatorId], references: [id])
+  evaluator    User              @relation("ScorecardEvaluations", fields: [evaluatorId], references: [id], onDelete: Restrict)
   overallScore Float?
   notes        String?           @db.Text
   scores       ScorecardScore[]
@@ -786,7 +786,7 @@ model CandidateActivity {
   description String
   metadata    Json?
   userId      Int?
-  user        User?                 @relation("CandidateActivityUser", fields: [userId], references: [id])
+  user        User?                 @relation("CandidateActivityUser", fields: [userId], references: [id], onDelete: SetNull)
   createdAt   DateTime              @default(now())
 
   @@index([candidateId])
