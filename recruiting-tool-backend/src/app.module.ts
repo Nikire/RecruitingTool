@@ -26,6 +26,8 @@ import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { TimeSlotsModule } from './modules/time-slots/time-slots.module';
 import { SseModule } from './modules/sse/sse.module';
 import { BackupModule } from './modules/backup/backup.module';
+import { AuditLogModule } from './modules/audit-log/audit-log.module';
+import { HealthModule } from './modules/health/health.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './common/guards/throttler.guard';
@@ -87,6 +89,8 @@ import { CustomThrottlerGuard } from './common/guards/throttler.guard';
     TimeSlotsModule,
     SseModule,
     BackupModule,
+    AuditLogModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [

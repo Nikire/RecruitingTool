@@ -133,8 +133,8 @@ export class CandidateController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate to purge' })
-  purge(@Param('uid') uid: string): Promise<MessageResponseDto> {
-    return this.candidateService.purge(uid);
+  purge(@Param('uid') uid: string, @CurrentUser() user: User): Promise<MessageResponseDto> {
+    return this.candidateService.purge(uid, user);
   }
 
   // Candidate Notes endpoints

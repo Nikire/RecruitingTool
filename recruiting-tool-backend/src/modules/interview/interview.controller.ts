@@ -3,7 +3,7 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagg
 import { InterviewService } from './interview.service';
 import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, AddInterviewerDto, RescheduleInterviewDto, InterviewRescheduleHistoryDto } from './dto/interview.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
-import { RolesType } from '@prisma/client';
+import { RolesType, User } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { UserResponseDto } from '../users/dto/users.dto';
 
@@ -112,7 +112,7 @@ export class InterviewController {
   @ApiOperation({ summary: 'Delete an interview' })
   @ApiResponse({ status: 200, description: 'Interview deleted successfully' })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async remove(@Param('uid') uid: string): Promise<{ message: string }> {
-    return this.interviewService.remove(uid);
+  async remove(@Param('uid') uid: string, @CurrentUser() user: User): Promise<{ message: string }> {
+    return this.interviewService.remove(uid, user);
   }
 }

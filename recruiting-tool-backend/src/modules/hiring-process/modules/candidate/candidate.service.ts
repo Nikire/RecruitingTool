@@ -14,6 +14,7 @@ import { EmailService } from 'src/modules/email/email.service';
 import { CandidateActivityService } from './services/candidate-activity.service';
 import { CandidateActivityType } from '@prisma/client';
 import { StorageService } from 'src/modules/storage/storage.service';
+import { AuditLogService } from 'src/modules/audit-log/audit-log.service';
 
 @Injectable()
 export class CandidateService {
@@ -24,6 +25,7 @@ export class CandidateService {
     private databaseService: DatabaseService,
     private emailService: EmailService,
     private storageService: StorageService,
+    private auditLogService: AuditLogService,
   ) {}
 
   async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
@@ -441,6 +443,19 @@ export class CandidateService {
         data: { deletedAt: new Date() },
       });
 
+      // Log audit trail
+      await this.auditLogService.logAction({
+        action: 'SOFT_DELETE',
+        entityType: 'Candidate',
+        entityId: existingCandidate.id,
+        entityUid: existingCandidate.uid,
+        user,
+        metadata: {
+          name: existingCandidate.name,
+          email: existingCandidate.email,
+        },
+      });
+
       return { message: `Candidate soft deleted successfully` };
     } catch (error) {
       if (error instanceof HttpException) {
@@ -459,7 +474,7 @@ export class CandidateService {
    * 2. Deletes all files from MinIO storage
    * 3. Permanently deletes the candidate record from database (cascade deletes related data)
    */
-  async purge(uid: string): Promise<MessageResponseDto> {
+  async purge(uid: string, user: User): Promise<MessageResponseDto> {
     try {
       if (!uid) {
         throw new EntityNotFoundException('Candidate', uid);
@@ -530,6 +545,21 @@ export class CandidateService {
           this.logger.error(`Error deleting file ${s3Key} from storage:`, deleteError.message);
         }
       }
+
+      // Log audit trail before hard delete
+      await this.auditLogService.logAction({
+        action: 'PURGE',
+        entityType: 'Candidate',
+        entityId: existingCandidate.id,
+        entityUid: existingCandidate.uid,
+        user,
+        metadata: {
+          name: existingCandidate.name,
+          email: existingCandidate.email,
+          filesDeleted: s3KeysToDelete.length,
+          deletionErrors: deletionErrors.length,
+        },
+      });
 
       // Hard delete: Permanently remove candidate from database
       // This will cascade delete related data (hiring processes, notes, activities, etc.)

@@ -9,6 +9,7 @@ import { EmailService } from '../email/email.service';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { SseService } from '../sse/sse.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
 
 @Injectable()
 export class ApplicationService {
@@ -19,6 +20,7 @@ export class ApplicationService {
     private emailService: EmailService,
     private sseService: SseService,
     private configService: ConfigService,
+    private auditLogService: AuditLogService,
   ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
@@ -299,6 +301,20 @@ export class ApplicationService {
       await this.databaseService.application.update({
         where: { uid },
         data: { deletedAt: new Date() },
+      });
+
+      // Log audit trail
+      await this.auditLogService.logAction({
+        action: 'SOFT_DELETE',
+        entityType: 'Application',
+        entityId: application.id,
+        entityUid: application.uid,
+        user,
+        metadata: {
+          applicantName: application.applicantName,
+          applicantEmail: application.applicantEmail,
+          jobPositionId: application.jobPositionId,
+        },
       });
 
       return { message: 'Application soft deleted successfully' };

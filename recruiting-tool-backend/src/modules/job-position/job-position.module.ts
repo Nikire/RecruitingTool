@@ -4,9 +4,10 @@ import { JobPositionService } from './job-position.service';
 import { HiringProcessModule } from '../hiring-process/hiring-process.module';
 import { CandidateModule } from '../hiring-process/modules/candidate/candidate.module';
 import { StagesModule } from '../hiring-process/modules/stages/stages.module';
+import { AuditLogModule } from '../audit-log/audit-log.module';
 
 @Module({
-  imports: [forwardRef(() => HiringProcessModule), CandidateModule, StagesModule],
+  imports: [forwardRef(() => HiringProcessModule), CandidateModule, StagesModule, AuditLogModule],
   controllers: [JobPositionController],
   providers: [JobPositionService],
   exports: [JobPositionService],

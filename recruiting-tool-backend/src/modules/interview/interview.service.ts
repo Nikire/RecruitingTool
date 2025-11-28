@@ -2,10 +2,11 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, RescheduleInterviewDto } from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
-import { InterviewStatus } from '@prisma/client';
+import { InterviewStatus, User } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { GoogleCalendarService } from '../google-calendar/google-calendar.service';
 import { SseService } from '../sse/sse.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
 
 @Injectable()
 export class InterviewService {
@@ -16,6 +17,7 @@ export class InterviewService {
     private readonly emailService: EmailService,
     private readonly googleCalendarService: GoogleCalendarService,
     private readonly sseService: SseService,
+    private readonly auditLogService: AuditLogService,
   ) {}
 
   async create(createInterviewDto: CreateInterviewDto, scheduledByUid: string): Promise<InterviewResponseDto> {
@@ -445,7 +447,7 @@ export class InterviewService {
     return this.findOne(interviewUid);
   }
 
-  async remove(uid: string): Promise<{ message: string }> {
+  async remove(uid: string, user: User): Promise<{ message: string }> {
     const interview = await this.databaseService.interview.findUnique({
       where: { uid },
     });
@@ -458,6 +460,20 @@ export class InterviewService {
     await this.databaseService.interview.update({
       where: { uid },
       data: { deletedAt: new Date() },
+    });
+
+    // Log audit trail
+    await this.auditLogService.logAction({
+      action: 'SOFT_DELETE',
+      entityType: 'Interview',
+      entityId: interview.id,
+      entityUid: interview.uid,
+      user,
+      metadata: {
+        stageId: interview.stageId,
+        scheduledDate: interview.scheduledDate,
+        status: interview.status,
+      },
     });
 
     return { message: `Interview soft deleted successfully` };

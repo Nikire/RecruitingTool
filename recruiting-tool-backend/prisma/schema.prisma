@@ -63,6 +63,7 @@ model User {
   aiUsageLogs             AIUsageLog[]           @relation("UserAIUsageLogs")
   candidateActivities     CandidateActivity[]    @relation("CandidateActivityUser")
   refreshTokens           RefreshToken[]         @relation("UserRefreshTokens")
+  auditLogs               AuditLog[]             @relation("UserAuditLogs")
 
   @@index([email])
   @@index([companyId])
@@ -203,6 +204,7 @@ model Stage {
   type            StageType
   description     String
   status          StageStatus    @default(OPEN)
+  deletedAt       DateTime?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
@@ -221,6 +223,7 @@ model Stage {
   @@index([status])
   @@index([position])
   @@index([hiringProcessId, position])
+  @@index([deletedAt])
 }
 
 model StageNote {
@@ -753,5 +756,27 @@ model RefreshToken {
   @@index([userId])
   @@index([token])
   @@index([expiresAt])
+  @@index([uid])
+}
+
+model AuditLog {
+  id         Int      @id @default(autoincrement())
+  uid        String   @unique @default(uuid()) @db.Uuid
+  action     String
+  entityType String
+  entityId   Int
+  entityUid  String
+  userId     Int
+  user       User     @relation("UserAuditLogs", fields: [userId], references: [id], onDelete: Cascade)
+  timestamp  DateTime @default(now())
+  ipAddress  String?
+  userAgent  String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityUid])
+  @@index([userId])
+  @@index([timestamp])
+  @@index([action])
   @@index([uid])
 }

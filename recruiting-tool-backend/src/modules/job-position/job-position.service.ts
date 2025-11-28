@@ -6,6 +6,7 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
 import { HiringProcessService } from '../hiring-process/hiring-process.service';
 import { StagesService } from '../hiring-process/modules/stages/stages.service';
+import { AuditLogService } from '../audit-log/audit-log.service';
 import { Prisma, User } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
@@ -17,6 +18,7 @@ export class JobPositionService {
     @Inject(forwardRef(() => HiringProcessService)) private readonly hiringProcessService: HiringProcessService,
     private readonly candidateService: CandidateService,
     private readonly stagesService: StagesService,
+    private readonly auditLogService: AuditLogService,
   ) {}
 
   async find(where: Prisma.JobPositionWhereInput): Promise<Array<JobPositionResponseDto>> {
@@ -245,6 +247,28 @@ export class JobPositionService {
       await this.databaseService.jobPosition.update({
         where: { uid },
         data: { deletedAt: new Date() },
+      });
+
+      // Soft delete all associated template stages (jobPositionId matches, hiringProcessId is null)
+      await this.databaseService.stage.updateMany({
+        where: {
+          jobPositionId: existingJobPosition.id,
+          hiringProcessId: null, // Only template stages
+        },
+        data: { deletedAt: new Date() },
+      });
+
+      // Log audit trail
+      await this.auditLogService.logAction({
+        action: 'SOFT_DELETE',
+        entityType: 'JobPosition',
+        entityId: existingJobPosition.id,
+        entityUid: existingJobPosition.uid,
+        user,
+        metadata: {
+          title: existingJobPosition.title,
+          companyId: existingJobPosition.companyId,
+        },
       });
 
       return { message: `Job position soft deleted successfully` };
