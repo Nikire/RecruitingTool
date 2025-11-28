@@ -12,9 +12,11 @@ export class WebhooksService {
   async processCandidateCreated(data: CandidateCreatedWebhookDto): Promise<{ success: boolean; message: string }> {
     this.logger.log(`Processing candidate created webhook for: ${data.candidateName}`);
 
-    // Log the webhook data for debugging
-    this.logger.debug(`Candidate UID: ${data.candidateUid}`);
-    this.logger.debug(`Candidate Email: ${data.candidateEmail}`);
+    // Log the webhook data for debugging (development only)
+    if (process.env.NODE_ENV === 'development') {
+      this.logger.debug(`Candidate UID: ${data.candidateUid}`);
+      this.logger.debug(`Candidate Email: ${data.candidateEmail}`);
+    }
 
     // Here you can add any additional processing logic
     // For example: send to analytics, update external systems, etc.
@@ -32,9 +34,11 @@ export class WebhooksService {
   async processInterviewScheduled(data: InterviewScheduledWebhookDto): Promise<{ success: boolean; message: string }> {
     this.logger.log(`Processing interview scheduled webhook for: ${data.candidateName}`);
 
-    this.logger.debug(`Interview UID: ${data.interviewUid}`);
-    this.logger.debug(`Scheduled at: ${data.scheduledAt}`);
-    this.logger.debug(`Interview type: ${data.interviewType}`);
+    if (process.env.NODE_ENV === 'development') {
+      this.logger.debug(`Interview UID: ${data.interviewUid}`);
+      this.logger.debug(`Scheduled at: ${data.scheduledAt}`);
+      this.logger.debug(`Interview type: ${data.interviewType}`);
+    }
 
     // Example use cases for n8n:
     // - Send calendar invites
@@ -56,8 +60,10 @@ export class WebhooksService {
   async processStageChanged(data: StageChangedWebhookDto): Promise<{ success: boolean; message: string }> {
     this.logger.log(`Processing stage changed webhook for: ${data.candidateName}`);
 
-    this.logger.debug(`Previous stage: ${data.previousStage}`);
-    this.logger.debug(`New stage: ${data.newStage}`);
+    if (process.env.NODE_ENV === 'development') {
+      this.logger.debug(`Previous stage: ${data.previousStage}`);
+      this.logger.debug(`New stage: ${data.newStage}`);
+    }
 
     // Example use cases for n8n:
     // - Send stage-specific emails to candidates
@@ -79,8 +85,10 @@ export class WebhooksService {
   async processApplicationStatusChanged(data: ApplicationStatusChangedWebhookDto): Promise<{ success: boolean; message: string }> {
     this.logger.log(`Processing application status changed webhook for: ${data.candidateName}`);
 
-    this.logger.debug(`Previous status: ${data.previousStatus}`);
-    this.logger.debug(`New status: ${data.newStatus}`);
+    if (process.env.NODE_ENV === 'development') {
+      this.logger.debug(`Previous status: ${data.previousStatus}`);
+      this.logger.debug(`New status: ${data.newStatus}`);
+    }
 
     // Example use cases for n8n:
     // - Send acceptance/rejection emails
