@@ -17,6 +17,8 @@ import {useTranslation} from 'react-i18next';
 import {useUpdateJobPosition} from '../../hooks/api/useJobPositions';
 import {JobPosition, JobPositionStatus} from '../../types/jobPosition.types';
 import StatusBadgeEditor, {StatusOption} from '../common/StatusBadgeEditor';
+import {CustomQuestionBuilder} from '../forms/CustomQuestionBuilder';
+import {CustomQuestion} from '../../types/customQuestions';
 
 interface UpdateJobPositionDialogProps {
 	open: boolean;
@@ -43,6 +45,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 }) => {
 	const {t} = useTranslation();
 	const [currentStatus, setCurrentStatus] = useState<JobPositionStatus>('OPEN');
+	const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
 
 	const {
 		register,
@@ -66,16 +69,18 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 				description: jobPosition.description || '',
 			});
 			setCurrentStatus(jobPosition.status);
+			setCustomQuestions(jobPosition.customQuestions || []);
 		}
 	}, [jobPosition, reset]);
 
 	const onSubmit = (data: JobPositionFormData) => {
 		if (!jobPosition) return;
 
-		// Include status in the update data
+		// Include status and custom questions in the update data
 		const updateData = {
 			...data,
 			status: currentStatus,
+			customQuestions: customQuestions.length > 0 ? customQuestions : undefined,
 		};
 
 		updateJobPosition(
@@ -83,6 +88,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 			{
 				onSuccess: () => {
 					reset();
+					setCustomQuestions([]);
 					onClose();
 				},
 			}
@@ -91,6 +97,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 
 	const handleClose = () => {
 		reset();
+		setCustomQuestions([]);
 		onClose();
 	};
 
@@ -162,6 +169,16 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 							{' '}
 							{t('update_job_position.stages_manage_help')}
 						</Alert>
+					</Box>
+
+					<Divider sx={{my: 3}} />
+
+					{/* Custom Questions Builder */}
+					<Box sx={{mb: 2}}>
+						<CustomQuestionBuilder
+							questions={customQuestions}
+							onQuestionsChange={setCustomQuestions}
+						/>
 					</Box>
 
 					{isError && (
