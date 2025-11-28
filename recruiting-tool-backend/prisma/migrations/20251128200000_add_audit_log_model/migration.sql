@@ -1,3 +1,6 @@
+-- Enable uuid-ossp extension if not already enabled
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- CreateTable
 CREATE TABLE "AuditLog" (
     "id" SERIAL NOT NULL,
