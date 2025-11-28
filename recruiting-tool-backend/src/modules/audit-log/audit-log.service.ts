@@ -4,7 +4,7 @@ import { User } from '@prisma/client';
 
 export interface AuditLogData {
   action: 'SOFT_DELETE' | 'HARD_DELETE' | 'RESTORE' | 'PURGE';
-  entityType: 'JobPosition' | 'Candidate' | 'Application' | 'Interview';
+  entityType: 'JobPosition' | 'Candidate' | 'Application' | 'Interview' | 'Stage' | 'HiringProcess' | 'User';
   entityId: number;
   entityUid: string;
   user: User;
