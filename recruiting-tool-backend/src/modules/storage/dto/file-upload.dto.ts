@@ -7,6 +7,7 @@ export class FileUploadResponseDto {
   mimetype: string;
   size: number;
   s3Key: string;
+  uploadedByPublic: boolean;
   uploadedByUid?: string;
   candidateUid?: string;
   createdAt: Date;

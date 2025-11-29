@@ -44,7 +44,7 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 // Request interceptor - adds JWT token to requests
 api.interceptors.request.use((config) => {
 	// Skip authentication for public endpoints
-	const isPublicEndpoint = config.url?.includes('/public/');
+	const isPublicEndpoint = config.url?.includes('/public/') || config.url?.includes('-public');
 	if (isPublicEndpoint) {
 		return config; // Don't add Authorization header for public endpoints
 	}
@@ -72,7 +72,7 @@ api.interceptors.response.use(
 		const originalRequest = error.config;
 
 		// Don't redirect to login for public endpoint failures
-		const isPublicEndpoint = originalRequest?.url?.includes('/public/');
+		const isPublicEndpoint = originalRequest?.url?.includes('/public/') || originalRequest?.url?.includes('-public');
 		if (isPublicEndpoint) {
 			console.warn('[AUTH] Public endpoint error, not redirecting to login:', error);
 			return Promise.reject(errorNormalizerInterceptor(error));

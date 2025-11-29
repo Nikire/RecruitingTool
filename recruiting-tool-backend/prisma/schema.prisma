@@ -310,8 +310,9 @@ model FileUpload {
   mimetype           String
   size               Int
   s3Key              String
-  uploadedById       Int
-  uploadedBy         User          @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
+  uploadedByPublic   Boolean       @default(false)
+  uploadedById       Int?
+  uploadedBy         User?         @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
   candidateId        Int?
   candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
   applicationResumes Application[] @relation("ApplicationResume")
@@ -322,6 +323,7 @@ model FileUpload {
   @@index([uploadedById])
   @@index([uid])
   @@index([createdAt])
+  @@index([uploadedByPublic])
 }
 
 model Application {

@@ -32,12 +32,18 @@ export class FilesService {
       // Upload to S3/MinIO with validated content type
       const s3Key = await this.storageService.uploadFile(file.buffer, uniqueFilename, file.mimetype);
 
-      // Get user ID from UID
-      const user = await this.database.user.findUnique({
-        where: { uid: userUid },
-      });
-      if (!user) {
-        throw new EntityNotFoundException('User', userUid);
+      // Get user ID from UID (null for public uploads)
+      let userId: number | undefined;
+      const isPublicUpload = userUid === 'public-applicant';
+
+      if (!isPublicUpload) {
+        const user = await this.database.user.findUnique({
+          where: { uid: userUid },
+        });
+        if (!user) {
+          throw new EntityNotFoundException('User', userUid);
+        }
+        userId = user.id;
       }
 
       // Get candidate ID if provided
@@ -60,7 +66,8 @@ export class FilesService {
           mimetype: file.mimetype,
           size: file.size,
           s3Key,
-          uploadedById: user.id,
+          uploadedByPublic: isPublicUpload, // Track if uploaded by public user
+          uploadedById: userId, // null for public uploads
           candidateId,
         },
       });
@@ -218,6 +225,7 @@ export class FilesService {
       mimetype: file.mimetype,
       size: file.size,
       s3Key: file.s3Key,
+      uploadedByPublic: file.uploadedByPublic,
       uploadedByUid,
       candidateUid,
       createdAt: file.createdAt,
