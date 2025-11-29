@@ -3,19 +3,30 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { CreateEmailTemplateDto, UpdateEmailTemplateDto, EmailTemplateResponseDto } from './dto/email-template.dto';
 import { EmailTemplateMapper } from './entities/email-template.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
+import { CacheService } from '../cache/cache.service';
+import * as Handlebars from 'handlebars';
 
 @Injectable()
 export class EmailTemplatesService {
-  constructor(private databaseService: DatabaseService) {}
+  constructor(
+    private databaseService: DatabaseService,
+    private cacheService: CacheService,
+  ) {}
 
   async create(createDto: CreateEmailTemplateDto, userId: number): Promise<EmailTemplateResponseDto> {
-    // Find company by UID to get numeric ID
-    const company = await this.databaseService.company.findUnique({
-      where: { uid: createDto.companyUid },
-    });
+    let companyId: number | null = null;
 
-    if (!company) {
-      throw new NotFoundException(`Company ${createDto.companyUid} not found`);
+    // Find company by UID if provided
+    if (createDto.companyUid) {
+      const company = await this.databaseService.company.findUnique({
+        where: { uid: createDto.companyUid },
+      });
+
+      if (!company) {
+        throw new NotFoundException(`Company ${createDto.companyUid} not found`);
+      }
+
+      companyId = company.id;
     }
 
     // Verify user exists
@@ -32,7 +43,7 @@ export class EmailTemplatesService {
         name: createDto.name,
         subject: createDto.subject,
         body: createDto.body,
-        companyId: company.id,
+        companyId: companyId,
         createdById: userId,
         isDefault: createDto.isDefault || false,
       },
@@ -41,6 +52,9 @@ export class EmailTemplatesService {
         createdBy: true,
       },
     });
+
+    // Invalidate email templates cache after creation
+    await this.cacheService.invalidate('email-templates');
 
     return EmailTemplateMapper(emailTemplate);
   }
@@ -115,6 +129,10 @@ export class EmailTemplatesService {
       },
     });
 
+    // Invalidate cache for this specific template and all templates
+    await this.cacheService.invalidate(`email-templates:${uid}`);
+    await this.cacheService.invalidate('email-templates');
+
     return EmailTemplateMapper(emailTemplate);
   }
 
@@ -132,6 +150,47 @@ export class EmailTemplatesService {
       where: { uid },
     });
 
+    // Invalidate cache after deletion
+    await this.cacheService.invalidate('email-templates');
+
     return { message: 'Email template deleted successfully' };
+  }
+
+  /**
+   * Render a template with provided variables
+   * Supports Handlebars syntax: {{variableName}}
+   */
+  renderTemplate(templateBody: string, variables: Record<string, any>): string {
+    try {
+      const template = Handlebars.compile(templateBody);
+      return template(variables);
+    } catch (error) {
+      throw new BadRequestException(`Failed to render template: ${error.message}`);
+    }
+  }
+
+  /**
+   * Preview a template with sample data
+   */
+  async preview(uid: string, variables?: Record<string, any>): Promise<{ renderedSubject: string; renderedBody: string }> {
+    const emailTemplate = await this.findOne(uid);
+
+    // Default sample data if not provided
+    const sampleData = variables || {
+      candidateName: 'John Doe',
+      positionTitle: 'Senior Software Engineer',
+      companyName: 'Tech Corp',
+      hrName: 'Jane Smith',
+      interviewDate: new Date().toLocaleDateString(),
+      interviewTime: '10:00 AM',
+    };
+
+    const renderedSubject = this.renderTemplate(emailTemplate.subject, sampleData);
+    const renderedBody = this.renderTemplate(emailTemplate.body, sampleData);
+
+    return {
+      renderedSubject,
+      renderedBody,
+    };
   }
 }

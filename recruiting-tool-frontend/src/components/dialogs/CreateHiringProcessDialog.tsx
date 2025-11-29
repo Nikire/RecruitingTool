@@ -16,15 +16,19 @@ import {
 	ToggleButtonGroup,
 	ToggleButton,
 	Divider,
+	InputAdornment,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import PersonIcon from '@mui/icons-material/Person';
+import ErrorIcon from '@mui/icons-material/Error';
 import {useForm, Controller} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {useCreateHiringProcess} from '../../hooks/api/useHiringProcess';
 import {useCandidates, useCreateCandidate} from '../../hooks/api/useCandidates';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
+import {useValidationRules} from '../../utils/validation';
+import FormErrorSummary from '../common/FormErrorSummary';
 
 interface CreateHiringProcessDialogProps {
 	open: boolean;
@@ -45,6 +49,8 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 	open,
 	onClose,
 }) => {
+	const {t} = useTranslation();
+	const validationRules = useValidationRules();
 	const [candidateMode, setCandidateMode] = useState<CandidateMode>('existing');
 
 	const {
@@ -122,8 +128,6 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 	const isLoading = loadingCandidates || loadingJobPositions;
 	const isSubmitting = isPending || isCreatingCandidate;
 
-	const {t} = useTranslation();
-
 	return (
 		<Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
 			<DialogTitle>{t('hiring_processes.create_title')}</DialogTitle>
@@ -135,6 +139,8 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 						</Box>
 					) : (
 						<>
+							<FormErrorSummary errors={errors} />
+
 							<FormControl fullWidth margin="normal">
 								<InputLabel>{t('job_positions.title')}</InputLabel>
 								<Controller
@@ -229,30 +235,43 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
 										label={t('candidates.name_label')}
 										fullWidth
 										margin="normal"
-										{...register('candidateName', {
-											required: candidateMode === 'new' ? t('validation.name_required') : false,
-											minLength: {
-												value: 3,
-												message: t('validation.name_min_length', {min: 3}),
-											},
-										})}
+										{...register('candidateName',
+											candidateMode === 'new'
+												? validationRules.combine(
+													validationRules.required(t('candidates.name_label')),
+													validationRules.minLength(3),
+												)
+												: {}
+										)}
 										error={!!errors.candidateName}
 										helperText={errors.candidateName?.message}
+										InputProps={{
+											endAdornment: errors.candidateName ? (
+												<InputAdornment position="end">
+													<ErrorIcon color="error" />
+												</InputAdornment>
+											) : null,
+										}}
 									/>
 									<TextField
 										label={t('candidates.email_label')}
 										type="email"
 										fullWidth
 										margin="normal"
-										{...register('candidateEmail', {
-											required: candidateMode === 'new' ? t('validation.email_required') : false,
-											pattern: {
-												value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-												message: t('validation.email_invalid'),
-											},
-										})}
+										{...register('candidateEmail',
+											candidateMode === 'new'
+												? validationRules.email()
+												: {}
+										)}
 										error={!!errors.candidateEmail}
 										helperText={errors.candidateEmail?.message}
+										InputProps={{
+											endAdornment: errors.candidateEmail ? (
+												<InputAdornment position="end">
+													<ErrorIcon color="error" />
+												</InputAdornment>
+											) : null,
+										}}
 									/>
 								</Box>
 							)}

@@ -199,7 +199,7 @@ const Home: React.FC = () => {
 			</Box>
 
 			{/* Features Section */}
-			<Container maxWidth="lg" sx={{ py: { xs: 8, md: 12 } }}>
+			<Container maxWidth="xl" disableGutters sx={{ py: { xs: 8, md: 12 }, px: { xs: 2, sm: 3, md: 4 } }}>
 				<Box sx={{ textAlign: 'center', mb: 6 }}>
 					<Typography
 						variant="h3"
@@ -220,12 +220,14 @@ const Home: React.FC = () => {
 					</Typography>
 				</Box>
 
-				<Grid container spacing={4}>
+				<Grid container spacing={3} justifyContent="center">
 					{features.map((feature, index) => (
 						<Grid item xs={12} sm={6} md={4} key={index}>
 							<Card
 								sx={{
-									height: '100%',
+									minHeight: 180,
+									maxWidth: 350,
+									mx: 'auto',
 									display: 'flex',
 									flexDirection: 'column',
 									transition: 'all 0.3s ease',
@@ -239,13 +241,16 @@ const Home: React.FC = () => {
 									sx={{
 										flexGrow: 1,
 										textAlign: 'center',
-										p: 3,
+										p: 1.5,
+										display: 'flex',
+										flexDirection: 'column',
+										justifyContent: 'flex-start',
 									}}
 								>
 									<Box
 										sx={{
 											color: 'primary.main',
-											mb: 2,
+											mb: 1,
 											display: 'flex',
 											justifyContent: 'center',
 										}}
@@ -257,10 +262,11 @@ const Home: React.FC = () => {
 										component="h3"
 										gutterBottom
 										fontWeight="bold"
+										sx={{ fontSize: '1rem', mb: 0.5 }}
 									>
 										{t(feature.titleKey)}
 									</Typography>
-									<Typography variant="body2" color="text.secondary">
+									<Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.813rem' }}>
 										{t(feature.descriptionKey)}
 									</Typography>
 								</CardContent>
@@ -277,7 +283,7 @@ const Home: React.FC = () => {
 					py: { xs: 8, md: 12 },
 				}}
 			>
-				<Container maxWidth="lg">
+				<Container maxWidth="xl" disableGutters sx={{ px: { xs: 2, sm: 3, md: 4 } }}>
 					<Box sx={{ textAlign: 'center', mb: 6 }}>
 						<Typography
 							variant="h3"
@@ -298,14 +304,28 @@ const Home: React.FC = () => {
 						</Typography>
 					</Box>
 
-					<Grid container spacing={4}>
-						{benefits.map((benefit, index) => (
-							<Grid item xs={12} sm={6} md={3} key={index}>
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+						{/* First Row */}
+						<Box
+							sx={{
+								display: 'flex',
+								justifyContent: 'center',
+								gap: 3,
+								flexWrap: { xs: 'wrap', sm: 'nowrap' },
+							}}
+						>
+							{benefits.slice(0, 2).map((benefit, index) => (
 								<Box
+									key={index}
 									sx={{
 										textAlign: 'center',
 										p: 3,
-										height: '100%',
+										width: { xs: '100%', sm: '50%' },
+										maxWidth: 400,
+										display: 'flex',
+										flexDirection: 'column',
+										justifyContent: 'center',
+										alignItems: 'center',
 									}}
 								>
 									<Box
@@ -330,9 +350,57 @@ const Home: React.FC = () => {
 										{t(benefit.descriptionKey)}
 									</Typography>
 								</Box>
-							</Grid>
-						))}
-					</Grid>
+							))}
+						</Box>
+
+						{/* Second Row */}
+						<Box
+							sx={{
+								display: 'flex',
+								justifyContent: 'center',
+								gap: 3,
+								flexWrap: { xs: 'wrap', sm: 'nowrap' },
+							}}
+						>
+							{benefits.slice(2, 4).map((benefit, index) => (
+								<Box
+									key={index + 2}
+									sx={{
+										textAlign: 'center',
+										p: 3,
+										width: { xs: '100%', sm: '50%' },
+										maxWidth: 400,
+										display: 'flex',
+										flexDirection: 'column',
+										justifyContent: 'center',
+										alignItems: 'center',
+									}}
+								>
+									<Box
+										sx={{
+											color: 'primary.main',
+											mb: 2,
+											display: 'flex',
+											justifyContent: 'center',
+										}}
+									>
+										{benefit.icon}
+									</Box>
+									<Typography
+										variant="h6"
+										component="h3"
+										gutterBottom
+										fontWeight="bold"
+									>
+										{t(benefit.titleKey)}
+									</Typography>
+									<Typography variant="body2" color="text.secondary">
+										{t(benefit.descriptionKey)}
+									</Typography>
+								</Box>
+							))}
+						</Box>
+					</Box>
 				</Container>
 			</Box>
 

@@ -25,6 +25,9 @@ export function UserMapper(user: any): UserResponseDto {
     bio: user.bio,
     linkedinUrl: user.linkedinUrl,
     timezone: user.timezone,
+    isActive: user.isActive,
+    deactivatedAt: user.deactivatedAt ? (typeof user.deactivatedAt === 'string' ? user.deactivatedAt : user.deactivatedAt.toISOString()) : undefined,
+    lastLoginAt: user.lastLoginAt ? (typeof user.lastLoginAt === 'string' ? user.lastLoginAt : user.lastLoginAt.toISOString()) : undefined,
   };
 }
 
@@ -53,5 +56,10 @@ export function UserWithPasswordMapper(user: any): UserWithPasswordResponseDto {
     bio: user.bio,
     linkedinUrl: user.linkedinUrl,
     timezone: user.timezone,
+    isActive: user.isActive,
+    deactivatedAt: user.deactivatedAt ? user.deactivatedAt.toISOString() : undefined,
+    lastLoginAt: user.lastLoginAt ? user.lastLoginAt.toISOString() : undefined,
+    id: user.id, // Internal ID for service layer use
+    companyId: user.companyId, // Internal company ID for service layer use
   };
 }

@@ -5,8 +5,9 @@ import {
   createEmailTemplate,
   updateEmailTemplate,
   deleteEmailTemplate,
+  previewEmailTemplate,
 } from '../../api/emailTemplates';
-import { CreateEmailTemplateDto, UpdateEmailTemplateDto } from '../../types/emailTemplate.types';
+import { CreateEmailTemplateDto, UpdateEmailTemplateDto, PreviewEmailTemplateDto } from '../../types/emailTemplate.types';
 import { showSuccessToast, showErrorToast } from '../../utils/toast';
 
 const EMAIL_TEMPLATES_KEY = 'email-templates';
@@ -68,6 +69,16 @@ export function useDeleteEmailTemplate() {
     },
     onError: (error) => {
       showErrorToast(error, 'Failed to delete email template');
+    },
+  });
+}
+
+export function usePreviewEmailTemplate() {
+  return useMutation({
+    mutationFn: ({ uid, data }: { uid: string; data?: PreviewEmailTemplateDto }) =>
+      previewEmailTemplate(uid, data),
+    onError: (error) => {
+      showErrorToast(error, 'Failed to preview email template');
     },
   });
 }

@@ -73,7 +73,7 @@ const JobPositionsFolderView: React.FC<JobPositionsFolderViewProps> = ({hiringPr
 											<Chip label={`Open: ${jp.statusCounts.OPEN}`} size="small" color="info" variant="outlined" />
 										)}
 										{jp.statusCounts.IN_PROGRESS > 0 && (
-											<Chip label={`In Progress: ${jp.statusCounts.IN_PROGRESS}`} size="small" color="primary" variant="outlined" />
+											<Chip label={t('job_positions.in_progress_count', {count: jp.statusCounts.IN_PROGRESS})} size="small" color="primary" variant="outlined" />
 										)}
 										{jp.statusCounts.CLOSED > 0 && (
 											<Chip label={`Closed: ${jp.statusCounts.CLOSED}`} size="small" color="success" variant="outlined" />

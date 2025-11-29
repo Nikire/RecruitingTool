@@ -182,6 +182,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
 							onClick={handleRemovePicture}
 							disabled={isPending}
 							title={t('profile.remove_picture_tooltip')}
+							aria-label={t('profile.remove_picture_tooltip')}
 						>
 							<DeleteIcon />
 						</IconButton>

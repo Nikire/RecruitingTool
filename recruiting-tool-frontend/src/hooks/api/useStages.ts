@@ -6,8 +6,12 @@ import {
 	updateStage,
 	deleteStage,
 	listStages,
+	getStageNotes,
+	createStageNote,
+	updateStageNote,
+	deleteStageNote,
 } from '../../api/stages';
-import {Stage} from '../../types/stage.types';
+import {Stage, CreateStageNoteDto, UpdateStageNoteDto} from '../../types/stage.types';
 import {PaginationParams} from '../../types/pagination.types';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
@@ -90,6 +94,65 @@ export function useDeleteStage() {
 		},
 		onError: (error) => {
 			showErrorToast(error, 'Failed to delete stage');
+		},
+	});
+}
+
+// Stage Notes Hooks
+const STAGE_NOTES_KEY = 'stageNotes';
+
+export function useStageNotes(stageUid: string) {
+	return useQuery({
+		queryKey: [STAGE_NOTES_KEY, stageUid],
+		queryFn: () => getStageNotes(stageUid),
+		enabled: !!stageUid,
+	});
+}
+
+export function useCreateStageNote() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({stageUid, data}: {stageUid: string; data: CreateStageNoteDto}) =>
+			createStageNote(stageUid, data),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({queryKey: [STAGE_NOTES_KEY, variables.stageUid]});
+			showSuccessToast('Note created successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to create note');
+		},
+	});
+}
+
+export function useUpdateStageNote() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({noteUid, data}: {noteUid: string; data: UpdateStageNoteDto}) =>
+			updateStageNote(noteUid, data),
+		onSuccess: (updatedNote) => {
+			queryClient.invalidateQueries({queryKey: [STAGE_NOTES_KEY, updatedNote.stageUid]});
+			showSuccessToast('Note updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update note');
+		},
+	});
+}
+
+export function useDeleteStageNote() {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: ({noteUid, stageUid}: {noteUid: string; stageUid: string}) =>
+			deleteStageNote(noteUid),
+		onSuccess: (_, variables) => {
+			queryClient.invalidateQueries({queryKey: [STAGE_NOTES_KEY, variables.stageUid]});
+			showSuccessToast('Note deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete note');
 		},
 	});
 }

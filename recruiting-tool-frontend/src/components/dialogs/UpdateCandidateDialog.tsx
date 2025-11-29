@@ -11,7 +11,9 @@ import {
 	Tab,
 	Divider,
 	CircularProgress,
+	InputAdornment,
 } from '@mui/material';
+import ErrorIcon from '@mui/icons-material/Error';
 import {useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {useUpdateCandidate} from '../../hooks/api/useCandidates';
@@ -20,6 +22,8 @@ import {useEffect, useState} from 'react';
 import FileUpload from '../files/FileUpload';
 import FileList from '../files/FileList';
 import CandidateNotes from '../candidate/CandidateNotes';
+import {useValidationRules} from '../../utils/validation';
+import FormErrorSummary from '../common/FormErrorSummary';
 
 interface UpdateCandidateDialogProps {
 	open: boolean;
@@ -38,6 +42,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 	candidate,
 }) => {
 	const {t} = useTranslation();
+	const validationRules = useValidationRules();
 	const [activeTab, setActiveTab] = useState(0);
 
 	const {
@@ -102,23 +107,26 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 			{activeTab === 0 && (
 				<form onSubmit={handleSubmit(onSubmit)}>
 					<DialogContent>
+						<FormErrorSummary errors={errors} />
+
 						<TextField
 							label={t('candidates.name_label')}
 							fullWidth
 							margin="normal"
-							{...register('name', {
-								required: t('validation.name_required'),
-								minLength: {
-									value: 3,
-									message: t('validation.name_min_length', {min: 3}),
-								},
-								maxLength: {
-									value: 100,
-									message: t('validation.name_max_length', {max: 100}),
-								},
-							})}
+							{...register('name', validationRules.combine(
+								validationRules.required(t('candidates.name_label')),
+								validationRules.minLength(3),
+								validationRules.maxLength(100),
+							))}
 							error={!!errors.name}
 							helperText={errors.name?.message}
+							InputProps={{
+								endAdornment: errors.name ? (
+									<InputAdornment position="end">
+										<ErrorIcon color="error" />
+									</InputAdornment>
+								) : null,
+							}}
 						/>
 
 						<TextField
@@ -126,15 +134,16 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
 							type="email"
 							fullWidth
 							margin="normal"
-							{...register('email', {
-								required: t('validation.email_required'),
-								pattern: {
-									value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-									message: t('validation.email_invalid'),
-								},
-							})}
+							{...register('email', validationRules.email())}
 							error={!!errors.email}
 							helperText={errors.email?.message}
+							InputProps={{
+								endAdornment: errors.email ? (
+									<InputAdornment position="end">
+										<ErrorIcon color="error" />
+									</InputAdornment>
+								) : null,
+							}}
 						/>
 
 						{isError && (

@@ -24,6 +24,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { useTranslation } from 'react-i18next';
+import toast from 'react-hot-toast';
 import { CustomQuestion, QuestionType } from '../../types/customQuestions';
 
 interface CustomQuestionBuilderProps {
@@ -70,12 +71,12 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 
 	const handleAddQuestion = () => {
 		if (!formData.text.trim()) {
-			alert(t('custom_questions.text_required_alert'));
+			toast.error(t('custom_questions.text_required_alert'));
 			return;
 		}
 
 		if ((formData.type === QuestionType.MULTIPLE_CHOICE || formData.type === QuestionType.CHECKBOX) && (!formData.options || formData.options.length < 2)) {
-			alert(t('custom_questions.options_required_alert'));
+			toast.error(t('custom_questions.options_required_alert'));
 			return;
 		}
 
@@ -83,8 +84,10 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 			const updatedQuestions = [...questions];
 			updatedQuestions[editingIndex] = formData;
 			onQuestionsChange(updatedQuestions);
+			toast.success(t('custom_questions.question_updated'));
 		} else {
 			onQuestionsChange([...questions, formData]);
+			toast.success(t('custom_questions.question_added'));
 		}
 
 		handleCloseDialog();

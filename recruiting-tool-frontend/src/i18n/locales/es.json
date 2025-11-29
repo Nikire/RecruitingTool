@@ -37,7 +37,14 @@
     "retry": "Reintentar",
     "my_profile": "Mi Perfil",
     "back_to_careers": "Volver a Carreras",
-    "n_a": "N/A"
+    "n_a": "N/A",
+    "refresh": "Actualizar",
+    "unknown_user": "Usuario Desconocido",
+    "access_denied": "Acceso Denegado",
+    "yes": "Sí",
+    "no": "No",
+    "print": "Imprimir",
+    "unknown": "Desconocido"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -58,7 +65,11 @@
     "status_required": "El estado es obligatorio",
     "job_position_required": "La posición de trabajo es obligatoria",
     "candidate_required": "El candidato es obligatorio",
-    "stage_required": "Se requiere al menos una etapa de contratación"
+    "stage_required": "Se requiere al menos una etapa de contratación",
+    "field_required": "{{field}} es requerido",
+    "form_errors": "Por favor corrija los siguientes errores:",
+    "numeric_only": "Solo se permiten números",
+    "positive_number": "Debe ser un número positivo"
   },
   "errors": {
     "operation_failed": "Operación Fallida",
@@ -68,7 +79,21 @@
     "fetch_failed": "Error al cargar datos. Por favor recargue la página.",
     "upload_failed": "Error al subir archivo. Por favor intente nuevamente.",
     "try_again": "Por favor intente nuevamente o contacte soporte si el problema persiste.",
-    "generic": "Algo salió mal. Por favor intente nuevamente."
+    "generic": "Algo salió mal. Por favor intente nuevamente.",
+    "interview_schedule_failed": "Error al programar la entrevista",
+    "interview_update_failed": "Error al actualizar la entrevista",
+    "interview_cancel_failed": "Error al cancelar la entrevista",
+    "interview_delete_failed": "Error al eliminar la entrevista",
+    "interview_reschedule_failed": "Error al reprogramar la entrevista",
+    "boundary": {
+      "title": "Algo salió mal",
+      "message": "Ocurrió un error inesperado. Por favor intente recargar la página o vuelva a la página de inicio.",
+      "reload": "Recargar Página",
+      "home": "Ir al Inicio",
+      "details": "Detalles del Error (Solo Modo de Desarrollo)",
+      "component_stack": "Pila de Componentes",
+      "support_message": "Si este problema persiste, por favor contacte a soporte."
+    }
   },
   "dialogs": {
     "delete_confirmation": "Confirmar Eliminación",
@@ -93,7 +118,9 @@
     "in_progress": "En Progreso",
     "reviewed": "Revisado",
     "accepted": "Aceptado",
-    "rejected": "Rechazado"
+    "rejected": "Rechazado",
+    "done": "Completado",
+    "current": "Actual"
   },
   "candidates": {
     "title": "Candidatos",
@@ -111,7 +138,16 @@
     "uploaded_files": "Archivos Subidos",
     "no_candidates": "No hay candidatos disponibles",
     "add_note": "Agregar Nota",
-    "internal_notes": "Notas Internas"
+    "internal_notes": "Notas Internas",
+    "create_candidate": "Crear Candidato",
+    "create_from_application": "Desde Aplicación de Trabajo",
+    "create_manual": "Agregar Manualmente",
+    "create_manual_hint": "Para llamadas telefónicas, referencias, visitas",
+    "import_csv": "Importar desde CSV",
+    "import_csv_hint": "Importación masiva de candidatos desde un archivo CSV",
+    "search_placeholder": "Buscar por nombre o correo...",
+    "delete_title": "Eliminar Candidato",
+    "delete_message": "¿Está seguro que desea eliminar este candidato?"
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -129,7 +165,11 @@
     "view_details": "Ver Detalles",
     "company": "Empresa",
     "created_by": "Creado Por",
-    "stages_count": "Etapas"
+    "stages_count": "Etapas",
+    "subtitle": "Gestiona las ofertas de trabajo de tu empresa",
+    "create_new": "Crear Posición de Trabajo",
+    "search_placeholder": "Buscar posiciones...",
+    "in_progress_count": "En Progreso: {{count}}"
   },
   "hiring_processes": {
     "title": "Procesos de Contratación",
@@ -148,7 +188,12 @@
     "update_title": "Actualizar Empresa",
     "name_label": "Nombre de la Empresa",
     "description_label": "Descripción",
-    "no_companies": "No hay empresas disponibles"
+    "no_companies": "No hay empresas disponibles",
+    "add_company": "Agregar Empresa",
+    "search_placeholder": "Buscar empresas...",
+    "creating": "Creando...",
+    "delete_title": "Eliminar Empresa",
+    "delete_message": "¿Está seguro que desea eliminar esta empresa?"
   },
   "users": {
     "title": "Usuarios",
@@ -169,7 +214,27 @@
     "edit_user_tooltip": "Editar usuario",
     "delete_user_tooltip": "Eliminar usuario",
     "delete_user_title": "Eliminar Usuario",
-    "delete_user_message": "¿Está seguro que desea eliminar este usuario?"
+    "delete_user_message": "¿Está seguro que desea eliminar este usuario?",
+    "create_user": "Crear Usuario",
+    "search_placeholder": "Buscar por nombre o correo...",
+    "api_only_message": "La creación de usuarios actualmente solo está disponible a través de la API. Por favor use los endpoints de la API para crear nuevos usuarios.",
+    "user_singular": "Usuario",
+    "company_helper": "Seleccione una empresa para asignar este usuario (opcional)",
+    "roles_required": "Debe seleccionar al menos un rol",
+    "deactivate_user": "Desactivar Usuario",
+    "reactivate_user": "Reactivar Usuario",
+    "deactivate_user_title": "Desactivar Usuario",
+    "deactivate_user_message": "¿Está seguro de que desea desactivar este usuario? Ya no podrá iniciar sesión.",
+    "reactivate_user_title": "Reactivar Usuario",
+    "reactivate_user_message": "¿Está seguro de que desea reactivar este usuario?",
+    "view_activity": "Ver Actividad",
+    "no_activity": "No hay actividad registrada para este usuario",
+    "activity_error": "Error al cargar la actividad del usuario",
+    "activity_user_created": "Cuenta de usuario creada",
+    "activity_user_updated": "Perfil de usuario actualizado",
+    "activity_user_login": "Usuario inició sesión",
+    "activity_user_deactivated": "Cuenta de usuario desactivada",
+    "activity_user_reactivated": "Cuenta de usuario reactivada"
   },
   "stages": {
     "title": "Etapas",
@@ -194,7 +259,66 @@
     "add_more_stages_plural": "Por favor agregue al menos {{count}} etapas más.",
     "template_basic": "Básico (3 etapas)",
     "template_technical": "Técnico (4 etapas)",
-    "template_comprehensive": "Completo (5 etapas)"
+    "template_comprehensive": "Completo (5 etapas)",
+    "template_data": {
+      "basic": {
+        "name": "Básico (3 etapas)",
+        "screening": {
+          "title": "Evaluación Inicial",
+          "description": "Revisar aplicación y realizar evaluación telefónica inicial"
+        },
+        "interview": {
+          "title": "Entrevista",
+          "description": "Entrevista en profundidad con el gerente de contratación"
+        },
+        "offer": {
+          "title": "Oferta",
+          "description": "Extender oferta de trabajo al candidato"
+        }
+      },
+      "technical": {
+        "name": "Técnico (4 etapas)",
+        "review": {
+          "title": "Revisión de Aplicación",
+          "description": "Revisar currículum y portafolio"
+        },
+        "technical": {
+          "title": "Entrevista Técnica",
+          "description": "Desafío de código y evaluación técnica"
+        },
+        "final": {
+          "title": "Entrevista Final",
+          "description": "Entrevista de ajuste cultural y de equipo"
+        },
+        "offer": {
+          "title": "Oferta",
+          "description": "Extender oferta de trabajo al candidato"
+        }
+      },
+      "comprehensive": {
+        "name": "Completo (5 etapas)",
+        "review": {
+          "title": "Revisión de Aplicación",
+          "description": "Revisión inicial de materiales de aplicación"
+        },
+        "phone": {
+          "title": "Evaluación Telefónica",
+          "description": "Breve conversación telefónica para evaluar ajuste básico"
+        },
+        "assessment": {
+          "title": "Evaluación Técnica",
+          "description": "Evaluación técnica en profundidad con ejercicios de código"
+        },
+        "onsite": {
+          "title": "Entrevista Presencial",
+          "description": "Entrevistas presenciales de día completo con miembros del equipo"
+        },
+        "offer": {
+          "title": "Oferta",
+          "description": "Extender oferta final y negociar términos"
+        }
+      }
+    }
   },
   "applications": {
     "title": "Aplicaciones",
@@ -222,7 +346,54 @@
     "time_label": "Hora de la Entrevista",
     "location_label": "Ubicación",
     "notes_label": "Notas",
-    "no_interviews": "No hay entrevistas programadas"
+    "no_interviews": "No hay entrevistas programadas",
+    "schedule_interview": "Programar Entrevista",
+    "edit_title": "Editar Entrevista",
+    "candidate": "Candidato",
+    "job_position": "Posición de Trabajo",
+    "date": "Fecha",
+    "time": "Hora",
+    "duration": "Duración",
+    "duration_30min": "30 minutos",
+    "duration_45min": "45 minutos",
+    "duration_1hr": "1 hora",
+    "duration_1_5hr": "1.5 horas",
+    "duration_2hr": "2 horas",
+    "type": "Tipo de Entrevista",
+    "type_phone": "Teléfono",
+    "type_video": "Videollamada",
+    "type_in_person": "Presencial",
+    "interviewers": "Entrevistadores",
+    "location": "Ubicación",
+    "meeting_link": "Enlace de Reunión",
+    "notes": "Notas",
+    "scheduled": "Programada",
+    "completed": "Completada",
+    "cancelled": "Cancelada",
+    "pending": "Pendiente",
+    "cancel_interview": "Cancelar Entrevista",
+    "reschedule": "Reprogramar",
+    "reschedule_interview": "Reprogramar Entrevista",
+    "reschedule_title": "Reprogramar Entrevista",
+    "new_date": "Nueva Fecha",
+    "new_time": "Nueva Hora",
+    "reschedule_reason": "Motivo de Reprogramación",
+    "reschedule_reason_placeholder": "ej., Candidato solicitó horario diferente, Entrevistador no disponible, etc.",
+    "reschedule_history": "Historial de Reprogramaciones",
+    "view_reschedule_history": "Ver Historial de Reprogramaciones",
+    "rescheduled_count": "Reprogramada {{count}} vez",
+    "rescheduled_count_plural": "Reprogramada {{count}} veces",
+    "original_date": "Fecha Original",
+    "previous_date": "Fecha Anterior",
+    "rescheduled_by": "Reprogramada Por",
+    "rescheduled_at": "Reprogramada El",
+    "no_reschedule_history": "Esta entrevista no ha sido reprogramada",
+    "no_interviewers": "No hay entrevistadores asignados",
+    "select_candidate": "Seleccione un candidato",
+    "select_job_position": "Seleccione una posición de trabajo",
+    "select_interviewers": "Seleccione entrevistadores",
+    "location_placeholder": "ej., Sala de Oficina 201 o Zoom",
+    "meeting_link_placeholder": "ej., https://zoom.us/j/123456789"
   },
   "files": {
     "upload": "Subir Archivo",
@@ -249,10 +420,54 @@
   "email_templates": {
     "title": "Plantillas de Correo",
     "create_title": "Crear Plantilla de Correo",
-    "subject_label": "Asunto",
-    "body_label": "Cuerpo",
+    "subject_label": "Asunto del Correo",
+    "body_label": "Cuerpo del Correo",
     "variables": "Variables Disponibles",
-    "no_templates": "Aún no hay plantillas de correo. ¡Haz clic en \"Crear Plantilla\" para agregar la primera!"
+    "no_templates": "No se encontraron plantillas de correo",
+    "subtitle": "Administre plantillas de correo profesionales para comunicación con candidatos",
+    "update_title": "Actualizar Plantilla de Correo",
+    "preview_title": "Vista Previa de Plantilla",
+    "create_template": "Crear Plantilla",
+    "search_placeholder": "Buscar plantillas por nombre o asunto...",
+    "name_label": "Nombre de Plantilla",
+    "name_placeholder": "ej., Invitación a Entrevista",
+    "subject_placeholder": "ej., Invitación a Entrevista para {{positionTitle}}",
+    "body_placeholder": "Estimado/a {{candidateName}},\\n\\nNos complace invitarle...",
+    "company_label": "Empresa (opcional)",
+    "company_placeholder": "Seleccione empresa para plantilla específica de empresa",
+    "is_default_label": "Plantilla Predeterminada",
+    "is_default_hint": "Marcar como plantilla predeterminada para acceso rápido",
+    "created_by": "Creado Por",
+    "add_first_template": "Cree su primera plantilla de correo",
+    "delete_message": "¿Está seguro que desea eliminar esta plantilla de correo?",
+    "delete_warning": "Esta acción no se puede deshacer.",
+    "variable_helper": "Variables Disponibles",
+    "variable_candidate_name": "{{candidateName}} - Nombre del candidato",
+    "variable_position_title": "{{positionTitle}} - Título de la posición",
+    "variable_company_name": "{{companyName}} - Nombre de la empresa",
+    "variable_hr_name": "{{hrName}} - Nombre del contacto RH",
+    "variable_interview_date": "{{interviewDate}} - Fecha de entrevista",
+    "variable_interview_time": "{{interviewTime}} - Hora de entrevista",
+    "variable_meeting_link": "{{meetingLink}} - URL de la reunión",
+    "insert_variable": "Insertar Variable",
+    "preview_with_sample": "Vista Previa con Datos de Muestra",
+    "rendered_subject": "Asunto Renderizado",
+    "rendered_body": "Cuerpo Renderizado",
+    "system_wide": "A nivel de sistema",
+    "table_name": "Nombre",
+    "table_subject": "Asunto",
+    "table_default": "Predeterminada",
+    "table_created_by": "Creado Por",
+    "table_created_at": "Creado El",
+    "table_actions": "Acciones",
+    "default_templates": {
+      "application_rejection": "Rechazo de Aplicación",
+      "interview_invitation": "Invitación a Entrevista",
+      "job_offer": "Oferta de Trabajo",
+      "application_confirmation": "Confirmación de Aplicación",
+      "status_update": "Actualización de Estado",
+      "interview_reminder": "Recordatorio de Entrevista"
+    }
   },
   "forms": {
     "custom_questions": "Preguntas Personalizadas",
@@ -361,7 +576,14 @@
     "subject_required": "El asunto es obligatorio",
     "subject_min_length": "El asunto debe tener al menos {{min}} caracteres",
     "subject_max_length": "El asunto debe tener menos de {{max}} caracteres",
-    "body_required": "El cuerpo es obligatorio"
+    "body_required": "El cuerpo es obligatorio",
+    "preview": "Vista Previa",
+    "previewing": "Cargando vista previa...",
+    "preview_title": "Vista Previa del Correo",
+    "preview_info": "Así es como se verá el correo con datos de ejemplo. Las variables son reemplazadas con valores de muestra.",
+    "preview_subject": "Asunto",
+    "preview_body": "Cuerpo",
+    "hide_preview": "Ocultar Vista Previa"
   },
   "add_stage": {
     "add_title": "Agregar Nueva Etapa",
@@ -469,7 +691,18 @@
     "manage_positions": "Gestionar Posiciones de Trabajo",
     "review_applications": "Revisar Aplicaciones",
     "view_candidates": "Ver Candidatos",
-    "create_position": "Crear Posición de Trabajo"
+    "create_position": "Crear Posición de Trabajo",
+    "add_candidate": "Agregar Candidato Manualmente",
+    "stats": {
+      "applications": "Aplicaciones",
+      "candidates": "Candidatos",
+      "job_positions": "Posiciones de Trabajo",
+      "pending_review": "Revisión Pendiente",
+      "pending_review_count": "{{count}} pendiente de revisión",
+      "active_in_hiring": "Activos en procesos de contratación",
+      "currently_open": "{{count}} actualmente abiertas",
+      "applications_need_attention": "Aplicaciones que requieren atención"
+    }
   },
   "notes": {
     "save_candidate_first": "Por favor guarde el candidato primero antes de agregar notas.",
@@ -504,7 +737,9 @@
     "options_required_alert": "Por favor agregue al menos 2 opciones para preguntas de opción múltiple o casillas de verificación",
     "screening_questions": "Preguntas de Evaluación",
     "answer_placeholder": "Ingrese su respuesta...",
-    "no_answer": "No se proporcionó respuesta"
+    "no_answer": "No se proporcionó respuesta",
+    "question_added": "Pregunta agregada exitosamente",
+    "question_updated": "Pregunta actualizada exitosamente"
   },
   "interview": {
     "title": "Entrevista",
@@ -536,6 +771,10 @@
     "estimated_time": "Estimado: {{time}} minutos"
   },
   "job_positions_table": {
+    "error_loading": "Error al cargar posiciones de trabajo. Por favor intente nuevamente.",
+    "processes_count": "{{count}} procesos",
+    "no_positions": "No se encontraron posiciones de trabajo.",
+    "delete_message": "¿Está seguro que desea eliminar esta posición de trabajo? Esto también eliminará todas las etapas y procesos de contratación asociados.",
     "header_job_title": "Título del Trabajo",
     "header_company": "Empresa",
     "header_status": "Estado",
@@ -565,12 +804,16 @@
     "bio": "Biografía"
   },
   "applications_page": {
+    "all_applications": "Todas las Aplicaciones",
     "title": "Aplicaciones de Trabajo",
     "filter_by_status": "Filtrar por Estado"
   },
   "email_templates_page": {
-    "title": "Plantillas de Correo",
+    "create_template": "Crear Plantilla",
     "search_placeholder": "Buscar plantillas por nombre, asunto o contenido...",
+    "default_label": "Predeterminada",
+    "delete_confirmation": "¿Está seguro que desea eliminar \"{{name}}\"?",
+    "title": "Plantillas de Correo",
     "table_name": "Nombre",
     "table_subject": "Asunto",
     "table_default": "Predeterminada",
@@ -629,28 +872,17 @@
     "no_processes_with_status": "No hay procesos de contratación con estado: {{status}}",
     "stage_template": "Plantilla de Etapas",
     "stage_type": "Tipo",
-    "no_stages": "No hay etapas definidas para esta posición todavía."
+    "no_stages": "No hay etapas definidas para esta posición todavía.",
+    "custom_questions": "Preguntas de Selección Personalizadas",
+    "no_custom_questions": "No se han agregado preguntas de selección personalizadas a esta posición de trabajo. Los postulantes solo necesitarán proporcionar información estándar.",
+    "hr_detail_title": "Gestión de Posición de Trabajo",
+    "access_denied_message": "No tiene permiso para acceder a esta posición de trabajo. Solo puede ver posiciones de trabajo de su propia empresa."
   },
   "file_list": {
     "error_loading": "Error al cargar archivos. Por favor intente nuevamente más tarde.",
     "no_files": "No hay archivos subidos todavía",
     "delete_title": "Eliminar Archivo",
     "delete_message": "¿Está seguro que desea eliminar \"{{fileName}}\"? Esta acción no se puede deshacer."
-  },
-  "job_positions_table": {
-    "error_loading": "Error al cargar posiciones de trabajo. Por favor intente nuevamente.",
-    "processes_count": "{{count}} procesos",
-    "no_positions": "No se encontraron posiciones de trabajo.",
-    "delete_message": "¿Está seguro que desea eliminar esta posición de trabajo? Esto también eliminará todas las etapas y procesos de contratación asociados."
-  },
-  "applications_page": {
-    "all_applications": "Todas las Aplicaciones"
-  },
-  "email_templates_page": {
-    "create_template": "Crear Plantilla",
-    "search_placeholder": "Buscar plantillas por nombre, asunto o contenido...",
-    "default_label": "Predeterminada",
-    "delete_confirmation": "¿Está seguro que desea eliminar \"{{name}}\"?"
   },
   "hr_layout": {
     "title": "Panel de RRHH",
@@ -659,14 +891,16 @@
     "candidates": "Candidatos",
     "job_positions": "Posiciones de Trabajo",
     "email_templates": "Plantillas de Correo",
-    "aria_label": "navegación de rrhh"
+    "aria_label": "navegación de rrhh",
+    "analytics": "Análisis"
   },
   "admin_layout": {
     "title": "Panel de Administración",
     "dashboard": "Dashboard de Admin",
     "companies": "Empresas",
     "users": "Usuarios",
-    "aria_label": "navegación de administración"
+    "aria_label": "navegación de administración",
+    "settings": "Configuración del Sistema"
   },
   "language": {
     "select_language": "Seleccionar Idioma",
@@ -677,14 +911,14 @@
   },
   "home": {
     "hero": {
-      "headline": "Transforma Tu Proceso de Reclutamiento",
-      "subheadline": "Optimiza la contratación, encuentra el mejor talento y construye equipos excepcionales con nuestra plataforma integral de reclutamiento",
-      "cta_primary": "Comenzar Gratis",
+      "headline": "Plataforma Moderna de Reclutamiento para Empresas en Crecimiento",
+      "subheadline": "Únete a nuestro programa de adoptadores tempranos y obtén beneficios exclusivos mientras ayudas a dar forma al futuro de la tecnología de reclutamiento",
+      "cta_primary": "Únete como Adoptador Temprano",
       "cta_secondary": "Explorar Carreras"
     },
     "features": {
-      "section_title": "Funcionalidades Poderosas para el Reclutamiento Moderno",
-      "section_subtitle": "Todo lo que necesitas para gestionar tu proceso completo de contratación desde una sola plataforma",
+      "section_title": "Diseñado para Equipos de Reclutamiento Modernos",
+      "section_subtitle": "Herramientas esenciales para gestionar todo tu proceso de contratación de manera eficiente",
       "candidate_management": {
         "title": "Gestión de Candidatos",
         "description": "Organiza y rastrea toda la información de candidatos, currículums y comunicaciones en una ubicación centralizada"
@@ -711,29 +945,454 @@
       }
     },
     "benefits": {
-      "section_title": "¿Por Qué Elegir Nuestra Herramienta de Reclutamiento?",
-      "section_subtitle": "Únete a cientos de empresas que han transformado su proceso de contratación",
+      "section_title": "Beneficios para Adoptadores Tempranos",
+      "section_subtitle": "Sé de las primeras empresas en unirse y disfruta de ventajas exclusivas",
       "save_time": {
-        "title": "Ahorra Tiempo",
-        "description": "Reduce el tiempo de contratación hasta en un 40% con flujos de trabajo automatizados y procesos optimizados"
+        "title": "Soporte Prioritario",
+        "description": "Obtén soporte dedicado y acceso directo a nuestro equipo de desarrollo para tus comentarios y necesidades"
       },
       "streamline_hiring": {
-        "title": "Optimiza la Contratación",
-        "description": "Simplifica los procesos complejos de contratación con herramientas intuitivas y gestión automatizada de tareas"
+        "title": "Precio Exclusivo",
+        "description": "Asegura precios especiales de adoptador temprano con descuentos de por vida por ser un colaborador inicial"
       },
       "improve_collaboration": {
-        "title": "Mejora la Colaboración",
-        "description": "Fomenta un mejor trabajo en equipo con comunicación centralizada y evaluaciones compartidas de candidatos"
+        "title": "Da Forma al Producto",
+        "description": "Tus comentarios influyen directamente en nuevas funciones y mejoras mientras crecemos juntos"
       },
       "data_driven": {
-        "title": "Decisiones Basadas en Datos",
-        "description": "Toma decisiones de contratación más inteligentes respaldadas por análisis e información completa"
+        "title": "Sin Compromiso a Largo Plazo",
+        "description": "Términos flexibles mientras refinamos la plataforma - pausa o cancela en cualquier momento durante el período de acceso temprano"
       }
     },
     "cta": {
-      "headline": "¿Listo para Transformar Tu Contratación?",
-      "subheadline": "Únete a miles de empresas que usan nuestra plataforma para encontrar y contratar el mejor talento",
-      "button": "Comienza Tu Prueba Gratuita"
+      "headline": "¿Listo para Unirte a Nuestro Programa de Adoptadores Tempranos?",
+      "subheadline": "Sé parte de construir el futuro de la tecnología de reclutamiento y disfruta de beneficios exclusivos",
+      "button": "Obtener Acceso Temprano"
+    }
+  },
+  "success": {
+    "interview_scheduled": "Entrevista programada exitosamente",
+    "interview_updated": "Entrevista actualizada exitosamente",
+    "interview_cancelled": "Entrevista cancelada exitosamente",
+    "interview_deleted": "Entrevista eliminada exitosamente",
+    "interview_rescheduled": "Entrevista reprogramada exitosamente"
+  },
+  "hiring_process_status": {
+    "all": "Todos",
+    "open": "Abierto",
+    "in_progress": "En Progreso",
+    "closed": "Cerrado",
+    "cancelled": "Cancelado",
+    "rejected": "Rechazado"
+  },
+  "stage_types": {
+    "screening": "Selección",
+    "phone_interview": "Entrevista Telefónica",
+    "technical_interview": "Entrevista Técnica",
+    "final_interview": "Entrevista Final",
+    "offer": "Oferta",
+    "interview": "Entrevista"
+  },
+  "question_types": {
+    "short_text": "Texto Corto",
+    "long_text": "Texto Largo",
+    "multiple_choice": "Selección Múltiple",
+    "checkboxes": "Casillas de Verificación"
+  },
+  "candidate_import": {
+    "title": "Importar Candidatos desde CSV",
+    "download_template": "Descargar Plantilla CSV",
+    "template_help": "Descarga una plantilla con datos de ejemplo y columnas requeridas",
+    "select_file": "Seleccionar Archivo CSV",
+    "change_file": "Cambiar Archivo",
+    "selected_file": "Archivo seleccionado",
+    "preview_title": "Vista Previa de Importación",
+    "total_rows": "Total de filas",
+    "valid_rows": "Filas válidas",
+    "invalid_rows": "Filas inválidas",
+    "view_errors": "Ver Errores",
+    "row_number": "Fila",
+    "name": "Nombre",
+    "email": "Correo",
+    "errors": "Errores",
+    "import": "Importar Candidatos",
+    "importing": "Importando...",
+    "import_successful": "Importación Exitosa",
+    "import_completed_with_errors": "Importación Completada con Errores",
+    "imported_count": "Importados exitosamente",
+    "failed_count": "Fallaron al importar",
+    "import_errors": "Errores de Importación"
+  },
+  "careers": {
+    "title": "Posiciones Abiertas",
+    "subtitle": "Explora nuestras ofertas de trabajo actuales y aplica hoy",
+    "search_placeholder": "Buscar trabajos...",
+    "posted": "Publicado",
+    "posted_date": "Fecha de Publicación"
+  },
+  "user_roles": {
+    "super_admin": "Super Administrador",
+    "admin": "Administrador",
+    "hr": "RRHH",
+    "user": "Usuario"
+  },
+  "stage_notes": {
+    "title": "Notas de Etapa",
+    "add_note": "Agregar Nota",
+    "edit_note": "Editar Nota",
+    "delete_note_confirm": "¿Eliminar esta nota?",
+    "note_content": "Contenido de la Nota",
+    "note_placeholder": "Ingrese su nota aquí (ej., retroalimentación de entrevista, fundamento de decisión, etc.)...",
+    "no_notes": "No hay notas aún",
+    "add_first_note": "Agregar la primera nota",
+    "author": "Autor",
+    "created": "Creado",
+    "updated": "Actualizado",
+    "save_note": "Guardar Nota",
+    "cancel": "Cancelar",
+    "notes_count": "{{count}} nota",
+    "notes_count_plural": "{{count}} notas",
+    "note_by": "Nota de {{author}}",
+    "created_at": "Creado {{date}}",
+    "updated_at": "Actualizado {{date}}",
+    "validation_required": "El contenido de la nota es obligatorio",
+    "validation_min_length": "La nota debe tener al menos {{min}} caracteres",
+    "validation_max_length": "La nota debe tener menos de {{max}} caracteres",
+    "you": "Tú",
+    "only_author_can_edit": "Solo el autor puede editar o eliminar esta nota"
+  },
+  "admin_dashboard": {
+    "title": "Panel de Administración",
+    "welcome": "¡Bienvenido de nuevo, {{name}}! Gestiona tu sistema desde este centro de control.",
+    "candidate_management": "Gestión de Candidatos",
+    "candidate_management_desc": "Gestionar candidatos y sus aplicaciones",
+    "company_management": "Gestión de Empresas",
+    "company_management_desc": "Gestionar empresas y sus configuraciones",
+    "user_management": "Gestión de Usuarios",
+    "user_management_desc": "Gestionar cuentas de usuario, roles y permisos",
+    "job_positions": "Posiciones de Trabajo",
+    "job_positions_desc": "Ver todas las posiciones de trabajo en todas las empresas"
+  },
+  "status_editor": {
+    "click_to_edit": "Haz clic para editar el estado",
+    "select_status": "Selecciona un estado",
+    "change_job_position_status": "Cambiar el estado de la posición de trabajo",
+    "change_hiring_process_status": "Cambiar el estado del proceso de contratación"
+  },
+  "pagination": {
+    "showing": "Mostrando {{start}} a {{end}} de {{total}}",
+    "items": "Elementos",
+    "items_per_page": "Elementos por página"
+  },
+  "aria": {
+    "open_menu": "Abrir menú",
+    "close_menu": "Cerrar menú",
+    "open_drawer": "Abrir panel",
+    "close_drawer": "Cerrar panel",
+    "user_menu": "Menú de usuario",
+    "user_profile": "Perfil de usuario",
+    "edit_item": "Editar {{item}}",
+    "delete_item": "Eliminar {{item}}",
+    "view_item": "Ver {{item}}",
+    "add_item": "Agregar {{item}}",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "view": "Ver",
+    "add": "Agregar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "actions": "Acciones",
+    "menu": "Menú",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "submit": "Enviar",
+    "main_content": "Contenido principal",
+    "navigation": "Navegación",
+    "form": "Formulario",
+    "dialog": "Diálogo",
+    "error_icon": "Indicador de error",
+    "warning_icon": "Indicador de advertencia",
+    "loading": "Cargando",
+    "file_upload": "Subir archivo",
+    "avatar": "Avatar para {{name}}",
+    "profile_picture": "Foto de perfil",
+    "status": "Estado",
+    "create_dialog": "Diálogo de crear {{entity}}",
+    "update_dialog": "Diálogo de actualizar {{entity}}",
+    "delete_dialog": "Diálogo de confirmación de eliminación",
+    "form_error": "Error de formulario",
+    "required_field": "Campo requerido",
+    "pagination_navigation": "Navegación de paginación",
+    "pagination_controls": "Controles de paginación"
+  },
+  "ai_ranking": {
+    "title": "Rankings de Candidatos IA",
+    "overall_score": "Puntuación General",
+    "score_breakdown": "Desglose de Puntuación",
+    "skills_match": "Coincidencia de Habilidades",
+    "skills_match_desc": "Qué tan bien las habilidades técnicas y profesionales del candidato se alinean con los requisitos del trabajo",
+    "experience_match": "Coincidencia de Experiencia",
+    "experience_match_desc": "Relevancia y profundidad de la experiencia laboral en roles o industrias similares",
+    "education_match": "Coincidencia de Educación",
+    "education_match_desc": "Nivel de educación, campo de estudio y certificaciones relevantes",
+    "location_match": "Coincidencia de Ubicación",
+    "location_match_desc": "Proximidad a la ubicación del trabajo o compatibilidad con trabajo remoto",
+    "availability": "Disponibilidad",
+    "availability_desc": "Flexibilidad de fecha de inicio y alineación de horario con los requisitos de la posición",
+    "excellent": "Excelente Coincidencia",
+    "good": "Buena Coincidencia",
+    "fair": "Coincidencia Aceptable",
+    "poor": "Baja Coincidencia",
+    "rank": "Rango",
+    "tier": "Nivel",
+    "view_profile": "Ver Perfil",
+    "no_scores": "No hay puntuaciones IA disponibles aún",
+    "key_factors": "Factores Clave",
+    "filter_by_tier": "Filtrar por Nivel",
+    "all_tiers": "Todos los Niveles",
+    "score_range": "Rango de Puntuación",
+    "showing_candidates": "Mostrando {{count}} candidatos",
+    "scoring_method": "Método de Puntuación",
+    "scoring_method_desc": "Las puntuaciones IA se calculan usando un algoritmo ponderado: Habilidades (35%), Experiencia (30%), Educación (15%), Ubicación (10%), Disponibilidad (10%)"
+  },
+  "scorecard": {
+    "title": "Tarjetas de Evaluación",
+    "templates": "Plantillas de Tarjetas de Evaluación",
+    "create_template": "Crear Plantilla",
+    "edit_template": "Editar Plantilla",
+    "template_name": "Nombre de la Plantilla",
+    "description": "Descripción",
+    "categories": "Categorías",
+    "add_category": "Agregar Categoría",
+    "remove_category": "Quitar Categoría",
+    "category_name": "Nombre de la Categoría",
+    "category_placeholder": "Categoría {{index}}",
+    "weight": "Peso (%)",
+    "weight_help": "Porcentaje de la puntuación total (0-100)",
+    "total_weight": "Peso Total: {{weight}}%",
+    "weight_error": "Los pesos de las categorías deben sumar 100%",
+    "criteria": "Criterios",
+    "add_criterion": "Agregar Criterio",
+    "remove_criterion": "Quitar Criterio",
+    "criterion_name": "Nombre del Criterio",
+    "criterion_description": "Descripción del Criterio (Opcional)",
+    "max_score": "Puntuación Máxima",
+    "submit_scorecard": "Enviar Tarjeta de Evaluación",
+    "submit": "Enviar",
+    "overall_score": "Puntuación General",
+    "overall_notes": "Notas Generales",
+    "overall_notes_placeholder": "Agregue comentarios adicionales sobre la entrevista...",
+    "criterion_notes": "Notas",
+    "criterion_notes_placeholder": "Agregue retroalimentación específica para este criterio...",
+    "notes": "Notas",
+    "evaluator": "Evaluador",
+    "evaluated_by": "Evaluado por",
+    "submitted_at": "Enviado el",
+    "no_scorecards": "No hay tarjetas de evaluación enviadas todavía",
+    "no_templates": "No hay plantillas de tarjetas de evaluación todavía",
+    "create_first_template": "Crear Tu Primera Plantilla",
+    "categories_count": "{{count}} categoría",
+    "categories_count_plural": "{{count}} categorías",
+    "criteria_count": "{{count}} criterio",
+    "criteria_count_plural": "{{count}} criterios",
+    "created_by": "Creado por {{name}}",
+    "completion_progress": "Progreso de Completación",
+    "score_breakdown": "Desglose de Puntuación",
+    "view_scorecard": "Ver Tarjeta de Evaluación",
+    "score_excellent": "Excelente",
+    "score_good": "Bueno",
+    "score_fair": "Aceptable",
+    "score_poor": "Necesita Mejorar",
+    "uncategorized": "Sin Categorizar",
+    "unnamed_criterion": "Criterio Sin Nombre",
+    "validation": {
+      "at_least_one_category": "Se requiere al menos una categoría",
+      "at_least_one_criterion": "Se requiere al menos un criterio",
+      "weight_range": "El peso debe estar entre 1 y 100"
+    }
+  },
+  "analytics": {
+    "title": "Panel de Análisis",
+    "subtitle": "Perspectivas visuales y KPIs del rendimiento de reclutamiento",
+    "overview": "Resumen",
+    "hiring_metrics": "Métricas de Contratación",
+    "candidate_metrics": "Métricas de Candidatos",
+    "performance": "Rendimiento",
+    "total_candidates": "Total de Candidatos",
+    "active_positions": "Posiciones Activas",
+    "hiring_processes": "Procesos de Contratación",
+    "hired_this_month": "Contratados Este Mes",
+    "avg_time_to_hire": "Tiempo Promedio de Contratación",
+    "days": "días",
+    "conversion_funnel": "Embudo de Conversión",
+    "funnel_summary": "Tasa de conversión general desde aplicación hasta contratación",
+    "time_to_hire": "Tiempo de Contratación por Posición",
+    "time_to_hire_trend": "Tendencia de Tiempo de Contratación",
+    "hiring_trends": "Tendencias de Contratación",
+    "source_distribution": "Fuentes de Candidatos",
+    "source_effectiveness": "Efectividad de Fuentes",
+    "status_distribution": "Estado de Candidatos",
+    "top_skills": "Principales Habilidades",
+    "no_data": "No hay datos de análisis disponibles",
+    "start_date": "Fecha de Inicio",
+    "end_date": "Fecha de Fin",
+    "date_range": "Rango de Fechas",
+    "last_30_days": "Últimos 30 Días",
+    "last_90_days": "Últimos 90 Días",
+    "last_6_months": "Últimos 6 Meses",
+    "last_year": "Último Año",
+    "custom_range": "Rango Personalizado",
+    "apply_filters": "Aplicar Filtros",
+    "fetch_failed": "Error al cargar datos de análisis",
+    "data_refreshed": "Datos de análisis actualizados",
+    "average": "Promedio",
+    "hires": "Contrataciones",
+    "target": "Objetivo",
+    "actual_hires": "Contrataciones Reales",
+    "number_of_hires": "Número de Contrataciones",
+    "total_hires": "Total de Contrataciones",
+    "average_per_month": "Promedio por Mes",
+    "best_month": "Mejor Mes",
+    "total_period": "Período Total",
+    "candidates": "Candidatos",
+    "applications": "Aplicaciones",
+    "interviews": "Entrevistas",
+    "offers": "Ofertas",
+    "conversion_rate": "Tasa de Conversión",
+    "top_source": "Fuente Principal",
+    "hires_count": "Contrataciones",
+    "fast_hiring": "Rápido",
+    "average_hiring": "Promedio",
+    "slow_hiring": "Lento",
+    "loading_analytics": "Cargando datos de análisis...",
+    "refresh_data": "Actualizar Datos",
+    "export_report": "Exportar Reporte",
+    "position": "Posición",
+    "source": "Fuente",
+    "count": "Cantidad",
+    "stage": "Etapa",
+    "vs_last_period": "vs. Período Anterior"
+  },
+  "search": {
+    "advanced_search": "Búsqueda Avanzada",
+    "filters": "Filtros",
+    "apply_filters": "Aplicar Filtros",
+    "reset_filters": "Restablecer Filtros",
+    "clear_filters": "Limpiar Filtros",
+    "clear_all": "Limpiar Todo",
+    "active_filters": "Filtros Activos",
+    "no_filters": "No hay filtros aplicados",
+    "status": "Estado",
+    "date_range": "Rango de Fechas",
+    "start_date": "Fecha de Inicio",
+    "end_date": "Fecha de Fin",
+    "skills": "Habilidades",
+    "skills_placeholder": "Escribe para añadir habilidades...",
+    "skills_helper": "Presiona Enter para añadir cada habilidad",
+    "location": "Ubicación",
+    "location_placeholder": "ej., Madrid, Remoto",
+    "experience": "Experiencia",
+    "experience_years": "{{min}} - {{max}} años",
+    "salary": "Salario",
+    "salary_range": "${{min}} - ${{max}}",
+    "results_count": "{{count}} resultado",
+    "results_count_plural": "{{count}} resultados",
+    "save_search": "Guardar Búsqueda",
+    "saved_searches": "Búsquedas Guardadas",
+    "load_search": "Cargar Búsqueda",
+    "search_placeholder": "Buscar...",
+    "clear_search": "Limpiar búsqueda",
+    "toggle_filters": "Alternar filtros"
+  },
+  "settings": {
+    "system_settings_title": "Configuración del Sistema",
+    "system_settings_subtitle": "Configure los ajustes del sistema y monitoree la salud de los servicios (solo SUPER_ADMIN)",
+    "loading_settings": "Cargando configuración del sistema...",
+    "general_settings": "Configuración General",
+    "email_configuration": "Configuración de Email",
+    "ai_configuration": "Configuración de IA",
+    "integrations": "Integraciones",
+    "system_health": "Salud del Sistema",
+    "application_name": "Nombre de la Aplicación",
+    "default_app_name": "Herramienta de Reclutamiento",
+    "default_timezone": "Zona Horaria Predeterminada",
+    "default_language": "Idioma Predeterminado",
+    "date_format": "Formato de Fecha",
+    "smtp_status": "Estado SMTP",
+    "smtp_host": "Servidor SMTP",
+    "smtp_port": "Puerto SMTP",
+    "ai_status": "Estado de IA",
+    "ai_model": "Modelo de IA",
+    "default_quota": "Cuota Predeterminada",
+    "requests_per_month": "solicitudes/mes",
+    "google_calendar": "Google Calendar",
+    "n8n_webhook": "Webhook n8n",
+    "minio_storage": "Almacenamiento MinIO",
+    "database_status": "Conexión a Base de Datos",
+    "backend_api_status": "API Backend",
+    "storage_service_status": "Servicio de Almacenamiento",
+    "test_connection": "Probar Conexión",
+    "testing": "Probando...",
+    "email_test_success": "¡Prueba de conexión de email exitosa!",
+    "email_test_failed": "La prueba de conexión de email falló. Por favor, verifique su configuración.",
+    "status_ok": "Conectado",
+    "status_error": "Error",
+    "status_warning": "Advertencia",
+    "status_configured": "Configurado",
+    "status_not_configured": "No Configurado",
+    "status_enabled": "Habilitado",
+    "status_disabled": "Deshabilitado",
+    "status_connected": "Conectado",
+    "status_not_connected": "No Conectado"
+  },
+  "booking": {
+    "title": "Reserva Tu Entrevista",
+    "subtitle": "Selecciona el horario que mejor te convenga",
+    "loading_slots": "Cargando horarios disponibles...",
+    "error_title": "No se Pueden Cargar los Horarios",
+    "error_invalid_token": "El enlace de reserva es inválido o ha expirado. Por favor, contacta a Recursos Humanos para asistencia.",
+    "no_slots_title": "No Hay Horarios Disponibles",
+    "no_slots_message": "Actualmente no hay horarios disponibles. Por favor, contacta a Recursos Humanos para opciones de programación alternativas.",
+    "confirm_selection": "Confirmar Selección",
+    "confirming": "Confirmando tu selección...",
+    "confirmed_title": "¡Entrevista Programada!",
+    "confirmed_message": "Tu entrevista ha sido programada exitosamente. ¡Esperamos verte pronto!",
+    "email_confirmation": "Se ha enviado un correo de confirmación con los detalles de la entrevista a tu dirección de correo electrónico.",
+    "calendar_instructions": "Por favor, revisa tu correo para la invitación de calendario y detalles de la reunión."
+  },
+  "manual_candidate": {
+    "create_title": "Agregar Candidato Manualmente",
+    "description": "Cree un registro de candidato para llamadas telefónicas, referencias o visitas presenciales. Opcionalmente puede asignarlo a una posición de trabajo para iniciar el proceso de contratación inmediatamente.",
+    "source_manual": "Fuente: Entrada Manual",
+    "name_label": "Nombre Completo",
+    "email_label": "Correo Electrónico",
+    "phone_label": "Número de Teléfono",
+    "phone_helper": "Opcional - Formato: +1-555-0123",
+    "job_position_label": "Asignar a Posición de Trabajo (Opcional)",
+    "job_position_helper": "Seleccione una posición abierta para iniciar el proceso de contratación",
+    "no_job_position": "Ninguna - Solo crear candidato",
+    "notes_label": "Notas Iniciales",
+    "notes_helper": "Opcional - Agregue cualquier información relevante sobre este candidato",
+    "notes_placeholder": "ej., Referido por Juan Pérez, Llamó interesado en el rol de Ingeniero de Software, etc.",
+    "create_button": "Agregar Candidato",
+    "success_message": "¡Candidato agregado exitosamente!",
+    "success_with_hiring": "¡Candidato agregado y proceso de contratación iniciado!"
+  },
+  "candidate_activity": {
+    "load_error": "Error al cargar el historial de actividad",
+    "no_activities": "Sin historial de actividad aún",
+    "type": {
+      "created": "Candidato Creado",
+      "stage_changed": "Etapa Cambiada",
+      "status_changed": "Estado Cambiado",
+      "interview_scheduled": "Entrevista Programada",
+      "interview_updated": "Entrevista Actualizada",
+      "interview_cancelled": "Entrevista Cancelada",
+      "interview_completed": "Entrevista Completada",
+      "note_added": "Nota Agregada",
+      "application_received": "Aplicación Recibida",
+      "email_sent": "Correo Enviado"
     }
   }
 }

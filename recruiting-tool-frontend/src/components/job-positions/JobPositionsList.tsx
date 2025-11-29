@@ -1,6 +1,5 @@
 import {
 	Box,
-	CircularProgress,
 	Typography,
 	Table,
 	TableBody,
@@ -19,11 +18,12 @@ import {
 	useTheme,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
-import {useListJobPositions} from '../../hooks/api/useJobPositions';
+import {useListJobPositions, usePublicJobPositions} from '../../hooks/api/useJobPositions';
 import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
 import {useDialog} from '../../hooks/useDialog';
+import TableSkeletonLoader from '../common/TableSkeletonLoader';
 
 interface JobPositionsListProps {
 	page: number;
@@ -31,6 +31,7 @@ interface JobPositionsListProps {
 	search: string;
 	onPageChange: (page: number) => void;
 	onLimitChange: (limit: number) => void;
+	publicMode?: boolean;
 }
 
 // Skeleton loader for loading state
@@ -52,7 +53,8 @@ const JobPositionCardView: React.FC<{
 	jobPosition: any;
 	onApplyClick: (uid: string, title: string) => void;
 	onViewDetails: (uid: string) => void;
-}> = ({jobPosition, onApplyClick, onViewDetails}) => {
+	publicMode?: boolean;
+}> = ({jobPosition, onApplyClick, onViewDetails, publicMode = false}) => {
 	const {t} = useTranslation();
 	return (
 		<Card
@@ -72,12 +74,14 @@ const JobPositionCardView: React.FC<{
 			</Typography>
 
 			<Box sx={{display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap'}}>
-				<Chip
-					label={jobPosition.status}
-					color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
-					size="small"
-					sx={{fontSize: '0.85rem'}}
-				/>
+				{!publicMode && (
+					<Chip
+						label={jobPosition.status}
+						color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
+						size="small"
+						sx={{fontSize: '0.85rem'}}
+					/>
+				)}
 				<Chip
 					label={`${jobPosition.stages?.length || 0} ${t('stages.title')}`}
 					variant="outlined"
@@ -89,6 +93,12 @@ const JobPositionCardView: React.FC<{
 			{jobPosition.companyName && (
 				<Typography variant="body2" color="textSecondary" sx={{mb: 1}}>
 					{t('companies.title')}: {jobPosition.companyName}
+				</Typography>
+			)}
+
+			{jobPosition.createdAt && (
+				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 1}}>
+					{t('careers.posted')}: {new Date(jobPosition.createdAt).toLocaleDateString()}
 				</Typography>
 			)}
 
@@ -119,20 +129,22 @@ const JobPositionCardView: React.FC<{
 				>
 					{t('job_positions.view_details')}
 				</Button>
-				<Button
-					fullWidth
-					size="small"
-					variant="contained"
-					onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
-					disabled={jobPosition.status !== 'OPEN'}
-					sx={{
-						minHeight: 44,
-						fontSize: {xs: '0.9rem', sm: '1rem'},
-						flex: {xs: '1 1 auto', sm: '0 1 auto'},
-					}}
-				>
-					{t('common.apply')}
-				</Button>
+				{publicMode && (
+					<Button
+						fullWidth
+						size="small"
+						variant="contained"
+						onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
+						disabled={jobPosition.status !== 'OPEN'}
+						sx={{
+							minHeight: 44,
+							fontSize: {xs: '0.9rem', sm: '1rem'},
+							flex: {xs: '1 1 auto', sm: '0 1 auto'},
+						}}
+					>
+						{t('common.apply')}
+					</Button>
+				)}
 			</Box>
 		</CardContent>
 	</Card>
@@ -145,6 +157,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	search,
 	onPageChange,
 	onLimitChange,
+	publicMode = false,
 }) => {
 	const {t} = useTranslation();
 	const theme = useTheme();
@@ -154,13 +167,49 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	// Dialog state management using custom hook
 	const applyDialog = useDialog<{uid: string; title: string}>();
 
-	const {data, isLoading, error} = useListJobPositions({
-		page,
-		limit,
-		search,
-		sortBy: 'createdAt',
-		sortOrder: 'desc',
-	});
+	// Use public endpoint if in public mode, otherwise use authenticated endpoint
+	const publicQuery = usePublicJobPositions({ enabled: publicMode });
+	const authQuery = useListJobPositions(
+		{
+			page,
+			limit,
+			search,
+			sortBy: 'createdAt',
+			sortOrder: 'desc',
+		},
+		{ enabled: !publicMode } // Only run authenticated query when NOT in public mode
+	);
+
+	// Process data based on mode
+	let data, isLoading, error;
+
+	if (publicMode) {
+		// Public mode - use public endpoint with client-side filtering
+		isLoading = publicQuery.isLoading;
+		error = publicQuery.error;
+
+		if (publicQuery.data && Array.isArray(publicQuery.data)) {
+			const filteredData = publicQuery.data.filter((jp) =>
+				jp.title.toLowerCase().includes(search.toLowerCase())
+			);
+			const paginatedData = filteredData.slice((page - 1) * limit, page * limit);
+
+			data = {
+				data: paginatedData,
+				meta: {
+					total: filteredData.length,
+					page,
+					limit,
+					totalPages: Math.ceil(filteredData.length / limit),
+				},
+			};
+		}
+	} else {
+		// Authenticated mode - use server-side pagination
+		data = authQuery.data;
+		isLoading = authQuery.isLoading;
+		error = authQuery.error;
+	}
 
 	const jobPositions = data?.data;
 	const meta = data?.meta;
@@ -170,13 +219,18 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	};
 
 	const handleViewDetails = (uid: string) => {
-		navigate(`/careers/${uid}`);
+		// Navigate to different detail pages based on context
+		if (publicMode) {
+			navigate(`/careers/${uid}`);
+		} else {
+			navigate(`/hr/job-positions/${uid}`);
+		}
 	};
 
-	// Only show loading spinner on INITIAL load, not on refetch
+	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
 		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: {xs: 2, sm: 4}}}>
+			<Box sx={{width: '100%'}}>
 				{isMobile ? (
 					<Box sx={{width: '100%'}}>
 						{[1, 2, 3].map((i) => (
@@ -184,7 +238,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 						))}
 					</Box>
 				) : (
-					<CircularProgress />
+					<TableSkeletonLoader rows={limit} columns={6} />
 				)}
 			</Box>
 		);
@@ -212,6 +266,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 								jobPosition={jobPosition}
 								onApplyClick={handleApplyClick}
 								onViewDetails={handleViewDetails}
+								publicMode={publicMode}
 							/>
 						))}
 					</Box>
@@ -253,9 +308,10 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 							<TableRow>
 								<TableCell sx={{minWidth: 200}}><strong>{t('job_positions.job_title_label')}</strong></TableCell>
 								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions.company')}</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>
+								{!publicMode && <TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>}
 								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>
+								{!publicMode && <TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>}
+								<TableCell sx={{minWidth: 120}}><strong>{t('careers.posted_date')}</strong></TableCell>
 								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
@@ -266,27 +322,34 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 										{jobPosition.title}
 									</TableCell>
 									<TableCell>{jobPosition.companyName || 'N/A'}</TableCell>
-									<TableCell>
-										<Chip
-											label={jobPosition.status}
-											color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
-											size="small"
-										/>
-									</TableCell>
+									{!publicMode && (
+										<TableCell>
+											<Chip
+												label={jobPosition.status}
+												color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
+												size="small"
+											/>
+										</TableCell>
+									)}
 									<TableCell>{jobPosition.stages?.length || 0}</TableCell>
-									<TableCell sx={{maxWidth: 180}}>
-										{jobPosition.createdBy ? (
-											<>
-												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-													{jobPosition.createdBy.name}
-												</Typography>
-												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-													{jobPosition.createdBy.email}
-												</Typography>
-											</>
-										) : (
-											'N/A'
-										)}
+									{!publicMode && (
+										<TableCell sx={{maxWidth: 180}}>
+											{jobPosition.createdBy ? (
+												<>
+													<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
+														{jobPosition.createdBy.name}
+													</Typography>
+													<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
+														{jobPosition.createdBy.email}
+													</Typography>
+												</>
+											) : (
+												'N/A'
+											)}
+										</TableCell>
+									)}
+									<TableCell>
+										{jobPosition.createdAt ? new Date(jobPosition.createdAt).toLocaleDateString() : 'N/A'}
 									</TableCell>
 									<TableCell>
 										<Box sx={{display: 'flex', gap: 1}}>
@@ -297,14 +360,16 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 											>
 												{t('job_positions.view_details')}
 											</Button>
-											<Button
-												size="small"
-												variant="contained"
-												onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
-												disabled={jobPosition.status !== 'OPEN'}
-											>
-												{t('common.apply')}
-											</Button>
+											{publicMode && (
+												<Button
+													size="small"
+													variant="contained"
+													onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
+													disabled={jobPosition.status !== 'OPEN'}
+												>
+													{t('common.apply')}
+												</Button>
+											)}
 										</Box>
 									</TableCell>
 								</TableRow>

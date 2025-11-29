@@ -14,7 +14,29 @@ export interface JobPosition {
 	hiringProcesses?: Array<HiringProcess>;
 	stages: Array<Stage>;
 	createdBy?: User;
+	createdAt?: Date | string;
 }
+
+export interface PublicJobPosition {
+	uid: string;
+	title: string;
+	description?: string;
+	status: 'OPEN' | 'CLOSED' | 'CANCELLED';
+	companyName?: string;
+	companyDescription?: string;
+	customQuestions?: Array<CustomQuestion>;
+	stages?: Array<{
+		uid: string;
+		title: string;
+		description?: string;
+		type: string;
+		estimatedTime?: number;
+		position: number;
+		status?: string;
+	}>;
+	createdAt: Date | string;
+}
+
 const jobPositionStatus = {
 	OPEN: 'OPEN',
 	CLOSED: 'CLOSED',

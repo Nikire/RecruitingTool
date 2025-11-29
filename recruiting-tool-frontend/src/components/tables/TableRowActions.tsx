@@ -87,7 +87,12 @@ const TableRowActions: React.FC<TableRowActionsProps> = ({
 			{/* View action */}
 			{onView && (
 				<Tooltip title={getTooltip('common.view')}>
-					<IconButton size={size} color="info" onClick={onView}>
+					<IconButton
+						size={size}
+						color="info"
+						onClick={onView}
+						aria-label={getTooltip('common.view')}
+					>
 						<VisibilityIcon fontSize={size} />
 					</IconButton>
 				</Tooltip>
@@ -96,7 +101,12 @@ const TableRowActions: React.FC<TableRowActionsProps> = ({
 			{/* Edit action */}
 			{onEdit && (
 				<Tooltip title={getTooltip('common.edit')}>
-					<IconButton size={size} color="primary" onClick={onEdit}>
+					<IconButton
+						size={size}
+						color="primary"
+						onClick={onEdit}
+						aria-label={getTooltip('common.edit')}
+					>
 						<EditIcon fontSize={size} />
 					</IconButton>
 				</Tooltip>
@@ -105,7 +115,12 @@ const TableRowActions: React.FC<TableRowActionsProps> = ({
 			{/* Delete action */}
 			{onDelete && (
 				<Tooltip title={getTooltip('common.delete')}>
-					<IconButton size={size} color="error" onClick={onDelete}>
+					<IconButton
+						size={size}
+						color="error"
+						onClick={onDelete}
+						aria-label={getTooltip('common.delete')}
+					>
 						<DeleteIcon fontSize={size} />
 					</IconButton>
 				</Tooltip>
@@ -121,6 +136,7 @@ const TableRowActions: React.FC<TableRowActionsProps> = ({
 						color={action.color || 'default'}
 						onClick={action.onClick}
 						disabled={action.disabled}
+						aria-label={tooltipText || `${t('aria.actions')} ${index + 1}`}
 					>
 						{action.icon}
 					</IconButton>

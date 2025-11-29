@@ -3,6 +3,18 @@ import {MessageResponse} from '../types/responses';
 import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 import api from './axios';
 
+export function getPublicJobPositions(): Promise<JobPosition[]> {
+	return api
+		.get('/job-position/public/all')
+		.then((res) => res.data);
+}
+
+export function getPublicJobPosition(uid: string): Promise<JobPosition> {
+	return api
+		.get(`/job-position/public/${uid}`)
+		.then((res) => res.data);
+}
+
 export function getJobPositions(
 	uid?: string
 ): Promise<JobPosition | JobPosition[]> {

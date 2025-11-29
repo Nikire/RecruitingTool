@@ -3,7 +3,7 @@ export interface EmailTemplate {
   name: string;
   subject: string;
   body: string;
-  companyUid: string;
+  companyUid: string | null;
   createdByUid: string;
   createdByName: string;
   isDefault: boolean;
@@ -15,7 +15,7 @@ export interface CreateEmailTemplateDto {
   name: string;
   subject: string;
   body: string;
-  companyUid: string;
+  companyUid?: string; // Optional for system-wide templates
   isDefault?: boolean;
 }
 
@@ -24,4 +24,13 @@ export interface UpdateEmailTemplateDto {
   subject?: string;
   body?: string;
   isDefault?: boolean;
+}
+
+export interface PreviewEmailTemplateDto {
+  variables?: Record<string, any>;
+}
+
+export interface PreviewEmailTemplateResponse {
+  renderedSubject: string;
+  renderedBody: string;
 }

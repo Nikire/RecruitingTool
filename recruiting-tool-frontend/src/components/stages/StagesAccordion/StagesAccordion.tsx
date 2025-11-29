@@ -24,6 +24,7 @@ import ScheduleInterviewDialog from '../../dialogs/ScheduleInterviewDialog';
 import { Interview } from '../../../types/interview.types';
 import { canManageResources } from '../../../utils/permissions';
 import { useUserAtom } from '../../../hooks/api/state/useUserAtom';
+import { useTranslation } from 'react-i18next';
 
 type StagesAccordionProps = {
 	stage: Stage;
@@ -31,6 +32,7 @@ type StagesAccordionProps = {
 };
 
 const StagesAccordion: React.FC<StagesAccordionProps> = ({ stage, disabled }) => {
+	const { t } = useTranslation();
 	const { user } = useUserAtom();
 	const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
 	const [editingInterview, setEditingInterview] = useState<Interview | null>(null);
@@ -87,7 +89,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({ stage, disabled }) =>
 								<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
 									<Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 										<EventIcon fontSize="small" />
-										Interviews
+										{t('interviews.title')}
 									</Typography>
 									{canManage && (
 										<Button
@@ -96,7 +98,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({ stage, disabled }) =>
 											startIcon={<EventIcon />}
 											onClick={handleScheduleClick}
 										>
-											Schedule Interview
+											{t('interviews.schedule_interview')}
 										</Button>
 									)}
 								</Box>
@@ -117,7 +119,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({ stage, disabled }) =>
 									</Box>
 								) : (
 									<Typography variant="body2" color="text.secondary" sx={{ py: 2, textAlign: 'center' }}>
-										No interviews scheduled yet
+										{t('interviews.no_interviews')}
 									</Typography>
 								)}
 							</Box>

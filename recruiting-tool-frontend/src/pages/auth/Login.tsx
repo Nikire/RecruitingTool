@@ -14,14 +14,14 @@ interface LoginFormData {
 const Login: React.FC = () => {
 	const {t} = useTranslation();
 	const navigate = useNavigate();
-	const {user} = useUserAtom();
 	const {register, handleSubmit} = useForm<LoginFormData>();
 	const {mutate: login, isPending, isError} = useLogin();
 
 	const onSubmit = (data: LoginFormData) => {
 		login(data, {
-			onSuccess: () => {
-				navigate(getDefaultDashboard(user));
+			onSuccess: (response) => {
+				// Navigate using the user data from the login response
+				navigate(getDefaultDashboard(response.user));
 			},
 		});
 	};

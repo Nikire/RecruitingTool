@@ -1,4 +1,5 @@
 import {Box, Pagination as MuiPagination, Typography, Select, MenuItem, FormControl, InputLabel, useTheme, useMediaQuery} from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import {PaginationMeta} from '../../types/pagination.types';
 
 interface PaginationProps {
@@ -8,6 +9,7 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChange}) => {
+	const {t} = useTranslation();
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const {page, totalPages, total, limit} = meta;
@@ -34,13 +36,16 @@ const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChang
 				gap: {xs: 1.5, sm: 2},
 				p: {xs: 1, sm: 0},
 			}}
+			role="navigation"
+			aria-label={t('aria.pagination_navigation')}
 		>
 			<Typography
 				variant="body2"
 				color="textSecondary"
 				sx={{fontSize: {xs: '0.85rem', sm: '0.875rem'}}}
+				aria-live="polite"
 			>
-				Showing {startItem} to {endItem} of {total}
+				{t('pagination.showing', {start: startItem, end: endItem, total})}
 			</Typography>
 
 			<Box
@@ -53,13 +58,20 @@ const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChang
 				}}
 			>
 				<FormControl size="small" sx={{minWidth: {xs: '100%', sm: 120}}}>
-					<InputLabel sx={{fontSize: {xs: '0.85rem', sm: '0.875rem'}}}>
-						{isMobile ? 'Items' : 'Items per page'}
+					<InputLabel
+						id="items-per-page-label"
+						sx={{fontSize: {xs: '0.85rem', sm: '0.875rem'}}}
+					>
+						{isMobile ? t('pagination.items') : t('pagination.items_per_page')}
 					</InputLabel>
 					<Select
+						labelId="items-per-page-label"
 						value={limit}
 						onChange={handleLimitChange}
-						label={isMobile ? 'Items' : 'Items per page'}
+						label={isMobile ? t('pagination.items') : t('pagination.items_per_page')}
+						inputProps={{
+							'aria-label': t('pagination.items_per_page'),
+						}}
 						sx={{
 							fontSize: {xs: '0.9rem', sm: '1rem'},
 							height: {xs: 40, sm: 40},
@@ -82,6 +94,7 @@ const Pagination: React.FC<PaginationProps> = ({meta, onPageChange, onLimitChang
 						showFirstButton={!isMobile}
 						showLastButton={!isMobile}
 						size={isMobile ? 'small' : 'medium'}
+						aria-label={t('aria.pagination_controls')}
 						sx={{
 							'& .MuiPaginationItem-root': {
 								minWidth: {xs: 32, sm: 40},

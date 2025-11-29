@@ -19,7 +19,7 @@ import {
 	Alert,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import {useJobPositions} from '../../hooks/api/useJobPositions';
+import {usePublicJobPosition} from '../../hooks/api/useJobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
 import StatusLabel from '../../components/StatusLabel';
 import {HiringProcessStatus} from '../../types/hiringProcess.types';
@@ -50,7 +50,7 @@ const JobPositionDetailPage: React.FC = () => {
 	const {uid} = useParams<{uid: string}>();
 	const navigate = useNavigate();
 	const {user} = useUserAtom();
-	const {data: jobPositionData, isLoading, error} = useJobPositions(uid);
+	const {data: jobPositionData, isLoading, error} = usePublicJobPosition(uid || '');
 	const [statusFilter, setStatusFilter] = useState<HiringProcessStatus | 'ALL'>('ALL');
 	const [applyDialogOpen, setApplyDialogOpen] = useState(false);
 
@@ -60,7 +60,7 @@ const JobPositionDetailPage: React.FC = () => {
 
 	if (isLoading) {
 		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', p: 4}}>
+			<Box sx={{display: 'flex', justifyContent: 'center', p: {xs: 2, sm: 3, md: 4}}}>
 				<CircularProgress />
 			</Box>
 		);
@@ -68,7 +68,7 @@ const JobPositionDetailPage: React.FC = () => {
 
 	if (error || !jobPositionData) {
 		return (
-			<Box sx={{p: 4}}>
+			<Box sx={{p: {xs: 2, sm: 3, md: 4}}}>
 				<Typography color="error">
 					{t('job_position_detail.error_loading')}
 				</Typography>
@@ -91,29 +91,30 @@ const JobPositionDetailPage: React.FC = () => {
 	) || [];
 
 	return (
-		<Box sx={{p: 4}}>
+		<Box sx={{p: {xs: 2, sm: 3, md: 4}}}>
 			<Button
 				startIcon={<ArrowBackIcon />}
 				onClick={() => navigate('/careers')}
-				sx={{mb: 3}}
+				sx={{mb: {xs: 2, sm: 3}}}
 			>
 				{t('common.back_to_careers')}
 			</Button>
 
-			<Paper sx={{p: 3, mb: 3}}>
-				<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2}}>
+			<Paper sx={{p: {xs: 2, sm: 3}, mb: {xs: 2, sm: 3}}}>
+				<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: {xs: 'flex-start', sm: 'center'}, mb: 2, flexDirection: {xs: 'column', sm: 'row'}, gap: {xs: 2, sm: 0}}}>
 					<Box>
-						<Typography variant="h4">{jobPosition.title}</Typography>
+						<Typography variant="h4" sx={{fontSize: {xs: '1.75rem', sm: '2.125rem'}}}>{jobPosition.title}</Typography>
 						<Typography variant="subtitle1" color="textSecondary">
 							{canManage ? t('job_position_detail.hiring_overview') : jobPosition.description || t('job_position_detail.job_posting')}
 						</Typography>
 					</Box>
-					<Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
+					<Box sx={{display: 'flex', gap: 2, alignItems: 'center', width: {xs: '100%', sm: 'auto'}}}>
 						<StatusLabel status={jobPosition.status} />
 						{jobPosition.status === 'OPEN' && (
 							<Button
 								variant="contained"
 								onClick={() => setApplyDialogOpen(true)}
+								sx={{flex: {xs: 1, sm: 'none'}, minHeight: 44}}
 							>
 								{t('job_position_detail.apply_now')}
 							</Button>
@@ -123,7 +124,7 @@ const JobPositionDetailPage: React.FC = () => {
 
 				<Divider sx={{my: 2}} />
 
-				<Box sx={{display: 'flex', gap: 4}}>
+				<Box sx={{display: 'flex', gap: {xs: 2, sm: 4}, flexDirection: {xs: 'column', sm: 'row'}, flexWrap: {sm: 'wrap'}}}>
 					<Box>
 						<Typography variant="body2" color="textSecondary">
 							{t('job_position_detail.company')}
@@ -132,19 +133,31 @@ const JobPositionDetailPage: React.FC = () => {
 							{jobPosition.companyName || t('common.n_a')}
 						</Typography>
 					</Box>
-					<Box>
-						<Typography variant="body2" color="textSecondary">
-							{t('job_position_detail.created_by_hr')}
-						</Typography>
-						<Typography variant="body1">
-							{jobPosition.createdBy?.name || t('job_position_detail.unknown')}
-						</Typography>
-						{jobPosition.createdBy?.email && (
-							<Typography variant="caption" color="textSecondary">
-								{jobPosition.createdBy.email}
+					{jobPosition.createdAt && (
+						<Box>
+							<Typography variant="body2" color="textSecondary">
+								{t('careers.posted_date')}
 							</Typography>
-						)}
-					</Box>
+							<Typography variant="body1">
+								{new Date(jobPosition.createdAt).toLocaleDateString()}
+							</Typography>
+						</Box>
+					)}
+					{canManage && jobPosition.createdBy && (
+						<Box>
+							<Typography variant="body2" color="textSecondary">
+								{t('job_position_detail.created_by_hr')}
+							</Typography>
+							<Typography variant="body1">
+								{jobPosition.createdBy.name}
+							</Typography>
+							{jobPosition.createdBy.email && (
+								<Typography variant="caption" color="textSecondary">
+									{jobPosition.createdBy.email}
+								</Typography>
+							)}
+						</Box>
+					)}
 					<Box>
 						<Typography variant="body2" color="textSecondary">
 							{t('job_position_detail.total_stages')}
@@ -168,8 +181,8 @@ const JobPositionDetailPage: React.FC = () => {
 
 			{canManage && (
 				<>
-					<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3}}>
-						<Typography variant="h5">
+					<Box sx={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: {xs: 2, sm: 3}}}>
+						<Typography variant="h5" sx={{fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
 							{t('job_position_detail.hiring_processes_count', {
 								filtered: filteredHiringProcesses.length,
 								total: jobPosition.hiringProcesses?.length || 0
@@ -177,7 +190,7 @@ const JobPositionDetailPage: React.FC = () => {
 						</Typography>
 					</Box>
 
-					<Box sx={{mb: 3, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
+					<Box sx={{mb: {xs: 2, sm: 3}, display: 'flex', gap: 1, flexWrap: 'wrap'}}>
 						{statusOptions.map((status) => {
 							const count = status === 'ALL'
 								? jobPosition.hiringProcesses?.length || 0
@@ -248,7 +261,7 @@ const JobPositionDetailPage: React.FC = () => {
 							</Table>
 						</TableContainer>
 					) : (
-						<Paper sx={{p: 4, textAlign: 'center'}}>
+						<Paper sx={{p: {xs: 2, sm: 4}, textAlign: 'center'}}>
 							<Typography variant="body1" color="textSecondary">
 								{statusFilter === 'ALL'
 									? t('job_position_detail.no_processes')
@@ -257,11 +270,11 @@ const JobPositionDetailPage: React.FC = () => {
 						</Paper>
 					)}
 
-					<Typography variant="h5" sx={{mb: 2, mt: 5}}>
+					<Typography variant="h5" sx={{mb: {xs: 1.5, sm: 2}, mt: {xs: 3, sm: 5}, fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
 						{t('job_position_detail.stage_template')}
 					</Typography>
-					<Card sx={{mb: 3}}>
-						<CardContent>
+					<Card sx={{mb: {xs: 2, sm: 3}}}>
+						<CardContent sx={{p: {xs: 2, sm: 3}}}>
 							{jobPosition.stages && jobPosition.stages.length > 0 ? (
 								<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
 									{jobPosition.stages
@@ -287,6 +300,49 @@ const JobPositionDetailPage: React.FC = () => {
 								<Typography color="textSecondary">
 									{t('job_position_detail.no_stages')}
 								</Typography>
+							)}
+						</CardContent>
+					</Card>
+
+					<Typography variant="h5" sx={{mb: {xs: 1.5, sm: 2}, mt: {xs: 3, sm: 4}, fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
+						{t('job_position_detail.custom_questions')}
+					</Typography>
+					<Card sx={{mb: {xs: 2, sm: 3}}}>
+						<CardContent sx={{p: {xs: 2, sm: 3}}}>
+							{jobPosition.customQuestions && jobPosition.customQuestions.length > 0 ? (
+								<Box sx={{display: 'flex', flexDirection: 'column', gap: 2}}>
+									{jobPosition.customQuestions.map((question, index) => (
+										<Box key={question.id} sx={{display: 'flex', alignItems: 'flex-start', gap: 2}}>
+											<Chip label={index + 1} size="small" color="secondary" />
+											<Box sx={{flex: 1}}>
+												<Box sx={{display: 'flex', alignItems: 'center', gap: 1, mb: 0.5}}>
+													<Typography variant="body1" fontWeight="bold">
+														{question.text}
+													</Typography>
+													{question.required && (
+														<Chip label={t('custom_questions.required_chip')} size="small" color="primary" variant="outlined" />
+													)}
+												</Box>
+												<Typography variant="caption" color="textSecondary" display="block" sx={{mb: 1}}>
+													{t('custom_questions.type_label', {type: question.type.replace(/_/g, ' ')})}
+												</Typography>
+												{question.options && question.options.length > 0 && (
+													<Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap'}}>
+														{question.options.map((option, optIndex) => (
+															<Chip key={optIndex} label={option} size="small" variant="outlined" />
+														))}
+													</Box>
+												)}
+											</Box>
+										</Box>
+									))}
+								</Box>
+							) : (
+								<Alert severity="info">
+									<Typography variant="body2">
+										{t('job_position_detail.no_custom_questions')}
+									</Typography>
+								</Alert>
 							)}
 						</CardContent>
 					</Card>

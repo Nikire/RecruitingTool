@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField} from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCreateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
@@ -16,6 +17,7 @@ import ConfirmDeleteDialog from '../../components/dialogs/ConfirmDeleteDialog';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 
 export const CompaniesPage: React.FC = () => {
+  const {t} = useTranslation();
   const { user } = useUserAtom();
   const [searchState, setSearchState] = useCompaniesSearch();
   const { page, limit, search } = searchState;
@@ -62,19 +64,35 @@ export const CompaniesPage: React.FC = () => {
 
   return (
     <Box>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">Company Management</Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          flexDirection: {xs: 'column', sm: 'row'},
+          justifyContent: 'space-between',
+          alignItems: {xs: 'flex-start', sm: 'center'},
+          mb: {xs: 2, sm: 3},
+          gap: 2,
+        }}
+      >
+        <Typography variant="h4" sx={{fontSize: {xs: '1.5rem', sm: '2.125rem'}}}>
+          {t('companies.title')}
+        </Typography>
         <Button
           variant="contained"
           startIcon={<AddIcon />}
           onClick={createDialog.open}
+          sx={{
+            width: {xs: '100%', sm: 'auto'},
+            minHeight: '44px',
+          }}
+          aria-label={t('companies.add_company')}
         >
-          Add Company
+          {t('companies.add_company')}
         </Button>
       </Box>
 
-      <Box sx={{ mb: 3, maxWidth: 400 }}>
-        <SearchBar onSearch={handleSearch} placeholder="Search companies..." value={search} />
+      <Box sx={{ mb: 3, maxWidth: {xs: '100%', sm: 400} }}>
+        <SearchBar onSearch={handleSearch} placeholder={t('companies.search_placeholder')} value={search} />
       </Box>
 
       <CompaniesList
@@ -89,18 +107,18 @@ export const CompaniesPage: React.FC = () => {
 
       {/* Create Dialog */}
       <Dialog open={createDialog.isOpen} onClose={createDialog.close} maxWidth="sm" fullWidth>
-        <DialogTitle>Create New Company</DialogTitle>
+        <DialogTitle>{t('companies.create_title')}</DialogTitle>
         <DialogContent>
           <Box sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
-              label="Company Name"
+              label={t('companies.name_label')}
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               required
               fullWidth
             />
             <TextField
-              label="Description"
+              label={t('companies.description_label')}
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               multiline
@@ -110,9 +128,9 @@ export const CompaniesPage: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={createDialog.close}>Cancel</Button>
+          <Button onClick={createDialog.close}>{t('common.cancel')}</Button>
           <Button onClick={handleCreate} variant="contained" disabled={!formData.name || createMutation.isPending}>
-            {createMutation.isPending ? 'Creating...' : 'Create'}
+            {createMutation.isPending ? t('companies.creating') : t('common.create')}
           </Button>
         </DialogActions>
       </Dialog>
@@ -127,8 +145,8 @@ export const CompaniesPage: React.FC = () => {
         open={deleteDialog.isOpen}
         onClose={deleteDialog.close}
         onConfirm={handleConfirmDelete}
-        title="Delete Company"
-        message="Are you sure you want to delete this company?"
+        title={t('companies.delete_title')}
+        message={t('companies.delete_message')}
         itemName={deleteDialog.selectedItem?.name}
         isDeleting={deleteMutation.isPending}
       />

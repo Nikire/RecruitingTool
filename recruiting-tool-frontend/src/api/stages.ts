@@ -1,5 +1,5 @@
 import axiosInstance from './axios';
-import {Stage} from '../types/stage.types';
+import {Stage, StageNote, CreateStageNoteDto, UpdateStageNoteDto} from '../types/stage.types';
 import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 
 export const listStages = async (params: PaginationParams): Promise<PaginatedResponse<Stage>> => {
@@ -29,4 +29,24 @@ export const updateStage = async (data: Partial<Stage>, uid: string): Promise<St
 
 export const deleteStage = async (uid: string): Promise<void> => {
 	await axiosInstance.delete(`/stages/${uid}`);
+};
+
+// Stage Notes API functions
+export const getStageNotes = async (stageUid: string): Promise<StageNote[]> => {
+	const response = await axiosInstance.get(`/stages/${stageUid}/notes`);
+	return response.data;
+};
+
+export const createStageNote = async (stageUid: string, data: CreateStageNoteDto): Promise<StageNote> => {
+	const response = await axiosInstance.post(`/stages/${stageUid}/notes`, data);
+	return response.data;
+};
+
+export const updateStageNote = async (noteUid: string, data: UpdateStageNoteDto): Promise<StageNote> => {
+	const response = await axiosInstance.put(`/stages/notes/${noteUid}`, data);
+	return response.data;
+};
+
+export const deleteStageNote = async (noteUid: string): Promise<void> => {
+	await axiosInstance.delete(`/stages/notes/${noteUid}`);
 };

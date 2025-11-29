@@ -97,7 +97,7 @@ const ProfilePage: React.FC = () => {
 
 	if (!user) {
 		return (
-			<Box sx={{mt: 8, p: 4}}>
+			<Box sx={{p: 4}}>
 				<Typography variant="h5" color="error">
 					{t('profile_page.no_user_data')}
 				</Typography>
@@ -106,7 +106,7 @@ const ProfilePage: React.FC = () => {
 	}
 
 	return (
-		<Box component="form" sx={{mt: 8}} onSubmit={handleSubmit(onSubmit)}>
+		<Box component="form" onSubmit={handleSubmit(onSubmit)}>
 			<Box
 				sx={{
 					display: 'flex',
@@ -250,7 +250,9 @@ const ProfilePage: React.FC = () => {
 										<TextField
 											fullWidth
 											label={t('profile_page.full_name')}
-											{...register('name', {required: t('validation.name_required')})}
+											{...register('name', {
+												required: t('validation.name_required'),
+											})}
 											error={!!errors.name}
 											helperText={errors.name?.message}
 											variant="outlined"

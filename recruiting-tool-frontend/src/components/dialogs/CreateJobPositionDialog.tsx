@@ -5,22 +5,23 @@ import {
 	DialogActions,
 	TextField,
 	Button,
-	FormControl,
-	InputLabel,
-	Select,
-	MenuItem,
 	Typography,
 	Box,
 	Divider,
 	CircularProgress,
+	InputAdornment,
 } from '@mui/material';
-import {useForm, Controller} from 'react-hook-form';
+import ErrorIcon from '@mui/icons-material/Error';
+import {useForm} from 'react-hook-form';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import {useCreateJobPosition} from '../../hooks/api/useJobPositions';
-import {JobPositionStatus} from '../../types/jobPosition.types';
 import {Stage} from '../../types/stage.types';
 import StageBuilder from '../job-positions/StageBuilder';
+import {useValidationRules} from '../../utils/validation';
+import FormErrorSummary from '../common/FormErrorSummary';
+import {CustomQuestionBuilder} from '../forms/CustomQuestionBuilder';
+import {CustomQuestion} from '../../types/customQuestions';
 
 interface CreateJobPositionDialogProps {
 	open: boolean;
@@ -29,7 +30,6 @@ interface CreateJobPositionDialogProps {
 
 interface JobPositionFormData {
 	title: string;
-	status: JobPositionStatus;
 	description?: string;
 }
 
@@ -38,19 +38,19 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	onClose,
 }) => {
 	const {t} = useTranslation();
+	const validationRules = useValidationRules();
 	const [stages, setStages] = useState<Omit<Stage, 'uid' | 'status'>[]>([]);
 	const [stageError, setStageError] = useState<string>('');
+	const [customQuestions, setCustomQuestions] = useState<CustomQuestion[]>([]);
 
 	const {
 		register,
 		handleSubmit,
-		control,
 		reset,
 		formState: {errors},
 	} = useForm<JobPositionFormData>({
 		defaultValues: {
 			title: '',
-			status: 'OPEN',
 			description: '',
 		},
 	});
@@ -64,9 +64,10 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 			return;
 		}
 
-		// Prepare data with stages
+		// Prepare data with stages, custom questions, and default status
 		const jobPositionData = {
 			...data,
+			status: 'OPEN' as const, // Default to OPEN for new positions
 			stages: stages.map((stage) => ({
 				title: stage.title,
 				type: stage.type,
@@ -74,12 +75,14 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 				position: stage.position,
 				estimatedTime: stage.estimatedTime,
 			})),
+			customQuestions: customQuestions.length > 0 ? customQuestions : undefined,
 		};
 
 		createJobPosition(jobPositionData, {
 			onSuccess: () => {
 				reset();
 				setStages([]);
+				setCustomQuestions([]);
 				setStageError('');
 				onClose();
 			},
@@ -89,6 +92,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 	const handleClose = () => {
 		reset();
 		setStages([]);
+		setCustomQuestions([]);
 		setStageError('');
 		onClose();
 	};
@@ -98,6 +102,8 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 			<DialogTitle>{t('job_positions.create_title')}</DialogTitle>
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<DialogContent>
+					<FormErrorSummary errors={errors} />
+
 					<Box sx={{mb: 3}}>
 						<Typography variant="subtitle2" color="text.secondary" gutterBottom>
 							{t('job_positions.details')}
@@ -107,16 +113,20 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							label={t('job_positions.job_title_label')}
 							fullWidth
 							margin="normal"
-							{...register('title', {
-								required: t('validation.title_required'),
-								minLength: {
-									value: 3,
-									message: t('validation.min_length', {min: 3}),
-								},
-							})}
+							{...register('title', validationRules.combine(
+								validationRules.required(t('job_positions.job_title_label')),
+								validationRules.minLength(3),
+							))}
 							error={!!errors.title}
 							helperText={errors.title?.message}
 							placeholder={t('job_positions.title_placeholder')}
+							InputProps={{
+								endAdornment: errors.title ? (
+									<InputAdornment position="end">
+										<ErrorIcon color="error" />
+									</InputAdornment>
+								) : null,
+							}}
 						/>
 
 						<TextField
@@ -125,37 +135,18 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							margin="normal"
 							multiline
 							rows={3}
-							{...register('description', {
-								maxLength: {
-									value: 1000,
-									message: t('validation.description_max_length', {max: 1000}),
-								},
-							})}
+							{...register('description', validationRules.maxLength(1000))}
 							error={!!errors.description}
 							helperText={errors.description?.message}
 							placeholder={t('job_positions.description_placeholder')}
+							InputProps={{
+								endAdornment: errors.description ? (
+									<InputAdornment position="end">
+										<ErrorIcon color="error" />
+									</InputAdornment>
+								) : null,
+							}}
 						/>
-
-						<FormControl fullWidth margin="normal">
-							<InputLabel>{t('job_positions.status_label')}</InputLabel>
-							<Controller
-								name="status"
-								control={control}
-								rules={{required: t('validation.status_required')}}
-								render={({field}) => (
-									<Select {...field} label={t('job_positions.status_label')} error={!!errors.status}>
-										<MenuItem value="OPEN">{t('status.open')}</MenuItem>
-										<MenuItem value="CLOSED">{t('status.closed')}</MenuItem>
-										<MenuItem value="CANCELLED">{t('status.cancelled')}</MenuItem>
-									</Select>
-								)}
-							/>
-							{errors.status && (
-								<Typography color="error" variant="caption">
-									{errors.status.message}
-								</Typography>
-							)}
-						</FormControl>
 					</Box>
 
 					<Divider sx={{my: 3}} />
@@ -172,6 +163,16 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
 							}}
 							minStages={1}
 							error={stageError}
+						/>
+					</Box>
+
+					<Divider sx={{my: 3}} />
+
+					{/* Custom Questions Builder */}
+					<Box sx={{mb: 2}}>
+						<CustomQuestionBuilder
+							questions={customQuestions}
+							onQuestionsChange={setCustomQuestions}
 						/>
 					</Box>
 

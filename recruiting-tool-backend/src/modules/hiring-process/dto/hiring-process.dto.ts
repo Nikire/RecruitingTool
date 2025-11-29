@@ -42,6 +42,27 @@ export class HiringProcessResponseDto {
   @ApiProperty({ description: 'The UID of the related job position', example: '123e4567-e89b-12d3-a456-426614174000' })
   jobPositionUid: string;
 
+  @ApiProperty({ description: 'The title of the related job position', example: 'Software Engineer', required: false })
+  jobPositionTitle?: string;
+
+  @ApiProperty({ description: 'The UID of the candidate', example: '123e4567-e89b-12d3-a456-426614174000', required: false })
+  candidateUid?: string;
+
+  @ApiProperty({ description: 'The name of the candidate', example: 'John Doe', required: false })
+  candidateName?: string;
+
+  @ApiProperty({ description: 'The UID of the company', example: '123e4567-e89b-12d3-a456-426614174000', required: false })
+  companyUid?: string;
+
+  @ApiProperty({ description: 'The name of the company', example: 'Tech Corp', required: false })
+  companyName?: string;
+
+  @ApiProperty({ description: 'When the hiring process was created', required: false })
+  createdAt?: Date;
+
+  @ApiProperty({ description: 'When the hiring process was last updated', required: false })
+  updatedAt?: Date;
+
   @ApiProperty({ description: 'The stages of the hiring process' })
   stages?: Array<StageResponseDto>;
 }

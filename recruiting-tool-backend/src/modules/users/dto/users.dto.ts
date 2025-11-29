@@ -146,6 +146,12 @@ export class UserResponseDto {
   linkedinUrl?: string;
   @ApiProperty({ description: 'User timezone', required: false })
   timezone?: string;
+  @ApiProperty({ description: 'Whether the user is active', example: true })
+  isActive?: boolean;
+  @ApiProperty({ description: 'When the user was deactivated', required: false })
+  deactivatedAt?: string;
+  @ApiProperty({ description: 'Last login timestamp', required: false })
+  lastLoginAt?: string;
 }
 
 export class UserWithPasswordResponseDto extends UserResponseDto {
@@ -154,6 +160,10 @@ export class UserWithPasswordResponseDto extends UserResponseDto {
     example: 'Testing123',
   })
   password: string;
+
+  // Internal fields (not exposed in API, used internally only)
+  id?: number;
+  companyId?: number;
 }
 
 export class CreateUserInternalDto extends CreateUserDto {
@@ -164,4 +174,44 @@ export class CreateUserInternalDto extends CreateUserDto {
   @IsString()
   @IsNotEmpty()
   roles: Array<RolesType>;
+}
+
+export class UserActivityLogResponseDto {
+  @ApiProperty({ description: 'The UID of the activity log entry' })
+  uid: string;
+
+  @ApiProperty({ description: 'The UID of the user who performed the action' })
+  userUid: string;
+
+  @ApiProperty({ description: 'The action performed', example: 'LOGIN' })
+  action: string;
+
+  @ApiProperty({ description: 'IP address', example: '192.168.1.1', required: false })
+  ipAddress?: string;
+
+  @ApiProperty({ description: 'User agent string', required: false })
+  userAgent?: string;
+
+  @ApiProperty({ description: 'Additional metadata', required: false })
+  metadata?: any;
+
+  @ApiProperty({ description: 'When the action occurred' })
+  createdAt: string;
+}
+
+export class CreateUserActivityLogDto {
+  @IsNotEmpty()
+  @IsString()
+  action: string;
+
+  @IsOptional()
+  @IsString()
+  ipAddress?: string;
+
+  @IsOptional()
+  @IsString()
+  userAgent?: string;
+
+  @IsOptional()
+  metadata?: any;
 }

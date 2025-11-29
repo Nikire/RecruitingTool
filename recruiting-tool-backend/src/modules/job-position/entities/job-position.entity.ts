@@ -6,16 +6,16 @@ import { PublicUserMapper } from 'src/modules/users/entities/users.entities';
 export const includeJobPosition = {
   stages: {
     where: {
-      hiringProcessId: null  // Only get template stages (not hiring process stages)
-    }
+      hiringProcessId: null, // Only get template stages (not hiring process stages)
+    },
   },
   hiringProcesses: {
     include: {
-      candidate: true
-    }
+      candidate: true,
+    },
   },
   createdBy: true,
-  company: true
+  company: true,
 };
 
 type JobPositionWithRelations = Prisma.JobPositionGetPayload<{
@@ -28,7 +28,11 @@ export function JobPositionMapper(jobPosition: JobPosition | JobPositionWithRela
     title: jobPosition.title,
     description: jobPosition.description,
     status: jobPosition.status,
-    customQuestions: jobPosition.customQuestions ? (Array.isArray(jobPosition.customQuestions) ? jobPosition.customQuestions : JSON.parse(JSON.stringify(jobPosition.customQuestions))) : [],
+    customQuestions: jobPosition.customQuestions
+      ? Array.isArray(jobPosition.customQuestions)
+        ? jobPosition.customQuestions
+        : JSON.parse(JSON.stringify(jobPosition.customQuestions))
+      : [],
     companyUid: (jobPosition as any).company?.uid,
     companyName: (jobPosition as any).company?.name,
     stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map((stage) => StageMapper(stage)) : [],
@@ -42,7 +46,11 @@ export function JobPositionOneMapper(jobPosition: JobPositionWithRelations) {
     title: jobPosition.title,
     description: jobPosition.description,
     status: jobPosition.status,
-    customQuestions: jobPosition.customQuestions ? (Array.isArray(jobPosition.customQuestions) ? jobPosition.customQuestions : JSON.parse(JSON.stringify(jobPosition.customQuestions))) : [],
+    customQuestions: jobPosition.customQuestions
+      ? Array.isArray(jobPosition.customQuestions)
+        ? jobPosition.customQuestions
+        : JSON.parse(JSON.stringify(jobPosition.customQuestions))
+      : [],
     companyUid: (jobPosition as any).company?.uid,
     companyName: (jobPosition as any).company?.name,
     stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map((stage) => StageMapper(stage)) : [],
@@ -56,6 +64,6 @@ export function PublicJobPositionMapper(jobPosition: JobPosition | JobPositionWi
     uid: jobPosition.uid,
     title: jobPosition.title,
     description: jobPosition.description,
-    companyName: (jobPosition as any).company?.name || "Unknown Company",
+    companyName: (jobPosition as any).company?.name || 'Unknown Company',
   };
 }

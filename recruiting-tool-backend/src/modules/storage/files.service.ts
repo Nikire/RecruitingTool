@@ -1,185 +1,236 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { StorageService } from './storage.service';
 import { FileUploadResponseDto } from './dto/file-upload.dto';
 import { randomUUID } from 'crypto';
+import { EntityNotFoundException } from 'src/common/exceptions';
+import { FileValidator } from './validators/file-validation';
 
 @Injectable()
 export class FilesService {
-	constructor(
-		private readonly database: DatabaseService,
-		private readonly storageService: StorageService,
-	) {}
+  private readonly logger = new Logger(FilesService.name);
 
-	/**
-	 * Upload a file and store metadata in database
-	 */
-	async uploadFile(
-		file: Express.Multer.File,
-		userUid: string,
-		candidateUid?: string,
-	): Promise<FileUploadResponseDto> {
-		// Generate unique filename
-		const uniqueFilename = `${randomUUID()}-${file.originalname}`;
+  constructor(
+    private readonly database: DatabaseService,
+    private readonly storageService: StorageService,
+  ) {}
 
-		// Upload to S3/MinIO
-		const s3Key = await this.storageService.uploadFile(file.buffer, uniqueFilename, file.mimetype);
+  /**
+   * Upload a file and store metadata in database
+   * NOTE: File validation should be done via FileValidationPipe before this method
+   */
+  async uploadFile(file: Express.Multer.File, userUid: string, candidateUid?: string): Promise<FileUploadResponseDto> {
+    try {
+      // Sanitize filename for additional security
+      const sanitizedOriginalName = FileValidator.sanitizeFilename(file.originalname);
 
-		// Get user ID from UID
-		const user = await this.database.user.findUnique({
-			where: { uid: userUid },
-		});
-		if (!user) {
-			throw new NotFoundException(`User with UID ${userUid} not found`);
-		}
+      // Generate unique S3 key to prevent overwrites and collisions
+      const uniqueFilename = `${randomUUID()}-${sanitizedOriginalName}`;
 
-		// Get candidate ID if provided
-		let candidateId: number | undefined;
-		if (candidateUid) {
-			const candidate = await this.database.candidate.findUnique({
-				where: { uid: candidateUid },
-			});
-			if (!candidate) {
-				throw new NotFoundException(`Candidate with UID ${candidateUid} not found`);
-			}
-			candidateId = candidate.id;
-		}
+      this.logger.log(`Uploading file: ${sanitizedOriginalName} (sanitized from: ${file.originalname}) for user ${userUid}`);
 
-		// Save metadata to database
-		const fileUpload = await this.database.fileUpload.create({
-			data: {
-				filename: uniqueFilename,
-				originalName: file.originalname,
-				mimetype: file.mimetype,
-				size: file.size,
-				s3Key,
-				uploadedById: user.id,
-				candidateId,
-			},
-		});
+      // Upload to S3/MinIO with validated content type
+      const s3Key = await this.storageService.uploadFile(file.buffer, uniqueFilename, file.mimetype);
 
-		return this.mapToDto(fileUpload);
-	}
+      // Get user ID from UID (null for public uploads)
+      let userId: number | undefined;
+      const isPublicUpload = userUid === 'public-applicant';
 
-	/**
-	 * Get all files, optionally filtered by candidate
-	 */
-	async getFiles(candidateUid?: string): Promise<FileUploadResponseDto[]> {
-		let candidateId: number | undefined;
+      if (!isPublicUpload) {
+        const user = await this.database.user.findUnique({
+          where: { uid: userUid },
+        });
+        if (!user) {
+          throw new EntityNotFoundException('User', userUid);
+        }
+        userId = user.id;
+      }
 
-		if (candidateUid) {
-			const candidate = await this.database.candidate.findUnique({
-				where: { uid: candidateUid },
-			});
-			if (!candidate) {
-				throw new NotFoundException(`Candidate with UID ${candidateUid} not found`);
-			}
-			candidateId = candidate.id;
-		}
+      // Get candidate ID if provided
+      let candidateId: number | undefined;
+      if (candidateUid) {
+        const candidate = await this.database.candidate.findUnique({
+          where: { uid: candidateUid },
+        });
+        if (!candidate) {
+          throw new EntityNotFoundException('Candidate', candidateUid);
+        }
+        candidateId = candidate.id;
+      }
 
-		const files = await this.database.fileUpload.findMany({
-			where: candidateId ? { candidateId } : undefined,
-			orderBy: { createdAt: 'desc' },
-		});
+      // Save metadata to database with sanitized filename
+      const fileUpload = await this.database.fileUpload.create({
+        data: {
+          filename: uniqueFilename,
+          originalName: sanitizedOriginalName, // Store sanitized filename
+          mimetype: file.mimetype,
+          size: file.size,
+          s3Key,
+          uploadedByPublic: isPublicUpload, // Track if uploaded by public user
+          uploadedById: userId, // null for public uploads
+          candidateId,
+        },
+      });
 
-		return Promise.all(files.map((file) => this.mapToDto(file)));
-	}
+      this.logger.log(`File uploaded successfully: ${fileUpload.uid} - ${sanitizedOriginalName} (${file.size} bytes)`);
 
-	/**
-	 * Get a single file by UID
-	 */
-	async getFileByUid(uid: string): Promise<FileUploadResponseDto> {
-		const file = await this.database.fileUpload.findUnique({
-			where: { uid },
-		});
+      return this.mapToDto(fileUpload);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to upload file: ${error.message}`);
+    }
+  }
 
-		if (!file) {
-			throw new NotFoundException(`File with UID ${uid} not found`);
-		}
+  /**
+   * Get all files, optionally filtered by candidate
+   */
+  async getFiles(candidateUid?: string): Promise<FileUploadResponseDto[]> {
+    try {
+      let candidateId: number | undefined;
 
-		return this.mapToDto(file);
-	}
+      if (candidateUid) {
+        const candidate = await this.database.candidate.findUnique({
+          where: { uid: candidateUid },
+        });
+        if (!candidate) {
+          throw new EntityNotFoundException('Candidate', candidateUid);
+        }
+        candidateId = candidate.id;
+      }
 
-	/**
-	 * Download a file (returns stream)
-	 */
-	async downloadFile(uid: string) {
-		const file = await this.database.fileUpload.findUnique({
-			where: { uid },
-		});
+      const files = await this.database.fileUpload.findMany({
+        where: candidateId ? { candidateId } : undefined,
+        orderBy: { createdAt: 'desc' },
+      });
 
-		if (!file) {
-			throw new NotFoundException(`File with UID ${uid} not found`);
-		}
+      return Promise.all(files.map((file) => this.mapToDto(file)));
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get files: ${error.message}`);
+    }
+  }
 
-		const stream = await this.storageService.downloadFile(file.s3Key);
+  /**
+   * Get a single file by UID
+   */
+  async getFileByUid(uid: string): Promise<FileUploadResponseDto> {
+    try {
+      const file = await this.database.fileUpload.findUnique({
+        where: { uid },
+      });
 
-		return {
-			stream,
-			filename: file.originalName,
-			mimetype: file.mimetype,
-		};
-	}
+      if (!file) {
+        throw new EntityNotFoundException('File', uid);
+      }
 
-	/**
-	 * Delete a file
-	 */
-	async deleteFile(uid: string): Promise<void> {
-		const file = await this.database.fileUpload.findUnique({
-			where: { uid },
-		});
+      return this.mapToDto(file);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get file: ${error.message}`);
+    }
+  }
 
-		if (!file) {
-			throw new NotFoundException(`File with UID ${uid} not found`);
-		}
+  /**
+   * Download a file (returns stream)
+   */
+  async downloadFile(uid: string) {
+    try {
+      const file = await this.database.fileUpload.findUnique({
+        where: { uid },
+      });
 
-		// Delete from S3/MinIO
-		await this.storageService.deleteFile(file.s3Key);
+      if (!file) {
+        throw new EntityNotFoundException('File', uid);
+      }
 
-		// Delete from database
-		await this.database.fileUpload.delete({
-			where: { uid },
-		});
-	}
+      const stream = await this.storageService.downloadFile(file.s3Key);
 
-	/**
-	 * Map database entity to DTO with signed URL
-	 */
-	private async mapToDto(file: any): Promise<FileUploadResponseDto> {
-		const downloadUrl = await this.storageService.getSignedUrl(file.s3Key);
+      return {
+        stream,
+        filename: file.originalName,
+        mimetype: file.mimetype,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to download file: ${error.message}`);
+    }
+  }
 
-		// Get UIDs for uploaded user and candidate
-		let uploadedByUid: string | undefined;
-		let candidateUid: string | undefined;
+  /**
+   * Delete a file
+   */
+  async deleteFile(uid: string): Promise<void> {
+    try {
+      const file = await this.database.fileUpload.findUnique({
+        where: { uid },
+      });
 
-		if (file.uploadedById) {
-			const user = await this.database.user.findUnique({
-				where: { id: file.uploadedById },
-				select: { uid: true },
-			});
-			uploadedByUid = user?.uid;
-		}
+      if (!file) {
+        throw new EntityNotFoundException('File', uid);
+      }
 
-		if (file.candidateId) {
-			const candidate = await this.database.candidate.findUnique({
-				where: { id: file.candidateId },
-				select: { uid: true },
-			});
-			candidateUid = candidate?.uid;
-		}
+      // Delete from S3/MinIO
+      await this.storageService.deleteFile(file.s3Key);
 
-		return {
-			uid: file.uid,
-			filename: file.filename,
-			originalName: file.originalName,
-			mimetype: file.mimetype,
-			size: file.size,
-			s3Key: file.s3Key,
-			uploadedByUid,
-			candidateUid,
-			createdAt: file.createdAt,
-			updatedAt: file.updatedAt,
-			downloadUrl,
-		};
-	}
+      // Delete from database
+      await this.database.fileUpload.delete({
+        where: { uid },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to delete file: ${error.message}`);
+    }
+  }
+
+  /**
+   * Map database entity to DTO with signed URL
+   */
+  private async mapToDto(file: any): Promise<FileUploadResponseDto> {
+    const downloadUrl = await this.storageService.getSignedUrl(file.s3Key);
+
+    // Get UIDs for uploaded user and candidate
+    let uploadedByUid: string | undefined;
+    let candidateUid: string | undefined;
+
+    if (file.uploadedById) {
+      const user = await this.database.user.findUnique({
+        where: { id: file.uploadedById },
+        select: { uid: true },
+      });
+      uploadedByUid = user?.uid;
+    }
+
+    if (file.candidateId) {
+      const candidate = await this.database.candidate.findUnique({
+        where: { id: file.candidateId },
+        select: { uid: true },
+      });
+      candidateUid = candidate?.uid;
+    }
+
+    return {
+      uid: file.uid,
+      filename: file.filename,
+      originalName: file.originalName,
+      mimetype: file.mimetype,
+      size: file.size,
+      s3Key: file.s3Key,
+      uploadedByPublic: file.uploadedByPublic,
+      uploadedByUid,
+      candidateUid,
+      createdAt: file.createdAt,
+      updatedAt: file.updatedAt,
+      downloadUrl,
+    };
+  }
 }

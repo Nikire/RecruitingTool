@@ -67,6 +67,64 @@
       "timezone": "America/Los_Angeles"
     }
   ],
+  "profiles": [
+    {
+      "userIndex": 0,
+      "bio": "Experienced HR professional with 10+ years in tech recruitment. Passionate about finding the right talent and building diverse teams. Expert in applicant tracking systems and recruitment automation.",
+      "phone": "+1-555-0101",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 1,
+      "bio": "Dedicated to streamlining hiring processes and enhancing candidate experience. Specializing in technical recruiting for software engineering roles.",
+      "phone": "+1-555-0102",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": true,
+        "theme": "dark",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 2,
+      "bio": "Building world-class teams through strategic recruitment and employer branding. 8 years of experience in talent acquisition and people operations.",
+      "phone": "+1-555-0201",
+      "location": "San Francisco, CA, USA",
+      "timezone": "America/Los_Angeles",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "sunday"
+      }
+    },
+    {
+      "userIndex": 3,
+      "bio": "Supporting the hiring team with scheduling, coordination, and candidate communication. Ensuring smooth recruitment workflows.",
+      "phone": "+1-555-0202",
+      "location": "San Francisco, CA, USA",
+      "timezone": "America/Los_Angeles",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": true,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "sunday"
+      }
+    }
+  ],
   "jobPositions": [
     {
       "title": "Senior Software Engineer",
@@ -255,31 +313,49 @@
       "name": "John Doe",
       "email": "john.doe@example.com",
       "jobPositionIndex": 0,
-      "companyIndex": 0
+      "companyIndex": 0,
+      "source": "LINKEDIN",
+      "sourceUrl": "https://www.linkedin.com/jobs/view/123456"
     },
     {
       "name": "Jane Smith",
       "email": "jane.smith@example.com",
       "jobPositionIndex": 0,
-      "companyIndex": 0
+      "companyIndex": 0,
+      "source": "REFERRAL",
+      "sourceDetails": "Referred by Alice Johnson"
     },
     {
       "name": "Mike Wilson",
       "email": "mike.wilson@example.com",
       "jobPositionIndex": 1,
-      "companyIndex": 0
+      "companyIndex": 0,
+      "source": "INDEED",
+      "sourceUrl": "https://www.indeed.com/viewjob?jk=789012"
     },
     {
       "name": "Sarah Davis",
       "email": "sarah.davis@example.com",
       "jobPositionIndex": 2,
-      "companyIndex": 1
+      "companyIndex": 1,
+      "source": "WEBSITE",
+      "sourceUrl": "https://digitalsolutions.com/careers"
     },
     {
       "name": "Tom Anderson",
       "email": "tom.anderson@example.com",
       "jobPositionIndex": 3,
-      "companyIndex": 1
+      "companyIndex": 1,
+      "source": "RECRUITER",
+      "sourceDetails": "Through external recruiter - TechTalent Agency"
+    },
+    {
+      "name": "Emma Martinez",
+      "email": "emma.martinez@example.com",
+      "jobPositionIndex": 0,
+      "companyIndex": 0,
+      "source": "MANUAL",
+      "sourceDetails": "Walk-in applicant, manually entered by HR"
     }
   ],
   "candidateNotes": [

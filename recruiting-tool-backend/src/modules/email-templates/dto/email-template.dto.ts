@@ -24,10 +24,10 @@ export class CreateEmailTemplateDto {
   @IsNotEmpty()
   body: string;
 
-  @ApiProperty({ description: 'UID of the company', example: '123e4567-e89b-12d3-a456-426614174001' })
+  @ApiProperty({ description: 'UID of the company (optional for system-wide templates)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   @IsUUID()
-  @IsNotEmpty()
-  companyUid: string;
+  @IsOptional()
+  companyUid?: string;
 
   @ApiProperty({ description: 'Is this a default template', example: false, required: false })
   @IsBoolean()
@@ -81,8 +81,8 @@ export class EmailTemplateResponseDto {
   })
   body: string;
 
-  @ApiProperty({ description: 'UID of the company', example: '123e4567-e89b-12d3-a456-426614174001' })
-  companyUid: string;
+  @ApiProperty({ description: 'UID of the company (null for system-wide templates)', example: '123e4567-e89b-12d3-a456-426614174001', nullable: true })
+  companyUid: string | null;
 
   @ApiProperty({ description: 'UID of the user who created the template', example: '123e4567-e89b-12d3-a456-426614174001' })
   createdByUid: string;
@@ -98,4 +98,18 @@ export class EmailTemplateResponseDto {
 
   @ApiProperty({ description: 'Last update timestamp' })
   updatedAt: Date;
+}
+
+export class PreviewEmailTemplateDto {
+  @ApiProperty({ description: 'Variables to use in template rendering', example: { candidateName: 'John Doe', positionTitle: 'Software Engineer' }, required: false })
+  @IsOptional()
+  variables?: Record<string, any>;
+}
+
+export class PreviewEmailTemplateResponseDto {
+  @ApiProperty({ description: 'Rendered email subject with variables replaced', example: 'Interview Invitation - Software Engineer at Tech Corp' })
+  renderedSubject: string;
+
+  @ApiProperty({ description: 'Rendered email body with variables replaced', example: 'Dear John Doe,\n\nWe are pleased to invite you...' })
+  renderedBody: string;
 }

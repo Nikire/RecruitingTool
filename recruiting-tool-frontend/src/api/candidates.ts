@@ -1,4 +1,5 @@
 import axiosInstance from './axios';
+import { CandidateActivity } from '../types/candidate-activity.types';
 import {Candidate, CandidateNote, CreateCandidateNoteDto, UpdateCandidateNoteDto} from '../types/candidate';
 import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 
@@ -49,4 +50,9 @@ export const updateCandidateNote = async (noteUid: string, data: UpdateCandidate
 
 export const deleteCandidateNote = async (noteUid: string): Promise<void> => {
 	await axiosInstance.delete(`/candidate/notes/${noteUid}`);
+};
+
+export const getCandidateActivities = async (candidateUid: string): Promise<CandidateActivity[]> => {
+	const response = await axiosInstance.get(`/candidate/${candidateUid}/activities`);
+	return response.data;
 };

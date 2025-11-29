@@ -33,7 +33,7 @@ export class ApplicationResponseDto {
   @ApiProperty({ description: 'Cover letter', example: 'I am very interested in this position...', required: false })
   coverLetter?: string;
 
-  @ApiProperty({ description: 'Answers to custom screening questions', example: { 'q1': 'answer 1', 'q2': 'answer 2' }, required: false })
+  @ApiProperty({ description: 'Answers to custom screening questions', example: { q1: 'answer 1', q2: 'answer 2' }, required: false })
   customAnswers?: Record<string, any>;
 
   @ApiProperty({ description: 'Application status', example: 'PENDING', enum: ApplicationStatus })
@@ -99,7 +99,7 @@ export class CreateApplicationDto {
   @MaxLength(5000)
   coverLetter?: string;
 
-  @ApiProperty({ description: 'Answers to custom screening questions', example: { 'q1': 'answer 1', 'q2': ['option 1', 'option 2'] }, required: false })
+  @ApiProperty({ description: 'Answers to custom screening questions', example: { q1: 'answer 1', q2: ['option 1', 'option 2'] }, required: false })
   @IsOptional()
   @IsObject()
   customAnswers?: Record<string, any>;

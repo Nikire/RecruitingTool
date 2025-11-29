@@ -36,110 +36,7 @@ interface StageTemplate {
 	stages: Omit<Stage, 'uid' | 'status'>[];
 }
 
-const STAGE_TEMPLATES: StageTemplate[] = [
-	{
-		name: 'Basic (3 stages)',
-		icon: <PersonSearchIcon />,
-		stages: [
-			{
-				title: 'Initial Screening',
-				type: 'INTERVIEW' as StageType,
-				description: 'Review application and conduct initial phone screening',
-				position: 0,
-				estimatedTime: 30,
-			},
-			{
-				title: 'Interview',
-				type: 'INTERVIEW' as StageType,
-				description: 'In-depth interview with hiring manager',
-				position: 1,
-				estimatedTime: 60,
-			},
-			{
-				title: 'Offer',
-				type: 'OFFER' as StageType,
-				description: 'Extend job offer to candidate',
-				position: 2,
-				estimatedTime: 15,
-			},
-		],
-	},
-	{
-		name: 'Technical (4 stages)',
-		icon: <EngineeringIcon />,
-		stages: [
-			{
-				title: 'Application Review',
-				type: 'INTERVIEW' as StageType,
-				description: 'Review resume and portfolio',
-				position: 0,
-				estimatedTime: 20,
-			},
-			{
-				title: 'Technical Interview',
-				type: 'TECHNICAL_INTERVIEW' as StageType,
-				description: 'Coding challenge and technical assessment',
-				position: 1,
-				estimatedTime: 90,
-			},
-			{
-				title: 'Final Interview',
-				type: 'FINAL_INTERVIEW' as StageType,
-				description: 'Cultural fit and team interview',
-				position: 2,
-				estimatedTime: 60,
-			},
-			{
-				title: 'Offer',
-				type: 'OFFER' as StageType,
-				description: 'Extend job offer to candidate',
-				position: 3,
-				estimatedTime: 15,
-			},
-		],
-	},
-	{
-		name: 'Comprehensive (5 stages)',
-		icon: <BusinessCenterIcon />,
-		stages: [
-			{
-				title: 'Application Review',
-				type: 'INTERVIEW' as StageType,
-				description: 'Initial review of application materials',
-				position: 0,
-				estimatedTime: 15,
-			},
-			{
-				title: 'Phone Screen',
-				type: 'INTERVIEW' as StageType,
-				description: 'Brief phone conversation to assess basic fit',
-				position: 1,
-				estimatedTime: 30,
-			},
-			{
-				title: 'Technical Assessment',
-				type: 'TECHNICAL_INTERVIEW' as StageType,
-				description: 'In-depth technical evaluation with coding exercises',
-				position: 2,
-				estimatedTime: 120,
-			},
-			{
-				title: 'Onsite Interview',
-				type: 'FINAL_INTERVIEW' as StageType,
-				description: 'Full-day onsite interviews with team members',
-				position: 3,
-				estimatedTime: 240,
-			},
-			{
-				title: 'Offer',
-				type: 'OFFER' as StageType,
-				description: 'Extend final offer and negotiate terms',
-				position: 4,
-				estimatedTime: 30,
-			},
-		],
-	},
-];
+// Stage templates will be created dynamically with i18n in the component
 
 /**
  * Reusable component for building and managing stages in a job position.
@@ -158,6 +55,112 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
 	const [editingIndex, setEditingIndex] = useState<number | null>(null);
 	const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
 	const [templateMenuAnchor, setTemplateMenuAnchor] = useState<null | HTMLElement>(null);
+
+	// Create stage templates with i18n
+	const STAGE_TEMPLATES: StageTemplate[] = [
+		{
+			name: t('stages.template_data.basic.name'),
+			icon: <PersonSearchIcon />,
+			stages: [
+				{
+					title: t('stages.template_data.basic.screening.title'),
+					type: 'INTERVIEW' as StageType,
+					description: t('stages.template_data.basic.screening.description'),
+					position: 0,
+					estimatedTime: 30,
+				},
+				{
+					title: t('stages.template_data.basic.interview.title'),
+					type: 'INTERVIEW' as StageType,
+					description: t('stages.template_data.basic.interview.description'),
+					position: 1,
+					estimatedTime: 60,
+				},
+				{
+					title: t('stages.template_data.basic.offer.title'),
+					type: 'OFFER' as StageType,
+					description: t('stages.template_data.basic.offer.description'),
+					position: 2,
+					estimatedTime: 15,
+				},
+			],
+		},
+		{
+			name: t('stages.template_data.technical.name'),
+			icon: <EngineeringIcon />,
+			stages: [
+				{
+					title: t('stages.template_data.technical.review.title'),
+					type: 'INTERVIEW' as StageType,
+					description: t('stages.template_data.technical.review.description'),
+					position: 0,
+					estimatedTime: 20,
+				},
+				{
+					title: t('stages.template_data.technical.technical.title'),
+					type: 'TECHNICAL_INTERVIEW' as StageType,
+					description: t('stages.template_data.technical.technical.description'),
+					position: 1,
+					estimatedTime: 90,
+				},
+				{
+					title: t('stages.template_data.technical.final.title'),
+					type: 'FINAL_INTERVIEW' as StageType,
+					description: t('stages.template_data.technical.final.description'),
+					position: 2,
+					estimatedTime: 60,
+				},
+				{
+					title: t('stages.template_data.technical.offer.title'),
+					type: 'OFFER' as StageType,
+					description: t('stages.template_data.technical.offer.description'),
+					position: 3,
+					estimatedTime: 15,
+				},
+			],
+		},
+		{
+			name: t('stages.template_data.comprehensive.name'),
+			icon: <BusinessCenterIcon />,
+			stages: [
+				{
+					title: t('stages.template_data.comprehensive.review.title'),
+					type: 'INTERVIEW' as StageType,
+					description: t('stages.template_data.comprehensive.review.description'),
+					position: 0,
+					estimatedTime: 15,
+				},
+				{
+					title: t('stages.template_data.comprehensive.phone.title'),
+					type: 'INTERVIEW' as StageType,
+					description: t('stages.template_data.comprehensive.phone.description'),
+					position: 1,
+					estimatedTime: 30,
+				},
+				{
+					title: t('stages.template_data.comprehensive.assessment.title'),
+					type: 'TECHNICAL_INTERVIEW' as StageType,
+					description: t('stages.template_data.comprehensive.assessment.description'),
+					position: 2,
+					estimatedTime: 120,
+				},
+				{
+					title: t('stages.template_data.comprehensive.onsite.title'),
+					type: 'FINAL_INTERVIEW' as StageType,
+					description: t('stages.template_data.comprehensive.onsite.description'),
+					position: 3,
+					estimatedTime: 240,
+				},
+				{
+					title: t('stages.template_data.comprehensive.offer.title'),
+					type: 'OFFER' as StageType,
+					description: t('stages.template_data.comprehensive.offer.description'),
+					position: 4,
+					estimatedTime: 30,
+				},
+			],
+		},
+	];
 
 	const handleAddStage = (stageData: StageFormData) => {
 		const newStage: Omit<Stage, 'uid' | 'status'> = {

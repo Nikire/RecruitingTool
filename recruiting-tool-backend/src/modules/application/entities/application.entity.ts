@@ -26,7 +26,11 @@ export function ApplicationMapper(application: Application | ApplicationWithRela
     resumeFileUid: (application as any).resumeFile?.uid,
     resumeFileName: (application as any).resumeFile?.originalName,
     coverLetter: application.coverLetter,
-    customAnswers: application.customAnswers ? (typeof application.customAnswers === 'object' ? application.customAnswers : JSON.parse(JSON.stringify(application.customAnswers))) : {},
+    customAnswers: application.customAnswers
+      ? typeof application.customAnswers === 'object'
+        ? application.customAnswers
+        : JSON.parse(JSON.stringify(application.customAnswers))
+      : {},
     status: application.status,
     appliedAt: application.appliedAt,
     reviewedAt: application.reviewedAt,

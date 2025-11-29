@@ -12,10 +12,15 @@ import {
   Typography,
   Stack,
   CircularProgress,
+  Alert,
+  Paper,
+  Divider,
 } from '@mui/material';
+import { useState } from 'react';
+import { Visibility } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useCreateEmailTemplate, useUpdateEmailTemplate } from '../../hooks/api/useEmailTemplates';
+import { useCreateEmailTemplate, useUpdateEmailTemplate, usePreviewEmailTemplate } from '../../hooks/api/useEmailTemplates';
 import { EmailTemplate } from '../../types/emailTemplate.types';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
 
@@ -35,6 +40,8 @@ interface EmailTemplateFormData {
 const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose, template }) => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
+  const [showPreview, setShowPreview] = useState(false);
+  const [previewData, setPreviewData] = useState<{ renderedSubject: string; renderedBody: string } | null>(null);
 
   const AVAILABLE_VARIABLES = [
     { key: '{{candidateName}}', description: t('email_template.variable_candidate_name') },
@@ -63,6 +70,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
 
   const { mutate: createTemplate, isPending: isCreating } = useCreateEmailTemplate();
   const { mutate: updateTemplate, isPending: isUpdating } = useUpdateEmailTemplate();
+  const { mutate: previewTemplate, isPending: isPreviewing } = usePreviewEmailTemplate();
 
   const isPending = isCreating || isUpdating;
   const isEditMode = !!template;
@@ -117,6 +125,28 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
   const insertVariable = (variable: string) => {
     const currentBody = watch('body') || '';
     setValue('body', currentBody + variable);
+  };
+
+  const handlePreview = () => {
+    if (!template?.uid) {
+      // For new templates, can't preview until saved
+      setPreviewData({
+        renderedSubject: watch('subject') || '',
+        renderedBody: watch('body') || '',
+      });
+      setShowPreview(true);
+      return;
+    }
+
+    previewTemplate(
+      { uid: template.uid },
+      {
+        onSuccess: (data) => {
+          setPreviewData(data);
+          setShowPreview(true);
+        },
+      }
+    );
   };
 
   return (
@@ -201,12 +231,50 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
             control={<Checkbox {...register('isDefault')} defaultChecked={template?.isDefault || false} />}
             label={t('email_template.mark_default')}
           />
+
+          {showPreview && previewData && (
+            <Box sx={{ mt: 3 }}>
+              <Divider sx={{ my: 2 }} />
+              <Typography variant="h6" gutterBottom>
+                {t('email_template.preview_title')}
+              </Typography>
+              <Alert severity="info" sx={{ mb: 2 }}>
+                {t('email_template.preview_info')}
+              </Alert>
+              <Paper variant="outlined" sx={{ p: 2, mb: 2, backgroundColor: '#f5f5f5' }}>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  {t('email_template.preview_subject')}:
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 2 }}>
+                  {previewData.renderedSubject}
+                </Typography>
+                <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                  {t('email_template.preview_body')}:
+                </Typography>
+                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap' }}>
+                  {previewData.renderedBody}
+                </Typography>
+              </Paper>
+              <Button size="small" onClick={() => setShowPreview(false)}>
+                {t('email_template.hide_preview')}
+              </Button>
+            </Box>
+          )}
         </DialogContent>
 
         <DialogActions>
           <Button onClick={handleClose} disabled={isPending}>
             {t('common.cancel')}
           </Button>
+          {isEditMode && (
+            <Button
+              onClick={handlePreview}
+              disabled={isPreviewing}
+              startIcon={isPreviewing ? <CircularProgress size={20} /> : <Visibility />}
+            >
+              {isPreviewing ? t('email_template.previewing') : t('email_template.preview')}
+            </Button>
+          )}
           <Button type="submit" variant="contained" disabled={isPending} startIcon={isPending ? <CircularProgress size={20} color="inherit" /> : null}>
             {isPending ? t('common.saving') : isEditMode ? t('common.update') : t('common.create')}
           </Button>

@@ -1,4 +1,4 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcryptjs';
@@ -21,6 +21,14 @@ interface DummyDataStructure {
     bio?: string;
     linkedinUrl?: string;
     timezone?: string;
+  }>;
+  profiles: Array<{
+    userIndex: number;
+    bio?: string;
+    phone?: string;
+    location?: string;
+    timezone?: string;
+    preferences?: Record<string, any>;
   }>;
   jobPositions: Array<{
     title: string;
@@ -47,6 +55,9 @@ interface DummyDataStructure {
     email: string;
     jobPositionIndex: number;
     companyIndex: number;
+    source?: string;
+    sourceDetails?: string;
+    sourceUrl?: string;
   }>;
   candidateNotes: Array<{
     content: string;
@@ -65,24 +76,26 @@ interface DummyDataStructure {
 
 @Injectable()
 export class DummyService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(DummyService.name);
+
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly configService: ConfigService,
   ) {}
 
   async onApplicationBootstrap() {
-    console.log('DummyService initialized');
+    this.logger.log('DummyService initialized');
 
     // Check if dummy data already exists
     const existingCompanies = await this.databaseService.company.count();
     if (existingCompanies > 0) {
-      console.log('Dummy data already exists, skipping creation');
+      this.logger.log('Dummy data already exists, skipping creation');
       return;
     }
 
-    console.log('Creating dummy data from JSON...');
+    this.logger.log('Creating dummy data from JSON...');
     await this.createDummyData();
-    console.log('Dummy data created successfully!');
+    this.logger.log('Dummy data created successfully!');
   }
 
   async createDummyData() {
@@ -96,7 +109,7 @@ export class DummyService implements OnApplicationBootstrap {
     const createdCandidates = [];
 
     // Create companies
-    console.log('Creating companies...');
+    this.logger.log('Creating companies...');
     for (const company of data.companies) {
       const created = await this.databaseService.company.create({
         data: {
@@ -105,21 +118,26 @@ export class DummyService implements OnApplicationBootstrap {
         },
       });
       createdCompanies.push(created);
-      console.log(`Created company: ${created.name}`);
+      this.logger.log(`Created company: ${created.name}`);
     }
 
     // Update admin user to belong to first company
     const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
     if (adminEmail) {
-      await this.databaseService.user.update({
+      const adminUser = await this.databaseService.user.findFirst({
         where: { email: adminEmail },
-        data: { companyId: createdCompanies[0].id },
       });
-      console.log(`Updated admin user to belong to ${createdCompanies[0].name}`);
+      if (adminUser) {
+        await this.databaseService.user.update({
+          where: { id: adminUser.id },
+          data: { companyId: createdCompanies[0].id },
+        });
+        this.logger.log(`Updated admin user to belong to ${createdCompanies[0].name}`);
+      }
     }
 
     // Create users
-    console.log('Creating users...');
+    this.logger.log('Creating users...');
     for (const user of data.users) {
       const created = await this.databaseService.user.create({
         data: {
@@ -138,11 +156,27 @@ export class DummyService implements OnApplicationBootstrap {
         },
       });
       createdUsers.push(created);
-      console.log(`Created user: ${created.name} for ${createdCompanies[user.companyIndex].name}`);
+      this.logger.log(`Created user: ${created.name} for ${createdCompanies[user.companyIndex].name}`);
+    }
+
+    // Create profiles
+    this.logger.log('Creating user profiles...');
+    for (const profile of data.profiles) {
+      await this.databaseService.profile.create({
+        data: {
+          bio: profile.bio,
+          phone: profile.phone,
+          location: profile.location,
+          timezone: profile.timezone,
+          preferences: profile.preferences || {},
+          userId: createdUsers[profile.userIndex].id,
+        },
+      });
+      this.logger.log(`Created profile for user: ${createdUsers[profile.userIndex].name}`);
     }
 
     // Create job positions with stages
-    console.log('Creating job positions...');
+    this.logger.log('Creating job positions...');
     for (const jobPosition of data.jobPositions) {
       const created = await this.databaseService.jobPosition.create({
         data: {
@@ -155,7 +189,7 @@ export class DummyService implements OnApplicationBootstrap {
         },
       });
       createdJobPositions.push(created);
-      console.log(`Created job position: ${created.title} for ${createdCompanies[jobPosition.companyIndex].name}`);
+      this.logger.log(`Created job position: ${created.title} for ${createdCompanies[jobPosition.companyIndex].name}`);
 
       // Create stages for this job position
       const stages = jobPosition.stages.map((stage, index) => ({
@@ -171,24 +205,27 @@ export class DummyService implements OnApplicationBootstrap {
       await this.databaseService.stage.createMany({
         data: stages,
       });
-      console.log(`  Created ${stages.length} stages for ${created.title}`);
+      this.logger.log(`  Created ${stages.length} stages for ${created.title}`);
     }
 
     // Create candidates
-    console.log('Creating candidates...');
+    this.logger.log('Creating candidates...');
     for (const candidate of data.candidates) {
       const created = await this.databaseService.candidate.create({
         data: {
           name: candidate.name,
           email: candidate.email,
+          source: candidate.source as any,
+          sourceDetails: candidate.sourceDetails,
+          sourceUrl: candidate.sourceUrl,
         },
       });
       createdCandidates.push(created);
-      console.log(`Created candidate: ${created.name}`);
+      this.logger.log(`Created candidate: ${created.name} (source: ${candidate.source || 'DIRECT_APPLY'})`);
     }
 
     // Create hiring processes
-    console.log('Creating hiring processes...');
+    this.logger.log('Creating hiring processes...');
     for (let i = 0; i < createdCandidates.length; i++) {
       const candidate = createdCandidates[i];
       const candidateData = data.candidates[i];
@@ -227,11 +264,11 @@ export class DummyService implements OnApplicationBootstrap {
         data: hiringProcessStages,
       });
 
-      console.log(`Created hiring process: ${hiringProcess.title} with ${hiringProcessStages.length} stages`);
+      this.logger.log(`Created hiring process: ${hiringProcess.title} with ${hiringProcessStages.length} stages`);
     }
 
     // Create candidate notes
-    console.log('Creating candidate notes...');
+    this.logger.log('Creating candidate notes...');
     for (const note of data.candidateNotes) {
       await this.databaseService.candidateNote.create({
         data: {
@@ -240,11 +277,11 @@ export class DummyService implements OnApplicationBootstrap {
           authorId: createdUsers[note.authorUserIndex].id,
         },
       });
-      console.log(`Created note for candidate: ${createdCandidates[note.candidateIndex].name} by ${createdUsers[note.authorUserIndex].name}`);
+      this.logger.log(`Created note for candidate: ${createdCandidates[note.candidateIndex].name} by ${createdUsers[note.authorUserIndex].name}`);
     }
 
     // Create email templates
-    console.log('Creating email templates...');
+    this.logger.log('Creating email templates...');
     for (const template of data.emailTemplates) {
       await this.databaseService.emailTemplate.create({
         data: {
@@ -256,9 +293,9 @@ export class DummyService implements OnApplicationBootstrap {
           isDefault: template.isDefault,
         },
       });
-      console.log(`Created email template: ${template.name} for ${createdCompanies[template.companyIndex].name}`);
+      this.logger.log(`Created email template: ${template.name} for ${createdCompanies[template.companyIndex].name}`);
     }
 
-    console.log('All dummy data created successfully!');
+    this.logger.log('All dummy data created successfully!');
   }
 }

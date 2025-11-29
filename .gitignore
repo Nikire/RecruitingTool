@@ -6,3 +6,5 @@ builddocker.sh
 .claude/
 CLAUDE.md
 CLAUDE.md.backup
+
+POTENTIAL-ISSUES.md

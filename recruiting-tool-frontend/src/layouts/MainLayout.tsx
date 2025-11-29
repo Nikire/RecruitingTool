@@ -1,4 +1,4 @@
-import {Container} from '@mui/material';
+import {Container, Toolbar} from '@mui/material';
 import {Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {useEffect} from 'react';
 import Navbar from '../components/navbar/Navbar';
@@ -14,22 +14,29 @@ const MainLayout = () => {
 	// Redirect to login if session is invalid or user is not authenticated
 	useEffect(() => {
 		const token = localStorage.getItem('authToken');
+		const currentPath = window.location.pathname;
+
+		// Don't redirect on public routes
+		const publicRoutes = ['/careers', '/login', '/signup', '/book-interview', '/booking-confirmed'];
+		const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
 
 		// If there's a token but the auth query failed (401, 403, etc.), session is invalid
-		if (token && isError) {
+		// Only redirect to login if we're NOT on a public route
+		if (token && isError && !isPublicRoute) {
 			localStorage.removeItem('authToken');
 			navigate('/login', {replace: true});
 		}
 	}, [isError, navigate]);
 
-	// Use wider container for pages with tables
-	const widePages = ['/companies', '/candidates', '/careers'];
+	// Use wider container for pages with tables or rich content
+	const widePages = ['/', '/companies', '/candidates', '/careers'];
 	const isWidePage = widePages.includes(location.pathname);
 	const maxWidth = isWidePage ? 'xl' : 'md';
 
 	return (
 		<>
 			<Navbar />
+			<Toolbar /> {/* Offset spacer for fixed AppBar */}
 			<Container sx={{paddingTop: 2}} maxWidth={maxWidth}>
 				<Outlet />
 			</Container>

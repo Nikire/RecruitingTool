@@ -2,11 +2,24 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
+import { HttpExceptionFilter } from './common/filters/http-exception.filter';
+import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
+import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 
 const { PORT, FRONTEND_URL } = process.env;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Set global API prefix
+  app.setGlobalPrefix('api');
+
+  // Register global exception filters for consistent error handling
+  // Order matters: Prisma filter should be registered first to catch Prisma-specific errors
+  app.useGlobalFilters(new PrismaExceptionFilter(), new HttpExceptionFilter());
+
+  // Register global response interceptor for consistent success responses
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   app.enableCors({
     origin: FRONTEND_URL,

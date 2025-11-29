@@ -1,14 +1,23 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseInterceptors, UploadedFile, Res, BadRequestException } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
 import { CandidateService } from './candidate.service';
-import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto } from './dto/candidate.dto';
-import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import { CandidateImportService } from './candidate-import.service';
+import { CreateCandidateDto, UpdateCandidateDto, CandidateResponseDto, CreateManualCandidateDto } from './dto/candidate.dto';
+import { CandidateActivityService } from './services/candidate-activity.service';
+import { CandidateActivityResponseDto } from './dto/candidate-activity.dto';
+import { CandidateImportPreviewDto, CandidateImportResultDto } from './dto/candidate-import.dto';
+import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam, ApiConsumes } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
+import { CandidateFilterDto } from './dto/candidate-filter.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { User } from '@prisma/client';
+import { CandidateJourneyResponseDto } from '../stages/dto/stage-time-tracking.dto';
+import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -21,6 +30,8 @@ import { User } from '@prisma/client';
 export class CandidateController {
   constructor(
     private readonly candidateService: CandidateService,
+    private readonly candidateActivityService: CandidateActivityService,
+    private readonly candidateImportService: CandidateImportService,
     private readonly databaseService: DatabaseService,
   ) {}
 
@@ -36,14 +47,30 @@ export class CandidateController {
     return this.candidateService.create(createCandidateDto);
   }
 
+  @Post('manual')
+  @ApiOperation({
+    summary: 'Create a manual candidate and auto-create hiring process',
+    description:
+      'Creates a candidate from manual entry (phone call, referral, walk-in, etc.), automatically creates a hiring process, and sends a welcome email. Validates email uniqueness per company.',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'The candidate and hiring process have been successfully created.',
+    type: HiringProcessResponseDto,
+  })
+  @ApiBody({ type: CreateManualCandidateDto })
+  createManual(@Body() createManualCandidateDto: CreateManualCandidateDto, @CurrentUser() currentUser: User): Promise<HiringProcessResponseDto> {
+    return this.candidateService.createManual(createManualCandidateDto, currentUser);
+  }
+
   @Get('list')
-  @ApiOperation({ summary: 'Get paginated candidates list with filtering' })
+  @ApiOperation({ summary: 'Get paginated candidates list with advanced filtering and search' })
   @ApiResponse({
     status: 200,
-    description: 'Returns paginated candidates list',
+    description: 'Returns paginated candidates list with filters applied',
   })
-  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<CandidateResponseDto>> {
-    return this.candidateService.list(paginationDto, currentUser);
+  list(@Query() filterDto: CandidateFilterDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<CandidateResponseDto>> {
+    return this.candidateService.list(filterDto, currentUser);
   }
 
   @Get()
@@ -83,15 +110,31 @@ export class CandidateController {
   }
 
   @Delete(':uid')
-  @ApiOperation({ summary: 'Delete a candidate by UID' })
+  @ApiOperation({ summary: 'Soft delete a candidate by UID' })
   @ApiResponse({
     status: 200,
-    description: 'The candidate has been successfully deleted.',
+    description: 'The candidate has been soft deleted (can be restored).',
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'uid', required: true })
   remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<MessageResponseDto> {
     return this.candidateService.remove(uid, currentUser);
+  }
+
+  @Delete(':uid/purge')
+  @Auth(['SUPER_ADMIN'])
+  @ApiOperation({
+    summary: 'GDPR Purge - Permanently delete candidate data (SUPER_ADMIN only)',
+    description: 'Hard deletes a candidate and all associated data. This operation is irreversible and should only be used for GDPR "right to be forgotten" requests.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'The candidate has been permanently deleted from the database.',
+    type: MessageResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate to purge' })
+  purge(@Param('uid') uid: string, @CurrentUser() user: User): Promise<MessageResponseDto> {
+    return this.candidateService.purge(uid, user);
   }
 
   // Candidate Notes endpoints
@@ -104,11 +147,7 @@ export class CandidateController {
   })
   @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
   @ApiBody({ type: CreateCandidateNoteDto })
-  async createNote(
-    @Param('candidateUid') candidateUid: string,
-    @Body() createNoteDto: CreateCandidateNoteDto,
-    @CurrentUser() user: any,
-  ): Promise<CandidateNoteResponseDto> {
+  async createNote(@Param('candidateUid') candidateUid: string, @Body() createNoteDto: CreateCandidateNoteDto, @CurrentUser() user: any): Promise<CandidateNoteResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -140,11 +179,7 @@ export class CandidateController {
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
   @ApiBody({ type: UpdateCandidateNoteDto })
-  async updateNote(
-    @Param('noteUid') noteUid: string,
-    @Body() updateNoteDto: UpdateCandidateNoteDto,
-    @CurrentUser() user: any,
-  ): Promise<CandidateNoteResponseDto> {
+  async updateNote(@Param('noteUid') noteUid: string, @Body() updateNoteDto: UpdateCandidateNoteDto, @CurrentUser() user: any): Promise<CandidateNoteResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
@@ -160,14 +195,106 @@ export class CandidateController {
     type: MessageResponseDto,
   })
   @ApiParam({ name: 'noteUid', required: true, description: 'UID of the note' })
-  async removeNote(
-    @Param('noteUid') noteUid: string,
-    @CurrentUser() user: any,
-  ): Promise<MessageResponseDto> {
+  async removeNote(@Param('noteUid') noteUid: string, @CurrentUser() user: any): Promise<MessageResponseDto> {
     // Look up the user's numeric ID from the UID stored in the token
     const dbUser = await this.databaseService.user.findUnique({
       where: { uid: user.uid },
     });
     return this.candidateService.removeNote(noteUid, dbUser.id);
+  }
+
+  // Candidate Journey Tracking endpoint
+  @Get(':uid/journey')
+  @ApiOperation({ summary: 'Get candidate journey through all stages with time tracking' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the candidate journey across all hiring processes',
+    type: [CandidateJourneyResponseDto],
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
+  getCandidateJourney(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<CandidateJourneyResponseDto[]> {
+    return this.candidateService.getCandidateJourney(uid, currentUser);
+  }
+
+  // Candidate Activity Timeline endpoint
+  @Get(':uid/activities')
+  @ApiOperation({ summary: 'Get candidate activity timeline/history' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the candidate activity timeline',
+    type: [CandidateActivityResponseDto],
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
+  getCandidateActivities(@Param('uid') uid: string): Promise<CandidateActivityResponseDto[]> {
+    return this.candidateActivityService.getCandidateActivities(uid);
+  }
+
+  // Bulk Import endpoints
+  @Post('import/preview')
+  @ApiOperation({
+    summary: 'Preview CSV import - validate without creating candidates',
+    description: 'Upload a CSV file to validate format and data before importing. Returns preview with valid and invalid rows.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 200,
+    description: 'Returns preview of import with validation results',
+    type: CandidateImportPreviewDto,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async previewImport(@UploadedFile() file: Express.Multer.File): Promise<CandidateImportPreviewDto> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    if (file.mimetype !== 'text/csv' && !file.originalname.endsWith('.csv')) {
+      throw new BadRequestException('File must be a CSV');
+    }
+
+    return this.candidateImportService.previewImport(file.buffer);
+  }
+
+  @Post('import')
+  @ApiOperation({
+    summary: 'Import candidates from CSV file',
+    description: 'Upload a CSV file to bulk import candidates. Returns import results with success and error counts.',
+  })
+  @ApiConsumes('multipart/form-data')
+  @ApiResponse({
+    status: 201,
+    description: 'Candidates imported successfully',
+    type: CandidateImportResultDto,
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  async importCandidates(@UploadedFile() file: Express.Multer.File, @CurrentUser() currentUser: User): Promise<CandidateImportResultDto> {
+    if (!file) {
+      throw new BadRequestException('No file uploaded');
+    }
+
+    if (file.mimetype !== 'text/csv' && !file.originalname.endsWith('.csv')) {
+      throw new BadRequestException('File must be a CSV');
+    }
+
+    // Get user's company ID for duplicate checking
+    const companyId = currentUser.companyId || undefined;
+
+    return this.candidateImportService.importCandidates(file.buffer, companyId);
+  }
+
+  @Get('import/template')
+  @ApiOperation({
+    summary: 'Download CSV template',
+    description: 'Download a CSV template file with headers and example data for importing candidates.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'CSV template downloaded successfully',
+  })
+  downloadTemplate(@Res() res: Response): void {
+    const csvContent = this.candidateImportService.generateTemplateCSV();
+
+    res.setHeader('Content-Type', 'text/csv');
+    res.setHeader('Content-Disposition', 'attachment; filename="candidate-import-template.csv"');
+    res.send(csvContent);
   }
 }

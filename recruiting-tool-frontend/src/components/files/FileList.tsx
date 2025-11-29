@@ -153,6 +153,7 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 											edge="end"
 											onClick={() => handleDownload(file.uid, file.originalName)}
 											sx={{ mr: 1 }}
+											aria-label={`${t('common.download')} ${file.originalName}`}
 										>
 											<DownloadIcon />
 										</IconButton>
@@ -162,6 +163,7 @@ const FileList: React.FC<FileListProps> = ({ candidateUid, showActions = true })
 											edge="end"
 											onClick={() => handleDeleteClick(file.uid, file.originalName)}
 											color="error"
+											aria-label={`${t('common.delete')} ${file.originalName}`}
 										>
 											<DeleteIcon />
 										</IconButton>

@@ -1,10 +1,12 @@
-import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { RolesType } from '@prisma/client';
 import { UsersService } from 'src/modules/users/users.service';
 
 @Injectable()
 export class AdminUserService implements OnApplicationBootstrap {
+  private readonly logger = new Logger(AdminUserService.name);
+
   constructor(
     private usersService: UsersService,
     private configService: ConfigService,
@@ -16,7 +18,7 @@ export class AdminUserService implements OnApplicationBootstrap {
     if (ADMIN_EMAIL && ADMIN_NAME && ADMIN_PASSWORD) {
       const admin = await this.usersService.findByEmail(ADMIN_EMAIL);
       if (!admin) {
-        console.log('CREATING ADMIN USER...', '\n');
+        this.logger.log('Creating admin user...');
         await this.usersService.createInternal({
           email: ADMIN_EMAIL,
           name: ADMIN_NAME,
@@ -24,7 +26,7 @@ export class AdminUserService implements OnApplicationBootstrap {
           roles: [RolesType.USER, RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
         });
       } else {
-        console.log('ADMIN USER FOUND:', admin, '\n');
+        this.logger.log(`Admin user found: ${admin.email}`);
       }
     }
   }

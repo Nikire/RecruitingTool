@@ -178,7 +178,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 					>
 						<Typography variant="h6">{t('application_detail.title')}</Typography>
 						<Chip
-							label={application.status}
+							label={t(`status.${application.status.toLowerCase()}`)}
 							color={getStatusColor(application.status)}
 							size="small"
 						/>
@@ -328,13 +328,13 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
 											{t('status.pending')}
 										</MenuItem>
 										<MenuItem value={ApplicationStatus.REVIEWED}>
-											Reviewed
+											{t('status.reviewed')}
 										</MenuItem>
 										<MenuItem value={ApplicationStatus.ACCEPTED}>
-											Accepted
+											{t('status.accepted')}
 										</MenuItem>
 										<MenuItem value={ApplicationStatus.REJECTED}>
-											Rejected
+											{t('status.rejected')}
 										</MenuItem>
 									</Select>
 								</FormControl>

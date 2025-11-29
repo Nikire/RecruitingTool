@@ -119,15 +119,31 @@ export class UpdateJobPositionDto {
 }
 
 export class PublicJobPositionResponseDto {
-  @ApiProperty({ description: "The UID of the job position", example: "123e4567-e89b-12d3-a456-426614174000" })
+  @ApiProperty({ description: 'The UID of the job position', example: '123e4567-e89b-12d3-a456-426614174000' })
   uid: string;
 
-  @ApiProperty({ description: "The title of the Job position", example: "Senior Software Engineer" })
+  @ApiProperty({ description: 'The title of the Job position', example: 'Senior Software Engineer' })
   title: string;
 
-  @ApiProperty({ description: "The description of the job position", example: "Looking for a talented software engineer", required: false })
+  @ApiProperty({ description: 'The description of the job position', example: 'Looking for a talented software engineer', required: false })
   description?: string;
 
-  @ApiProperty({ description: "The company name", example: "Tech Corp" })
+  @ApiProperty({ description: 'The status of the job position', example: 'OPEN', enum: JobPositionStatus })
+  status: JobPositionStatus;
+
+  @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
   companyName: string;
+
+  @ApiProperty({ description: 'The company description', example: 'A leading tech company', required: false })
+  companyDescription?: string;
+
+  @ApiProperty({ description: 'When the job position was created', example: '2025-01-15T10:30:00Z' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Custom screening questions for this job position', type: [CustomQuestionDto], required: false })
+  @IsOptional()
+  customQuestions?: CustomQuestionDto[];
+
+  @ApiProperty({ description: 'The stages of the job position', type: [StageResponseDto], required: false })
+  stages?: StageResponseDto[];
 }

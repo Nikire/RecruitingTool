@@ -6,40 +6,42 @@ import {
 	Assignment as AssignmentIcon,
 } from '@mui/icons-material';
 import {useNavigate} from 'react-router-dom';
+import {useTranslation} from 'react-i18next';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import StatCard from '../../components/cards/stat-card/StatCard';
 
 const AdminDashboard: React.FC = () => {
+	const {t} = useTranslation();
 	const {user} = useUserAtom();
 	const navigate = useNavigate();
 
 	const stats = [
 		{
-			title: 'Candidate Management',
+			title: t('admin_dashboard.candidate_management'),
 			icon: <PeopleIcon />,
 			color: '#1976d2',
-			description: 'Manage candidates and their applications',
+			description: t('admin_dashboard.candidate_management_desc'),
 			path: '/admin/candidates',
 		},
 		{
-			title: 'Company Management',
+			title: t('admin_dashboard.company_management'),
 			icon: <BusinessIcon />,
 			color: '#2e7d32',
-			description: 'Manage companies and their settings',
+			description: t('admin_dashboard.company_management_desc'),
 			path: '/admin/companies',
 		},
 		{
-			title: 'User Management',
+			title: t('admin_dashboard.user_management'),
 			icon: <AssignmentIcon />,
 			color: '#ed6c02',
-			description: 'Manage user accounts, roles, and permissions',
+			description: t('admin_dashboard.user_management_desc'),
 			path: '/admin/users',
 		},
 		{
-			title: 'Job Positions',
+			title: t('admin_dashboard.job_positions'),
 			icon: <WorkIcon />,
 			color: '#9c27b0',
-			description: 'View all job positions across companies',
+			description: t('admin_dashboard.job_positions_desc'),
 			path: '/careers',
 		},
 	];
@@ -57,10 +59,10 @@ const AdminDashboard: React.FC = () => {
 		>
 			<Box sx={{mb: 4, textAlign: 'center', maxWidth: 800}}>
 				<Typography variant="h4" gutterBottom>
-					Admin Dashboard
+					{t('admin_dashboard.title')}
 				</Typography>
 				<Typography variant="body1" color="text.secondary">
-					Welcome back, {user?.name}! Manage your system from this central hub.
+					{t('admin_dashboard.welcome', {name: user?.name})}
 				</Typography>
 			</Box>
 

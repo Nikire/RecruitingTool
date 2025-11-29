@@ -9,7 +9,16 @@
 		"build:vite": "vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"typecheck": "tsc --noEmit"
+		"typecheck": "tsc --noEmit",
+		"format": "prettier --write \"src/**/*.{ts,tsx}\"",
+		"docker:build": "docker-compose up -d --build frontend",
+		"docker:rebuild": "docker-compose up -d --build",
+		"docker:logs": "docker-compose logs frontend --tail 100",
+		"docker:logs:follow": "docker-compose logs frontend --follow",
+		"docker:restart": "docker-compose restart frontend",
+		"checks": "npm run typecheck && npm run lint",
+		"checks:fix": "npm run format && npm run lint",
+		"agent:log": "node -e \"const fs=require('fs');const msg=process.argv[1];const date=new Date().toISOString().slice(0,19).replace('T',' ');fs.appendFileSync('../.claude/logs/agent-activity.log','['+date+'] [npm-script] '+msg+'\\n---\\n');\""
 	},
 	"dependencies": {
 		"@emotion/react": "^11.14.0",
@@ -20,10 +29,12 @@
 		"@mui/material": "^7.0.2",
 		"@mui/styled-engine-sc": "^6.4.3",
 		"@mui/system": "^7.3.5",
+		"@mui/x-data-grid": "^8.20.0",
 		"@mui/x-date-pickers": "^8.18.0",
 		"@tanstack/react-query": "^5.74.4",
 		"axios": "^1.8.4",
 		"date-fns": "^4.1.0",
+		"flag-icons": "^7.5.0",
 		"i18next": "^25.6.3",
 		"i18next-browser-languagedetector": "^8.2.0",
 		"jotai": "^2.15.1",
@@ -32,8 +43,10 @@
 		"react-hook-form": "^7.56.4",
 		"react-hot-toast": "^2.6.0",
 		"react-i18next": "^16.3.5",
+		"react-is": "^19.2.0",
 		"react-router": "^7.5.1",
 		"react-router-dom": "^7.5.1",
+		"recharts": "^3.5.0",
 		"styled-components": "^6.1.15"
 	},
 	"devDependencies": {

@@ -1,10 +1,11 @@
-import {Box, Typography, Grid, CircularProgress, Button, Paper} from '@mui/material';
+import {Box, Typography, Grid, Button, Paper} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import GroupIcon from '@mui/icons-material/Group';
 import WorkIcon from '@mui/icons-material/Work';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import AddIcon from '@mui/icons-material/Add';
 import {useApplications} from '../../hooks/api/useApplications';
 import {useCandidates} from '../../hooks/api/useCandidates';
@@ -12,9 +13,12 @@ import {useJobPositions} from '../../hooks/api/useJobPositions';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
 import {Navigate} from 'react-router-dom';
+import {useDialog} from '../../hooks/useDialog';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
+import ManualCandidateDialog from '../../components/dialogs/ManualCandidateDialog';
 import {Application} from '../../types/application.types';
 import {DashboardStatCard, ApplicationListItem, QuickActionButton} from '../../components/dashboard';
+import SkeletonLoader from '../../components/common/SkeletonLoader';
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -25,6 +29,7 @@ const HRDashboard: React.FC = () => {
 	const {user} = useUserAtom();
 	const navigate = useNavigate();
 	const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
+	const manualCandidateDialog = useDialog<never>();
 
 	// Permission check
 	const hasAccess = canManageResources(user);
@@ -52,40 +57,49 @@ const HRDashboard: React.FC = () => {
 	// Dashboard stat cards data
 	const statsData = [
 		{
-			title: 'Applications',
+			title: 'dashboard.stats.applications',
 			value: totalApplications,
-			subtitle: `${pendingApplications} pending review`,
+			subtitle: t('dashboard.stats.pending_review_count', {count: pendingApplications}),
 			icon: <AssignmentIcon />,
 			iconColor: 'primary.main',
 			onClick: () => navigate('/hr/applications'),
+			translate: true,
 		},
 		{
-			title: 'Candidates',
+			title: 'dashboard.stats.candidates',
 			value: totalCandidates,
-			subtitle: 'Active in hiring processes',
+			subtitle: t('dashboard.stats.active_in_hiring'),
 			icon: <GroupIcon />,
 			iconColor: 'success.main',
 			onClick: () => navigate('/hr/candidates'),
+			translate: true,
 		},
 		{
-			title: 'Job Positions',
+			title: 'dashboard.stats.job_positions',
 			value: totalJobPositions,
-			subtitle: `${openPositions} currently open`,
+			subtitle: t('dashboard.stats.currently_open', {count: openPositions}),
 			icon: <WorkIcon />,
 			iconColor: 'info.main',
 			onClick: () => navigate('/hr/job-positions'),
+			translate: true,
 		},
 		{
-			title: 'Pending Review',
+			title: 'dashboard.stats.pending_review',
 			value: pendingApplications,
-			subtitle: 'Applications need attention',
+			subtitle: t('dashboard.stats.applications_need_attention'),
 			icon: <AssignmentIcon />,
 			iconColor: 'warning.main',
+			translate: true,
 		},
 	];
 
 	// Quick actions configuration
 	const quickActions = [
+		{
+			icon: <PersonAddIcon />,
+			label: 'dashboard.add_candidate',
+			onClick: () => manualCandidateDialog.open(),
+		},
 		{
 			icon: <WorkIcon />,
 			label: 'dashboard.manage_positions',
@@ -104,22 +118,40 @@ const HRDashboard: React.FC = () => {
 	];
 
 	return (
-		<Box sx={{mt: 8}}>
-			<Box sx={{mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-				<Typography variant="h4" component="h1">
+		<Box>
+			<Box
+				sx={{
+					mb: {xs: 2, sm: 4},
+					display: 'flex',
+					flexDirection: {xs: 'column', sm: 'row'},
+					justifyContent: 'space-between',
+					alignItems: {xs: 'flex-start', sm: 'center'},
+					gap: 2,
+				}}
+			>
+				<Typography
+					variant="h4"
+					component="h1"
+					sx={{fontSize: {xs: '1.5rem', sm: '2.125rem'}}}
+				>
 					{t('dashboard.title')}
 				</Typography>
 				<Button
 					variant="contained"
 					startIcon={<AddIcon />}
 					onClick={() => navigate('/hr/job-positions')}
+					sx={{
+						width: {xs: '100%', sm: 'auto'},
+						minHeight: '44px', // Minimum touch target
+					}}
+					aria-label={t('dashboard.create_position')}
 				>
 					{t('dashboard.create_position')}
 				</Button>
 			</Box>
 
 			{/* Statistics Cards */}
-			<Grid container spacing={3} sx={{mb: 4}}>
+			<Grid container spacing={{xs: 2, sm: 3}} sx={{mb: {xs: 3, sm: 4}}}>
 				{statsData.map((stat, index) => (
 					<Grid item xs={12} sm={6} md={3} key={index}>
 						<DashboardStatCard
@@ -130,26 +162,44 @@ const HRDashboard: React.FC = () => {
 							iconColor={stat.iconColor}
 							isLoading={isLoading}
 							onClick={stat.onClick}
+							translate={stat.translate}
 						/>
 					</Grid>
 				))}
 			</Grid>
 
 			{/* Recent Applications */}
-			<Paper sx={{p: 3}}>
-				<Box sx={{mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-					<Typography variant="h5" component="h2">
+			<Paper sx={{p: {xs: 2, sm: 3}}}>
+				<Box
+					sx={{
+						mb: {xs: 2, sm: 3},
+						display: 'flex',
+						flexDirection: {xs: 'column', sm: 'row'},
+						justifyContent: 'space-between',
+						alignItems: {xs: 'flex-start', sm: 'center'},
+						gap: 2,
+					}}
+				>
+					<Typography
+						variant="h5"
+						component="h2"
+						sx={{fontSize: {xs: '1.25rem', sm: '1.5rem'}}}
+					>
 						{t('dashboard.recent_applications')}
 					</Typography>
-					<Button onClick={() => navigate('/hr/applications')}>
+					<Button
+						onClick={() => navigate('/hr/applications')}
+						sx={{
+							width: {xs: '100%', sm: 'auto'},
+							minHeight: '44px',
+						}}
+					>
 						{t('dashboard.view_all')}
 					</Button>
 				</Box>
 
 				{isLoading ? (
-					<Box sx={{display: 'flex', justifyContent: 'center', py: 4}}>
-						<CircularProgress />
-					</Box>
+					<SkeletonLoader variant="list" count={5} />
 				) : recentApplications.length === 0 ? (
 					<Typography color="text.secondary" sx={{py: 4, textAlign: 'center'}}>
 						{t('dashboard.no_applications')}
@@ -168,8 +218,15 @@ const HRDashboard: React.FC = () => {
 			</Paper>
 
 			{/* Quick Actions */}
-			<Box sx={{mt: 4}}>
-				<Typography variant="h5" component="h2" sx={{mb: 2}}>
+			<Box sx={{mt: {xs: 3, sm: 4}}}>
+				<Typography
+					variant="h5"
+					component="h2"
+					sx={{
+						mb: 2,
+						fontSize: {xs: '1.25rem', sm: '1.5rem'},
+					}}
+				>
 					{t('dashboard.quick_actions')}
 				</Typography>
 				<Grid container spacing={2}>
@@ -190,6 +247,12 @@ const HRDashboard: React.FC = () => {
 				open={!!selectedApplication}
 				onClose={() => setSelectedApplication(null)}
 				application={selectedApplication}
+			/>
+
+			{/* Manual Candidate Dialog */}
+			<ManualCandidateDialog
+				open={manualCandidateDialog.isOpen}
+				onClose={manualCandidateDialog.close}
 			/>
 		</Box>
 	);

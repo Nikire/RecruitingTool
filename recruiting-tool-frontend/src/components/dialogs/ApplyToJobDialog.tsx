@@ -13,10 +13,10 @@ import {
 import AttachFileIcon from '@mui/icons-material/AttachFile';
 import {useTranslation} from 'react-i18next';
 import {useCreateApplication} from '../../hooks/api/useApplications';
-import {useUploadFile} from '../../hooks/api/useFiles';
-import {useJobPositions} from '../../hooks/api/useJobPositions';
+import {usePublicJobPosition} from '../../hooks/api/useJobPositions';
 import {CustomQuestionRenderer} from '../forms/CustomQuestionRenderer';
 import {CustomAnswers} from '../../types/customQuestions';
+import {uploadResumePublic} from '../../api/files';
 
 interface ApplyToJobDialogProps {
 	open: boolean;
@@ -33,8 +33,8 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 }) => {
 	const {t} = useTranslation();
 	const {mutateAsync: createApplication, isPending: submitting} = useCreateApplication();
-	const {mutateAsync: uploadFile, isPending: uploading} = useUploadFile();
-	const {data: jobPosition, isLoading: loadingJob} = useJobPositions(jobUid);
+	const {data: jobPosition, isLoading: loadingJob} = usePublicJobPosition(jobUid);
+	const [uploading, setUploading] = useState(false);
 
 	const [formData, setFormData] = useState({
 		applicantName: '',
@@ -128,8 +128,10 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 			let resumeFileUid: string | undefined;
 
 			if (resumeFile) {
-				const uploadedFile = await uploadFile({file: resumeFile});
+				setUploading(true);
+				const uploadedFile = await uploadResumePublic(resumeFile);
 				resumeFileUid = uploadedFile.uid;
+				setUploading(false);
 			}
 
 			await createApplication({
@@ -148,6 +150,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 			}, 2000);
 		} catch (error) {
 			console.error('Application submission failed:', error);
+			setUploading(false);
 		}
 	};
 
