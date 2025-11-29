@@ -24,9 +24,22 @@ jobs:
         run: |
           # Extract issue numbers from PR body and title
           # Looks for patterns like: Closes #123, Fixes #456, Resolves #789
-          PR_BODY="${{ github.event.pull_request.body }}"
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          BRANCH_NAME="${{ github.event.pull_request.head.ref }}"
+
+          # Use heredoc to safely handle PR body with special characters (backticks, etc.)
+          PR_BODY=$(cat <<'EOF'
+          ${{ github.event.pull_request.body }}
+          EOF
+          )
+
+          PR_TITLE=$(cat <<'EOF'
+          ${{ github.event.pull_request.title }}
+          EOF
+          )
+
+          BRANCH_NAME=$(cat <<'EOF'
+          ${{ github.event.pull_request.head.ref }}
+          EOF
+          )
 
           # Combine all text sources
           ALL_TEXT="$PR_TITLE $PR_BODY $BRANCH_NAME"
