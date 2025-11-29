@@ -21,13 +21,11 @@ const AccessDeniedMessage: React.FC<AccessDeniedMessageProps> = ({
 		: t('access.denied');
 
 	return (
-		<Box sx={{mt: 8}}>
+		<Box>
 			<Alert severity="error" sx={{mb: 2}}>
 				{message || defaultMessage}
 			</Alert>
-			<Typography variant="body1">
-				{t('access.contact_admin')}
-			</Typography>
+			<Typography variant="body1">{t('access.contact_admin')}</Typography>
 		</Box>
 	);
 };

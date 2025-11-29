@@ -13,10 +13,10 @@ import {isAdmin} from '../../../utils/permissions';
 import {ApplicationStatus} from '../../../types/application.types';
 import ApplicationsTable from '../../../components/applications/ApplicationsTable';
 import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
-import { useTranslation } from 'react-i18next';
+import {useTranslation} from 'react-i18next';
 
 const ApplicationsPage: React.FC = () => {
-	const { t } = useTranslation();
+	const {t} = useTranslation();
 	const {user} = useUserAtom();
 	const hasAdminAccess = isAdmin(user);
 	const [statusFilter, setStatusFilter] = useState<ApplicationStatus | ''>('');
@@ -45,7 +45,6 @@ const ApplicationsPage: React.FC = () => {
 					justifyContent: 'space-between',
 					alignItems: 'center',
 					mb: 3,
-					mt: 8,
 				}}
 			>
 				<Typography variant="h4">{t('applications_page.title')}</Typography>
@@ -54,7 +53,9 @@ const ApplicationsPage: React.FC = () => {
 			<Paper sx={{p: 2, mb: 3}}>
 				<Box sx={{display: 'flex', gap: 2, alignItems: 'center'}}>
 					<FormControl sx={{minWidth: 200}}>
-						<InputLabel id="status-filter-label">{t('applications_page.filter_by_status')}</InputLabel>
+						<InputLabel id="status-filter-label">
+							{t('applications_page.filter_by_status')}
+						</InputLabel>
 						<Select
 							labelId="status-filter-label"
 							id="status-filter"
