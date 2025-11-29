@@ -109,9 +109,9 @@ const HRJobPositionDetailPage: React.FC = () => {
 
 	// Company permission check
 	const canAccess =
-		user.role.includes('ADMIN') ||
-		user.role.includes('SUPER_ADMIN') ||
-		user.companyId === jobPosition.companyId;
+		user.roles.includes('ADMIN') ||
+		user.roles.includes('SUPER_ADMIN') ||
+		user.companyUid === jobPosition.companyUid;
 
 	if (!canAccess) {
 		return (
