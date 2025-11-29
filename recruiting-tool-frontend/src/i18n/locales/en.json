@@ -39,7 +39,8 @@
     "my_profile": "My Profile",
     "back_to_careers": "Back to Careers",
     "n_a": "N/A",
-    "unknown_user": "Unknown User"
+    "unknown_user": "Unknown User",
+    "access_denied": "Access Denied"
   },
   "validation": {
     "required": "This field is required",
@@ -184,7 +185,8 @@
     "title": "Job Positions",
     "create_title": "Create New Job Position",
     "update_title": "Update Job Position",
-    "subtitle": "Create, manage, and monitor job openings for recruitment",
+    "subtitle": "Manage your company's job openings",
+    "create_new": "Create Job Position",
     "search_placeholder": "Search positions...",
     "job_title_label": "Job Title",
     "description_label": "Description",
@@ -883,7 +885,9 @@
     "stage_type": "Type",
     "no_stages": "No stages defined for this job position yet.",
     "custom_questions": "Custom Screening Questions",
-    "no_custom_questions": "No custom screening questions have been added to this job position. Applicants will only need to provide standard information."
+    "no_custom_questions": "No custom screening questions have been added to this job position. Applicants will only need to provide standard information.",
+    "hr_detail_title": "Job Position Management",
+    "access_denied_message": "You do not have permission to access this job position. You can only view job positions from your own company."
   },
   "file_list": {
     "error_loading": "Failed to load files. Please try again later.",

@@ -26,6 +26,7 @@ import SystemSettingsPage from './pages/admin/SystemSettingsPage';
 import BookInterviewPage from './pages/booking/BookInterviewPage';
 import BookingConfirmedPage from './pages/booking/BookingConfirmedPage';
 import ErrorBoundaryTest from './pages/test/ErrorBoundaryTest';
+import HRJobPositionDetailPage from './pages/hr/job-position-detail/HRJobPositionDetailPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -71,6 +72,7 @@ function App() {
 						<Route path="/hr/applications" element={<ApplicationsPage />} />
 						<Route path="/hr/candidates" element={<CandidatesPage />} />
 						<Route path="/hr/job-positions" element={<JobPositionsPage />} />
+						<Route path="/hr/job-positions/:uid" element={<HRJobPositionDetailPage />} />
 						<Route path="/hr/analytics" element={<AnalyticsPage />} />
 						<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
 					</Route>

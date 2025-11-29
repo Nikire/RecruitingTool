@@ -126,20 +126,22 @@ const JobPositionCardView: React.FC<{
 				>
 					{t('job_positions.view_details')}
 				</Button>
-				<Button
-					fullWidth
-					size="small"
-					variant="contained"
-					onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
-					disabled={jobPosition.status !== 'OPEN'}
-					sx={{
-						minHeight: 44,
-						fontSize: {xs: '0.9rem', sm: '1rem'},
-						flex: {xs: '1 1 auto', sm: '0 1 auto'},
-					}}
-				>
-					{t('common.apply')}
-				</Button>
+				{publicMode && (
+					<Button
+						fullWidth
+						size="small"
+						variant="contained"
+						onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
+						disabled={jobPosition.status !== 'OPEN'}
+						sx={{
+							minHeight: 44,
+							fontSize: {xs: '0.9rem', sm: '1rem'},
+							flex: {xs: '1 1 auto', sm: '0 1 auto'},
+						}}
+					>
+						{t('common.apply')}
+					</Button>
+				)}
 			</Box>
 		</CardContent>
 	</Card>
@@ -214,7 +216,12 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	};
 
 	const handleViewDetails = (uid: string) => {
-		navigate(`/careers/${uid}`);
+		// Navigate to different detail pages based on context
+		if (publicMode) {
+			navigate(`/careers/${uid}`);
+		} else {
+			navigate(`/hr/job-positions/${uid}`);
+		}
 	};
 
 	// Show skeleton loader on INITIAL load, not on refetch
@@ -347,14 +354,16 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 											>
 												{t('job_positions.view_details')}
 											</Button>
-											<Button
-												size="small"
-												variant="contained"
-												onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
-												disabled={jobPosition.status !== 'OPEN'}
-											>
-												{t('common.apply')}
-											</Button>
+											{publicMode && (
+												<Button
+													size="small"
+													variant="contained"
+													onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
+													disabled={jobPosition.status !== 'OPEN'}
+												>
+													{t('common.apply')}
+												</Button>
+											)}
 										</Box>
 									</TableCell>
 								</TableRow>

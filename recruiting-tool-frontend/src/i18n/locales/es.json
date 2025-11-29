@@ -39,7 +39,8 @@
     "my_profile": "Mi Perfil",
     "back_to_careers": "Volver a Carreras",
     "n_a": "N/A",
-    "unknown_user": "Usuario Desconocido"
+    "unknown_user": "Usuario Desconocido",
+    "access_denied": "Acceso Denegado"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -184,7 +185,8 @@
     "title": "Posiciones de Trabajo",
     "create_title": "Crear Nueva Posición de Trabajo",
     "update_title": "Actualizar Posición de Trabajo",
-    "subtitle": "Crear, gestionar y monitorear ofertas de trabajo para reclutamiento",
+    "subtitle": "Gestiona las ofertas de trabajo de tu empresa",
+    "create_new": "Crear Posición de Trabajo",
     "search_placeholder": "Buscar posiciones...",
     "job_title_label": "Título del Trabajo",
     "description_label": "Descripción",
@@ -881,7 +883,9 @@
     "stage_type": "Tipo",
     "no_stages": "No hay etapas definidas para esta posición todavía.",
     "custom_questions": "Preguntas de Selección Personalizadas",
-    "no_custom_questions": "No se han agregado preguntas de selección personalizadas a esta posición de trabajo. Los postulantes solo necesitarán proporcionar información estándar."
+    "no_custom_questions": "No se han agregado preguntas de selección personalizadas a esta posición de trabajo. Los postulantes solo necesitarán proporcionar información estándar.",
+    "hr_detail_title": "Gestión de Posición de Trabajo",
+    "access_denied_message": "No tiene permiso para acceder a esta posición de trabajo. Solo puede ver posiciones de trabajo de su propia empresa."
   },
   "file_list": {
     "error_loading": "Error al cargar archivos. Por favor intente nuevamente más tarde.",
