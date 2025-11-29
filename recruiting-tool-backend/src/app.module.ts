@@ -39,33 +39,15 @@ import { CacheModule } from './modules/cache/cache.module';
     CacheModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
-      useFactory: (config: ConfigService) => [
-        {
-          name: 'default',
-          ttl: parseInt(config.get('THROTTLE_TTL', '900000')), // 15 minutes in ms
-          limit: parseInt(config.get('THROTTLE_LIMIT', '100')), // 100 requests
-        },
-        {
-          name: 'auth',
-          ttl: parseInt(config.get('THROTTLE_AUTH_TTL', '900000')), // 15 minutes
-          limit: parseInt(config.get('THROTTLE_AUTH_LIMIT', '5')), // 5 requests
-        },
-        {
-          name: 'register',
-          ttl: parseInt(config.get('THROTTLE_REGISTER_TTL', '3600000')), // 1 hour
-          limit: parseInt(config.get('THROTTLE_REGISTER_LIMIT', '3')), // 3 requests
-        },
-        {
-          name: 'ai',
-          ttl: parseInt(config.get('THROTTLE_AI_TTL', '3600000')), // 1 hour
-          limit: parseInt(config.get('THROTTLE_AI_LIMIT', '10')), // 10 requests
-        },
-        {
-          name: 'application',
-          ttl: parseInt(config.get('THROTTLE_APPLICATION_TTL', '3600000')), // 1 hour
-          limit: parseInt(config.get('THROTTLE_APPLICATION_LIMIT', '5')), // 5 requests
-        },
-      ],
+      useFactory: (config: ConfigService) => ({
+        throttlers: [
+          {
+            name: 'default',
+            ttl: parseInt(config.get('THROTTLE_TTL', '60000')), // TTL in milliseconds
+            limit: parseInt(config.get('THROTTLE_LIMIT', '100')), // Max requests per TTL window
+          },
+        ],
+      }),
     }),
     UsersModule,
     SharedModule,
