@@ -14,9 +14,15 @@ const MainLayout = () => {
 	// Redirect to login if session is invalid or user is not authenticated
 	useEffect(() => {
 		const token = localStorage.getItem('authToken');
+		const currentPath = window.location.pathname;
+
+		// Don't redirect on public routes
+		const publicRoutes = ['/careers', '/login', '/signup', '/book-interview', '/booking-confirmed'];
+		const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
 
 		// If there's a token but the auth query failed (401, 403, etc.), session is invalid
-		if (token && isError) {
+		// Only redirect to login if we're NOT on a public route
+		if (token && isError && !isPublicRoute) {
 			localStorage.removeItem('authToken');
 			navigate('/login', {replace: true});
 		}

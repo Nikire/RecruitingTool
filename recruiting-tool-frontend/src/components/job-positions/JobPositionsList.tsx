@@ -53,7 +53,8 @@ const JobPositionCardView: React.FC<{
 	jobPosition: any;
 	onApplyClick: (uid: string, title: string) => void;
 	onViewDetails: (uid: string) => void;
-}> = ({jobPosition, onApplyClick, onViewDetails}) => {
+	publicMode?: boolean;
+}> = ({jobPosition, onApplyClick, onViewDetails, publicMode = false}) => {
 	const {t} = useTranslation();
 	return (
 		<Card
@@ -73,12 +74,14 @@ const JobPositionCardView: React.FC<{
 			</Typography>
 
 			<Box sx={{display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap'}}>
-				<Chip
-					label={jobPosition.status}
-					color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
-					size="small"
-					sx={{fontSize: '0.85rem'}}
-				/>
+				{!publicMode && (
+					<Chip
+						label={jobPosition.status}
+						color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
+						size="small"
+						sx={{fontSize: '0.85rem'}}
+					/>
+				)}
 				<Chip
 					label={`${jobPosition.stages?.length || 0} ${t('stages.title')}`}
 					variant="outlined"
@@ -263,6 +266,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 								jobPosition={jobPosition}
 								onApplyClick={handleApplyClick}
 								onViewDetails={handleViewDetails}
+								publicMode={publicMode}
 							/>
 						))}
 					</Box>
@@ -304,7 +308,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 							<TableRow>
 								<TableCell sx={{minWidth: 200}}><strong>{t('job_positions.job_title_label')}</strong></TableCell>
 								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions.company')}</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>
+								{!publicMode && <TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>}
 								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
 								{!publicMode && <TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>}
 								<TableCell sx={{minWidth: 120}}><strong>{t('careers.posted_date')}</strong></TableCell>
@@ -318,13 +322,15 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 										{jobPosition.title}
 									</TableCell>
 									<TableCell>{jobPosition.companyName || 'N/A'}</TableCell>
-									<TableCell>
-										<Chip
-											label={jobPosition.status}
-											color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
-											size="small"
-										/>
-									</TableCell>
+									{!publicMode && (
+										<TableCell>
+											<Chip
+												label={jobPosition.status}
+												color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
+												size="small"
+											/>
+										</TableCell>
+									)}
 									<TableCell>{jobPosition.stages?.length || 0}</TableCell>
 									{!publicMode && (
 										<TableCell sx={{maxWidth: 180}}>

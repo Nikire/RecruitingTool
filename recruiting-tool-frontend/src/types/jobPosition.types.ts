@@ -21,6 +21,7 @@ export interface PublicJobPosition {
 	uid: string;
 	title: string;
 	description?: string;
+	status: 'OPEN' | 'CLOSED' | 'CANCELLED';
 	companyName?: string;
 	companyDescription?: string;
 	customQuestions?: Array<CustomQuestion>;

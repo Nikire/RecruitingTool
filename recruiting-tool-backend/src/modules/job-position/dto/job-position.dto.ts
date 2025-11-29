@@ -128,6 +128,9 @@ export class PublicJobPositionResponseDto {
   @ApiProperty({ description: 'The description of the job position', example: 'Looking for a talented software engineer', required: false })
   description?: string;
 
+  @ApiProperty({ description: 'The status of the job position', example: 'OPEN', enum: JobPositionStatus })
+  status: JobPositionStatus;
+
   @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
   companyName: string;
 
