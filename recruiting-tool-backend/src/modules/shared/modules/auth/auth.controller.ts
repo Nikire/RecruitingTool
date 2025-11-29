@@ -79,7 +79,7 @@ export class AuthController {
   @ApiTooManyRequestsResponse({
     description: 'Too many refresh attempts',
   })
-  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 refresh attempts per minute
+  @Throttle({ default: { limit: 30, ttl: 60000 } }) // 30 refresh attempts per minute (increased for multiple tabs/sessions - was 10)
   async refresh(@Body() refreshTokenDto: RefreshTokenDto): Promise<TokenPairDto> {
     return this.authService.refreshAccessToken(refreshTokenDto);
   }
