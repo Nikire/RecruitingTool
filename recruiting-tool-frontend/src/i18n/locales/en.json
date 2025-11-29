@@ -40,7 +40,11 @@
     "back_to_careers": "Back to Careers",
     "n_a": "N/A",
     "unknown_user": "Unknown User",
-    "access_denied": "Access Denied"
+    "access_denied": "Access Denied",
+    "yes": "Yes",
+    "no": "No",
+    "print": "Print",
+    "unknown": "Unknown"
   },
   "validation": {
     "required": "This field is required",
@@ -121,7 +125,31 @@
     "in_progress": "In Progress",
     "reviewed": "Reviewed",
     "accepted": "Accepted",
+    "rejected": "Rejected",
+    "done": "Done",
+    "current": "Current"
+  },
+  "hiring_process_status": {
+    "all": "All",
+    "open": "Open",
+    "in_progress": "In Progress",
+    "closed": "Closed",
+    "cancelled": "Cancelled",
     "rejected": "Rejected"
+  },
+  "stage_types": {
+    "screening": "Screening",
+    "phone_interview": "Phone Interview",
+    "technical_interview": "Technical Interview",
+    "final_interview": "Final Interview",
+    "offer": "Offer",
+    "interview": "Interview"
+  },
+  "question_types": {
+    "short_text": "Short Text",
+    "long_text": "Long Text",
+    "multiple_choice": "Multiple Choice",
+    "checkboxes": "Checkboxes"
   },
   "candidates": {
     "title": "Candidates",
@@ -225,7 +253,9 @@
     "creating": "Creating...",
     "name_label": "Company Name",
     "description_label": "Description",
-    "no_companies": "No companies available"
+    "no_companies": "No companies available",
+    "delete_title": "Delete Company",
+    "delete_message": "Are you sure you want to delete this company?"
   },
   "users": {
     "title": "Users",
@@ -482,11 +512,47 @@
   },
   "email_templates": {
     "title": "Email Templates",
+    "subtitle": "Manage professional email templates for candidate communication",
     "create_title": "Create Email Template",
-    "subject_label": "Subject",
-    "body_label": "Body",
+    "update_title": "Update Email Template",
+    "preview_title": "Preview Email Template",
+    "create_template": "Create Template",
+    "search_placeholder": "Search templates by name or subject...",
+    "name_label": "Template Name",
+    "name_placeholder": "e.g., Interview Invitation",
+    "subject_label": "Email Subject",
+    "subject_placeholder": "e.g., Interview Invitation for {{positionTitle}}",
+    "body_label": "Email Body",
+    "body_placeholder": "Dear {{candidateName}},\\n\\nWe are pleased to invite you...",
+    "company_label": "Company (optional)",
+    "company_placeholder": "Select company for company-specific template",
+    "is_default_label": "Default Template",
+    "is_default_hint": "Mark as default template for quick access",
+    "created_by": "Created By",
+    "no_templates": "No email templates found",
+    "add_first_template": "Create your first email template",
+    "delete_message": "Are you sure you want to delete this email template?",
+    "delete_warning": "This action cannot be undone.",
     "variables": "Available Variables",
-    "no_templates": "No email templates yet. Click \"Create Template\" to add your first one!"
+    "variable_helper": "Available Variables",
+    "variable_candidate_name": "{{candidateName}} - Candidate's name",
+    "variable_position_title": "{{positionTitle}} - Job position title",
+    "variable_company_name": "{{companyName}} - Company name",
+    "variable_hr_name": "{{hrName}} - HR contact name",
+    "variable_interview_date": "{{interviewDate}} - Interview date",
+    "variable_interview_time": "{{interviewTime}} - Interview time",
+    "variable_meeting_link": "{{meetingLink}} - Meeting URL",
+    "insert_variable": "Insert Variable",
+    "preview_with_sample": "Preview with Sample Data",
+    "rendered_subject": "Rendered Subject",
+    "rendered_body": "Rendered Body",
+    "system_wide": "System-wide",
+    "table_name": "Name",
+    "table_subject": "Subject",
+    "table_default": "Default",
+    "table_created_by": "Created By",
+    "table_created_at": "Created At",
+    "table_actions": "Actions"
   },
   "forms": {
     "custom_questions": "Custom Questions",
@@ -799,7 +865,11 @@
     "header_actions": "Actions",
     "edit_tooltip": "Edit job position",
     "delete_tooltip": "Delete job position",
-    "delete_title": "Delete Job Position"
+    "delete_title": "Delete Job Position",
+    "error_loading": "Error loading job positions. Please try again.",
+    "processes_count": "{{count}} processes",
+    "no_positions": "No job positions found.",
+    "delete_message": "Are you sure you want to delete this job position? This will also delete all associated stages and hiring processes."
   },
   "profile_page": {
     "no_user_data": "No user data available",
@@ -820,7 +890,8 @@
   },
   "applications_page": {
     "title": "Job Applications",
-    "filter_by_status": "Filter by Status"
+    "filter_by_status": "Filter by Status",
+    "all_applications": "All Applications"
   },
   "email_templates_page": {
     "title": "Email Templates",
@@ -894,21 +965,6 @@
     "no_files": "No files uploaded yet",
     "delete_title": "Delete File",
     "delete_message": "Are you sure you want to delete \"{{fileName}}\"? This action cannot be undone."
-  },
-  "job_positions_table": {
-    "error_loading": "Error loading job positions. Please try again.",
-    "processes_count": "{{count}} processes",
-    "no_positions": "No job positions found.",
-    "delete_message": "Are you sure you want to delete this job position? This will also delete all associated stages and hiring processes."
-  },
-  "applications_page": {
-    "all_applications": "All Applications"
-  },
-  "email_templates_page": {
-    "create_template": "Create Template",
-    "search_placeholder": "Search templates by name, subject, or content...",
-    "default_label": "Default",
-    "delete_confirmation": "Are you sure you want to delete \"{{name}}\"?"
   },
   "hr_layout": {
     "title": "HR Panel",
@@ -1206,7 +1262,8 @@
     "position": "Position",
     "source": "Source",
     "count": "Count",
-    "stage": "Stage"
+    "stage": "Stage",
+    "vs_last_period": "vs. Last Period"
   },
   "search": {
     "advanced_search": "Advanced Search",
@@ -1327,57 +1384,6 @@
       "note_added": "Note Added",
       "application_received": "Application Received",
       "email_sent": "Email Sent"
-    }
-  },
-  "email_templates": {
-    "title": "Email Templates",
-    "subtitle": "Manage professional email templates for candidate communication",
-    "create_title": "Create Email Template",
-    "update_title": "Update Email Template",
-    "preview_title": "Preview Email Template",
-    "create_template": "Create Template",
-    "search_placeholder": "Search templates by name or subject...",
-    "name_label": "Template Name",
-    "name_placeholder": "e.g., Interview Invitation",
-    "subject_label": "Email Subject",
-    "subject_placeholder": "e.g., Interview Invitation for {{positionTitle}}",
-    "body_label": "Email Body",
-    "body_placeholder": "Dear {{candidateName}},\\n\\nWe are pleased to invite you...",
-    "company_label": "Company (optional)",
-    "company_placeholder": "Select company for company-specific template",
-    "is_default_label": "Default Template",
-    "is_default_hint": "Mark as default template for quick access",
-    "created_by": "Created By",
-    "no_templates": "No email templates found",
-    "add_first_template": "Create your first email template",
-    "delete_message": "Are you sure you want to delete this email template?",
-    "delete_warning": "This action cannot be undone.",
-    "variable_helper": "Available Variables",
-    "variable_candidate_name": "{{candidateName}} - Candidate's name",
-    "variable_position_title": "{{positionTitle}} - Job position title",
-    "variable_company_name": "{{companyName}} - Company name",
-    "variable_hr_name": "{{hrName}} - HR contact name",
-    "variable_interview_date": "{{interviewDate}} - Interview date",
-    "variable_interview_time": "{{interviewTime}} - Interview time",
-    "variable_meeting_link": "{{meetingLink}} - Meeting URL",
-    "insert_variable": "Insert Variable",
-    "preview_with_sample": "Preview with Sample Data",
-    "rendered_subject": "Rendered Subject",
-    "rendered_body": "Rendered Body",
-    "system_wide": "System-wide",
-    "table_name": "Name",
-    "table_subject": "Subject",
-    "table_default": "Default",
-    "table_created_by": "Created By",
-    "table_created_at": "Created At",
-    "table_actions": "Actions",
-    "default_templates": {
-      "application_rejection": "Application Rejection",
-      "interview_invitation": "Interview Invitation",
-      "job_offer": "Job Offer",
-      "application_confirmation": "Application Confirmation",
-      "status_update": "Status Update",
-      "interview_reminder": "Interview Reminder"
     }
   }
 }

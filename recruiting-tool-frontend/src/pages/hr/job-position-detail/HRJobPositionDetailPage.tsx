@@ -289,7 +289,7 @@ const HRJobPositionDetailPage: React.FC = () => {
 					return (
 						<Chip
 							key={status}
-							label={`${status.replace(/_/g, ' ')} (${count})`}
+							label={`${t(`hiring_process_status.${status.toLowerCase()}`)} (${count})`}
 							onClick={() => setStatusFilter(status)}
 							color={statusFilter === status ? 'primary' : 'default'}
 							variant={statusFilter === status ? 'filled' : 'outlined'}
@@ -402,7 +402,7 @@ const HRJobPositionDetailPage: React.FC = () => {
 											</Typography>
 											<Typography variant="caption" color="textSecondary">
 												{t('job_position_detail.stage_type')}:{' '}
-												{stage.type.replace(/_/g, ' ')}
+												{t(`stage_types.${stage.type.toLowerCase()}`)}
 											</Typography>
 										</Box>
 									</Box>
@@ -458,7 +458,7 @@ const HRJobPositionDetailPage: React.FC = () => {
 											sx={{mb: 1}}
 										>
 											{t('custom_questions.type_label', {
-												type: question.type.replace(/_/g, ' '),
+												type: t(`question_types.${question.type.toLowerCase()}`),
 											})}
 										</Typography>
 										{question.options && question.options.length > 0 && (

@@ -40,7 +40,11 @@
     "back_to_careers": "Volver a Carreras",
     "n_a": "N/A",
     "unknown_user": "Usuario Desconocido",
-    "access_denied": "Acceso Denegado"
+    "access_denied": "Acceso Denegado",
+    "yes": "Sí",
+    "no": "No",
+    "print": "Imprimir",
+    "unknown": "Desconocido"
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -121,7 +125,31 @@
     "in_progress": "En Progreso",
     "reviewed": "Revisado",
     "accepted": "Aceptado",
+    "rejected": "Rechazado",
+    "done": "Completado",
+    "current": "Actual"
+  },
+  "hiring_process_status": {
+    "all": "Todos",
+    "open": "Abierto",
+    "in_progress": "En Progreso",
+    "closed": "Cerrado",
+    "cancelled": "Cancelado",
     "rejected": "Rechazado"
+  },
+  "stage_types": {
+    "screening": "Selección",
+    "phone_interview": "Entrevista Telefónica",
+    "technical_interview": "Entrevista Técnica",
+    "final_interview": "Entrevista Final",
+    "offer": "Oferta",
+    "interview": "Entrevista"
+  },
+  "question_types": {
+    "short_text": "Texto Corto",
+    "long_text": "Texto Largo",
+    "multiple_choice": "Selección Múltiple",
+    "checkboxes": "Casillas de Verificación"
   },
   "candidates": {
     "title": "Candidatos",
@@ -223,7 +251,9 @@
     "creating": "Creando...",
     "name_label": "Nombre de la Empresa",
     "description_label": "Descripción",
-    "no_companies": "No hay empresas disponibles"
+    "no_companies": "No hay empresas disponibles",
+    "delete_title": "Eliminar Empresa",
+    "delete_message": "¿Está seguro que desea eliminar esta empresa?"
   },
   "users": {
     "title": "Usuarios",
@@ -480,11 +510,55 @@
   },
   "email_templates": {
     "title": "Plantillas de Correo",
+    "subtitle": "Administre plantillas de correo profesionales para comunicación con candidatos",
     "create_title": "Crear Plantilla de Correo",
-    "subject_label": "Asunto",
-    "body_label": "Cuerpo",
+    "update_title": "Actualizar Plantilla de Correo",
+    "preview_title": "Vista Previa de Plantilla",
+    "create_template": "Crear Plantilla",
+    "search_placeholder": "Buscar plantillas por nombre o asunto...",
+    "name_label": "Nombre de Plantilla",
+    "name_placeholder": "ej., Invitación a Entrevista",
+    "subject_label": "Asunto del Correo",
+    "subject_placeholder": "ej., Invitación a Entrevista para {{positionTitle}}",
+    "body_label": "Cuerpo del Correo",
+    "body_placeholder": "Estimado/a {{candidateName}},\\n\\nNos complace invitarle...",
+    "company_label": "Empresa (opcional)",
+    "company_placeholder": "Seleccione empresa para plantilla específica de empresa",
+    "is_default_label": "Plantilla Predeterminada",
+    "is_default_hint": "Marcar como plantilla predeterminada para acceso rápido",
+    "created_by": "Creado Por",
+    "no_templates": "No se encontraron plantillas de correo",
+    "add_first_template": "Cree su primera plantilla de correo",
+    "delete_message": "¿Está seguro que desea eliminar esta plantilla de correo?",
+    "delete_warning": "Esta acción no se puede deshacer.",
     "variables": "Variables Disponibles",
-    "no_templates": "Aún no hay plantillas de correo. ¡Haz clic en \"Crear Plantilla\" para agregar la primera!"
+    "variable_helper": "Variables Disponibles",
+    "variable_candidate_name": "{{candidateName}} - Nombre del candidato",
+    "variable_position_title": "{{positionTitle}} - Título de la posición",
+    "variable_company_name": "{{companyName}} - Nombre de la empresa",
+    "variable_hr_name": "{{hrName}} - Nombre del contacto RH",
+    "variable_interview_date": "{{interviewDate}} - Fecha de entrevista",
+    "variable_interview_time": "{{interviewTime}} - Hora de entrevista",
+    "variable_meeting_link": "{{meetingLink}} - URL de la reunión",
+    "insert_variable": "Insertar Variable",
+    "preview_with_sample": "Vista Previa con Datos de Muestra",
+    "rendered_subject": "Asunto Renderizado",
+    "rendered_body": "Cuerpo Renderizado",
+    "system_wide": "A nivel de sistema",
+    "table_name": "Nombre",
+    "table_subject": "Asunto",
+    "table_default": "Predeterminada",
+    "table_created_by": "Creado Por",
+    "table_created_at": "Creado El",
+    "table_actions": "Acciones",
+    "default_templates": {
+      "application_rejection": "Rechazo de Aplicación",
+      "interview_invitation": "Invitación a Entrevista",
+      "job_offer": "Oferta de Trabajo",
+      "application_confirmation": "Confirmación de Aplicación",
+      "status_update": "Actualización de Estado",
+      "interview_reminder": "Recordatorio de Entrevista"
+    }
   },
   "forms": {
     "custom_questions": "Preguntas Personalizadas",
@@ -797,7 +871,11 @@
     "header_actions": "Acciones",
     "edit_tooltip": "Editar posición de trabajo",
     "delete_tooltip": "Eliminar posición de trabajo",
-    "delete_title": "Eliminar Posición de Trabajo"
+    "delete_title": "Eliminar Posición de Trabajo",
+    "error_loading": "Error al cargar posiciones de trabajo. Por favor intente nuevamente.",
+    "processes_count": "{{count}} procesos",
+    "no_positions": "No se encontraron posiciones de trabajo.",
+    "delete_message": "¿Está seguro que desea eliminar esta posición de trabajo? Esto también eliminará todas las etapas y procesos de contratación asociados."
   },
   "profile_page": {
     "no_user_data": "No hay datos de usuario disponibles",
@@ -818,7 +896,8 @@
   },
   "applications_page": {
     "title": "Aplicaciones de Trabajo",
-    "filter_by_status": "Filtrar por Estado"
+    "filter_by_status": "Filtrar por Estado",
+    "all_applications": "Todas las Aplicaciones"
   },
   "email_templates_page": {
     "title": "Plantillas de Correo",
@@ -892,21 +971,6 @@
     "no_files": "No hay archivos subidos todavía",
     "delete_title": "Eliminar Archivo",
     "delete_message": "¿Está seguro que desea eliminar \"{{fileName}}\"? Esta acción no se puede deshacer."
-  },
-  "job_positions_table": {
-    "error_loading": "Error al cargar posiciones de trabajo. Por favor intente nuevamente.",
-    "processes_count": "{{count}} procesos",
-    "no_positions": "No se encontraron posiciones de trabajo.",
-    "delete_message": "¿Está seguro que desea eliminar esta posición de trabajo? Esto también eliminará todas las etapas y procesos de contratación asociados."
-  },
-  "applications_page": {
-    "all_applications": "Todas las Aplicaciones"
-  },
-  "email_templates_page": {
-    "create_template": "Crear Plantilla",
-    "search_placeholder": "Buscar plantillas por nombre, asunto o contenido...",
-    "default_label": "Predeterminada",
-    "delete_confirmation": "¿Está seguro que desea eliminar \"{{name}}\"?"
   },
   "hr_layout": {
     "title": "Panel de RRHH",
@@ -1204,7 +1268,8 @@
     "position": "Posición",
     "source": "Fuente",
     "count": "Cantidad",
-    "stage": "Etapa"
+    "stage": "Etapa",
+    "vs_last_period": "vs. Período Anterior"
   },
   "search": {
     "advanced_search": "Búsqueda Avanzada",
@@ -1325,57 +1390,6 @@
       "note_added": "Nota Agregada",
       "application_received": "Aplicación Recibida",
       "email_sent": "Correo Enviado"
-    }
-  },
-  "email_templates": {
-    "title": "Plantillas de Correo",
-    "subtitle": "Administre plantillas de correo profesionales para comunicación con candidatos",
-    "create_title": "Crear Plantilla de Correo",
-    "update_title": "Actualizar Plantilla de Correo",
-    "preview_title": "Vista Previa de Plantilla",
-    "create_template": "Crear Plantilla",
-    "search_placeholder": "Buscar plantillas por nombre o asunto...",
-    "name_label": "Nombre de Plantilla",
-    "name_placeholder": "ej., Invitación a Entrevista",
-    "subject_label": "Asunto del Correo",
-    "subject_placeholder": "ej., Invitación a Entrevista para {{positionTitle}}",
-    "body_label": "Cuerpo del Correo",
-    "body_placeholder": "Estimado/a {{candidateName}},\\n\\nNos complace invitarle...",
-    "company_label": "Empresa (opcional)",
-    "company_placeholder": "Seleccione empresa para plantilla específica de empresa",
-    "is_default_label": "Plantilla Predeterminada",
-    "is_default_hint": "Marcar como plantilla predeterminada para acceso rápido",
-    "created_by": "Creado Por",
-    "no_templates": "No se encontraron plantillas de correo",
-    "add_first_template": "Cree su primera plantilla de correo",
-    "delete_message": "¿Está seguro que desea eliminar esta plantilla de correo?",
-    "delete_warning": "Esta acción no se puede deshacer.",
-    "variable_helper": "Variables Disponibles",
-    "variable_candidate_name": "{{candidateName}} - Nombre del candidato",
-    "variable_position_title": "{{positionTitle}} - Título de la posición",
-    "variable_company_name": "{{companyName}} - Nombre de la empresa",
-    "variable_hr_name": "{{hrName}} - Nombre del contacto RH",
-    "variable_interview_date": "{{interviewDate}} - Fecha de entrevista",
-    "variable_interview_time": "{{interviewTime}} - Hora de entrevista",
-    "variable_meeting_link": "{{meetingLink}} - URL de la reunión",
-    "insert_variable": "Insertar Variable",
-    "preview_with_sample": "Vista Previa con Datos de Muestra",
-    "rendered_subject": "Asunto Renderizado",
-    "rendered_body": "Cuerpo Renderizado",
-    "system_wide": "A nivel de sistema",
-    "table_name": "Nombre",
-    "table_subject": "Asunto",
-    "table_default": "Predeterminada",
-    "table_created_by": "Creado Por",
-    "table_created_at": "Creado El",
-    "table_actions": "Acciones",
-    "default_templates": {
-      "application_rejection": "Rechazo de Aplicación",
-      "interview_invitation": "Invitación a Entrevista",
-      "job_offer": "Oferta de Trabajo",
-      "application_confirmation": "Confirmación de Aplicación",
-      "status_update": "Actualización de Estado",
-      "interview_reminder": "Recordatorio de Entrevista"
     }
   }
 }

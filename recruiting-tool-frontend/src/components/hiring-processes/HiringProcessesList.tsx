@@ -84,10 +84,10 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 									<TableCell sx={{maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
 										{process.title}
 									</TableCell>
-									<TableCell>{process.company?.name || 'N/A'}</TableCell>
+									<TableCell>{process.company?.name || t('common.n_a')}</TableCell>
 									<TableCell>
 										<Chip
-											label={process.status}
+											label={t(`status.${process.status.toLowerCase()}`)}
 											color={getHiringProcessStatusColor(process.status)}
 											size="small"
 										/>
@@ -120,7 +120,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 												</Typography>
 											</>
 										) : (
-											'N/A'
+											t('common.n_a')
 										)}
 									</TableCell>
 									<TableCell>

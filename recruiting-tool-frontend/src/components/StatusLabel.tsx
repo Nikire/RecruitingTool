@@ -1,4 +1,5 @@
 import {Chip, ChipProps} from '@mui/material';
+import {useTranslation} from 'react-i18next';
 import {JobPositionStatus} from '../types/jobPosition.types';
 import {StageStatus} from '../types/stage.types';
 import {HiringProcessStatus} from '../types/hiringProcess.types';
@@ -8,6 +9,7 @@ type StatusLabelProps = {
 };
 
 const StatusLabel: React.FC<StatusLabelProps> = ({status}) => {
+	const {t} = useTranslation();
 	let color: ChipProps['color'] = 'default';
 
 	switch (status) {
@@ -37,7 +39,7 @@ const StatusLabel: React.FC<StatusLabelProps> = ({status}) => {
 			break;
 	}
 
-	return <Chip label={status} color={color} sx={{fontWeight: 600}} />;
+	return <Chip label={t(`status.${status.toLowerCase()}`)} color={color} sx={{fontWeight: 600}} />;
 };
 
 export default StatusLabel;

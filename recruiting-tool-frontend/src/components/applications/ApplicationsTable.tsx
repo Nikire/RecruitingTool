@@ -105,7 +105,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 								</TableCell>
 								<TableCell>
 									<Chip
-										label={application.status}
+										label={t(`status.${application.status.toLowerCase()}`)}
 										color={getApplicationStatusColor(application.status)}
 										size="small"
 									/>

@@ -301,6 +301,11 @@ export class JobPositionService {
         },
         include: {
           company: true,
+          stages: {
+            orderBy: {
+              position: 'asc',
+            },
+          },
         },
         orderBy: {
           createdAt: 'desc',
@@ -315,6 +320,7 @@ export class JobPositionService {
         companyDescription: jp.company?.description,
         createdAt: jp.createdAt,
         customQuestions: jp.customQuestions as any,
+        stages: jp.stages,
       }));
     } catch (error) {
       if (error instanceof HttpException) {

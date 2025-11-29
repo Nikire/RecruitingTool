@@ -162,6 +162,7 @@ const HRDashboard: React.FC = () => {
 							iconColor={stat.iconColor}
 							isLoading={isLoading}
 							onClick={stat.onClick}
+							translate={stat.translate}
 						/>
 					</Grid>
 				))}
