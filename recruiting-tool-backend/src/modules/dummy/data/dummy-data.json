@@ -465,5 +465,427 @@
       "createdByUserIndex": 2,
       "isDefault": false
     }
+  ],
+  "fileUploads": [
+    {
+      "filename": "resume_michael_chen_1732981234567.pdf",
+      "originalName": "Michael_Chen_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 245678,
+      "s3Key": "public-applications/resume_michael_chen_1732981234567.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_sarah_williams_1732981345678.pdf",
+      "originalName": "Sarah_Williams_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198432,
+      "s3Key": "public-applications/resume_sarah_williams_1732981345678.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_david_johnson_1732981456789.pdf",
+      "originalName": "David_Johnson_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 312456,
+      "s3Key": "public-applications/resume_david_johnson_1732981456789.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_lisa_garcia_1732981567890.pdf",
+      "originalName": "Lisa_Garcia_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 276543,
+      "s3Key": "public-applications/resume_lisa_garcia_1732981567890.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_james_rodriguez_1732981678901.pdf",
+      "originalName": "James_Rodriguez_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198765,
+      "s3Key": "public-applications/resume_james_rodriguez_1732981678901.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_emily_brown_1732981789012.pdf",
+      "originalName": "Emily_Brown_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 234567,
+      "s3Key": "public-applications/resume_emily_brown_1732981789012.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_kevin_lee_1732981890123.pdf",
+      "originalName": "Kevin_Lee_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 287654,
+      "s3Key": "public-applications/resume_kevin_lee_1732981890123.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_amanda_taylor_1732981901234.pdf",
+      "originalName": "Amanda_Taylor_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 209876,
+      "s3Key": "public-applications/resume_amanda_taylor_1732981901234.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_robert_martinez_1732982012345.pdf",
+      "originalName": "Robert_Martinez_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 256789,
+      "s3Key": "public-applications/resume_robert_martinez_1732982012345.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_jennifer_anderson_1732982123456.pdf",
+      "originalName": "Jennifer_Anderson_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198234,
+      "s3Key": "public-applications/resume_jennifer_anderson_1732982123456.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_daniel_thomas_1732982234567.pdf",
+      "originalName": "Daniel_Thomas_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 276123,
+      "s3Key": "public-applications/resume_daniel_thomas_1732982234567.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_michelle_jackson_1732982345678.pdf",
+      "originalName": "Michelle_Jackson_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 245987,
+      "s3Key": "public-applications/resume_michelle_jackson_1732982345678.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_christopher_white_1732982456789.pdf",
+      "originalName": "Christopher_White_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 234098,
+      "s3Key": "public-applications/resume_christopher_white_1732982456789.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_jessica_harris_1732982567890.pdf",
+      "originalName": "Jessica_Harris_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198765,
+      "s3Key": "public-applications/resume_jessica_harris_1732982567890.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_matthew_clark_1732982678901.pdf",
+      "originalName": "Matthew_Clark_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 287432,
+      "s3Key": "public-applications/resume_matthew_clark_1732982678901.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_ashley_lewis_1732982789012.pdf",
+      "originalName": "Ashley_Lewis_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 212345,
+      "s3Key": "public-applications/resume_ashley_lewis_1732982789012.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_ryan_walker_1732982890123.pdf",
+      "originalName": "Ryan_Walker_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 265432,
+      "s3Key": "public-applications/resume_ryan_walker_1732982890123.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_nicole_hall_1732982901234.pdf",
+      "originalName": "Nicole_Hall_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 243567,
+      "s3Key": "public-applications/resume_nicole_hall_1732982901234.pdf",
+      "uploadedByPublic": true
+    }
+  ],
+  "applications": [
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Michael Chen",
+      "applicantEmail": "michael.chen@email.com",
+      "applicantPhone": "+1-555-1001",
+      "resumeFileIndex": 0,
+      "coverLetter": "I am writing to express my strong interest in the Senior Software Engineer position at Tech Innovations Inc. With over 8 years of experience in full-stack development and a proven track record of delivering scalable solutions, I am confident in my ability to contribute to your team's success.",
+      "customAnswers": {
+        "q1-se": "8 years",
+        "q2-se": "Led the migration of a monolithic application to microservices architecture, reducing deployment time by 70% and improving system reliability. The solution now serves 2M+ daily active users.",
+        "q3-se": "Hybrid",
+        "q4-se": ["JavaScript", "Python", "Go"]
+      },
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-20T10:30:00Z",
+      "reviewedAt": "2025-11-21T14:00:00Z",
+      "reviewedByUserIndex": 0,
+      "notes": "Strong technical background. Excellent communication skills during initial screening. Proceed to technical interview."
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Sarah Williams",
+      "applicantEmail": "sarah.williams@email.com",
+      "applicantPhone": "+1-555-1002",
+      "resumeFileIndex": 1,
+      "coverLetter": "With a passion for clean code and 6 years of software engineering experience, I am excited about the opportunity to join Tech Innovations Inc as a Senior Software Engineer.",
+      "customAnswers": {
+        "q1-se": "6 years",
+        "q2-se": "Designed and implemented a real-time collaboration feature that increased user engagement by 45%. Used WebSockets and Redis for state synchronization across multiple clients.",
+        "q3-se": "Remote",
+        "q4-se": ["JavaScript", "Python", "Rust"]
+      },
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-18T09:15:00Z",
+      "reviewedAt": "2025-11-19T11:30:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Exceptional candidate. Strong problem-solving skills and cultural fit. Offer extended."
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "David Johnson",
+      "applicantEmail": "david.johnson@email.com",
+      "applicantPhone": "+1-555-1003",
+      "resumeFileIndex": 2,
+      "coverLetter": "I am applying for the Senior Software Engineer role with 10 years of experience building enterprise-grade applications.",
+      "customAnswers": {
+        "q1-se": "10 years",
+        "q2-se": "Architected a distributed caching system that reduced database load by 60% and improved API response times from 800ms to under 100ms for 95% of requests.",
+        "q3-se": "Hybrid",
+        "q4-se": ["Java", "Python", "Go", "Rust"]
+      },
+      "status": "PENDING",
+      "appliedAt": "2025-11-25T14:45:00Z"
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Lisa Garcia",
+      "applicantEmail": "lisa.garcia@email.com",
+      "applicantPhone": "+1-555-1004",
+      "resumeFileIndex": 3,
+      "coverLetter": "As an experienced software engineer with expertise in distributed systems, I am thrilled to apply for this position.",
+      "customAnswers": {
+        "q1-se": "7 years",
+        "q2-se": "Built a fault-tolerant message queue system processing 500K messages/minute with 99.99% uptime. Implemented circuit breakers and graceful degradation patterns.",
+        "q3-se": "On-site",
+        "q4-se": ["JavaScript", "Go", "C++"]
+      },
+      "status": "REJECTED",
+      "appliedAt": "2025-11-15T16:20:00Z",
+      "reviewedAt": "2025-11-16T10:00:00Z",
+      "reviewedByUserIndex": 0,
+      "notes": "Good technical skills but looking for on-site only which doesn't align with our hybrid model."
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "James Rodriguez",
+      "applicantEmail": "james.rodriguez@email.com",
+      "applicantPhone": "+1-555-1005",
+      "resumeFileIndex": 4,
+      "coverLetter": "I am excited to apply for the Frontend Developer position. With 5 years of React experience, I specialize in building performant and accessible user interfaces.",
+      "customAnswers": {
+        "q1-fe": "5 years",
+        "q2-fe": "Created a complex data visualization dashboard using React, D3.js, and Canvas. Handled real-time updates for 10K+ data points with smooth 60fps animations. Implemented virtualization to render 100K+ rows efficiently.",
+        "q3-fe": "Zustand"
+      },
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-22T11:00:00Z",
+      "reviewedAt": "2025-11-23T15:30:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Impressive React skills. Strong portfolio with modern libraries. Schedule coding challenge."
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Emily Brown",
+      "applicantEmail": "emily.brown@email.com",
+      "applicantPhone": "+1-555-1006",
+      "resumeFileIndex": 5,
+      "coverLetter": "With a deep understanding of React ecosystem and 4 years of frontend development experience, I would love to contribute to your team's projects.",
+      "customAnswers": {
+        "q1-fe": "4 years",
+        "q2-fe": "Built a component library used across 15+ products with 200+ components. Implemented automated visual regression testing with Chromatic. Achieved 95% component test coverage.",
+        "q3-fe": "Redux"
+      },
+      "status": "PENDING",
+      "appliedAt": "2025-11-26T09:30:00Z"
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Kevin Lee",
+      "applicantEmail": "kevin.lee@email.com",
+      "applicantPhone": "+1-555-1007",
+      "resumeFileIndex": 6,
+      "coverLetter": "I am writing to apply for the Frontend Developer role. My experience includes building responsive, accessible web applications with React.",
+      "customAnswers": {
+        "q1-fe": "3 years",
+        "q2-fe": "Developed a form builder component allowing users to create custom forms with drag-and-drop. Implemented complex validation logic, conditional fields, and multi-step workflows. Used React Hook Form and Yup for validation.",
+        "q3-fe": "Context API"
+      },
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-19T13:15:00Z",
+      "reviewedAt": "2025-11-20T16:00:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Great culture fit. Strong fundamentals. Offer extended after successful coding challenge."
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Amanda Taylor",
+      "applicantEmail": "amanda.taylor@email.com",
+      "applicantPhone": "+1-555-1008",
+      "resumeFileIndex": 7,
+      "coverLetter": "Passionate about creating delightful user experiences, I am applying for the Frontend Developer position with 6 years of React expertise.",
+      "customAnswers": {
+        "q1-fe": "6 years",
+        "q2-fe": "Redesigned the checkout flow reducing cart abandonment by 35%. Implemented progressive web app features including offline support and push notifications. Achieved 95+ Lighthouse score.",
+        "q3-fe": "Jotai"
+      },
+      "status": "REJECTED",
+      "appliedAt": "2025-11-14T10:00:00Z",
+      "reviewedAt": "2025-11-15T12:00:00Z",
+      "reviewedByUserIndex": 0,
+      "notes": "Strong candidate but salary expectations exceed budget by 30%."
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Robert Martinez",
+      "applicantEmail": "robert.martinez@email.com",
+      "applicantPhone": "+1-555-1009",
+      "resumeFileIndex": 8,
+      "coverLetter": "I am applying for the DevOps Engineer position with 7 years of experience managing cloud infrastructure and implementing CI/CD pipelines.",
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-21T15:45:00Z",
+      "reviewedAt": "2025-11-22T10:30:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Excellent AWS and Kubernetes experience. Strong automation skills. Move to technical assessment."
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Jennifer Anderson",
+      "applicantEmail": "jennifer.anderson@email.com",
+      "applicantPhone": "+1-555-1010",
+      "resumeFileIndex": 9,
+      "coverLetter": "With expertise in infrastructure as code and container orchestration, I am excited about the DevOps Engineer opportunity.",
+      "status": "PENDING",
+      "appliedAt": "2025-11-27T08:00:00Z"
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Daniel Thomas",
+      "applicantEmail": "daniel.thomas@email.com",
+      "applicantPhone": "+1-555-1011",
+      "resumeFileIndex": 10,
+      "coverLetter": "I am writing to express my interest in the DevOps Engineer role. My background includes managing large-scale Kubernetes clusters.",
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-17T12:30:00Z",
+      "reviewedAt": "2025-11-18T14:00:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Outstanding technical skills. Implemented similar infrastructure at previous company. Offer accepted."
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Michelle Jackson",
+      "applicantEmail": "michelle.jackson@email.com",
+      "applicantPhone": "+1-555-1012",
+      "resumeFileIndex": 11,
+      "coverLetter": "As a certified AWS Solutions Architect with 5 years of DevOps experience, I am well-suited for this position.",
+      "status": "REJECTED",
+      "appliedAt": "2025-11-16T11:15:00Z",
+      "reviewedAt": "2025-11-17T09:00:00Z",
+      "reviewedByUserIndex": 3,
+      "notes": "Lacks Kubernetes experience which is critical for this role."
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Christopher White",
+      "applicantEmail": "christopher.white@email.com",
+      "applicantPhone": "+1-555-1013",
+      "resumeFileIndex": 12,
+      "coverLetter": "I am applying for the Product Manager position with 6 years of experience leading product strategy and development.",
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-23T14:00:00Z",
+      "reviewedAt": "2025-11-24T11:00:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Strong product sense. Good understanding of user research methodologies. Schedule case study presentation."
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Jessica Harris",
+      "applicantEmail": "jessica.harris@email.com",
+      "applicantPhone": "+1-555-1014",
+      "resumeFileIndex": 13,
+      "coverLetter": "With a track record of launching successful products and driving user growth, I am excited about this Product Manager opportunity.",
+      "status": "PENDING",
+      "appliedAt": "2025-11-26T16:30:00Z"
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Matthew Clark",
+      "applicantEmail": "matthew.clark@email.com",
+      "applicantPhone": "+1-555-1015",
+      "resumeFileIndex": 14,
+      "coverLetter": "I am writing to apply for the Product Manager role. My experience includes product discovery, roadmap planning, and stakeholder management.",
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-20T10:00:00Z",
+      "reviewedAt": "2025-11-21T15:00:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Exceptional case study presentation. Strong leadership skills. Offer extended and accepted."
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Ashley Lewis",
+      "applicantEmail": "ashley.lewis@email.com",
+      "applicantPhone": "+1-555-1016",
+      "resumeFileIndex": 15,
+      "coverLetter": "As a data-driven product manager with 5 years of experience, I would love to contribute to your product strategy.",
+      "status": "REJECTED",
+      "appliedAt": "2025-11-13T09:30:00Z",
+      "reviewedAt": "2025-11-14T11:00:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Good candidate but lacks B2B SaaS experience which is essential for this role."
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Ryan Walker",
+      "applicantEmail": "ryan.walker@email.com",
+      "applicantPhone": "+1-555-1017",
+      "resumeFileIndex": 16,
+      "coverLetter": "I am thrilled to apply for the Senior Software Engineer position. My expertise in backend systems and API design makes me a strong fit.",
+      "customAnswers": {
+        "q1-se": "9 years",
+        "q2-se": "Designed a GraphQL API serving 50+ client applications with complex authorization rules. Implemented data loader pattern reducing N+1 queries by 95% and improving response times significantly.",
+        "q3-se": "Remote",
+        "q4-se": ["JavaScript", "Python", "Java", "Rust"]
+      },
+      "status": "PENDING",
+      "appliedAt": "2025-11-28T11:00:00Z"
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Nicole Hall",
+      "applicantEmail": "nicole.hall@email.com",
+      "applicantPhone": "+1-555-1018",
+      "resumeFileIndex": 17,
+      "coverLetter": "With extensive experience in React and modern frontend technologies, I am eager to join your team as a Frontend Developer.",
+      "customAnswers": {
+        "q1-fe": "5 years",
+        "q2-fe": "Built an interactive code playground component similar to CodeSandbox. Implemented real-time collaboration using WebRTC and operational transformation. Supported 10+ programming languages with syntax highlighting and auto-completion.",
+        "q3-fe": "No preference"
+      },
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-24T13:30:00Z",
+      "reviewedAt": "2025-11-25T10:00:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Creative approach to complex problems. Strong understanding of performance optimization. Schedule final interview."
+    }
   ]
 }

@@ -72,6 +72,30 @@ interface DummyDataStructure {
     createdByUserIndex: number;
     isDefault: boolean;
   }>;
+  fileUploads: Array<{
+    filename: string;
+    originalName: string;
+    mimetype: string;
+    size: number;
+    s3Key: string;
+    uploadedByPublic: boolean;
+    uploadedByUserIndex?: number;
+    candidateIndex?: number;
+  }>;
+  applications: Array<{
+    jobPositionIndex: number;
+    applicantName: string;
+    applicantEmail: string;
+    applicantPhone: string;
+    resumeFileIndex?: number;
+    coverLetter?: string;
+    customAnswers?: Record<string, any>;
+    status: string;
+    appliedAt: string;
+    reviewedAt?: string;
+    reviewedByUserIndex?: number;
+    notes?: string;
+  }>;
 }
 
 @Injectable()
@@ -107,6 +131,7 @@ export class DummyService implements OnApplicationBootstrap {
     const createdUsers = [];
     const createdJobPositions = [];
     const createdCandidates = [];
+    const createdFileUploads = [];
 
     // Create companies
     this.logger.log('Creating companies...');
@@ -294,6 +319,47 @@ export class DummyService implements OnApplicationBootstrap {
         },
       });
       this.logger.log(`Created email template: ${template.name} for ${createdCompanies[template.companyIndex].name}`);
+    }
+
+    // Create file uploads
+    this.logger.log('Creating file uploads...');
+    for (const file of data.fileUploads) {
+      const created = await this.databaseService.fileUpload.create({
+        data: {
+          filename: file.filename,
+          originalName: file.originalName,
+          mimetype: file.mimetype,
+          size: file.size,
+          s3Key: file.s3Key,
+          uploadedByPublic: file.uploadedByPublic,
+          uploadedById: file.uploadedByUserIndex !== undefined ? createdUsers[file.uploadedByUserIndex].id : null,
+          candidateId: file.candidateIndex !== undefined ? createdCandidates[file.candidateIndex].id : null,
+        },
+      });
+      createdFileUploads.push(created);
+      this.logger.log(`Created file upload: ${file.originalName} (public: ${file.uploadedByPublic})`);
+    }
+
+    // Create applications
+    this.logger.log('Creating applications...');
+    for (const application of data.applications) {
+      await this.databaseService.application.create({
+        data: {
+          jobPositionId: createdJobPositions[application.jobPositionIndex].id,
+          applicantName: application.applicantName,
+          applicantEmail: application.applicantEmail,
+          applicantPhone: application.applicantPhone,
+          resumeFileId: application.resumeFileIndex !== undefined ? createdFileUploads[application.resumeFileIndex].id : null,
+          coverLetter: application.coverLetter,
+          customAnswers: application.customAnswers || {},
+          status: application.status as any,
+          appliedAt: new Date(application.appliedAt),
+          reviewedAt: application.reviewedAt ? new Date(application.reviewedAt) : null,
+          reviewedById: application.reviewedByUserIndex !== undefined ? createdUsers[application.reviewedByUserIndex].id : null,
+          notes: application.notes,
+        },
+      });
+      this.logger.log(`Created application: ${application.applicantName} for ${createdJobPositions[application.jobPositionIndex].title} (status: ${application.status})`);
     }
 
     this.logger.log('All dummy data created successfully!');
