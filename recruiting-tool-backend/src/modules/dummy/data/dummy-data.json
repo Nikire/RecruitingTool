@@ -661,8 +661,8 @@
         ]
       },
       "status": "REVIEWED",
-      "appliedAt": "2025-11-20T10:30:00Z",
-      "reviewedAt": "2025-11-21T14:00:00Z",
+      "appliedAt": "2025-10-31T06:57:13Z",
+      "reviewedAt": "2025-11-03T12:45:00Z",
       "reviewedByUserIndex": 0,
       "notes": "Strong technical background. Excellent communication skills during initial screening. Proceed to technical interview."
     },
@@ -684,8 +684,8 @@
         ]
       },
       "status": "ACCEPTED",
-      "appliedAt": "2025-11-18T09:15:00Z",
-      "reviewedAt": "2025-11-19T11:30:00Z",
+      "appliedAt": "2025-11-01T19:37:52Z",
+      "reviewedAt": "2025-11-04T11:15:00Z",
       "reviewedByUserIndex": 1,
       "notes": "Exceptional candidate. Strong problem-solving skills and cultural fit. Offer extended."
     },
@@ -708,7 +708,7 @@
         ]
       },
       "status": "PENDING",
-      "appliedAt": "2025-11-25T14:45:00Z"
+      "appliedAt": "2025-11-03T15:56:01Z"
     },
     {
       "jobPositionIndex": 0,
@@ -728,8 +728,8 @@
         ]
       },
       "status": "REJECTED",
-      "appliedAt": "2025-11-15T16:20:00Z",
-      "reviewedAt": "2025-11-16T10:00:00Z",
+      "appliedAt": "2025-11-06T06:45:25Z",
+      "reviewedAt": "2025-11-09T12:00:00Z",
       "reviewedByUserIndex": 0,
       "notes": "Good technical skills but looking for on-site only which doesn't align with our hybrid model."
     },
@@ -746,8 +746,8 @@
         "q3-fe": "Zustand"
       },
       "status": "REVIEWED",
-      "appliedAt": "2025-11-22T11:00:00Z",
-      "reviewedAt": "2025-11-23T15:30:00Z",
+      "appliedAt": "2025-11-07T08:29:03Z",
+      "reviewedAt": "2025-11-11T13:45:00Z",
       "reviewedByUserIndex": 1,
       "notes": "Impressive React skills. Strong portfolio with modern libraries. Schedule coding challenge."
     },
@@ -764,7 +764,8 @@
         "q3-fe": "Redux"
       },
       "status": "PENDING",
-      "appliedAt": "2025-11-26T09:30:00Z"
+      "appliedAt": "2025-11-09T16:25:56Z",
+      "reviewedAt": "2025-11-12T14:00:00Z"
     },
     {
       "jobPositionIndex": 1,
@@ -779,8 +780,8 @@
         "q3-fe": "Context API"
       },
       "status": "ACCEPTED",
-      "appliedAt": "2025-11-19T13:15:00Z",
-      "reviewedAt": "2025-11-20T16:00:00Z",
+      "appliedAt": "2025-11-12T03:47:54Z",
+      "reviewedAt": "2025-11-16T13:15:00Z",
       "reviewedByUserIndex": 1,
       "notes": "Great culture fit. Strong fundamentals. Offer extended after successful coding challenge."
     },
@@ -797,8 +798,8 @@
         "q3-fe": "Jotai"
       },
       "status": "REJECTED",
-      "appliedAt": "2025-11-14T10:00:00Z",
-      "reviewedAt": "2025-11-15T12:00:00Z",
+      "appliedAt": "2025-11-13T18:42:04Z",
+      "reviewedAt": "2025-11-17T15:30:00Z",
       "reviewedByUserIndex": 0,
       "notes": "Strong candidate but salary expectations exceed budget by 30%."
     },
@@ -810,8 +811,8 @@
       "resumeFileIndex": 8,
       "coverLetter": "I am applying for the DevOps Engineer position with 7 years of experience managing cloud infrastructure and implementing CI/CD pipelines.",
       "status": "REVIEWED",
-      "appliedAt": "2025-11-21T15:45:00Z",
-      "reviewedAt": "2025-11-22T10:30:00Z",
+      "appliedAt": "2025-11-16T05:03:07Z",
+      "reviewedAt": "2025-11-21T14:45:00Z",
       "reviewedByUserIndex": 2,
       "notes": "Excellent AWS and Kubernetes experience. Strong automation skills. Move to technical assessment."
     },
@@ -823,7 +824,8 @@
       "resumeFileIndex": 9,
       "coverLetter": "With expertise in infrastructure as code and container orchestration, I am excited about the DevOps Engineer opportunity.",
       "status": "PENDING",
-      "appliedAt": "2025-11-27T08:00:00Z"
+      "appliedAt": "2025-11-18T03:23:43Z",
+      "reviewedAt": "2025-11-21T09:45:00Z"
     },
     {
       "jobPositionIndex": 2,
@@ -833,8 +835,8 @@
       "resumeFileIndex": 10,
       "coverLetter": "I am writing to express my interest in the DevOps Engineer role. My background includes managing large-scale Kubernetes clusters.",
       "status": "ACCEPTED",
-      "appliedAt": "2025-11-17T12:30:00Z",
-      "reviewedAt": "2025-11-18T14:00:00Z",
+      "appliedAt": "2025-11-20T02:23:51Z",
+      "reviewedAt": "2025-11-23T14:00:00Z",
       "reviewedByUserIndex": 2,
       "notes": "Outstanding technical skills. Implemented similar infrastructure at previous company. Offer accepted."
     },
@@ -846,8 +848,8 @@
       "resumeFileIndex": 11,
       "coverLetter": "As a certified AWS Solutions Architect with 5 years of DevOps experience, I am well-suited for this position.",
       "status": "REJECTED",
-      "appliedAt": "2025-11-16T11:15:00Z",
-      "reviewedAt": "2025-11-17T09:00:00Z",
+      "appliedAt": "2025-11-22T07:46:57Z",
+      "reviewedAt": "2025-11-26T11:45:00Z",
       "reviewedByUserIndex": 3,
       "notes": "Lacks Kubernetes experience which is critical for this role."
     },
@@ -859,8 +861,8 @@
       "resumeFileIndex": 12,
       "coverLetter": "I am applying for the Product Manager position with 6 years of experience leading product strategy and development.",
       "status": "REVIEWED",
-      "appliedAt": "2025-11-23T14:00:00Z",
-      "reviewedAt": "2025-11-24T11:00:00Z",
+      "appliedAt": "2025-11-23T19:18:40Z",
+      "reviewedAt": "2025-11-26T09:30:00Z",
       "reviewedByUserIndex": 2,
       "notes": "Strong product sense. Good understanding of user research methodologies. Schedule case study presentation."
     },
@@ -872,7 +874,8 @@
       "resumeFileIndex": 13,
       "coverLetter": "With a track record of launching successful products and driving user growth, I am excited about this Product Manager opportunity.",
       "status": "PENDING",
-      "appliedAt": "2025-11-26T16:30:00Z"
+      "appliedAt": "2025-11-25T20:35:53Z",
+      "reviewedAt": "2025-11-27T15:00:00Z"
     },
     {
       "jobPositionIndex": 3,
@@ -882,8 +885,8 @@
       "resumeFileIndex": 14,
       "coverLetter": "I am writing to apply for the Product Manager role. My experience includes product discovery, roadmap planning, and stakeholder management.",
       "status": "ACCEPTED",
-      "appliedAt": "2025-11-20T10:00:00Z",
-      "reviewedAt": "2025-11-21T15:00:00Z",
+      "appliedAt": "2025-11-27T10:23:49Z",
+      "reviewedAt": "2025-11-29T09:30:00Z",
       "reviewedByUserIndex": 2,
       "notes": "Exceptional case study presentation. Strong leadership skills. Offer extended and accepted."
     },
@@ -895,8 +898,8 @@
       "resumeFileIndex": 15,
       "coverLetter": "As a data-driven product manager with 5 years of experience, I would love to contribute to your product strategy.",
       "status": "REJECTED",
-      "appliedAt": "2025-11-13T09:30:00Z",
-      "reviewedAt": "2025-11-14T11:00:00Z",
+      "appliedAt": "2025-11-26T02:41:43Z",
+      "reviewedAt": "2025-11-28T13:15:00Z",
       "reviewedByUserIndex": 2,
       "notes": "Good candidate but lacks B2B SaaS experience which is essential for this role."
     },
@@ -919,7 +922,8 @@
         ]
       },
       "status": "PENDING",
-      "appliedAt": "2025-11-28T11:00:00Z"
+      "appliedAt": "2025-11-26T14:37:06Z",
+      "reviewedAt": "2025-11-29T11:00:00Z"
     },
     {
       "jobPositionIndex": 1,
@@ -934,8 +938,8 @@
         "q3-fe": "No preference"
       },
       "status": "REVIEWED",
-      "appliedAt": "2025-11-24T13:30:00Z",
-      "reviewedAt": "2025-11-25T10:00:00Z",
+      "appliedAt": "2025-11-26T03:02:17Z",
+      "reviewedAt": "2025-11-27T11:30:00Z",
       "reviewedByUserIndex": 1,
       "notes": "Creative approach to complex problems. Strong understanding of performance optimization. Schedule final interview."
     }
@@ -945,7 +949,7 @@
       "candidateIndex": 0,
       "stagePosition": 0,
       "scheduledDate": "2025-11-18T00:00:00Z",
-      "scheduledTime": "10:00",
+      "scheduledTime": "16:30",
       "duration": 30,
       "status": "COMPLETED",
       "meetingLink": "https://meet.google.com/abc-defg-hij",
@@ -955,8 +959,8 @@
     {
       "candidateIndex": 0,
       "stagePosition": 1,
-      "scheduledDate": "2025-11-25T00:00:00Z",
-      "scheduledTime": "14:00",
+      "scheduledDate": "2025-11-24T00:00:00Z",
+      "scheduledTime": "12:00",
       "duration": 90,
       "status": "COMPLETED",
       "meetingLink": "https://zoom.us/j/123456789",
@@ -966,7 +970,7 @@
     {
       "candidateIndex": 0,
       "stagePosition": 2,
-      "scheduledDate": "2025-12-02T00:00:00Z",
+      "scheduledDate": "2025-12-03T00:00:00Z",
       "scheduledTime": "11:00",
       "duration": 60,
       "status": "SCHEDULED",
@@ -977,8 +981,8 @@
     {
       "candidateIndex": 1,
       "stagePosition": 0,
-      "scheduledDate": "2025-11-20T00:00:00Z",
-      "scheduledTime": "15:30",
+      "scheduledDate": "2025-11-16T00:00:00Z",
+      "scheduledTime": "09:00",
       "duration": 30,
       "status": "COMPLETED",
       "meetingLink": "https://meet.google.com/pqr-stuv-wxy",
@@ -988,8 +992,8 @@
     {
       "candidateIndex": 1,
       "stagePosition": 1,
-      "scheduledDate": "2025-11-28T00:00:00Z",
-      "scheduledTime": "10:00",
+      "scheduledDate": "2025-11-30T00:00:00Z",
+      "scheduledTime": "13:00",
       "duration": 120,
       "status": "SCHEDULED",
       "meetingLink": "https://zoom.us/j/987654321",
@@ -999,8 +1003,8 @@
     {
       "candidateIndex": 2,
       "stagePosition": 0,
-      "scheduledDate": "2025-11-22T00:00:00Z",
-      "scheduledTime": "09:00",
+      "scheduledDate": "2025-11-20T00:00:00Z",
+      "scheduledTime": "15:00",
       "duration": 30,
       "status": "COMPLETED",
       "location": "Office - Conference Room A",
@@ -1010,7 +1014,7 @@
     {
       "candidateIndex": 2,
       "stagePosition": 1,
-      "scheduledDate": "2025-12-01T00:00:00Z",
+      "scheduledDate": "2025-12-07T00:00:00Z",
       "scheduledTime": "14:30",
       "duration": 90,
       "status": "SCHEDULED",
@@ -1021,8 +1025,8 @@
     {
       "candidateIndex": 3,
       "stagePosition": 0,
-      "scheduledDate": "2025-11-19T00:00:00Z",
-      "scheduledTime": "13:00",
+      "scheduledDate": "2025-11-26T00:00:00Z",
+      "scheduledTime": "15:00",
       "duration": 30,
       "status": "COMPLETED",
       "meetingLink": "https://meet.google.com/devops-phone-screen",
@@ -1033,7 +1037,7 @@
       "candidateIndex": 3,
       "stagePosition": 1,
       "scheduledDate": "2025-11-26T00:00:00Z",
-      "scheduledTime": "10:00",
+      "scheduledTime": "15:30",
       "duration": 120,
       "status": "COMPLETED",
       "meetingLink": "https://zoom.us/j/devops-tech-456",
@@ -1043,8 +1047,8 @@
     {
       "candidateIndex": 4,
       "stagePosition": 0,
-      "scheduledDate": "2025-11-21T00:00:00Z",
-      "scheduledTime": "11:00",
+      "scheduledDate": "2025-11-22T00:00:00Z",
+      "scheduledTime": "13:00",
       "duration": 45,
       "status": "COMPLETED",
       "meetingLink": "https://meet.google.com/product-screen",
@@ -1054,8 +1058,8 @@
     {
       "candidateIndex": 4,
       "stagePosition": 1,
-      "scheduledDate": "2025-11-29T00:00:00Z",
-      "scheduledTime": "15:00",
+      "scheduledDate": "2025-12-04T00:00:00Z",
+      "scheduledTime": "09:30",
       "duration": 90,
       "status": "SCHEDULED",
       "meetingLink": "https://zoom.us/j/product-case-study",
@@ -1065,7 +1069,7 @@
     {
       "candidateIndex": 5,
       "stagePosition": 0,
-      "scheduledDate": "2025-12-03T00:00:00Z",
+      "scheduledDate": "2025-12-02T00:00:00Z",
       "scheduledTime": "09:30",
       "duration": 30,
       "status": "PENDING",
@@ -1169,14 +1173,14 @@
         "source": "LINKEDIN"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-15T09:00:00Z"
+      "createdAt": "2025-10-31T07:50:26Z"
     },
     {
       "candidateIndex": 0,
       "type": "NOTE_ADDED",
       "description": "HR added note: Great technical skills demonstrated during phone screening",
       "userIndex": 0,
-      "createdAt": "2025-11-18T10:30:00Z"
+      "createdAt": "2025-11-01T00:30:39Z"
     },
     {
       "candidateIndex": 0,
@@ -1187,14 +1191,14 @@
         "interviewTime": "10:00"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-17T14:00:00Z"
+      "createdAt": "2025-11-01T10:52:41Z"
     },
     {
       "candidateIndex": 0,
       "type": "INTERVIEW_COMPLETED",
       "description": "Phone screening interview completed successfully",
       "userIndex": 0,
-      "createdAt": "2025-11-18T10:45:00Z"
+      "createdAt": "2025-11-01T21:05:21Z"
     },
     {
       "candidateIndex": 0,
@@ -1205,7 +1209,7 @@
         "toStage": "Technical Interview"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-18T11:00:00Z"
+      "createdAt": "2025-11-01T21:16:36Z"
     },
     {
       "candidateIndex": 0,
@@ -1216,21 +1220,21 @@
         "interviewTime": "14:00"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-20T09:00:00Z"
+      "createdAt": "2025-11-02T20:30:20Z"
     },
     {
       "candidateIndex": 0,
       "type": "NOTE_ADDED",
       "description": "HR added note: Follow up needed - candidate mentioned they have another offer deadline next week",
       "userIndex": 1,
-      "createdAt": "2025-11-22T15:30:00Z"
+      "createdAt": "2025-11-03T07:49:28Z"
     },
     {
       "candidateIndex": 0,
       "type": "INTERVIEW_COMPLETED",
       "description": "Technical interview completed - strong performance",
       "userIndex": 1,
-      "createdAt": "2025-11-25T15:30:00Z"
+      "createdAt": "2025-11-03T20:26:18Z"
     },
     {
       "candidateIndex": 0,
@@ -1241,7 +1245,7 @@
         "toStage": "Team Interview"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-26T10:00:00Z"
+      "createdAt": "2025-11-04T11:06:20Z"
     },
     {
       "candidateIndex": 0,
@@ -1252,7 +1256,7 @@
         "interviewTime": "11:00"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-27T14:00:00Z"
+      "createdAt": "2025-11-05T00:56:03Z"
     },
     {
       "candidateIndex": 1,
@@ -1263,14 +1267,14 @@
         "referredBy": "Alice Johnson"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-16T10:30:00Z"
+      "createdAt": "2025-11-05T05:39:40Z"
     },
     {
       "candidateIndex": 1,
       "type": "NOTE_ADDED",
       "description": "HR added note: Excellent communication skills. Very interested in our company culture",
       "userIndex": 0,
-      "createdAt": "2025-11-20T16:00:00Z"
+      "createdAt": "2025-11-05T16:07:32Z"
     },
     {
       "candidateIndex": 1,
@@ -1281,14 +1285,14 @@
         "interviewTime": "15:30"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-19T11:00:00Z"
+      "createdAt": "2025-11-05T23:32:02Z"
     },
     {
       "candidateIndex": 1,
       "type": "INTERVIEW_COMPLETED",
       "description": "Initial screening completed - referral from Alice Johnson confirmed",
       "userIndex": 1,
-      "createdAt": "2025-11-20T16:15:00Z"
+      "createdAt": "2025-11-06T20:15:30Z"
     },
     {
       "candidateIndex": 1,
@@ -1299,7 +1303,7 @@
         "toStage": "Technical Interview"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-21T09:00:00Z"
+      "createdAt": "2025-11-07T02:14:07Z"
     },
     {
       "candidateIndex": 1,
@@ -1310,7 +1314,7 @@
         "interviewTime": "10:00"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-22T13:00:00Z"
+      "createdAt": "2025-11-08T00:00:51Z"
     },
     {
       "candidateIndex": 2,
@@ -1320,14 +1324,14 @@
         "source": "INDEED"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-17T14:20:00Z"
+      "createdAt": "2025-11-08T10:12:06Z"
     },
     {
       "candidateIndex": 2,
       "type": "NOTE_ADDED",
       "description": "HR added note: Resume shows impressive portfolio. Scheduled for technical interview",
       "userIndex": 1,
-      "createdAt": "2025-11-22T09:30:00Z"
+      "createdAt": "2025-11-08T12:48:06Z"
     },
     {
       "candidateIndex": 2,
@@ -1339,14 +1343,14 @@
         "location": "Office - Conference Room A"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-21T10:00:00Z"
+      "createdAt": "2025-11-09T01:20:09Z"
     },
     {
       "candidateIndex": 2,
       "type": "INTERVIEW_COMPLETED",
       "description": "In-person phone screening completed - showed enthusiasm for Vue.js and Angular",
       "userIndex": 1,
-      "createdAt": "2025-11-22T09:45:00Z"
+      "createdAt": "2025-11-09T09:55:09Z"
     },
     {
       "candidateIndex": 2,
@@ -1357,7 +1361,7 @@
         "toStage": "Coding Challenge"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-23T10:00:00Z"
+      "createdAt": "2025-11-10T10:09:46Z"
     },
     {
       "candidateIndex": 2,
@@ -1368,7 +1372,7 @@
         "interviewTime": "14:30"
       },
       "userIndex": 1,
-      "createdAt": "2025-11-25T11:00:00Z"
+      "createdAt": "2025-11-10T13:50:33Z"
     },
     {
       "candidateIndex": 3,
@@ -1378,21 +1382,21 @@
         "source": "WEBSITE"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-14T11:45:00Z"
+      "createdAt": "2025-11-11T16:29:04Z"
     },
     {
       "candidateIndex": 3,
       "type": "NOTE_ADDED",
       "description": "HR added note: Strong DevOps background with AWS and Kubernetes. Good culture fit",
       "userIndex": 2,
-      "createdAt": "2025-11-19T13:30:00Z"
+      "createdAt": "2025-11-11T17:27:51Z"
     },
     {
       "candidateIndex": 3,
       "type": "NOTE_ADDED",
       "description": "HR added note: Candidate requested remote work flexibility. Need to discuss with team",
       "userIndex": 3,
-      "createdAt": "2025-11-19T14:00:00Z"
+      "createdAt": "2025-11-11T21:57:21Z"
     },
     {
       "candidateIndex": 3,
@@ -1403,14 +1407,14 @@
         "interviewTime": "13:00"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-18T10:00:00Z"
+      "createdAt": "2025-11-12T18:09:54Z"
     },
     {
       "candidateIndex": 3,
       "type": "INTERVIEW_COMPLETED",
       "description": "Recruiter call completed - confirmed AWS and Kubernetes expertise",
       "userIndex": 2,
-      "createdAt": "2025-11-19T13:45:00Z"
+      "createdAt": "2025-11-12T20:55:16Z"
     },
     {
       "candidateIndex": 3,
@@ -1421,7 +1425,7 @@
         "toStage": "Technical Assessment"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-20T09:00:00Z"
+      "createdAt": "2025-11-13T12:41:56Z"
     },
     {
       "candidateIndex": 3,
@@ -1432,14 +1436,14 @@
         "interviewTime": "10:00"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-22T14:00:00Z"
+      "createdAt": "2025-11-14T00:41:20Z"
     },
     {
       "candidateIndex": 3,
       "type": "INTERVIEW_COMPLETED",
       "description": "Technical assessment completed - excellent understanding of CI/CD and IaC",
       "userIndex": 2,
-      "createdAt": "2025-11-26T12:00:00Z"
+      "createdAt": "2025-11-14T19:00:14Z"
     },
     {
       "candidateIndex": 3,
@@ -1449,7 +1453,7 @@
         "status": "ADVANCED"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-27T10:00:00Z"
+      "createdAt": "2025-11-15T00:00:43Z"
     },
     {
       "candidateIndex": 4,
@@ -1460,21 +1464,21 @@
         "recruiter": "TechTalent Agency"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-13T15:30:00Z"
+      "createdAt": "2025-11-15T22:39:29Z"
     },
     {
       "candidateIndex": 4,
       "type": "NOTE_ADDED",
       "description": "HR added note: Product case study presentation was outstanding. Clear strategic thinking",
       "userIndex": 2,
-      "createdAt": "2025-11-21T11:30:00Z"
+      "createdAt": "2025-11-16T08:34:04Z"
     },
     {
       "candidateIndex": 4,
       "type": "NOTE_ADDED",
       "description": "HR added note: Salary expectations are slightly higher than budget. Will need approval for adjustment",
       "userIndex": 2,
-      "createdAt": "2025-11-21T12:00:00Z"
+      "createdAt": "2025-11-16T16:55:46Z"
     },
     {
       "candidateIndex": 4,
@@ -1485,14 +1489,14 @@
         "interviewTime": "11:00"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-20T13:00:00Z"
+      "createdAt": "2025-11-16T22:34:51Z"
     },
     {
       "candidateIndex": 4,
       "type": "INTERVIEW_COMPLETED",
       "description": "Initial screening completed - strong strategic thinking demonstrated",
       "userIndex": 2,
-      "createdAt": "2025-11-21T11:45:00Z"
+      "createdAt": "2025-11-17T16:59:14Z"
     },
     {
       "candidateIndex": 4,
@@ -1503,7 +1507,7 @@
         "toStage": "Case Study"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-22T09:00:00Z"
+      "createdAt": "2025-11-18T04:11:14Z"
     },
     {
       "candidateIndex": 4,
@@ -1514,7 +1518,7 @@
         "interviewTime": "15:00"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-24T10:00:00Z"
+      "createdAt": "2025-11-18T13:52:57Z"
     },
     {
       "candidateIndex": 4,
@@ -1524,7 +1528,7 @@
         "emailTemplate": "Case Study Instructions"
       },
       "userIndex": 2,
-      "createdAt": "2025-11-24T10:30:00Z"
+      "createdAt": "2025-11-19T00:53:38Z"
     },
     {
       "candidateIndex": 5,
@@ -1535,7 +1539,7 @@
         "note": "Walk-in applicant"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-28T14:00:00Z"
+      "createdAt": "2025-11-20T04:02:42Z"
     },
     {
       "candidateIndex": 5,
@@ -1546,7 +1550,7 @@
         "interviewTime": "09:30"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-29T11:00:00Z"
+      "createdAt": "2025-11-20T09:02:53Z"
     },
     {
       "candidateIndex": 5,
@@ -1556,7 +1560,7 @@
         "emailTemplate": "Interview Invitation"
       },
       "userIndex": 0,
-      "createdAt": "2025-11-29T11:15:00Z"
+      "createdAt": "2025-11-20T20:21:21Z"
     }
   ],
   "stageNotes": [
@@ -1565,160 +1569,160 @@
       "stagePosition": 1,
       "content": "Candidate demonstrated excellent problem-solving skills during technical interview. Strong understanding of algorithms and data structures.",
       "authorUserIndex": 1,
-      "createdAt": "2025-11-25T15:45:00Z"
+      "createdAt": "2025-11-19T16:00:00Z"
     },
     {
       "candidateIndex": 0,
       "stagePosition": 2,
       "content": "Preparing for team interview. Need to assess cultural fit and communication skills.",
       "authorUserIndex": 0,
-      "createdAt": "2025-11-27T09:00:00Z"
+      "createdAt": "2025-11-23T12:45:00Z"
     },
     {
       "candidateIndex": 1,
       "stagePosition": 0,
       "content": "Referred by Alice Johnson - strong endorsement for technical skills and team collaboration.",
       "authorUserIndex": 1,
-      "createdAt": "2025-11-20T16:30:00Z"
+      "createdAt": "2025-11-27T12:00:00Z"
     },
     {
       "candidateIndex": 1,
       "stagePosition": 1,
       "content": "Technical deep dive scheduled. Focus areas: React ecosystem, state management, performance optimization.",
       "authorUserIndex": 1,
-      "createdAt": "2025-11-22T14:00:00Z"
+      "createdAt": "2025-11-23T10:15:00Z"
     },
     {
       "candidateIndex": 2,
       "stagePosition": 0,
       "content": "Portfolio review shows strong frontend skills with Vue.js and Angular. Good attention to detail in UI/UX.",
       "authorUserIndex": 1,
-      "createdAt": "2025-11-22T10:00:00Z"
+      "createdAt": "2025-11-17T09:45:00Z"
     },
     {
       "candidateIndex": 2,
       "stagePosition": 1,
       "content": "Coding challenge will assess component architecture and state management patterns.",
       "authorUserIndex": 1,
-      "createdAt": "2025-11-25T12:00:00Z"
+      "createdAt": "2025-11-24T15:45:00Z"
     },
     {
       "candidateIndex": 3,
       "stagePosition": 1,
       "content": "Technical assessment revealed deep expertise in Docker, Kubernetes, and CI/CD pipelines. Strong candidate for DevOps role.",
       "authorUserIndex": 2,
-      "createdAt": "2025-11-26T12:30:00Z"
+      "createdAt": "2025-11-18T13:00:00Z"
     },
     {
       "candidateIndex": 3,
       "stagePosition": 1,
       "content": "Candidate expressed preference for remote work. Team is open to hybrid arrangement.",
       "authorUserIndex": 3,
-      "createdAt": "2025-11-26T13:00:00Z"
+      "createdAt": "2025-11-20T16:15:00Z"
     },
     {
       "candidateIndex": 4,
       "stagePosition": 0,
       "content": "Initial screening shows strong product management background. Good strategic thinking and data-driven approach.",
       "authorUserIndex": 2,
-      "createdAt": "2025-11-21T12:00:00Z"
+      "createdAt": "2025-11-25T10:30:00Z"
     },
     {
       "candidateIndex": 4,
       "stagePosition": 1,
       "content": "Case study preparation: Candidate will present market entry strategy for new product segment. Allow 90 minutes for presentation and Q&A.",
       "authorUserIndex": 2,
-      "createdAt": "2025-11-24T11:00:00Z"
+      "createdAt": "2025-11-29T13:45:00Z"
     },
     {
       "candidateIndex": 4,
       "stagePosition": 1,
       "content": "Salary expectations are $120K, slightly above budget of $110K. May need director approval for adjustment.",
       "authorUserIndex": 2,
-      "createdAt": "2025-11-24T11:30:00Z"
+      "createdAt": "2025-11-20T15:30:00Z"
     },
     {
       "candidateIndex": 5,
       "stagePosition": 0,
       "content": "Walk-in applicant, manually entered into system. Resume shows 6 years experience. Phone screening will verify background.",
       "authorUserIndex": 0,
-      "createdAt": "2025-11-29T11:30:00Z"
+      "createdAt": "2025-11-16T14:45:00Z"
     }
   ],
   "stageTimeLogs": [
     {
       "candidateIndex": 0,
       "stagePosition": 0,
-      "enteredAt": "2025-11-15T09:00:00Z",
-      "exitedAt": "2025-11-18T11:00:00Z",
-      "duration": 266
+      "enteredAt": "2025-11-18T13:15:00Z",
+      "exitedAt": "2025-11-27T11:00:00Z",
+      "duration": 213
     },
     {
       "candidateIndex": 0,
       "stagePosition": 1,
-      "enteredAt": "2025-11-18T11:00:00Z",
-      "exitedAt": "2025-11-26T10:00:00Z",
-      "duration": 191
+      "enteredAt": "2025-11-08T07:45:00Z",
+      "exitedAt": "2025-11-17T07:30:00Z",
+      "duration": 215
     },
     {
       "candidateIndex": 0,
       "stagePosition": 2,
-      "enteredAt": "2025-11-26T10:00:00Z"
+      "enteredAt": "2025-11-22T10:15:00Z"
     },
     {
       "candidateIndex": 1,
       "stagePosition": 0,
-      "enteredAt": "2025-11-16T10:30:00Z",
-      "exitedAt": "2025-11-21T09:00:00Z",
-      "duration": 119
+      "enteredAt": "2025-11-03T08:00:00Z",
+      "exitedAt": "2025-11-08T08:00:00Z",
+      "duration": 120
     },
     {
       "candidateIndex": 1,
       "stagePosition": 1,
-      "enteredAt": "2025-11-21T09:00:00Z"
+      "enteredAt": "2025-11-22T15:15:00Z"
     },
     {
       "candidateIndex": 2,
       "stagePosition": 0,
-      "enteredAt": "2025-11-17T14:20:00Z",
-      "exitedAt": "2025-11-23T10:00:00Z",
-      "duration": 140
+      "enteredAt": "2025-11-24T07:30:00Z",
+      "exitedAt": "2025-11-29T12:30:00Z",
+      "duration": 125
     },
     {
       "candidateIndex": 2,
       "stagePosition": 1,
-      "enteredAt": "2025-11-23T10:00:00Z"
+      "enteredAt": "2025-11-02T10:45:00Z"
     },
     {
       "candidateIndex": 3,
       "stagePosition": 0,
-      "enteredAt": "2025-11-14T11:45:00Z",
-      "exitedAt": "2025-11-20T09:00:00Z",
-      "duration": 141
+      "enteredAt": "2025-11-01T12:30:00Z",
+      "exitedAt": "2025-11-06T13:00:00Z",
+      "duration": 120
     },
     {
       "candidateIndex": 3,
       "stagePosition": 1,
-      "enteredAt": "2025-11-20T09:00:00Z",
-      "exitedAt": "2025-11-27T10:00:00Z",
-      "duration": 169
+      "enteredAt": "2025-11-23T16:45:00Z",
+      "exitedAt": "2025-11-29T09:15:00Z",
+      "duration": 136
     },
     {
       "candidateIndex": 4,
       "stagePosition": 0,
-      "enteredAt": "2025-11-13T15:30:00Z",
-      "exitedAt": "2025-11-22T09:00:00Z",
-      "duration": 210
+      "enteredAt": "2025-11-04T12:15:00Z",
+      "exitedAt": "2025-11-13T13:30:00Z",
+      "duration": 217
     },
     {
       "candidateIndex": 4,
       "stagePosition": 1,
-      "enteredAt": "2025-11-22T09:00:00Z"
+      "enteredAt": "2025-11-02T13:15:00Z"
     },
     {
       "candidateIndex": 5,
       "stagePosition": 0,
-      "enteredAt": "2025-11-28T14:00:00Z"
+      "enteredAt": "2025-11-15T15:15:00Z"
     }
   ],
   "emailLogs": [
@@ -1730,7 +1734,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-1",
-      "sentAt": "2025-11-17T14:00:00Z"
+      "sentAt": "2025-11-03T13:30:00Z"
     },
     {
       "recipientEmail": "john.doe@example.com",
@@ -1740,7 +1744,7 @@
       "emailType": "INTERVIEW_CONFIRMATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-2",
-      "sentAt": "2025-11-20T09:15:00Z"
+      "sentAt": "2025-11-04T16:15:00Z"
     },
     {
       "recipientEmail": "john.doe@example.com",
@@ -1750,7 +1754,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-3",
-      "sentAt": "2025-11-27T14:15:00Z"
+      "sentAt": "2025-11-13T07:30:00Z"
     },
     {
       "recipientEmail": "jane.smith@example.com",
@@ -1760,7 +1764,7 @@
       "emailType": "APPLICATION_RECEIVED",
       "relatedEntity": "Candidate",
       "relatedEntityId": "candidate-2",
-      "sentAt": "2025-11-16T10:45:00Z"
+      "sentAt": "2025-11-23T11:00:00Z"
     },
     {
       "recipientEmail": "jane.smith@example.com",
@@ -1770,7 +1774,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-4",
-      "sentAt": "2025-11-19T11:15:00Z"
+      "sentAt": "2025-11-22T09:45:00Z"
     },
     {
       "recipientEmail": "jane.smith@example.com",
@@ -1780,7 +1784,7 @@
       "emailType": "INTERVIEW_CONFIRMATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-5",
-      "sentAt": "2025-11-22T13:15:00Z"
+      "sentAt": "2025-11-28T07:15:00Z"
     },
     {
       "recipientEmail": "mike.wilson@example.com",
@@ -1790,7 +1794,7 @@
       "emailType": "APPLICATION_RECEIVED",
       "relatedEntity": "Candidate",
       "relatedEntityId": "candidate-3",
-      "sentAt": "2025-11-17T14:30:00Z"
+      "sentAt": "2025-11-21T16:30:00Z"
     },
     {
       "recipientEmail": "mike.wilson@example.com",
@@ -1800,7 +1804,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-6",
-      "sentAt": "2025-11-21T10:15:00Z"
+      "sentAt": "2025-11-27T07:45:00Z"
     },
     {
       "recipientEmail": "mike.wilson@example.com",
@@ -1810,7 +1814,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-7",
-      "sentAt": "2025-11-25T11:15:00Z"
+      "sentAt": "2025-11-02T08:00:00Z"
     },
     {
       "recipientEmail": "sarah.davis@example.com",
@@ -1820,7 +1824,7 @@
       "emailType": "APPLICATION_RECEIVED",
       "relatedEntity": "Candidate",
       "relatedEntityId": "candidate-4",
-      "sentAt": "2025-11-14T12:00:00Z"
+      "sentAt": "2025-11-07T13:45:00Z"
     },
     {
       "recipientEmail": "sarah.davis@example.com",
@@ -1830,7 +1834,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-8",
-      "sentAt": "2025-11-18T10:15:00Z"
+      "sentAt": "2025-11-26T11:15:00Z"
     },
     {
       "recipientEmail": "sarah.davis@example.com",
@@ -1840,7 +1844,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-9",
-      "sentAt": "2025-11-22T14:15:00Z"
+      "sentAt": "2025-11-28T10:45:00Z"
     },
     {
       "recipientEmail": "sarah.davis@example.com",
@@ -1850,7 +1854,7 @@
       "emailType": "STATUS_UPDATE",
       "relatedEntity": "Candidate",
       "relatedEntityId": "candidate-4",
-      "sentAt": "2025-11-27T10:30:00Z"
+      "sentAt": "2025-11-04T12:30:00Z"
     },
     {
       "recipientEmail": "tom.anderson@example.com",
@@ -1860,7 +1864,7 @@
       "emailType": "APPLICATION_RECEIVED",
       "relatedEntity": "Candidate",
       "relatedEntityId": "candidate-5",
-      "sentAt": "2025-11-13T16:00:00Z"
+      "sentAt": "2025-11-18T08:30:00Z"
     },
     {
       "recipientEmail": "tom.anderson@example.com",
@@ -1870,7 +1874,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-10",
-      "sentAt": "2025-11-20T13:15:00Z"
+      "sentAt": "2025-11-26T14:30:00Z"
     },
     {
       "recipientEmail": "tom.anderson@example.com",
@@ -1880,7 +1884,7 @@
       "emailType": "CASE_STUDY_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-11",
-      "sentAt": "2025-11-24T10:30:00Z"
+      "sentAt": "2025-11-24T13:30:00Z"
     },
     {
       "recipientEmail": "tom.anderson@example.com",
@@ -1890,7 +1894,7 @@
       "emailType": "INTERVIEW_CONFIRMATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-11",
-      "sentAt": "2025-11-26T09:00:00Z"
+      "sentAt": "2025-11-20T12:30:00Z"
     },
     {
       "recipientEmail": "emma.martinez@example.com",
@@ -1900,7 +1904,7 @@
       "emailType": "APPLICATION_RECEIVED",
       "relatedEntity": "Candidate",
       "relatedEntityId": "candidate-6",
-      "sentAt": "2025-11-28T14:15:00Z"
+      "sentAt": "2025-11-22T07:45:00Z"
     },
     {
       "recipientEmail": "emma.martinez@example.com",
@@ -1910,7 +1914,7 @@
       "emailType": "INTERVIEW_INVITATION",
       "relatedEntity": "Interview",
       "relatedEntityId": "interview-12",
-      "sentAt": "2025-11-29T11:15:00Z"
+      "sentAt": "2025-11-10T10:45:00Z"
     },
     {
       "recipientEmail": "michael.chen@email.com",
@@ -1920,7 +1924,7 @@
       "emailType": "STATUS_UPDATE",
       "relatedEntity": "Application",
       "relatedEntityId": "application-1",
-      "sentAt": "2025-11-21T10:00:00Z"
+      "sentAt": "2025-11-18T11:45:00Z"
     },
     {
       "recipientEmail": "sarah.williams@email.com",
@@ -1930,7 +1934,7 @@
       "emailType": "OFFER_EXTENDED",
       "relatedEntity": "Application",
       "relatedEntityId": "application-2",
-      "sentAt": "2025-11-25T14:00:00Z"
+      "sentAt": "2025-11-10T07:30:00Z"
     },
     {
       "recipientEmail": "lisa.garcia@email.com",
@@ -1940,7 +1944,7 @@
       "emailType": "REJECTION",
       "relatedEntity": "Application",
       "relatedEntityId": "application-4",
-      "sentAt": "2025-11-18T16:00:00Z"
+      "sentAt": "2025-11-08T13:15:00Z"
     },
     {
       "recipientEmail": "james.rodriguez@email.com",
@@ -1950,7 +1954,7 @@
       "emailType": "STATUS_UPDATE",
       "relatedEntity": "Application",
       "relatedEntityId": "application-5",
-      "sentAt": "2025-11-22T11:00:00Z"
+      "sentAt": "2025-11-26T16:00:00Z"
     },
     {
       "recipientEmail": "kevin.lee@email.com",
@@ -1960,7 +1964,7 @@
       "emailType": "OFFER_EXTENDED",
       "relatedEntity": "Application",
       "relatedEntityId": "application-7",
-      "sentAt": "2025-11-26T15:00:00Z"
+      "sentAt": "2025-11-28T13:45:00Z"
     },
     {
       "recipientEmail": "amanda.taylor@email.com",
@@ -1970,7 +1974,7 @@
       "emailType": "REJECTION",
       "relatedEntity": "Application",
       "relatedEntityId": "application-8",
-      "sentAt": "2025-11-23T14:00:00Z"
+      "sentAt": "2025-11-13T09:45:00Z"
     },
     {
       "recipientEmail": "robert.martinez@email.com",
@@ -1980,7 +1984,7 @@
       "emailType": "STATUS_UPDATE",
       "relatedEntity": "Application",
       "relatedEntityId": "application-9",
-      "sentAt": "2025-11-24T10:00:00Z"
+      "sentAt": "2025-11-23T13:00:00Z"
     },
     {
       "recipientEmail": "daniel.thomas@email.com",
@@ -1990,7 +1994,7 @@
       "emailType": "OFFER_EXTENDED",
       "relatedEntity": "Application",
       "relatedEntityId": "application-11",
-      "sentAt": "2025-11-27T16:00:00Z"
+      "sentAt": "2025-11-06T07:00:00Z"
     },
     {
       "recipientEmail": "michelle.jackson@email.com",
@@ -2000,7 +2004,7 @@
       "emailType": "REJECTION",
       "relatedEntity": "Application",
       "relatedEntityId": "application-12",
-      "sentAt": "2025-11-20T15:00:00Z"
+      "sentAt": "2025-11-27T13:15:00Z"
     },
     {
       "recipientEmail": "christopher.white@email.com",
@@ -2010,7 +2014,7 @@
       "emailType": "STATUS_UPDATE",
       "relatedEntity": "Application",
       "relatedEntityId": "application-13",
-      "sentAt": "2025-11-23T09:00:00Z"
+      "sentAt": "2025-11-22T13:30:00Z"
     },
     {
       "recipientEmail": "matthew.clark@email.com",
@@ -2020,7 +2024,7 @@
       "emailType": "OFFER_EXTENDED",
       "relatedEntity": "Application",
       "relatedEntityId": "application-15",
-      "sentAt": "2025-11-28T14:00:00Z"
+      "sentAt": "2025-11-07T12:15:00Z"
     }
   ],
   "hrSchedules": [
@@ -2522,7 +2526,7 @@
         ],
         "recommendation": "Strong hire - proceed to final interview"
       },
-      "scoredAt": "2025-11-16T10:00:00Z"
+      "scoredAt": "2025-11-18T16:15:00Z"
     },
     {
       "candidateIndex": 1,
@@ -2542,7 +2546,7 @@
         ],
         "recommendation": "Good fit for frontend role"
       },
-      "scoredAt": "2025-11-17T11:30:00Z"
+      "scoredAt": "2025-11-22T07:30:00Z"
     },
     {
       "candidateIndex": 2,
@@ -2561,7 +2565,7 @@
         ],
         "recommendation": "Consider for junior position"
       },
-      "scoredAt": "2025-11-18T14:00:00Z"
+      "scoredAt": "2025-11-25T13:00:00Z"
     },
     {
       "candidateIndex": 3,
@@ -2581,7 +2585,7 @@
         ],
         "recommendation": "Exceptional candidate - extend offer"
       },
-      "scoredAt": "2025-11-15T09:30:00Z"
+      "scoredAt": "2025-11-21T16:45:00Z"
     },
     {
       "candidateIndex": 4,
@@ -2601,7 +2605,7 @@
         ],
         "recommendation": "Strong candidate - proceed"
       },
-      "scoredAt": "2025-11-14T13:00:00Z"
+      "scoredAt": "2025-11-23T07:30:00Z"
     }
   ],
   "aiQuotas": [
@@ -2655,7 +2659,7 @@
       "operation": "RESUME_PARSING",
       "tokensUsed": 1250,
       "cost": 0.0025,
-      "createdAt": "2025-11-15T09:15:00Z"
+      "createdAt": "2025-11-11T09:00:00Z"
     },
     {
       "companyIndex": 0,
@@ -2663,7 +2667,7 @@
       "operation": "CANDIDATE_SCORING",
       "tokensUsed": 2100,
       "cost": 0.0042,
-      "createdAt": "2025-11-16T10:05:00Z"
+      "createdAt": "2025-11-17T15:15:00Z"
     },
     {
       "companyIndex": 0,
@@ -2671,7 +2675,7 @@
       "operation": "RESUME_PARSING",
       "tokensUsed": 1180,
       "cost": 0.0024,
-      "createdAt": "2025-11-17T11:20:00Z"
+      "createdAt": "2025-11-05T09:15:00Z"
     },
     {
       "companyIndex": 0,
@@ -2679,7 +2683,7 @@
       "operation": "CANDIDATE_SCORING",
       "tokensUsed": 1950,
       "cost": 0.0039,
-      "createdAt": "2025-11-17T11:32:00Z"
+      "createdAt": "2025-11-14T11:15:00Z"
     },
     {
       "companyIndex": 0,
@@ -2687,7 +2691,7 @@
       "operation": "RESUME_PARSING",
       "tokensUsed": 1320,
       "cost": 0.0026,
-      "createdAt": "2025-11-18T13:45:00Z"
+      "createdAt": "2025-11-13T07:30:00Z"
     },
     {
       "companyIndex": 0,
@@ -2695,7 +2699,7 @@
       "operation": "CANDIDATE_SCORING",
       "tokensUsed": 2050,
       "cost": 0.0041,
-      "createdAt": "2025-11-18T14:10:00Z"
+      "createdAt": "2025-11-05T07:15:00Z"
     },
     {
       "companyIndex": 0,
@@ -2703,7 +2707,7 @@
       "operation": "BATCH_SCORING",
       "tokensUsed": 8500,
       "cost": 0.017,
-      "createdAt": "2025-11-20T10:00:00Z"
+      "createdAt": "2025-11-04T15:00:00Z"
     },
     {
       "companyIndex": 1,
@@ -2711,7 +2715,7 @@
       "operation": "RESUME_PARSING",
       "tokensUsed": 1290,
       "cost": 0.0026,
-      "createdAt": "2025-11-14T13:15:00Z"
+      "createdAt": "2025-11-22T15:45:00Z"
     },
     {
       "companyIndex": 1,
@@ -2719,7 +2723,7 @@
       "operation": "CANDIDATE_SCORING",
       "tokensUsed": 2000,
       "cost": 0.004,
-      "createdAt": "2025-11-15T09:35:00Z"
+      "createdAt": "2025-11-15T14:00:00Z"
     },
     {
       "companyIndex": 1,
@@ -2727,7 +2731,7 @@
       "operation": "RESUME_PARSING",
       "tokensUsed": 1150,
       "cost": 0.0023,
-      "createdAt": "2025-11-16T14:20:00Z"
+      "createdAt": "2025-11-22T08:45:00Z"
     },
     {
       "companyIndex": 1,
@@ -2735,7 +2739,7 @@
       "operation": "BATCH_SCORING",
       "tokensUsed": 7800,
       "cost": 0.0156,
-      "createdAt": "2025-11-22T11:00:00Z"
+      "createdAt": "2025-11-25T11:15:00Z"
     }
   ]
 }

@@ -78,6 +78,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 								<TableCell sx={{minWidth: 80}}><strong>{t('job_positions_table.header_stages')}</strong></TableCell>
 								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions_table.header_hiring_processes')}</strong></TableCell>
 								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions_table.header_created_by')}</strong></TableCell>
+								<TableCell sx={{minWidth: 120}}><strong>{t('careers.posted_date')}</strong></TableCell>
 								<TableCell sx={{minWidth: 180}}><strong>{t('job_positions_table.header_actions')}</strong></TableCell>
 							</TableRow>
 						</TableHead>
@@ -117,6 +118,9 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
 										) : (
 											t('common.n_a')
 										)}
+									</TableCell>
+									<TableCell>
+										{jobPosition.createdAt ? new Date(jobPosition.createdAt).toLocaleDateString() : t('common.n_a')}
 									</TableCell>
 									<TableCell>
 										<Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>

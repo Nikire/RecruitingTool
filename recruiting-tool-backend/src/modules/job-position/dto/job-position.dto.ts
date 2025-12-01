@@ -63,6 +63,16 @@ export class JobPositionResponseDto {
   @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
   companyName?: string;
 
+  @ApiProperty({ description: 'When the job position was posted/created', example: '2025-01-15T10:30:00Z' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'The user who created this job position', required: false })
+  createdBy?: {
+    uid: string;
+    name: string;
+    email: string;
+  };
+
   @ApiProperty({ description: 'The stages of the job position' })
   stages?: Array<StageResponseDto>;
 

@@ -52,9 +52,8 @@ const AdminDashboard: React.FC = () => {
 				display: 'flex',
 				flexDirection: 'column',
 				alignItems: 'center',
-				justifyContent: 'center',
-				minHeight: 'calc(100vh - 64px)', // Full height minus AppBar
 				width: '100%',
+				py: 6, // Padding top and bottom instead of centering
 			}}
 		>
 			<Box sx={{mb: 4, textAlign: 'center', maxWidth: 800}}>

@@ -13,7 +13,11 @@ export interface JobPosition {
 	customQuestions?: Array<CustomQuestion>;
 	hiringProcesses?: Array<HiringProcess>;
 	stages: Array<Stage>;
-	createdBy?: User;
+	createdBy?: {
+		uid: string;
+		name: string;
+		email: string;
+	};
 	createdAt?: Date | string;
 }
 

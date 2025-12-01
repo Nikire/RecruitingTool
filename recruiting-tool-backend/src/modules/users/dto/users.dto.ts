@@ -132,6 +132,14 @@ export class UserResponseDto {
     required: false,
   })
   companyUid?: string;
+  @ApiProperty({
+    description: 'The company details of the user',
+    required: false,
+  })
+  company?: {
+    uid: string;
+    name: string;
+  };
   @ApiProperty({ description: 'Profile picture URL', required: false })
   profilePicture?: string;
   @ApiProperty({ description: 'Phone number', required: false })
