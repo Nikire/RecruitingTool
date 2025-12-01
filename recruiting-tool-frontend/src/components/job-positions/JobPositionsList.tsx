@@ -1,29 +1,23 @@
 import {
 	Box,
 	Typography,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
 	Paper,
-	Chip,
-	Button,
 	Card,
 	CardContent,
 	Skeleton,
 	Stack,
+	Chip,
+	Button,
 	useMediaQuery,
 	useTheme,
 } from '@mui/material';
+import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import {useTranslation} from 'react-i18next';
 import {useListJobPositions, usePublicJobPositions} from '../../hooks/api/useJobPositions';
-import Pagination from '../pagination/Pagination';
 import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
 import {useDialog} from '../../hooks/useDialog';
-import TableSkeletonLoader from '../common/TableSkeletonLoader';
+import {EnhancedDataGrid, DateCell, StatusCell, CellRow, CellColumn, ActionsCell} from '../tables';
 
 interface JobPositionsListProps {
 	page: number;
@@ -33,6 +27,13 @@ interface JobPositionsListProps {
 	onLimitChange: (limit: number) => void;
 	publicMode?: boolean;
 }
+
+// Custom color mapping for job position statuses
+const jobPositionStatusColors: Record<string, 'success' | 'warning' | 'error' | 'primary' | 'default'> = {
+	OPEN: 'success',
+	CLOSED: 'default',
+	DRAFT: 'warning',
+};
 
 // Skeleton loader for loading state
 const JobPositionCardSkeleton = () => (
@@ -58,96 +59,96 @@ const JobPositionCardView: React.FC<{
 	const {t} = useTranslation();
 	return (
 		<Card
-		sx={{
-			mb: 2,
-			p: 2,
-			transition: 'all 0.2s ease-in-out',
-			'&:hover': {
-				boxShadow: 3,
-				transform: 'translateY(-2px)',
-			},
-		}}
-	>
-		<CardContent sx={{p: 0}}>
-			<Typography variant="h6" sx={{mb: 1, fontSize: {xs: '1.1rem', sm: '1.25rem'}}}>
-				{jobPosition.title}
-			</Typography>
+			sx={{
+				mb: 2,
+				p: 2,
+				transition: 'all 0.2s ease-in-out',
+				'&:hover': {
+					boxShadow: 3,
+					transform: 'translateY(-2px)',
+				},
+			}}
+		>
+			<CardContent sx={{p: 0}}>
+				<Typography variant="h6" sx={{mb: 1, fontSize: {xs: '1.1rem', sm: '1.25rem'}}}>
+					{jobPosition.title}
+				</Typography>
 
-			<Box sx={{display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap'}}>
-				{!publicMode && (
+				<Box sx={{display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap'}}>
+					{!publicMode && (
+						<Chip
+							label={jobPosition.status}
+							color={jobPositionStatusColors[jobPosition.status] || 'default'}
+							size="small"
+							sx={{fontSize: '0.85rem'}}
+						/>
+					)}
 					<Chip
-						label={jobPosition.status}
-						color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
+						label={`${jobPosition.stages?.length || 0} ${t('stages.title')}`}
+						variant="outlined"
 						size="small"
 						sx={{fontSize: '0.85rem'}}
 					/>
+				</Box>
+
+				{jobPosition.companyName && (
+					<Typography variant="body2" color="textSecondary" sx={{mb: 1}}>
+						{t('companies.title')}: {jobPosition.companyName}
+					</Typography>
 				)}
-				<Chip
-					label={`${jobPosition.stages?.length || 0} ${t('stages.title')}`}
-					variant="outlined"
-					size="small"
-					sx={{fontSize: '0.85rem'}}
-				/>
-			</Box>
 
-			{jobPosition.companyName && (
-				<Typography variant="body2" color="textSecondary" sx={{mb: 1}}>
-					{t('companies.title')}: {jobPosition.companyName}
-				</Typography>
-			)}
+				{jobPosition.createdAt && (
+					<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 1}}>
+						{t('careers.posted')}: {new Date(jobPosition.createdAt).toLocaleDateString()}
+					</Typography>
+				)}
 
-			{jobPosition.createdAt && (
-				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 1}}>
-					{t('careers.posted')}: {new Date(jobPosition.createdAt).toLocaleDateString()}
-				</Typography>
-			)}
+				{jobPosition.createdBy && (
+					<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 2}}>
+						{t('job_positions.posted_by')}: {jobPosition.createdBy.name}
+					</Typography>
+				)}
 
-			{jobPosition.createdBy && (
-				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 2}}>
-					{t('job_positions.posted_by')}: {jobPosition.createdBy.name}
-				</Typography>
-			)}
-
-			<Box
-				sx={{
-					display: 'flex',
-					gap: 1,
-					mt: 2,
-					flexWrap: 'wrap',
-				}}
-			>
-				<Button
-					fullWidth
-					size="small"
-					variant="outlined"
-					onClick={() => onViewDetails(jobPosition.uid)}
+				<Box
 					sx={{
-						minHeight: 44,
-						fontSize: {xs: '0.9rem', sm: '1rem'},
-						flex: {xs: '1 1 auto', sm: '0 1 auto'},
+						display: 'flex',
+						gap: 1,
+						mt: 2,
+						flexWrap: 'wrap',
 					}}
 				>
-					{t('job_positions.view_details')}
-				</Button>
-				{publicMode && (
 					<Button
 						fullWidth
 						size="small"
-						variant="contained"
-						onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
-						disabled={jobPosition.status !== 'OPEN'}
+						variant="outlined"
+						onClick={() => onViewDetails(jobPosition.uid)}
 						sx={{
 							minHeight: 44,
 							fontSize: {xs: '0.9rem', sm: '1rem'},
 							flex: {xs: '1 1 auto', sm: '0 1 auto'},
 						}}
 					>
-						{t('common.apply')}
+						{t('job_positions.view_details')}
 					</Button>
-				)}
-			</Box>
-		</CardContent>
-	</Card>
+					{publicMode && (
+						<Button
+							fullWidth
+							size="small"
+							variant="contained"
+							onClick={() => onApplyClick(jobPosition.uid, jobPosition.title)}
+							disabled={jobPosition.status !== 'OPEN'}
+							sx={{
+								minHeight: 44,
+								fontSize: {xs: '0.9rem', sm: '1rem'},
+								flex: {xs: '1 1 auto', sm: '0 1 auto'},
+							}}
+						>
+							{t('common.apply')}
+						</Button>
+					)}
+				</Box>
+			</CardContent>
+		</Card>
 	);
 };
 
@@ -168,7 +169,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	const applyDialog = useDialog<{uid: string; title: string}>();
 
 	// Use public endpoint if in public mode, otherwise use authenticated endpoint
-	const publicQuery = usePublicJobPositions({ enabled: publicMode });
+	const publicQuery = usePublicJobPositions({enabled: publicMode});
 	const authQuery = useListJobPositions(
 		{
 			page,
@@ -177,7 +178,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 			sortBy: 'createdAt',
 			sortOrder: 'desc',
 		},
-		{ enabled: !publicMode } // Only run authenticated query when NOT in public mode
+		{enabled: !publicMode} // Only run authenticated query when NOT in public mode
 	);
 
 	// Process data based on mode
@@ -211,8 +212,8 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 		error = authQuery.error;
 	}
 
-	const jobPositions = data?.data;
-	const meta = data?.meta;
+	const jobPositions = data?.data || [];
+	const totalRows = data?.meta?.total || 0;
 
 	const handleApplyClick = (jobUid: string, jobTitle: string) => {
 		applyDialog.openWith({uid: jobUid, title: jobTitle});
@@ -227,21 +228,111 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 		}
 	};
 
+	// Define columns - different for public vs authenticated mode
+	const columns: GridColDef[] = [
+		{
+			field: 'title',
+			headerName: t('job_positions.job_title_label'),
+			flex: 1,
+			minWidth: 200,
+		},
+		{
+			field: 'companyName',
+			headerName: t('job_positions.company'),
+			width: 150,
+			renderCell: (params) => params.value || 'N/A',
+		},
+		...(!publicMode
+			? [
+					{
+						field: 'status',
+						headerName: t('job_positions.status_label'),
+						width: 120,
+						renderCell: (params: GridRenderCellParams) => (
+							<CellRow centered>
+								<StatusCell status={params.value} colorMap={jobPositionStatusColors} />
+							</CellRow>
+						),
+					} as GridColDef,
+			  ]
+			: []),
+		{
+			field: 'stages',
+			headerName: t('stages.title'),
+			width: 100,
+			valueGetter: (value: any[]) => value?.length || 0,
+		},
+		...(!publicMode
+			? [
+					{
+						field: 'createdBy',
+						headerName: t('job_positions.created_by'),
+						width: 180,
+						renderCell: (params: GridRenderCellParams) => (
+							params.row.createdBy ? (
+								<CellColumn gap={0.25}>
+									<Typography variant="body2" noWrap>
+										{params.row.createdBy.name}
+									</Typography>
+									<Typography variant="caption" color="text.secondary" noWrap>
+										{params.row.createdBy.email}
+									</Typography>
+								</CellColumn>
+							) : (
+								'N/A'
+							)
+						),
+					} as GridColDef,
+			  ]
+			: []),
+		{
+			field: 'createdAt',
+			headerName: t('careers.posted_date'),
+			width: 130,
+			renderCell: (params) => <DateCell value={params.value} />,
+		},
+		{
+			field: 'actions',
+			headerName: t('common.actions'),
+			width: publicMode ? 150 : 80,
+			sortable: false,
+			filterable: false,
+			renderCell: (params: GridRenderCellParams) => (
+				<ActionsCell
+					onView={() => handleViewDetails(params.row.uid)}
+					customActions={
+						publicMode && (
+							<Button
+								size="small"
+								variant="contained"
+								onClick={(e) => {
+									e.stopPropagation();
+									handleApplyClick(params.row.uid, params.row.title);
+								}}
+								disabled={params.row.status !== 'OPEN'}
+								sx={{ml: 0.5, minWidth: 'auto', px: 1.5}}
+							>
+								{t('common.apply')}
+							</Button>
+						)
+					}
+				/>
+			),
+		},
+	];
+
 	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{width: '100%'}}>
-				{isMobile ? (
-					<Box sx={{width: '100%'}}>
-						{[1, 2, 3].map((i) => (
-							<JobPositionCardSkeleton key={i} />
-						))}
-					</Box>
-				) : (
-					<TableSkeletonLoader rows={limit} columns={6} />
-				)}
-			</Box>
-		);
+		if (isMobile) {
+			return (
+				<Box sx={{width: '100%'}}>
+					{[1, 2, 3].map((i) => (
+						<JobPositionCardSkeleton key={i} />
+					))}
+				</Box>
+			);
+		}
+		// Desktop loading is handled by EnhancedDataGrid
 	}
 
 	if (error && !data) {
@@ -258,7 +349,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 	if (isMobile) {
 		return (
 			<>
-				{jobPositions && jobPositions.length > 0 ? (
+				{jobPositions.length > 0 ? (
 					<Box sx={{width: '100%'}}>
 						{jobPositions.map((jobPosition) => (
 							<JobPositionCardView
@@ -278,14 +369,6 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 					</Paper>
 				)}
 
-				{meta && (
-					<Pagination
-						meta={meta}
-						onPageChange={onPageChange}
-						onLimitChange={onLimitChange}
-					/>
-				)}
-
 				{applyDialog.selectedItem && (
 					<ApplyToJobDialog
 						open={applyDialog.isOpen}
@@ -298,94 +381,54 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
 		);
 	}
 
-	// Desktop view (table layout)
-	return (
-		<>
-			{jobPositions && jobPositions.length > 0 ? (
-				<TableContainer component={Paper} sx={{width: '100%', overflowX: 'auto'}}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell sx={{minWidth: 200}}><strong>{t('job_positions.job_title_label')}</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>{t('job_positions.company')}</strong></TableCell>
-								{!publicMode && <TableCell sx={{minWidth: 100}}><strong>{t('job_positions.status_label')}</strong></TableCell>}
-								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
-								{!publicMode && <TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>}
-								<TableCell sx={{minWidth: 120}}><strong>{t('careers.posted_date')}</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{jobPositions.map((jobPosition) => (
-								<TableRow key={jobPosition.uid} hover>
-									<TableCell sx={{maxWidth: 250, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
-										{jobPosition.title}
-									</TableCell>
-									<TableCell>{jobPosition.companyName || 'N/A'}</TableCell>
-									{!publicMode && (
-										<TableCell>
-											<Chip
-												label={jobPosition.status}
-												color={jobPosition.status === 'OPEN' ? 'success' : jobPosition.status === 'CLOSED' ? 'default' : 'warning'}
-												size="small"
-											/>
-										</TableCell>
-									)}
-									<TableCell>{jobPosition.stages?.length || 0}</TableCell>
-									{!publicMode && (
-										<TableCell sx={{maxWidth: 180}}>
-											{jobPosition.createdBy ? (
-												<>
-													<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-														{jobPosition.createdBy.name}
-													</Typography>
-													<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-														{jobPosition.createdBy.email}
-													</Typography>
-												</>
-											) : (
-												'N/A'
-											)}
-										</TableCell>
-									)}
-									<TableCell>
-										{jobPosition.createdAt ? new Date(jobPosition.createdAt).toLocaleDateString() : 'N/A'}
-									</TableCell>
-									<TableCell>
-										<Box sx={{display: 'flex', gap: 1}}>
-											<Button
-												size="small"
-												variant="outlined"
-												onClick={() => handleViewDetails(jobPosition.uid)}
-											>
-												{t('job_positions.view_details')}
-											</Button>
-											{publicMode && (
-												<Button
-													size="small"
-													variant="contained"
-													onClick={() => handleApplyClick(jobPosition.uid, jobPosition.title)}
-													disabled={jobPosition.status !== 'OPEN'}
-												>
-													{t('common.apply')}
-												</Button>
-											)}
-										</Box>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			) : (
+	// Desktop view (DataGrid)
+	if (!isLoading && jobPositions.length === 0) {
+		return (
+			<>
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
 						{t('job_positions.no_positions')}
 					</Typography>
 				</Paper>
-			)}
+				{applyDialog.selectedItem && (
+					<ApplyToJobDialog
+						open={applyDialog.isOpen}
+						onClose={applyDialog.close}
+						jobUid={applyDialog.selectedItem.uid}
+						jobTitle={applyDialog.selectedItem.title}
+					/>
+				)}
+			</>
+		);
+	}
 
-			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
+	return (
+		<>
+			<Box sx={{height: 600, width: '100%'}}>
+				<EnhancedDataGrid
+					rows={jobPositions}
+					columns={columns}
+					loading={isLoading}
+					getRowId={(row) => row.uid}
+					rowCount={totalRows}
+					paginationMode={publicMode ? 'client' : 'server'}
+					paginationModel={{page: page - 1, pageSize: limit}}
+					onPaginationModelChange={(model) => {
+						if (model.page !== page - 1) {
+							onPageChange(model.page + 1);
+						}
+						if (model.pageSize !== limit) {
+							onLimitChange(model.pageSize);
+						}
+					}}
+					pageSizeOptions={[10, 25, 50, 100]}
+					disableRowSelectionOnClick
+					onboardingKey={publicMode ? 'job-positions-public' : 'job-positions-list'}
+					localeText={{
+						noRowsLabel: t('job_positions.no_positions'),
+					}}
+				/>
+			</Box>
 
 			{applyDialog.selectedItem && (
 				<ApplyToJobDialog
