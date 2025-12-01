@@ -1,12 +1,6 @@
 import {
 	Box,
 	Typography,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
 	Paper,
 	Card,
 	CardContent,
@@ -16,6 +10,7 @@ import {
 	useMediaQuery,
 	useTheme,
 } from '@mui/material';
+import {GridColDef} from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useTranslation} from 'react-i18next';
@@ -23,13 +18,11 @@ import {useListCandidates, useDeleteCandidate} from '../../hooks/api/useCandidat
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 import {Candidate} from '../../types/candidate';
-import Pagination from '../pagination/Pagination';
 import UpdateCandidateDialog from '../dialogs/UpdateCandidateDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
-import {TableRowActions} from '../tables';
-import TableSkeletonLoader from '../common/TableSkeletonLoader';
+import {EnhancedDataGrid, ActionsCell, DateCell} from '../tables';
 
 interface CandidatesListProps {
 	page: number;
@@ -39,7 +32,7 @@ interface CandidatesListProps {
 	onLimitChange: (limit: number) => void;
 }
 
-// Skeleton loader for loading state
+// Skeleton loader for mobile loading state
 const CandidateCardSkeleton = () => (
 	<Card sx={{mb: 2, p: 2}}>
 		<Stack spacing={1}>
@@ -83,9 +76,11 @@ const CandidateCardView: React.FC<{
 					{t('candidates.email_label')}: {candidate.email}
 				</Typography>
 
-				<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 2, fontFamily: 'monospace'}}>
-					UID: {candidate.uid}
-				</Typography>
+				{candidate.phone && (
+					<Typography variant="body2" color="textSecondary" sx={{mb: 0.5}}>
+						{t('candidates.phone_label')}: {candidate.phone}
+					</Typography>
+				)}
 
 				{canManage && (
 					<Box
@@ -100,11 +95,8 @@ const CandidateCardView: React.FC<{
 							size="small"
 							color="primary"
 							onClick={() => onEdit(candidate)}
-							aria-label={t('users.edit_user_tooltip')}
-							sx={{
-								minHeight: 44,
-								minWidth: 44,
-							}}
+							aria-label={t('common.edit')}
+							sx={{minHeight: 44, minWidth: 44}}
 						>
 							<EditIcon />
 						</IconButton>
@@ -112,11 +104,8 @@ const CandidateCardView: React.FC<{
 							size="small"
 							color="error"
 							onClick={() => onDelete(candidate)}
-							aria-label={t('users.delete_user_tooltip')}
-							sx={{
-								minHeight: 44,
-								minWidth: 44,
-							}}
+							aria-label={t('common.delete')}
+							sx={{minHeight: 44, minWidth: 44}}
 						>
 							<DeleteIcon />
 						</IconButton>
@@ -152,8 +141,8 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const candidates = data?.data;
-	const meta = data?.meta;
+	const candidates = data?.data || [];
+	const totalRows = data?.meta?.total || 0;
 
 	const handleEditClick = (candidate: Candidate) => {
 		updateDialog.openWith(candidate);
@@ -163,38 +152,66 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 		deleteConfirm.confirmDelete(candidate);
 	};
 
-	// Show skeleton loader on INITIAL load, not on refetch
-	if (isLoading && !data) {
-		return (
-			<Box sx={{width: '100%'}}>
-				{isMobile ? (
-					<Box sx={{width: '100%'}}>
-						{[1, 2, 3].map((i) => (
-							<CandidateCardSkeleton key={i} />
-						))}
-					</Box>
-				) : (
-					<TableSkeletonLoader rows={limit} columns={canManage ? 4 : 3} />
-				)}
-			</Box>
-		);
-	}
-
-	if (error && !data) {
-		return (
-			<Box sx={{p: {xs: 2, sm: 4}}}>
-				<Typography color="error" sx={{fontSize: {xs: '0.95rem', sm: '1rem'}}}>
-					{t('errors.fetch_failed')}
-				</Typography>
-			</Box>
-		);
-	}
+	// Define columns for DataGrid
+	const columns: GridColDef[] = [
+		{
+			field: 'name',
+			headerName: t('candidates.name_label'),
+			flex: 1,
+			minWidth: 150,
+		},
+		{
+			field: 'email',
+			headerName: t('candidates.email_label'),
+			flex: 1,
+			minWidth: 200,
+		},
+		{
+			field: 'phone',
+			headerName: t('candidates.phone_label'),
+			width: 150,
+			renderCell: (params) => params.value || '-',
+		},
+		{
+			field: 'createdAt',
+			headerName: t('common.created'),
+			width: 150,
+			renderCell: (params) => <DateCell value={params.value} />,
+		},
+		...(canManage
+			? [
+					{
+						field: 'actions',
+						headerName: t('common.actions'),
+						width: 120,
+						sortable: false,
+						filterable: false,
+						renderCell: (params: any) => (
+							<ActionsCell
+								onEdit={() => handleEditClick(params.row)}
+								onDelete={() => handleDeleteClick(params.row)}
+							/>
+						),
+					} as GridColDef,
+			  ]
+			: []),
+	];
 
 	// Mobile view (card layout)
 	if (isMobile) {
+		if (isLoading && !data) {
+			return (
+				<Box sx={{width: '100%'}}>
+					{[1, 2, 3].map((i) => (
+						<CandidateCardSkeleton key={i} />
+					))}
+				</Box>
+			);
+		}
+
 		return (
 			<>
-				{candidates && candidates.length > 0 ? (
+				{candidates.length > 0 ? (
 					<Box sx={{width: '100%'}}>
 						{candidates.map((candidate) => (
 							<CandidateCardView
@@ -212,14 +229,6 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 							{t('candidates.no_candidates')}
 						</Typography>
 					</Paper>
-				)}
-
-				{meta && (
-					<Pagination
-						meta={meta}
-						onPageChange={onPageChange}
-						onLimitChange={onLimitChange}
-					/>
 				)}
 
 				<UpdateCandidateDialog
@@ -241,52 +250,44 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 		);
 	}
 
-	// Desktop view (table layout)
+	// Desktop view (DataGrid)
+	if (error && !data) {
+		return (
+			<Box sx={{p: {xs: 2, sm: 4}}}>
+				<Typography color="error" sx={{fontSize: {xs: '0.95rem', sm: '1rem'}}}>
+					{t('errors.fetch_failed')}
+				</Typography>
+			</Box>
+		);
+	}
+
 	return (
 		<>
-			{candidates && candidates.length > 0 ? (
-				<TableContainer component={Paper}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell><strong>{t('candidates.name_label')}</strong></TableCell>
-								<TableCell><strong>{t('candidates.email_label')}</strong></TableCell>
-								<TableCell><strong>UID</strong></TableCell>
-								{canManage && <TableCell align="right"><strong>{t('common.actions')}</strong></TableCell>}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{candidates.map((candidate) => (
-								<TableRow key={candidate.uid} hover>
-									<TableCell>{candidate.name}</TableCell>
-									<TableCell>{candidate.email}</TableCell>
-									<TableCell>
-										<Typography variant="caption" sx={{fontFamily: 'monospace'}}>
-											{candidate.uid}
-										</Typography>
-									</TableCell>
-									{canManage && (
-										<TableCell align="right">
-											<TableRowActions
-												onEdit={() => handleEditClick(candidate)}
-												onDelete={() => handleDeleteClick(candidate)}
-											/>
-										</TableCell>
-									)}
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			) : (
-				<Paper sx={{p: 4, textAlign: 'center'}}>
-					<Typography variant="body1" color="textSecondary">
-						{t('candidates.no_candidates')}
-					</Typography>
-				</Paper>
-			)}
-
-			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
+			<Box sx={{height: 600, width: '100%'}}>
+				<EnhancedDataGrid
+					rows={candidates}
+					columns={columns}
+					loading={isLoading}
+					getRowId={(row) => row.uid}
+					rowCount={totalRows}
+					paginationMode="server"
+					paginationModel={{page: page - 1, pageSize: limit}}
+					onPaginationModelChange={(model) => {
+						if (model.page !== page - 1) {
+							onPageChange(model.page + 1);
+						}
+						if (model.pageSize !== limit) {
+							onLimitChange(model.pageSize);
+						}
+					}}
+					pageSizeOptions={[10, 25, 50, 100]}
+					disableRowSelectionOnClick
+					onboardingKey="candidates-list"
+					localeText={{
+						noRowsLabel: t('candidates.no_candidates'),
+					}}
+				/>
+			</Box>
 
 			<UpdateCandidateDialog
 				open={updateDialog.isOpen}

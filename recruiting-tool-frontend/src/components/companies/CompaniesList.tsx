@@ -1,13 +1,6 @@
 import {
 	Box,
 	Typography,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Paper,
 	Card,
 	CardContent,
 	Skeleton,
@@ -16,15 +9,15 @@ import {
 	IconButton,
 	useMediaQuery,
 	useTheme,
+	Paper,
 } from '@mui/material';
+import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useTranslation} from 'react-i18next';
 import {useListCompanies} from '../../hooks/api/useCompanies';
 import {Company} from '../../types/company.types';
-import Pagination from '../pagination/Pagination';
-import {TableRowActions} from '../tables';
-import TableSkeletonLoader from '../common/TableSkeletonLoader';
+import {EnhancedDataGrid, ActionsCell} from '../tables';
 
 interface CompaniesListProps {
 	page: number;
@@ -109,7 +102,7 @@ const CompanyCardView: React.FC<{
 						size="small"
 						color="primary"
 						onClick={() => onEdit(company)}
-						aria-label={t('users.edit_user_tooltip')}
+						aria-label={t('common.edit')}
 						sx={{
 							minHeight: 44,
 							minWidth: 44,
@@ -121,7 +114,7 @@ const CompanyCardView: React.FC<{
 						size="small"
 						color="error"
 						onClick={() => onDelete(company)}
-						aria-label={t('users.delete_user_tooltip')}
+						aria-label={t('common.delete')}
 						sx={{
 							minHeight: 44,
 							minWidth: 44,
@@ -155,31 +148,75 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const companies = data?.data;
-	const meta = data?.meta;
+	const companies = data?.data || [];
+	const totalRows = data?.meta?.total || 0;
+
+	const columns: GridColDef[] = [
+		{
+			field: 'name',
+			headerName: t('companies.name_label'),
+			flex: 1,
+			minWidth: 150,
+		},
+		{
+			field: 'description',
+			headerName: t('companies.description_label'),
+			flex: 2,
+			minWidth: 200,
+			renderCell: (params) => params.value || '-',
+		},
+		{
+			field: 'userCount',
+			headerName: t('users.title'),
+			width: 120,
+			align: 'center',
+			headerAlign: 'center',
+			valueGetter: (value) => value || 0,
+		},
+		{
+			field: 'jobPositionCount',
+			headerName: t('job_positions.title'),
+			width: 150,
+			align: 'center',
+			headerAlign: 'center',
+			valueGetter: (value) => value || 0,
+		},
+		{
+			field: 'actions',
+			headerName: t('common.actions'),
+			width: 120,
+			sortable: false,
+			filterable: false,
+			align: 'center',
+			headerAlign: 'center',
+			renderCell: (params: GridRenderCellParams<Company>) => (
+				<ActionsCell
+					onEdit={() => onEdit(params.row)}
+					onDelete={() => onDelete(params.row)}
+				/>
+			),
+		},
+	];
 
 	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{width: '100%'}}>
-				{isMobile ? (
-					<Box sx={{width: '100%'}}>
-						{[1, 2, 3].map((i) => (
-							<CompanyCardSkeleton key={i} />
-						))}
-					</Box>
-				) : (
-					<TableSkeletonLoader rows={limit} columns={5} />
-				)}
-			</Box>
-		);
+		if (isMobile) {
+			return (
+				<Box sx={{width: '100%'}}>
+					{[1, 2, 3].map((i) => (
+						<CompanyCardSkeleton key={i} />
+					))}
+				</Box>
+			);
+		}
+		// Desktop loading is handled by EnhancedDataGrid
 	}
 
 	// Mobile view (card layout)
 	if (isMobile) {
 		return (
 			<>
-				{companies && companies.length > 0 ? (
+				{companies.length > 0 ? (
 					<Box sx={{width: '100%'}}>
 						{companies.map((company) => (
 							<CompanyCardView
@@ -197,53 +234,37 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 						</Typography>
 					</Paper>
 				)}
-
-				{meta && (
-					<Pagination
-						meta={meta}
-						onPageChange={onPageChange}
-						onLimitChange={onLimitChange}
-					/>
-				)}
 			</>
 		);
 	}
 
-	// Desktop view (table layout)
+	// Desktop view (DataGrid)
 	return (
-		<>
-			<TableContainer component={Paper}>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<TableCell>{t('companies.name_label')}</TableCell>
-							<TableCell>{t('companies.description_label')}</TableCell>
-							<TableCell align="center">{t('users.title')}</TableCell>
-							<TableCell align="center">{t('job_positions.title')}</TableCell>
-							<TableCell align="center">{t('common.actions')}</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{companies?.map((company) => (
-							<TableRow key={company.uid}>
-								<TableCell>{company.name}</TableCell>
-								<TableCell>{company.description || '-'}</TableCell>
-								<TableCell align="center">{company.userCount || 0}</TableCell>
-								<TableCell align="center">{company.jobPositionCount || 0}</TableCell>
-								<TableCell align="center">
-									<TableRowActions
-										onEdit={() => onEdit(company)}
-										onDelete={() => onDelete(company)}
-									/>
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
-
-			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
-		</>
+		<Box sx={{height: 600, width: '100%'}}>
+			<EnhancedDataGrid
+				rows={companies}
+				columns={columns}
+				loading={isLoading}
+				getRowId={(row) => row.uid}
+				rowCount={totalRows}
+				paginationMode="server"
+				paginationModel={{page: page - 1, pageSize: limit}}
+				onPaginationModelChange={(model) => {
+					if (model.page !== page - 1) {
+						onPageChange(model.page + 1);
+					}
+					if (model.pageSize !== limit) {
+						onLimitChange(model.pageSize);
+					}
+				}}
+				pageSizeOptions={[10, 25, 50, 100]}
+				disableRowSelectionOnClick
+				onboardingKey="companies-list"
+				localeText={{
+					noRowsLabel: t('companies.no_companies'),
+				}}
+			/>
+		</Box>
 	);
 };
 

@@ -44,7 +44,35 @@
     "yes": "Yes",
     "no": "No",
     "print": "Print",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "gotIt": "Got it",
+    "created": "Created"
+  },
+  "dataGrid": {
+    "ariaLabel": "Data table with sortable and filterable columns",
+    "onboarding": {
+      "title": "Column Options Available",
+      "description": "Click the menu icon on any column header to filter data, sort, or show/hide columns.",
+      "dontShowAgain": "Don't show this again"
+    },
+    "help": {
+      "tooltip": "Table help",
+      "ariaLabel": "Open table help",
+      "title": "Table Features",
+      "intro": "Click the menu icon on column headers to access these features:",
+      "filter": {
+        "title": "Filter",
+        "description": "Filter rows by column values"
+      },
+      "sort": {
+        "title": "Sort",
+        "description": "Sort ascending or descending"
+      },
+      "columns": {
+        "title": "Manage Columns",
+        "description": "Show or hide columns"
+      }
+    }
   },
   "validation": {
     "required": "This field is required",

@@ -1,18 +1,8 @@
-import {
-	Typography,
-	Button,
-	Box,
-	Chip,
-	IconButton,
-	CircularProgress,
-} from '@mui/material';
+import {Typography, Button, Box, Chip} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import {DataGrid, GridColDef} from '@mui/x-data-grid';
-import {useState} from 'react';
+import {GridColDef} from '@mui/x-data-grid';
+import {EnhancedDataGrid, CellRow, ActionsCell, DateCell} from '../../components/tables';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useDialog} from '../../hooks/useDialog';
 import {useEmailTemplates, useDeleteEmailTemplate} from '../../hooks/api/useEmailTemplates';
@@ -22,7 +12,6 @@ import ConfirmDeleteDialog from '../../components/dialogs/ConfirmDeleteDialog';
 import {canManageResources} from '../../utils/permissions';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 import {EmailTemplate} from '../../types/emailTemplate.types';
-import {format} from 'date-fns';
 
 const EmailTemplatesPage: React.FC = () => {
 	const {t} = useTranslation();
@@ -66,19 +55,24 @@ const EmailTemplatesPage: React.FC = () => {
 			width: 120,
 			renderCell: (params) =>
 				params.value ? (
-					<Chip label={t('common.yes')} size="small" color="primary" />
+					<CellRow centered>
+						<Chip label={t('common.yes')} size="small" color="primary" />
+					</CellRow>
 				) : null,
 		},
 		{
 			field: 'companyUid',
 			headerName: t('job_positions.company'),
 			width: 150,
-			renderCell: (params) =>
-				params.value ? (
-					<Chip label={t('job_positions.company')} size="small" />
-				) : (
-					<Chip label={t('email_templates.system_wide')} size="small" color="secondary" />
-				),
+			renderCell: (params) => (
+				<CellRow centered>
+					{params.value ? (
+						<Chip label={t('job_positions.company')} size="small" />
+					) : (
+						<Chip label={t('email_templates.system_wide')} size="small" color="secondary" />
+					)}
+				</CellRow>
+			),
 		},
 		{
 			field: 'createdByName',
@@ -89,41 +83,20 @@ const EmailTemplatesPage: React.FC = () => {
 			field: 'createdAt',
 			headerName: t('email_templates.table_created_at'),
 			width: 150,
-			renderCell: (params) => format(new Date(params.value), 'MMM dd, yyyy'),
+			renderCell: (params) => <DateCell value={params.value} />,
 		},
 		{
 			field: 'actions',
 			headerName: t('email_templates.table_actions'),
 			width: 150,
 			sortable: false,
+			filterable: false,
 			renderCell: (params) => (
-				<Box>
-					<IconButton
-						size="small"
-						onClick={() => previewDialog.open(params.row.uid)}
-						title={t('common.view')}
-					>
-						<VisibilityIcon fontSize="small" />
-					</IconButton>
-					{canManage && (
-						<>
-							<IconButton
-								size="small"
-								onClick={() => updateDialog.open(params.row)}
-								title={t('common.edit')}
-							>
-								<EditIcon fontSize="small" />
-							</IconButton>
-							<IconButton
-								size="small"
-								onClick={() => deleteDialog.open(params.row)}
-								title={t('common.delete')}
-							>
-								<DeleteIcon fontSize="small" />
-							</IconButton>
-						</>
-					)}
-				</Box>
+				<ActionsCell
+					onView={() => previewDialog.open(params.row.uid)}
+					onEdit={canManage ? () => updateDialog.open(params.row) : undefined}
+					onDelete={canManage ? () => deleteDialog.open(params.row) : undefined}
+				/>
 			),
 		},
 	];
@@ -167,7 +140,7 @@ const EmailTemplatesPage: React.FC = () => {
 			</Box>
 
 			<Box sx={{height: 600, width: '100%'}}>
-				<DataGrid
+				<EnhancedDataGrid
 					rows={templates || []}
 					columns={columns}
 					loading={isLoading}
@@ -177,14 +150,7 @@ const EmailTemplatesPage: React.FC = () => {
 					}}
 					disableRowSelectionOnClick
 					getRowId={(row) => row.uid}
-					sx={{
-						'& .MuiDataGrid-cell:focus': {
-							outline: 'none',
-						},
-						'& .MuiDataGrid-cell:focus-within': {
-							outline: 'none',
-						},
-					}}
+					onboardingKey="email-templates"
 				/>
 			</Box>
 

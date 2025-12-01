@@ -44,7 +44,35 @@
     "yes": "Sí",
     "no": "No",
     "print": "Imprimir",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "gotIt": "Entendido",
+    "created": "Creado"
+  },
+  "dataGrid": {
+    "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
+    "onboarding": {
+      "title": "Opciones de Columna Disponibles",
+      "description": "Haz clic en el icono de menú en cualquier encabezado de columna para filtrar datos, ordenar o mostrar/ocultar columnas.",
+      "dontShowAgain": "No mostrar esto de nuevo"
+    },
+    "help": {
+      "tooltip": "Ayuda de tabla",
+      "ariaLabel": "Abrir ayuda de tabla",
+      "title": "Funciones de la Tabla",
+      "intro": "Haz clic en el icono de menú en los encabezados de columna para acceder a estas funciones:",
+      "filter": {
+        "title": "Filtrar",
+        "description": "Filtrar filas por valores de columna"
+      },
+      "sort": {
+        "title": "Ordenar",
+        "description": "Ordenar ascendente o descendente"
+      },
+      "columns": {
+        "title": "Gestionar Columnas",
+        "description": "Mostrar u ocultar columnas"
+      }
+    }
   },
   "validation": {
     "required": "Este campo es obligatorio",
