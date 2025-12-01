@@ -62,12 +62,13 @@ jobs:
             ISSUE_STATE=$(gh issue view "$issue" --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
 
             if [ "$ISSUE_STATE" = "OPEN" ]; then
-              gh issue close "$issue" \
-                --comment "✅ Closed via commit to \`development\` branch.
+              COMMENT="✅ Closed via commit to development branch.
 
 **Commit:** ${{ github.sha }}
 **Author:** ${{ github.actor }}
-**Push:** [View changes](https://github.com/${{ github.repository }}/commit/${{ github.sha }})" \
+**Push:** [View changes](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
+
+              gh issue close "$issue" --comment "$COMMENT" \
                 && echo "Successfully closed issue #$issue" \
                 || echo "Failed to close issue #$issue"
             elif [ "$ISSUE_STATE" = "CLOSED" ]; then
