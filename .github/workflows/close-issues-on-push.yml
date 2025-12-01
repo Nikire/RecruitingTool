@@ -21,22 +21,22 @@ jobs:
       - name: Extract and close issues from commit messages
         env:
           GH_TOKEN: ${{ github.token }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_AUTHOR: ${{ github.actor }}
+          REPO_NAME: ${{ github.repository }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
         run: |
           echo "Processing commits from push event..."
 
           # Get commit messages from this push
-          # For a push event, we look at the commits included
           COMMIT_MESSAGES=""
 
-          # Get the commits from this push (between before and after SHA)
-          BEFORE="${{ github.event.before }}"
-          AFTER="${{ github.event.after }}"
-
           # Handle initial push (no before SHA)
-          if [ "$BEFORE" = "0000000000000000000000000000000000000000" ]; then
-            COMMIT_MESSAGES=$(git log --format="%B" -n 10 "$AFTER")
+          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            COMMIT_MESSAGES=$(git log --format="%B" -n 10 "$AFTER_SHA")
           else
-            COMMIT_MESSAGES=$(git log --format="%B" "$BEFORE".."$AFTER" 2>/dev/null || git log --format="%B" -n 10 "$AFTER")
+            COMMIT_MESSAGES=$(git log --format="%B" "$BEFORE_SHA".."$AFTER_SHA" 2>/dev/null || git log --format="%B" -n 10 "$AFTER_SHA")
           fi
 
           echo "Commit messages:"
@@ -62,13 +62,7 @@ jobs:
             ISSUE_STATE=$(gh issue view "$issue" --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
 
             if [ "$ISSUE_STATE" = "OPEN" ]; then
-              COMMENT="✅ Closed via commit to development branch.
-
-**Commit:** ${{ github.sha }}
-**Author:** ${{ github.actor }}
-**Push:** [View changes](https://github.com/${{ github.repository }}/commit/${{ github.sha }})"
-
-              gh issue close "$issue" --comment "$COMMENT" \
+              gh issue close "$issue" --comment "Closed via commit to development branch. Commit: $COMMIT_SHA by $COMMIT_AUTHOR" \
                 && echo "Successfully closed issue #$issue" \
                 || echo "Failed to close issue #$issue"
             elif [ "$ISSUE_STATE" = "CLOSED" ]; then
