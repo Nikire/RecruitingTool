@@ -27,8 +27,8 @@ const EmailTemplatesPage: React.FC = () => {
 	const canManage = canManageResources(user);
 
 	const handleDelete = () => {
-		if (deleteDialog.data) {
-			deleteTemplate(deleteDialog.data.uid, {
+		if (deleteDialog.selectedItem) {
+			deleteTemplate(deleteDialog.selectedItem.uid, {
 				onSuccess: () => {
 					deleteDialog.close();
 				},
@@ -93,9 +93,9 @@ const EmailTemplatesPage: React.FC = () => {
 			filterable: false,
 			renderCell: (params) => (
 				<ActionsCell
-					onView={() => previewDialog.open(params.row.uid)}
-					onEdit={canManage ? () => updateDialog.open(params.row) : undefined}
-					onDelete={canManage ? () => deleteDialog.open(params.row) : undefined}
+					onView={() => previewDialog.openWith(params.row.uid)}
+					onEdit={canManage ? () => updateDialog.openWith(params.row) : undefined}
+					onDelete={canManage ? () => deleteDialog.openWith(params.row) : undefined}
 				/>
 			),
 		},
@@ -161,14 +161,14 @@ const EmailTemplatesPage: React.FC = () => {
 					createDialog.close();
 					updateDialog.close();
 				}}
-				template={updateDialog.data}
+				template={updateDialog.selectedItem ?? undefined}
 			/>
 
 			{/* Preview Dialog */}
 			<EmailTemplatePreviewDialog
 				open={previewDialog.isOpen}
 				onClose={previewDialog.close}
-				templateUid={previewDialog.data || null}
+				templateUid={previewDialog.selectedItem || null}
 			/>
 
 			{/* Delete Confirmation Dialog */}
@@ -178,7 +178,7 @@ const EmailTemplatesPage: React.FC = () => {
 				onConfirm={handleDelete}
 				title={t('dialogs.delete_confirmation')}
 				message={t('email_templates.delete_message')}
-				itemName={deleteDialog.data?.name}
+				itemName={deleteDialog.selectedItem?.name}
 				isDeleting={isDeleting}
 			/>
 		</Box>
