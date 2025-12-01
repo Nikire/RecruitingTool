@@ -31,6 +31,7 @@ export interface CreateUserDto {
 	email: string;
 	password: string;
 	companyUid?: string;
+	roles?: UserRoles[];
 }
 
 export interface UpdateUserDto {
@@ -38,6 +39,7 @@ export interface UpdateUserDto {
 	email?: string;
 	password?: string;
 	companyUid?: string;
+	roles?: UserRoles[];
 	profilePicture?: string;
 	phoneNumber?: string;
 	position?: string;

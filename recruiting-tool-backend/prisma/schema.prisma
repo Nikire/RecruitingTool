@@ -135,8 +135,8 @@ model CandidateNote {
   updatedAt   DateTime  @updatedAt
   candidateId Int
   candidate   Candidate @relation("CandidateNotes", fields: [candidateId], references: [id], onDelete: Cascade)
-  authorId    Int
-  author      User      @relation("CandidateNoteAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  authorId    Int?
+  author      User?     @relation("CandidateNoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
   @@index([candidateId])
   @@index([authorId])

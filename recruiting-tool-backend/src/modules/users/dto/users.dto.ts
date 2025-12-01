@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { RolesType } from '@prisma/client';
-import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
+import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
 export class CreateUserDto {
   @ApiProperty({ description: 'The name of the user', example: 'John Doe' })
@@ -31,6 +31,18 @@ export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
   companyUid?: string;
+
+  @ApiProperty({
+    description: 'The roles of the user',
+    example: ['USER', 'HR'],
+    enum: RolesType,
+    isArray: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(RolesType, { each: true })
+  roles?: Array<RolesType>;
 }
 export class UpdateUserDto {
   @ApiProperty({ description: 'The name of the user', example: 'John Doe 2' })
@@ -99,6 +111,18 @@ export class UpdateUserDto {
   @IsOptional()
   @IsString()
   timezone?: string;
+
+  @ApiProperty({
+    description: 'The roles of the user',
+    example: ['USER', 'HR'],
+    enum: RolesType,
+    isArray: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(RolesType, { each: true })
+  roles?: Array<RolesType>;
 }
 
 export class UserResponseDto {

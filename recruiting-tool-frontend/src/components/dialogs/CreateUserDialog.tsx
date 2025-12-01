@@ -74,6 +74,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({open, onClose}) => {
 			name: data.name,
 			email: data.email,
 			password: data.password,
+			roles: data.roles,
 		};
 
 		// Add company if selected

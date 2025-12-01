@@ -269,41 +269,47 @@ const JobPositionDetailPage: React.FC = () => {
 							</Typography>
 						</Paper>
 					)}
+				</>
+			)}
 
-					<Typography variant="h5" sx={{mb: {xs: 1.5, sm: 2}, mt: {xs: 3, sm: 5}, fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
-						{t('job_position_detail.stage_template')}
-					</Typography>
-					<Card sx={{mb: {xs: 2, sm: 3}}}>
-						<CardContent sx={{p: {xs: 2, sm: 3}}}>
-							{jobPosition.stages && jobPosition.stages.length > 0 ? (
-								<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
-									{jobPosition.stages
-										.sort((a, b) => a.position - b.position)
-										.map((stage, index) => (
-											<Box key={stage.uid} sx={{display: 'flex', alignItems: 'center', gap: 2}}>
-												<Chip label={index + 1} size="small" color="primary" />
-												<Box sx={{flex: 1}}>
-													<Typography variant="body1" fontWeight="bold">
-														{stage.title}
-													</Typography>
-													<Typography variant="body2" color="textSecondary">
-														{stage.description}
-													</Typography>
-													<Typography variant="caption" color="textSecondary">
-														{t('job_position_detail.stage_type')}: {stage.type.replace(/_/g, ' ')}
-													</Typography>
-												</Box>
-											</Box>
-										))}
-								</Box>
-							) : (
-								<Typography color="textSecondary">
-									{t('job_position_detail.no_stages')}
-								</Typography>
-							)}
-						</CardContent>
-					</Card>
+			{/* Hiring Stages - visible to everyone */}
+			<Typography variant="h5" sx={{mb: {xs: 1.5, sm: 2}, mt: {xs: 3, sm: 5}, fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
+				{t('job_position_detail.stage_template')}
+			</Typography>
+			<Card sx={{mb: {xs: 2, sm: 3}}}>
+				<CardContent sx={{p: {xs: 2, sm: 3}}}>
+					{jobPosition.stages && jobPosition.stages.length > 0 ? (
+						<Box sx={{display: 'flex', flexDirection: 'column', gap: 1}}>
+							{jobPosition.stages
+								.sort((a, b) => a.position - b.position)
+								.map((stage, index) => (
+									<Box key={stage.uid} sx={{display: 'flex', alignItems: 'center', gap: 2}}>
+										<Chip label={index + 1} size="small" color="primary" />
+										<Box sx={{flex: 1}}>
+											<Typography variant="body1" fontWeight="bold">
+												{stage.title}
+											</Typography>
+											<Typography variant="body2" color="textSecondary">
+												{stage.description}
+											</Typography>
+											<Typography variant="caption" color="textSecondary">
+												{t('job_position_detail.stage_type')}: {stage.type.replace(/_/g, ' ')}
+											</Typography>
+										</Box>
+									</Box>
+								))}
+						</Box>
+					) : (
+						<Typography color="textSecondary">
+							{t('job_position_detail.no_stages')}
+						</Typography>
+					)}
+				</CardContent>
+			</Card>
 
+			{/* Custom Questions - only visible to HR/Admin */}
+			{canManage && (
+				<>
 					<Typography variant="h5" sx={{mb: {xs: 1.5, sm: 2}, mt: {xs: 3, sm: 4}, fontSize: {xs: '1.25rem', sm: '1.5rem'}}}>
 						{t('job_position_detail.custom_questions')}
 					</Typography>

@@ -32,9 +32,14 @@ export class UsersService {
           companyId = company.id;
         }
 
-        const { companyUid, ...userData } = createUserDto;
+        const { companyUid, roles, ...userData } = createUserDto;
         const newUser = await this.databaseService.user.create({
-          data: { ...userData, password: await bycrypt.hash(createUserDto.password, 10), companyId },
+          data: {
+            ...userData,
+            password: await bycrypt.hash(createUserDto.password, 10),
+            companyId,
+            ...(roles && { roles }),
+          },
           include: {
             company: true,
           },
@@ -209,10 +214,14 @@ export class UsersService {
         companyId = company.id;
       }
 
-      const { companyUid, ...userData } = updateUserDto;
+      const { companyUid, roles, ...userData } = updateUserDto;
       const updatedUser = await this.databaseService.user.update({
         where: { uid },
-        data: { ...userData, ...(companyId !== undefined && { companyId }) },
+        data: {
+          ...userData,
+          ...(companyId !== undefined && { companyId }),
+          ...(roles !== undefined && { roles }),
+        },
         include: {
           company: true,
         },

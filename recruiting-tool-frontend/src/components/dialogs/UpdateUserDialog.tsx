@@ -8,12 +8,20 @@ import {
 	Typography,
 	Box,
 	CircularProgress,
+	Checkbox,
+	FormControl,
+	FormLabel,
+	FormGroup,
+	FormControlLabel,
+	FormHelperText,
 } from '@mui/material';
-import {useForm} from 'react-hook-form';
+import {useForm, Controller} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {useUpdateUser} from '../../hooks/api/useUsers';
-import {User} from '../../types/user.types';
+import {User, UserRoles} from '../../types/user.types';
 import {useEffect} from 'react';
+import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {hasRole} from '../../utils/permissions';
 
 interface UpdateUserDialogProps {
 	open: boolean;
@@ -26,6 +34,7 @@ interface UserFormData {
 	email: string;
 	password?: string;
 	companyUid?: string;
+	roles: UserRoles[];
 }
 
 const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
@@ -34,10 +43,14 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 	user,
 }) => {
 	const {t} = useTranslation();
+	const {user: currentUser} = useUserAtom();
+	const isSuperAdmin = hasRole(currentUser, UserRoles.SUPER_ADMIN);
+
 	const {
 		register,
 		handleSubmit,
 		reset,
+		control,
 		formState: {errors},
 	} = useForm<UserFormData>({
 		defaultValues: {
@@ -45,6 +58,7 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 			email: '',
 			password: '',
 			companyUid: '',
+			roles: [UserRoles.USER],
 		},
 	});
 
@@ -58,9 +72,21 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 				email: user.email,
 				password: '',
 				companyUid: user.company?.uid || '',
+				roles: user.roles || [UserRoles.USER],
 			});
 		}
 	}, [user, reset]);
+
+	const availableRoles = [
+		{value: UserRoles.USER, label: t('user_roles.user')},
+		{value: UserRoles.HR, label: t('user_roles.hr')},
+		{value: UserRoles.ADMIN, label: t('user_roles.admin')},
+	];
+
+	// Only SUPER_ADMIN can assign SUPER_ADMIN role
+	if (isSuperAdmin) {
+		availableRoles.push({value: UserRoles.SUPER_ADMIN, label: t('user_roles.super_admin')});
+	}
 
 	const onSubmit = (data: UserFormData) => {
 		if (!user) return;
@@ -69,6 +95,7 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 		const updateData: any = {
 			name: data.name,
 			email: data.email,
+			roles: data.roles,
 		};
 
 		if (data.password && data.password.trim() !== '') {
@@ -151,6 +178,40 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
 							error={!!errors.password}
 							helperText={errors.password?.message || t('users.password_helper')}
 						/>
+
+						<FormControl component="fieldset" error={!!errors.roles}>
+							<FormLabel component="legend">{t('users.roles_label')}</FormLabel>
+							<FormGroup>
+								{availableRoles.map((role) => (
+									<Controller
+										key={role.value}
+										name="roles"
+										control={control}
+										rules={{
+											validate: (value) =>
+												value.length > 0 || t('users.roles_required'),
+										}}
+										render={({field}) => (
+											<FormControlLabel
+												control={
+													<Checkbox
+														checked={field.value?.includes(role.value)}
+														onChange={(e) => {
+															const newValue = e.target.checked
+																? [...(field.value || []), role.value]
+																: field.value?.filter((r) => r !== role.value);
+															field.onChange(newValue);
+														}}
+													/>
+												}
+												label={role.label}
+											/>
+										)}
+									/>
+								))}
+							</FormGroup>
+							{errors.roles && <FormHelperText>{errors.roles.message}</FormHelperText>}
+						</FormControl>
 
 						<TextField
 							label={t('users.company_uid_label')}
