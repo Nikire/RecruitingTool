@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Container,
@@ -13,8 +13,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { useTranslation } from 'react-i18next';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AnalyticsDashboard from '../../components/analytics/AnalyticsDashboard';
-import { getAnalyticsData } from '../../services/analyticsService';
-import { AnalyticsData, DateRangeFilter } from '../../types/analytics';
+import { useAnalyticsOverview } from '../../hooks/api/useAnalytics';
 import toast from 'react-hot-toast';
 
 /**
@@ -22,43 +21,40 @@ import toast from 'react-hot-toast';
  *
  * Main page for displaying analytics dashboard.
  * Includes date range filtering and data refresh functionality.
+ * Now uses React Query for data fetching with real backend API.
  */
 const AnalyticsPage: React.FC = () => {
   const { t } = useTranslation();
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [dateRange, setDateRange] = useState<DateRangeFilter>({
+  const [dateRange, setDateRange] = useState<{
+    startDate: Date | null;
+    endDate: Date | null;
+  }>({
     startDate: null,
     endDate: null,
   });
 
-  // Fetch analytics data
-  const fetchAnalytics = async () => {
-    setIsLoading(true);
-    try {
-      const data = await getAnalyticsData(dateRange);
-      setAnalyticsData(data);
-    } catch (error) {
-      console.error('Failed to fetch analytics:', error);
-      toast.error(t('analytics.fetch_failed'));
-    } finally {
-      setIsLoading(false);
+  // Convert Date objects to ISO strings for API
+  const apiDateRange = useMemo(() => {
+    if (!dateRange.startDate && !dateRange.endDate) {
+      return undefined;
     }
-  };
+    return {
+      startDate: dateRange.startDate?.toISOString(),
+      endDate: dateRange.endDate?.toISOString(),
+    };
+  }, [dateRange]);
 
-  // Load data on mount
-  useEffect(() => {
-    fetchAnalytics();
-  }, []);
+  // Fetch analytics data using React Query
+  const { data: overviewData, isLoading, refetch } = useAnalyticsOverview(apiDateRange);
 
   // Handle date range apply
   const handleApplyDateRange = () => {
-    fetchAnalytics();
+    refetch();
   };
 
   // Handle refresh
   const handleRefresh = () => {
-    fetchAnalytics();
+    refetch();
     toast.success(t('analytics.data_refreshed'));
   };
 
@@ -68,10 +64,6 @@ const AnalyticsPage: React.FC = () => {
       startDate: null,
       endDate: null,
     });
-    // Will trigger a fetch after state update
-    setTimeout(() => {
-      fetchAnalytics();
-    }, 100);
   };
 
   return (
@@ -169,7 +161,7 @@ const AnalyticsPage: React.FC = () => {
         </Paper>
 
         {/* Analytics Dashboard */}
-        <AnalyticsDashboard data={analyticsData} isLoading={isLoading} />
+        <AnalyticsDashboard data={overviewData} isLoading={isLoading} dateRange={apiDateRange} />
       </Container>
     </LocalizationProvider>
   );
