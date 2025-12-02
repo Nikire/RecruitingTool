@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
@@ -32,6 +32,8 @@ import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './common/guards/throttler.guard';
 import { CacheModule } from './modules/cache/cache.module';
+import { LoggingMiddleware } from './common/middleware/logging.middleware';
+import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 
 @Module({
   imports: [
@@ -85,4 +87,10 @@ import { CacheModule } from './modules/cache/cache.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply logging and performance monitoring to all routes
+    // Order matters: logging first, then performance
+    consumer.apply(LoggingMiddleware, PerformanceMiddleware).forRoutes('*');
+  }
+}

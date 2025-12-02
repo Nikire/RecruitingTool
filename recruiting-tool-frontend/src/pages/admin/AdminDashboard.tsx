@@ -8,7 +8,7 @@ import {
 import {useNavigate} from 'react-router-dom';
 import {useTranslation} from 'react-i18next';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
-import StatCard from '../../components/cards/stat-card/StatCard';
+import {UnifiedStatCard} from '../../components/common';
 
 const AdminDashboard: React.FC = () => {
 	const {t} = useTranslation();
@@ -77,22 +77,18 @@ const AdminDashboard: React.FC = () => {
 				{stats.map((stat) => (
 					<Box
 						key={stat.title}
-						onClick={() => navigate(stat.path)}
 						sx={{
-							cursor: 'pointer',
 							width: 280,
 							minHeight: 160,
-							'&:hover': {
-								transform: 'translateY(-4px)',
-								transition: 'transform 0.2s ease-in-out',
-							},
 						}}
 					>
-						<StatCard
+						<UnifiedStatCard
 							title={stat.title}
 							icon={stat.icon}
 							color={stat.color}
-							description={stat.description}
+							subtitle={stat.description}
+							onClick={() => navigate(stat.path)}
+							variant="navigation"
 						/>
 					</Box>
 				))}

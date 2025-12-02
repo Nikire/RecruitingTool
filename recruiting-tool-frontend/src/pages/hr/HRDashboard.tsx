@@ -17,7 +17,8 @@ import {useDialog} from '../../hooks/useDialog';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
 import ManualCandidateDialog from '../../components/dialogs/ManualCandidateDialog';
 import {Application} from '../../types/application.types';
-import {DashboardStatCard, ApplicationListItem, QuickActionButton} from '../../components/dashboard';
+import {ApplicationListItem, QuickActionButton} from '../../components/dashboard';
+import {UnifiedStatCard} from '../../components/common';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
 
 /**
@@ -154,15 +155,16 @@ const HRDashboard: React.FC = () => {
 			<Grid container spacing={{xs: 2, sm: 3}} sx={{mb: {xs: 3, sm: 4}}}>
 				{statsData.map((stat, index) => (
 					<Grid item xs={12} sm={6} md={3} key={index}>
-						<DashboardStatCard
+						<UnifiedStatCard
 							title={stat.title}
 							value={stat.value}
 							subtitle={stat.subtitle}
 							icon={stat.icon}
-							iconColor={stat.iconColor}
+							color={stat.iconColor}
 							isLoading={isLoading}
 							onClick={stat.onClick}
 							translate={stat.translate}
+							variant="statistic"
 						/>
 					</Grid>
 				))}
