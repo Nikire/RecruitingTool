@@ -24,10 +24,27 @@ export class FilesService {
       // Sanitize filename for additional security
       const sanitizedOriginalName = FileValidator.sanitizeFilename(file.originalname);
 
+      this.logger.log(`Uploading file: ${sanitizedOriginalName} (sanitized from: ${file.originalname}) for user ${userUid}`);
+
+      // Calculate file hash for deduplication
+      const fileHash = this.storageService.calculateFileHash(file.buffer);
+      this.logger.log(`File hash calculated: ${fileHash}`);
+
+      // Check if file with same hash already exists
+      const existingFile = await this.database.fileUpload.findFirst({
+        where: { hash: fileHash },
+      });
+
+      if (existingFile) {
+        this.logger.log(`Duplicate file detected (hash: ${fileHash}). Returning existing file: ${existingFile.uid}`);
+
+        // Return existing file record instead of uploading again
+        // This saves storage space and upload time
+        return this.mapToDto(existingFile);
+      }
+
       // Generate unique S3 key to prevent overwrites and collisions
       const uniqueFilename = `${randomUUID()}-${sanitizedOriginalName}`;
-
-      this.logger.log(`Uploading file: ${sanitizedOriginalName} (sanitized from: ${file.originalname}) for user ${userUid}`);
 
       // Upload to S3/MinIO with validated content type
       const s3Key = await this.storageService.uploadFile(file.buffer, uniqueFilename, file.mimetype);
@@ -58,7 +75,7 @@ export class FilesService {
         candidateId = candidate.id;
       }
 
-      // Save metadata to database with sanitized filename
+      // Save metadata to database with hash
       const fileUpload = await this.database.fileUpload.create({
         data: {
           filename: uniqueFilename,
@@ -66,13 +83,14 @@ export class FilesService {
           mimetype: file.mimetype,
           size: file.size,
           s3Key,
+          hash: fileHash, // Store hash for deduplication
           uploadedByPublic: isPublicUpload, // Track if uploaded by public user
           uploadedById: userId, // null for public uploads
           candidateId,
         },
       });
 
-      this.logger.log(`File uploaded successfully: ${fileUpload.uid} - ${sanitizedOriginalName} (${file.size} bytes)`);
+      this.logger.log(`File uploaded successfully: ${fileUpload.uid} - ${sanitizedOriginalName} (${file.size} bytes, hash: ${fileHash})`);
 
       return this.mapToDto(fileUpload);
     } catch (error) {
@@ -225,6 +243,7 @@ export class FilesService {
       mimetype: file.mimetype,
       size: file.size,
       s3Key: file.s3Key,
+      hash: file.hash, // Include hash in response
       uploadedByPublic: file.uploadedByPublic,
       uploadedByUid,
       candidateUid,

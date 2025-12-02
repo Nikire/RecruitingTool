@@ -310,6 +310,7 @@ model FileUpload {
   mimetype           String
   size               Int
   s3Key              String
+  hash               String?       // SHA-256 hash for deduplication (optional for backward compatibility)
   uploadedByPublic   Boolean       @default(false)
   uploadedById       Int?
   uploadedBy         User?         @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
@@ -324,6 +325,7 @@ model FileUpload {
   @@index([uid])
   @@index([createdAt])
   @@index([uploadedByPublic])
+  @@index([hash])
 }
 
 model Application {

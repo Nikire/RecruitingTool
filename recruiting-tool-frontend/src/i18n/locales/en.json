@@ -1413,5 +1413,11 @@
       "application_received": "Application Received",
       "email_sent": "Email Sent"
     }
+  },
+  "entitySelect": {
+    "placeholder": "Select...",
+    "loading": "Loading options...",
+    "no_options": "No options available",
+    "search_placeholder": "Type to search..."
   }
 }
