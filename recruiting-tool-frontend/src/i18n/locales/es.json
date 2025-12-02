@@ -1428,5 +1428,48 @@
     "loading": "Cargando opciones...",
     "no_options": "No hay opciones disponibles",
     "search_placeholder": "Escribe para buscar..."
+  },
+  "deleted_records": {
+    "page_title": "Registros Eliminados",
+    "page_description": "Ver y administrar registros eliminados temporalmente. Puede restaurar elementos eliminados accidentalmente o purgarlos permanentemente para cumplir con GDPR.",
+    "no_records": "No se encontraron registros eliminados",
+    "tabs": {
+      "candidates": "Candidatos",
+      "job_positions": "Posiciones de Trabajo",
+      "applications": "Aplicaciones",
+      "interviews": "Entrevistas"
+    },
+    "table": {
+      "name": "Nombre",
+      "email": "Correo Electrónico",
+      "source": "Fuente",
+      "title": "Título",
+      "status": "Estado",
+      "applicant_name": "Nombre del Aplicante",
+      "scheduled_date": "Fecha Programada",
+      "deleted_at": "Eliminado el"
+    },
+    "actions": {
+      "restore": "Restaurar",
+      "purge": "Eliminar Permanentemente"
+    },
+    "confirm_restore_title": "Confirmar Restauración",
+    "confirm_restore_message": "¿Está seguro que desea restaurar este registro? Se activará nuevamente.",
+    "confirm_purge_title": "Confirmar Eliminación Permanente",
+    "confirm_purge_message": "¿Está seguro que desea eliminar permanentemente este registro? Esta acción no se puede deshacer.",
+    "confirm_purge_warning": "ADVERTENCIA: Esta acción es irreversible y cumple con los requisitos de eliminación de datos de GDPR.",
+    "restore_success": "Registro restaurado exitosamente",
+    "restore_error": "Error al restaurar el registro",
+    "purge_success": "Registro eliminado permanentemente",
+    "purge_error": "Error al eliminar el registro"
+  },
+  "admin_layout": {
+    "title": "Panel de Administración",
+    "dashboard": "Dashboard",
+    "companies": "Empresas",
+    "users": "Usuarios",
+    "deleted_records": "Registros Eliminados",
+    "settings": "Configuración",
+    "aria_label": "navegación de administrador"
   }
 }

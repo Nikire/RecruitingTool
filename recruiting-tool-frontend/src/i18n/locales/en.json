@@ -1422,5 +1422,48 @@
     "loading": "Loading options...",
     "no_options": "No options available",
     "search_placeholder": "Type to search..."
+  },
+  "deleted_records": {
+    "page_title": "Deleted Records",
+    "page_description": "View and manage soft-deleted records. You can restore accidentally deleted items or permanently purge them for GDPR compliance.",
+    "no_records": "No deleted records found",
+    "tabs": {
+      "candidates": "Candidates",
+      "job_positions": "Job Positions",
+      "applications": "Applications",
+      "interviews": "Interviews"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "source": "Source",
+      "title": "Title",
+      "status": "Status",
+      "applicant_name": "Applicant Name",
+      "scheduled_date": "Scheduled Date",
+      "deleted_at": "Deleted At"
+    },
+    "actions": {
+      "restore": "Restore",
+      "purge": "Permanently Delete"
+    },
+    "confirm_restore_title": "Confirm Restore",
+    "confirm_restore_message": "Are you sure you want to restore this record? It will become active again.",
+    "confirm_purge_title": "Confirm Permanent Deletion",
+    "confirm_purge_message": "Are you sure you want to permanently delete this record? This action cannot be undone.",
+    "confirm_purge_warning": "WARNING: This action is irreversible and complies with GDPR data deletion requirements.",
+    "restore_success": "Record restored successfully",
+    "restore_error": "Failed to restore record",
+    "purge_success": "Record permanently deleted",
+    "purge_error": "Failed to delete record"
+  },
+  "admin_layout": {
+    "title": "Admin Panel",
+    "dashboard": "Dashboard",
+    "companies": "Companies",
+    "users": "Users",
+    "deleted_records": "Deleted Records",
+    "settings": "Settings",
+    "aria_label": "admin navigation"
   }
 }
