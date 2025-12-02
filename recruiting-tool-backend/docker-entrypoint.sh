@@ -2,7 +2,7 @@
 set -eux
 
 echo "Running Prisma migrations..."
-npx prisma generate
+# Removed duplicate 'npx prisma generate' - already done in Dockerfile
 npx prisma migrate deploy
 
 echo "Starting the application..."

@@ -1,17 +1,58 @@
+# Dependencies
 node_modules
+
+# Build output
 dist
+
+# Git
 .git
 .gitignore
+
+# Documentation
 *.md
+!README.md
+
+# Environment files
 .env
 .env.*
 !.env.example
 !.env.docker
+
+# Testing
 coverage
 .nyc_output
+test
+tests
+*.spec.ts
+*.test.ts
+
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
+
+# OS files
 .DS_Store
 Thumbs.db
+*.swp
+*.swo
+
+# IDE
+.vscode
+.idea
+*.sublime-*
+.editorconfig
+
+# Misc
+.eslintcache
+.prettierignore
+.prettierrc
+.eslintrc.js
+
+# Docker files (don't need these in the image)
+Dockerfile
+Dockerfile.*
+.dockerignore
+docker-compose*.yml

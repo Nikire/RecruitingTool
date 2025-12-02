@@ -28,6 +28,7 @@ import { SseModule } from './modules/sse/sse.module';
 import { BackupModule } from './modules/backup/backup.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { HealthModule } from './modules/health/health.module';
+import { MetricsModule } from './modules/metrics/metrics.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './common/guards/throttler.guard';
@@ -77,6 +78,7 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
     BackupModule,
     AuditLogModule,
     HealthModule,
+    MetricsModule,
   ],
   controllers: [AppController],
   providers: [
