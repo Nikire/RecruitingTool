@@ -1,13 +1,6 @@
 import {
 	Box,
 	Typography,
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Paper,
 	Card,
 	CardContent,
 	Skeleton,
@@ -16,12 +9,12 @@ import {
 	useMediaQuery,
 	useTheme,
 } from '@mui/material';
+import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import {useTranslation} from 'react-i18next';
 import {useListUsers, useDeleteUser} from '../../hooks/api/useUsers';
 import {User, UserRoles} from '../../types/user.types';
-import Pagination from '../pagination/Pagination';
 import UpdateUserDialog from '../dialogs/UpdateUserDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
@@ -30,9 +23,8 @@ import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
-import {TableRowActions} from '../tables';
 import {StatusChip} from '../common';
-import TableSkeletonLoader from '../common/TableSkeletonLoader';
+import {EnhancedDataGrid, ActionsCell, DateCell} from '../tables';
 
 interface UsersListProps {
 	page: number;
@@ -176,24 +168,84 @@ const UsersList: React.FC<UsersListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const users = data?.data;
-	const meta = data?.meta;
+	const users = data?.data || [];
+	const totalRows = data?.meta?.total || 0;
+
+	const columns: GridColDef[] = [
+		{
+			field: 'name',
+			headerName: t('users.name_label'),
+			flex: 1,
+			minWidth: 150,
+		},
+		{
+			field: 'email',
+			headerName: t('users.email_label'),
+			flex: 1,
+			minWidth: 200,
+		},
+		{
+			field: 'roles',
+			headerName: t('users.roles_label'),
+			width: 200,
+			renderCell: (params: GridRenderCellParams<User>) => (
+				<Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap'}}>
+					{params.row.roles.map((role) => (
+						<StatusChip
+							key={role}
+							status={role}
+							type="userRole"
+							size="small"
+						/>
+					))}
+				</Box>
+			),
+		},
+		{
+			field: 'company',
+			headerName: t('users.company_label'),
+			width: 150,
+			valueGetter: (value: any) => value?.name || '-',
+		},
+		{
+			field: 'createdAt',
+			headerName: t('users.created_label'),
+			width: 130,
+			renderCell: (params) => <DateCell value={params.value} />,
+		},
+		...(isSuperAdmin
+			? [
+					{
+						field: 'actions',
+						headerName: t('common.actions'),
+						width: 120,
+						sortable: false,
+						filterable: false,
+						align: 'right' as const,
+						headerAlign: 'right' as const,
+						renderCell: (params: GridRenderCellParams<User>) => (
+							<ActionsCell
+								onEdit={() => updateDialog.openWith(params.row)}
+								onDelete={() => deleteConfirm.confirmDelete(params.row)}
+							/>
+						),
+					} as GridColDef,
+			  ]
+			: []),
+	];
 
 	// Show skeleton loader on INITIAL load, not on refetch
 	if (isLoading && !data) {
-		return (
-			<Box sx={{width: '100%'}}>
-				{isMobile ? (
-					<Box sx={{width: '100%'}}>
-						{[1, 2, 3].map((i) => (
-							<UserCardSkeleton key={i} />
-						))}
-					</Box>
-				) : (
-					<TableSkeletonLoader rows={limit} columns={isSuperAdmin ? 6 : 5} />
-				)}
-			</Box>
-		);
+		if (isMobile) {
+			return (
+				<Box sx={{width: '100%'}}>
+					{[1, 2, 3].map((i) => (
+						<UserCardSkeleton key={i} />
+					))}
+				</Box>
+			);
+		}
+		// Desktop loading is handled by EnhancedDataGrid
 	}
 
 	if (error && !data) {
@@ -204,7 +256,7 @@ const UsersList: React.FC<UsersListProps> = ({
 	if (isMobile) {
 		return (
 			<>
-				{users && users.length > 0 ? (
+				{users.length > 0 ? (
 					<Box sx={{width: '100%'}}>
 						{users.map((user) => (
 							<UserCardView
@@ -218,14 +270,6 @@ const UsersList: React.FC<UsersListProps> = ({
 					</Box>
 				) : (
 					<EmptyState message="users.no_users" />
-				)}
-
-				{meta && (
-					<Pagination
-						meta={meta}
-						onPageChange={onPageChange}
-						onLimitChange={onLimitChange}
-					/>
 				)}
 
 				<UpdateUserDialog
@@ -247,61 +291,34 @@ const UsersList: React.FC<UsersListProps> = ({
 		);
 	}
 
-	// Desktop view (table layout)
+	// Desktop view (DataGrid)
 	return (
 		<>
-			{users && users.length > 0 ? (
-				<TableContainer component={Paper}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell><strong>{t('users.name_label')}</strong></TableCell>
-								<TableCell><strong>{t('users.email_label')}</strong></TableCell>
-								<TableCell><strong>{t('users.roles_label')}</strong></TableCell>
-								<TableCell><strong>{t('users.company_label')}</strong></TableCell>
-								<TableCell><strong>{t('users.created_label')}</strong></TableCell>
-								{isSuperAdmin && <TableCell align="right"><strong>{t('common.actions')}</strong></TableCell>}
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{users.map((user) => (
-								<TableRow key={user.uid} hover>
-									<TableCell>{user.name}</TableCell>
-									<TableCell>{user.email}</TableCell>
-									<TableCell>
-										<Box sx={{display: 'flex', gap: 0.5, flexWrap: 'wrap'}}>
-											{user.roles.map((role) => (
-												<StatusChip
-													key={role}
-													status={role}
-													type="userRole"
-													size="small"
-												/>
-											))}
-										</Box>
-									</TableCell>
-									<TableCell>{user.company?.name || '-'}</TableCell>
-									<TableCell>
-										{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}
-									</TableCell>
-									{isSuperAdmin && (
-										<TableCell align="right">
-											<TableRowActions
-												onEdit={() => updateDialog.openWith(user)}
-												onDelete={() => deleteConfirm.confirmDelete(user)}
-											/>
-										</TableCell>
-									)}
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			) : (
-				<EmptyState message="users.no_users" />
-			)}
-
-			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
+			<Box sx={{height: 600, width: '100%'}}>
+				<EnhancedDataGrid
+					rows={users}
+					columns={columns}
+					loading={isLoading}
+					getRowId={(row) => row.uid}
+					rowCount={totalRows}
+					paginationMode="server"
+					paginationModel={{page: page - 1, pageSize: limit}}
+					onPaginationModelChange={(model) => {
+						if (model.page !== page - 1) {
+							onPageChange(model.page + 1);
+						}
+						if (model.pageSize !== limit) {
+							onLimitChange(model.pageSize);
+						}
+					}}
+					pageSizeOptions={[10, 25, 50, 100]}
+					disableRowSelectionOnClick
+					onboardingKey="users-list"
+					localeText={{
+						noRowsLabel: t('users.no_users'),
+					}}
+				/>
+			</Box>
 
 			<UpdateUserDialog
 				open={updateDialog.isOpen}

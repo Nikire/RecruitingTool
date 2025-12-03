@@ -3,9 +3,10 @@ import { StorageService } from './storage.service';
 import { FilesService } from './files.service';
 import { FilesController } from './files.controller';
 import { DatabaseModule } from '../shared/modules/database/database.module';
+import { QuotaModule } from '../quota/quota.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, QuotaModule],
   controllers: [FilesController],
   providers: [StorageService, FilesService],
   exports: [StorageService, FilesService],

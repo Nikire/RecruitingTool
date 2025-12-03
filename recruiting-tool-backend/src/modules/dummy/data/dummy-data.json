@@ -14,7 +14,11 @@
       "name": "Alice Johnson",
       "email": "alice@techinnovations.com",
       "password": "password123",
-      "roles": ["USER", "HR", "ADMIN"],
+      "roles": [
+        "USER",
+        "HR",
+        "ADMIN"
+      ],
       "companyIndex": 0,
       "profilePicture": "https://i.pravatar.cc/150?img=1",
       "phoneNumber": "+1-555-0101",
@@ -28,7 +32,10 @@
       "name": "Bob Smith",
       "email": "bob@techinnovations.com",
       "password": "password123",
-      "roles": ["USER", "HR"],
+      "roles": [
+        "USER",
+        "HR"
+      ],
       "companyIndex": 0,
       "profilePicture": "https://i.pravatar.cc/150?img=12",
       "phoneNumber": "+1-555-0102",
@@ -42,7 +49,11 @@
       "name": "Charlie Brown",
       "email": "charlie@digitalsolutions.com",
       "password": "password123",
-      "roles": ["USER", "HR", "ADMIN"],
+      "roles": [
+        "USER",
+        "HR",
+        "ADMIN"
+      ],
       "companyIndex": 1,
       "profilePicture": "https://i.pravatar.cc/150?img=33",
       "phoneNumber": "+1-555-0201",
@@ -56,7 +67,9 @@
       "name": "Diana Prince",
       "email": "diana@digitalsolutions.com",
       "password": "password123",
-      "roles": ["USER"],
+      "roles": [
+        "USER"
+      ],
       "companyIndex": 1,
       "profilePicture": "https://i.pravatar.cc/150?img=5",
       "phoneNumber": "+1-555-0202",
@@ -150,14 +163,25 @@
           "type": "MULTIPLE_CHOICE",
           "text": "Preferred work arrangement?",
           "required": true,
-          "options": ["Remote", "Hybrid", "On-site"]
+          "options": [
+            "Remote",
+            "Hybrid",
+            "On-site"
+          ]
         },
         {
           "id": "q4-se",
           "type": "CHECKBOX",
           "text": "Which technologies are you proficient in?",
           "required": true,
-          "options": ["JavaScript", "Python", "Java", "Go", "Rust", "C++"]
+          "options": [
+            "JavaScript",
+            "Python",
+            "Java",
+            "Go",
+            "Rust",
+            "C++"
+          ]
         }
       ],
       "stages": [
@@ -211,7 +235,13 @@
           "type": "MULTIPLE_CHOICE",
           "text": "What's your preferred state management solution?",
           "required": false,
-          "options": ["Redux", "Context API", "Zustand", "Jotai", "No preference"]
+          "options": [
+            "Redux",
+            "Context API",
+            "Zustand",
+            "Jotai",
+            "No preference"
+          ]
         }
       ],
       "stages": [
@@ -464,6 +494,2252 @@
       "companyIndex": 1,
       "createdByUserIndex": 2,
       "isDefault": false
+    }
+  ],
+  "fileUploads": [
+    {
+      "filename": "resume_michael_chen_1732981234567.pdf",
+      "originalName": "Michael_Chen_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 245678,
+      "s3Key": "public-applications/resume_michael_chen_1732981234567.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_sarah_williams_1732981345678.pdf",
+      "originalName": "Sarah_Williams_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198432,
+      "s3Key": "public-applications/resume_sarah_williams_1732981345678.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_david_johnson_1732981456789.pdf",
+      "originalName": "David_Johnson_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 312456,
+      "s3Key": "public-applications/resume_david_johnson_1732981456789.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_lisa_garcia_1732981567890.pdf",
+      "originalName": "Lisa_Garcia_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 276543,
+      "s3Key": "public-applications/resume_lisa_garcia_1732981567890.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_james_rodriguez_1732981678901.pdf",
+      "originalName": "James_Rodriguez_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198765,
+      "s3Key": "public-applications/resume_james_rodriguez_1732981678901.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_emily_brown_1732981789012.pdf",
+      "originalName": "Emily_Brown_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 234567,
+      "s3Key": "public-applications/resume_emily_brown_1732981789012.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_kevin_lee_1732981890123.pdf",
+      "originalName": "Kevin_Lee_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 287654,
+      "s3Key": "public-applications/resume_kevin_lee_1732981890123.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_amanda_taylor_1732981901234.pdf",
+      "originalName": "Amanda_Taylor_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 209876,
+      "s3Key": "public-applications/resume_amanda_taylor_1732981901234.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_robert_martinez_1732982012345.pdf",
+      "originalName": "Robert_Martinez_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 256789,
+      "s3Key": "public-applications/resume_robert_martinez_1732982012345.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_jennifer_anderson_1732982123456.pdf",
+      "originalName": "Jennifer_Anderson_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198234,
+      "s3Key": "public-applications/resume_jennifer_anderson_1732982123456.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_daniel_thomas_1732982234567.pdf",
+      "originalName": "Daniel_Thomas_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 276123,
+      "s3Key": "public-applications/resume_daniel_thomas_1732982234567.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_michelle_jackson_1732982345678.pdf",
+      "originalName": "Michelle_Jackson_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 245987,
+      "s3Key": "public-applications/resume_michelle_jackson_1732982345678.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_christopher_white_1732982456789.pdf",
+      "originalName": "Christopher_White_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 234098,
+      "s3Key": "public-applications/resume_christopher_white_1732982456789.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_jessica_harris_1732982567890.pdf",
+      "originalName": "Jessica_Harris_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 198765,
+      "s3Key": "public-applications/resume_jessica_harris_1732982567890.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_matthew_clark_1732982678901.pdf",
+      "originalName": "Matthew_Clark_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 287432,
+      "s3Key": "public-applications/resume_matthew_clark_1732982678901.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_ashley_lewis_1732982789012.pdf",
+      "originalName": "Ashley_Lewis_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 212345,
+      "s3Key": "public-applications/resume_ashley_lewis_1732982789012.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_ryan_walker_1732982890123.pdf",
+      "originalName": "Ryan_Walker_Resume.pdf",
+      "mimetype": "application/pdf",
+      "size": 265432,
+      "s3Key": "public-applications/resume_ryan_walker_1732982890123.pdf",
+      "uploadedByPublic": true
+    },
+    {
+      "filename": "resume_nicole_hall_1732982901234.pdf",
+      "originalName": "Nicole_Hall_CV.pdf",
+      "mimetype": "application/pdf",
+      "size": 243567,
+      "s3Key": "public-applications/resume_nicole_hall_1732982901234.pdf",
+      "uploadedByPublic": true
+    }
+  ],
+  "applications": [
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Michael Chen",
+      "applicantEmail": "michael.chen@email.com",
+      "applicantPhone": "+1-555-1001",
+      "resumeFileIndex": 0,
+      "coverLetter": "I am writing to express my strong interest in the Senior Software Engineer position at Tech Innovations Inc. With over 8 years of experience in full-stack development and a proven track record of delivering scalable solutions, I am confident in my ability to contribute to your team's success.",
+      "customAnswers": {
+        "q1-se": "8 years",
+        "q2-se": "Led the migration of a monolithic application to microservices architecture, reducing deployment time by 70% and improving system reliability. The solution now serves 2M+ daily active users.",
+        "q3-se": "Hybrid",
+        "q4-se": [
+          "JavaScript",
+          "Python",
+          "Go"
+        ]
+      },
+      "status": "REVIEWED",
+      "appliedAt": "2025-10-31T06:57:13Z",
+      "reviewedAt": "2025-11-03T12:45:00Z",
+      "reviewedByUserIndex": 0,
+      "notes": "Strong technical background. Excellent communication skills during initial screening. Proceed to technical interview."
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Sarah Williams",
+      "applicantEmail": "sarah.williams@email.com",
+      "applicantPhone": "+1-555-1002",
+      "resumeFileIndex": 1,
+      "coverLetter": "With a passion for clean code and 6 years of software engineering experience, I am excited about the opportunity to join Tech Innovations Inc as a Senior Software Engineer.",
+      "customAnswers": {
+        "q1-se": "6 years",
+        "q2-se": "Designed and implemented a real-time collaboration feature that increased user engagement by 45%. Used WebSockets and Redis for state synchronization across multiple clients.",
+        "q3-se": "Remote",
+        "q4-se": [
+          "JavaScript",
+          "Python",
+          "Rust"
+        ]
+      },
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-01T19:37:52Z",
+      "reviewedAt": "2025-11-04T11:15:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Exceptional candidate. Strong problem-solving skills and cultural fit. Offer extended."
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "David Johnson",
+      "applicantEmail": "david.johnson@email.com",
+      "applicantPhone": "+1-555-1003",
+      "resumeFileIndex": 2,
+      "coverLetter": "I am applying for the Senior Software Engineer role with 10 years of experience building enterprise-grade applications.",
+      "customAnswers": {
+        "q1-se": "10 years",
+        "q2-se": "Architected a distributed caching system that reduced database load by 60% and improved API response times from 800ms to under 100ms for 95% of requests.",
+        "q3-se": "Hybrid",
+        "q4-se": [
+          "Java",
+          "Python",
+          "Go",
+          "Rust"
+        ]
+      },
+      "status": "PENDING",
+      "appliedAt": "2025-11-03T15:56:01Z"
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Lisa Garcia",
+      "applicantEmail": "lisa.garcia@email.com",
+      "applicantPhone": "+1-555-1004",
+      "resumeFileIndex": 3,
+      "coverLetter": "As an experienced software engineer with expertise in distributed systems, I am thrilled to apply for this position.",
+      "customAnswers": {
+        "q1-se": "7 years",
+        "q2-se": "Built a fault-tolerant message queue system processing 500K messages/minute with 99.99% uptime. Implemented circuit breakers and graceful degradation patterns.",
+        "q3-se": "On-site",
+        "q4-se": [
+          "JavaScript",
+          "Go",
+          "C++"
+        ]
+      },
+      "status": "REJECTED",
+      "appliedAt": "2025-11-06T06:45:25Z",
+      "reviewedAt": "2025-11-09T12:00:00Z",
+      "reviewedByUserIndex": 0,
+      "notes": "Good technical skills but looking for on-site only which doesn't align with our hybrid model."
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "James Rodriguez",
+      "applicantEmail": "james.rodriguez@email.com",
+      "applicantPhone": "+1-555-1005",
+      "resumeFileIndex": 4,
+      "coverLetter": "I am excited to apply for the Frontend Developer position. With 5 years of React experience, I specialize in building performant and accessible user interfaces.",
+      "customAnswers": {
+        "q1-fe": "5 years",
+        "q2-fe": "Created a complex data visualization dashboard using React, D3.js, and Canvas. Handled real-time updates for 10K+ data points with smooth 60fps animations. Implemented virtualization to render 100K+ rows efficiently.",
+        "q3-fe": "Zustand"
+      },
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-07T08:29:03Z",
+      "reviewedAt": "2025-11-11T13:45:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Impressive React skills. Strong portfolio with modern libraries. Schedule coding challenge."
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Emily Brown",
+      "applicantEmail": "emily.brown@email.com",
+      "applicantPhone": "+1-555-1006",
+      "resumeFileIndex": 5,
+      "coverLetter": "With a deep understanding of React ecosystem and 4 years of frontend development experience, I would love to contribute to your team's projects.",
+      "customAnswers": {
+        "q1-fe": "4 years",
+        "q2-fe": "Built a component library used across 15+ products with 200+ components. Implemented automated visual regression testing with Chromatic. Achieved 95% component test coverage.",
+        "q3-fe": "Redux"
+      },
+      "status": "PENDING",
+      "appliedAt": "2025-11-09T16:25:56Z",
+      "reviewedAt": "2025-11-12T14:00:00Z"
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Kevin Lee",
+      "applicantEmail": "kevin.lee@email.com",
+      "applicantPhone": "+1-555-1007",
+      "resumeFileIndex": 6,
+      "coverLetter": "I am writing to apply for the Frontend Developer role. My experience includes building responsive, accessible web applications with React.",
+      "customAnswers": {
+        "q1-fe": "3 years",
+        "q2-fe": "Developed a form builder component allowing users to create custom forms with drag-and-drop. Implemented complex validation logic, conditional fields, and multi-step workflows. Used React Hook Form and Yup for validation.",
+        "q3-fe": "Context API"
+      },
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-12T03:47:54Z",
+      "reviewedAt": "2025-11-16T13:15:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Great culture fit. Strong fundamentals. Offer extended after successful coding challenge."
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Amanda Taylor",
+      "applicantEmail": "amanda.taylor@email.com",
+      "applicantPhone": "+1-555-1008",
+      "resumeFileIndex": 7,
+      "coverLetter": "Passionate about creating delightful user experiences, I am applying for the Frontend Developer position with 6 years of React expertise.",
+      "customAnswers": {
+        "q1-fe": "6 years",
+        "q2-fe": "Redesigned the checkout flow reducing cart abandonment by 35%. Implemented progressive web app features including offline support and push notifications. Achieved 95+ Lighthouse score.",
+        "q3-fe": "Jotai"
+      },
+      "status": "REJECTED",
+      "appliedAt": "2025-11-13T18:42:04Z",
+      "reviewedAt": "2025-11-17T15:30:00Z",
+      "reviewedByUserIndex": 0,
+      "notes": "Strong candidate but salary expectations exceed budget by 30%."
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Robert Martinez",
+      "applicantEmail": "robert.martinez@email.com",
+      "applicantPhone": "+1-555-1009",
+      "resumeFileIndex": 8,
+      "coverLetter": "I am applying for the DevOps Engineer position with 7 years of experience managing cloud infrastructure and implementing CI/CD pipelines.",
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-16T05:03:07Z",
+      "reviewedAt": "2025-11-21T14:45:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Excellent AWS and Kubernetes experience. Strong automation skills. Move to technical assessment."
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Jennifer Anderson",
+      "applicantEmail": "jennifer.anderson@email.com",
+      "applicantPhone": "+1-555-1010",
+      "resumeFileIndex": 9,
+      "coverLetter": "With expertise in infrastructure as code and container orchestration, I am excited about the DevOps Engineer opportunity.",
+      "status": "PENDING",
+      "appliedAt": "2025-11-18T03:23:43Z",
+      "reviewedAt": "2025-11-21T09:45:00Z"
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Daniel Thomas",
+      "applicantEmail": "daniel.thomas@email.com",
+      "applicantPhone": "+1-555-1011",
+      "resumeFileIndex": 10,
+      "coverLetter": "I am writing to express my interest in the DevOps Engineer role. My background includes managing large-scale Kubernetes clusters.",
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-20T02:23:51Z",
+      "reviewedAt": "2025-11-23T14:00:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Outstanding technical skills. Implemented similar infrastructure at previous company. Offer accepted."
+    },
+    {
+      "jobPositionIndex": 2,
+      "applicantName": "Michelle Jackson",
+      "applicantEmail": "michelle.jackson@email.com",
+      "applicantPhone": "+1-555-1012",
+      "resumeFileIndex": 11,
+      "coverLetter": "As a certified AWS Solutions Architect with 5 years of DevOps experience, I am well-suited for this position.",
+      "status": "REJECTED",
+      "appliedAt": "2025-11-22T07:46:57Z",
+      "reviewedAt": "2025-11-26T11:45:00Z",
+      "reviewedByUserIndex": 3,
+      "notes": "Lacks Kubernetes experience which is critical for this role."
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Christopher White",
+      "applicantEmail": "christopher.white@email.com",
+      "applicantPhone": "+1-555-1013",
+      "resumeFileIndex": 12,
+      "coverLetter": "I am applying for the Product Manager position with 6 years of experience leading product strategy and development.",
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-23T19:18:40Z",
+      "reviewedAt": "2025-11-26T09:30:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Strong product sense. Good understanding of user research methodologies. Schedule case study presentation."
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Jessica Harris",
+      "applicantEmail": "jessica.harris@email.com",
+      "applicantPhone": "+1-555-1014",
+      "resumeFileIndex": 13,
+      "coverLetter": "With a track record of launching successful products and driving user growth, I am excited about this Product Manager opportunity.",
+      "status": "PENDING",
+      "appliedAt": "2025-11-25T20:35:53Z",
+      "reviewedAt": "2025-11-27T15:00:00Z"
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Matthew Clark",
+      "applicantEmail": "matthew.clark@email.com",
+      "applicantPhone": "+1-555-1015",
+      "resumeFileIndex": 14,
+      "coverLetter": "I am writing to apply for the Product Manager role. My experience includes product discovery, roadmap planning, and stakeholder management.",
+      "status": "ACCEPTED",
+      "appliedAt": "2025-11-27T10:23:49Z",
+      "reviewedAt": "2025-11-29T09:30:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Exceptional case study presentation. Strong leadership skills. Offer extended and accepted."
+    },
+    {
+      "jobPositionIndex": 3,
+      "applicantName": "Ashley Lewis",
+      "applicantEmail": "ashley.lewis@email.com",
+      "applicantPhone": "+1-555-1016",
+      "resumeFileIndex": 15,
+      "coverLetter": "As a data-driven product manager with 5 years of experience, I would love to contribute to your product strategy.",
+      "status": "REJECTED",
+      "appliedAt": "2025-11-26T02:41:43Z",
+      "reviewedAt": "2025-11-28T13:15:00Z",
+      "reviewedByUserIndex": 2,
+      "notes": "Good candidate but lacks B2B SaaS experience which is essential for this role."
+    },
+    {
+      "jobPositionIndex": 0,
+      "applicantName": "Ryan Walker",
+      "applicantEmail": "ryan.walker@email.com",
+      "applicantPhone": "+1-555-1017",
+      "resumeFileIndex": 16,
+      "coverLetter": "I am thrilled to apply for the Senior Software Engineer position. My expertise in backend systems and API design makes me a strong fit.",
+      "customAnswers": {
+        "q1-se": "9 years",
+        "q2-se": "Designed a GraphQL API serving 50+ client applications with complex authorization rules. Implemented data loader pattern reducing N+1 queries by 95% and improving response times significantly.",
+        "q3-se": "Remote",
+        "q4-se": [
+          "JavaScript",
+          "Python",
+          "Java",
+          "Rust"
+        ]
+      },
+      "status": "PENDING",
+      "appliedAt": "2025-11-26T14:37:06Z",
+      "reviewedAt": "2025-11-29T11:00:00Z"
+    },
+    {
+      "jobPositionIndex": 1,
+      "applicantName": "Nicole Hall",
+      "applicantEmail": "nicole.hall@email.com",
+      "applicantPhone": "+1-555-1018",
+      "resumeFileIndex": 17,
+      "coverLetter": "With extensive experience in React and modern frontend technologies, I am eager to join your team as a Frontend Developer.",
+      "customAnswers": {
+        "q1-fe": "5 years",
+        "q2-fe": "Built an interactive code playground component similar to CodeSandbox. Implemented real-time collaboration using WebRTC and operational transformation. Supported 10+ programming languages with syntax highlighting and auto-completion.",
+        "q3-fe": "No preference"
+      },
+      "status": "REVIEWED",
+      "appliedAt": "2025-11-26T03:02:17Z",
+      "reviewedAt": "2025-11-27T11:30:00Z",
+      "reviewedByUserIndex": 1,
+      "notes": "Creative approach to complex problems. Strong understanding of performance optimization. Schedule final interview."
+    }
+  ],
+  "interviews": [
+    {
+      "candidateIndex": 0,
+      "stagePosition": 0,
+      "scheduledDate": "2025-11-18T00:00:00Z",
+      "scheduledTime": "16:30",
+      "duration": 30,
+      "status": "COMPLETED",
+      "meetingLink": "https://meet.google.com/abc-defg-hij",
+      "notes": "Phone screening completed. Candidate has strong technical background, good communication skills. Moving to technical interview.",
+      "scheduledByUserIndex": 0
+    },
+    {
+      "candidateIndex": 0,
+      "stagePosition": 1,
+      "scheduledDate": "2025-11-24T00:00:00Z",
+      "scheduledTime": "12:00",
+      "duration": 90,
+      "status": "COMPLETED",
+      "meetingLink": "https://zoom.us/j/123456789",
+      "notes": "Technical interview completed successfully. Strong problem-solving skills demonstrated. Recommended for HR interview.",
+      "scheduledByUserIndex": 0
+    },
+    {
+      "candidateIndex": 0,
+      "stagePosition": 2,
+      "scheduledDate": "2025-12-03T00:00:00Z",
+      "scheduledTime": "11:00",
+      "duration": 60,
+      "status": "SCHEDULED",
+      "meetingLink": "https://meet.google.com/xyz-uvwx-klm",
+      "notes": "HR interview to discuss compensation, benefits, and cultural fit.",
+      "scheduledByUserIndex": 0
+    },
+    {
+      "candidateIndex": 1,
+      "stagePosition": 0,
+      "scheduledDate": "2025-11-16T00:00:00Z",
+      "scheduledTime": "09:00",
+      "duration": 30,
+      "status": "COMPLETED",
+      "meetingLink": "https://meet.google.com/pqr-stuv-wxy",
+      "notes": "Initial screening went well. Referral from Alice Johnson. Moving forward to technical round.",
+      "scheduledByUserIndex": 1
+    },
+    {
+      "candidateIndex": 1,
+      "stagePosition": 1,
+      "scheduledDate": "2025-11-30T00:00:00Z",
+      "scheduledTime": "13:00",
+      "duration": 120,
+      "status": "SCHEDULED",
+      "meetingLink": "https://zoom.us/j/987654321",
+      "notes": "Technical deep dive scheduled. Will include live coding session and system design discussion.",
+      "scheduledByUserIndex": 1
+    },
+    {
+      "candidateIndex": 2,
+      "stagePosition": 0,
+      "scheduledDate": "2025-11-20T00:00:00Z",
+      "scheduledTime": "15:00",
+      "duration": 30,
+      "status": "COMPLETED",
+      "location": "Office - Conference Room A",
+      "notes": "In-person phone screening. Candidate showed enthusiasm and relevant experience with Vue.js and Angular.",
+      "scheduledByUserIndex": 1
+    },
+    {
+      "candidateIndex": 2,
+      "stagePosition": 1,
+      "scheduledDate": "2025-12-07T00:00:00Z",
+      "scheduledTime": "14:30",
+      "duration": 90,
+      "status": "SCHEDULED",
+      "meetingLink": "https://meet.google.com/frontend-tech-interview",
+      "notes": "Technical interview focusing on React, state management, and frontend architecture.",
+      "scheduledByUserIndex": 1
+    },
+    {
+      "candidateIndex": 3,
+      "stagePosition": 0,
+      "scheduledDate": "2025-11-26T00:00:00Z",
+      "scheduledTime": "15:00",
+      "duration": 30,
+      "status": "COMPLETED",
+      "meetingLink": "https://meet.google.com/devops-phone-screen",
+      "notes": "Phone screening completed. Strong AWS and Kubernetes experience confirmed. Proceeding to technical assessment.",
+      "scheduledByUserIndex": 2
+    },
+    {
+      "candidateIndex": 3,
+      "stagePosition": 1,
+      "scheduledDate": "2025-11-26T00:00:00Z",
+      "scheduledTime": "15:30",
+      "duration": 120,
+      "status": "COMPLETED",
+      "meetingLink": "https://zoom.us/j/devops-tech-456",
+      "notes": "Technical interview completed. Excellent understanding of CI/CD pipelines, infrastructure as code, and container orchestration. Strong candidate.",
+      "scheduledByUserIndex": 2
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 0,
+      "scheduledDate": "2025-11-22T00:00:00Z",
+      "scheduledTime": "13:00",
+      "duration": 45,
+      "status": "COMPLETED",
+      "meetingLink": "https://meet.google.com/product-screen",
+      "notes": "Initial screening for Product Manager role. Candidate demonstrated strong strategic thinking and data-driven approach.",
+      "scheduledByUserIndex": 2
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 1,
+      "scheduledDate": "2025-12-04T00:00:00Z",
+      "scheduledTime": "09:30",
+      "duration": 90,
+      "status": "SCHEDULED",
+      "meetingLink": "https://zoom.us/j/product-case-study",
+      "notes": "Product case study presentation. Candidate will present strategy for entering a new market segment.",
+      "scheduledByUserIndex": 2
+    },
+    {
+      "candidateIndex": 5,
+      "stagePosition": 0,
+      "scheduledDate": "2025-12-02T00:00:00Z",
+      "scheduledTime": "09:30",
+      "duration": 30,
+      "status": "PENDING",
+      "notes": "Phone screening scheduled. Walk-in applicant, manually added to system.",
+      "scheduledByUserIndex": 0
+    }
+  ],
+  "interviewInterviewers": [
+    {
+      "interviewIndex": 0,
+      "userIndex": 0,
+      "role": "Lead Interviewer"
+    },
+    {
+      "interviewIndex": 1,
+      "userIndex": 1,
+      "role": "Technical Interviewer"
+    },
+    {
+      "interviewIndex": 1,
+      "userIndex": 0,
+      "role": "Panel Member"
+    },
+    {
+      "interviewIndex": 2,
+      "userIndex": 0,
+      "role": "HR Interviewer"
+    },
+    {
+      "interviewIndex": 3,
+      "userIndex": 1,
+      "role": "Lead Interviewer"
+    },
+    {
+      "interviewIndex": 4,
+      "userIndex": 1,
+      "role": "Technical Interviewer"
+    },
+    {
+      "interviewIndex": 4,
+      "userIndex": 0,
+      "role": "Senior Reviewer"
+    },
+    {
+      "interviewIndex": 5,
+      "userIndex": 1,
+      "role": "Lead Interviewer"
+    },
+    {
+      "interviewIndex": 6,
+      "userIndex": 1,
+      "role": "Technical Interviewer"
+    },
+    {
+      "interviewIndex": 6,
+      "userIndex": 0,
+      "role": "Panel Member"
+    },
+    {
+      "interviewIndex": 7,
+      "userIndex": 2,
+      "role": "Lead Interviewer"
+    },
+    {
+      "interviewIndex": 8,
+      "userIndex": 2,
+      "role": "Technical Interviewer"
+    },
+    {
+      "interviewIndex": 8,
+      "userIndex": 3,
+      "role": "DevOps Specialist"
+    },
+    {
+      "interviewIndex": 9,
+      "userIndex": 2,
+      "role": "Lead Interviewer"
+    },
+    {
+      "interviewIndex": 10,
+      "userIndex": 2,
+      "role": "Hiring Manager"
+    },
+    {
+      "interviewIndex": 10,
+      "userIndex": 3,
+      "role": "Product Lead"
+    },
+    {
+      "interviewIndex": 11,
+      "userIndex": 0,
+      "role": "Phone Screener"
+    }
+  ],
+  "candidateActivities": [
+    {
+      "candidateIndex": 0,
+      "type": "CREATED",
+      "description": "Candidate John Doe was added to the system",
+      "metadata": {
+        "source": "LINKEDIN"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-10-31T07:50:26Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Great technical skills demonstrated during phone screening",
+      "userIndex": 0,
+      "createdAt": "2025-11-01T00:30:39Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Phone screening interview scheduled for November 18 at 10:00 AM",
+      "metadata": {
+        "interviewDate": "2025-11-18",
+        "interviewTime": "10:00"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-01T10:52:41Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "Phone screening interview completed successfully",
+      "userIndex": 0,
+      "createdAt": "2025-11-01T21:05:21Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "STAGE_CHANGED",
+      "description": "Candidate moved from 'Initial Screening' to 'Technical Interview' stage",
+      "metadata": {
+        "fromStage": "Initial Screening",
+        "toStage": "Technical Interview"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-01T21:16:36Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Technical interview scheduled for November 25 at 2:00 PM",
+      "metadata": {
+        "interviewDate": "2025-11-25",
+        "interviewTime": "14:00"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-02T20:30:20Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Follow up needed - candidate mentioned they have another offer deadline next week",
+      "userIndex": 1,
+      "createdAt": "2025-11-03T07:49:28Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "Technical interview completed - strong performance",
+      "userIndex": 1,
+      "createdAt": "2025-11-03T20:26:18Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "STAGE_CHANGED",
+      "description": "Candidate moved from 'Technical Interview' to 'Team Interview' stage",
+      "metadata": {
+        "fromStage": "Technical Interview",
+        "toStage": "Team Interview"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-04T11:06:20Z"
+    },
+    {
+      "candidateIndex": 0,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "HR interview scheduled for December 2 at 11:00 AM",
+      "metadata": {
+        "interviewDate": "2025-12-02",
+        "interviewTime": "11:00"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-05T00:56:03Z"
+    },
+    {
+      "candidateIndex": 1,
+      "type": "CREATED",
+      "description": "Candidate Jane Smith was added to the system",
+      "metadata": {
+        "source": "REFERRAL",
+        "referredBy": "Alice Johnson"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-05T05:39:40Z"
+    },
+    {
+      "candidateIndex": 1,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Excellent communication skills. Very interested in our company culture",
+      "userIndex": 0,
+      "createdAt": "2025-11-05T16:07:32Z"
+    },
+    {
+      "candidateIndex": 1,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Initial screening scheduled for November 20 at 3:30 PM",
+      "metadata": {
+        "interviewDate": "2025-11-20",
+        "interviewTime": "15:30"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-05T23:32:02Z"
+    },
+    {
+      "candidateIndex": 1,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "Initial screening completed - referral from Alice Johnson confirmed",
+      "userIndex": 1,
+      "createdAt": "2025-11-06T20:15:30Z"
+    },
+    {
+      "candidateIndex": 1,
+      "type": "STAGE_CHANGED",
+      "description": "Candidate moved from 'Initial Screening' to 'Technical Interview' stage",
+      "metadata": {
+        "fromStage": "Initial Screening",
+        "toStage": "Technical Interview"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-07T02:14:07Z"
+    },
+    {
+      "candidateIndex": 1,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Technical deep dive scheduled for November 28 at 10:00 AM",
+      "metadata": {
+        "interviewDate": "2025-11-28",
+        "interviewTime": "10:00"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-08T00:00:51Z"
+    },
+    {
+      "candidateIndex": 2,
+      "type": "CREATED",
+      "description": "Candidate Mike Wilson was added to the system",
+      "metadata": {
+        "source": "INDEED"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-08T10:12:06Z"
+    },
+    {
+      "candidateIndex": 2,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Resume shows impressive portfolio. Scheduled for technical interview",
+      "userIndex": 1,
+      "createdAt": "2025-11-08T12:48:06Z"
+    },
+    {
+      "candidateIndex": 2,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Phone screening scheduled for November 22 at 9:00 AM",
+      "metadata": {
+        "interviewDate": "2025-11-22",
+        "interviewTime": "09:00",
+        "location": "Office - Conference Room A"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-09T01:20:09Z"
+    },
+    {
+      "candidateIndex": 2,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "In-person phone screening completed - showed enthusiasm for Vue.js and Angular",
+      "userIndex": 1,
+      "createdAt": "2025-11-09T09:55:09Z"
+    },
+    {
+      "candidateIndex": 2,
+      "type": "STAGE_CHANGED",
+      "description": "Candidate moved from 'Phone Screening' to 'Coding Challenge' stage",
+      "metadata": {
+        "fromStage": "Phone Screening",
+        "toStage": "Coding Challenge"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-10T10:09:46Z"
+    },
+    {
+      "candidateIndex": 2,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Technical interview scheduled for December 1 at 2:30 PM",
+      "metadata": {
+        "interviewDate": "2025-12-01",
+        "interviewTime": "14:30"
+      },
+      "userIndex": 1,
+      "createdAt": "2025-11-10T13:50:33Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "CREATED",
+      "description": "Candidate Sarah Davis was added to the system",
+      "metadata": {
+        "source": "WEBSITE"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-11T16:29:04Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Strong DevOps background with AWS and Kubernetes. Good culture fit",
+      "userIndex": 2,
+      "createdAt": "2025-11-11T17:27:51Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Candidate requested remote work flexibility. Need to discuss with team",
+      "userIndex": 3,
+      "createdAt": "2025-11-11T21:57:21Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Recruiter call scheduled for November 19 at 1:00 PM",
+      "metadata": {
+        "interviewDate": "2025-11-19",
+        "interviewTime": "13:00"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-12T18:09:54Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "Recruiter call completed - confirmed AWS and Kubernetes expertise",
+      "userIndex": 2,
+      "createdAt": "2025-11-12T20:55:16Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "STAGE_CHANGED",
+      "description": "Candidate moved from 'Recruiter Call' to 'Technical Assessment' stage",
+      "metadata": {
+        "fromStage": "Recruiter Call",
+        "toStage": "Technical Assessment"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-13T12:41:56Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Technical assessment scheduled for November 26 at 10:00 AM",
+      "metadata": {
+        "interviewDate": "2025-11-26",
+        "interviewTime": "10:00"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-14T00:41:20Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "Technical assessment completed - excellent understanding of CI/CD and IaC",
+      "userIndex": 2,
+      "createdAt": "2025-11-14T19:00:14Z"
+    },
+    {
+      "candidateIndex": 3,
+      "type": "STATUS_CHANGED",
+      "description": "Candidate status updated - moving to final round",
+      "metadata": {
+        "status": "ADVANCED"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-15T00:00:43Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "CREATED",
+      "description": "Candidate Tom Anderson was added to the system",
+      "metadata": {
+        "source": "RECRUITER",
+        "recruiter": "TechTalent Agency"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-15T22:39:29Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Product case study presentation was outstanding. Clear strategic thinking",
+      "userIndex": 2,
+      "createdAt": "2025-11-16T08:34:04Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "NOTE_ADDED",
+      "description": "HR added note: Salary expectations are slightly higher than budget. Will need approval for adjustment",
+      "userIndex": 2,
+      "createdAt": "2025-11-16T16:55:46Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Initial screening scheduled for November 21 at 11:00 AM",
+      "metadata": {
+        "interviewDate": "2025-11-21",
+        "interviewTime": "11:00"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-16T22:34:51Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "INTERVIEW_COMPLETED",
+      "description": "Initial screening completed - strong strategic thinking demonstrated",
+      "userIndex": 2,
+      "createdAt": "2025-11-17T16:59:14Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "STAGE_CHANGED",
+      "description": "Candidate moved from 'Initial Call' to 'Case Study' stage",
+      "metadata": {
+        "fromStage": "Initial Call",
+        "toStage": "Case Study"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-18T04:11:14Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Product case study presentation scheduled for November 29 at 3:00 PM",
+      "metadata": {
+        "interviewDate": "2025-11-29",
+        "interviewTime": "15:00"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-18T13:52:57Z"
+    },
+    {
+      "candidateIndex": 4,
+      "type": "EMAIL_SENT",
+      "description": "Sent case study preparation materials and requirements",
+      "metadata": {
+        "emailTemplate": "Case Study Instructions"
+      },
+      "userIndex": 2,
+      "createdAt": "2025-11-19T00:53:38Z"
+    },
+    {
+      "candidateIndex": 5,
+      "type": "CREATED",
+      "description": "Candidate Emma Martinez was added to the system",
+      "metadata": {
+        "source": "MANUAL",
+        "note": "Walk-in applicant"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-20T04:02:42Z"
+    },
+    {
+      "candidateIndex": 5,
+      "type": "INTERVIEW_SCHEDULED",
+      "description": "Phone screening scheduled for December 3 at 9:30 AM",
+      "metadata": {
+        "interviewDate": "2025-12-03",
+        "interviewTime": "09:30"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-20T09:02:53Z"
+    },
+    {
+      "candidateIndex": 5,
+      "type": "EMAIL_SENT",
+      "description": "Sent interview confirmation and preparation details",
+      "metadata": {
+        "emailTemplate": "Interview Invitation"
+      },
+      "userIndex": 0,
+      "createdAt": "2025-11-20T20:21:21Z"
+    }
+  ],
+  "stageNotes": [
+    {
+      "candidateIndex": 0,
+      "stagePosition": 1,
+      "content": "Candidate demonstrated excellent problem-solving skills during technical interview. Strong understanding of algorithms and data structures.",
+      "authorUserIndex": 1,
+      "createdAt": "2025-11-19T16:00:00Z"
+    },
+    {
+      "candidateIndex": 0,
+      "stagePosition": 2,
+      "content": "Preparing for team interview. Need to assess cultural fit and communication skills.",
+      "authorUserIndex": 0,
+      "createdAt": "2025-11-23T12:45:00Z"
+    },
+    {
+      "candidateIndex": 1,
+      "stagePosition": 0,
+      "content": "Referred by Alice Johnson - strong endorsement for technical skills and team collaboration.",
+      "authorUserIndex": 1,
+      "createdAt": "2025-11-27T12:00:00Z"
+    },
+    {
+      "candidateIndex": 1,
+      "stagePosition": 1,
+      "content": "Technical deep dive scheduled. Focus areas: React ecosystem, state management, performance optimization.",
+      "authorUserIndex": 1,
+      "createdAt": "2025-11-23T10:15:00Z"
+    },
+    {
+      "candidateIndex": 2,
+      "stagePosition": 0,
+      "content": "Portfolio review shows strong frontend skills with Vue.js and Angular. Good attention to detail in UI/UX.",
+      "authorUserIndex": 1,
+      "createdAt": "2025-11-17T09:45:00Z"
+    },
+    {
+      "candidateIndex": 2,
+      "stagePosition": 1,
+      "content": "Coding challenge will assess component architecture and state management patterns.",
+      "authorUserIndex": 1,
+      "createdAt": "2025-11-24T15:45:00Z"
+    },
+    {
+      "candidateIndex": 3,
+      "stagePosition": 1,
+      "content": "Technical assessment revealed deep expertise in Docker, Kubernetes, and CI/CD pipelines. Strong candidate for DevOps role.",
+      "authorUserIndex": 2,
+      "createdAt": "2025-11-18T13:00:00Z"
+    },
+    {
+      "candidateIndex": 3,
+      "stagePosition": 1,
+      "content": "Candidate expressed preference for remote work. Team is open to hybrid arrangement.",
+      "authorUserIndex": 3,
+      "createdAt": "2025-11-20T16:15:00Z"
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 0,
+      "content": "Initial screening shows strong product management background. Good strategic thinking and data-driven approach.",
+      "authorUserIndex": 2,
+      "createdAt": "2025-11-25T10:30:00Z"
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 1,
+      "content": "Case study preparation: Candidate will present market entry strategy for new product segment. Allow 90 minutes for presentation and Q&A.",
+      "authorUserIndex": 2,
+      "createdAt": "2025-11-29T13:45:00Z"
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 1,
+      "content": "Salary expectations are $120K, slightly above budget of $110K. May need director approval for adjustment.",
+      "authorUserIndex": 2,
+      "createdAt": "2025-11-20T15:30:00Z"
+    },
+    {
+      "candidateIndex": 5,
+      "stagePosition": 0,
+      "content": "Walk-in applicant, manually entered into system. Resume shows 6 years experience. Phone screening will verify background.",
+      "authorUserIndex": 0,
+      "createdAt": "2025-11-16T14:45:00Z"
+    }
+  ],
+  "stageTimeLogs": [
+    {
+      "candidateIndex": 0,
+      "stagePosition": 0,
+      "enteredAt": "2025-11-18T13:15:00Z",
+      "exitedAt": "2025-11-27T11:00:00Z",
+      "duration": 213
+    },
+    {
+      "candidateIndex": 0,
+      "stagePosition": 1,
+      "enteredAt": "2025-11-08T07:45:00Z",
+      "exitedAt": "2025-11-17T07:30:00Z",
+      "duration": 215
+    },
+    {
+      "candidateIndex": 0,
+      "stagePosition": 2,
+      "enteredAt": "2025-11-22T10:15:00Z"
+    },
+    {
+      "candidateIndex": 1,
+      "stagePosition": 0,
+      "enteredAt": "2025-11-03T08:00:00Z",
+      "exitedAt": "2025-11-08T08:00:00Z",
+      "duration": 120
+    },
+    {
+      "candidateIndex": 1,
+      "stagePosition": 1,
+      "enteredAt": "2025-11-22T15:15:00Z"
+    },
+    {
+      "candidateIndex": 2,
+      "stagePosition": 0,
+      "enteredAt": "2025-11-24T07:30:00Z",
+      "exitedAt": "2025-11-29T12:30:00Z",
+      "duration": 125
+    },
+    {
+      "candidateIndex": 2,
+      "stagePosition": 1,
+      "enteredAt": "2025-11-02T10:45:00Z"
+    },
+    {
+      "candidateIndex": 3,
+      "stagePosition": 0,
+      "enteredAt": "2025-11-01T12:30:00Z",
+      "exitedAt": "2025-11-06T13:00:00Z",
+      "duration": 120
+    },
+    {
+      "candidateIndex": 3,
+      "stagePosition": 1,
+      "enteredAt": "2025-11-23T16:45:00Z",
+      "exitedAt": "2025-11-29T09:15:00Z",
+      "duration": 136
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 0,
+      "enteredAt": "2025-11-04T12:15:00Z",
+      "exitedAt": "2025-11-13T13:30:00Z",
+      "duration": 217
+    },
+    {
+      "candidateIndex": 4,
+      "stagePosition": 1,
+      "enteredAt": "2025-11-02T13:15:00Z"
+    },
+    {
+      "candidateIndex": 5,
+      "stagePosition": 0,
+      "enteredAt": "2025-11-15T15:15:00Z"
+    }
+  ],
+  "emailLogs": [
+    {
+      "recipientEmail": "john.doe@example.com",
+      "recipientName": "John Doe",
+      "subject": "Interview Invitation - Senior Software Engineer at Tech Innovations Inc",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-1",
+      "sentAt": "2025-11-03T13:30:00Z"
+    },
+    {
+      "recipientEmail": "john.doe@example.com",
+      "recipientName": "John Doe",
+      "subject": "Technical Interview Confirmation - Senior Software Engineer",
+      "template": "Interview Confirmation",
+      "emailType": "INTERVIEW_CONFIRMATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-2",
+      "sentAt": "2025-11-04T16:15:00Z"
+    },
+    {
+      "recipientEmail": "john.doe@example.com",
+      "recipientName": "John Doe",
+      "subject": "Next Steps - Team Interview Scheduled",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-3",
+      "sentAt": "2025-11-13T07:30:00Z"
+    },
+    {
+      "recipientEmail": "jane.smith@example.com",
+      "recipientName": "Jane Smith",
+      "subject": "Thank you for your application - Senior Software Engineer",
+      "template": "Application Received Confirmation",
+      "emailType": "APPLICATION_RECEIVED",
+      "relatedEntity": "Candidate",
+      "relatedEntityId": "candidate-2",
+      "sentAt": "2025-11-23T11:00:00Z"
+    },
+    {
+      "recipientEmail": "jane.smith@example.com",
+      "recipientName": "Jane Smith",
+      "subject": "Interview Invitation - Senior Software Engineer at Tech Innovations Inc",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-4",
+      "sentAt": "2025-11-22T09:45:00Z"
+    },
+    {
+      "recipientEmail": "jane.smith@example.com",
+      "recipientName": "Jane Smith",
+      "subject": "Technical Interview Scheduled - November 28",
+      "template": "Interview Confirmation",
+      "emailType": "INTERVIEW_CONFIRMATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-5",
+      "sentAt": "2025-11-28T07:15:00Z"
+    },
+    {
+      "recipientEmail": "mike.wilson@example.com",
+      "recipientName": "Mike Wilson",
+      "subject": "Application Received - Frontend Developer Position",
+      "template": "Application Received Confirmation",
+      "emailType": "APPLICATION_RECEIVED",
+      "relatedEntity": "Candidate",
+      "relatedEntityId": "candidate-3",
+      "sentAt": "2025-11-21T16:30:00Z"
+    },
+    {
+      "recipientEmail": "mike.wilson@example.com",
+      "recipientName": "Mike Wilson",
+      "subject": "Phone Screening Scheduled - Frontend Developer",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-6",
+      "sentAt": "2025-11-27T07:45:00Z"
+    },
+    {
+      "recipientEmail": "mike.wilson@example.com",
+      "recipientName": "Mike Wilson",
+      "subject": "Technical Interview - Next Steps",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-7",
+      "sentAt": "2025-11-02T08:00:00Z"
+    },
+    {
+      "recipientEmail": "sarah.davis@example.com",
+      "recipientName": "Sarah Davis",
+      "subject": "Application Received - DevOps Engineer Position",
+      "template": "Application Received",
+      "emailType": "APPLICATION_RECEIVED",
+      "relatedEntity": "Candidate",
+      "relatedEntityId": "candidate-4",
+      "sentAt": "2025-11-07T13:45:00Z"
+    },
+    {
+      "recipientEmail": "sarah.davis@example.com",
+      "recipientName": "Sarah Davis",
+      "subject": "Recruiter Call Scheduled - DevOps Engineer",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-8",
+      "sentAt": "2025-11-26T11:15:00Z"
+    },
+    {
+      "recipientEmail": "sarah.davis@example.com",
+      "recipientName": "Sarah Davis",
+      "subject": "Technical Assessment Invitation",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-9",
+      "sentAt": "2025-11-28T10:45:00Z"
+    },
+    {
+      "recipientEmail": "sarah.davis@example.com",
+      "recipientName": "Sarah Davis",
+      "subject": "Great News - Moving to Final Round!",
+      "template": "Status Update",
+      "emailType": "STATUS_UPDATE",
+      "relatedEntity": "Candidate",
+      "relatedEntityId": "candidate-4",
+      "sentAt": "2025-11-04T12:30:00Z"
+    },
+    {
+      "recipientEmail": "tom.anderson@example.com",
+      "recipientName": "Tom Anderson",
+      "subject": "Application Received - Product Manager Position",
+      "template": "Application Received",
+      "emailType": "APPLICATION_RECEIVED",
+      "relatedEntity": "Candidate",
+      "relatedEntityId": "candidate-5",
+      "sentAt": "2025-11-18T08:30:00Z"
+    },
+    {
+      "recipientEmail": "tom.anderson@example.com",
+      "recipientName": "Tom Anderson",
+      "subject": "Initial Screening Scheduled - Product Manager",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-10",
+      "sentAt": "2025-11-26T14:30:00Z"
+    },
+    {
+      "recipientEmail": "tom.anderson@example.com",
+      "recipientName": "Tom Anderson",
+      "subject": "Case Study Instructions - Product Manager Role",
+      "template": "Case Study Instructions",
+      "emailType": "CASE_STUDY_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-11",
+      "sentAt": "2025-11-24T13:30:00Z"
+    },
+    {
+      "recipientEmail": "tom.anderson@example.com",
+      "recipientName": "Tom Anderson",
+      "subject": "Product Case Study Presentation - November 29",
+      "template": "Interview Confirmation",
+      "emailType": "INTERVIEW_CONFIRMATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-11",
+      "sentAt": "2025-11-20T12:30:00Z"
+    },
+    {
+      "recipientEmail": "emma.martinez@example.com",
+      "recipientName": "Emma Martinez",
+      "subject": "Thank you for your interest - Senior Software Engineer",
+      "template": "Application Received Confirmation",
+      "emailType": "APPLICATION_RECEIVED",
+      "relatedEntity": "Candidate",
+      "relatedEntityId": "candidate-6",
+      "sentAt": "2025-11-22T07:45:00Z"
+    },
+    {
+      "recipientEmail": "emma.martinez@example.com",
+      "recipientName": "Emma Martinez",
+      "subject": "Phone Screening Scheduled - December 3",
+      "template": "Interview Invitation",
+      "emailType": "INTERVIEW_INVITATION",
+      "relatedEntity": "Interview",
+      "relatedEntityId": "interview-12",
+      "sentAt": "2025-11-10T10:45:00Z"
+    },
+    {
+      "recipientEmail": "michael.chen@email.com",
+      "recipientName": "Michael Chen",
+      "subject": "Application Status Update - Senior Software Engineer",
+      "template": "Status Update",
+      "emailType": "STATUS_UPDATE",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-1",
+      "sentAt": "2025-11-18T11:45:00Z"
+    },
+    {
+      "recipientEmail": "sarah.williams@email.com",
+      "recipientName": "Sarah Williams",
+      "subject": "Congratulations! Offer Extended - Senior Software Engineer",
+      "template": "Offer Letter",
+      "emailType": "OFFER_EXTENDED",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-2",
+      "sentAt": "2025-11-10T07:30:00Z"
+    },
+    {
+      "recipientEmail": "lisa.garcia@email.com",
+      "recipientName": "Lisa Garcia",
+      "subject": "Update on your application - Senior Software Engineer",
+      "template": "Rejection - Early Stage",
+      "emailType": "REJECTION",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-4",
+      "sentAt": "2025-11-08T13:15:00Z"
+    },
+    {
+      "recipientEmail": "james.rodriguez@email.com",
+      "recipientName": "James Rodriguez",
+      "subject": "Application Review Update - Frontend Developer",
+      "template": "Status Update",
+      "emailType": "STATUS_UPDATE",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-5",
+      "sentAt": "2025-11-26T16:00:00Z"
+    },
+    {
+      "recipientEmail": "kevin.lee@email.com",
+      "recipientName": "Kevin Lee",
+      "subject": "Offer Letter - Frontend Developer Position",
+      "template": "Offer Letter",
+      "emailType": "OFFER_EXTENDED",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-7",
+      "sentAt": "2025-11-28T13:45:00Z"
+    },
+    {
+      "recipientEmail": "amanda.taylor@email.com",
+      "recipientName": "Amanda Taylor",
+      "subject": "Update regarding Frontend Developer position",
+      "template": "Rejection - Final Stage",
+      "emailType": "REJECTION",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-8",
+      "sentAt": "2025-11-13T09:45:00Z"
+    },
+    {
+      "recipientEmail": "robert.martinez@email.com",
+      "recipientName": "Robert Martinez",
+      "subject": "Interview Progress Update - DevOps Engineer",
+      "template": "Status Update",
+      "emailType": "STATUS_UPDATE",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-9",
+      "sentAt": "2025-11-23T13:00:00Z"
+    },
+    {
+      "recipientEmail": "daniel.thomas@email.com",
+      "recipientName": "Daniel Thomas",
+      "subject": "Job Offer - DevOps Engineer at Digital Solutions Corp",
+      "template": "Offer Letter",
+      "emailType": "OFFER_EXTENDED",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-11",
+      "sentAt": "2025-11-06T07:00:00Z"
+    },
+    {
+      "recipientEmail": "michelle.jackson@email.com",
+      "recipientName": "Michelle Jackson",
+      "subject": "Application Update - DevOps Engineer",
+      "template": "Rejection - Early Stage",
+      "emailType": "REJECTION",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-12",
+      "sentAt": "2025-11-27T13:15:00Z"
+    },
+    {
+      "recipientEmail": "christopher.white@email.com",
+      "recipientName": "Christopher White",
+      "subject": "Application Review - Product Manager Position",
+      "template": "Status Update",
+      "emailType": "STATUS_UPDATE",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-13",
+      "sentAt": "2025-11-22T13:30:00Z"
+    },
+    {
+      "recipientEmail": "matthew.clark@email.com",
+      "recipientName": "Matthew Clark",
+      "subject": "Offer Extended - Product Manager at Digital Solutions Corp",
+      "template": "Offer Letter",
+      "emailType": "OFFER_EXTENDED",
+      "relatedEntity": "Application",
+      "relatedEntityId": "application-15",
+      "sentAt": "2025-11-07T12:15:00Z"
+    }
+  ],
+  "hrSchedules": [
+    {
+      "userIndex": 0,
+      "dayOfWeek": 1,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 0,
+      "dayOfWeek": 2,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 0,
+      "dayOfWeek": 3,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 0,
+      "dayOfWeek": 4,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 0,
+      "dayOfWeek": 5,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 1,
+      "dayOfWeek": 1,
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 1,
+      "dayOfWeek": 2,
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 1,
+      "dayOfWeek": 3,
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 1,
+      "dayOfWeek": 4,
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 1,
+      "dayOfWeek": 5,
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 2,
+      "dayOfWeek": 1,
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 2,
+      "dayOfWeek": 2,
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 2,
+      "dayOfWeek": 3,
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 2,
+      "dayOfWeek": 4,
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 2,
+      "dayOfWeek": 5,
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 3,
+      "dayOfWeek": 1,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 3,
+      "dayOfWeek": 2,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 3,
+      "dayOfWeek": 3,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 3,
+      "dayOfWeek": 4,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 3,
+      "dayOfWeek": 5,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": true,
+      "isAvailable": true
+    },
+    {
+      "userIndex": 0,
+      "dayOfWeek": 2,
+      "startTime": "09:00",
+      "endTime": "17:00",
+      "isRecurring": false,
+      "specificDate": "2025-12-10T00:00:00Z",
+      "isAvailable": false
+    },
+    {
+      "userIndex": 1,
+      "dayOfWeek": 5,
+      "startTime": "08:00",
+      "endTime": "16:00",
+      "isRecurring": false,
+      "specificDate": "2025-12-06T00:00:00Z",
+      "isAvailable": false
+    },
+    {
+      "userIndex": 2,
+      "dayOfWeek": 3,
+      "startTime": "10:00",
+      "endTime": "18:00",
+      "isRecurring": false,
+      "specificDate": "2025-12-11T00:00:00Z",
+      "isAvailable": false
+    },
+    {
+      "userIndex": 3,
+      "dayOfWeek": 1,
+      "startTime": "14:00",
+      "endTime": "17:00",
+      "isRecurring": false,
+      "specificDate": "2025-12-09T00:00:00Z",
+      "isAvailable": true
+    }
+  ],
+  "scorecardTemplates": [
+    {
+      "name": "Software Engineer Evaluation",
+      "description": "Comprehensive evaluation scorecard for software engineering positions",
+      "companyIndex": 0,
+      "isActive": true,
+      "categories": [
+        {
+          "name": "Technical Skills",
+          "weight": 40,
+          "order": 0,
+          "criteria": [
+            {
+              "name": "Coding Proficiency",
+              "description": "Ability to write clean, efficient, and maintainable code",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Problem-Solving",
+              "description": "Analytical thinking and ability to solve complex technical challenges",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "System Design",
+              "description": "Understanding of software architecture and design patterns",
+              "maxScore": 5,
+              "order": 2
+            },
+            {
+              "name": "Technology Stack Knowledge",
+              "description": "Familiarity with required frameworks, libraries, and tools",
+              "maxScore": 5,
+              "order": 3
+            }
+          ]
+        },
+        {
+          "name": "Communication",
+          "weight": 25,
+          "order": 1,
+          "criteria": [
+            {
+              "name": "Verbal Communication",
+              "description": "Clarity and effectiveness in verbal explanations",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Technical Documentation",
+              "description": "Ability to document code and technical decisions",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "Collaboration",
+              "description": "Willingness and ability to work effectively in a team",
+              "maxScore": 5,
+              "order": 2
+            }
+          ]
+        },
+        {
+          "name": "Cultural Fit",
+          "weight": 20,
+          "order": 2,
+          "criteria": [
+            {
+              "name": "Company Values Alignment",
+              "description": "Alignment with company mission, vision, and values",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Work Style",
+              "description": "Compatibility with team's work environment and practices",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "Growth Mindset",
+              "description": "Eagerness to learn and adapt to new challenges",
+              "maxScore": 5,
+              "order": 2
+            }
+          ]
+        },
+        {
+          "name": "Experience",
+          "weight": 15,
+          "order": 3,
+          "criteria": [
+            {
+              "name": "Relevant Projects",
+              "description": "Quality and relevance of past work experience",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Years of Experience",
+              "description": "Professional experience in software development",
+              "maxScore": 5,
+              "order": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Product Manager Assessment",
+      "description": "Evaluation scorecard for product management candidates",
+      "companyIndex": 1,
+      "isActive": true,
+      "categories": [
+        {
+          "name": "Product Strategy",
+          "weight": 35,
+          "order": 0,
+          "criteria": [
+            {
+              "name": "Strategic Thinking",
+              "description": "Ability to develop product vision and roadmap",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Market Understanding",
+              "description": "Knowledge of market trends, competition, and customer needs",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "Prioritization Skills",
+              "description": "Ability to prioritize features and make trade-off decisions",
+              "maxScore": 5,
+              "order": 2
+            }
+          ]
+        },
+        {
+          "name": "Leadership & Collaboration",
+          "weight": 30,
+          "order": 1,
+          "criteria": [
+            {
+              "name": "Stakeholder Management",
+              "description": "Ability to influence and align stakeholders",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Cross-functional Leadership",
+              "description": "Experience leading engineering, design, and business teams",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "Communication Skills",
+              "description": "Clarity in articulating product vision and requirements",
+              "maxScore": 5,
+              "order": 2
+            }
+          ]
+        },
+        {
+          "name": "Analytical Abilities",
+          "weight": 20,
+          "order": 2,
+          "criteria": [
+            {
+              "name": "Data-Driven Decision Making",
+              "description": "Use of metrics and analytics to inform product decisions",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "User Research",
+              "description": "Ability to conduct and interpret user research",
+              "maxScore": 5,
+              "order": 1
+            }
+          ]
+        },
+        {
+          "name": "Execution",
+          "weight": 15,
+          "order": 3,
+          "criteria": [
+            {
+              "name": "Project Management",
+              "description": "Ability to manage timelines, resources, and deliverables",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Results Orientation",
+              "description": "Track record of shipping successful products",
+              "maxScore": 5,
+              "order": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "General Interview Scorecard",
+      "description": "Universal scorecard for all positions - basic evaluation criteria",
+      "isActive": true,
+      "categories": [
+        {
+          "name": "Core Competencies",
+          "weight": 50,
+          "order": 0,
+          "criteria": [
+            {
+              "name": "Job-Specific Skills",
+              "description": "Technical or functional skills required for the role",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Problem-Solving Ability",
+              "description": "Analytical thinking and approach to challenges",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "Relevant Experience",
+              "description": "Past experience applicable to this position",
+              "maxScore": 5,
+              "order": 2
+            }
+          ]
+        },
+        {
+          "name": "Soft Skills",
+          "weight": 30,
+          "order": 1,
+          "criteria": [
+            {
+              "name": "Communication",
+              "description": "Clarity and effectiveness in communication",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Teamwork",
+              "description": "Ability to collaborate and work in teams",
+              "maxScore": 5,
+              "order": 1
+            },
+            {
+              "name": "Adaptability",
+              "description": "Flexibility and openness to change",
+              "maxScore": 5,
+              "order": 2
+            }
+          ]
+        },
+        {
+          "name": "Cultural Fit",
+          "weight": 20,
+          "order": 2,
+          "criteria": [
+            {
+              "name": "Values Alignment",
+              "description": "Compatibility with company culture and values",
+              "maxScore": 5,
+              "order": 0
+            },
+            {
+              "name": "Motivation",
+              "description": "Enthusiasm for the role and company",
+              "maxScore": 5,
+              "order": 1
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "candidateScores": [
+    {
+      "candidateIndex": 0,
+      "jobPositionIndex": 0,
+      "overallScore": 87.5,
+      "skillsScore": 92.0,
+      "experienceScore": 85.0,
+      "educationScore": 86.0,
+      "analysis": {
+        "strengths": [
+          "Strong technical background",
+          "Excellent problem-solving skills",
+          "Good communication"
+        ],
+        "weaknesses": [
+          "Limited experience with specific framework"
+        ],
+        "recommendation": "Strong hire - proceed to final interview"
+      },
+      "scoredAt": "2025-11-18T16:15:00Z"
+    },
+    {
+      "candidateIndex": 1,
+      "jobPositionIndex": 1,
+      "overallScore": 82.3,
+      "skillsScore": 88.0,
+      "experienceScore": 78.0,
+      "educationScore": 81.0,
+      "analysis": {
+        "strengths": [
+          "Strong frontend skills",
+          "React expertise",
+          "Modern development practices"
+        ],
+        "weaknesses": [
+          "Less backend experience"
+        ],
+        "recommendation": "Good fit for frontend role"
+      },
+      "scoredAt": "2025-11-22T07:30:00Z"
+    },
+    {
+      "candidateIndex": 2,
+      "jobPositionIndex": 2,
+      "overallScore": 79.0,
+      "skillsScore": 81.0,
+      "experienceScore": 75.0,
+      "educationScore": 82.0,
+      "analysis": {
+        "strengths": [
+          "Good coding skills",
+          "Fast learner"
+        ],
+        "weaknesses": [
+          "Limited professional experience"
+        ],
+        "recommendation": "Consider for junior position"
+      },
+      "scoredAt": "2025-11-25T13:00:00Z"
+    },
+    {
+      "candidateIndex": 3,
+      "jobPositionIndex": 3,
+      "overallScore": 91.2,
+      "skillsScore": 93.0,
+      "experienceScore": 90.0,
+      "educationScore": 91.0,
+      "analysis": {
+        "strengths": [
+          "Extensive data science background",
+          "Strong analytical skills",
+          "Published research"
+        ],
+        "weaknesses": [
+          "None significant"
+        ],
+        "recommendation": "Exceptional candidate - extend offer"
+      },
+      "scoredAt": "2025-11-21T16:45:00Z"
+    },
+    {
+      "candidateIndex": 4,
+      "jobPositionIndex": 3,
+      "overallScore": 85.8,
+      "skillsScore": 87.0,
+      "experienceScore": 84.0,
+      "educationScore": 86.0,
+      "analysis": {
+        "strengths": [
+          "Strong product management background",
+          "Good stakeholder communication",
+          "Data-driven approach"
+        ],
+        "weaknesses": [
+          "Limited experience in tech industry"
+        ],
+        "recommendation": "Strong candidate - proceed"
+      },
+      "scoredAt": "2025-11-23T07:30:00Z"
+    }
+  ],
+  "aiQuotas": [
+    {
+      "companyIndex": 0,
+      "quotaType": "RESUME_PARSING",
+      "limit": 1000,
+      "used": 247,
+      "resetDate": "2025-12-01T00:00:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "quotaType": "CANDIDATE_SCORING",
+      "limit": 500,
+      "used": 89,
+      "resetDate": "2025-12-01T00:00:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "quotaType": "BATCH_SCORING",
+      "limit": 100,
+      "used": 12,
+      "resetDate": "2025-12-01T00:00:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "quotaType": "RESUME_PARSING",
+      "limit": 500,
+      "used": 156,
+      "resetDate": "2025-12-01T00:00:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "quotaType": "CANDIDATE_SCORING",
+      "limit": 250,
+      "used": 67,
+      "resetDate": "2025-12-01T00:00:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "quotaType": "BATCH_SCORING",
+      "limit": 50,
+      "used": 8,
+      "resetDate": "2025-12-01T00:00:00Z"
+    }
+  ],
+  "aiUsageLogs": [
+    {
+      "companyIndex": 0,
+      "userIndex": 0,
+      "operation": "RESUME_PARSING",
+      "tokensUsed": 1250,
+      "cost": 0.0025,
+      "createdAt": "2025-11-11T09:00:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "userIndex": 0,
+      "operation": "CANDIDATE_SCORING",
+      "tokensUsed": 2100,
+      "cost": 0.0042,
+      "createdAt": "2025-11-17T15:15:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "userIndex": 1,
+      "operation": "RESUME_PARSING",
+      "tokensUsed": 1180,
+      "cost": 0.0024,
+      "createdAt": "2025-11-05T09:15:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "userIndex": 1,
+      "operation": "CANDIDATE_SCORING",
+      "tokensUsed": 1950,
+      "cost": 0.0039,
+      "createdAt": "2025-11-14T11:15:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "userIndex": 0,
+      "operation": "RESUME_PARSING",
+      "tokensUsed": 1320,
+      "cost": 0.0026,
+      "createdAt": "2025-11-13T07:30:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "userIndex": 0,
+      "operation": "CANDIDATE_SCORING",
+      "tokensUsed": 2050,
+      "cost": 0.0041,
+      "createdAt": "2025-11-05T07:15:00Z"
+    },
+    {
+      "companyIndex": 0,
+      "userIndex": 1,
+      "operation": "BATCH_SCORING",
+      "tokensUsed": 8500,
+      "cost": 0.017,
+      "createdAt": "2025-11-04T15:00:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "userIndex": 2,
+      "operation": "RESUME_PARSING",
+      "tokensUsed": 1290,
+      "cost": 0.0026,
+      "createdAt": "2025-11-22T15:45:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "userIndex": 2,
+      "operation": "CANDIDATE_SCORING",
+      "tokensUsed": 2000,
+      "cost": 0.004,
+      "createdAt": "2025-11-15T14:00:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "userIndex": 3,
+      "operation": "RESUME_PARSING",
+      "tokensUsed": 1150,
+      "cost": 0.0023,
+      "createdAt": "2025-11-22T08:45:00Z"
+    },
+    {
+      "companyIndex": 1,
+      "userIndex": 2,
+      "operation": "BATCH_SCORING",
+      "tokensUsed": 7800,
+      "cost": 0.0156,
+      "createdAt": "2025-11-25T11:15:00Z"
     }
   ]
 }

@@ -44,7 +44,35 @@
     "yes": "Sí",
     "no": "No",
     "print": "Imprimir",
-    "unknown": "Desconocido"
+    "unknown": "Desconocido",
+    "gotIt": "Entendido",
+    "created": "Creado"
+  },
+  "dataGrid": {
+    "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
+    "onboarding": {
+      "title": "Opciones de Columna Disponibles",
+      "description": "Haz clic en el icono de menú en cualquier encabezado de columna para filtrar datos, ordenar o mostrar/ocultar columnas.",
+      "dontShowAgain": "No mostrar esto de nuevo"
+    },
+    "help": {
+      "tooltip": "Ayuda de tabla",
+      "ariaLabel": "Abrir ayuda de tabla",
+      "title": "Funciones de la Tabla",
+      "intro": "Haz clic en el icono de menú en los encabezados de columna para acceder a estas funciones:",
+      "filter": {
+        "title": "Filtrar",
+        "description": "Filtrar filas por valores de columna"
+      },
+      "sort": {
+        "title": "Ordenar",
+        "description": "Ordenar ascendente o descendente"
+      },
+      "columns": {
+        "title": "Gestionar Columnas",
+        "description": "Mostrar u ocultar columnas"
+      }
+    }
   },
   "validation": {
     "required": "Este campo es obligatorio",
@@ -1223,6 +1251,9 @@
     "active_positions": "Posiciones Activas",
     "hiring_processes": "Procesos de Contratación",
     "hired_this_month": "Contratados Este Mes",
+    "total_applications": "Total de Aplicaciones",
+    "active_processes": "Procesos Activos",
+    "time_to_first_interview": "Tiempo a Primera Entrevista",
     "avg_time_to_hire": "Tiempo Promedio de Contratación",
     "days": "días",
     "conversion_funnel": "Embudo de Conversión",
@@ -1393,6 +1424,148 @@
       "note_added": "Nota Agregada",
       "application_received": "Aplicación Recibida",
       "email_sent": "Correo Enviado"
+    }
+  },
+  "entitySelect": {
+    "placeholder": "Seleccionar...",
+    "loading": "Cargando opciones...",
+    "no_options": "No hay opciones disponibles",
+    "search_placeholder": "Escribe para buscar..."
+  },
+  "deleted_records": {
+    "page_title": "Registros Eliminados",
+    "page_description": "Ver y administrar registros eliminados temporalmente. Puede restaurar elementos eliminados accidentalmente o purgarlos permanentemente para cumplir con GDPR.",
+    "no_records": "No se encontraron registros eliminados",
+    "tabs": {
+      "candidates": "Candidatos",
+      "job_positions": "Posiciones de Trabajo",
+      "applications": "Aplicaciones",
+      "interviews": "Entrevistas"
+    },
+    "table": {
+      "name": "Nombre",
+      "email": "Correo Electrónico",
+      "source": "Fuente",
+      "title": "Título",
+      "status": "Estado",
+      "applicant_name": "Nombre del Aplicante",
+      "scheduled_date": "Fecha Programada",
+      "deleted_at": "Eliminado el"
+    },
+    "actions": {
+      "restore": "Restaurar",
+      "purge": "Eliminar Permanentemente"
+    },
+    "confirm_restore_title": "Confirmar Restauración",
+    "confirm_restore_message": "¿Está seguro que desea restaurar este registro? Se activará nuevamente.",
+    "confirm_purge_title": "Confirmar Eliminación Permanente",
+    "confirm_purge_message": "¿Está seguro que desea eliminar permanentemente este registro? Esta acción no se puede deshacer.",
+    "confirm_purge_warning": "ADVERTENCIA: Esta acción es irreversible y cumple con los requisitos de eliminación de datos de GDPR.",
+    "restore_success": "Registro restaurado exitosamente",
+    "restore_error": "Error al restaurar el registro",
+    "purge_success": "Registro eliminado permanentemente",
+    "purge_error": "Error al eliminar el registro"
+  },
+  "admin_layout": {
+    "title": "Panel de Administración",
+    "dashboard": "Dashboard",
+    "companies": "Empresas",
+    "users": "Usuarios",
+    "deleted_records": "Registros Eliminados",
+    "settings": "Configuración",
+    "aria_label": "navegación de administrador"
+  },
+  "subscription": {
+    "title": "Gestión de Suscripción",
+    "description": "Administra tu plan de suscripción y consulta detalles de uso",
+    "current_subscription": "Suscripción Actual",
+    "plan_label": "Plan",
+    "trial_ends": "Termina Prueba",
+    "billing_period_ends": "Termina Período de Facturación",
+    "manage_billing": "Gestionar Facturación",
+    "cancel_subscription": "Cancelar Suscripción",
+    "available_plans": "Planes Disponibles",
+    "upgrade_to_plan": "Actualizar a este Plan",
+    "current_plan": "Plan Actual",
+    "per_month": "mes",
+    "recommended": "Recomendado",
+    "status": {
+      "trialing": "Prueba",
+      "active": "Activo",
+      "past_due": "Vencido",
+      "canceled": "Cancelado",
+      "unpaid": "Sin Pagar"
+    },
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "price": "$0",
+        "description": "Perfecto para probar la plataforma",
+        "features": {
+          "basic_recruiting": "Funciones básicas de reclutamiento",
+          "unlimited_candidates": "Hasta 5 posiciones de trabajo"
+        }
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "$79",
+        "description": "Para equipos de reclutamiento en crecimiento",
+        "features": {
+          "ai_parsing": "Análisis de currículums con IA",
+          "advanced_analytics": "Análisis avanzados",
+          "custom_branding": "Marca personalizada",
+          "priority_support": "Soporte prioritario"
+        }
+      },
+      "enterprise": {
+        "name": "Empresarial",
+        "price": "$299",
+        "description": "Para grandes organizaciones",
+        "features": {
+          "api_access": "Acceso a API",
+          "custom_integrations": "Integraciones personalizadas",
+          "unlimited_everything": "Todo ilimitado",
+          "dedicated_support": "Soporte dedicado"
+        }
+      }
+    },
+    "quota": {
+      "title": "Uso y Cuota",
+      "users": "Usuarios",
+      "job_positions": "Posiciones de Trabajo",
+      "storage": "Almacenamiento",
+      "features": "Funciones Disponibles",
+      "approaching_limit": "Te estás acercando a los límites de tu plan. Considera actualizar para obtener más capacidad.",
+      "upgrade_now": "Actualizar Ahora",
+      "unlimited": "Ilimitado"
+    },
+    "features": {
+      "ai_resume_parsing": "Análisis de Currículums con IA",
+      "advanced_analytics": "Análisis Avanzados",
+      "custom_branding": "Marca Personalizada",
+      "priority_support": "Soporte Prioritario",
+      "api_access": "Acceso a API",
+      "custom_integrations": "Integraciones Personalizadas",
+      "ai_scoring": "Puntuación de Candidatos con IA",
+      "email_templates": "Plantillas de Email",
+      "analytics": "Panel de Análisis"
+    },
+    "messages": {
+      "will_cancel": "Tu suscripción será cancelada al final del período de facturación",
+      "cancel_success": "La suscripción se cancelará el {{date}}"
+    },
+    "dialogs": {
+      "cancel": {
+        "title": "Cancelar Suscripción",
+        "message": "¿Estás seguro de que deseas cancelar tu suscripción? Continuarás teniendo acceso hasta el final de tu período de facturación actual.",
+        "confirm": "Sí, Cancelar Suscripción"
+      }
+    },
+    "errors": {
+      "load_failed": "Error al cargar los detalles de la suscripción. Por favor, inténtalo de nuevo.",
+      "checkout_failed": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
+      "billing_portal_failed": "Error al abrir el portal de facturación. Por favor, inténtalo de nuevo.",
+      "cancel_failed": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
     }
   }
 }

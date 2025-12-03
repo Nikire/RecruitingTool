@@ -11,6 +11,10 @@
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit",
 		"format": "prettier --write \"src/**/*.{ts,tsx}\"",
+		"test": "vitest",
+		"test:ui": "vitest --ui",
+		"test:run": "vitest run",
+		"test:coverage": "vitest run --coverage",
 		"docker:build": "docker-compose up -d --build frontend",
 		"docker:rebuild": "docker-compose up -d --build",
 		"docker:logs": "docker-compose logs frontend --tail 100",
@@ -51,6 +55,10 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.19.0",
+		"@testing-library/dom": "10.4.0",
+		"@testing-library/jest-dom": "6.6.3",
+		"@testing-library/react": "16.0.1",
+		"@testing-library/user-event": "14.5.2",
 		"@types/node": "^22.14.1",
 		"@types/react": "^19.1.2",
 		"@types/react-dom": "^19.1.2",
@@ -62,8 +70,10 @@
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"eslint-plugin-react-refresh": "^0.4.18",
 		"globals": "^15.14.0",
+		"jsdom": "25.0.1",
 		"typescript": "^5.8.3",
 		"typescript-eslint": "^8.22.0",
-		"vite": "^6.3.2"
+		"vite": "^6.3.2",
+		"vitest": "2.1.8"
 	}
 }

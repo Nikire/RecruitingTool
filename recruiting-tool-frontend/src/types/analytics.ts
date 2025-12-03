@@ -1,6 +1,112 @@
 /**
  * Analytics data types for HR recruitment metrics
+ * Aligned with backend API DTOs
  */
+
+// =====================
+// Backend DTO Types
+// =====================
+
+export interface TimeMetricsDto {
+  averageTimeToHire: number;
+  timeToFirstInterview: number;
+  averageTimePerStage: Record<string, number>;
+}
+
+export interface ConversionMetricsDto {
+  applicationToScreeningRate: number;
+  screeningToInterviewRate: number;
+  interviewToOfferRate: number;
+  offerToHiredRate: number;
+  overallConversionRate: number;
+}
+
+export interface VolumeMetricsDto {
+  totalApplicationsThisMonth: number;
+  totalHiredThisMonth: number;
+  totalActiveProcesses: number;
+  candidatesBySource: Record<string, number>;
+}
+
+export interface OverviewMetricsDto {
+  timeMetrics: TimeMetricsDto;
+  conversionMetrics: ConversionMetricsDto;
+  volumeMetrics: VolumeMetricsDto;
+  dateRange: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export interface SourceAnalyticsDto {
+  source: string;
+  count: number;
+  conversionRate: number;
+  averageTimeToHire: number;
+}
+
+export interface PipelineStageDto {
+  stage: string;
+  count: number;
+  conversionRate: number;
+  dropOffRate: number;
+}
+
+export interface PipelineFunnelDto {
+  stages: PipelineStageDto[];
+  overallConversionRate: number;
+  totalApplications: number;
+  totalHires: number;
+  dateRange: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export interface TimeToHireTrendDto {
+  period: string;
+  averageTimeToHire: number;
+  hiresCount: number;
+}
+
+export interface TimeToHireDto {
+  current: number;
+  previous: number;
+  percentageChange: number;
+  trend: TimeToHireTrendDto[];
+  median: number;
+  fastest: number;
+  slowest: number;
+  dateRange: {
+    startDate: string;
+    endDate: string;
+  };
+}
+
+export interface SourceEffectivenessDto {
+  source: string;
+  totalApplications: number;
+  hires: number;
+  successRate: number;
+  averageTimeToHire: number;
+  averageQualityScore?: number;
+  costPerHire?: number;
+}
+
+export interface StageDurationDto {
+  stageType: string;
+  averageDuration: number;
+  medianDuration: number;
+  completedCount: number;
+  currentCount: number;
+  fastest: number;
+  slowest: number;
+}
+
+// =====================
+// Legacy Types (for compatibility with existing components)
+// TODO: Migrate components to use backend DTOs directly
+// =====================
 
 export interface AnalyticsData {
   overview: OverviewMetrics;

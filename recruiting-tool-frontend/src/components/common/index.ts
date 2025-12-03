@@ -5,3 +5,7 @@ export {default as EmptyState} from './EmptyState';
 export {default as ErrorMessage} from './ErrorMessage';
 export {default as LoadingSpinner} from './LoadingSpinner';
 export {default as LanguageSelector} from './LanguageSelector';
+export {default as EntitySelect} from './EntitySelect';
+export type {EntitySelectProps} from './EntitySelect';
+export {default as UnifiedStatCard} from './UnifiedStatCard';
+export type {UnifiedStatCardProps} from './UnifiedStatCard';

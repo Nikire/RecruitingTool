@@ -71,7 +71,7 @@ const SystemSettingsPage: React.FC = () => {
   const [testingEmail, setTestingEmail] = useState(false);
 
   // Permission check - SUPER_ADMIN only
-  const isSuperAdmin = user?.role === 'SUPER_ADMIN';
+  const isSuperAdmin = user?.roles?.includes('SUPER_ADMIN');
 
   if (!user) {
     return <Navigate to="/login" />;

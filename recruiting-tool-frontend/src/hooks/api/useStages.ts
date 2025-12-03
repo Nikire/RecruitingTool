@@ -38,7 +38,11 @@ export function useCreateStage() {
 	return useMutation({
 		mutationFn: (data: Partial<Stage>) => createStage(data),
 		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: ['jobPositions']});
+			// Invalidate all jobPositions queries (including those with specific uids)
+			queryClient.invalidateQueries({
+				queryKey: ['jobPositions'],
+				refetchType: 'all',
+			});
 			queryClient.invalidateQueries({queryKey: [STAGES_KEY]});
 			showSuccessToast('Stage created successfully!');
 		},
@@ -54,7 +58,11 @@ export function useBulkCreateStages() {
 	return useMutation({
 		mutationFn: (data: Partial<Stage>[]) => bulkCreateStages(data),
 		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: ['jobPositions']});
+			// Invalidate all jobPositions queries (including those with specific uids)
+			queryClient.invalidateQueries({
+				queryKey: ['jobPositions'],
+				refetchType: 'all',
+			});
 			queryClient.invalidateQueries({queryKey: [STAGES_KEY]});
 			showSuccessToast('Stages created successfully!');
 		},

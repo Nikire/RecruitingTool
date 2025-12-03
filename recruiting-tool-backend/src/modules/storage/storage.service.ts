@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadBucketCommand, CreateBucketCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { Readable } from 'stream';
+import { createHash } from 'crypto';
 
 @Injectable()
 export class StorageService {
@@ -53,6 +54,15 @@ export class StorageService {
         this.logger.error(`Error checking bucket: ${error.message}`);
       }
     }
+  }
+
+  /**
+   * Calculate SHA-256 hash of a file buffer
+   * @param buffer - File buffer
+   * @returns SHA-256 hash as hex string
+   */
+  calculateFileHash(buffer: Buffer): string {
+    return createHash('sha256').update(buffer).digest('hex');
   }
 
   /**

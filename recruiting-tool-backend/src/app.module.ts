@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
@@ -28,10 +28,15 @@ import { SseModule } from './modules/sse/sse.module';
 import { BackupModule } from './modules/backup/backup.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { HealthModule } from './modules/health/health.module';
+import { MetricsModule } from './modules/metrics/metrics.module';
 import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './common/guards/throttler.guard';
 import { CacheModule } from './modules/cache/cache.module';
+import { LoggingMiddleware } from './common/middleware/logging.middleware';
+import { PerformanceMiddleware } from './common/middleware/performance.middleware';
+import { StripeModule } from './modules/stripe/stripe.module';
+import { QuotaModule } from './modules/quota/quota.module';
 
 @Module({
   imports: [
@@ -75,6 +80,9 @@ import { CacheModule } from './modules/cache/cache.module';
     BackupModule,
     AuditLogModule,
     HealthModule,
+    MetricsModule,
+    StripeModule,
+    QuotaModule,
   ],
   controllers: [AppController],
   providers: [
@@ -85,4 +93,10 @@ import { CacheModule } from './modules/cache/cache.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    // Apply logging and performance monitoring to all routes
+    // Order matters: logging first, then performance
+    consumer.apply(LoggingMiddleware, PerformanceMiddleware).forRoutes('*');
+  }
+}

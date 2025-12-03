@@ -1,0 +1,75 @@
+name: Close Issues on Push to Development
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  close-issues:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract and close issues from commit messages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COMMIT_SHA: ${{ github.sha }}
+          COMMIT_AUTHOR: ${{ github.actor }}
+          REPO_NAME: ${{ github.repository }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
+        run: |
+          echo "Processing commits from push event..."
+
+          # Get commit messages from this push
+          COMMIT_MESSAGES=""
+
+          # Handle initial push (no before SHA)
+          if [ "$BEFORE_SHA" = "0000000000000000000000000000000000000000" ]; then
+            COMMIT_MESSAGES=$(git log --format="%B" -n 10 "$AFTER_SHA")
+          else
+            COMMIT_MESSAGES=$(git log --format="%B" "$BEFORE_SHA".."$AFTER_SHA" 2>/dev/null || git log --format="%B" -n 10 "$AFTER_SHA")
+          fi
+
+          echo "Commit messages:"
+          echo "$COMMIT_MESSAGES"
+          echo "---"
+
+          # Extract issue numbers from commit messages
+          # Looks for: Closes #123, Fixes #456, Resolves #789, Close #123, Fix #456
+          ISSUE_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s*#[0-9]+' | grep -oE '[0-9]+' | sort -u)
+
+          if [ -z "$ISSUE_NUMBERS" ]; then
+            echo "No issues to close found in commit messages"
+            exit 0
+          fi
+
+          echo "Found issues to close: $ISSUE_NUMBERS"
+
+          # Close each issue
+          for issue in $ISSUE_NUMBERS; do
+            echo "Closing issue #$issue..."
+
+            # Check if issue exists and is open
+            ISSUE_STATE=$(gh issue view "$issue" --json state --jq '.state' 2>/dev/null || echo "NOT_FOUND")
+
+            if [ "$ISSUE_STATE" = "OPEN" ]; then
+              gh issue close "$issue" --comment "Closed via commit to development branch. Commit: $COMMIT_SHA by $COMMIT_AUTHOR" \
+                && echo "Successfully closed issue #$issue" \
+                || echo "Failed to close issue #$issue"
+            elif [ "$ISSUE_STATE" = "CLOSED" ]; then
+              echo "Issue #$issue is already closed, skipping"
+            else
+              echo "Issue #$issue not found or inaccessible"
+            fi
+          done
+
+          echo "Done processing issues"

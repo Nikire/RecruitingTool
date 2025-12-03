@@ -1,39 +1,96 @@
-import {atom, useAtomValue, useSetAtom} from 'jotai';
+/**
+ * @deprecated Import from '../../../store' instead
+ *
+ * This file is kept for backwards compatibility.
+ * All new code should import from the centralized store:
+ *
+ * @example
+ * ```tsx
+ * // Old (deprecated)
+ * import { candidatesSearchAtom } from '../../hooks/api/state/useSearchState';
+ *
+ * // New (preferred)
+ * import {
+ *   candidateFiltersAtom,
+ *   useCandidateFiltersValue,
+ *   useCandidateFiltersSetter,
+ * } from '../store';
+ * ```
+ *
+ * The new atoms have additional features:
+ * - Status filters (OPEN, CLOSED, etc.)
+ * - Sort field and direction
+ * - Derived atoms for hasActiveFilters
+ *
+ * @see filters.atoms.ts for the new implementation
+ */
 
-export interface SearchState {
-	page: number;
-	limit: number;
-	search: string;
-}
+// Re-export everything from the centralized store for backwards compatibility
+export type {BaseFilterState as SearchState} from '../../../store';
 
-const defaultSearchState: SearchState = {
-	page: 1,
-	limit: 10,
-	search: '',
-};
+export {
+	// Legacy atom exports (deprecated, use new filter atoms)
+	candidatesSearchAtom,
+	companiesSearchAtom,
+	hiringProcessesSearchAtom,
+	jobPositionsSearchAtom,
+	usersSearchAtom,
+	// New recommended atoms
+	candidateFiltersAtom,
+	companyFiltersAtom,
+	hiringProcessFiltersAtom,
+	jobPositionFiltersAtom,
+	userFiltersAtom,
+} from '../../../store';
 
-// In-memory search states for each page (resets on page refresh)
-export const candidatesSearchAtom = atom<SearchState>(defaultSearchState);
-export const companiesSearchAtom = atom<SearchState>(defaultSearchState);
-export const hiringProcessesSearchAtom = atom<SearchState>(defaultSearchState);
-export const jobPositionsSearchAtom = atom<SearchState>(defaultSearchState);
-export const usersSearchAtom = atom<SearchState>(defaultSearchState);
+import {useAtomValue, useSetAtom} from 'jotai';
+import {
+	candidateFiltersAtom,
+	companyFiltersAtom,
+	hiringProcessFiltersAtom,
+	jobPositionFiltersAtom,
+	userFiltersAtom,
+} from '../../../store';
 
-// Read-only hooks (subscribe to changes) - use these for data that needs to trigger re-renders
-export const useCandidatesSearchValue = () => useAtomValue(candidatesSearchAtom);
-export const useCompaniesSearchValue = () => useAtomValue(companiesSearchAtom);
-export const useHiringProcessesSearchValue = () => useAtomValue(hiringProcessesSearchAtom);
-export const useJobPositionsSearchValue = () => useAtomValue(jobPositionsSearchAtom);
+// ============================================================================
+// Legacy Hooks (for backward compatibility)
+// These wrap the new filter atoms but maintain the old API
+// ============================================================================
 
-// Write-only hooks (don't subscribe) - use these for callbacks that update state
-export const useCandidatesSearchSetter = () => useSetAtom(candidatesSearchAtom);
-export const useCompaniesSearchSetter = () => useSetAtom(companiesSearchAtom);
-export const useHiringProcessesSearchSetter = () => useSetAtom(hiringProcessesSearchAtom);
-export const useJobPositionsSearchSetter = () => useSetAtom(jobPositionsSearchAtom);
+/** @deprecated Use useCandidateFiltersValue from '../../../store' instead */
+export const useCandidatesSearchValue = () => useAtomValue(candidateFiltersAtom);
+/** @deprecated Use useCompanyFiltersValue from '../../../store' instead */
+export const useCompaniesSearchValue = () => useAtomValue(companyFiltersAtom);
+/** @deprecated Use useHiringProcessFiltersValue from '../../../store' instead */
+export const useHiringProcessesSearchValue = () => useAtomValue(hiringProcessFiltersAtom);
+/** @deprecated Use useJobPositionFiltersValue from '../../../store' instead */
+export const useJobPositionsSearchValue = () => useAtomValue(jobPositionFiltersAtom);
+/** @deprecated Use useUserFiltersValue from '../../../store' instead */
+export const useUsersSearchValue = () => useAtomValue(userFiltersAtom);
 
-// Legacy hooks (for backward compatibility if needed, but prefer split hooks)
-export const useCandidatesSearch = () => [useAtomValue(candidatesSearchAtom), useSetAtom(candidatesSearchAtom)] as const;
-export const useCompaniesSearch = () => [useAtomValue(companiesSearchAtom), useSetAtom(companiesSearchAtom)] as const;
-export const useHiringProcessesSearch = () => [useAtomValue(hiringProcessesSearchAtom), useSetAtom(hiringProcessesSearchAtom)] as const;
-export const useJobPositionsSearch = () => [useAtomValue(jobPositionsSearchAtom), useSetAtom(jobPositionsSearchAtom)] as const;
-export const useUsersSearch = () => [useAtomValue(usersSearchAtom), useSetAtom(usersSearchAtom)] as const;
+/** @deprecated Use useCandidateFiltersSetter from '../../../store' instead */
+export const useCandidatesSearchSetter = () => useSetAtom(candidateFiltersAtom);
+/** @deprecated Use useCompanyFiltersSetter from '../../../store' instead */
+export const useCompaniesSearchSetter = () => useSetAtom(companyFiltersAtom);
+/** @deprecated Use useHiringProcessFiltersSetter from '../../../store' instead */
+export const useHiringProcessesSearchSetter = () => useSetAtom(hiringProcessFiltersAtom);
+/** @deprecated Use useJobPositionFiltersSetter from '../../../store' instead */
+export const useJobPositionsSearchSetter = () => useSetAtom(jobPositionFiltersAtom);
+/** @deprecated Use useUserFiltersSetter from '../../../store' instead */
+export const useUsersSearchSetter = () => useSetAtom(userFiltersAtom);
+
+/** @deprecated Use separate hooks from '../../../store' instead */
+export const useCandidatesSearch = () =>
+	[useAtomValue(candidateFiltersAtom), useSetAtom(candidateFiltersAtom)] as const;
+/** @deprecated Use separate hooks from '../../../store' instead */
+export const useCompaniesSearch = () =>
+	[useAtomValue(companyFiltersAtom), useSetAtom(companyFiltersAtom)] as const;
+/** @deprecated Use separate hooks from '../../../store' instead */
+export const useHiringProcessesSearch = () =>
+	[useAtomValue(hiringProcessFiltersAtom), useSetAtom(hiringProcessFiltersAtom)] as const;
+/** @deprecated Use separate hooks from '../../../store' instead */
+export const useJobPositionsSearch = () =>
+	[useAtomValue(jobPositionFiltersAtom), useSetAtom(jobPositionFiltersAtom)] as const;
+/** @deprecated Use separate hooks from '../../../store' instead */
+export const useUsersSearch = () =>
+	[useAtomValue(userFiltersAtom), useSetAtom(userFiltersAtom)] as const;

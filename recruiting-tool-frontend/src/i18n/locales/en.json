@@ -44,7 +44,35 @@
     "yes": "Yes",
     "no": "No",
     "print": "Print",
-    "unknown": "Unknown"
+    "unknown": "Unknown",
+    "gotIt": "Got it",
+    "created": "Created"
+  },
+  "dataGrid": {
+    "ariaLabel": "Data table with sortable and filterable columns",
+    "onboarding": {
+      "title": "Column Options Available",
+      "description": "Click the menu icon on any column header to filter data, sort, or show/hide columns.",
+      "dontShowAgain": "Don't show this again"
+    },
+    "help": {
+      "tooltip": "Table help",
+      "ariaLabel": "Open table help",
+      "title": "Table Features",
+      "intro": "Click the menu icon on column headers to access these features:",
+      "filter": {
+        "title": "Filter",
+        "description": "Filter rows by column values"
+      },
+      "sort": {
+        "title": "Sort",
+        "description": "Sort ascending or descending"
+      },
+      "columns": {
+        "title": "Manage Columns",
+        "description": "Show or hide columns"
+      }
+    }
   },
   "validation": {
     "required": "This field is required",
@@ -1217,6 +1245,9 @@
     "active_positions": "Active Positions",
     "hiring_processes": "Hiring Processes",
     "hired_this_month": "Hired This Month",
+    "total_applications": "Total Applications",
+    "active_processes": "Active Processes",
+    "time_to_first_interview": "Time to First Interview",
     "avg_time_to_hire": "Avg. Time to Hire",
     "days": "days",
     "conversion_funnel": "Conversion Funnel",
@@ -1387,6 +1418,148 @@
       "note_added": "Note Added",
       "application_received": "Application Received",
       "email_sent": "Email Sent"
+    }
+  },
+  "entitySelect": {
+    "placeholder": "Select...",
+    "loading": "Loading options...",
+    "no_options": "No options available",
+    "search_placeholder": "Type to search..."
+  },
+  "deleted_records": {
+    "page_title": "Deleted Records",
+    "page_description": "View and manage soft-deleted records. You can restore accidentally deleted items or permanently purge them for GDPR compliance.",
+    "no_records": "No deleted records found",
+    "tabs": {
+      "candidates": "Candidates",
+      "job_positions": "Job Positions",
+      "applications": "Applications",
+      "interviews": "Interviews"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "source": "Source",
+      "title": "Title",
+      "status": "Status",
+      "applicant_name": "Applicant Name",
+      "scheduled_date": "Scheduled Date",
+      "deleted_at": "Deleted At"
+    },
+    "actions": {
+      "restore": "Restore",
+      "purge": "Permanently Delete"
+    },
+    "confirm_restore_title": "Confirm Restore",
+    "confirm_restore_message": "Are you sure you want to restore this record? It will become active again.",
+    "confirm_purge_title": "Confirm Permanent Deletion",
+    "confirm_purge_message": "Are you sure you want to permanently delete this record? This action cannot be undone.",
+    "confirm_purge_warning": "WARNING: This action is irreversible and complies with GDPR data deletion requirements.",
+    "restore_success": "Record restored successfully",
+    "restore_error": "Failed to restore record",
+    "purge_success": "Record permanently deleted",
+    "purge_error": "Failed to delete record"
+  },
+  "admin_layout": {
+    "title": "Admin Panel",
+    "dashboard": "Dashboard",
+    "companies": "Companies",
+    "users": "Users",
+    "deleted_records": "Deleted Records",
+    "settings": "Settings",
+    "aria_label": "admin navigation"
+  },
+  "subscription": {
+    "title": "Subscription Management",
+    "description": "Manage your subscription plan and view usage details",
+    "current_subscription": "Current Subscription",
+    "plan_label": "Plan",
+    "trial_ends": "Trial Ends",
+    "billing_period_ends": "Billing Period Ends",
+    "manage_billing": "Manage Billing",
+    "cancel_subscription": "Cancel Subscription",
+    "available_plans": "Available Plans",
+    "upgrade_to_plan": "Upgrade to this Plan",
+    "current_plan": "Current Plan",
+    "per_month": "month",
+    "recommended": "Recommended",
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Past Due",
+      "canceled": "Canceled",
+      "unpaid": "Unpaid"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "description": "Perfect for trying out the platform",
+        "features": {
+          "basic_recruiting": "Basic recruiting features",
+          "unlimited_candidates": "Up to 5 job positions"
+        }
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$79",
+        "description": "For growing recruitment teams",
+        "features": {
+          "ai_parsing": "AI-powered resume parsing",
+          "advanced_analytics": "Advanced analytics",
+          "custom_branding": "Custom branding",
+          "priority_support": "Priority support"
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "$299",
+        "description": "For large organizations",
+        "features": {
+          "api_access": "API access",
+          "custom_integrations": "Custom integrations",
+          "unlimited_everything": "Unlimited everything",
+          "dedicated_support": "Dedicated support"
+        }
+      }
+    },
+    "quota": {
+      "title": "Usage & Quota",
+      "users": "Users",
+      "job_positions": "Job Positions",
+      "storage": "Storage",
+      "features": "Available Features",
+      "approaching_limit": "You're approaching your plan limits. Consider upgrading for more capacity.",
+      "upgrade_now": "Upgrade Now",
+      "unlimited": "Unlimited"
+    },
+    "features": {
+      "ai_resume_parsing": "AI Resume Parsing",
+      "advanced_analytics": "Advanced Analytics",
+      "custom_branding": "Custom Branding",
+      "priority_support": "Priority Support",
+      "api_access": "API Access",
+      "custom_integrations": "Custom Integrations",
+      "ai_scoring": "AI Candidate Scoring",
+      "email_templates": "Email Templates",
+      "analytics": "Analytics Dashboard"
+    },
+    "messages": {
+      "will_cancel": "Your subscription will be canceled at the end of the billing period",
+      "cancel_success": "Subscription will be canceled on {{date}}"
+    },
+    "dialogs": {
+      "cancel": {
+        "title": "Cancel Subscription",
+        "message": "Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.",
+        "confirm": "Yes, Cancel Subscription"
+      }
+    },
+    "errors": {
+      "load_failed": "Failed to load subscription details. Please try again.",
+      "checkout_failed": "Failed to create checkout session. Please try again.",
+      "billing_portal_failed": "Failed to open billing portal. Please try again.",
+      "cancel_failed": "Failed to cancel subscription. Please try again."
     }
   }
 }

@@ -7,6 +7,7 @@ export class FileUploadResponseDto {
   mimetype: string;
   size: number;
   s3Key: string;
+  hash?: string; // SHA-256 hash for deduplication
   uploadedByPublic: boolean;
   uploadedByUid?: string;
   candidateUid?: string;

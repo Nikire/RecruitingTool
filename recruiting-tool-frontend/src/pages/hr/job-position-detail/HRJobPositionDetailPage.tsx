@@ -494,11 +494,15 @@ const HRJobPositionDetailPage: React.FC = () => {
 				jobPosition={updateDialog.selectedItem}
 			/>
 
-			<ManageStagesDialog
-				open={manageStagesDialog.isOpen}
-				onClose={manageStagesDialog.close}
-				jobPosition={manageStagesDialog.selectedItem}
-			/>
+			{manageStagesDialog.selectedItem && (
+				<ManageStagesDialog
+					open={manageStagesDialog.isOpen}
+					onClose={manageStagesDialog.close}
+					jobPositionUid={manageStagesDialog.selectedItem.uid}
+					jobPositionTitle={manageStagesDialog.selectedItem.title}
+					existingStages={manageStagesDialog.selectedItem.stages}
+				/>
+			)}
 
 			<ConfirmDeleteDialog
 				open={deleteConfirm.isOpen}

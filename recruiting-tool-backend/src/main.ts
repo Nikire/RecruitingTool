@@ -9,7 +9,9 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 const { PORT, FRONTEND_URL } = process.env;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    rawBody: true, // Enable raw body for webhook signature verification
+  });
 
   // Set global API prefix
   app.setGlobalPrefix('api');

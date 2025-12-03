@@ -12,14 +12,24 @@ import ConversionFunnel from './ConversionFunnel';
 import HiringTrendsChart from './HiringTrendsChart';
 import SourceDistributionChart from './SourceDistributionChart';
 import {
-	AnalyticsData,
+	OverviewMetricsDto,
+	PipelineFunnelDto,
+	TimeToHireDto,
 	MetricCardData,
 	MetricTrend,
+	StageConversionRate,
 } from '../../types/analytics';
+import {
+	useAnalyticsPipeline,
+	useAnalyticsTimeToHire,
+	useAnalyticsSources,
+	DateRange,
+} from '../../hooks/api/useAnalytics';
 
 interface AnalyticsDashboardProps {
-	data: AnalyticsData | null;
+	data: OverviewMetricsDto | null | undefined;
 	isLoading?: boolean;
+	dateRange?: DateRange;
 }
 
 /**
@@ -27,64 +37,117 @@ interface AnalyticsDashboardProps {
  *
  * Main analytics dashboard layout displaying all analytics components.
  * Shows overview metrics, charts, and insights.
+ * Now uses real backend data via React Query hooks.
  */
 const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 	data,
 	isLoading = false,
+	dateRange,
 }) => {
 	const {t} = useTranslation();
 
-	// Convert trend value to trend direction
-	const getTrend = (trendValue?: number): MetricTrend => {
-		if (!trendValue) return 'neutral';
-		if (trendValue > 0) return 'up';
-		if (trendValue < 0) return 'down';
-		return 'neutral';
+	// Fetch additional analytics data
+	const { data: pipelineData } = useAnalyticsPipeline(dateRange);
+	const { data: timeToHireData } = useAnalyticsTimeToHire(dateRange);
+	const { data: sourcesData } = useAnalyticsSources(dateRange);
+
+	// Convert backend conversion metrics to legacy format for ConversionFunnel component
+	const convertToLegacyConversionRates = (
+		data: OverviewMetricsDto | null | undefined
+	): StageConversionRate[] => {
+		if (!data) return [];
+
+		const { conversionMetrics } = data;
+
+		return [
+			{
+				fromStage: 'Application',
+				toStage: 'Screening',
+				rate: conversionMetrics.applicationToScreeningRate,
+				count: 0, // Not available in new API
+			},
+			{
+				fromStage: 'Screening',
+				toStage: 'Interview',
+				rate: conversionMetrics.screeningToInterviewRate,
+				count: 0,
+			},
+			{
+				fromStage: 'Interview',
+				toStage: 'Offer',
+				rate: conversionMetrics.interviewToOfferRate,
+				count: 0,
+			},
+			{
+				fromStage: 'Offer',
+				toStage: 'Hired',
+				rate: conversionMetrics.offerToHiredRate,
+				count: 0,
+			},
+		];
 	};
 
-	// Prepare metric cards data
+	// Convert sources data to legacy format for SourceDistributionChart
+	const convertToLegacySourceDistribution = (
+		sources: typeof sourcesData
+	) => {
+		if (!sources || sources.length === 0) return [];
+
+		const totalCount = sources.reduce((sum, s) => sum + s.count, 0);
+		return sources.map((s) => ({
+			source: s.source,
+			count: s.count,
+			percentage: totalCount > 0 ? Math.round((s.count / totalCount) * 100) : 0,
+		}));
+	};
+
+	// Convert time-to-hire trend to legacy format for HiringTrendsChart
+	const convertToLegacyHiringTrends = (
+		timeToHire: TimeToHireDto | null | undefined
+	) => {
+		if (!timeToHire || !timeToHire.trend) return [];
+
+		return timeToHire.trend.map((t) => ({
+			month: t.period,
+			count: t.hiresCount,
+			target: undefined,
+		}));
+	};
+
+	// Prepare metric cards data from backend OverviewMetricsDto
 	const metricCards: MetricCardData[] = data
 		? [
 				{
-					title: t('analytics.total_candidates'),
-					value: data.overview.totalCandidates,
-					trend: getTrend(data.overview.candidatesTrend),
-					trendValue: data.overview.candidatesTrend,
+					title: t('analytics.total_applications'),
+					value: data.volumeMetrics.totalApplicationsThisMonth,
 					icon: <PeopleIcon fontSize="large" />,
 					color: 'primary.main',
 				},
 				{
-					title: t('analytics.active_positions'),
-					value: data.overview.activeJobPositions,
-					trend: getTrend(data.overview.positionsTrend),
-					trendValue: data.overview.positionsTrend,
+					title: t('analytics.active_processes'),
+					value: data.volumeMetrics.totalActiveProcesses,
 					icon: <WorkIcon fontSize="large" />,
 					color: 'info.main',
 				},
 				{
-					title: t('analytics.hiring_processes'),
-					value: data.overview.totalHiringProcesses,
-					trend: getTrend(data.overview.processesTrend),
-					trendValue: data.overview.processesTrend,
-					icon: <AssignmentIcon fontSize="large" />,
-					color: 'warning.main',
-				},
-				{
 					title: t('analytics.hired_this_month'),
-					value: data.overview.hiredThisMonth,
-					trend: getTrend(data.overview.hiredTrend),
-					trendValue: data.overview.hiredTrend,
+					value: data.volumeMetrics.totalHiredThisMonth,
 					icon: <CheckCircleIcon fontSize="large" />,
 					color: 'success.main',
 				},
 				{
 					title: t('analytics.avg_time_to_hire'),
-					value: data.overview.avgTimeToHire,
+					value: Math.round(data.timeMetrics.averageTimeToHire),
 					unit: t('analytics.days'),
-					trend: getTrend(data.overview.timeToHireTrend),
-					trendValue: data.overview.timeToHireTrend,
 					icon: <TimerIcon fontSize="large" />,
 					color: 'secondary.main',
+				},
+				{
+					title: t('analytics.time_to_first_interview'),
+					value: Math.round(data.timeMetrics.timeToFirstInterview),
+					unit: t('analytics.days'),
+					icon: <AssignmentIcon fontSize="large" />,
+					color: 'warning.main',
 				},
 		  ]
 		: [];
@@ -143,47 +206,40 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 				<Grid container spacing={3}>
 					{/* Conversion Funnel */}
 					<Grid item xs={12} lg={6}>
-						<ConversionFunnel data={data.hiring.conversionRates} />
+						<ConversionFunnel data={convertToLegacyConversionRates(data)} />
 					</Grid>
 
 					{/* Time to Hire Chart */}
 					{/* TODO: TimeToHireChart component needs to be created */}
 					{/* <Grid item xs={12} lg={6}>
-            <TimeToHireChart data={data.hiring.timeToHireByPosition} />
+            <TimeToHireChart data={timeToHireData} />
           </Grid> */}
 
 					{/* Hiring Trends */}
-					<Grid item xs={12}>
-						<HiringTrendsChart data={data.hiring.hiresOverTime} />
-					</Grid>
+					{timeToHireData && (
+						<Grid item xs={12}>
+							<HiringTrendsChart data={convertToLegacyHiringTrends(timeToHireData)} />
+						</Grid>
+					)}
 				</Grid>
 			</Box>
 
 			{/* Candidate Metrics */}
-			<Box mb={4}>
-				<Typography variant="h5" gutterBottom fontWeight={600} mb={3}>
-					{t('analytics.candidate_metrics')}
-				</Typography>
-				<Grid spacing={3}>
-					{/* Source Distribution */}
-					<Grid item xs={12} md={6}>
-						<SourceDistributionChart
-							data={data.candidates.sourceDistribution}
-						/>
+			{sourcesData && sourcesData.length > 0 && (
+				<Box mb={4}>
+					<Typography variant="h5" gutterBottom fontWeight={600} mb={3}>
+						{t('analytics.candidate_metrics')}
+					</Typography>
+					<Grid container spacing={3}>
+						{/* Source Distribution */}
+						<Grid item xs={12} md={6}>
+							<SourceDistributionChart
+								data={convertToLegacySourceDistribution(sourcesData)}
+							/>
+						</Grid>
 					</Grid>
-
-					{/* Status Distribution */}
-					<Grid item xs={12} md={6}>
-						<SourceDistributionChart
-							data={data.candidates.statusDistribution.map((item) => ({
-								source: item.status,
-								count: item.count,
-								percentage: item.percentage,
-							}))}
-						/>
-					</Grid>
-				</Grid>
-			</Box>
+				</Box>
+			)}
 		</Box>
 	);
 };

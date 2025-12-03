@@ -35,6 +35,8 @@ export function JobPositionMapper(jobPosition: JobPosition | JobPositionWithRela
       : [],
     companyUid: (jobPosition as any).company?.uid,
     companyName: (jobPosition as any).company?.name,
+    createdAt: jobPosition.createdAt,
+    createdBy: (jobPosition as any).createdBy ? PublicUserMapper((jobPosition as any).createdBy) : undefined,
     stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map((stage) => StageMapper(stage)) : [],
     hiringProcesses: Array.isArray((jobPosition as any).hiringProcesses) ? (jobPosition as any).hiringProcesses.map((hp) => PublicHiringProcessOneMapper(hp)) : [],
   };
@@ -53,6 +55,7 @@ export function JobPositionOneMapper(jobPosition: JobPositionWithRelations) {
       : [],
     companyUid: (jobPosition as any).company?.uid,
     companyName: (jobPosition as any).company?.name,
+    createdAt: jobPosition.createdAt,
     stages: Array.isArray((jobPosition as any).stages) ? (jobPosition as any).stages.map((stage) => StageMapper(stage)) : [],
     hiringProcesses: Array.isArray((jobPosition as any).hiringProcesses) ? (jobPosition as any).hiringProcesses.map((hp) => PublicHiringProcessOneMapper(hp)) : [],
     createdBy: PublicUserMapper(jobPosition.createdBy),

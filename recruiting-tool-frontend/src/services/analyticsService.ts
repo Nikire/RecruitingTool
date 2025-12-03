@@ -1,217 +1,148 @@
-import { AnalyticsData } from '../types/analytics';
+import api from '../api/axios';
+import {
+  OverviewMetricsDto,
+  TimeMetricsDto,
+  ConversionMetricsDto,
+  VolumeMetricsDto,
+  SourceAnalyticsDto,
+  PipelineFunnelDto,
+  TimeToHireDto,
+  SourceEffectivenessDto,
+  StageDurationDto,
+} from '../types/analytics';
 
 /**
- * Mock Analytics Service
+ * Analytics Service
  *
- * Generates realistic mock data for analytics dashboard.
- * In production, this would call actual API endpoints.
+ * Direct API calls to backend analytics endpoints.
+ * Use React Query hooks (useAnalytics.ts) for data fetching instead of calling these directly.
  */
 
-const MOCK_JOB_POSITIONS = [
-  'Senior Software Engineer',
-  'Product Manager',
-  'UX Designer',
-  'Data Analyst',
-  'DevOps Engineer',
-  'Marketing Manager',
-];
-
-const MOCK_SOURCES = [
-  'LinkedIn',
-  'Indeed',
-  'Referral',
-  'Company Website',
-  'Job Board',
-  'Recruiter',
-];
-
-const MOCK_STAGES = [
-  'Application',
-  'Screening',
-  'Interview',
-  'Technical Test',
-  'Offer',
-  'Hired',
-];
-
-const MOCK_SKILLS = [
-  'React',
-  'TypeScript',
-  'Node.js',
-  'Python',
-  'AWS',
-  'Docker',
-  'SQL',
-  'Agile',
-  'Leadership',
-  'Communication',
-];
+export interface DateRangeParams {
+  startDate?: string; // ISO 8601 date string
+  endDate?: string;   // ISO 8601 date string
+  companyUid?: string; // For SUPER_ADMIN filtering
+}
 
 /**
- * Generate random number within range
+ * Helper to build query params
  */
-const randomInt = (min: number, max: number): number => {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
+const buildQueryParams = (params?: DateRangeParams): string => {
+  if (!params) return '';
+
+  const urlParams = new URLSearchParams();
+  if (params.startDate) urlParams.append('startDate', params.startDate);
+  if (params.endDate) urlParams.append('endDate', params.endDate);
+  if (params.companyUid) urlParams.append('companyUid', params.companyUid);
+
+  const queryString = urlParams.toString();
+  return queryString ? `?${queryString}` : '';
 };
 
 /**
- * Generate random percentage trend
+ * Fetch overview metrics
  */
-const randomTrend = (): number => {
-  return Math.random() > 0.5 ? randomInt(5, 20) : -randomInt(5, 15);
+export const getAnalyticsOverview = async (
+  params?: DateRangeParams
+): Promise<OverviewMetricsDto> => {
+  const { data } = await api.get<OverviewMetricsDto>(
+    `/analytics/overview${buildQueryParams(params)}`
+  );
+  return data;
 };
 
 /**
- * Get last N months formatted
+ * Fetch time metrics
  */
-const getLastMonths = (n: number): string[] => {
-  const months = [];
-  const now = new Date();
-
-  for (let i = n - 1; i >= 0; i--) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    months.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
-  }
-
-  return months;
+export const getAnalyticsTimeMetrics = async (
+  params?: DateRangeParams
+): Promise<TimeMetricsDto> => {
+  const { data } = await api.get<TimeMetricsDto>(
+    `/analytics/time-metrics${buildQueryParams(params)}`
+  );
+  return data;
 };
 
 /**
- * Get last N weeks formatted
+ * Fetch conversion metrics
  */
-const getLastWeeks = (n: number): string[] => {
-  const weeks = [];
-  const now = new Date();
-
-  for (let i = n - 1; i >= 0; i--) {
-    const date = new Date(now);
-    date.setDate(date.getDate() - (i * 7));
-    weeks.push(`Week ${date.getDate()}/${date.getMonth() + 1}`);
-  }
-
-  return weeks;
+export const getAnalyticsConversion = async (
+  params?: DateRangeParams
+): Promise<ConversionMetricsDto> => {
+  const { data } = await api.get<ConversionMetricsDto>(
+    `/analytics/conversion${buildQueryParams(params)}`
+  );
+  return data;
 };
 
 /**
- * Fetch analytics data (mock implementation)
+ * Fetch volume metrics
  */
-export const getAnalyticsData = async (
-  dateRange?: { startDate: Date | null; endDate: Date | null }
-): Promise<AnalyticsData> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 500));
+export const getAnalyticsVolume = async (
+  params?: DateRangeParams
+): Promise<VolumeMetricsDto> => {
+  const { data } = await api.get<VolumeMetricsDto>(
+    `/analytics/volume${buildQueryParams(params)}`
+  );
+  return data;
+};
 
-  // Generate overview metrics
-  const totalCandidates = randomInt(100, 500);
-  const totalHiringProcesses = randomInt(30, 150);
-  const activeJobPositions = randomInt(5, 25);
-  const hiredThisMonth = randomInt(3, 15);
-  const avgTimeToHire = randomInt(14, 45);
+/**
+ * Fetch source analytics
+ */
+export const getAnalyticsSources = async (
+  params?: DateRangeParams
+): Promise<SourceAnalyticsDto[]> => {
+  const { data } = await api.get<SourceAnalyticsDto[]>(
+    `/analytics/sources${buildQueryParams(params)}`
+  );
+  return data;
+};
 
-  // Generate stage conversion rates (funnel data)
-  const conversionRates = [];
-  let previousCount = 100;
+/**
+ * Fetch pipeline funnel
+ */
+export const getAnalyticsPipeline = async (
+  params?: DateRangeParams
+): Promise<PipelineFunnelDto> => {
+  const { data } = await api.get<PipelineFunnelDto>(
+    `/analytics/pipeline${buildQueryParams(params)}`
+  );
+  return data;
+};
 
-  for (let i = 0; i < MOCK_STAGES.length - 1; i++) {
-    const rate = randomInt(60, 90) - (i * 5); // Decreasing conversion as we go through stages
-    const count = Math.floor((previousCount * rate) / 100);
+/**
+ * Fetch time-to-hire analytics
+ */
+export const getAnalyticsTimeToHire = async (
+  params?: DateRangeParams
+): Promise<TimeToHireDto> => {
+  const { data } = await api.get<TimeToHireDto>(
+    `/analytics/time-to-hire${buildQueryParams(params)}`
+  );
+  return data;
+};
 
-    conversionRates.push({
-      fromStage: MOCK_STAGES[i],
-      toStage: MOCK_STAGES[i + 1],
-      rate,
-      count,
-    });
+/**
+ * Fetch source effectiveness
+ */
+export const getAnalyticsSourceEffectiveness = async (
+  params?: DateRangeParams
+): Promise<SourceEffectivenessDto[]> => {
+  const { data } = await api.get<SourceEffectivenessDto[]>(
+    `/analytics/source-effectiveness${buildQueryParams(params)}`
+  );
+  return data;
+};
 
-    previousCount = count;
-  }
-
-  // Generate time to hire by position
-  const timeToHireByPosition = MOCK_JOB_POSITIONS.map((position) => ({
-    position,
-    days: randomInt(20, 60),
-    count: randomInt(2, 8),
-  }));
-
-  // Generate hiring trends over last 6 months
-  const months = getLastMonths(6);
-  const hiresOverTime = months.map((month, index) => ({
-    month,
-    count: randomInt(3, 12) + index, // Slight upward trend
-    target: 10, // Target of 10 hires per month
-  }));
-
-  // Generate source distribution
-  const totalSources = randomInt(80, 200);
-  const sourceDistribution = MOCK_SOURCES.map((source) => {
-    const count = randomInt(10, 50);
-    return {
-      source,
-      count,
-      percentage: Math.round((count / totalSources) * 100),
-    };
-  });
-
-  // Generate status distribution
-  const statusDistribution = [
-    { status: 'Active', count: randomInt(30, 80), percentage: 0 },
-    { status: 'In Progress', count: randomInt(20, 60), percentage: 0 },
-    { status: 'Hired', count: randomInt(10, 30), percentage: 0 },
-    { status: 'Rejected', count: randomInt(15, 40), percentage: 0 },
-    { status: 'Withdrawn', count: randomInt(5, 20), percentage: 0 },
-  ];
-
-  const totalStatus = statusDistribution.reduce((sum, item) => sum + item.count, 0);
-  statusDistribution.forEach((item) => {
-    item.percentage = Math.round((item.count / totalStatus) * 100);
-  });
-
-  // Generate top skills
-  const topSkills = MOCK_SKILLS.slice(0, 8).map((skill) => ({
-    skill,
-    count: randomInt(10, 50),
-  })).sort((a, b) => b.count - a.count);
-
-  // Generate average score by position
-  const avgScoreByPosition = MOCK_JOB_POSITIONS.map((position) => ({
-    position,
-    score: randomInt(65, 95),
-    candidateCount: randomInt(5, 20),
-  }));
-
-  // Generate interviews per week for last 8 weeks
-  const weeks = getLastWeeks(8);
-  const interviewsPerWeek = weeks.map((week) => ({
-    week,
-    count: randomInt(5, 25),
-  }));
-
-  return {
-    overview: {
-      totalCandidates,
-      totalHiringProcesses,
-      activeJobPositions,
-      hiredThisMonth,
-      avgTimeToHire,
-      candidatesTrend: randomTrend(),
-      processesTrend: randomTrend(),
-      positionsTrend: randomTrend(),
-      hiredTrend: randomTrend(),
-      timeToHireTrend: randomTrend(),
-    },
-    hiring: {
-      conversionRates,
-      timeToHireByPosition,
-      hiresOverTime,
-    },
-    candidates: {
-      sourceDistribution,
-      statusDistribution,
-      topSkills,
-    },
-    performance: {
-      avgScoreByPosition,
-      interviewsPerWeek,
-    },
-  };
+/**
+ * Fetch stage duration analysis
+ */
+export const getAnalyticsStageDuration = async (
+  params?: DateRangeParams
+): Promise<StageDurationDto[]> => {
+  const { data } = await api.get<StageDurationDto[]>(
+    `/analytics/stage-duration${buildQueryParams(params)}`
+  );
+  return data;
 };

@@ -3,9 +3,10 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { StorageModule } from '../storage/storage.module';
 import { UserActivityService } from './services/user-activity.service';
+import { QuotaModule } from '../quota/quota.module';
 
 @Module({
-  imports: [StorageModule],
+  imports: [StorageModule, QuotaModule],
   controllers: [UsersController],
   providers: [UsersService, UserActivityService],
   exports: [UsersService, UserActivityService],

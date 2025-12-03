@@ -1,28 +1,13 @@
 import {useState} from 'react';
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableContainer,
-	TableHead,
-	TableRow,
-	Paper,
-	Chip,
-	IconButton,
-	Typography,
-	Box,
-	Tooltip,
-} from '@mui/material';
-import {Visibility as VisibilityIcon} from '@mui/icons-material';
-import {format} from 'date-fns';
+import {Typography, Box, Paper} from '@mui/material';
+import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import {useTranslation} from 'react-i18next';
 import {useApplications} from '../../hooks/api/useApplications';
 import {Application, ApplicationStatus} from '../../types/application.types';
 import ApplicationDetailDialog from '../dialogs/ApplicationDetailDialog';
-import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
-import {getApplicationStatusColor} from '../../utils/statusColors';
+import {EnhancedDataGrid, DateCell, StatusCell, ActionsCell, CellColumn, CellRow} from '../tables';
 
 interface ApplicationsTableProps {
 	statusFilter?: ApplicationStatus;
@@ -46,15 +31,84 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 		setSelectedApplication(null);
 	};
 
-	if (isLoading) {
-		return <LoadingSpinner />;
-	}
+	// Custom color mapping for application statuses
+	const applicationStatusColors: Record<string, 'success' | 'warning' | 'error' | 'primary' | 'default'> = {
+		PENDING: 'warning',
+		REVIEWED: 'primary',
+		ACCEPTED: 'success',
+		REJECTED: 'error',
+	};
+
+	const columns: GridColDef[] = [
+		{
+			field: 'applicantName',
+			headerName: t('applications.applicant_name'),
+			flex: 1,
+			minWidth: 150,
+		},
+		{
+			field: 'applicantEmail',
+			headerName: t('applications.email'),
+			flex: 1,
+			minWidth: 180,
+		},
+		{
+			field: 'applicantPhone',
+			headerName: t('applications.phone'),
+			width: 130,
+			renderCell: (params) => params.value || '-',
+		},
+		{
+			field: 'jobPositionTitle',
+			headerName: t('applications.job_position'),
+			flex: 1,
+			minWidth: 180,
+			renderCell: (params: GridRenderCellParams<Application>) => (
+				<CellColumn gap={0.25}>
+					<Typography variant="body2">{params.value}</Typography>
+					{params.row.companyName && (
+						<Typography variant="caption" color="text.secondary">
+							{params.row.companyName}
+						</Typography>
+					)}
+				</CellColumn>
+			),
+		},
+		{
+			field: 'status',
+			headerName: t('applications.status'),
+			width: 130,
+			renderCell: (params) => (
+				<CellRow centered>
+					<StatusCell status={params.value} colorMap={applicationStatusColors} />
+				</CellRow>
+			),
+		},
+		{
+			field: 'appliedAt',
+			headerName: t('applications.applied_date'),
+			width: 170,
+			renderCell: (params) => <DateCell value={params.value} showTime />,
+		},
+		{
+			field: 'actions',
+			headerName: t('common.actions'),
+			width: 100,
+			sortable: false,
+			filterable: false,
+			align: 'center',
+			headerAlign: 'center',
+			renderCell: (params: GridRenderCellParams<Application>) => (
+				<ActionsCell onView={() => handleViewClick(params.row)} />
+			),
+		},
+	];
 
 	if (isError) {
 		return <ErrorMessage message="applications.error_loading" />;
 	}
 
-	if (!applications || applications.length === 0) {
+	if (!isLoading && (!applications || applications.length === 0)) {
 		const emptyMessage = statusFilter
 			? 'applications.no_applications_with_status'
 			: 'applications.no_applications_submitted';
@@ -66,72 +120,34 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({statusFilter}) => 
 			<Paper sx={{mb: 2}}>
 				<Box sx={{p: 2, borderBottom: 1, borderColor: 'divider'}}>
 					<Typography variant="body2" color="text.secondary">
-						{t('applications.total_applications', {count: applications.length})}
+						{t('applications.total_applications', {count: applications?.length || 0})}
 					</Typography>
 				</Box>
 			</Paper>
 
-			<TableContainer component={Paper}>
-				<Table>
-					<TableHead>
-						<TableRow>
-							<TableCell>{t('applications.applicant_name')}</TableCell>
-							<TableCell>{t('applications.email')}</TableCell>
-							<TableCell>{t('applications.phone')}</TableCell>
-							<TableCell>{t('applications.job_position')}</TableCell>
-							<TableCell>{t('applications.status')}</TableCell>
-							<TableCell>{t('applications.applied_date')}</TableCell>
-							<TableCell align="center">{t('common.actions')}</TableCell>
-						</TableRow>
-					</TableHead>
-					<TableBody>
-						{applications.map((application) => (
-							<TableRow
-								key={application.uid}
-								hover
-								sx={{cursor: 'pointer'}}
-								onClick={() => handleViewClick(application)}
-							>
-								<TableCell>{application.applicantName}</TableCell>
-								<TableCell>{application.applicantEmail}</TableCell>
-								<TableCell>{application.applicantPhone}</TableCell>
-								<TableCell>
-									<Typography variant="body2">{application.jobPositionTitle}</Typography>
-									{application.companyName && (
-										<Typography variant="caption" color="text.secondary">
-											{application.companyName}
-										</Typography>
-									)}
-								</TableCell>
-								<TableCell>
-									<Chip
-										label={t(`status.${application.status.toLowerCase()}`)}
-										color={getApplicationStatusColor(application.status)}
-										size="small"
-									/>
-								</TableCell>
-								<TableCell>
-									{format(new Date(application.appliedAt), 'MMM d, yyyy h:mm a')}
-								</TableCell>
-								<TableCell align="center">
-									<Tooltip title={t('applications.view_details')}>
-										<IconButton
-											onClick={(e) => {
-												e.stopPropagation();
-												handleViewClick(application);
-											}}
-											size="small"
-											color="primary"
-										>
-											<VisibilityIcon />
-										</IconButton>
-									</Tooltip>
-								</TableCell>
-							</TableRow>
-						))}
-					</TableBody>
-				</Table>
-			</TableContainer>
+			<Box sx={{height: 600, width: '100%'}}>
+				<EnhancedDataGrid
+					rows={applications || []}
+					columns={columns}
+					loading={isLoading}
+					getRowId={(row) => row.uid}
+					pageSizeOptions={[10, 25, 50, 100]}
+					initialState={{
+						pagination: {paginationModel: {pageSize: 25}},
+					}}
+					disableRowSelectionOnClick
+					onRowClick={(params) => handleViewClick(params.row)}
+					onboardingKey="applications-table"
+					localeText={{
+						noRowsLabel: t('applications.no_applications_submitted'),
+					}}
+					sx={{
+						'& .MuiDataGrid-row': {
+							cursor: 'pointer',
+						},
+					}}
+				/>
+			</Box>
 
 			<ApplicationDetailDialog
 				open={dialogOpen}

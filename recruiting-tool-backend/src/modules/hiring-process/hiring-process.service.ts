@@ -10,6 +10,7 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { User } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { QuotaService } from '../quota/quota.service';
 
 @Injectable()
 export class HiringProcessService {
@@ -18,6 +19,7 @@ export class HiringProcessService {
     @Inject(forwardRef(() => JobPositionService)) private readonly jobPositionService: JobPositionService,
     private readonly candidateService: CandidateService,
     private readonly stagesService: StagesService,
+    private readonly quotaService: QuotaService,
   ) {}
 
   async create(createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
@@ -42,6 +44,17 @@ export class HiringProcessService {
         throw new NotFoundException(`Company ${jobPosition.companyUid} not found`);
       }
       const companyId = company.id;
+
+      // Get jobPositionId for quota check
+      const jobPositionEntity = await this.databaseService.jobPosition.findUnique({
+        where: { uid: jobPosition.uid },
+      });
+      if (!jobPositionEntity) {
+        throw new NotFoundException(`Job position ${jobPosition.uid} not found`);
+      }
+
+      // Check candidates per position quota
+      await this.quotaService.checkCandidatesQuota(companyId, jobPositionEntity.id);
 
       const newHiringProcess = await this.databaseService.hiringProcess.create({
         data: {

@@ -1,21 +1,19 @@
-import {Box, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Button, Chip, IconButton, Tooltip} from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
+import {Box, Typography, Button, Chip} from '@mui/material';
+import {GridColDef, GridRenderCellParams} from '@mui/x-data-grid';
 import {useTranslation} from 'react-i18next';
 import {useListHiringProcesses, useDeleteHiringProcess} from '../../hooks/api/useHiringProcess';
 import {HiringProcess} from '../../types/hiringProcess.types';
 import {useNavigate} from 'react-router-dom';
-import Pagination from '../pagination/Pagination';
 import UpdateHiringProcessDialog from '../dialogs/UpdateHiringProcessDialog';
 import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
-import LoadingSpinner from '../common/LoadingSpinner';
 import EmptyState from '../common/EmptyState';
 import ErrorMessage from '../common/ErrorMessage';
 import {getHiringProcessStatusColor} from '../../utils/statusColors';
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
+import {EnhancedDataGrid, ActionsCell, CellRow, CellColumn} from '../tables';
 
 interface HiringProcessesListProps {
 	page: number;
@@ -50,122 +48,149 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
 		sortOrder: 'desc',
 	});
 
-	const processes = data?.data as HiringProcess[] | undefined;
-	const meta = data?.meta;
+	const processes = (data?.data as HiringProcess[] | undefined) || [];
+	const totalRows = data?.meta?.total || 0;
 
-	// Only show loading spinner on INITIAL load, not on refetch
-	if (isLoading && !data) {
-		return <LoadingSpinner />;
-	}
+	const handleViewClick = (process: HiringProcess) => {
+		navigate(`/hiring-process/${process.uid}`);
+	};
+
+	const columns: GridColDef[] = [
+		{
+			field: 'title',
+			headerName: t('hiring_processes.title'),
+			flex: 1,
+			minWidth: 150,
+		},
+		{
+			field: 'company',
+			headerName: t('companies.title'),
+			width: 150,
+			valueGetter: (value: any) => value?.name || t('common.n_a'),
+		},
+		{
+			field: 'status',
+			headerName: t('status.pending'),
+			width: 130,
+			renderCell: (params: GridRenderCellParams<HiringProcess>) => (
+				<CellRow centered>
+					<Chip
+						label={t(`status.${params.row.status.toLowerCase()}`)}
+						color={getHiringProcessStatusColor(params.row.status)}
+						size="small"
+					/>
+				</CellRow>
+			),
+		},
+		{
+			field: 'stages',
+			headerName: t('stages.title'),
+			width: 120,
+			valueGetter: (value: any[]) => `${value?.length || 0} ${t('stages.title').toLowerCase()}`,
+		},
+		{
+			field: 'candidate',
+			headerName: t('candidates.title'),
+			width: 180,
+			renderCell: (params: GridRenderCellParams<HiringProcess>) =>
+				params.row.candidate ? (
+					<CellColumn gap={0.25}>
+						<Typography variant="body2" noWrap>
+							{params.row.candidate.name}
+						</Typography>
+						<Typography variant="caption" color="text.secondary" noWrap>
+							{params.row.candidate.email}
+						</Typography>
+					</CellColumn>
+				) : (
+					<Typography variant="caption" sx={{color: 'error.main', fontWeight: 500}}>
+						{t('hiring_processes.no_candidate')}
+					</Typography>
+				),
+		},
+		{
+			field: 'createdBy',
+			headerName: t('job_positions.created_by'),
+			width: 180,
+			renderCell: (params: GridRenderCellParams<HiringProcess>) =>
+				params.row.jobPosition?.createdBy ? (
+					<CellColumn gap={0.25}>
+						<Typography variant="body2" noWrap>
+							{params.row.jobPosition.createdBy.name}
+						</Typography>
+						<Typography variant="caption" color="text.secondary" noWrap>
+							{params.row.jobPosition.createdBy.email}
+						</Typography>
+					</CellColumn>
+				) : (
+					t('common.n_a')
+				),
+		},
+		{
+			field: 'actions',
+			headerName: t('common.actions'),
+			width: 160,
+			sortable: false,
+			filterable: false,
+			renderCell: (params: GridRenderCellParams<HiringProcess>) => (
+				<Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
+					<Button
+						size="small"
+						variant="outlined"
+						onClick={(e) => {
+							e.stopPropagation();
+							handleViewClick(params.row);
+						}}
+					>
+						{t('common.view')}
+					</Button>
+					{canManage && (
+						<ActionsCell
+							onEdit={() => updateDialog.openWith(params.row)}
+							onDelete={() => deleteConfirm.confirmDelete(params.row)}
+							showView={false}
+						/>
+					)}
+				</Box>
+			),
+		},
+	];
 
 	if (error && !data) {
 		return <ErrorMessage message="errors.fetch_failed" />;
 	}
 
+	if (!isLoading && processes.length === 0) {
+		return <EmptyState message="hiring_processes.no_processes" />;
+	}
+
 	return (
 		<>
-			{processes && processes.length > 0 ? (
-				<TableContainer component={Paper} sx={{width: '100%', overflowX: 'auto'}}>
-					<Table>
-						<TableHead>
-							<TableRow>
-								<TableCell sx={{minWidth: 150}}><strong>{t('hiring_processes.title')}</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>{t('companies.title')}</strong></TableCell>
-								<TableCell sx={{minWidth: 100}}><strong>{t('status.pending')}</strong></TableCell>
-								<TableCell sx={{minWidth: 80}}><strong>{t('stages.title')}</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>{t('candidates.title')}</strong></TableCell>
-								<TableCell sx={{minWidth: 150}}><strong>{t('job_positions.created_by')}</strong></TableCell>
-								<TableCell sx={{minWidth: 120}}><strong>{t('common.actions')}</strong></TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{processes.map((process) => (
-								<TableRow key={process.uid} hover>
-									<TableCell sx={{maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>
-										{process.title}
-									</TableCell>
-									<TableCell>{process.company?.name || t('common.n_a')}</TableCell>
-									<TableCell>
-										<Chip
-											label={t(`status.${process.status.toLowerCase()}`)}
-											color={getHiringProcessStatusColor(process.status)}
-											size="small"
-										/>
-									</TableCell>
-									<TableCell>{process.stages?.length || 0} {t('stages.title').toLowerCase()}</TableCell>
-									<TableCell sx={{maxWidth: 180}}>
-										{process.candidate ? (
-											<>
-												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-													{process.candidate.name}
-												</Typography>
-												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-													{process.candidate.email}
-												</Typography>
-											</>
-										) : (
-											<Typography variant="caption" sx={{color: 'error.main', fontWeight: 500}}>
-												{t('hiring_processes.no_candidate')}
-											</Typography>
-										)}
-									</TableCell>
-									<TableCell sx={{maxWidth: 180}}>
-										{process.jobPosition?.createdBy ? (
-											<>
-												<Typography variant="body2" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis'}}>
-													{process.jobPosition.createdBy.name}
-												</Typography>
-												<Typography variant="caption" color="textSecondary" sx={{whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', display: 'block'}}>
-													{process.jobPosition.createdBy.email}
-												</Typography>
-											</>
-										) : (
-											t('common.n_a')
-										)}
-									</TableCell>
-									<TableCell>
-										<Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
-											<Button
-												size="small"
-												variant="outlined"
-												onClick={() => navigate(`/hiring-process/${process.uid}`)}
-											>
-												{t('common.view')}
-											</Button>
-											{canManage && (
-												<>
-													<Tooltip title={t('common.edit')}>
-														<IconButton
-															size="small"
-															color="primary"
-															onClick={() => updateDialog.openWith(process)}
-														>
-															<EditIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-													<Tooltip title={t('common.delete')}>
-														<IconButton
-															size="small"
-															color="error"
-															onClick={() => deleteConfirm.confirmDelete(process)}
-														>
-															<DeleteIcon fontSize="small" />
-														</IconButton>
-													</Tooltip>
-												</>
-											)}
-										</Box>
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</TableContainer>
-			) : (
-				<EmptyState message="hiring_processes.no_processes" />
-			)}
-
-			{meta && <Pagination meta={meta} onPageChange={onPageChange} onLimitChange={onLimitChange} />}
+			<Box sx={{height: 600, width: '100%'}}>
+				<EnhancedDataGrid
+					rows={processes}
+					columns={columns}
+					loading={isLoading}
+					getRowId={(row) => row.uid}
+					rowCount={totalRows}
+					paginationMode="server"
+					paginationModel={{page: page - 1, pageSize: limit}}
+					onPaginationModelChange={(model) => {
+						if (model.page !== page - 1) {
+							onPageChange(model.page + 1);
+						}
+						if (model.pageSize !== limit) {
+							onLimitChange(model.pageSize);
+						}
+					}}
+					pageSizeOptions={[10, 25, 50, 100]}
+					disableRowSelectionOnClick
+					onboardingKey="hiring-processes-list"
+					localeText={{
+						noRowsLabel: t('hiring_processes.no_processes'),
+					}}
+				/>
+			</Box>
 
 			<UpdateHiringProcessDialog
 				open={updateDialog.isOpen}

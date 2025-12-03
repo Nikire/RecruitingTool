@@ -23,10 +23,12 @@ import ApplicationsPage from './pages/admin/applications/ApplicationsPage';
 import EmailTemplatesPage from './pages/email-templates/EmailTemplatesPage';
 import AnalyticsPage from './pages/analytics/AnalyticsPage';
 import SystemSettingsPage from './pages/admin/SystemSettingsPage';
+import DeletedRecordsPage from './pages/admin/DeletedRecordsPage';
 import BookInterviewPage from './pages/booking/BookInterviewPage';
 import BookingConfirmedPage from './pages/booking/BookingConfirmedPage';
 import ErrorBoundaryTest from './pages/test/ErrorBoundaryTest';
 import HRJobPositionDetailPage from './pages/hr/job-position-detail/HRJobPositionDetailPage';
+import SubscriptionPage from './pages/settings/SubscriptionPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -84,7 +86,9 @@ function App() {
 						<Route path="/admin" element={<AdminDashboard />} />
 						<Route path="/admin/companies" element={<CompaniesPage />} />
 						<Route path="/admin/users" element={<UserManagementPage />} />
+						<Route path="/admin/deleted-records" element={<DeletedRecordsPage />} />
 						<Route path="/admin/settings" element={<SystemSettingsPage />} />
+						<Route path="/settings/subscription" element={<SubscriptionPage />} />
 					</Route>
 				</Route>
 			</Routes>
