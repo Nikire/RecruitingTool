@@ -44,8 +44,10 @@ jobs:
           echo "---"
 
           # Extract issue numbers from commit messages
-          # Looks for: Closes #123, Fixes #456, Resolves #789, Close #123, Fix #456
-          ISSUE_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -oiE '(close[sd]?|fix(e[sd])?|resolve[sd]?)\s*#[0-9]+' | grep -oE '[0-9]+' | sort -u)
+          # Looks for lines containing: Closes, Fixes, Resolves (and variants)
+          # Then extracts ALL #XXX patterns from those lines
+          # This handles: "Closes #120, #121, #122" (multiple issues on one line)
+          ISSUE_NUMBERS=$(echo "$COMMIT_MESSAGES" | grep -iE "(close[sd]?|fix(e[sd])?|resolve[sd]?)" | grep -oE "#[0-9]+" | grep -oE "[0-9]+" | sort -u)
 
           if [ -z "$ISSUE_NUMBERS" ]; then
             echo "No issues to close found in commit messages"
