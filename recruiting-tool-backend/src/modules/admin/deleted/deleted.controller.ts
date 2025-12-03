@@ -1,11 +1,8 @@
-import { Controller, Get, Post, Delete, Param, UseGuards } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Delete, Param } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { DeletedService } from './deleted.service';
-import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
-import { RolesGuard } from '../../auth/guards/roles.guard';
-import { Roles } from '../../../decorators/roles.decorator';
-import { RolesType } from '@prisma/client';
-import { GetUser } from '../../../decorators/get-user.decorator';
+import { Auth } from '../../shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from '../../shared/modules/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
 import {
   DeletedCandidateDto,
@@ -18,8 +15,10 @@ import {
 @ApiTags('Admin - Deleted Records')
 @ApiBearerAuth()
 @Controller('admin/deleted')
-@UseGuards(JwtAuthGuard, RolesGuard)
-@Roles(RolesType.ADMIN, RolesType.SUPER_ADMIN)
+@ApiUnauthorizedResponse({
+  description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+})
+@Auth(['ADMIN'])
 export class DeletedController {
   constructor(private readonly deletedService: DeletedService) {}
 
@@ -67,7 +66,7 @@ export class DeletedController {
     description: 'List of soft-deleted job positions',
     type: [DeletedJobPositionDto],
   })
-  async getDeletedJobPositions(@GetUser() user: User): Promise<DeletedJobPositionDto[]> {
+  async getDeletedJobPositions(@CurrentUser() user: User): Promise<DeletedJobPositionDto[]> {
     return this.deletedService.getDeletedJobPositions(user.companyId!);
   }
 
@@ -80,7 +79,7 @@ export class DeletedController {
   })
   async restoreJobPosition(
     @Param('uid') uid: string,
-    @GetUser() user: User,
+    @CurrentUser() user: User,
   ): Promise<DeletedJobPositionDto> {
     return this.deletedService.restoreJobPosition(uid, user.companyId!);
   }
@@ -94,7 +93,7 @@ export class DeletedController {
   })
   async purgeJobPosition(
     @Param('uid') uid: string,
-    @GetUser() user: User,
+    @CurrentUser() user: User,
   ): Promise<PurgeResponseDto> {
     return this.deletedService.purgeJobPosition(uid, user.companyId!);
   }
@@ -108,7 +107,7 @@ export class DeletedController {
     description: 'List of soft-deleted applications',
     type: [DeletedApplicationDto],
   })
-  async getDeletedApplications(@GetUser() user: User): Promise<DeletedApplicationDto[]> {
+  async getDeletedApplications(@CurrentUser() user: User): Promise<DeletedApplicationDto[]> {
     return this.deletedService.getDeletedApplications(user.companyId!);
   }
 
@@ -143,7 +142,7 @@ export class DeletedController {
     description: 'List of soft-deleted interviews',
     type: [DeletedInterviewDto],
   })
-  async getDeletedInterviews(@GetUser() user: User): Promise<DeletedInterviewDto[]> {
+  async getDeletedInterviews(@CurrentUser() user: User): Promise<DeletedInterviewDto[]> {
     return this.deletedService.getDeletedInterviews(user.companyId!);
   }
 

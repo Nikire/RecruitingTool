@@ -89,6 +89,7 @@ model User {
   candidateActivities     CandidateActivity[]    @relation("CandidateActivityUser")
   refreshTokens           RefreshToken[]         @relation("UserRefreshTokens")
   auditLogs               AuditLog[]             @relation("UserAuditLogs")
+  calendarConnections     CalendarConnection[]   @relation("UserCalendarConnections")
 
   @@unique([email, companyId])
   @@index([email])
@@ -860,6 +861,31 @@ model AuditLog {
   @@index([uid])
   @@index([entityType])
   @@index([entityUid])
+}
+
+enum CalendarProvider {
+  GOOGLE
+  OUTLOOK
+}
+
+model CalendarConnection {
+  id           Int              @id @default(autoincrement())
+  uid          String           @unique @default(uuid()) @db.Uuid
+  userId       Int
+  user         User             @relation("UserCalendarConnections", fields: [userId], references: [id], onDelete: Cascade)
+  provider     CalendarProvider
+  accessToken  String?          @db.Text
+  refreshToken String           @db.Text
+  tokenExpiry  DateTime?
+  email        String
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([userId, provider])
+  @@index([userId])
+  @@index([provider])
+  @@index([uid])
+  @@index([tokenExpiry])
 }
 
 enum SubscriptionStatus {

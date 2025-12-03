@@ -17,6 +17,7 @@ import {Outlet, NavLink, useNavigate} from 'react-router-dom';
 import MenuIcon from '@mui/icons-material/Menu';
 import PersonIcon from '@mui/icons-material/Person';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import SubscriptionsIcon from '@mui/icons-material/Subscriptions';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
 import {useTranslation} from 'react-i18next';
@@ -156,6 +157,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 							<PersonIcon />
 						</ListItemIcon>
 						<ListItemText primary={translate ? t('common.my_profile') : 'My Profile'} />
+					</ListItemButton>
+				</ListItem>
+				<ListItem disablePadding>
+					<ListItemButton
+						component={NavLink}
+						to="/profile/subscription"
+						onClick={() => setMobileOpen(false)}
+						aria-label={translate ? t('common.subscription') : 'Subscription'}
+					>
+						<ListItemIcon>
+							<SubscriptionsIcon />
+						</ListItemIcon>
+						<ListItemText primary={translate ? t('common.subscription') : 'Subscription'} />
 					</ListItemButton>
 				</ListItem>
 				<ListItem disablePadding>

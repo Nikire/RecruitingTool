@@ -20,6 +20,7 @@ import { HRScheduleModule } from './modules/hr-schedule/hr-schedule.module';
 import { ScorecardModule } from './modules/scorecard/scorecard.module';
 import { AiModule } from './modules/ai/ai.module';
 import { GoogleCalendarModule } from './modules/google-calendar/google-calendar.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 import { AIQuotaModule } from './modules/ai-quota/ai-quota.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
@@ -72,6 +73,7 @@ import { QuotaModule } from './modules/quota/quota.module';
     ScorecardModule,
     AiModule,
     GoogleCalendarModule,
+    CalendarModule,
     AIQuotaModule,
     AnalyticsModule,
     WebhooksModule,

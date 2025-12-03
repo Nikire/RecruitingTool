@@ -45,8 +45,8 @@ const SubscriptionPage: React.FC = () => {
   const handleUpgrade = (plan: SubscriptionPlan) => {
     if (plan === SubscriptionPlan.FREE) return;
 
-    const successUrl = `${window.location.origin}/settings/subscription?success=true`;
-    const cancelUrl = `${window.location.origin}/settings/subscription?canceled=true`;
+    const successUrl = `${window.location.origin}/profile/subscription?success=true`;
+    const cancelUrl = `${window.location.origin}/profile/subscription?canceled=true`;
 
     createCheckout(
       {
