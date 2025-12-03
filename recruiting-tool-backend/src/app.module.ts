@@ -35,6 +35,8 @@ import { CustomThrottlerGuard } from './common/guards/throttler.guard';
 import { CacheModule } from './modules/cache/cache.module';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
+import { StripeModule } from './modules/stripe/stripe.module';
+import { QuotaModule } from './modules/quota/quota.module';
 
 @Module({
   imports: [
@@ -79,6 +81,8 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
     AuditLogModule,
     HealthModule,
     MetricsModule,
+    StripeModule,
+    QuotaModule,
   ],
   controllers: [AppController],
   providers: [

@@ -5,6 +5,7 @@ import { FileUploadResponseDto } from './dto/file-upload.dto';
 import { randomUUID } from 'crypto';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { FileValidator } from './validators/file-validation';
+import { QuotaService } from '../quota/quota.service';
 
 @Injectable()
 export class FilesService {
@@ -13,6 +14,7 @@ export class FilesService {
   constructor(
     private readonly database: DatabaseService,
     private readonly storageService: StorageService,
+    private readonly quotaService: QuotaService,
   ) {}
 
   /**
@@ -61,6 +63,11 @@ export class FilesService {
           throw new EntityNotFoundException('User', userUid);
         }
         userId = user.id;
+
+        // Check storage quota for authenticated users
+        if (user.companyId) {
+          await this.quotaService.checkStorageQuota(user.companyId, file.size);
+        }
       }
 
       // Get candidate ID if provided

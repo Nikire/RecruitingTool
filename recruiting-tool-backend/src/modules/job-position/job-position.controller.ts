@@ -8,6 +8,7 @@ import { User } from '@prisma/client';
 import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto } from './dto/job-position.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { CheckQuota } from '../quota/decorators/check-quota.decorator';
 
 @ApiTags('Job Position')
 @Controller('job-position')
@@ -41,6 +42,7 @@ export class JobPositionController {
   }
 
   @Auth(['HR', 'ADMIN'])
+  @CheckQuota('jobPositions')
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
@@ -51,6 +53,10 @@ export class JobPositionController {
     status: 201,
     description: 'The job position has been successfully created.',
     type: JobPositionResponseDto,
+  })
+  @ApiResponse({
+    status: 402,
+    description: 'Payment Required - Quota exceeded for current subscription plan',
   })
   @ApiBody({ type: CreateJobPositionDto })
   create(@CurrentUser() currentUser: User, @Body() createJobPositionDto: CreateJobPositionDto): Promise<JobPositionResponseDto> {

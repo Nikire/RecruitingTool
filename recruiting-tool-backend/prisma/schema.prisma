@@ -42,6 +42,7 @@ model Company {
   scorecardTemplates ScorecardTemplate[]
   aiQuotas           AIQuota[]
   aiUsageLogs        AIUsageLog[]
+  subscription       Subscription?
 
   @@index([uid])
   @@index([name])
@@ -310,7 +311,7 @@ model FileUpload {
   mimetype           String
   size               Int
   s3Key              String
-  hash               String?       // SHA-256 hash for deduplication (optional for backward compatibility)
+  hash               String? // SHA-256 hash for deduplication (optional for backward compatibility)
   uploadedByPublic   Boolean       @default(false)
   uploadedById       Int?
   uploadedBy         User?         @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
@@ -859,4 +860,43 @@ model AuditLog {
   @@index([uid])
   @@index([entityType])
   @@index([entityUid])
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+}
+
+enum SubscriptionPlan {
+  FREE
+  PROFESSIONAL
+  ENTERPRISE
+}
+
+model Subscription {
+  id                   Int                @id @default(autoincrement())
+  uid                  String             @unique @default(uuid()) @db.Uuid
+  companyId            Int                @unique
+  company              Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  status               SubscriptionStatus @default(TRIALING)
+  plan                 SubscriptionPlan   @default(FREE)
+  currentPeriodStart   DateTime?
+  currentPeriodEnd     DateTime?
+  trialEnd             DateTime?
+  cancelAtPeriodEnd    Boolean            @default(false)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  @@index([companyId])
+  @@index([stripeCustomerId])
+  @@index([stripeSubscriptionId])
+  @@index([status])
+  @@index([plan])
+  @@index([uid])
+  @@index([currentPeriodEnd])
 }

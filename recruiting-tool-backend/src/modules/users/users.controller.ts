@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOp
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { UserActivityService } from './services/user-activity.service';
+import { CheckQuota } from '../quota/decorators/check-quota.decorator';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -28,11 +29,16 @@ export class UsersController {
     description: 'The user has been successfully created.',
     type: UserResponseDto,
   })
+  @ApiResponse({
+    status: 402,
+    description: 'Payment Required - Quota exceeded for current subscription plan',
+  })
   @ApiConflictResponse({
     description: 'The email already exists.',
   })
   @ApiBody({ type: CreateUserDto })
   @Auth(['ADMIN'])
+  @CheckQuota('users')
   async create(@Body() createUserDto: CreateUserDto): Promise<UserResponseDto> {
     return this.usersService.create(createUserDto);
   }

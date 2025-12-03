@@ -1465,5 +1465,98 @@
     "deleted_records": "Deleted Records",
     "settings": "Settings",
     "aria_label": "admin navigation"
+  },
+  "subscription": {
+    "title": "Subscription Management",
+    "description": "Manage your subscription plan and view usage details",
+    "current_subscription": "Current Subscription",
+    "plan_label": "Plan",
+    "trial_ends": "Trial Ends",
+    "billing_period_ends": "Billing Period Ends",
+    "manage_billing": "Manage Billing",
+    "cancel_subscription": "Cancel Subscription",
+    "available_plans": "Available Plans",
+    "upgrade_to_plan": "Upgrade to this Plan",
+    "current_plan": "Current Plan",
+    "per_month": "month",
+    "recommended": "Recommended",
+    "status": {
+      "trialing": "Trial",
+      "active": "Active",
+      "past_due": "Past Due",
+      "canceled": "Canceled",
+      "unpaid": "Unpaid"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "$0",
+        "description": "Perfect for trying out the platform",
+        "features": {
+          "basic_recruiting": "Basic recruiting features",
+          "unlimited_candidates": "Up to 5 job positions"
+        }
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$79",
+        "description": "For growing recruitment teams",
+        "features": {
+          "ai_parsing": "AI-powered resume parsing",
+          "advanced_analytics": "Advanced analytics",
+          "custom_branding": "Custom branding",
+          "priority_support": "Priority support"
+        }
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "$299",
+        "description": "For large organizations",
+        "features": {
+          "api_access": "API access",
+          "custom_integrations": "Custom integrations",
+          "unlimited_everything": "Unlimited everything",
+          "dedicated_support": "Dedicated support"
+        }
+      }
+    },
+    "quota": {
+      "title": "Usage & Quota",
+      "users": "Users",
+      "job_positions": "Job Positions",
+      "storage": "Storage",
+      "features": "Available Features",
+      "approaching_limit": "You're approaching your plan limits. Consider upgrading for more capacity.",
+      "upgrade_now": "Upgrade Now",
+      "unlimited": "Unlimited"
+    },
+    "features": {
+      "ai_resume_parsing": "AI Resume Parsing",
+      "advanced_analytics": "Advanced Analytics",
+      "custom_branding": "Custom Branding",
+      "priority_support": "Priority Support",
+      "api_access": "API Access",
+      "custom_integrations": "Custom Integrations",
+      "ai_scoring": "AI Candidate Scoring",
+      "email_templates": "Email Templates",
+      "analytics": "Analytics Dashboard"
+    },
+    "messages": {
+      "will_cancel": "Your subscription will be canceled at the end of the billing period",
+      "cancel_success": "Subscription will be canceled on {{date}}"
+    },
+    "dialogs": {
+      "cancel": {
+        "title": "Cancel Subscription",
+        "message": "Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.",
+        "confirm": "Yes, Cancel Subscription"
+      }
+    },
+    "errors": {
+      "load_failed": "Failed to load subscription details. Please try again.",
+      "checkout_failed": "Failed to create checkout session. Please try again.",
+      "billing_portal_failed": "Failed to open billing portal. Please try again.",
+      "cancel_failed": "Failed to cancel subscription. Please try again."
+    }
   }
 }
