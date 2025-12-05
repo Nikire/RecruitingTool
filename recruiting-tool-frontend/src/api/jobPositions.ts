@@ -3,9 +3,32 @@ import {MessageResponse} from '../types/responses';
 import {PaginationParams, PaginatedResponse} from '../types/pagination.types';
 import api from './axios';
 
-export function getPublicJobPositions(): Promise<JobPosition[]> {
+export interface PublicJobPositionFilters {
+	search?: string;
+	category?: string;
+	jobType?: string;
+	workLocation?: string;
+	experienceLevel?: string;
+	salaryMin?: number;
+	salaryMax?: number;
+	companyUid?: string;
+	sortBy?: 'createdAt' | 'salary' | 'title';
+	sortOrder?: 'asc' | 'desc';
+	page?: number;
+	limit?: number;
+}
+
+export interface PaginatedPublicJobPositions {
+	data: JobPosition[];
+	total: number;
+	page: number;
+	limit: number;
+	totalPages: number;
+}
+
+export function getPublicJobPositions(filters?: PublicJobPositionFilters): Promise<PaginatedPublicJobPositions> {
 	return api
-		.get('/job-position/public/all')
+		.get('/job-position/public/all', { params: filters })
 		.then((res) => res.data);
 }
 

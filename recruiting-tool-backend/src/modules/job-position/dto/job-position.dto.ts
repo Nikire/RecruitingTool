@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { JobPositionStatus, JobType, WorkLocation, SalaryPeriod, ExperienceLevel } from '@prisma/client';
-import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsArray, ValidateNested, IsEnum, IsBoolean, IsInt, IsDate, Min } from 'class-validator';
+import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsArray, ValidateNested, IsEnum, IsBoolean, IsInt, IsDate, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { HiringProcessResponseDto } from 'src/modules/hiring-process/dto/hiring-process.dto';
 import { CreateStageDto, StageResponseDto } from 'src/modules/hiring-process/modules/stages/dto/stages.dto';
@@ -462,4 +462,92 @@ export class PublicJobPositionResponseDto {
 
   @ApiProperty({ description: 'The stages of the job position', type: [StageResponseDto], required: false })
   stages?: StageResponseDto[];
+}
+
+export class JobPositionFiltersDto {
+  @ApiProperty({ description: 'Search in title, description', example: 'Senior Developer', required: false })
+  @IsOptional()
+  @IsString()
+  search?: string;
+
+  @ApiProperty({ description: 'Filter by job category', example: 'Engineering', required: false })
+  @IsOptional()
+  @IsString()
+  category?: string;
+
+  @ApiProperty({ description: 'Filter by job type', enum: JobType, required: false })
+  @IsOptional()
+  @IsEnum(JobType)
+  jobType?: JobType;
+
+  @ApiProperty({ description: 'Filter by work location', enum: WorkLocation, required: false })
+  @IsOptional()
+  @IsEnum(WorkLocation)
+  workLocation?: WorkLocation;
+
+  @ApiProperty({ description: 'Filter by experience level', enum: ExperienceLevel, required: false })
+  @IsOptional()
+  @IsEnum(ExperienceLevel)
+  experienceLevel?: ExperienceLevel;
+
+  @ApiProperty({ description: 'Minimum salary filter', example: 50000, required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  salaryMin?: number;
+
+  @ApiProperty({ description: 'Maximum salary filter', example: 150000, required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  salaryMax?: number;
+
+  @ApiProperty({ description: 'Filter by company UID', example: '123e4567-e89b-12d3-a456-426614174000', required: false })
+  @IsOptional()
+  @IsString()
+  companyUid?: string;
+
+  @ApiProperty({ description: 'Sort by field', example: 'createdAt', enum: ['createdAt', 'salary', 'title'], default: 'createdAt', required: false })
+  @IsOptional()
+  @IsString()
+  sortBy?: 'createdAt' | 'salary' | 'title';
+
+  @ApiProperty({ description: 'Sort order', example: 'desc', enum: ['asc', 'desc'], default: 'desc', required: false })
+  @IsOptional()
+  @IsString()
+  sortOrder?: 'asc' | 'desc';
+
+  @ApiProperty({ description: 'Page number (1-indexed)', example: 1, default: 1, required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number;
+
+  @ApiProperty({ description: 'Items per page', example: 12, default: 12, required: false })
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(100)
+  limit?: number;
+}
+
+export class PaginatedPublicJobPositionResponseDto {
+  @ApiProperty({ description: 'Array of job positions', type: [PublicJobPositionResponseDto] })
+  data: PublicJobPositionResponseDto[];
+
+  @ApiProperty({ description: 'Total number of matching job positions', example: 150 })
+  total: number;
+
+  @ApiProperty({ description: 'Current page number', example: 1 })
+  page: number;
+
+  @ApiProperty({ description: 'Items per page', example: 12 })
+  limit: number;
+
+  @ApiProperty({ description: 'Total number of pages', example: 13 })
+  totalPages: number;
 }

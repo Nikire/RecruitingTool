@@ -20,9 +20,11 @@ import {
 	useTheme,
 	Pagination,
 	SelectChangeEvent,
+	TextField,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {usePublicJobPositions} from '../../hooks/api/useJobPositions';
+import {PublicJobPositionFilters} from '../../api/jobPositions';
 import PublicJobCard from '../../components/careers/PublicJobCard';
 import JobSearchFilters from '../../components/careers/JobSearchFilters';
 import {ApplyToJobDialog} from '../../components/dialogs/ApplyToJobDialog';
@@ -72,55 +74,34 @@ const CareersPage: React.FC = () => {
 	// Mobile filter drawer state
 	const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
-	// Fetch public job positions
-	const {data: jobPositions, isLoading, error} = usePublicJobPositions({enabled: true});
+	// Build API filters from UI state
+	const apiFilters: PublicJobPositionFilters = useMemo(() => {
+		const params: PublicJobPositionFilters = {
+			page,
+			limit: ITEMS_PER_PAGE,
+			sortBy: 'createdAt',
+			sortOrder: 'desc',
+		};
 
-	// Get unique companies for filter
-	const uniqueCompanies = useMemo(() => {
-		if (!jobPositions) return [];
-		const companies = new Set(
-			jobPositions.map((job) => job.companyName).filter((name): name is string => !!name)
-		);
-		return Array.from(companies).sort();
-	}, [jobPositions]);
+		if (filters.search) params.search = filters.search;
+		if (filters.category) params.category = filters.category;
+		if (filters.jobType) params.jobType = filters.jobType;
+		if (filters.workLocation) params.workLocation = filters.workLocation;
+		if (filters.experienceLevel) params.experienceLevel = filters.experienceLevel;
+		if (filters.salaryMin) params.salaryMin = parseInt(filters.salaryMin);
+		if (filters.salaryMax) params.salaryMax = parseInt(filters.salaryMax);
+		// Note: company filter will need to be converted to companyUid when we implement it
+		// For now, we'll skip it since the backend expects companyUid, not company name
 
-	// Filter and paginate jobs
-	const {filteredJobs, totalPages, displayedJobs} = useMemo(() => {
-		let filtered =
-			jobPositions?.filter((job) => {
-				// Search filter
-				if (filters.search) {
-					const searchLower = filters.search.toLowerCase();
-					const matchesSearch =
-						job.title.toLowerCase().includes(searchLower) ||
-						job.companyName?.toLowerCase().includes(searchLower);
-					if (!matchesSearch) return false;
-				}
+		return params;
+	}, [filters, page]);
 
-				// Company filter
-				if (filters.company && job.companyName !== filters.company) {
-					return false;
-				}
+	// Fetch public job positions with server-side filtering
+	const {data, isLoading, error} = usePublicJobPositions(apiFilters, {enabled: true});
 
-				// Status filter - only show OPEN positions
-				if (job.status !== 'OPEN') {
-					return false;
-				}
-
-				// Future filters will go here (category, jobType, etc.)
-				// These fields are placeholders for when backend Issue #164 is ready
-
-				return true;
-			}) || [];
-
-		const totalPages = Math.ceil(filtered.length / ITEMS_PER_PAGE);
-		const startIndex = (page - 1) * ITEMS_PER_PAGE;
-		const displayedJobs = filtered.slice(startIndex, startIndex + ITEMS_PER_PAGE);
-
-		return {filteredJobs: filtered, totalPages, displayedJobs};
-	}, [jobPositions, filters, page]);
-
-	const openJobsCount = filteredJobs.length;
+	const jobPositions = data?.data || [];
+	const totalPages = data?.totalPages || 0;
+	const openJobsCount = data?.total || 0;
 
 	const handleApplyClick = (uid: string, title: string) => {
 		applyDialog.openWith({uid, title});
@@ -188,89 +169,99 @@ const CareersPage: React.FC = () => {
 			</Box>
 
 			<Stack spacing={3}>
-				{/* Company Filter */}
+				{/* Category Filter */}
 				<FormControl fullWidth size="small">
-					<InputLabel>{t('careersFilters.company')}</InputLabel>
-					<Select
-						value={filters.company}
-						onChange={(e: SelectChangeEvent) => handleFilterChange('company', e.target.value)}
-						label={t('careersFilters.company')}
-					>
-						<MenuItem value="">{t('careersFilters.all_companies')}</MenuItem>
-						{uniqueCompanies.map((company) => (
-							<MenuItem key={company} value={company}>
-								<Box sx={{display: 'flex', alignItems: 'center', gap: 1}}>
-									<BusinessIcon fontSize="small" />
-									{company}
-								</Box>
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-
-				<Divider />
-
-				{/* Category Filter - Placeholder for future */}
-				<FormControl fullWidth size="small" disabled>
 					<InputLabel>{t('careersFilters.category')}</InputLabel>
-					<Select value={filters.category} label={t('careersFilters.category')}>
+					<Select
+						value={filters.category}
+						onChange={(e: SelectChangeEvent) => handleFilterChange('category', e.target.value)}
+						label={t('careersFilters.category')}
+					>
 						<MenuItem value="">{t('careersFilters.all_categories')}</MenuItem>
-						<MenuItem value="engineering">{t('careersFilters.engineering')}</MenuItem>
-						<MenuItem value="marketing">{t('careersFilters.marketing')}</MenuItem>
-						<MenuItem value="sales">{t('careersFilters.sales')}</MenuItem>
-						<MenuItem value="design">{t('careersFilters.design')}</MenuItem>
-						<MenuItem value="product">{t('careersFilters.product')}</MenuItem>
+						<MenuItem value="Engineering">{t('careersFilters.engineering')}</MenuItem>
+						<MenuItem value="Marketing">{t('careersFilters.marketing')}</MenuItem>
+						<MenuItem value="Sales">{t('careersFilters.sales')}</MenuItem>
+						<MenuItem value="Design">{t('careersFilters.design')}</MenuItem>
+						<MenuItem value="Product">{t('careersFilters.product')}</MenuItem>
 					</Select>
 				</FormControl>
 
-				{/* Job Type Filter - Placeholder for future */}
-				<FormControl fullWidth size="small" disabled>
+				{/* Job Type Filter */}
+				<FormControl fullWidth size="small">
 					<InputLabel>{t('careersFilters.job_type')}</InputLabel>
-					<Select value={filters.jobType} label={t('careersFilters.job_type')}>
+					<Select
+						value={filters.jobType}
+						onChange={(e: SelectChangeEvent) => handleFilterChange('jobType', e.target.value)}
+						label={t('careersFilters.job_type')}
+					>
 						<MenuItem value="">{t('careersFilters.all_types')}</MenuItem>
-						<MenuItem value="full_time">{t('careersFilters.full_time')}</MenuItem>
-						<MenuItem value="part_time">{t('careersFilters.part_time')}</MenuItem>
-						<MenuItem value="contract">{t('careersFilters.contract')}</MenuItem>
-						<MenuItem value="internship">{t('careersFilters.internship')}</MenuItem>
+						<MenuItem value="FULL_TIME">{t('careersFilters.full_time')}</MenuItem>
+						<MenuItem value="PART_TIME">{t('careersFilters.part_time')}</MenuItem>
+						<MenuItem value="CONTRACT">{t('careersFilters.contract')}</MenuItem>
+						<MenuItem value="INTERNSHIP">{t('careersFilters.internship')}</MenuItem>
+						<MenuItem value="TEMPORARY">{t('careersFilters.temporary')}</MenuItem>
 					</Select>
 				</FormControl>
 
-				{/* Work Location Filter - Placeholder for future */}
-				<FormControl fullWidth size="small" disabled>
+				{/* Work Location Filter */}
+				<FormControl fullWidth size="small">
 					<InputLabel>{t('careersFilters.work_location')}</InputLabel>
-					<Select value={filters.workLocation} label={t('careersFilters.work_location')}>
+					<Select
+						value={filters.workLocation}
+						onChange={(e: SelectChangeEvent) => handleFilterChange('workLocation', e.target.value)}
+						label={t('careersFilters.work_location')}
+					>
 						<MenuItem value="">{t('careersFilters.all_locations')}</MenuItem>
-						<MenuItem value="remote">{t('careersFilters.remote')}</MenuItem>
-						<MenuItem value="hybrid">{t('careersFilters.hybrid')}</MenuItem>
-						<MenuItem value="onsite">{t('careersFilters.onsite')}</MenuItem>
+						<MenuItem value="REMOTE">{t('careersFilters.remote')}</MenuItem>
+						<MenuItem value="HYBRID">{t('careersFilters.hybrid')}</MenuItem>
+						<MenuItem value="ON_SITE">{t('careersFilters.onsite')}</MenuItem>
 					</Select>
 				</FormControl>
 
-				{/* Experience Level Filter - Placeholder for future */}
-				<FormControl fullWidth size="small" disabled>
+				{/* Experience Level Filter */}
+				<FormControl fullWidth size="small">
 					<InputLabel>{t('careersFilters.experience_level')}</InputLabel>
 					<Select
 						value={filters.experienceLevel}
+						onChange={(e: SelectChangeEvent) => handleFilterChange('experienceLevel', e.target.value)}
 						label={t('careersFilters.experience_level')}
 					>
 						<MenuItem value="">{t('careersFilters.all_levels')}</MenuItem>
-						<MenuItem value="entry">{t('careersFilters.entry_level')}</MenuItem>
-						<MenuItem value="mid">{t('careersFilters.mid_level')}</MenuItem>
-						<MenuItem value="senior">{t('careersFilters.senior_level')}</MenuItem>
-						<MenuItem value="lead">{t('careersFilters.lead_level')}</MenuItem>
+						<MenuItem value="ENTRY">{t('careersFilters.entry_level')}</MenuItem>
+						<MenuItem value="MID">{t('careersFilters.mid_level')}</MenuItem>
+						<MenuItem value="SENIOR">{t('careersFilters.senior_level')}</MenuItem>
+						<MenuItem value="LEAD">{t('careersFilters.lead_level')}</MenuItem>
+						<MenuItem value="EXECUTIVE">{t('careersFilters.executive_level')}</MenuItem>
 					</Select>
 				</FormControl>
 
 				<Divider />
 
-				{/* Salary Range - Placeholder for future */}
+				{/* Salary Range Filter */}
 				<Box>
 					<Typography variant="body2" sx={{mb: 2, fontWeight: 600}}>
 						{t('careersFilters.salary_range')}
 					</Typography>
-					<Typography variant="caption" color="text.secondary">
-						{t('careersFilters.coming_soon')}
-					</Typography>
+					<Stack spacing={2}>
+						<TextField
+							fullWidth
+							size="small"
+							type="number"
+							label={t('careersFilters.salary_min')}
+							value={filters.salaryMin}
+							onChange={(e) => handleFilterChange('salaryMin', e.target.value)}
+							inputProps={{min: 0}}
+						/>
+						<TextField
+							fullWidth
+							size="small"
+							type="number"
+							label={t('careersFilters.salary_max')}
+							value={filters.salaryMax}
+							onChange={(e) => handleFilterChange('salaryMax', e.target.value)}
+							inputProps={{min: 0}}
+						/>
+					</Stack>
 				</Box>
 			</Stack>
 		</Paper>
@@ -464,8 +455,8 @@ const CareersPage: React.FC = () => {
 							<Box sx={{mb: 3}}>
 								<Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
 									{t('careersResults.showing_results', {
-										count: displayedJobs.length,
-										total: filteredJobs.length,
+										count: jobPositions.length,
+										total: openJobsCount,
 									})}
 								</Typography>
 
@@ -530,7 +521,7 @@ const CareersPage: React.FC = () => {
 						{/* Empty state - no jobs */}
 						{!isLoading &&
 							!error &&
-							filteredJobs.length === 0 &&
+							openJobsCount === 0 &&
 							!filters.search &&
 							activeFilterCount === 0 && (
 								<Box sx={{textAlign: 'center', py: 8}}>
@@ -549,7 +540,7 @@ const CareersPage: React.FC = () => {
 						{/* Empty state - no search/filter results */}
 						{!isLoading &&
 							!error &&
-							filteredJobs.length === 0 &&
+							openJobsCount === 0 &&
 							(filters.search || activeFilterCount > 0) && (
 								<Box sx={{textAlign: 'center', py: 8}}>
 									<SearchOffIcon
@@ -568,10 +559,10 @@ const CareersPage: React.FC = () => {
 							)}
 
 						{/* Job cards grid */}
-						{!isLoading && !error && displayedJobs.length > 0 && (
+						{!isLoading && !error && jobPositions.length > 0 && (
 							<>
 								<Grid container spacing={3}>
-									{displayedJobs.map((job) => (
+									{jobPositions.map((job) => (
 										<Grid
 											key={job.uid}
 											item

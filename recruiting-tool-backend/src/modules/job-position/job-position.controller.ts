@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseInterceptors } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { JobPositionService } from './job-position.service';
 import { User } from '@prisma/client';
-import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto } from './dto/job-position.dto';
+import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto, JobPositionFiltersDto, PaginatedPublicJobPositionResponseDto } from './dto/job-position.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CheckQuota } from '../quota/decorators/check-quota.decorator';
@@ -18,13 +18,26 @@ export class JobPositionController {
   @Get('public/all')
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(600000) // Cache for 10 minutes (600 seconds * 1000ms)
-  @ApiOperation({ summary: 'Get all open job positions (Public - No auth required)' })
+  @ApiOperation({ summary: 'Get all open job positions with filtering and pagination (Public - No auth required)' })
   @ApiResponse({
     status: 200,
-    description: 'Returns list of open job positions',
+    description: 'Returns paginated list of open job positions',
+    type: PaginatedPublicJobPositionResponseDto,
   })
-  findAllPublic() {
-    return this.jobPositionService.findAllPublic();
+  @ApiQuery({ name: 'search', required: false, description: 'Search in title, description' })
+  @ApiQuery({ name: 'category', required: false, description: 'Filter by job category' })
+  @ApiQuery({ name: 'jobType', required: false, enum: ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'TEMPORARY', 'INTERNSHIP'], description: 'Filter by job type' })
+  @ApiQuery({ name: 'workLocation', required: false, enum: ['REMOTE', 'HYBRID', 'ONSITE'], description: 'Filter by work location' })
+  @ApiQuery({ name: 'experienceLevel', required: false, enum: ['ENTRY', 'MID', 'SENIOR', 'LEAD', 'EXECUTIVE'], description: 'Filter by experience level' })
+  @ApiQuery({ name: 'salaryMin', required: false, type: Number, description: 'Minimum salary filter' })
+  @ApiQuery({ name: 'salaryMax', required: false, type: Number, description: 'Maximum salary filter' })
+  @ApiQuery({ name: 'companyUid', required: false, description: 'Filter by company UID' })
+  @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'salary', 'title'], description: 'Sort by field' })
+  @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'], description: 'Sort order' })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-indexed)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page' })
+  findAllPublic(@Query() filters: JobPositionFiltersDto) {
+    return this.jobPositionService.findAllPublic(filters);
   }
 
   @Get('public/:uid')

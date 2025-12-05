@@ -7,6 +7,7 @@ import {
 	getPublicJobPosition,
 	listJobPositions,
 	updateJobPosition,
+	PublicJobPositionFilters,
 } from '../../api/jobPositions';
 import {JobPosition} from '../../types/jobPosition.types';
 import {PaginationParams} from '../../types/pagination.types';
@@ -14,10 +15,10 @@ import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 const JOB_POSITIONS_KEY = 'jobPositions';
 
-export function usePublicJobPositions(options?: { enabled?: boolean }) {
+export function usePublicJobPositions(filters?: PublicJobPositionFilters, options?: { enabled?: boolean }) {
 	return useQuery({
-		queryKey: [JOB_POSITIONS_KEY, 'public'],
-		queryFn: getPublicJobPositions,
+		queryKey: [JOB_POSITIONS_KEY, 'public', filters],
+		queryFn: () => getPublicJobPositions(filters),
 		enabled: options?.enabled !== false,
 	});
 }

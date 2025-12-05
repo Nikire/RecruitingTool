@@ -1221,6 +1221,7 @@
     "part_time": "Tiempo Parcial",
     "contract": "Contrato",
     "internship": "Pasantía",
+    "temporary": "Temporal",
     "work_location": "Ubicación de Trabajo",
     "all_locations": "Todas las Ubicaciones",
     "remote": "Remoto",
@@ -1232,12 +1233,22 @@
     "mid_level": "Nivel Medio",
     "senior_level": "Nivel Senior",
     "lead_level": "Líder / Gerente",
+    "executive_level": "Ejecutivo",
     "salary_range": "Rango Salarial",
-    "coming_soon": "Próximamente..."
+    "salary_min": "Salario Mínimo",
+    "salary_max": "Salario Máximo"
   },
   "careersResults": {
     "showing_results": "Mostrando {{count}} de {{total}} trabajos",
     "showing_results_plural": "Mostrando {{count}} de {{total}} trabajos"
+  },
+  "careersSort": {
+    "sort_by": "Ordenar Por",
+    "newest_first": "Más Recientes Primero",
+    "oldest_first": "Más Antiguos Primero",
+    "salary_high_to_low": "Salario: Mayor a Menor",
+    "salary_low_to_high": "Salario: Menor a Mayor",
+    "title_a_to_z": "Título: A-Z"
   },
   "user_roles": {
     "super_admin": "Super Administrador",
