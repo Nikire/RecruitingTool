@@ -17,7 +17,7 @@ const MainLayout = () => {
 		const currentPath = window.location.pathname;
 
 		// Don't redirect on public routes
-		const publicRoutes = ['/careers', '/login', '/signup', '/book-interview', '/booking-confirmed'];
+		const publicRoutes = ['/careers', '/login', '/register', '/book-interview', '/booking-confirmed'];
 		const isPublicRoute = publicRoutes.some(route => currentPath.startsWith(route));
 
 		// If there's a token but the auth query failed (401, 403, etc.), session is invalid
@@ -29,7 +29,7 @@ const MainLayout = () => {
 	}, [isError, navigate]);
 
 	// Use wider container for pages with tables or rich content
-	const widePages = ['/', '/companies', '/candidates', '/careers'];
+	const widePages = ['/', '/companies', '/candidates', '/careers', '/onboarding'];
 	const isWidePage = widePages.includes(location.pathname);
 	const maxWidth = isWidePage ? 'xl' : 'md';
 
@@ -37,7 +37,7 @@ const MainLayout = () => {
 		<>
 			<Navbar />
 			<Toolbar /> {/* Offset spacer for fixed AppBar */}
-			<Container sx={{paddingTop: 2}} maxWidth={maxWidth}>
+			<Container sx={{py: 2}} maxWidth={maxWidth}>
 				<Outlet />
 			</Container>
 		</>

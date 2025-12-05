@@ -276,7 +276,7 @@ const SubscriptionPage: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.FREE}
             price={t('subscription.plans.free.price')}
@@ -286,7 +286,7 @@ const SubscriptionPage: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.PROFESSIONAL}
             price={t('subscription.plans.professional.price')}
@@ -302,7 +302,7 @@ const SubscriptionPage: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.ENTERPRISE}
             price={t('subscription.plans.enterprise.price')}

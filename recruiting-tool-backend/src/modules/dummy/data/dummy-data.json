@@ -78,6 +78,40 @@
       "bio": "Supporting the hiring team with scheduling, coordination, and candidate communication.",
       "linkedinUrl": "https://linkedin.com/in/dianaprince",
       "timezone": "America/Los_Angeles"
+    },
+    {
+      "name": "Edward Martinez",
+      "email": "edward@techinnovations.com",
+      "password": "password123",
+      "roles": [
+        "COMPANY_OWNER",
+        "ADMIN"
+      ],
+      "companyIndex": 0,
+      "profilePicture": "https://i.pravatar.cc/150?img=11",
+      "phoneNumber": "+1-555-0103",
+      "position": "CEO & Founder",
+      "department": "Executive",
+      "bio": "Founder and CEO of Tech Innovations Inc. Leading the company vision and strategic direction.",
+      "linkedinUrl": "https://linkedin.com/in/edwardmartinez",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Fiona Chen",
+      "email": "fiona@digitalsolutions.com",
+      "password": "password123",
+      "roles": [
+        "COMPANY_OWNER",
+        "ADMIN"
+      ],
+      "companyIndex": 1,
+      "profilePicture": "https://i.pravatar.cc/150?img=47",
+      "phoneNumber": "+1-555-0203",
+      "position": "CEO & Co-Founder",
+      "department": "Executive",
+      "bio": "Co-founder of Digital Solutions Corp. Passionate about digital transformation and innovation.",
+      "linkedinUrl": "https://linkedin.com/in/fionachen",
+      "timezone": "America/Los_Angeles"
     }
   ],
   "profiles": [
@@ -135,6 +169,34 @@
         "theme": "light",
         "language": "en",
         "weekStartsOn": "sunday"
+      }
+    },
+    {
+      "userIndex": 4,
+      "bio": "Founder and CEO of Tech Innovations Inc. Leading the company vision and strategic direction. Expert in software development and tech entrepreneurship.",
+      "phone": "+1-555-0103",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": true,
+        "theme": "dark",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 5,
+      "bio": "Co-founder of Digital Solutions Corp. Passionate about digital transformation and innovation. Building a team that drives change.",
+      "phone": "+1-555-0203",
+      "location": "San Francisco, CA, USA",
+      "timezone": "America/Los_Angeles",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
       }
     }
   ],

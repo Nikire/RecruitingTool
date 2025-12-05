@@ -25,16 +25,41 @@ export class AuthService {
     private readonly databaseService: DatabaseService,
   ) {}
 
-  async register({ name, email, password }: CreateUserDto): Promise<RegisteredUserDto> {
+  async register({ name, email, password, roles, companyUid }: CreateUserDto): Promise<RegisteredUserDto> {
     const foundUser = await this.usersService.findByEmail(email);
     if (foundUser) {
       throw new BadRequestException('User already exists');
+    }
+
+    // Check if user is registering as COMPANY_OWNER
+    const isCompanyOwner = roles && roles.includes('COMPANY_OWNER' as any);
+
+    let finalCompanyUid = companyUid;
+
+    // If COMPANY_OWNER role is selected, auto-create a company
+    if (isCompanyOwner && !companyUid) {
+      // Extract company name from email domain or use a default
+      const emailDomain = email.split('@')[1];
+      const companyName = emailDomain ? emailDomain.split('.')[0] : 'My Company';
+      const formattedCompanyName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+
+      // Create the company
+      const newCompany = await this.databaseService.company.create({
+        data: {
+          name: `${formattedCompanyName} Inc`,
+          description: `Company created for ${name}`,
+        },
+      });
+
+      finalCompanyUid = newCompany.uid;
     }
 
     const user = await this.usersService.create({
       name,
       email,
       password,
+      roles,
+      companyUid: finalCompanyUid,
     });
 
     const { token, refreshToken } = await this.login({ email, password });

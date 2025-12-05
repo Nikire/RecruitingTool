@@ -697,7 +697,11 @@
     "signup": "Signup",
     "careers": "Careers",
     "hr_panel": "HR Panel",
-    "admin_panel": "Admin Panel"
+    "admin_panel": "Admin Panel",
+    "menu": "Menu",
+    "notifications": "Notifications",
+    "profile": "Profile",
+    "subscription": "Subscription"
   },
   "access": {
     "denied": "Access Denied",
@@ -857,6 +861,81 @@
     "signing_up": "Signing up...",
     "login_failed": "Login failed. Please try again.",
     "signup_failed": "Signup failed. Please try again."
+  },
+  "registration_wizard": {
+    "steps": {
+      "role_selection": "Choose Your Role",
+      "account_creation": "Create Account",
+      "role_information": "Additional Information",
+      "confirmation": "Confirm & Complete"
+    },
+    "role_selection": {
+      "title": "How do you want to use our platform?",
+      "subtitle": "Choose the role that best describes your needs"
+    },
+    "roles": {
+      "hr": {
+        "title": "HR / Recruiter",
+        "description": "I want to hire talent for my company"
+      },
+      "applicant": {
+        "title": "Job Applicant",
+        "description": "I'm looking for a job"
+      },
+      "company_owner": {
+        "title": "Company Owner",
+        "description": "I want to set up my company"
+      }
+    },
+    "account_creation": {
+      "title": "Create Your Account",
+      "subtitle": "Enter your details to get started",
+      "confirm_password": "Confirm Password",
+      "confirm_password_required": "Please confirm your password",
+      "passwords_must_match": "Passwords must match",
+      "accept_terms": "I accept the",
+      "terms_of_service": "Terms of Service",
+      "terms_required": "You must accept the Terms of Service"
+    },
+    "role_info": {
+      "title": "Additional Information",
+      "hr_subtitle": "Tell us about your role. You'll be able to join a company after registration.",
+      "company": "Select Company",
+      "company_required": "Please select a company",
+      "company_helper": "Choose the company you work for",
+      "no_companies": "No companies available",
+      "job_title": "Your Job Title",
+      "job_title_helper": "Optional: e.g., HR Manager, Recruiter",
+      "applicant_subtitle": "Help us understand your background (optional)",
+      "skills_summary": "Skills & Experience Summary",
+      "skills_helper": "Brief description of your skills and experience",
+      "resume_upload": "Upload Resume (Optional)",
+      "resume_helper": "PDF, DOC, or DOCX format",
+      "choose_file": "Choose File",
+      "company_name": "Company Name",
+      "company_name_required": "Company name is required",
+      "industry": "Industry",
+      "industry_helper": "e.g., Technology, Healthcare, Finance",
+      "company_size": "Company Size",
+      "company_size_helper": "Number of employees",
+      "employees": "employees"
+    },
+    "confirmation": {
+      "title": "Review & Complete Registration",
+      "review_message": "Please review your information before completing registration",
+      "role_label": "Selected Role:",
+      "name_label": "Full Name:",
+      "email_label": "Email:",
+      "job_title_label": "Job Title:",
+      "company_name_label": "Company Name:",
+      "next_steps": "After registration, you'll be redirected to your personalized dashboard",
+      "success_title": "Welcome Aboard!",
+      "success_message": "Your account has been created successfully.",
+      "redirecting": "Redirecting to your dashboard...",
+      "setting_up": "Setting up your account...",
+      "creating_account": "Creating Account...",
+      "error_message": "Registration failed. Please try again"
+    }
   },
   "companies_page": {
     "title": "Company Management",
@@ -1561,6 +1640,178 @@
       "checkout_failed": "Failed to create checkout session. Please try again.",
       "billing_portal_failed": "Failed to open billing portal. Please try again.",
       "cancel_failed": "Failed to cancel subscription. Please try again."
+    }
+  },
+  "onboarding": {
+    "steps": {
+      "plan_selection": "Select Plan",
+      "payment": "Payment",
+      "company_setup": "Company Setup",
+      "welcome": "Welcome"
+    },
+    "plan_selection": {
+      "title": "Choose Your Plan",
+      "subtitle": "Select the plan that best fits your hiring needs. You can change your plan anytime.",
+      "recommended": "Recommended",
+      "select_plan": "Select Plan",
+      "change_plan_later": "You can change your plan at any time from your account settings"
+    },
+    "plans": {
+      "free": {
+        "name": "Free",
+        "price": "$0/month",
+        "description": "Perfect for small teams getting started with recruitment"
+      },
+      "professional": {
+        "name": "Professional",
+        "price": "$99/month",
+        "description": "For growing teams with advanced hiring needs"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Custom",
+        "description": "For large organizations with custom requirements"
+      },
+      "features": {
+        "basic_candidate_management": "Basic candidate management",
+        "up_to_candidates": "Up to 50 candidates",
+        "basic_job_postings": "Up to 5 job postings",
+        "email_notifications": "Email notifications",
+        "ai_resume_screening": "AI resume screening",
+        "advanced_analytics": "Advanced analytics",
+        "priority_support": "Priority support",
+        "everything_in_free": "Everything in Free",
+        "unlimited_candidates": "Unlimited candidates",
+        "custom_email_templates": "Custom email templates",
+        "calendar_integration": "Calendar integration",
+        "everything_in_professional": "Everything in Professional",
+        "unlimited_users": "Unlimited team members",
+        "dedicated_account_manager": "Dedicated account manager",
+        "custom_integrations": "Custom integrations",
+        "sla_guarantee": "SLA guarantee",
+        "advanced_security": "Advanced security features",
+        "custom_branding": "Custom branding"
+      }
+    },
+    "payment": {
+      "title": "Complete Your Payment",
+      "plan_summary": "Plan Summary",
+      "selected_plan": "Selected Plan",
+      "price": "Price",
+      "billing_info": "Billed monthly. Cancel anytime.",
+      "secure_payment_notice": "Your payment is processed securely through Stripe. We never store your credit card information.",
+      "whats_included": "What's Included",
+      "proceed_to_payment": "Proceed to Payment",
+      "processing": "Processing...",
+      "error_message": "Failed to create checkout session. Please try again.",
+      "features": {
+        "cancel_anytime": "Cancel anytime, no commitments",
+        "no_setup_fees": "No setup fees or hidden charges",
+        "secure_processing": "Secure payment processing",
+        "instant_access": "Instant access after payment"
+      }
+    },
+    "company_setup": {
+      "title": "Complete Your Company Profile",
+      "subtitle": "Help us personalize your experience by providing some additional information about your company.",
+      "optional_notice": "These details are optional. You can always update them later in your company settings.",
+      "industry_label": "Industry",
+      "industry_helper": "Select your company's primary industry",
+      "select_industry": "Select an industry",
+      "timezone_label": "Timezone",
+      "timezone_helper": "Your local timezone for scheduling interviews",
+      "select_timezone": "Select a timezone",
+      "team_size_label": "Team Size",
+      "team_size_helper": "Approximate number of employees",
+      "select_team_size": "Select team size",
+      "employees": "employees",
+      "skip": "Skip",
+      "industries": {
+        "technology": "Technology",
+        "healthcare": "Healthcare",
+        "finance": "Finance",
+        "retail": "Retail",
+        "manufacturing": "Manufacturing",
+        "education": "Education",
+        "consulting": "Consulting",
+        "real_estate": "Real Estate",
+        "hospitality": "Hospitality",
+        "other": "Other"
+      }
+    },
+    "welcome": {
+      "title": "Welcome to Recruiting Tool!",
+      "subtitle": "Your setup is complete",
+      "description": "You're all set! Let's explore the key features that will help you streamline your hiring process.",
+      "features_title": "Key Features at Your Fingertips",
+      "features": {
+        "candidate_management": {
+          "title": "Candidate Management",
+          "description": "Track and manage all your candidates in one centralized dashboard"
+        },
+        "job_postings": {
+          "title": "Job Postings",
+          "description": "Create and publish job postings to attract top talent"
+        },
+        "analytics": {
+          "title": "Analytics & Insights",
+          "description": "Make data-driven hiring decisions with powerful analytics"
+        },
+        "email_templates": {
+          "title": "Email Templates",
+          "description": "Communicate efficiently with customizable email templates"
+        },
+        "interview_scheduling": {
+          "title": "Interview Scheduling",
+          "description": "Schedule interviews seamlessly with calendar integration"
+        }
+      },
+      "quick_start_title": "Quick Start Guide",
+      "quick_steps": {
+        "create_first_job": "Create your first job posting",
+        "add_team_members": "Invite team members to collaborate",
+        "setup_email_templates": "Customize your email templates",
+        "explore_dashboard": "Explore the analytics dashboard"
+      },
+      "resources_title": "Helpful Resources",
+      "resources": {
+        "documentation": "View Documentation",
+        "support": "Contact Support"
+      },
+      "complete_setup": "Go to Dashboard"
+    }
+  },
+  "hr_onboarding": {
+    "steps": {
+      "welcome": "Welcome",
+      "profile_setup": "Profile Setup",
+      "complete": "Complete"
+    },
+    "welcome": {
+      "title": "Welcome to Your HR Dashboard",
+      "subtitle": "Let's get you set up to start managing your recruitment process.",
+      "your_company": "Your Company",
+      "info_message": "You've been invited to join this company as an HR team member. Complete your profile to get started."
+    },
+    "profile_setup": {
+      "title": "Complete Your Profile",
+      "subtitle": "Tell us a bit about yourself to personalize your experience.",
+      "position_label": "Job Title",
+      "position_helper": "E.g., HR Manager, Recruiter, Talent Acquisition Specialist",
+      "department_label": "Department",
+      "department_helper": "E.g., Human Resources, Recruiting",
+      "phone_label": "Phone Number",
+      "phone_helper": "Your contact number",
+      "timezone_label": "Timezone",
+      "timezone_helper": "E.g., America/New_York, Europe/London",
+      "bio_label": "Professional Bio",
+      "bio_helper": "Tell us about your experience and expertise (optional)",
+      "saving": "Saving..."
+    },
+    "completion": {
+      "title": "Profile Complete!",
+      "message": "Your HR profile has been set up successfully. Redirecting you to your dashboard...",
+      "redirecting": "Redirecting to dashboard..."
     }
   }
 }

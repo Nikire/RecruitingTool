@@ -3,7 +3,7 @@ import {User, UserRoles} from '../types/user.types';
 /**
  * Management roles that have permissions to create, update, and delete resources
  */
-const MANAGEMENT_ROLES = [UserRoles.HR, UserRoles.ADMIN, UserRoles.SUPER_ADMIN] as const;
+const MANAGEMENT_ROLES = [UserRoles.HR, UserRoles.ADMIN, UserRoles.SUPER_ADMIN, UserRoles.COMPANY_OWNER] as const;
 
 /**
  * Checks if the user has management permissions (HR, ADMIN, or SUPER_ADMIN roles)
@@ -49,15 +49,20 @@ export const isAdmin = (user: User | null): boolean => {
 
 /**
  * Gets the default dashboard route for a user based on their roles
- * Priority: SUPER_ADMIN/ADMIN > HR > regular users
+ * Priority: SUPER_ADMIN > ADMIN/COMPANY_OWNER > HR > regular users
  * @param user - The user to get the dashboard for
  * @returns The appropriate dashboard route
  */
 export const getDefaultDashboard = (user: User | null): string => {
 	if (!user || !Array.isArray(user.roles)) return '/careers';
 
-	// Admins go to admin panel
-	if (user.roles.includes(UserRoles.SUPER_ADMIN) || user.roles.includes(UserRoles.ADMIN)) {
+	// Super admins go to admin panel
+	if (user.roles.includes(UserRoles.SUPER_ADMIN)) {
+		return '/admin';
+	}
+
+	// Admins and Company Owners go to admin panel
+	if (user.roles.includes(UserRoles.ADMIN) || user.roles.includes(UserRoles.COMPANY_OWNER)) {
 		return '/admin';
 	}
 

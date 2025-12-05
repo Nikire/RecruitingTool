@@ -7,6 +7,8 @@ import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { UserActivityService } from './services/user-activity.service';
 import { CheckQuota } from '../quota/decorators/check-quota.decorator';
+import { OnboardingService } from './services/onboarding.service';
+import { HROnboardingStatusDto, CompleteHROnboardingDto, HROnboardingCompleteResponseDto } from './dto/onboarding.dto';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -20,6 +22,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly userActivityService: UserActivityService,
+    private readonly onboardingService: OnboardingService,
   ) {}
 
   @Post()
@@ -128,5 +131,30 @@ export class UsersController {
   @Auth(['ADMIN'])
   getUserActivity(@Param('uid') uid: string): Promise<UserActivityLogResponseDto[]> {
     return this.userActivityService.getUserActivity(uid);
+  }
+
+  @Get('onboarding/hr/status')
+  @ApiOperation({ summary: 'Get HR onboarding status for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns HR onboarding status',
+    type: HROnboardingStatusDto,
+  })
+  @Auth(['HR', 'USER'])
+  getHROnboardingStatus(@Request() req): Promise<HROnboardingStatusDto> {
+    return this.onboardingService.getHROnboardingStatus(req.user.id);
+  }
+
+  @Post('onboarding/hr/complete')
+  @ApiOperation({ summary: 'Complete HR user onboarding' })
+  @ApiResponse({
+    status: 200,
+    description: 'Onboarding completed successfully',
+    type: HROnboardingCompleteResponseDto,
+  })
+  @ApiBody({ type: CompleteHROnboardingDto })
+  @Auth(['HR', 'USER'])
+  completeHROnboarding(@Request() req, @Body() data: CompleteHROnboardingDto): Promise<HROnboardingCompleteResponseDto> {
+    return this.onboardingService.completeHROnboarding(req.user.id, data);
   }
 }

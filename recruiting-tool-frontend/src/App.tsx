@@ -1,6 +1,6 @@
 import {Route, Routes} from 'react-router-dom';
 import Login from './pages/auth/Login';
-import Signup from './pages/auth/Signup';
+import RegistrationWizard from './pages/auth/RegistrationWizard';
 import Logout from './pages/auth/Logout';
 import Home from './pages/home/Home';
 import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
@@ -29,6 +29,8 @@ import BookingConfirmedPage from './pages/booking/BookingConfirmedPage';
 import ErrorBoundaryTest from './pages/test/ErrorBoundaryTest';
 import HRJobPositionDetailPage from './pages/hr/job-position-detail/HRJobPositionDetailPage';
 import SubscriptionPage from './pages/profile/SubscriptionPage';
+import OnboardingWizard from './pages/onboarding/OnboardingWizard';
+import HROnboardingWizard from './pages/onboarding/HROnboardingWizard';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -51,7 +53,7 @@ function App() {
 				{/* Main Layout - for other public pages */}
 				<Route element={<MainLayout />}>
 					<Route path="/login" element={<Login />} />
-					<Route path="/signup" element={<Signup />} />
+					<Route path="/register" element={<RegistrationWizard />} />
 					<Route path="/logout" element={<Logout />} />
 					<Route path="/careers" element={<CareersPage />} />
 					<Route path="/careers/:uid" element={<JobPositionDetailPage />} />
@@ -63,6 +65,8 @@ function App() {
 					</Route>
 
 					<Route element={<ProtectedRoute />}>
+						<Route path="/onboarding" element={<OnboardingWizard />} />
+						<Route path="/onboarding/hr" element={<HROnboardingWizard />} />
 						<Route path="/profile" element={<ProfilePage />} />
 						<Route path="/profile/subscription" element={<SubscriptionPage />} />
 					</Route>

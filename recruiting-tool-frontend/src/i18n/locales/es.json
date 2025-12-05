@@ -703,7 +703,11 @@
     "signup": "Registrarse",
     "careers": "Carreras",
     "hr_panel": "Panel de RRHH",
-    "admin_panel": "Panel de Administración"
+    "admin_panel": "Panel de Administración",
+    "menu": "Menú",
+    "notifications": "Notificaciones",
+    "profile": "Perfil",
+    "subscription": "Suscripción"
   },
   "access": {
     "denied": "Acceso Denegado",
@@ -863,6 +867,81 @@
     "signing_up": "Registrando...",
     "login_failed": "Error al iniciar sesión. Por favor intente nuevamente.",
     "signup_failed": "Error al registrarse. Por favor intente nuevamente."
+  },
+  "registration_wizard": {
+    "steps": {
+      "role_selection": "Elige tu Rol",
+      "account_creation": "Crear Cuenta",
+      "role_information": "Información Adicional",
+      "confirmation": "Confirmar y Completar"
+    },
+    "role_selection": {
+      "title": "¿Cómo quieres usar nuestra plataforma?",
+      "subtitle": "Elige el rol que mejor describa tus necesidades"
+    },
+    "roles": {
+      "hr": {
+        "title": "RRHH / Reclutador",
+        "description": "Quiero contratar talento para mi empresa"
+      },
+      "applicant": {
+        "title": "Candidato",
+        "description": "Estoy buscando trabajo"
+      },
+      "company_owner": {
+        "title": "Propietario de Empresa",
+        "description": "Quiero configurar mi empresa"
+      }
+    },
+    "account_creation": {
+      "title": "Crea tu Cuenta",
+      "subtitle": "Ingresa tus datos para comenzar",
+      "confirm_password": "Confirmar Contraseña",
+      "confirm_password_required": "Por favor confirma tu contraseña",
+      "passwords_must_match": "Las contraseñas deben coincidir",
+      "accept_terms": "Acepto los",
+      "terms_of_service": "Términos de Servicio",
+      "terms_required": "Debes aceptar los Términos de Servicio"
+    },
+    "role_info": {
+      "title": "Información Adicional",
+      "hr_subtitle": "Cuéntanos sobre tu rol. Podrás unirte a una empresa después del registro.",
+      "company": "Seleccionar Empresa",
+      "company_required": "Por favor selecciona una empresa",
+      "company_helper": "Elige la empresa para la que trabajas",
+      "no_companies": "No hay empresas disponibles",
+      "job_title": "Tu Cargo",
+      "job_title_helper": "Opcional: ej., Gerente de RRHH, Reclutador",
+      "applicant_subtitle": "Ayúdanos a conocer tu experiencia (opcional)",
+      "skills_summary": "Resumen de Habilidades y Experiencia",
+      "skills_helper": "Breve descripción de tus habilidades y experiencia",
+      "resume_upload": "Subir CV (Opcional)",
+      "resume_helper": "Formato PDF, DOC o DOCX",
+      "choose_file": "Elegir Archivo",
+      "company_name": "Nombre de la Empresa",
+      "company_name_required": "El nombre de la empresa es requerido",
+      "industry": "Industria",
+      "industry_helper": "ej., Tecnología, Salud, Finanzas",
+      "company_size": "Tamaño de la Empresa",
+      "company_size_helper": "Número de empleados",
+      "employees": "empleados"
+    },
+    "confirmation": {
+      "title": "Revisar y Completar Registro",
+      "review_message": "Por favor revisa tu información antes de completar el registro",
+      "role_label": "Rol Seleccionado:",
+      "name_label": "Nombre Completo:",
+      "email_label": "Correo Electrónico:",
+      "job_title_label": "Cargo:",
+      "company_name_label": "Nombre de Empresa:",
+      "next_steps": "Después del registro, serás redirigido a tu panel personalizado",
+      "success_title": "¡Bienvenido!",
+      "success_message": "Tu cuenta ha sido creada exitosamente.",
+      "redirecting": "Redirigiendo a tu panel...",
+      "setting_up": "Configurando tu cuenta...",
+      "creating_account": "Creando Cuenta...",
+      "error_message": "Error en el registro. Por favor intenta nuevamente"
+    }
   },
   "companies_page": {
     "title": "Gestión de Empresas",
@@ -1567,6 +1646,178 @@
       "checkout_failed": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
       "billing_portal_failed": "Error al abrir el portal de facturación. Por favor, inténtalo de nuevo.",
       "cancel_failed": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
+    }
+  },
+  "onboarding": {
+    "steps": {
+      "plan_selection": "Seleccionar Plan",
+      "payment": "Pago",
+      "company_setup": "Configuración de Empresa",
+      "welcome": "Bienvenida"
+    },
+    "plan_selection": {
+      "title": "Elige Tu Plan",
+      "subtitle": "Selecciona el plan que mejor se adapte a tus necesidades de contratación. Puedes cambiar tu plan en cualquier momento.",
+      "recommended": "Recomendado",
+      "select_plan": "Seleccionar Plan",
+      "change_plan_later": "Puedes cambiar tu plan en cualquier momento desde la configuración de tu cuenta"
+    },
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "price": "$0/mes",
+        "description": "Perfecto para equipos pequeños que comienzan con la contratación"
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "$99/mes",
+        "description": "Para equipos en crecimiento con necesidades avanzadas de contratación"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Personalizado",
+        "description": "Para grandes organizaciones con requisitos personalizados"
+      },
+      "features": {
+        "basic_candidate_management": "Gestión básica de candidatos",
+        "up_to_candidates": "Hasta 50 candidatos",
+        "basic_job_postings": "Hasta 5 ofertas de empleo",
+        "email_notifications": "Notificaciones por email",
+        "ai_resume_screening": "Análisis de currículums con IA",
+        "advanced_analytics": "Análisis avanzados",
+        "priority_support": "Soporte prioritario",
+        "everything_in_free": "Todo lo incluido en Gratis",
+        "unlimited_candidates": "Candidatos ilimitados",
+        "custom_email_templates": "Plantillas de email personalizadas",
+        "calendar_integration": "Integración con calendario",
+        "everything_in_professional": "Todo lo incluido en Profesional",
+        "unlimited_users": "Miembros de equipo ilimitados",
+        "dedicated_account_manager": "Gerente de cuenta dedicado",
+        "custom_integrations": "Integraciones personalizadas",
+        "sla_guarantee": "Garantía de SLA",
+        "advanced_security": "Características de seguridad avanzadas",
+        "custom_branding": "Marca personalizada"
+      }
+    },
+    "payment": {
+      "title": "Completa Tu Pago",
+      "plan_summary": "Resumen del Plan",
+      "selected_plan": "Plan Seleccionado",
+      "price": "Precio",
+      "billing_info": "Facturado mensualmente. Cancela en cualquier momento.",
+      "secure_payment_notice": "Tu pago es procesado de forma segura a través de Stripe. Nunca almacenamos la información de tu tarjeta de crédito.",
+      "whats_included": "Qué Incluye",
+      "proceed_to_payment": "Proceder al Pago",
+      "processing": "Procesando...",
+      "error_message": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
+      "features": {
+        "cancel_anytime": "Cancela en cualquier momento, sin compromisos",
+        "no_setup_fees": "Sin cargos de configuración ni ocultos",
+        "secure_processing": "Procesamiento de pago seguro",
+        "instant_access": "Acceso instantáneo después del pago"
+      }
+    },
+    "company_setup": {
+      "title": "Completa el Perfil de Tu Empresa",
+      "subtitle": "Ayúdanos a personalizar tu experiencia proporcionando información adicional sobre tu empresa.",
+      "optional_notice": "Estos detalles son opcionales. Siempre puedes actualizarlos más tarde en la configuración de tu empresa.",
+      "industry_label": "Industria",
+      "industry_helper": "Selecciona la industria principal de tu empresa",
+      "select_industry": "Selecciona una industria",
+      "timezone_label": "Zona Horaria",
+      "timezone_helper": "Tu zona horaria local para programar entrevistas",
+      "select_timezone": "Selecciona una zona horaria",
+      "team_size_label": "Tamaño del Equipo",
+      "team_size_helper": "Número aproximado de empleados",
+      "select_team_size": "Selecciona el tamaño del equipo",
+      "employees": "empleados",
+      "skip": "Omitir",
+      "industries": {
+        "technology": "Tecnología",
+        "healthcare": "Salud",
+        "finance": "Finanzas",
+        "retail": "Comercio Minorista",
+        "manufacturing": "Manufactura",
+        "education": "Educación",
+        "consulting": "Consultoría",
+        "real_estate": "Bienes Raíces",
+        "hospitality": "Hospitalidad",
+        "other": "Otro"
+      }
+    },
+    "welcome": {
+      "title": "¡Bienvenido a Recruiting Tool!",
+      "subtitle": "Tu configuración está completa",
+      "description": "¡Todo listo! Exploremos las características clave que te ayudarán a optimizar tu proceso de contratación.",
+      "features_title": "Características Clave al Alcance",
+      "features": {
+        "candidate_management": {
+          "title": "Gestión de Candidatos",
+          "description": "Rastrea y gestiona todos tus candidatos en un panel centralizado"
+        },
+        "job_postings": {
+          "title": "Ofertas de Empleo",
+          "description": "Crea y publica ofertas de empleo para atraer al mejor talento"
+        },
+        "analytics": {
+          "title": "Análisis e Información",
+          "description": "Toma decisiones de contratación basadas en datos con análisis potentes"
+        },
+        "email_templates": {
+          "title": "Plantillas de Email",
+          "description": "Comunícate eficientemente con plantillas de email personalizables"
+        },
+        "interview_scheduling": {
+          "title": "Programación de Entrevistas",
+          "description": "Programa entrevistas sin problemas con integración de calendario"
+        }
+      },
+      "quick_start_title": "Guía de Inicio Rápido",
+      "quick_steps": {
+        "create_first_job": "Crea tu primera oferta de empleo",
+        "add_team_members": "Invita a miembros del equipo a colaborar",
+        "setup_email_templates": "Personaliza tus plantillas de email",
+        "explore_dashboard": "Explora el panel de análisis"
+      },
+      "resources_title": "Recursos Útiles",
+      "resources": {
+        "documentation": "Ver Documentación",
+        "support": "Contactar Soporte"
+      },
+      "complete_setup": "Ir al Panel"
+    }
+  },
+  "hr_onboarding": {
+    "steps": {
+      "welcome": "Bienvenida",
+      "profile_setup": "Configuración de Perfil",
+      "complete": "Completar"
+    },
+    "welcome": {
+      "title": "Bienvenido a Tu Panel de RRHH",
+      "subtitle": "Configuremos tu cuenta para comenzar a gestionar tu proceso de reclutamiento.",
+      "your_company": "Tu Empresa",
+      "info_message": "Has sido invitado a unirte a esta empresa como miembro del equipo de RRHH. Completa tu perfil para comenzar."
+    },
+    "profile_setup": {
+      "title": "Completa Tu Perfil",
+      "subtitle": "Cuéntanos un poco sobre ti para personalizar tu experiencia.",
+      "position_label": "Cargo",
+      "position_helper": "Ej., Gerente de RRHH, Reclutador, Especialista en Adquisición de Talento",
+      "department_label": "Departamento",
+      "department_helper": "Ej., Recursos Humanos, Reclutamiento",
+      "phone_label": "Número de Teléfono",
+      "phone_helper": "Tu número de contacto",
+      "timezone_label": "Zona Horaria",
+      "timezone_helper": "Ej., America/New_York, Europe/Madrid",
+      "bio_label": "Biografía Profesional",
+      "bio_helper": "Cuéntanos sobre tu experiencia y especialización (opcional)",
+      "saving": "Guardando..."
+    },
+    "completion": {
+      "title": "¡Perfil Completo!",
+      "message": "Tu perfil de RRHH se ha configurado exitosamente. Redirigiendo a tu panel...",
+      "redirecting": "Redirigiendo al panel..."
     }
   }
 }

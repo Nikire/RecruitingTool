@@ -136,7 +136,7 @@ const Home: React.FC = () => {
 								<Button
 									variant="contained"
 									size="large"
-									onClick={() => navigate('/signup')}
+									onClick={() => navigate('/register')}
 									sx={{
 										bgcolor: 'white',
 										color: 'primary.main',
@@ -225,8 +225,9 @@ const Home: React.FC = () => {
 						<Grid item xs={12} sm={6} md={4} key={index}>
 							<Card
 								sx={{
-									minHeight: 180,
-									maxWidth: 350,
+									height: '100%',
+									width: 350,
+									maxWidth: '100%',
 									mx: 'auto',
 									display: 'flex',
 									flexDirection: 'column',
@@ -448,7 +449,7 @@ const Home: React.FC = () => {
 						<Button
 							variant="contained"
 							size="large"
-							onClick={() => navigate('/signup')}
+							onClick={() => navigate('/register')}
 							sx={{
 								bgcolor: 'white',
 								color: 'primary.main',
