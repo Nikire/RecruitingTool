@@ -20,6 +20,7 @@ export function CompanyMapper(company: Company | CompanyWithRelations) {
     uid: company.uid,
     name: company.name,
     description: company.description,
+    logoUrl: company.logoUrl,
   };
 
   if ((company as any)._count) {
@@ -35,5 +36,6 @@ export function PublicCompanyMapper(company: Company) {
     uid: company.uid,
     name: company.name,
     description: company.description,
+    logoUrl: company.logoUrl,
   };
 }

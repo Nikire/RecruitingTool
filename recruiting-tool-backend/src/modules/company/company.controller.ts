@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { CompanyService } from './company.service';
 import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto } from './dto/company.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { FileValidationPipe } from '../storage/pipes/file-validation.pipe';
+import { Request } from 'express';
 
 @ApiTags('company')
 @Controller('company')
@@ -62,5 +65,37 @@ export class CompanyController {
   @ApiResponse({ status: 200, description: 'Company deleted successfully', type: MessageResponseDto })
   remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.companyService.remove(uid);
+  }
+
+  @Post(':uid/logo')
+  @Auth(['COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
+  @UseInterceptors(FileInterceptor('logo'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload company logo (COMPANY_OWNER, ADMIN, SUPER_ADMIN)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        logo: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Logo uploaded successfully', type: CompanyResponseDto })
+  async uploadLogo(
+    @Param('uid') uid: string,
+    @UploadedFile(
+      new FileValidationPipe({
+        maxSize: 5 * 1024 * 1024, // 5MB
+        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'],
+      }),
+    )
+    file: Express.Multer.File,
+    @Req() req: Request,
+  ): Promise<CompanyResponseDto> {
+    const userUid = (req.user as any)?.uid;
+    return this.companyService.uploadLogo(uid, file, userUid);
   }
 }

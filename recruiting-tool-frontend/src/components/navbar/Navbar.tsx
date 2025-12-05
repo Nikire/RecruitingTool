@@ -149,7 +149,20 @@ const Navbar: React.FC = () => {
 							}}
 							aria-label={t('navbar.home')}
 						>
-							<WorkIcon sx={{fontSize: {xs: 28, sm: 32}}} />
+							{isAuthenticated && logedUser?.company?.logoUrl ? (
+								<Box
+									component="img"
+									src={logedUser.company.logoUrl}
+									alt={logedUser.company.name || 'Company Logo'}
+									sx={{
+										height: {xs: 32, sm: 40},
+										maxWidth: 150,
+										objectFit: 'contain',
+									}}
+								/>
+							) : (
+								<WorkIcon sx={{fontSize: {xs: 28, sm: 32}}} />
+							)}
 							<Typography
 								variant="h6"
 								component="div"
@@ -160,7 +173,9 @@ const Navbar: React.FC = () => {
 									display: {xs: 'none', sm: 'block'},
 								}}
 							>
-								{t('navbar.app_title')}
+								{isAuthenticated && logedUser?.company?.name
+									? logedUser.company.name
+									: t('navbar.app_title')}
 							</Typography>
 						</Box>
 

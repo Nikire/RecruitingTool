@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
 	Box,
 	Typography,
@@ -8,7 +8,10 @@ import {
 	Card,
 	CardContent,
 	Alert,
+	Avatar,
+	IconButton,
 } from '@mui/material';
+import { CloudUpload as UploadIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useForm } from 'react-hook-form';
 import { OnboardingFormData } from '../OnboardingWizard';
@@ -30,6 +33,9 @@ interface CompanySetupFormData {
 const CompanySetupStep: React.FC<CompanySetupStepProps> = ({ formData, onNext, onBack }) => {
 	const { t } = useTranslation();
 	const validationRules = useValidationRules();
+	const [logoFile, setLogoFile] = useState<File | null>(null);
+	const [logoPreview, setLogoPreview] = useState<string | null>(null);
+
 	const {
 		register,
 		handleSubmit,
@@ -41,6 +47,36 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({ formData, onNext, o
 			teamSize: formData.teamSize || '',
 		},
 	});
+
+	const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		const file = event.target.files?.[0];
+		if (file) {
+			// Validate file size (5MB)
+			if (file.size > 5 * 1024 * 1024) {
+				alert(t('onboarding.company_setup.logo_size_limit'));
+				return;
+			}
+
+			// Validate file type
+			const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'];
+			if (!validTypes.includes(file.type)) {
+				alert(t('onboarding.company_setup.logo_helper'));
+				return;
+			}
+
+			setLogoFile(file);
+			const reader = new FileReader();
+			reader.onloadend = () => {
+				setLogoPreview(reader.result as string);
+			};
+			reader.readAsDataURL(file);
+		}
+	};
+
+	const handleRemoveLogo = () => {
+		setLogoFile(null);
+		setLogoPreview(null);
+	};
 
 	const industries = [
 		'technology',
@@ -75,7 +111,8 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({ formData, onNext, o
 	];
 
 	const onSubmit = (data: CompanySetupFormData) => {
-		onNext(data);
+		// Pass the logo file along with other data
+		onNext({ ...data, logoFile });
 	};
 
 	const handleSkip = () => {
@@ -100,6 +137,72 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({ formData, onNext, o
 
 				<Card sx={{ mb: 3 }}>
 					<CardContent>
+						{/* Logo Upload Section */}
+						<Box sx={{ mb: 3 }}>
+							<Typography variant="subtitle1" gutterBottom>
+								{t('onboarding.company_setup.logo_label')}
+							</Typography>
+							<Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+								{t('onboarding.company_setup.logo_helper')}
+							</Typography>
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+								{logoPreview ? (
+									<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+										<Avatar
+											src={logoPreview}
+											alt="Company Logo"
+											sx={{ width: 80, height: 80 }}
+											variant="rounded"
+										/>
+										<Box>
+											<Button
+												variant="outlined"
+												component="label"
+												startIcon={<UploadIcon />}
+												size="small"
+												sx={{ mb: 1 }}
+											>
+												{t('onboarding.company_setup.change_logo')}
+												<input
+													type="file"
+													hidden
+													accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+													onChange={handleLogoChange}
+												/>
+											</Button>
+											<br />
+											<Button
+												variant="outlined"
+												color="error"
+												startIcon={<DeleteIcon />}
+												onClick={handleRemoveLogo}
+												size="small"
+											>
+												{t('onboarding.company_setup.remove_logo')}
+											</Button>
+										</Box>
+									</Box>
+								) : (
+									<Button
+										variant="outlined"
+										component="label"
+										startIcon={<UploadIcon />}
+									>
+										{t('onboarding.company_setup.upload_logo')}
+										<input
+											type="file"
+											hidden
+											accept="image/png,image/jpeg,image/jpg,image/svg+xml"
+											onChange={handleLogoChange}
+										/>
+									</Button>
+								)}
+							</Box>
+							<Typography variant="caption" color="textSecondary" sx={{ mt: 1, display: 'block' }}>
+								{t('onboarding.company_setup.logo_size_limit')}
+							</Typography>
+						</Box>
+
 						<TextField
 							select
 							label={t('onboarding.company_setup.industry_label')}

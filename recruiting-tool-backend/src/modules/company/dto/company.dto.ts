@@ -14,6 +14,11 @@ export class CreateCompanyDto {
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
 }
 
 export class UpdateCompanyDto {
@@ -29,6 +34,11 @@ export class UpdateCompanyDto {
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
 }
 
 export class CompanyResponseDto {
@@ -40,6 +50,9 @@ export class CompanyResponseDto {
 
   @ApiProperty({ description: 'The description of the company', example: 'A leading technology company', required: false })
   description?: string;
+
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  logoUrl?: string;
 
   @ApiProperty({ description: 'Number of users in the company', example: 5, required: false })
   userCount?: number;

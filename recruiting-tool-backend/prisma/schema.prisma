@@ -33,6 +33,7 @@ model Company {
   uid                String              @unique @default(uuid()) @db.Uuid
   name               String
   description        String?
+  logoUrl            String?
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
   users              User[]
