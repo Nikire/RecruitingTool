@@ -198,7 +198,10 @@
     "subtitle": "Manage your company's job openings",
     "create_new": "Create Job Position",
     "search_placeholder": "Search positions...",
-    "in_progress_count": "In Progress: {{count}}"
+    "in_progress_count": "In Progress: {{count}}",
+    "pagination_showing": "Showing {{start}}-{{end}} of {{total}} positions",
+    "pagination_info": "{{from}}-{{to}} of {{count}}",
+    "per_page": "Per page"
   },
   "job_position_card": {
     "full_time": "Full-time",
@@ -227,6 +230,17 @@
     "hr": "Human Resources",
     "finance": "Finance",
     "operations": "Operations",
+    "location_label": "Location",
+    "location_placeholder": "e.g., Remote, New York, London",
+    "date_from_label": "Created From",
+    "date_to_label": "Created To",
+    "sort_by_label": "Sort By",
+    "sort_order_label": "Order",
+    "sort_newest": "Newest First",
+    "sort_title": "Job Title",
+    "sort_updated": "Recently Updated",
+    "sort_ascending": "Ascending (A-Z, Oldest)",
+    "sort_descending": "Descending (Z-A, Newest)",
     "clear_filters": "Clear Filters",
     "active_filters": "{{count}} active filter",
     "active_filters_plural": "{{count}} active filters"
@@ -1178,6 +1192,46 @@
     "check_back_soon": "Check back soon for new opportunities",
     "no_results_found": "No Jobs Found",
     "try_different_keywords": "Try adjusting your search or check back later for new positions"
+  },
+  "careersHero": {
+    "title": "Find Your Next Opportunity",
+    "subtitle": "Explore job openings from top companies and take the next step in your career"
+  },
+  "careersFilters": {
+    "filters": "Filters",
+    "clear_all": "Clear All",
+    "company": "Company",
+    "all_companies": "All Companies",
+    "category": "Job Category",
+    "all_categories": "All Categories",
+    "engineering": "Engineering",
+    "marketing": "Marketing",
+    "sales": "Sales",
+    "design": "Design",
+    "product": "Product",
+    "job_type": "Job Type",
+    "all_types": "All Types",
+    "full_time": "Full-time",
+    "part_time": "Part-time",
+    "contract": "Contract",
+    "internship": "Internship",
+    "work_location": "Work Location",
+    "all_locations": "All Locations",
+    "remote": "Remote",
+    "hybrid": "Hybrid",
+    "onsite": "On-site",
+    "experience_level": "Experience Level",
+    "all_levels": "All Levels",
+    "entry_level": "Entry Level",
+    "mid_level": "Mid Level",
+    "senior_level": "Senior Level",
+    "lead_level": "Lead / Manager",
+    "salary_range": "Salary Range",
+    "coming_soon": "Coming soon..."
+  },
+  "careersResults": {
+    "showing_results": "Showing {{count}} of {{total}} jobs",
+    "showing_results_plural": "Showing {{count}} of {{total}} jobs"
   },
   "user_roles": {
     "super_admin": "Super Admin",

@@ -1,4 +1,4 @@
-import {useState, useMemo} from 'react';
+import {useState} from 'react';
 import {
 	Typography,
 	Box,
@@ -11,6 +11,7 @@ import {
 	ToggleButton,
 	ToggleButtonGroup,
 	Skeleton,
+	TablePagination,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
@@ -49,45 +50,34 @@ const JobPositionsPage: React.FC = () => {
 		return (localStorage.getItem('jobPositions_viewMode') as 'grid' | 'list') || 'grid';
 	});
 
+	// Pagination state
+	const [page, setPage] = useState(0); // MUI TablePagination uses 0-based indexing
+	const [pageSize, setPageSize] = useState(10);
+
 	// Filter state
 	const [filters, setFilters] = useState<JobPositionFiltersState>({
 		search: '',
 		status: 'ALL',
 		department: 'ALL',
-	});
-
-	// Fetch job positions
-	const {data, isLoading, error} = useListJobPositions({
-		page: 1,
-		limit: 100,
+		location: '',
+		dateFrom: null,
+		dateTo: null,
 		sortBy: 'createdAt',
 		sortOrder: 'desc',
 	});
 
+	// Fetch job positions with server-side pagination and filtering
+	const {data, isLoading, error} = useListJobPositions({
+		page: page + 1, // Convert to 1-based for API
+		limit: pageSize,
+		search: filters.search || undefined,
+		status: filters.status !== 'ALL' ? filters.status : undefined,
+		sortBy: filters.sortBy,
+		sortOrder: filters.sortOrder,
+	});
+
 	const jobPositions = data?.data || [];
-
-	// Filter job positions based on filter state
-	const filteredJobPositions = useMemo(() => {
-		return jobPositions.filter((position) => {
-			// Search filter
-			if (
-				filters.search &&
-				!position.title.toLowerCase().includes(filters.search.toLowerCase())
-			) {
-				return false;
-			}
-
-			// Status filter
-			if (filters.status !== 'ALL' && position.status !== filters.status) {
-				return false;
-			}
-
-			// Department filter (for now just show all - department data not in JobPosition type)
-			// This can be implemented when department field is added to backend
-
-			return true;
-		});
-	}, [jobPositions, filters]);
+	const totalCount = data?.meta?.total || 0;
 
 	const handleViewModeChange = (
 		_event: React.MouseEvent<HTMLElement>,
@@ -97,6 +87,21 @@ const JobPositionsPage: React.FC = () => {
 			setViewMode(newMode);
 			localStorage.setItem('jobPositions_viewMode', newMode);
 		}
+	};
+
+	const handlePageChange = (_event: unknown, newPage: number) => {
+		setPage(newPage);
+		window.scrollTo({top: 0, behavior: 'smooth'});
+	};
+
+	const handlePageSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		setPageSize(parseInt(event.target.value, 10));
+		setPage(0); // Reset to first page
+	};
+
+	const handleFilterChange = (newFilters: JobPositionFiltersState) => {
+		setFilters(newFilters);
+		setPage(0); // Reset to first page when filters change
 	};
 
 	const handleCloseStagesDialog = () => {
@@ -144,11 +149,11 @@ const JobPositionsPage: React.FC = () => {
 		<Paper sx={{p: 8, textAlign: 'center'}}>
 			<InboxIcon sx={{fontSize: 80, color: 'text.disabled', mb: 2}} />
 			<Typography variant="h6" color="textSecondary" gutterBottom>
-				{filters.search || filters.status !== 'ALL'
+				{filters.search || filters.status !== 'ALL' || filters.location || filters.dateFrom || filters.dateTo
 					? t('job_position_card.no_results')
 					: t('job_position_card.no_positions')}
 			</Typography>
-			{!filters.search && filters.status === 'ALL' && canManage && (
+			{!filters.search && filters.status === 'ALL' && !filters.location && !filters.dateFrom && !filters.dateTo && canManage && (
 				<Button
 					variant="contained"
 					color="primary"
@@ -161,6 +166,14 @@ const JobPositionsPage: React.FC = () => {
 			)}
 		</Paper>
 	);
+
+	// Pagination info text
+	const getPaginationText = () => {
+		if (totalCount === 0) return '';
+		const start = page * pageSize + 1;
+		const end = Math.min((page + 1) * pageSize, totalCount);
+		return t('job_positions.pagination_showing', {start, end, total: totalCount});
+	};
 
 	return (
 		<Box>
@@ -239,7 +252,16 @@ const JobPositionsPage: React.FC = () => {
 			)}
 
 			{/* Filters */}
-			<JobPositionFilters filters={filters} onChange={setFilters} />
+			<JobPositionFilters filters={filters} onChange={handleFilterChange} />
+
+			{/* Pagination Info */}
+			{!isLoading && totalCount > 0 && (
+				<Box sx={{mb: 2, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+					<Typography variant="body2" color="text.secondary">
+						{getPaginationText()}
+					</Typography>
+				</Box>
+			)}
 
 			{/* Error State */}
 			{error && !data && (
@@ -254,32 +276,56 @@ const JobPositionsPage: React.FC = () => {
 			{isLoading && renderSkeletonCards()}
 
 			{/* Empty State */}
-			{!isLoading && filteredJobPositions.length === 0 && renderEmptyState()}
+			{!isLoading && jobPositions.length === 0 && renderEmptyState()}
 
 			{/* Grid View */}
-			{!isLoading && filteredJobPositions.length > 0 && viewMode === 'grid' && (
-				<Grid container spacing={3} justifyContent="center">
-					{filteredJobPositions.map((position) => (
-						<Grid
-							item
-							xs={12}
-							sm={6}
-							md={4}
-							key={position.uid}
-							sx={{overflow: 'visible'}}
-						>
-							<JobPositionCard
-								jobPosition={position}
-								onView={handleViewDetails}
-								onEdit={canManage ? handleEdit : undefined}
-							/>
-						</Grid>
-					))}
-				</Grid>
+			{!isLoading && jobPositions.length > 0 && viewMode === 'grid' && (
+				<>
+					<Grid container spacing={3} justifyContent="center">
+						{jobPositions.map((position) => (
+							<Grid
+								item
+								xs={12}
+								sm={6}
+								md={4}
+								key={position.uid}
+								sx={{overflow: 'visible'}}
+							>
+								<JobPositionCard
+									jobPosition={position}
+									onView={handleViewDetails}
+									onEdit={canManage ? handleEdit : undefined}
+								/>
+							</Grid>
+						))}
+					</Grid>
+
+					{/* Pagination Controls */}
+					<Box sx={{display: 'flex', justifyContent: 'center', mt: 4}}>
+						<TablePagination
+							component="div"
+							count={totalCount}
+							page={page}
+							onPageChange={handlePageChange}
+							rowsPerPage={pageSize}
+							onRowsPerPageChange={handlePageSizeChange}
+							rowsPerPageOptions={[10, 25, 50]}
+							labelRowsPerPage={t('job_positions.per_page')}
+							labelDisplayedRows={({from, to, count}) =>
+								t('job_positions.pagination_info', {from, to, count})
+							}
+							sx={{
+								'& .MuiTablePagination-toolbar': {
+									justifyContent: 'center',
+								},
+							}}
+						/>
+					</Box>
+				</>
 			)}
 
 			{/* List View - Fallback to showing grid message */}
-			{!isLoading && filteredJobPositions.length > 0 && viewMode === 'list' && (
+			{!isLoading && jobPositions.length > 0 && viewMode === 'list' && (
 				<Paper sx={{p: 4, textAlign: 'center'}}>
 					<Typography variant="body1" color="textSecondary">
 						{t('job_position_card.list_view_coming_soon')}

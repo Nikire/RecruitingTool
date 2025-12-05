@@ -198,7 +198,10 @@
     "subtitle": "Gestiona las ofertas de trabajo de tu empresa",
     "create_new": "Crear Posición de Trabajo",
     "search_placeholder": "Buscar posiciones...",
-    "in_progress_count": "En Progreso: {{count}}"
+    "in_progress_count": "En Progreso: {{count}}",
+    "pagination_showing": "Mostrando {{start}}-{{end}} de {{total}} posiciones",
+    "pagination_info": "{{from}}-{{to}} de {{count}}",
+    "per_page": "Por página"
   },
   "job_position_card": {
     "full_time": "Tiempo completo",
@@ -227,6 +230,17 @@
     "hr": "Recursos Humanos",
     "finance": "Finanzas",
     "operations": "Operaciones",
+    "location_label": "Ubicación",
+    "location_placeholder": "ej., Remoto, Nueva York, Londres",
+    "date_from_label": "Creado Desde",
+    "date_to_label": "Creado Hasta",
+    "sort_by_label": "Ordenar Por",
+    "sort_order_label": "Orden",
+    "sort_newest": "Más Reciente",
+    "sort_title": "Título del Trabajo",
+    "sort_updated": "Actualizado Recientemente",
+    "sort_ascending": "Ascendente (A-Z, Más Antiguo)",
+    "sort_descending": "Descendente (Z-A, Más Reciente)",
     "clear_filters": "Limpiar Filtros",
     "active_filters": "{{count}} filtro activo",
     "active_filters_plural": "{{count}} filtros activos"
@@ -1184,6 +1198,46 @@
     "check_back_soon": "Vuelve pronto para nuevas oportunidades",
     "no_results_found": "No Se Encontraron Trabajos",
     "try_different_keywords": "Intenta ajustar tu búsqueda o vuelve más tarde para nuevas posiciones"
+  },
+  "careersHero": {
+    "title": "Encuentra Tu Próxima Oportunidad",
+    "subtitle": "Explora ofertas de trabajo de las mejores empresas y da el siguiente paso en tu carrera"
+  },
+  "careersFilters": {
+    "filters": "Filtros",
+    "clear_all": "Limpiar Todo",
+    "company": "Empresa",
+    "all_companies": "Todas las Empresas",
+    "category": "Categoría de Trabajo",
+    "all_categories": "Todas las Categorías",
+    "engineering": "Ingeniería",
+    "marketing": "Marketing",
+    "sales": "Ventas",
+    "design": "Diseño",
+    "product": "Producto",
+    "job_type": "Tipo de Trabajo",
+    "all_types": "Todos los Tipos",
+    "full_time": "Tiempo Completo",
+    "part_time": "Tiempo Parcial",
+    "contract": "Contrato",
+    "internship": "Pasantía",
+    "work_location": "Ubicación de Trabajo",
+    "all_locations": "Todas las Ubicaciones",
+    "remote": "Remoto",
+    "hybrid": "Híbrido",
+    "onsite": "Presencial",
+    "experience_level": "Nivel de Experiencia",
+    "all_levels": "Todos los Niveles",
+    "entry_level": "Nivel de Entrada",
+    "mid_level": "Nivel Medio",
+    "senior_level": "Nivel Senior",
+    "lead_level": "Líder / Gerente",
+    "salary_range": "Rango Salarial",
+    "coming_soon": "Próximamente..."
+  },
+  "careersResults": {
+    "showing_results": "Mostrando {{count}} de {{total}} trabajos",
+    "showing_results_plural": "Mostrando {{count}} de {{total}} trabajos"
   },
   "user_roles": {
     "super_admin": "Super Administrador",

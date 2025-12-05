@@ -43,6 +43,22 @@ interface DummyDataStructure {
       required: boolean;
       options?: string[];
     }>;
+    jobCategory?: string;
+    jobType?: 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | 'TEMPORARY';
+    workLocation?: 'REMOTE' | 'HYBRID' | 'ON_SITE';
+    salaryMin?: number;
+    salaryMax?: number;
+    salaryCurrency?: string;
+    salaryPeriod?: 'HOURLY' | 'MONTHLY' | 'YEARLY';
+    benefits?: string[];
+    requirements?: string[];
+    responsibilities?: string[];
+    experienceLevel?: 'ENTRY' | 'MID' | 'SENIOR' | 'LEAD' | 'EXECUTIVE';
+    educationLevel?: string;
+    skills?: string[];
+    applicationDeadline?: string;
+    isUrgent?: boolean;
+    isFeatured?: boolean;
     stages: Array<{
       title: string;
       type: StageType;
@@ -418,6 +434,22 @@ export class DummyService implements OnApplicationBootstrap {
               description: jobPosition.description,
               status: jobPosition.status as any,
               customQuestions: jobPosition.customQuestions ? jobPosition.customQuestions : [],
+              jobCategory: jobPosition.jobCategory,
+              jobType: jobPosition.jobType as any,
+              workLocation: jobPosition.workLocation as any,
+              salaryMin: jobPosition.salaryMin,
+              salaryMax: jobPosition.salaryMax,
+              salaryCurrency: jobPosition.salaryCurrency || 'USD',
+              salaryPeriod: jobPosition.salaryPeriod as any,
+              benefits: jobPosition.benefits || [],
+              requirements: jobPosition.requirements || [],
+              responsibilities: jobPosition.responsibilities || [],
+              experienceLevel: jobPosition.experienceLevel as any,
+              educationLevel: jobPosition.educationLevel,
+              skills: jobPosition.skills || [],
+              applicationDeadline: jobPosition.applicationDeadline ? new Date(jobPosition.applicationDeadline) : null,
+              isUrgent: jobPosition.isUrgent || false,
+              isFeatured: jobPosition.isFeatured || false,
               companyId: createdCompanies[jobPosition.companyIndex].id,
               createdById: createdUsers[jobPosition.createdByUserIndex].id,
             },

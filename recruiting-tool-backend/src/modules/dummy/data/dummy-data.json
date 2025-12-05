@@ -271,7 +271,43 @@
           "description": "Present the job offer",
           "estimatedTime": 15
         }
-      ]
+      ],
+      "jobCategory": "Engineering",
+      "jobType": "FULL_TIME",
+      "workLocation": "HYBRID",
+      "salaryMin": 80000,
+      "salaryMax": 120000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "YEARLY",
+      "benefits": [
+        "Health Insurance",
+        "401k Match",
+        "Flexible PTO",
+        "Remote Work Options"
+      ],
+      "requirements": [
+        "5+ years of software development experience",
+        "Bachelor's degree in Computer Science or related field",
+        "Strong problem-solving skills"
+      ],
+      "responsibilities": [
+        "Design and implement scalable software solutions",
+        "Lead technical discussions and code reviews",
+        "Mentor junior developers"
+      ],
+      "experienceLevel": "SENIOR",
+      "educationLevel": "Bachelor's degree",
+      "skills": [
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Node.js",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "applicationDeadline": "2025-12-31T23:59:59Z",
+      "isUrgent": false,
+      "isFeatured": true
     },
     {
       "title": "Frontend Developer",
@@ -331,7 +367,40 @@
           "description": "Present the compensation package",
           "estimatedTime": 15
         }
-      ]
+      ],
+      "jobCategory": "Marketing",
+      "jobType": "FULL_TIME",
+      "workLocation": "REMOTE",
+      "salaryMin": 60000,
+      "salaryMax": 90000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "YEARLY",
+      "benefits": [
+        "Health Insurance",
+        "Remote Work Stipend",
+        "Professional Development Budget"
+      ],
+      "requirements": [
+        "3+ years in digital marketing",
+        "Experience with SEO and content marketing",
+        "Strong analytical skills"
+      ],
+      "responsibilities": [
+        "Develop and execute marketing campaigns",
+        "Analyze campaign performance",
+        "Manage social media presence"
+      ],
+      "experienceLevel": "MID",
+      "educationLevel": "Bachelor's degree in Marketing",
+      "skills": [
+        "SEO",
+        "Content Marketing",
+        "Google Analytics",
+        "Social Media Management"
+      ],
+      "applicationDeadline": "2025-11-30T23:59:59Z",
+      "isUrgent": true,
+      "isFeatured": false
     },
     {
       "title": "DevOps Engineer",
@@ -364,7 +433,41 @@
           "description": "Discuss terms and offer",
           "estimatedTime": 20
         }
-      ]
+      ],
+      "jobCategory": "Data Science",
+      "jobType": "CONTRACT",
+      "workLocation": "REMOTE",
+      "salaryMin": 70,
+      "salaryMax": 100,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "HOURLY",
+      "benefits": [
+        "Flexible Schedule",
+        "Project Bonuses"
+      ],
+      "requirements": [
+        "Expert knowledge in Python and SQL",
+        "Experience with machine learning frameworks",
+        "Strong statistics background"
+      ],
+      "responsibilities": [
+        "Develop predictive models",
+        "Analyze complex datasets",
+        "Present findings to stakeholders"
+      ],
+      "experienceLevel": "SENIOR",
+      "educationLevel": "Master's degree in Data Science",
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "SQL",
+        "Pandas",
+        "Scikit-learn",
+        "Data Visualization"
+      ],
+      "applicationDeadline": "2026-01-15T23:59:59Z",
+      "isUrgent": false,
+      "isFeatured": true
     },
     {
       "title": "Product Manager",

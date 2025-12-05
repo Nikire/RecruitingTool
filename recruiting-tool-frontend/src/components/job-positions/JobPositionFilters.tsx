@@ -9,16 +9,23 @@ import {
 	Typography,
 	Chip,
 	Stack,
+	Grid,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
+import SortIcon from '@mui/icons-material/Sort';
 import {JobPositionStatus} from '../../types/jobPosition.types';
 
 export interface JobPositionFiltersState {
 	search: string;
 	status: JobPositionStatus | 'ALL';
 	department: string;
+	location: string;
+	dateFrom: string | null;
+	dateTo: string | null;
+	sortBy: 'createdAt' | 'title' | 'updatedAt';
+	sortOrder: 'asc' | 'desc';
 }
 
 interface JobPositionFiltersProps {
@@ -55,21 +62,69 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
 		});
 	};
 
+	const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange({
+			...filters,
+			location: event.target.value,
+		});
+	};
+
+	const handleDateFromChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange({
+			...filters,
+			dateFrom: event.target.value || null,
+		});
+	};
+
+	const handleDateToChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange({
+			...filters,
+			dateTo: event.target.value || null,
+		});
+	};
+
+	const handleSortByChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange({
+			...filters,
+			sortBy: event.target.value as 'createdAt' | 'title' | 'updatedAt',
+		});
+	};
+
+	const handleSortOrderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+		onChange({
+			...filters,
+			sortOrder: event.target.value as 'asc' | 'desc',
+		});
+	};
+
 	const handleClearFilters = () => {
 		onChange({
 			search: '',
 			status: 'ALL',
 			department: 'ALL',
+			location: '',
+			dateFrom: null,
+			dateTo: null,
+			sortBy: 'createdAt',
+			sortOrder: 'desc',
 		});
 	};
 
 	const hasActiveFilters =
-		filters.search !== '' || filters.status !== 'ALL' || filters.department !== 'ALL';
+		filters.search !== '' ||
+		filters.status !== 'ALL' ||
+		filters.department !== 'ALL' ||
+		filters.location !== '' ||
+		filters.dateFrom !== null ||
+		filters.dateTo !== null;
 
 	const activeFilterCount = [
 		filters.search !== '',
 		filters.status !== 'ALL',
 		filters.department !== 'ALL',
+		filters.location !== '',
+		filters.dateFrom !== null,
+		filters.dateTo !== null,
 	].filter(Boolean).length;
 
 	return (
@@ -101,60 +156,136 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
 					}}
 				/>
 
-				{/* Filter Dropdowns */}
-				<Box
-					sx={{
-						display: 'flex',
-						gap: 2,
-						flexWrap: 'wrap',
-					}}
-				>
+				{/* Filter Dropdowns and Inputs */}
+				<Grid container spacing={2}>
 					{/* Status Filter */}
-					<TextField
-						select
-						label={t('job_position_filters.status_label')}
-						value={filters.status}
-						onChange={handleStatusChange}
-						sx={{minWidth: 200, flex: '1 1 200px'}}
-						size="small"
-					>
-						<MenuItem value="ALL">{t('job_position_filters.all_statuses')}</MenuItem>
-						<MenuItem value="OPEN">{t('status.open')}</MenuItem>
-						<MenuItem value="CLOSED">{t('status.closed')}</MenuItem>
-						<MenuItem value="CANCELLED">{t('status.cancelled')}</MenuItem>
-					</TextField>
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							select
+							fullWidth
+							label={t('job_position_filters.status_label')}
+							value={filters.status}
+							onChange={handleStatusChange}
+							size="small"
+						>
+							<MenuItem value="ALL">{t('job_position_filters.all_statuses')}</MenuItem>
+							<MenuItem value="OPEN">{t('status.open')}</MenuItem>
+							<MenuItem value="CLOSED">{t('status.closed')}</MenuItem>
+							<MenuItem value="CANCELLED">{t('status.cancelled')}</MenuItem>
+						</TextField>
+					</Grid>
 
 					{/* Department Filter */}
-					<TextField
-						select
-						label={t('job_position_filters.department_label')}
-						value={filters.department}
-						onChange={handleDepartmentChange}
-						sx={{minWidth: 200, flex: '1 1 200px'}}
-						size="small"
-					>
-						<MenuItem value="ALL">{t('job_position_filters.all_departments')}</MenuItem>
-						<MenuItem value="engineering">{t('job_position_filters.engineering')}</MenuItem>
-						<MenuItem value="marketing">{t('job_position_filters.marketing')}</MenuItem>
-						<MenuItem value="sales">{t('job_position_filters.sales')}</MenuItem>
-						<MenuItem value="hr">{t('job_position_filters.hr')}</MenuItem>
-						<MenuItem value="finance">{t('job_position_filters.finance')}</MenuItem>
-						<MenuItem value="operations">{t('job_position_filters.operations')}</MenuItem>
-					</TextField>
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							select
+							fullWidth
+							label={t('job_position_filters.department_label')}
+							value={filters.department}
+							onChange={handleDepartmentChange}
+							size="small"
+						>
+							<MenuItem value="ALL">{t('job_position_filters.all_departments')}</MenuItem>
+							<MenuItem value="engineering">{t('job_position_filters.engineering')}</MenuItem>
+							<MenuItem value="marketing">{t('job_position_filters.marketing')}</MenuItem>
+							<MenuItem value="sales">{t('job_position_filters.sales')}</MenuItem>
+							<MenuItem value="hr">{t('job_position_filters.hr')}</MenuItem>
+							<MenuItem value="finance">{t('job_position_filters.finance')}</MenuItem>
+							<MenuItem value="operations">{t('job_position_filters.operations')}</MenuItem>
+						</TextField>
+					</Grid>
+
+					{/* Location Filter */}
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							fullWidth
+							label={t('job_position_filters.location_label')}
+							placeholder={t('job_position_filters.location_placeholder')}
+							value={filters.location}
+							onChange={handleLocationChange}
+							size="small"
+						/>
+					</Grid>
+
+					{/* Sort By */}
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							select
+							fullWidth
+							label={t('job_position_filters.sort_by_label')}
+							value={filters.sortBy}
+							onChange={handleSortByChange}
+							size="small"
+							InputProps={{
+								startAdornment: (
+									<InputAdornment position="start">
+										<SortIcon fontSize="small" />
+									</InputAdornment>
+								),
+							}}
+						>
+							<MenuItem value="createdAt">{t('job_position_filters.sort_newest')}</MenuItem>
+							<MenuItem value="title">{t('job_position_filters.sort_title')}</MenuItem>
+							<MenuItem value="updatedAt">{t('job_position_filters.sort_updated')}</MenuItem>
+						</TextField>
+					</Grid>
+
+					{/* Date From */}
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							fullWidth
+							type="date"
+							label={t('job_position_filters.date_from_label')}
+							value={filters.dateFrom || ''}
+							onChange={handleDateFromChange}
+							size="small"
+							InputLabelProps={{shrink: true}}
+						/>
+					</Grid>
+
+					{/* Date To */}
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							fullWidth
+							type="date"
+							label={t('job_position_filters.date_to_label')}
+							value={filters.dateTo || ''}
+							onChange={handleDateToChange}
+							size="small"
+							InputLabelProps={{shrink: true}}
+						/>
+					</Grid>
+
+					{/* Sort Order */}
+					<Grid item xs={12} sm={6} md={3}>
+						<TextField
+							select
+							fullWidth
+							label={t('job_position_filters.sort_order_label')}
+							value={filters.sortOrder}
+							onChange={handleSortOrderChange}
+							size="small"
+						>
+							<MenuItem value="desc">{t('job_position_filters.sort_descending')}</MenuItem>
+							<MenuItem value="asc">{t('job_position_filters.sort_ascending')}</MenuItem>
+						</TextField>
+					</Grid>
 
 					{/* Clear Filters Button */}
 					{hasActiveFilters && (
-						<Button
-							variant="outlined"
-							onClick={handleClearFilters}
-							startIcon={<ClearIcon />}
-							sx={{flex: '0 0 auto'}}
-							size="small"
-						>
-							{t('job_position_filters.clear_filters')}
-						</Button>
+						<Grid item xs={12} sm={6} md={3} sx={{display: 'flex', alignItems: 'center'}}>
+							<Button
+								variant="outlined"
+								onClick={handleClearFilters}
+								startIcon={<ClearIcon />}
+								fullWidth
+								size="small"
+							>
+								{t('job_position_filters.clear_filters')}
+							</Button>
+						</Grid>
 					)}
-				</Box>
+				</Grid>
 
 				{/* Active Filters Display */}
 				{hasActiveFilters && (
@@ -164,7 +295,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
 								count: activeFilterCount,
 							})}
 						</Typography>
-						<Stack direction="row" spacing={1} sx={{mt: 1, flexWrap: 'wrap'}}>
+						<Stack direction="row" spacing={1} sx={{mt: 1, flexWrap: 'wrap', gap: 1}}>
 							{filters.search && (
 								<Chip
 									label={`${t('common.search')}: ${filters.search}`}
@@ -188,6 +319,27 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
 									)}`}
 									size="small"
 									onDelete={() => onChange({...filters, department: 'ALL'})}
+								/>
+							)}
+							{filters.location && (
+								<Chip
+									label={`${t('job_position_filters.location_label')}: ${filters.location}`}
+									size="small"
+									onDelete={() => onChange({...filters, location: ''})}
+								/>
+							)}
+							{filters.dateFrom && (
+								<Chip
+									label={`${t('job_position_filters.date_from_label')}: ${filters.dateFrom}`}
+									size="small"
+									onDelete={() => onChange({...filters, dateFrom: null})}
+								/>
+							)}
+							{filters.dateTo && (
+								<Chip
+									label={`${t('job_position_filters.date_to_label')}: ${filters.dateTo}`}
+									size="small"
+									onDelete={() => onChange({...filters, dateTo: null})}
 								/>
 							)}
 						</Stack>

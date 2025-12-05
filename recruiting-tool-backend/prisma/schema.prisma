@@ -172,24 +172,40 @@ enum ApplicationSource {
 }
 
 model JobPosition {
-  id               Int               @id @default(autoincrement())
-  uid              String            @unique @default(uuid()) @db.Uuid
-  title            String
-  description      String?
-  customQuestions  Json?             @default("[]")
-  deletedAt        DateTime?
-  createdAt        DateTime          @default(now())
-  updatedAt        DateTime          @updatedAt
-  createdById      Int
-  createdBy        User              @relation("JobPositionsUser", fields: [createdById], references: [id], onDelete: Restrict)
-  companyId        Int
-  company          Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  stages           Stage[]
-  status           JobPositionStatus @default(OPEN)
-  hiringProcesses  HiringProcess[]
-  applications     Application[]
-  candidateScores  CandidateScore[]  @relation("JobPositionScores")
-  batchScoringJobs BatchScoringJob[] @relation("BatchScoringJobs")
+  id                  Int               @id @default(autoincrement())
+  uid                 String            @unique @default(uuid()) @db.Uuid
+  title               String
+  description         String?
+  customQuestions     Json?             @default("[]")
+  jobCategory         String?
+  jobType             JobType?
+  workLocation        WorkLocation?
+  salaryMin           Int?
+  salaryMax           Int?
+  salaryCurrency      String            @default("USD")
+  salaryPeriod        SalaryPeriod?
+  benefits            String[]          @default([])
+  requirements        String[]          @default([])
+  responsibilities    String[]          @default([])
+  experienceLevel     ExperienceLevel?
+  educationLevel      String?
+  skills              String[]          @default([])
+  applicationDeadline DateTime?
+  isUrgent            Boolean           @default(false)
+  isFeatured          Boolean           @default(false)
+  deletedAt           DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+  createdById         Int
+  createdBy           User              @relation("JobPositionsUser", fields: [createdById], references: [id], onDelete: Restrict)
+  companyId           Int
+  company             Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  stages              Stage[]
+  status              JobPositionStatus @default(OPEN)
+  hiringProcesses     HiringProcess[]
+  applications        Application[]
+  candidateScores     CandidateScore[]  @relation("JobPositionScores")
+  batchScoringJobs    BatchScoringJob[] @relation("BatchScoringJobs")
 
   @@index([status])
   @@index([companyId])
@@ -200,6 +216,13 @@ model JobPosition {
   @@index([companyId, deletedAt])
   @@index([uid])
   @@index([title])
+  @@index([jobCategory])
+  @@index([jobType])
+  @@index([workLocation])
+  @@index([experienceLevel])
+  @@index([isUrgent])
+  @@index([isFeatured])
+  @@index([applicationDeadline])
 }
 
 model HiringProcess {
@@ -902,6 +925,34 @@ enum SubscriptionPlan {
   FREE
   PROFESSIONAL
   ENTERPRISE
+}
+
+enum JobType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERNSHIP
+  TEMPORARY
+}
+
+enum WorkLocation {
+  REMOTE
+  HYBRID
+  ON_SITE
+}
+
+enum SalaryPeriod {
+  HOURLY
+  MONTHLY
+  YEARLY
+}
+
+enum ExperienceLevel {
+  ENTRY
+  MID
+  SENIOR
+  LEAD
+  EXECUTIVE
 }
 
 model Subscription {
