@@ -113,4 +113,21 @@ export class AuthController {
     await this.authService.revokeAllUserTokens(user.id);
     return { message: 'All sessions terminated successfully' };
   }
+
+  @Post('complete-onboarding')
+  @ApiOperation({ summary: 'Mark onboarding as complete for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Onboarding marked as complete',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid or missing token',
+  })
+  @SkipThrottle()
+  async completeOnboarding(@Headers('authorization') authHeader: string): Promise<{ message: string; onboardingCompleted: boolean }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    await this.authService.completeOnboarding(user.id);
+    return { message: 'Onboarding completed successfully', onboardingCompleted: true };
+  }
 }

@@ -3,6 +3,7 @@ import Login from './pages/auth/Login';
 import RegistrationWizard from './pages/auth/RegistrationWizard';
 import Logout from './pages/auth/Logout';
 import Home from './pages/home/Home';
+import LandingPage from './pages/landing/LandingPage';
 import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
 import DocumentContainer from './layouts/DocumentContainer';
@@ -31,6 +32,7 @@ import HRJobPositionDetailPage from './pages/hr/job-position-detail/HRJobPositio
 import SubscriptionPage from './pages/profile/SubscriptionPage';
 import OnboardingWizard from './pages/onboarding/OnboardingWizard';
 import HROnboardingWizard from './pages/onboarding/HROnboardingWizard';
+import ApplicantOnboarding from './pages/applicant/ApplicantOnboarding';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -38,7 +40,12 @@ function App() {
 		<>
 			<Toaster />
 			<Routes>
-				{/* Landing Page Layout - for Home page with custom styling */}
+				{/* Landing Page - Marketing Page */}
+				<Route element={<LandingPageLayout />}>
+					<Route path="/landing" element={<LandingPage />} />
+				</Route>
+
+				{/* Home Page - Original landing page for logged-in users */}
 				<Route element={<LandingPageLayout />}>
 					<Route index element={<Home />} />
 				</Route>
@@ -67,6 +74,7 @@ function App() {
 					<Route element={<ProtectedRoute />}>
 						<Route path="/onboarding" element={<OnboardingWizard />} />
 						<Route path="/onboarding/hr" element={<HROnboardingWizard />} />
+						<Route path="/applicant/onboarding" element={<ApplicantOnboarding />} />
 						<Route path="/profile" element={<ProfilePage />} />
 						<Route path="/profile/subscription" element={<SubscriptionPage />} />
 					</Route>

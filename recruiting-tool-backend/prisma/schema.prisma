@@ -65,6 +65,7 @@ model User {
   linkedinUrl             String?
   timezone                String?
   googleRefreshToken      String?
+  onboardingCompleted     Boolean                @default(false)
   isActive                Boolean                @default(true)
   deactivatedAt           DateTime?
   deactivatedBy           Int?

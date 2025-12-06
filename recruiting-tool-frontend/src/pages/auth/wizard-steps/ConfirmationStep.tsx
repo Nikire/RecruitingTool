@@ -47,14 +47,20 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onComplet
 
 	const handleRegister = () => {
 		// Prepare registration data based on role
-		const registrationData = {
+		const registrationData: any = {
 			name: formData.name,
 			email: formData.email,
 			password: formData.password,
-			// Note: Backend will handle role assignment based on the provided data
-			// For now, we'll use the basic register endpoint
-			// In the future, we can create role-specific registration endpoints
+			roles: formData.selectedRole ? [formData.selectedRole] : undefined,
 		};
+
+		// For COMPANY_OWNER, include company name if provided
+		// Backend will auto-create company with this name
+		if (formData.selectedRole === 'COMPANY_OWNER' && formData.companyName) {
+			// We'll send companyName in metadata for now
+			// Backend will create company automatically for COMPANY_OWNER role
+			registrationData.companyName = formData.companyName;
+		}
 
 		registerUser(registrationData, {
 			onSuccess: () => {

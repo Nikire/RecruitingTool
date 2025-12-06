@@ -32,6 +32,12 @@ export class CreateUserDto {
   @IsNotEmpty()
   companyUid?: string;
 
+  @ApiProperty({ description: 'Company name for COMPANY_OWNER registration', example: 'Acme Corp', required: false })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  companyName?: string;
+
   @ApiProperty({
     description: 'The roles of the user',
     example: ['USER', 'HR'],
@@ -184,6 +190,8 @@ export class UserResponseDto {
   deactivatedAt?: string;
   @ApiProperty({ description: 'Last login timestamp', required: false })
   lastLoginAt?: string;
+  @ApiProperty({ description: 'Whether the user has completed onboarding', example: false })
+  onboardingCompleted?: boolean;
 }
 
 export class UserWithPasswordResponseDto extends UserResponseDto {

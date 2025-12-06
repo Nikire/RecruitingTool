@@ -1947,5 +1947,209 @@
       "message": "Tu perfil de RRHH se ha configurado exitosamente. Redirigiendo a tu panel...",
       "redirecting": "Redirigiendo al panel..."
     }
+  },
+  "landing": {
+    "hero": {
+      "headline": "Optimiza tu Proceso de Contratación con Software de Reclutamiento Moderno",
+      "subheadline": "Rastrea candidatos, gestiona entrevistas y construye equipos increíbles con nuestra plataforma todo-en-uno",
+      "cta_primary": "Iniciar Prueba Gratuita",
+      "cta_secondary": "Ver Demo",
+      "image_placeholder": "Imagen Principal"
+    },
+    "stats": {
+      "candidates_processed": "Candidatos Procesados",
+      "companies": "Empresas Usando",
+      "satisfaction": "Satisfacción del Cliente",
+      "time_saved": "Tiempo Ahorrado"
+    },
+    "features": {
+      "section_title": "Todo lo que Necesitas para Contratar Mejor",
+      "section_subtitle": "Funciones potentes diseñadas para hacer el reclutamiento más fácil y efectivo",
+      "multi_stage_hiring": {
+        "title": "Procesos de Contratación Multi-Etapa",
+        "description": "Crea flujos de trabajo personalizables con múltiples etapas para tu proceso"
+      },
+      "candidate_tracking": {
+        "title": "Seguimiento de Candidatos",
+        "description": "Centraliza toda la información, currículums y comunicaciones de candidatos en un solo lugar"
+      },
+      "ai_screening": {
+        "title": "Filtrado de Currículums con IA",
+        "description": "Filtra y clasifica candidatos automáticamente usando tecnología de IA avanzada"
+      },
+      "interview_scheduling": {
+        "title": "Programación de Entrevistas",
+        "description": "Programa entrevistas sin esfuerzo con integración automática de calendario"
+      },
+      "analytics": {
+        "title": "Análisis e Informes",
+        "description": "Toma decisiones basadas en datos con análisis completos de reclutamiento"
+      },
+      "team_collaboration": {
+        "title": "Colaboración en Equipo",
+        "description": "Permite colaboración fluida entre equipos de RRHH, gerentes de contratación y entrevistadores"
+      }
+    },
+    "pricing": {
+      "section_title": "Precios Simples y Transparentes",
+      "section_subtitle": "Elige el plan que se ajuste al tamaño de tu equipo y necesidades de contratación",
+      "per_month": "mes",
+      "recommended": "Recomendado",
+      "cta": "Comenzar",
+      "free": {
+        "name": "Gratis",
+        "price": "$0",
+        "description": "Perfecto para equipos pequeños que comienzan",
+        "features": {
+          "positions": "Hasta 5 posiciones de trabajo",
+          "candidates": "Hasta 50 candidatos",
+          "basic_analytics": "Análisis básicos",
+          "email_support": "Soporte por email"
+        }
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "$29",
+        "description": "Para equipos en crecimiento con necesidades avanzadas",
+        "features": {
+          "unlimited_positions": "Posiciones de trabajo ilimitadas",
+          "unlimited_candidates": "Candidatos ilimitados",
+          "ai_screening": "Filtrado de currículums con IA",
+          "advanced_analytics": "Análisis e informes avanzados",
+          "priority_support": "Soporte prioritario",
+          "custom_branding": "Marca personalizada"
+        }
+      },
+      "enterprise": {
+        "name": "Empresarial",
+        "price": "$99",
+        "description": "Para grandes organizaciones a escala",
+        "features": {
+          "everything_professional": "Todo en Profesional",
+          "dedicated_support": "Gerente de cuenta dedicado",
+          "sso": "Inicio de sesión único (SSO)",
+          "api_access": "Acceso a API",
+          "custom_integrations": "Integraciones personalizadas",
+          "sla": "Garantía SLA"
+        }
+      }
+    },
+    "social_proof": {
+      "section_title": "Confiado por Equipos de Reclutamiento en Todo el Mundo",
+      "section_subtitle": "Mira lo que nuestros clientes dicen sobre su experiencia",
+      "trusted_by": "Confiado por empresas líderes",
+      "company_logo": "Empresa",
+      "testimonial_1": {
+        "quote": "Esta plataforma ha transformado completamente cómo gestionamos nuestro proceso de contratación. Hemos reducido nuestro tiempo de contratación en un 40%.",
+        "author": "Sarah Johnson",
+        "role": "Directora de RRHH",
+        "company": "TechCorp Inc."
+      },
+      "testimonial_2": {
+        "quote": "La función de filtrado con IA nos ahorra innumerables horas. Ahora podemos enfocarnos en los mejores candidatos en lugar de revisar cientos de currículums.",
+        "author": "Michael Chen",
+        "role": "Gerente de Adquisición de Talento",
+        "company": "Growth Ventures"
+      },
+      "testimonial_3": {
+        "quote": "Las funciones de colaboración facilitan que todo nuestro equipo de contratación esté en la misma página. ¡Altamente recomendado!",
+        "author": "Emma Rodriguez",
+        "role": "CEO",
+        "company": "Startup Labs"
+      }
+    },
+    "footer": {
+      "brand_name": "Recruiting Tool",
+      "brand_description": "Software de reclutamiento moderno diseñado para ayudarte a construir equipos increíbles más rápido y eficientemente.",
+      "product": "Producto",
+      "features": "Características",
+      "pricing": "Precios",
+      "careers": "Empleos",
+      "company": "Empresa",
+      "about": "Acerca de",
+      "contact": "Contacto",
+      "blog": "Blog",
+      "resources": "Recursos",
+      "documentation": "Documentación",
+      "support": "Soporte",
+      "api": "API",
+      "legal": "Legal",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio",
+      "security": "Seguridad",
+      "copyright": "© {{year}} Recruiting Tool. Todos los derechos reservados."
+    }
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": "Bienvenida",
+      "profile": "Completar Perfil",
+      "resume": "Subir Currículum",
+      "preferences": "Preferencias",
+      "completion": "¡Listo!"
+    },
+    "welcome": {
+      "title": "¡Bienvenido a Nuestra Plataforma!",
+      "subtitle": "Vamos a configurar tu cuenta para que puedas comenzar a explorar oportunidades laborales increíbles.",
+      "what_to_expect": "Qué Esperar",
+      "step1_desc": "Completa tu perfil con información esencial",
+      "step2_desc": "Sube tu currículum (opcional pero recomendado)",
+      "step3_desc": "Cuéntanos sobre tus preferencias laborales",
+      "step4_desc": "¡Comienza a navegar y aplicar a empleos!",
+      "get_started": "Comenzar"
+    },
+    "profile": {
+      "title": "Completa Tu Perfil",
+      "subtitle": "Ayuda a los empleadores a conocerte mejor completando tu perfil.",
+      "full_name": "Nombre Completo",
+      "phone_number": "Número de Teléfono",
+      "location": "Ubicación / Ciudad",
+      "location_placeholder": "ej., Madrid, España",
+      "linkedin_url": "URL de LinkedIn (Opcional)",
+      "portfolio_url": "URL de Portafolio (Opcional)"
+    },
+    "resume": {
+      "title": "Sube Tu Currículum",
+      "subtitle": "Sube tu currículum para ayudar a los empleadores a entender tu experiencia y habilidades.",
+      "upload_prompt": "Haz clic para subir o arrastra y suelta tu currículum",
+      "file_formats": "Formatos soportados: PDF, DOC, DOCX (Máx 5MB)",
+      "invalid_file_type": "Tipo de archivo inválido. Por favor sube un archivo PDF, DOC o DOCX.",
+      "file_too_large": "El archivo es demasiado grande. El tamaño máximo es 5MB.",
+      "skip": "Omitir por ahora"
+    },
+    "preferences": {
+      "title": "Preferencias Laborales",
+      "subtitle": "Déjanos saber qué tipo de trabajo buscas para mostrarte las mejores coincidencias.",
+      "desired_job_types": "Tipos de Trabajo Deseados",
+      "preferred_locations": "Ubicaciones de Trabajo Preferidas",
+      "salary_expectation": "Expectativa Salarial (Opcional)",
+      "salary_optional": "Opcional - ej., $50,000 - $70,000",
+      "select_multiple": "Puedes seleccionar múltiples opciones"
+    },
+    "completion": {
+      "title": "¡Todo Listo!",
+      "subtitle": "Tu perfil está completo. Ahora puedes navegar empleos y enviar aplicaciones.",
+      "summary": "Resumen de Tu Perfil",
+      "profile": "Nombre",
+      "location": "Ubicación",
+      "resume": "Currículum",
+      "preferences": "Preferencias Laborales",
+      "skipped": "Omitido",
+      "finish": "Comenzar a Explorar Empleos",
+      "completing": "Completando...",
+      "error": "Error al completar la bienvenida. Por favor intenta de nuevo."
+    }
+  },
+  "job_type": {
+    "full_time": "Tiempo Completo",
+    "part_time": "Tiempo Parcial",
+    "contract": "Contrato",
+    "internship": "Pasantía",
+    "temporary": "Temporal"
+  },
+  "work_location": {
+    "remote": "Remoto",
+    "hybrid": "Híbrido",
+    "on_site": "Presencial"
   }
 }

@@ -25,7 +25,7 @@ export class AuthService {
     private readonly databaseService: DatabaseService,
   ) {}
 
-  async register({ name, email, password, roles, companyUid }: CreateUserDto): Promise<RegisteredUserDto> {
+  async register({ name, email, password, roles, companyUid, companyName }: CreateUserDto): Promise<RegisteredUserDto> {
     const foundUser = await this.usersService.findByEmail(email);
     if (foundUser) {
       throw new BadRequestException('User already exists');
@@ -38,15 +38,19 @@ export class AuthService {
 
     // If COMPANY_OWNER role is selected, auto-create a company
     if (isCompanyOwner && !companyUid) {
-      // Extract company name from email domain or use a default
-      const emailDomain = email.split('@')[1];
-      const companyName = emailDomain ? emailDomain.split('.')[0] : 'My Company';
-      const formattedCompanyName = companyName.charAt(0).toUpperCase() + companyName.slice(1);
+      // Use provided company name, or extract from email domain as fallback
+      let finalCompanyName = companyName;
+
+      if (!finalCompanyName) {
+        const emailDomain = email.split('@')[1];
+        const domainName = emailDomain ? emailDomain.split('.')[0] : 'My Company';
+        finalCompanyName = domainName.charAt(0).toUpperCase() + domainName.slice(1) + ' Inc';
+      }
 
       // Create the company
       const newCompany = await this.databaseService.company.create({
         data: {
-          name: `${formattedCompanyName} Inc`,
+          name: finalCompanyName,
           description: `Company created for ${name}`,
         },
       });
@@ -279,5 +283,15 @@ export class AuthService {
     });
 
     return result.count;
+  }
+
+  /**
+   * Mark user onboarding as complete
+   */
+  async completeOnboarding(userId: number): Promise<void> {
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: { onboardingCompleted: true },
+    });
   }
 }

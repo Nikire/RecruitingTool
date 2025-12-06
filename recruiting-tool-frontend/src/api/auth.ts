@@ -16,6 +16,8 @@ export function register(data: {
 	name: string;
 	email: string;
 	password: string;
+	roles?: string[];
+	companyName?: string;
 }): Promise<{user: User; token: string; refreshToken: string}> {
 	return api.post('/auth/register', data).then((res) => res.data);
 }
