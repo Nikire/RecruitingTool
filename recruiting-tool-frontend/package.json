@@ -15,6 +15,10 @@
 		"test:ui": "vitest --ui",
 		"test:run": "vitest run",
 		"test:coverage": "vitest run --coverage",
+		"test:e2e": "playwright test",
+		"test:e2e:ui": "playwright test --ui",
+		"test:e2e:headed": "playwright test --headed",
+		"test:e2e:report": "playwright show-report",
 		"docker:build": "docker-compose up -d --build frontend",
 		"docker:rebuild": "docker-compose up -d --build",
 		"docker:logs": "docker-compose logs frontend --tail 100",
@@ -56,6 +60,7 @@
 	},
 	"devDependencies": {
 		"@eslint/js": "^9.19.0",
+		"@playwright/test": "^1.57.0",
 		"@testing-library/dom": "10.4.0",
 		"@testing-library/jest-dom": "6.6.3",
 		"@testing-library/react": "16.0.1",
