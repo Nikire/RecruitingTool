@@ -20,10 +20,15 @@ import {
 	useTheme,
 	Pagination,
 	SelectChangeEvent,
+	Slider,
 	TextField,
+	Avatar,
+	ListItemIcon,
+	ListItemText,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {usePublicJobPositions} from '../../hooks/api/useJobPositions';
+import {usePublicCompaniesWithJobs} from '../../hooks/api/useCompanies';
 import {PublicJobPositionFilters} from '../../api/jobPositions';
 import PublicJobCard from '../../components/careers/PublicJobCard';
 import JobSearchFilters from '../../components/careers/JobSearchFilters';
@@ -47,6 +52,9 @@ interface Filters {
 }
 
 const ITEMS_PER_PAGE = 12;
+const MIN_SALARY = 0;
+const MAX_SALARY = 300000;
+const SALARY_STEP = 5000;
 
 const CareersPage: React.FC = () => {
 	const {t} = useTranslation();
@@ -74,6 +82,13 @@ const CareersPage: React.FC = () => {
 	// Mobile filter drawer state
 	const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
+	// Salary range state for slider
+	const [salaryRange, setSalaryRange] = useState<number[]>([MIN_SALARY, MAX_SALARY]);
+
+	// Fetch companies with open job positions
+	const {data: companiesData, isLoading: isLoadingCompanies} = usePublicCompaniesWithJobs();
+	const companies = companiesData || [];
+
 	// Build API filters from UI state
 	const apiFilters: PublicJobPositionFilters = useMemo(() => {
 		const params: PublicJobPositionFilters = {
@@ -90,8 +105,7 @@ const CareersPage: React.FC = () => {
 		if (filters.experienceLevel) params.experienceLevel = filters.experienceLevel;
 		if (filters.salaryMin) params.salaryMin = parseInt(filters.salaryMin);
 		if (filters.salaryMax) params.salaryMax = parseInt(filters.salaryMax);
-		// Note: company filter will need to be converted to companyUid when we implement it
-		// For now, we'll skip it since the backend expects companyUid, not company name
+		if (filters.company) params.companyUid = filters.company; // Pass companyUid directly
 
 		return params;
 	}, [filters, page]);
@@ -123,7 +137,27 @@ const CareersPage: React.FC = () => {
 			salaryMax: '',
 			company: '',
 		});
+		setSalaryRange([MIN_SALARY, MAX_SALARY]);
 		setPage(1);
+	};
+
+	const handleSalaryRangeChange = (_event: Event, newValue: number | number[]) => {
+		const range = newValue as number[];
+		setSalaryRange(range);
+		setFilters((prev) => ({
+			...prev,
+			salaryMin: range[0] === MIN_SALARY ? '' : range[0].toString(),
+			salaryMax: range[1] === MAX_SALARY ? '' : range[1].toString(),
+		}));
+		setPage(1);
+	};
+
+	const formatSalary = (value: number): string => {
+		if (value === 0) return '$0';
+		if (value >= 1000) {
+			return `$${(value / 1000).toFixed(0)}k`;
+		}
+		return `$${value}`;
 	};
 
 	const activeFilterCount = useMemo(() => {
@@ -169,6 +203,35 @@ const CareersPage: React.FC = () => {
 			</Box>
 
 			<Stack spacing={3}>
+				{/* Company Filter */}
+				<FormControl fullWidth size="small">
+					<InputLabel>{t('careersFilters.company')}</InputLabel>
+					<Select
+						value={filters.company}
+						onChange={(e: SelectChangeEvent) => handleFilterChange('company', e.target.value)}
+						label={t('careersFilters.company')}
+						disabled={isLoadingCompanies}
+					>
+						<MenuItem value="">{t('careersFilters.all_companies')}</MenuItem>
+						{companies.map((company) => (
+							<MenuItem key={company.uid} value={company.uid}>
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+									{company.logoUrl ? (
+										<Avatar
+											src={company.logoUrl}
+											alt={company.name}
+											sx={{ width: 20, height: 20 }}
+										/>
+									) : (
+										<BusinessIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
+									)}
+									<Typography variant="body2">{company.name}</Typography>
+								</Box>
+							</MenuItem>
+						))}
+					</Select>
+				</FormControl>
+
 				{/* Category Filter */}
 				<FormControl fullWidth size="small">
 					<InputLabel>{t('careersFilters.category')}</InputLabel>
@@ -239,29 +302,34 @@ const CareersPage: React.FC = () => {
 
 				{/* Salary Range Filter */}
 				<Box>
-					<Typography variant="body2" sx={{mb: 2, fontWeight: 600}}>
+					<Typography variant="body2" sx={{mb: 1, fontWeight: 600}}>
 						{t('careersFilters.salary_range')}
 					</Typography>
-					<Stack spacing={2}>
-						<TextField
-							fullWidth
-							size="small"
-							type="number"
-							label={t('careersFilters.salary_min')}
-							value={filters.salaryMin}
-							onChange={(e) => handleFilterChange('salaryMin', e.target.value)}
-							inputProps={{min: 0}}
-						/>
-						<TextField
-							fullWidth
-							size="small"
-							type="number"
-							label={t('careersFilters.salary_max')}
-							value={filters.salaryMax}
-							onChange={(e) => handleFilterChange('salaryMax', e.target.value)}
-							inputProps={{min: 0}}
-						/>
-					</Stack>
+					<Typography
+						variant="body2"
+						color="primary"
+						sx={{mb: 2, fontWeight: 500, textAlign: 'center'}}
+					>
+						{formatSalary(salaryRange[0])} - {formatSalary(salaryRange[1])}
+					</Typography>
+					<Slider
+						value={salaryRange}
+						onChange={handleSalaryRangeChange}
+						valueLabelDisplay="auto"
+						valueLabelFormat={formatSalary}
+						min={MIN_SALARY}
+						max={MAX_SALARY}
+						step={SALARY_STEP}
+						marks={[
+							{value: MIN_SALARY, label: formatSalary(MIN_SALARY)},
+							{value: MAX_SALARY, label: formatSalary(MAX_SALARY)},
+						]}
+						sx={{
+							'& .MuiSlider-markLabel': {
+								fontSize: '0.75rem',
+							},
+						}}
+					/>
 				</Box>
 			</Stack>
 		</Paper>
@@ -465,7 +533,7 @@ const CareersPage: React.FC = () => {
 									<Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
 										{filters.company && (
 											<Chip
-												label={`${t('careersFilters.company')}: ${filters.company}`}
+												label={`${t('careersFilters.company')}: ${companies.find(c => c.uid === filters.company)?.name || filters.company}`}
 												onDelete={() => handleFilterChange('company', '')}
 												size="small"
 											/>

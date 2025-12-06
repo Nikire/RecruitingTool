@@ -14,6 +14,14 @@ export const useCompanies = (uid?: string) => {
   });
 };
 
+export const usePublicCompaniesWithJobs = () => {
+  return useQuery({
+    queryKey: [COMPANIES_KEY, 'public', 'with-jobs'],
+    queryFn: () => companiesApi.getPublicWithJobs(),
+    staleTime: 10 * 60 * 1000, // 10 minutes (matches backend cache)
+  });
+};
+
 export const useListCompanies = (params: PaginationParams) => {
   return useQuery({
     queryKey: [COMPANIES_KEY, 'list', params],

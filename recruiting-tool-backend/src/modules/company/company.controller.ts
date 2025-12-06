@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto } from './dto/company.dto';
+import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto } from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -14,6 +14,19 @@ import { Request } from 'express';
 @Controller('company')
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
+
+  @Get('public/with-jobs')
+  @UseInterceptors(CacheInterceptor)
+  @CacheTTL(600000) // Cache for 10 minutes (same as public job positions)
+  @ApiOperation({ summary: 'Get all companies with open job positions (Public - No auth required)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns list of companies with at least one open job position',
+    type: [PublicCompanyResponseDto],
+  })
+  findAllPublicWithJobs(): Promise<Array<PublicCompanyResponseDto>> {
+    return this.companyService.findAllPublicWithJobs();
+  }
 
   @Post()
   @Auth(['SUPER_ADMIN'])

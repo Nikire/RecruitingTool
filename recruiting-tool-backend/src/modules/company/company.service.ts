@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto } from './dto/company.dto';
+import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto } from './dto/company.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CompanyMapper, includeCompany } from './entities/company.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -94,6 +94,37 @@ export class CompanyService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to find all: ${error.message}`);
+    }
+  }
+
+  async findAllPublicWithJobs(): Promise<Array<PublicCompanyResponseDto>> {
+    try {
+      // Find all companies that have at least one OPEN job position
+      const companies = await this.databaseService.company.findMany({
+        where: {
+          jobPositions: {
+            some: {
+              status: 'OPEN',
+              deletedAt: null, // Exclude soft-deleted job positions
+            },
+          },
+        },
+        select: {
+          uid: true,
+          name: true,
+          logoUrl: true,
+        },
+        orderBy: {
+          name: 'asc', // Alphabetical order for dropdown
+        },
+      });
+
+      return companies;
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to find all public companies with jobs: ${error.message}`);
     }
   }
 

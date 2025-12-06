@@ -201,7 +201,13 @@
     "in_progress_count": "En Progreso: {{count}}",
     "pagination_showing": "Mostrando {{start}}-{{end}} de {{total}} posiciones",
     "pagination_info": "{{from}}-{{to}} de {{count}}",
-    "per_page": "Por página"
+    "per_page": "Por página",
+    "created_success": "¡Posición de trabajo creada exitosamente!",
+    "updated_success": "¡Posición de trabajo actualizada exitosamente!",
+    "deleted_success": "¡Posición de trabajo eliminada exitosamente!",
+    "create_error": "Error al crear posición de trabajo",
+    "update_error": "Error al actualizar posición de trabajo",
+    "delete_error": "Error al eliminar posición de trabajo"
   },
   "job_position_card": {
     "full_time": "Tiempo completo",
@@ -1236,7 +1242,8 @@
     "executive_level": "Ejecutivo",
     "salary_range": "Rango Salarial",
     "salary_min": "Salario Mínimo",
-    "salary_max": "Salario Máximo"
+    "salary_max": "Salario Máximo",
+    "salary_range_label": "Rango Salarial"
   },
   "careersResults": {
     "showing_results": "Mostrando {{count}} de {{total}} trabajos",

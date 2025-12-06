@@ -201,7 +201,13 @@
     "in_progress_count": "In Progress: {{count}}",
     "pagination_showing": "Showing {{start}}-{{end}} of {{total}} positions",
     "pagination_info": "{{from}}-{{to}} of {{count}}",
-    "per_page": "Per page"
+    "per_page": "Per page",
+    "created_success": "Job position created successfully!",
+    "updated_success": "Job position updated successfully!",
+    "deleted_success": "Job position deleted successfully!",
+    "create_error": "Failed to create job position",
+    "update_error": "Failed to update job position",
+    "delete_error": "Failed to delete job position"
   },
   "job_position_card": {
     "full_time": "Full-time",
@@ -1230,7 +1236,8 @@
     "executive_level": "Executive",
     "salary_range": "Salary Range",
     "salary_min": "Min Salary",
-    "salary_max": "Max Salary"
+    "salary_max": "Max Salary",
+    "salary_range_label": "Salary Range"
   },
   "careersResults": {
     "showing_results": "Showing {{count}} of {{total}} jobs",
