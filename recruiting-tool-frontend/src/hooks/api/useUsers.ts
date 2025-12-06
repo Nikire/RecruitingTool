@@ -112,3 +112,43 @@ export const useUserActivity = (uid: string) => {
 		enabled: !!uid,
 	});
 };
+
+export const useUploadResume = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: (file: File) => usersApi.uploadResume(file),
+		onSuccess: () => {
+			// Invalidate auth/me query to refresh user data with resume info
+			queryClient.invalidateQueries({queryKey: ['auth', 'me']});
+			showSuccessToast('Resume uploaded successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to upload resume');
+		},
+	});
+};
+
+export const useGetResumeDownloadUrl = () => {
+	return useQuery({
+		queryKey: [USERS_KEY, 'resume', 'download'],
+		queryFn: () => usersApi.getResumeDownloadUrl(),
+		enabled: false, // Manual fetch
+	});
+};
+
+export const useDeleteResume = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: () => usersApi.deleteResume(),
+		onSuccess: () => {
+			// Invalidate auth/me query to refresh user data
+			queryClient.invalidateQueries({queryKey: ['auth', 'me']});
+			showSuccessToast('Resume deleted successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to delete resume');
+		},
+	});
+};

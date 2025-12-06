@@ -74,6 +74,10 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({ formData, onNext, onBack })
 
 	const renderCompanyOwnerForm = () => (
 		<>
+			<Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+				{t('registration_wizard.role_info.company_owner_subtitle')}
+			</Typography>
+
 			<TextField
 				label={t('registration_wizard.role_info.company_name')}
 				fullWidth
@@ -82,31 +86,8 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({ formData, onNext, onBack })
 					required: t('registration_wizard.role_info.company_name_required'),
 				})}
 				error={!!errors.companyName}
-				helperText={errors.companyName?.message}
+				helperText={errors.companyName?.message || t('registration_wizard.role_info.company_name_helper')}
 			/>
-
-			<TextField
-				label={t('registration_wizard.role_info.industry')}
-				fullWidth
-				margin="normal"
-				{...register('industry')}
-				helperText={t('registration_wizard.role_info.industry_helper')}
-			/>
-
-			<TextField
-				select
-				label={t('registration_wizard.role_info.company_size')}
-				fullWidth
-				margin="normal"
-				{...register('companySize')}
-				helperText={t('registration_wizard.role_info.company_size_helper')}
-			>
-				<MenuItem value="1-10">1-10 {t('registration_wizard.role_info.employees')}</MenuItem>
-				<MenuItem value="11-50">11-50 {t('registration_wizard.role_info.employees')}</MenuItem>
-				<MenuItem value="51-200">51-200 {t('registration_wizard.role_info.employees')}</MenuItem>
-				<MenuItem value="201-500">201-500 {t('registration_wizard.role_info.employees')}</MenuItem>
-				<MenuItem value="501+">501+ {t('registration_wizard.role_info.employees')}</MenuItem>
-			</TextField>
 		</>
 	);
 

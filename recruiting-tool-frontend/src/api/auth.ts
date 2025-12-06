@@ -33,3 +33,12 @@ export function refreshToken(refreshToken: string): Promise<{
 export function logout(refreshToken: string): Promise<{message: string}> {
 	return api.post('/auth/logout', { refreshToken }).then((res) => res.data);
 }
+
+export function updateProfile(data: {
+	phoneNumber?: string;
+	location?: string;
+	linkedinUrl?: string;
+	portfolioUrl?: string;
+}): Promise<User> {
+	return api.patch('/users/profile', data).then((res) => res.data);
+}

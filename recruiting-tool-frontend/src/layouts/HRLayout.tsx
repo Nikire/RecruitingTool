@@ -4,6 +4,7 @@ import GroupIcon from '@mui/icons-material/Group';
 import WorkIcon from '@mui/icons-material/Work';
 import EmailIcon from '@mui/icons-material/Email';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import PeopleIcon from '@mui/icons-material/People';
 import {DashboardLayout, DashboardMenuItem} from '../components/layout';
 import { useTranslation } from 'react-i18next';
 
@@ -44,6 +45,11 @@ const HRLayout: React.FC = () => {
 			text: t('hr_layout.email_templates'),
 			icon: <EmailIcon />,
 			path: '/hr/email-templates',
+		},
+		{
+			text: t('hr_layout.team'),
+			icon: <PeopleIcon />,
+			path: '/settings/team',
 		},
 	];
 

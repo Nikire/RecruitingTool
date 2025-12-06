@@ -1,14 +1,16 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto, UserResponseDto, UpdateUserDto, UserActivityLogResponseDto } from './dto/users.dto';
+import { CreateUserDto, UserResponseDto, UpdateUserDto, UserActivityLogResponseDto, UpdateProfileDto } from './dto/users.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
-import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiConsumes } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { UserActivityService } from './services/user-activity.service';
 import { CheckQuota } from '../quota/decorators/check-quota.decorator';
 import { OnboardingService } from './services/onboarding.service';
 import { HROnboardingStatusDto, CompleteHROnboardingDto, HROnboardingCompleteResponseDto } from './dto/onboarding.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { FileValidationPipe } from '../storage/pipes/file-validation.pipe';
 
 @ApiTags('Users')
 @ApiBearerAuth()
@@ -133,6 +135,19 @@ export class UsersController {
     return this.userActivityService.getUserActivity(uid);
   }
 
+  @Patch('profile')
+  @ApiOperation({ summary: 'Update current user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'Profile updated successfully',
+    type: UserResponseDto,
+  })
+  @ApiBody({ type: UpdateProfileDto })
+  @Auth(['USER'])
+  updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto): Promise<UserResponseDto> {
+    return this.usersService.updateProfile(req.user.id, updateProfileDto);
+  }
+
   @Get('onboarding/hr/status')
   @ApiOperation({ summary: 'Get HR onboarding status for current user' })
   @ApiResponse({
@@ -156,5 +171,86 @@ export class UsersController {
   @Auth(['HR', 'USER'])
   completeHROnboarding(@Request() req, @Body() data: CompleteHROnboardingDto): Promise<HROnboardingCompleteResponseDto> {
     return this.onboardingService.completeHROnboarding(req.user.id, data);
+  }
+
+  @Post('resume')
+  @ApiOperation({ summary: 'Upload resume for current user' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        file: {
+          type: 'string',
+          format: 'binary',
+          description: 'Resume file (PDF, DOC, DOCX - max 5MB)',
+        },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Resume uploaded successfully',
+    type: UserResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid file type or file too large',
+  })
+  @UseInterceptors(FileInterceptor('file'))
+  @Auth(['USER'])
+  async uploadResume(
+    @Request() req,
+    @UploadedFile(
+      new FileValidationPipe({
+        maxSize: 5 * 1024 * 1024, // 5MB
+        allowedMimeTypes: [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        ],
+      }),
+    )
+    file: Express.Multer.File,
+  ): Promise<UserResponseDto> {
+    return this.usersService.uploadResume(req.user.id, file);
+  }
+
+  @Get('resume/download')
+  @ApiOperation({ summary: 'Get presigned URL for resume download' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns presigned download URL',
+    schema: {
+      type: 'object',
+      properties: {
+        downloadUrl: { type: 'string' },
+        fileName: { type: 'string' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resume not found',
+  })
+  @Auth(['USER'])
+  async getResumeDownloadUrl(@Request() req) {
+    return this.usersService.getResumeDownloadUrl(req.user.id);
+  }
+
+  @Delete('resume')
+  @ApiOperation({ summary: 'Delete resume for current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Resume deleted successfully',
+    type: MessageResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Resume not found',
+  })
+  @Auth(['USER'])
+  async deleteResume(@Request() req): Promise<MessageResponseDto> {
+    return this.usersService.deleteResume(req.user.id);
   }
 }

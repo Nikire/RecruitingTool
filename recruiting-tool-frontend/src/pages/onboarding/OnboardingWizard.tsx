@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Stepper, Step, StepLabel, Paper } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Box, Stepper, Step, StepLabel, Paper, Alert, Snackbar } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import PlanSelectionStep from './wizard-steps/PlanSelectionStep';
 import PaymentStep from './wizard-steps/PaymentStep';
@@ -25,11 +25,33 @@ export interface OnboardingFormData {
 const OnboardingWizard: React.FC = () => {
 	const { t } = useTranslation();
 	const navigate = useNavigate();
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [activeStep, setActiveStep] = useState(0);
+	const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
 	const [formData, setFormData] = useState<OnboardingFormData>({
 		selectedPlan: null,
 		paymentCompleted: false,
 	});
+
+	// Handle Stripe redirect - check for payment success/cancelled in URL
+	useEffect(() => {
+		const payment = searchParams.get('payment');
+		const step = searchParams.get('step');
+
+		if (payment === 'success') {
+			// Payment was successful - advance to company setup step
+			setFormData((prev) => ({ ...prev, paymentCompleted: true }));
+			setActiveStep(2); // Go to company setup
+			setShowPaymentSuccess(true);
+			// Clean up URL params
+			setSearchParams({});
+		} else if (payment === 'cancelled') {
+			// Payment was cancelled - stay on payment step
+			setActiveStep(1);
+			// Clean up URL params
+			setSearchParams({});
+		}
+	}, [searchParams, setSearchParams]);
 
 	const steps = [
 		t('onboarding.steps.plan_selection'),
@@ -103,23 +125,42 @@ const OnboardingWizard: React.FC = () => {
 	};
 
 	return (
-		<Paper
-			elevation={3}
-			sx={{
-				p: { xs: 2, sm: 3, md: 4 },
-				width: '100%',
-			}}
-		>
-			<Stepper activeStep={activeStep} sx={{ mb: 4 }}>
-				{steps.map((label) => (
-					<Step key={label}>
-						<StepLabel>{label}</StepLabel>
-					</Step>
-				))}
-			</Stepper>
+		<>
+			<Paper
+				elevation={3}
+				sx={{
+					p: { xs: 2, sm: 3, md: 4 },
+					width: '100%',
+				}}
+			>
+				<Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+					{steps.map((label) => (
+						<Step key={label}>
+							<StepLabel>{label}</StepLabel>
+						</Step>
+					))}
+				</Stepper>
 
-			<Box sx={{ mt: 3 }}>{renderStep()}</Box>
-		</Paper>
+				<Box sx={{ mt: 3 }}>{renderStep()}</Box>
+			</Paper>
+
+			{/* Payment success notification */}
+			<Snackbar
+				open={showPaymentSuccess}
+				autoHideDuration={6000}
+				onClose={() => setShowPaymentSuccess(false)}
+				anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+			>
+				<Alert
+					onClose={() => setShowPaymentSuccess(false)}
+					severity="success"
+					variant="filled"
+					sx={{ width: '100%' }}
+				>
+					{t('onboarding.payment.success_message')}
+				</Alert>
+			</Snackbar>
+		</>
 	);
 };
 

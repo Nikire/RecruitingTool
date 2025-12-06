@@ -32,6 +32,8 @@ export class JobPositionController {
   @ApiQuery({ name: 'salaryMin', required: false, type: Number, description: 'Minimum salary filter' })
   @ApiQuery({ name: 'salaryMax', required: false, type: Number, description: 'Maximum salary filter' })
   @ApiQuery({ name: 'companyUid', required: false, description: 'Filter by company UID' })
+  @ApiQuery({ name: 'city', required: false, description: 'Filter by city' })
+  @ApiQuery({ name: 'country', required: false, description: 'Filter by country' })
   @ApiQuery({ name: 'sortBy', required: false, enum: ['createdAt', 'salary', 'title'], description: 'Sort by field' })
   @ApiQuery({ name: 'sortOrder', required: false, enum: ['asc', 'desc'], description: 'Sort order' })
   @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (1-indexed)' })

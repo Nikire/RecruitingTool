@@ -31,8 +31,6 @@ export interface RegistrationFormData {
 
 	// For Company Owner
 	companyName?: string;
-	industry?: string;
-	companySize?: string;
 }
 
 const RegistrationWizard: React.FC = () => {

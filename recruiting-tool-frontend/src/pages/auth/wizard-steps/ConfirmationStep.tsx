@@ -36,6 +36,10 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({ formData, onComplet
 				else if (formData.selectedRole === 'HR') {
 					navigate('/onboarding/hr', { replace: true });
 				}
+				// USER (applicants) go through applicant onboarding
+				else if (formData.selectedRole === 'USER') {
+					navigate('/applicant/onboarding', { replace: true });
+				}
 				// All other users go directly to their dashboard
 				else {
 					navigate(getDefaultDashboard(user), { replace: true });

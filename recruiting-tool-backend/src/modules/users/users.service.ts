@@ -367,4 +367,171 @@ export class UsersService {
       this.logger.error(`Failed to update last login for user ${userId}:`, error.message);
     }
   }
+
+  async updateProfile(userId: number, updateData: { phoneNumber?: string; location?: string; linkedinUrl?: string; portfolioUrl?: string }): Promise<UserResponseDto> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new EntityNotFoundException('User', userId.toString());
+      }
+
+      const updatedUser = await this.databaseService.user.update({
+        where: { id: userId },
+        data: updateData,
+        include: {
+          company: true,
+        },
+      });
+
+      return UserMapper(updatedUser);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to update profile: ${error.message}`);
+    }
+  }
+
+  async uploadResume(userId: number, file: Express.Multer.File): Promise<UserResponseDto> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { id: userId },
+        include: { company: true },
+      });
+
+      if (!user) {
+        throw new EntityNotFoundException('User', userId.toString());
+      }
+
+      this.logger.log(`Uploading resume for user ${user.uid}: ${file.originalname}`);
+
+      // Delete old resume from MinIO if exists
+      if (user.resumeUrl) {
+        try {
+          await this.storageService.deleteFile(user.resumeUrl);
+          this.logger.log(`Deleted old resume: ${user.resumeUrl}`);
+        } catch (error) {
+          this.logger.warn(`Failed to delete old resume: ${error.message}`);
+          // Continue with upload even if deletion fails
+        }
+      }
+
+      // Generate unique filename with user UID
+      const fileExtension = file.originalname.split('.').pop();
+      const uniqueFilename = `${user.uid}_${Date.now()}.${fileExtension}`;
+      const s3Key = `resumes/${user.uid}/${uniqueFilename}`;
+
+      // Upload to MinIO using existing storage service
+      await this.storageService.uploadFile(file.buffer, s3Key, file.mimetype);
+      this.logger.log(`Uploaded resume to MinIO: ${s3Key}`);
+
+      // Update user record with resume info
+      const updatedUser = await this.databaseService.user.update({
+        where: { id: userId },
+        data: {
+          resumeUrl: s3Key,
+          resumeFileName: file.originalname,
+        },
+        include: {
+          company: true,
+        },
+      });
+
+      // Log the activity
+      await this.userActivityService.logActivity(userId, {
+        action: 'RESUME_UPLOADED',
+        metadata: { filename: file.originalname, size: file.size },
+      });
+
+      this.logger.log(`Resume uploaded successfully for user ${user.uid}`);
+      return UserMapper(updatedUser);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      this.logger.error(`Failed to upload resume: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to upload resume: ${error.message}`);
+    }
+  }
+
+  async getResumeDownloadUrl(userId: number): Promise<{ downloadUrl: string; fileName: string }> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new EntityNotFoundException('User', userId.toString());
+      }
+
+      if (!user.resumeUrl) {
+        throw new NotFoundException('Resume not found for this user');
+      }
+
+      // Generate presigned URL (1 hour expiration)
+      const downloadUrl = await this.storageService.getSignedUrl(user.resumeUrl, 3600);
+
+      return {
+        downloadUrl,
+        fileName: user.resumeFileName || 'resume.pdf',
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      this.logger.error(`Failed to get resume download URL: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to get resume download URL: ${error.message}`);
+    }
+  }
+
+  async deleteResume(userId: number): Promise<MessageResponseDto> {
+    try {
+      const user = await this.databaseService.user.findUnique({
+        where: { id: userId },
+      });
+
+      if (!user) {
+        throw new EntityNotFoundException('User', userId.toString());
+      }
+
+      if (!user.resumeUrl) {
+        throw new NotFoundException('Resume not found for this user');
+      }
+
+      // Delete from MinIO
+      try {
+        await this.storageService.deleteFile(user.resumeUrl);
+        this.logger.log(`Deleted resume from MinIO: ${user.resumeUrl}`);
+      } catch (error) {
+        this.logger.warn(`Failed to delete resume from MinIO: ${error.message}`);
+        // Continue with database update even if MinIO deletion fails
+      }
+
+      // Update user record
+      await this.databaseService.user.update({
+        where: { id: userId },
+        data: {
+          resumeUrl: null,
+          resumeFileName: null,
+        },
+      });
+
+      // Log the activity
+      await this.userActivityService.logActivity(userId, {
+        action: 'RESUME_DELETED',
+      });
+
+      this.logger.log(`Resume deleted successfully for user ${user.uid}`);
+      return { message: 'Resume deleted successfully' };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      this.logger.error(`Failed to delete resume: ${error.message}`);
+      throw new InternalServerErrorException(`Failed to delete resume: ${error.message}`);
+    }
+  }
 }

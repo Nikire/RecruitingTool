@@ -30,7 +30,7 @@ import {useTranslation} from 'react-i18next';
 import {usePublicJobPositions} from '../../hooks/api/useJobPositions';
 import {usePublicCompaniesWithJobs} from '../../hooks/api/useCompanies';
 import {PublicJobPositionFilters} from '../../api/jobPositions';
-import PublicJobCard from '../../components/careers/PublicJobCard';
+import CompactJobCard from '../../components/careers/CompactJobCard';
 import JobSearchFilters from '../../components/careers/JobSearchFilters';
 import {ApplyToJobDialog} from '../../components/dialogs/ApplyToJobDialog';
 import {useDialog} from '../../hooks/useDialog';
@@ -368,87 +368,25 @@ const CareersPage: React.FC = () => {
 			sx={{
 				minHeight: '100vh',
 				bgcolor: 'background.default',
+				pt: 4,
 				pb: 8,
 			}}
 		>
-			{/* Hero section */}
-			<Box
-				sx={{
-					bgcolor: 'primary.main',
-					color: 'primary.contrastText',
-					py: {xs: 6, sm: 8, md: 10},
-					mb: 6,
-					background: (theme) =>
-						`linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`,
-					position: 'relative',
-					overflow: 'hidden',
-					'&::before': {
-						content: '""',
-						position: 'absolute',
-						top: 0,
-						left: 0,
-						right: 0,
-						bottom: 0,
-						backgroundImage:
-							'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%), radial-gradient(circle at 80% 80%, rgba(255,255,255,0.1) 0%, transparent 50%)',
-						pointerEvents: 'none',
-					},
-				}}
-			>
-				<Container maxWidth="xl" sx={{position: 'relative', zIndex: 1}}>
-					<Box sx={{textAlign: 'center', maxWidth: 800, mx: 'auto'}}>
-						<Typography
-							variant="h2"
-							sx={{
-								fontWeight: 800,
-								mb: 2,
-								fontSize: {xs: '2rem', sm: '2.75rem', md: '3.5rem'},
-								lineHeight: 1.2,
-								textShadow: '0 2px 4px rgba(0,0,0,0.1)',
-							}}
-						>
-							{t('careersHero.title')}
-						</Typography>
-						<Typography
-							variant="h6"
-							sx={{
-								mb: 4,
-								opacity: 0.95,
-								fontSize: {xs: '1rem', sm: '1.25rem'},
-								fontWeight: 400,
-								lineHeight: 1.6,
-							}}
-						>
-							{t('careersHero.subtitle')}
-						</Typography>
-
-						{/* Job count badge */}
-						<Box
-							sx={{
-								display: 'inline-flex',
-								alignItems: 'center',
-								gap: 1,
-								bgcolor: 'rgba(255,255,255,0.2)',
-								backdropFilter: 'blur(10px)',
-								px: 3,
-								py: 1.5,
-								borderRadius: 3,
-								border: '1px solid rgba(255,255,255,0.3)',
-							}}
-						>
-							<WorkIcon sx={{fontSize: 24}} />
-							<Typography variant="h6" sx={{fontWeight: 700}}>
-								{isLoading
-									? '...'
-									: t('careers.open_positions_count', {count: openJobsCount})}
-							</Typography>
-						</Box>
-					</Box>
-				</Container>
-			</Box>
-
-			{/* Main content */}
 			<Container maxWidth="xl">
+				{/* Page header */}
+				<Box sx={{mb: 4}}>
+					<Typography variant="h4" sx={{fontWeight: 700, mb: 1}}>
+						{t('careersHero.title')}
+					</Typography>
+					<Typography variant="body1" color="text.secondary" sx={{mb: 2}}>
+						{t('careersHero.subtitle')}
+					</Typography>
+					{!isLoading && (
+						<Typography variant="body2" color="primary" sx={{fontWeight: 600}}>
+							{t('careers.open_positions_count', {count: openJobsCount})}
+						</Typography>
+					)}
+				</Box>
 				{/* Search bar */}
 				<Box sx={{mb: 4}}>
 					<JobSearchFilters
@@ -643,7 +581,7 @@ const CareersPage: React.FC = () => {
 												justifyContent: 'center',
 											}}
 										>
-											<PublicJobCard
+											<CompactJobCard
 												jobPosition={job}
 												onApplyClick={handleApplyClick}
 											/>
@@ -680,6 +618,7 @@ const CareersPage: React.FC = () => {
 						)}
 					</Box>
 				</Box>
+
 			</Container>
 
 			{/* Apply dialog */}

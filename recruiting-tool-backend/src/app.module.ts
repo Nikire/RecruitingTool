@@ -38,6 +38,10 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { QuotaModule } from './modules/quota/quota.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { CompanyRolesModule } from './modules/company-roles/company-roles.module';
+import { ConnectionRequestsModule } from './modules/connection-requests/connection-requests.module';
+import { CompanyInvitationsModule } from './modules/company-invitations/company-invitations.module';
 
 @Module({
   imports: [
@@ -85,6 +89,10 @@ import { QuotaModule } from './modules/quota/quota.module';
     MetricsModule,
     StripeModule,
     QuotaModule,
+    NotificationsModule,
+    CompanyRolesModule,
+    ConnectionRequestsModule,
+    CompanyInvitationsModule,
   ],
   controllers: [AppController],
   providers: [

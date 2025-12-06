@@ -141,6 +141,36 @@ export class JobPositionResponseDto {
   @IsBoolean()
   isFeatured: boolean;
 
+  @ApiProperty({ description: 'City where the job is located', example: 'San Francisco', required: false })
+  city?: string;
+
+  @ApiProperty({ description: 'State/province where the job is located', example: 'California', required: false })
+  state?: string;
+
+  @ApiProperty({ description: 'Country where the job is located', example: 'United States', required: false })
+  country?: string;
+
+  @ApiProperty({ description: 'Whether to show salary information publicly', example: false, default: false })
+  @IsBoolean()
+  showSalary: boolean;
+
+  @ApiProperty({ description: 'Tags for categorization and search', type: [String], example: ['frontend', 'react', 'typescript'], required: false })
+  @IsArray()
+  @IsString({ each: true })
+  tags: string[];
+
+  @ApiProperty({ description: 'Whether this position is highlighted', example: false, default: false })
+  @IsBoolean()
+  isHighlighted: boolean;
+
+  @ApiProperty({ description: 'Number of views', example: 0, default: 0 })
+  @IsInt()
+  viewCount: number;
+
+  @ApiProperty({ description: 'Number of applications', example: 0, default: 0 })
+  @IsInt()
+  applicationCount: number;
+
   @ApiProperty({ description: 'The company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
   companyUid: string;
 
@@ -272,6 +302,37 @@ export class CreateJobPositionDto {
   @IsBoolean()
   isFeatured?: boolean;
 
+  @ApiProperty({ description: 'City where the job is located', example: 'San Francisco', required: false })
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiProperty({ description: 'State/province where the job is located', example: 'California', required: false })
+  @IsOptional()
+  @IsString()
+  state?: string;
+
+  @ApiProperty({ description: 'Country where the job is located', example: 'United States', required: false })
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @ApiProperty({ description: 'Whether to show salary information publicly', example: false, required: false })
+  @IsOptional()
+  @IsBoolean()
+  showSalary?: boolean;
+
+  @ApiProperty({ description: 'Tags for categorization and search', type: [String], example: ['frontend', 'react', 'typescript'], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @ApiProperty({ description: 'Whether this position is highlighted', example: false, required: false })
+  @IsOptional()
+  @IsBoolean()
+  isHighlighted?: boolean;
+
   @ApiProperty({ description: 'The stages of the job position', type: [CreateStageDto] })
   stages?: Array<CreateStageDto>;
 }
@@ -384,6 +445,37 @@ export class UpdateJobPositionDto {
   @IsOptional()
   @IsBoolean()
   isFeatured?: boolean;
+
+  @ApiProperty({ description: 'City where the job is located', example: 'San Francisco', required: false })
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiProperty({ description: 'State/province where the job is located', example: 'California', required: false })
+  @IsOptional()
+  @IsString()
+  state?: string;
+
+  @ApiProperty({ description: 'Country where the job is located', example: 'United States', required: false })
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @ApiProperty({ description: 'Whether to show salary information publicly', example: false, required: false })
+  @IsOptional()
+  @IsBoolean()
+  showSalary?: boolean;
+
+  @ApiProperty({ description: 'Tags for categorization and search', type: [String], example: ['frontend', 'react', 'typescript'], required: false })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @ApiProperty({ description: 'Whether this position is highlighted', example: false, required: false })
+  @IsOptional()
+  @IsBoolean()
+  isHighlighted?: boolean;
 }
 
 export class PublicJobPositionResponseDto {
@@ -447,6 +539,30 @@ export class PublicJobPositionResponseDto {
   @ApiProperty({ description: 'Whether this position is featured', example: false })
   isFeatured: boolean;
 
+  @ApiProperty({ description: 'City where the job is located', example: 'San Francisco', required: false })
+  city?: string;
+
+  @ApiProperty({ description: 'State/province where the job is located', example: 'California', required: false })
+  state?: string;
+
+  @ApiProperty({ description: 'Country where the job is located', example: 'United States', required: false })
+  country?: string;
+
+  @ApiProperty({ description: 'Whether to show salary information publicly', example: false, default: false })
+  showSalary: boolean;
+
+  @ApiProperty({ description: 'Tags for categorization and search', type: [String], example: ['frontend', 'react', 'typescript'], required: false })
+  tags: string[];
+
+  @ApiProperty({ description: 'Whether this position is highlighted', example: false, default: false })
+  isHighlighted: boolean;
+
+  @ApiProperty({ description: 'Number of views', example: 0, default: 0 })
+  viewCount: number;
+
+  @ApiProperty({ description: 'Number of applications', example: 0, default: 0 })
+  applicationCount: number;
+
   @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
   companyName: string;
 
@@ -508,6 +624,16 @@ export class JobPositionFiltersDto {
   @IsOptional()
   @IsString()
   companyUid?: string;
+
+  @ApiProperty({ description: 'Filter by city', example: 'San Francisco', required: false })
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiProperty({ description: 'Filter by country', example: 'United States', required: false })
+  @IsOptional()
+  @IsString()
+  country?: string;
 
   @ApiProperty({ description: 'Sort by field', example: 'createdAt', enum: ['createdAt', 'salary', 'title'], default: 'createdAt', required: false })
   @IsOptional()

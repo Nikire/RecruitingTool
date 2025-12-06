@@ -367,6 +367,16 @@ export class JobPositionService {
         }
       }
 
+      // City filter
+      if (filters?.city) {
+        where.city = { contains: filters.city, mode: 'insensitive' };
+      }
+
+      // Country filter
+      if (filters?.country) {
+        where.country = { contains: filters.country, mode: 'insensitive' };
+      }
+
       // Build orderBy clause
       let orderBy: Prisma.JobPositionOrderByWithRelationInput = { createdAt: 'desc' };
 
@@ -428,6 +438,14 @@ export class JobPositionService {
         applicationDeadline: jp.applicationDeadline,
         isUrgent: jp.isUrgent,
         isFeatured: jp.isFeatured,
+        city: jp.city,
+        state: jp.state,
+        country: jp.country,
+        showSalary: jp.showSalary,
+        tags: jp.tags,
+        isHighlighted: jp.isHighlighted,
+        viewCount: jp.viewCount,
+        applicationCount: jp.applicationCount,
         companyName: jp.company?.name || 'Unknown Company',
         companyDescription: jp.company?.description,
         createdAt: jp.createdAt,
@@ -501,6 +519,14 @@ export class JobPositionService {
         applicationDeadline: jobPosition.applicationDeadline,
         isUrgent: jobPosition.isUrgent,
         isFeatured: jobPosition.isFeatured,
+        city: jobPosition.city,
+        state: jobPosition.state,
+        country: jobPosition.country,
+        showSalary: jobPosition.showSalary,
+        tags: jobPosition.tags,
+        isHighlighted: jobPosition.isHighlighted,
+        viewCount: jobPosition.viewCount,
+        applicationCount: jobPosition.applicationCount,
         companyName: jobPosition.company?.name || 'Unknown Company',
         companyDescription: jobPosition.company?.description,
         createdAt: jobPosition.createdAt,

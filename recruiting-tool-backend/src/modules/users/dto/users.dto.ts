@@ -113,10 +113,30 @@ export class UpdateUserDto {
   @IsString()
   linkedinUrl?: string;
 
+  @ApiProperty({ description: 'Portfolio URL', example: 'https://portfolio.com/johndoe', required: false })
+  @IsOptional()
+  @IsString()
+  portfolioUrl?: string;
+
+  @ApiProperty({ description: 'Location', example: 'New York, USA', required: false })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
   @ApiProperty({ description: 'User timezone', example: 'America/New_York', required: false })
   @IsOptional()
   @IsString()
   timezone?: string;
+
+  @ApiProperty({ description: 'Resume URL (MinIO S3 key)', example: 'resumes/user-uid/resume.pdf', required: false })
+  @IsOptional()
+  @IsString()
+  resumeUrl?: string;
+
+  @ApiProperty({ description: 'Resume original filename', example: 'John_Doe_Resume.pdf', required: false })
+  @IsOptional()
+  @IsString()
+  resumeFileName?: string;
 
   @ApiProperty({
     description: 'The roles of the user',
@@ -182,8 +202,16 @@ export class UserResponseDto {
   bio?: string;
   @ApiProperty({ description: 'LinkedIn profile URL', required: false })
   linkedinUrl?: string;
+  @ApiProperty({ description: 'Portfolio URL', required: false })
+  portfolioUrl?: string;
+  @ApiProperty({ description: 'Location', required: false })
+  location?: string;
   @ApiProperty({ description: 'User timezone', required: false })
   timezone?: string;
+  @ApiProperty({ description: 'Resume URL (MinIO S3 key)', required: false })
+  resumeUrl?: string;
+  @ApiProperty({ description: 'Resume original filename', required: false })
+  resumeFileName?: string;
   @ApiProperty({ description: 'Whether the user is active', example: true })
   isActive?: boolean;
   @ApiProperty({ description: 'When the user was deactivated', required: false })
@@ -254,4 +282,26 @@ export class CreateUserActivityLogDto {
 
   @IsOptional()
   metadata?: any;
+}
+
+export class UpdateProfileDto {
+  @ApiProperty({ description: 'Phone number', example: '+1-555-0123', required: false })
+  @IsOptional()
+  @IsString()
+  phoneNumber?: string;
+
+  @ApiProperty({ description: 'Location', example: 'New York, USA', required: false })
+  @IsOptional()
+  @IsString()
+  location?: string;
+
+  @ApiProperty({ description: 'LinkedIn profile URL', example: 'https://linkedin.com/in/johndoe', required: false })
+  @IsOptional()
+  @IsString()
+  linkedinUrl?: string;
+
+  @ApiProperty({ description: 'Portfolio URL', example: 'https://portfolio.com/johndoe', required: false })
+  @IsOptional()
+  @IsString()
+  portfolioUrl?: string;
 }

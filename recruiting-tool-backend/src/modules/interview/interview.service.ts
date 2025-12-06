@@ -1,12 +1,16 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
-import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, RescheduleInterviewDto } from './dto/interview.dto';
+import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, RescheduleInterviewDto, CheckAvailabilityDto, AvailabilityCheckResponseDto, ConflictDto, AlternativeSlotDto } from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
 import { InterviewStatus, User } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { GoogleCalendarService } from '../google-calendar/google-calendar.service';
+import { InterviewCalendarService } from './interview-calendar.service';
 import { SseService } from '../sse/sse.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { Inject } from '@nestjs/common';
 
 @Injectable()
 export class InterviewService {
@@ -16,8 +20,10 @@ export class InterviewService {
     private readonly databaseService: DatabaseService,
     private readonly emailService: EmailService,
     private readonly googleCalendarService: GoogleCalendarService,
+    private readonly interviewCalendarService: InterviewCalendarService,
     private readonly sseService: SseService,
     private readonly auditLogService: AuditLogService,
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
   async create(createInterviewDto: CreateInterviewDto, scheduledByUid: string): Promise<InterviewResponseDto> {
@@ -79,52 +85,44 @@ export class InterviewService {
       },
     });
 
-    // Send email notification if interview is scheduled
-    if (status === InterviewStatus.SCHEDULED && stage.hiringProcess?.candidate) {
-      await this.emailService.sendInterviewScheduled(stage.hiringProcess.candidate, scheduledBy, interview);
+    // Create Google Calendar event and store event ID and Meet link BEFORE sending email
+    if (status === InterviewStatus.SCHEDULED && scheduledDate && scheduledTime) {
+      const calendarEvent = await this.interviewCalendarService.createCalendarEvent(
+        {
+          ...interview,
+          stage: {
+            title: stage.title,
+            hiringProcess: stage.hiringProcess,
+          },
+        },
+        scheduledBy,
+      );
+
+      // Update interview with calendar event ID and Meet link if created
+      if (calendarEvent) {
+        const updateData: any = { calendarEventId: calendarEvent.id };
+
+        // If no meetingLink was provided and Google Meet link was generated, save it
+        if (!interview.meetingLink && calendarEvent.meetLink) {
+          updateData.meetingLink = calendarEvent.meetLink;
+          this.logger.log(`Saved Google Meet link for interview ${interview.uid}: ${calendarEvent.meetLink}`);
+        }
+
+        await this.databaseService.interview.update({
+          where: { id: interview.id },
+          data: updateData,
+        });
+
+        // Update the interview object with the new meetingLink so it's included in email
+        if (calendarEvent.meetLink && !interview.meetingLink) {
+          interview.meetingLink = calendarEvent.meetLink;
+        }
+      }
     }
 
-    // Create Google Calendar event if user has connected calendar
-    if (status === InterviewStatus.SCHEDULED && scheduledDate && scheduledTime) {
-      try {
-        const isCalendarConnected = await this.googleCalendarService.isCalendarConnected(scheduledBy.id);
-
-        if (isCalendarConnected) {
-          // Parse date and time to create ISO datetime strings
-          const startDateTime = this.combineDateTime(scheduledDate, scheduledTime);
-          const endDateTime = this.calculateEndTime(startDateTime, duration || 60);
-
-          const calendarEvent = await this.googleCalendarService.createCalendarEvent(scheduledBy.id, {
-            summary: `Interview: ${stage.hiringProcess.title}`,
-            description: `Interview with ${stage.hiringProcess.candidate.name}\n\nStage: ${stage.title}\n${notes ? `\nNotes: ${notes}` : ''}`,
-            startTime: startDateTime,
-            endTime: endDateTime,
-            location: location || undefined,
-            attendees: [
-              {
-                email: stage.hiringProcess.candidate.email,
-                displayName: stage.hiringProcess.candidate.name,
-              },
-            ],
-            createMeetLink: !meetingLink, // Only create Meet link if no meeting link provided
-          });
-
-          // Update interview with Google Calendar event ID and meeting link if created
-          if (calendarEvent.meetLink && !meetingLink) {
-            await this.databaseService.interview.update({
-              where: { id: interview.id },
-              data: {
-                meetingLink: calendarEvent.meetLink,
-              },
-            });
-          }
-
-          this.logger.log(`Created Google Calendar event for interview ${interview.uid}`);
-        }
-      } catch (error) {
-        // Log error but don't fail the interview creation
-        this.logger.error(`Failed to create Google Calendar event: ${error.message}`);
-      }
+    // Send email notification AFTER calendar event creation (so Meet link is included)
+    if (status === InterviewStatus.SCHEDULED && stage.hiringProcess?.candidate) {
+      await this.emailService.sendInterviewScheduled(stage.hiringProcess.candidate, scheduledBy, interview);
     }
 
     // Emit SSE event for interview scheduled
@@ -261,7 +259,15 @@ export class InterviewService {
       },
       include: {
         scheduledBy: true,
-        stage: true,
+        stage: {
+          include: {
+            hiringProcess: {
+              include: {
+                candidate: true,
+              },
+            },
+          },
+        },
         interviewers: {
           include: {
             user: true,
@@ -269,6 +275,20 @@ export class InterviewService {
         },
       },
     });
+
+    // Sync calendar event if interview is scheduled and has calendar event ID
+    if (interview.status === InterviewStatus.SCHEDULED && interview.calendarEventId) {
+      await this.interviewCalendarService.updateCalendarEvent(
+        {
+          ...interview,
+          stage: {
+            title: interview.stage.title,
+            hiringProcess: interview.stage.hiringProcess,
+          },
+        },
+        existingInterview.scheduledBy,
+      );
+    }
 
     return InterviewMapper(interview);
   }
@@ -311,6 +331,11 @@ export class InterviewService {
         },
       },
     });
+
+    // Delete Google Calendar event if exists
+    if (existingInterview.calendarEventId) {
+      await this.interviewCalendarService.deleteCalendarEvent(existingInterview, existingInterview.scheduledBy);
+    }
 
     // Send cancellation email
     if (existingInterview.stage.hiringProcess?.candidate) {
@@ -358,6 +383,18 @@ export class InterviewService {
     // Verify interview exists
     const interview = await this.databaseService.interview.findUnique({
       where: { uid: interviewUid },
+      include: {
+        scheduledBy: true,
+        stage: {
+          include: {
+            hiringProcess: {
+              include: {
+                candidate: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!interview) {
@@ -396,6 +433,20 @@ export class InterviewService {
       },
     });
 
+    // Sync calendar attendees if calendar event exists
+    if (interview.calendarEventId && interview.status === InterviewStatus.SCHEDULED) {
+      await this.interviewCalendarService.syncAttendees(
+        {
+          ...interview,
+          stage: {
+            title: interview.stage.title,
+            hiringProcess: interview.stage.hiringProcess,
+          },
+        },
+        interview.scheduledBy,
+      );
+    }
+
     // Return updated interview
     return this.findOne(interviewUid);
   }
@@ -404,6 +455,18 @@ export class InterviewService {
     // Verify interview exists
     const interview = await this.databaseService.interview.findUnique({
       where: { uid: interviewUid },
+      include: {
+        scheduledBy: true,
+        stage: {
+          include: {
+            hiringProcess: {
+              include: {
+                candidate: true,
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!interview) {
@@ -442,6 +505,20 @@ export class InterviewService {
         },
       },
     });
+
+    // Sync calendar attendees if calendar event exists
+    if (interview.calendarEventId && interview.status === InterviewStatus.SCHEDULED) {
+      await this.interviewCalendarService.syncAttendees(
+        {
+          ...interview,
+          stage: {
+            title: interview.stage.title,
+            hiringProcess: interview.stage.hiringProcess,
+          },
+        },
+        interview.scheduledBy,
+      );
+    }
 
     // Return updated interview
     return this.findOne(interviewUid);
@@ -555,7 +632,15 @@ export class InterviewService {
       },
       include: {
         scheduledBy: true,
-        stage: true,
+        stage: {
+          include: {
+            hiringProcess: {
+              include: {
+                candidate: true,
+              },
+            },
+          },
+        },
         interviewers: {
           include: {
             user: true,
@@ -563,6 +648,20 @@ export class InterviewService {
         },
       },
     });
+
+    // Update Google Calendar event if exists
+    if (existingInterview.calendarEventId) {
+      await this.interviewCalendarService.updateCalendarEvent(
+        {
+          ...updatedInterview,
+          stage: {
+            title: existingInterview.stage.title,
+            hiringProcess: existingInterview.stage.hiringProcess,
+          },
+        },
+        existingInterview.scheduledBy,
+      );
+    }
 
     // Send reschedule notification email
     if (existingInterview.stage.hiringProcess?.candidate) {
@@ -609,5 +708,294 @@ export class InterviewService {
 
     const { InterviewRescheduleMapper } = await import('./entities/interview.entity');
     return reschedules.map(InterviewRescheduleMapper);
+  }
+
+  /**
+   * Check availability of interviewers for a proposed time slot
+   * Detects conflicts and optionally suggests alternative time slots
+   */
+  async checkAvailability(dto: CheckAvailabilityDto): Promise<AvailabilityCheckResponseDto> {
+    const { interviewerUids, proposedStartTime, duration, timeZone, bufferMinutes = 15, suggestAlternatives = true } = dto;
+
+    // Generate cache key
+    const cacheKey = `availability:${interviewerUids.sort().join(',')}:${proposedStartTime}:${duration}:${bufferMinutes}`;
+
+    // Check cache first (5-minute TTL)
+    const cached = await this.cacheManager.get<AvailabilityCheckResponseDto>(cacheKey);
+    if (cached) {
+      this.logger.log(`Returning cached availability check for ${interviewerUids.length} interviewers`);
+      return cached;
+    }
+
+    // Calculate end time with buffer
+    const proposedEndTime = this.addMinutes(proposedStartTime, duration);
+    const bufferedStartTime = this.addMinutes(proposedStartTime, -bufferMinutes);
+    const bufferedEndTime = this.addMinutes(proposedEndTime, bufferMinutes);
+
+    // Get all interviewers
+    const interviewers = await this.databaseService.user.findMany({
+      where: {
+        uid: { in: interviewerUids },
+      },
+      select: {
+        id: true,
+        uid: true,
+        name: true,
+        email: true,
+        googleRefreshToken: true,
+      },
+    });
+
+    if (interviewers.length !== interviewerUids.length) {
+      const foundUids = interviewers.map((i) => i.uid);
+      const missingUids = interviewerUids.filter((uid) => !foundUids.includes(uid));
+      throw new NotFoundException(`Interviewers not found: ${missingUids.join(', ')}`);
+    }
+
+    // Detect conflicts for each interviewer
+    const conflicts: ConflictDto[] = [];
+
+    for (const interviewer of interviewers) {
+      // Skip if user hasn't connected Google Calendar
+      if (!interviewer.googleRefreshToken) {
+        this.logger.warn(`Interviewer ${interviewer.uid} has not connected Google Calendar, skipping availability check`);
+        conflicts.push({
+          interviewerUid: interviewer.uid,
+          interviewerName: interviewer.name,
+          conflictStart: bufferedStartTime,
+          conflictEnd: bufferedEndTime,
+          conflictType: 'calendar_not_connected',
+        });
+        continue;
+      }
+
+      try {
+        // Check availability using Google Calendar FreeBusy API
+        const availability = await this.googleCalendarService.getAvailability(interviewer.id, {
+          startDate: bufferedStartTime,
+          endDate: bufferedEndTime,
+          timeZone,
+        });
+
+        // If interviewer is busy, add to conflicts
+        if (availability.busy) {
+          // Find the specific busy slots that overlap with the proposed time
+          const overlappingSlots = this.findOverlappingSlots(
+            availability.availableSlots,
+            bufferedStartTime,
+            bufferedEndTime,
+          );
+
+          for (const slot of overlappingSlots) {
+            conflicts.push({
+              interviewerUid: interviewer.uid,
+              interviewerName: interviewer.name,
+              conflictStart: slot.start,
+              conflictEnd: slot.end,
+              conflictType: 'calendar_event',
+            });
+          }
+        }
+      } catch (error) {
+        this.logger.error(`Failed to check availability for interviewer ${interviewer.uid}: ${error.message}`);
+        conflicts.push({
+          interviewerUid: interviewer.uid,
+          interviewerName: interviewer.name,
+          conflictStart: bufferedStartTime,
+          conflictEnd: bufferedEndTime,
+          conflictType: 'availability_check_failed',
+        });
+      }
+    }
+
+    const available = conflicts.length === 0;
+
+    // Suggest alternative slots if requested and there are conflicts
+    let alternativeSlots: AlternativeSlotDto[] = [];
+    if (!available && suggestAlternatives) {
+      alternativeSlots = await this.suggestAlternativeSlots(
+        interviewers,
+        proposedStartTime,
+        duration,
+        bufferMinutes,
+        timeZone,
+      );
+    }
+
+    const response: AvailabilityCheckResponseDto = {
+      available,
+      conflicts: conflicts.length > 0 ? conflicts : undefined,
+      alternativeSlots: alternativeSlots.length > 0 ? alternativeSlots : undefined,
+      checkedAt: new Date(),
+    };
+
+    // Cache the result for 5 minutes
+    await this.cacheManager.set(cacheKey, response, 300000); // 5 minutes in milliseconds
+
+    this.logger.log(`Availability check completed: ${available ? 'Available' : `${conflicts.length} conflict(s) found`}`);
+
+    return response;
+  }
+
+  /**
+   * Find busy slots that overlap with the proposed time range
+   */
+  private findOverlappingSlots(
+    availableSlots: Array<{ startTime: string; endTime: string }>,
+    proposedStart: string,
+    proposedEnd: string,
+  ): Array<{ start: string; end: string }> {
+    const proposedStartTime = new Date(proposedStart).getTime();
+    const proposedEndTime = new Date(proposedEnd).getTime();
+
+    // If there are available slots, we need to find the gaps (busy periods)
+    // For simplicity, we'll infer busy periods by checking if proposed time falls outside available slots
+    const overlapping: Array<{ start: string; end: string }> = [];
+
+    if (availableSlots.length === 0) {
+      // No available slots means the entire period is busy
+      return [{ start: proposedStart, end: proposedEnd }];
+    }
+
+    // Check if proposed time overlaps with any available slot
+    let hasAvailableOverlap = false;
+    for (const slot of availableSlots) {
+      const slotStart = new Date(slot.startTime).getTime();
+      const slotEnd = new Date(slot.endTime).getTime();
+
+      // If proposed time is fully contained in an available slot, no conflict
+      if (proposedStartTime >= slotStart && proposedEndTime <= slotEnd) {
+        hasAvailableOverlap = true;
+        break;
+      }
+    }
+
+    // If no available slot fully contains the proposed time, there's a conflict
+    if (!hasAvailableOverlap) {
+      overlapping.push({ start: proposedStart, end: proposedEnd });
+    }
+
+    return overlapping;
+  }
+
+  /**
+   * Suggest alternative time slots when the proposed time has conflicts
+   * Finds the next 3-5 available slots within the next 7 days
+   */
+  private async suggestAlternativeSlots(
+    interviewers: Array<{ id: number; uid: string; name: string; googleRefreshToken: string | null }>,
+    proposedStartTime: string,
+    duration: number,
+    bufferMinutes: number,
+    timeZone?: string,
+  ): Promise<AlternativeSlotDto[]> {
+    const alternatives: AlternativeSlotDto[] = [];
+    const proposedDate = new Date(proposedStartTime);
+
+    // Search for slots in the next 7 days
+    const searchEndDate = new Date(proposedDate);
+    searchEndDate.setDate(searchEndDate.getDate() + 7);
+
+    // Define business hours (9 AM to 5 PM)
+    const businessHourStart = 9;
+    const businessHourEnd = 17;
+
+    // Generate candidate slots (every 30 minutes during business hours)
+    const candidateSlots: Array<{ start: Date; end: Date }> = [];
+    let currentSlot = new Date(proposedDate);
+    currentSlot.setHours(businessHourStart, 0, 0, 0);
+
+    // Start from the next 30-minute increment after proposed time
+    if (currentSlot < proposedDate) {
+      currentSlot = new Date(proposedDate);
+      currentSlot.setMinutes(Math.ceil(currentSlot.getMinutes() / 30) * 30);
+    }
+
+    while (currentSlot < searchEndDate && alternatives.length < 5) {
+      // Skip weekends
+      if (currentSlot.getDay() === 0 || currentSlot.getDay() === 6) {
+        currentSlot.setDate(currentSlot.getDate() + 1);
+        currentSlot.setHours(businessHourStart, 0, 0, 0);
+        continue;
+      }
+
+      // Skip outside business hours
+      if (currentSlot.getHours() >= businessHourEnd) {
+        currentSlot.setDate(currentSlot.getDate() + 1);
+        currentSlot.setHours(businessHourStart, 0, 0, 0);
+        continue;
+      }
+
+      const slotEnd = this.addMinutes(currentSlot.toISOString(), duration);
+
+      // Skip if slot extends past business hours
+      if (new Date(slotEnd).getHours() > businessHourEnd) {
+        currentSlot.setDate(currentSlot.getDate() + 1);
+        currentSlot.setHours(businessHourStart, 0, 0, 0);
+        continue;
+      }
+
+      candidateSlots.push({ start: new Date(currentSlot), end: new Date(slotEnd) });
+
+      // Move to next 30-minute slot
+      currentSlot.setMinutes(currentSlot.getMinutes() + 30);
+    }
+
+    // Check each candidate slot for availability
+    for (const slot of candidateSlots) {
+      if (alternatives.length >= 5) break;
+
+      const unavailableInterviewers: string[] = [];
+      let allAvailable = true;
+
+      const bufferedStart = this.addMinutes(slot.start.toISOString(), -bufferMinutes);
+      const bufferedEnd = this.addMinutes(slot.end.toISOString(), bufferMinutes);
+
+      for (const interviewer of interviewers) {
+        // Skip if calendar not connected
+        if (!interviewer.googleRefreshToken) {
+          unavailableInterviewers.push(interviewer.uid);
+          allAvailable = false;
+          continue;
+        }
+
+        try {
+          const availability = await this.googleCalendarService.getAvailability(interviewer.id, {
+            startDate: bufferedStart,
+            endDate: bufferedEnd,
+            timeZone,
+          });
+
+          if (availability.busy) {
+            unavailableInterviewers.push(interviewer.uid);
+            allAvailable = false;
+          }
+        } catch (error) {
+          this.logger.error(`Failed to check availability for slot: ${error.message}`);
+          unavailableInterviewers.push(interviewer.uid);
+          allAvailable = false;
+        }
+      }
+
+      // Add slot if all interviewers are available
+      if (allAvailable) {
+        alternatives.push({
+          startTime: slot.start.toISOString(),
+          endTime: slot.end.toISOString(),
+          allAvailable: true,
+        });
+      }
+    }
+
+    return alternatives;
+  }
+
+  /**
+   * Add minutes to an ISO datetime string
+   */
+  private addMinutes(isoString: string, minutes: number): string {
+    const date = new Date(isoString);
+    date.setMinutes(date.getMinutes() + minutes);
+    return date.toISOString();
   }
 }

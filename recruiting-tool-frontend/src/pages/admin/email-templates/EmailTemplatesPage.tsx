@@ -23,7 +23,7 @@ import {
 } from '../../../hooks/api/useEmailTemplates';
 import {canManageResources} from '../../../utils/permissions';
 import EmailTemplateDialog from '../../../components/email-templates/EmailTemplateDialog';
-import {EmailTemplate} from '../../../types/emailTemplate.types';
+import {EmailTemplate, EmailTemplateType} from '../../../types/emailTemplate.types';
 import {format} from 'date-fns';
 import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
@@ -141,6 +141,9 @@ const EmailTemplatesPage: React.FC = () => {
 										{t('email_templates_page.table_subject')}
 									</TableCell>
 									<TableCell>
+										{t('email_templates_page.table_type')}
+									</TableCell>
+									<TableCell>
 										{t('email_templates_page.table_default')}
 									</TableCell>
 									<TableCell>
@@ -173,6 +176,24 @@ const EmailTemplatesPage: React.FC = () => {
 											>
 												{template.subject}
 											</Typography>
+										</TableCell>
+										<TableCell>
+											{template.type && (
+												<Chip
+													label={t(`email_template.type_${template.type.toLowerCase()}`)}
+													size="small"
+													variant="outlined"
+													color={
+														template.type === EmailTemplateType.APPLICATION_RECEIVED ? 'success' :
+														template.type === EmailTemplateType.APPLICATION_REJECTED ? 'error' :
+														template.type === EmailTemplateType.APPLICATION_SHORTLISTED ? 'info' :
+														template.type === EmailTemplateType.INTERVIEW_INVITATION ? 'primary' :
+														template.type === EmailTemplateType.INTERVIEW_REMINDER ? 'warning' :
+														template.type === EmailTemplateType.OFFER_LETTER ? 'success' :
+														'default'
+													}
+												/>
+											)}
 										</TableCell>
 										<TableCell>
 											{template.isDefault && (

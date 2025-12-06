@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import axios from '../../../api/axios';
 import { OnboardingData } from '../ApplicantOnboarding';
+import { useUpdateProfile } from '../../../hooks/api/useAuth';
 
 interface CompletionStepProps {
   data: OnboardingData;
@@ -15,24 +16,29 @@ const CompletionStep: React.FC<CompletionStepProps> = ({ data, onComplete, onBac
   const { t } = useTranslation();
   const [isCompleting, setIsCompleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { mutateAsync: updateProfile } = useUpdateProfile();
 
   const handleComplete = async () => {
     setIsCompleting(true);
     setError(null);
 
     try {
+      // Save profile data to backend
+      await updateProfile({
+        phoneNumber: data.phoneNumber,
+        location: data.location,
+        linkedinUrl: data.linkedinUrl,
+        portfolioUrl: data.portfolioUrl,
+      });
+
       // Call backend to mark onboarding as complete
       await axios.post('/auth/complete-onboarding');
-
-      // TODO: Save profile data to backend
-      // This could be implemented as a separate endpoint for updating user profile
-      console.log('Onboarding data:', data);
 
       // Navigate to careers page
       onComplete();
     } catch (err: any) {
       console.error('Error completing onboarding:', err);
-      setError(err.response?.data?.message || t('onboarding.completion.error'));
+      setError(err.response?.data?.message || t('applicant_onboarding.completion.error'));
       setIsCompleting(false);
     }
   };
@@ -51,11 +57,11 @@ const CompletionStep: React.FC<CompletionStepProps> = ({ data, onComplete, onBac
       <CheckCircleIcon sx={{ fontSize: 80, color: 'success.main' }} />
 
       <Typography variant="h4" component="h1" gutterBottom>
-        {t('onboarding.completion.title')}
+        {t('applicant_onboarding.completion.title')}
       </Typography>
 
       <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600 }}>
-        {t('onboarding.completion.subtitle')}
+        {t('applicant_onboarding.completion.subtitle')}
       </Typography>
 
       {error && (
@@ -66,22 +72,22 @@ const CompletionStep: React.FC<CompletionStepProps> = ({ data, onComplete, onBac
 
       <Box sx={{ mt: 2, textAlign: 'left', maxWidth: 500 }}>
         <Typography variant="h6" gutterBottom>
-          {t('onboarding.completion.summary')}
+          {t('applicant_onboarding.completion.summary')}
         </Typography>
 
         <Box component="ul" sx={{ pl: 2 }}>
           <Typography component="li" variant="body2" sx={{ mb: 1 }}>
-            <strong>{t('onboarding.completion.profile')}:</strong> {data.fullName || t('common.n_a')}
+            <strong>{t('applicant_onboarding.completion.profile')}:</strong> {data.fullName || t('common.n_a')}
           </Typography>
           <Typography component="li" variant="body2" sx={{ mb: 1 }}>
-            <strong>{t('onboarding.completion.location')}:</strong> {data.location || t('common.n_a')}
+            <strong>{t('applicant_onboarding.completion.location')}:</strong> {data.location || t('common.n_a')}
           </Typography>
           <Typography component="li" variant="body2" sx={{ mb: 1 }}>
-            <strong>{t('onboarding.completion.resume')}:</strong>{' '}
-            {data.resumeFile ? data.resumeFile.name : data.resumeSkipped ? t('onboarding.completion.skipped') : t('common.n_a')}
+            <strong>{t('applicant_onboarding.completion.resume')}:</strong>{' '}
+            {data.resumeFile ? data.resumeFile.name : data.resumeSkipped ? t('applicant_onboarding.completion.skipped') : t('common.n_a')}
           </Typography>
           <Typography component="li" variant="body2">
-            <strong>{t('onboarding.completion.preferences')}:</strong>{' '}
+            <strong>{t('applicant_onboarding.completion.preferences')}:</strong>{' '}
             {data.desiredJobTypes && data.desiredJobTypes.length > 0
               ? data.desiredJobTypes.map((type) => t(`job_type.${type.toLowerCase()}`)).join(', ')
               : t('common.n_a')}
@@ -100,7 +106,7 @@ const CompletionStep: React.FC<CompletionStepProps> = ({ data, onComplete, onBac
           disabled={isCompleting}
           startIcon={isCompleting ? <CircularProgress size={20} /> : <CheckCircleIcon />}
         >
-          {isCompleting ? t('onboarding.completion.completing') : t('onboarding.completion.finish')}
+          {isCompleting ? t('applicant_onboarding.completion.completing') : t('applicant_onboarding.completion.finish')}
         </Button>
       </Box>
     </Box>

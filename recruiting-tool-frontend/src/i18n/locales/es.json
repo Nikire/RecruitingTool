@@ -47,7 +47,13 @@
     "print": "Imprimir",
     "unknown": "Desconocido",
     "gotIt": "Entendido",
-    "created": "Creado"
+    "created": "Creado",
+    "approve": "Aprobar",
+    "approving": "Aprobando...",
+    "deny": "Denegar",
+    "denying": "Denegando...",
+    "send": "Enviar",
+    "sending": "Enviando..."
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -176,7 +182,28 @@
     "import_csv_hint": "Importación masiva de candidatos desde un archivo CSV",
     "search_placeholder": "Buscar por nombre o correo...",
     "delete_title": "Eliminar Candidato",
-    "delete_message": "¿Está seguro que desea eliminar este candidato?"
+    "delete_message": "¿Está seguro que desea eliminar este candidato?",
+    "source_label": "Fuente del Candidato",
+    "source_details_label": "Detalles de la Fuente",
+    "source_filter_label": "Filtrar por Fuente",
+    "all_sources": "Todas las Fuentes",
+    "sources": {
+      "WEBSITE": "Sitio Web",
+      "LINKEDIN": "LinkedIn",
+      "INDEED": "Indeed",
+      "GLASSDOOR": "Glassdoor",
+      "REFERRAL": "Referencia",
+      "JOB_FAIR": "Feria de Empleo",
+      "UNIVERSITY": "Universidad",
+      "RECRUITER": "Reclutador",
+      "DIRECT_APPLY": "Aplicación Directa",
+      "SOCIAL_MEDIA": "Redes Sociales",
+      "MANUAL": "Entrada Manual",
+      "CSV_IMPORT": "Importación CSV",
+      "OTHER": "Otro",
+      "CAREER_PAGE": "Página de Carreras",
+      "JOB_BOARD": "Portal de Empleo"
+    }
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -605,7 +632,12 @@
     "phone_required": "El número de teléfono es obligatorio",
     "submit_application": "Enviar Aplicación",
     "submitting": "Enviando...",
-    "success_message": "¡Aplicación enviada exitosamente! Te contactaremos pronto."
+    "success_message": "¡Aplicación enviada exitosamente! Te contactaremos pronto.",
+    "autofill_from_profile": "Autocompletar desde Perfil",
+    "autofilling": "Autocompletando...",
+    "autofill_success": "Formulario completado con tus datos de perfil",
+    "autofill_error": "Error al cargar datos del perfil",
+    "no_profile_data": "Inicia sesión para usar el autocompletado"
   },
   "edit_profile": {
     "title": "Editar Perfil",
@@ -644,6 +676,16 @@
     "body_helper": "Usa las variables de arriba para personalización",
     "available_variables": "Variables Disponibles (clic para insertar):",
     "mark_default": "Marcar como plantilla predeterminada",
+    "type_label": "Tipo de Plantilla",
+    "type_helper": "Selecciona el tipo para la selección automática de correos (opcional)",
+    "type_none": "Ninguno (Personalizado)",
+    "type_application_received": "Solicitud Recibida",
+    "type_application_rejected": "Solicitud Rechazada",
+    "type_application_shortlisted": "Solicitud Preseleccionada",
+    "type_interview_invitation": "Invitación a Entrevista",
+    "type_interview_reminder": "Recordatorio de Entrevista",
+    "type_offer_letter": "Carta de Oferta",
+    "type_custom": "Personalizado",
     "variable_candidate_name": "Nombre del candidato",
     "variable_position_title": "Título de la posición",
     "variable_company_name": "Nombre de la empresa",
@@ -900,6 +942,7 @@
     "title": "Plantillas de Correo",
     "table_name": "Nombre",
     "table_subject": "Asunto",
+    "table_type": "Tipo",
     "table_default": "Predeterminada",
     "table_created_by": "Creada Por",
     "table_created_at": "Creada el",
@@ -971,11 +1014,8 @@
       "choose_file": "Elegir Archivo",
       "company_name": "Nombre de la Empresa",
       "company_name_required": "El nombre de la empresa es requerido",
-      "industry": "Industria",
-      "industry_helper": "ej., Tecnología, Salud, Finanzas",
-      "company_size": "Tamaño de la Empresa",
-      "company_size_helper": "Número de empleados",
-      "employees": "empleados"
+      "company_name_helper": "El nombre de tu empresa será visible para los candidatos",
+      "company_owner_subtitle": "Ingresa el nombre de tu empresa. Configurarás detalles adicionales después del registro."
     },
     "confirmation": {
       "title": "Revisar y Completar Registro",
@@ -1051,15 +1091,17 @@
     "job_positions": "Posiciones de Trabajo",
     "email_templates": "Plantillas de Correo",
     "aria_label": "navegación de rrhh",
-    "analytics": "Análisis"
+    "analytics": "Análisis",
+    "team": "Equipo"
   },
   "admin_layout": {
     "title": "Panel de Administración",
-    "dashboard": "Dashboard de Admin",
+    "dashboard": "Dashboard",
     "companies": "Empresas",
     "users": "Usuarios",
-    "aria_label": "navegación de administración",
-    "settings": "Configuración del Sistema"
+    "deleted_records": "Registros Eliminados",
+    "settings": "Configuración",
+    "aria_label": "navegación de administrador"
   },
   "language": {
     "select_language": "Seleccionar Idioma",
@@ -1665,15 +1707,6 @@
     "purge_success": "Registro eliminado permanentemente",
     "purge_error": "Error al eliminar el registro"
   },
-  "admin_layout": {
-    "title": "Panel de Administración",
-    "dashboard": "Dashboard",
-    "companies": "Empresas",
-    "users": "Usuarios",
-    "deleted_records": "Registros Eliminados",
-    "settings": "Configuración",
-    "aria_label": "navegación de administrador"
-  },
   "subscription": {
     "title": "Gestión de Suscripción",
     "description": "Administra tu plan de suscripción y consulta detalles de uso",
@@ -1829,6 +1862,7 @@
       "proceed_to_payment": "Proceder al Pago",
       "processing": "Procesando...",
       "error_message": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
+      "success_message": "¡Pago exitoso! Tu suscripción ya está activa.",
       "features": {
         "cancel_anytime": "Cancela en cualquier momento, sin compromisos",
         "no_setup_fees": "Sin cargos de configuración ni ocultos",
@@ -2080,7 +2114,7 @@
       "copyright": "© {{year}} Recruiting Tool. Todos los derechos reservados."
     }
   },
-  "onboarding": {
+  "applicant_onboarding": {
     "steps": {
       "welcome": "Bienvenida",
       "profile": "Completar Perfil",
@@ -2115,6 +2149,8 @@
       "file_formats": "Formatos soportados: PDF, DOC, DOCX (Máx 5MB)",
       "invalid_file_type": "Tipo de archivo inválido. Por favor sube un archivo PDF, DOC o DOCX.",
       "file_too_large": "El archivo es demasiado grande. El tamaño máximo es 5MB.",
+      "uploading": "Subiendo currículum...",
+      "upload_error": "Error al subir el currículum. Por favor intenta de nuevo.",
       "skip": "Omitir por ahora"
     },
     "preferences": {
@@ -2151,5 +2187,181 @@
     "remote": "Remoto",
     "hybrid": "Híbrido",
     "on_site": "Presencial"
+  },
+  "careersJob": {
+    "location_not_specified": "Ubicación no especificada",
+    "from": "Desde",
+    "up_to": "Hasta",
+    "featured": "Destacado"
+  },
+  "calendar_settings": {
+    "title": "Configuración del Calendario",
+    "google_calendar": "Integración con Google Calendar",
+    "connection_status": "Estado de Conexión",
+    "connected": "Conectado",
+    "not_connected": "No Conectado",
+    "connect": "Conectar Google Calendar",
+    "connecting": "Conectando...",
+    "disconnect": "Desconectar",
+    "disconnecting": "Desconectando...",
+    "connected_message": "Tu Google Calendar está conectado y listo para usar en la programación de entrevistas con enlaces de Meet.",
+    "not_connected_message": "Conecta tu Google Calendar para crear automáticamente eventos de entrevista con enlaces de Google Meet.",
+    "oauth_info": "Serás redirigido a Google para autorizar el acceso al calendario. Solo solicitamos permiso para gestionar eventos del calendario.",
+    "connection_check": "Verificando estado de conexión...",
+    "connect_error": "Error al conectar Google Calendar. Por favor intenta de nuevo.",
+    "disconnect_error": "Error al desconectar Google Calendar. Por favor intenta de nuevo.",
+    "disconnected_success": "Google Calendar desconectado exitosamente.",
+    "refresh_status": "Actualizar estado de conexión",
+    "working_hours": "Horario Laboral",
+    "working_hours_description": "Establece tu horario laboral disponible para la programación de entrevistas. Esto ayuda a prevenir que se programen reuniones fuera de tus horas preferidas.",
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "start_time": "Hora de Inicio",
+    "end_time": "Hora de Fin",
+    "meeting_settings": "Configuración de Reuniones",
+    "buffer_time": "Tiempo de Espera Entre Reuniones",
+    "buffer_time_helper": "Espacio de tiempo para agregar entre reuniones consecutivas",
+    "no_buffer": "Sin espera",
+    "minutes": "minutos",
+    "default_duration": "Duración Predeterminada de Reunión",
+    "default_duration_helper": "Duración estándar para nuevas reuniones de entrevista",
+    "settings_saved": "¡Configuración del calendario guardada exitosamente!"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "Sin notificaciones",
+    "mark_all_read": "Marcar todas como leídas",
+    "delete": "Eliminar notificación",
+    "bell": {
+      "aria_label": "Notificaciones"
+    },
+    "messages": {
+      "all_marked_read": "{{count}} notificaciones marcadas como leídas",
+      "deleted": "Notificación eliminada",
+      "created": "Notificación creada"
+    },
+    "errors": {
+      "load_failed": "Error al cargar notificaciones",
+      "mark_read_failed": "Error al marcar notificación como leída",
+      "mark_all_read_failed": "Error al marcar todas como leídas",
+      "delete_failed": "Error al eliminar notificación",
+      "create_failed": "Error al crear notificación"
+    }
+  },
+  "company_roles": {
+    "title": "Gestión de Equipo",
+    "members": "Miembros del Equipo",
+    "no_members": "No se encontraron miembros del equipo",
+    "add_member": "Agregar Miembro",
+    "edit_role": "Editar Rol",
+    "remove_member": "Eliminar Miembro",
+    "delegatable_roles": "Roles Asignables",
+    "role_assigned_success": "Rol asignado exitosamente",
+    "role_assigned_error": "Error al asignar rol",
+    "role_updated_success": "Rol actualizado exitosamente",
+    "role_updated_error": "Error al actualizar rol",
+    "user_removed_success": "Usuario eliminado de la empresa exitosamente",
+    "user_removed_error": "Error al eliminar usuario",
+    "confirm_remove": "¿Estás seguro de que quieres eliminar este usuario de la empresa?",
+    "member_since": "Miembro desde",
+    "last_login": "Último acceso",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "roles": {
+      "USER": "Usuario",
+      "HR": "Recursos Humanos",
+      "HR_MANAGER": "Gerente de RH",
+      "RECRUITER": "Reclutador",
+      "ADMIN": "Administrador",
+      "COMPANY_ADMIN": "Administrador de Empresa",
+      "COMPANY_OWNER": "Propietario de Empresa",
+      "SUPER_ADMIN": "Super Administrador"
+    },
+    "role_descriptions": {
+      "USER": "Usuario básico con acceso de solo lectura",
+      "RECRUITER": "Puede asistir en contratación y ver candidatos",
+      "HR": "Puede gestionar procesos de contratación y candidatos",
+      "HR_MANAGER": "Puede gestionar equipo de RH y delegar roles",
+      "COMPANY_ADMIN": "Puede gestionar configuración de empresa y delegar la mayoría de roles",
+      "COMPANY_OWNER": "Control total de la empresa y puede delegar todos los roles",
+      "ADMIN": "Administrador del sistema (heredado)",
+      "SUPER_ADMIN": "Administrador a nivel de sistema"
+    }
+  },
+  "connection_requests": {
+    "request_to_join": "Solicitar Unirse a la Empresa",
+    "request_description": "Envía una solicitud para unirte a {{companyName}}. Tu solicitud será revisada por los administradores de la empresa.",
+    "approval_notice": "Tu solicitud será revisada por los administradores de la empresa. Se te notificará una vez que se tome una decisión.",
+    "request_sent": "Solicitud de conexión enviada exitosamente",
+    "request_approved": "Solicitud de conexión aprobada",
+    "request_denied": "Solicitud de conexión denegada",
+    "request_cancelled": "Solicitud de conexión cancelada",
+    "no_pending_requests": "No hay solicitudes de conexión pendientes",
+    "requested_role": "Rol Solicitado",
+    "approve_dialog_title": "Aprobar Solicitud de Conexión",
+    "approve_dialog_description": "Aprobar la solicitud de {{userName}} para unirse a tu empresa?",
+    "deny_dialog_title": "Denegar Solicitud de Conexión",
+    "deny_dialog_description": "Denegar la solicitud de {{userName}} para unirse a tu empresa?",
+    "fields": {
+      "role": "Rol",
+      "message": "Mensaje (Opcional)",
+      "message_help": "Explica por qué quieres unirte a esta empresa (opcional)",
+      "message_placeholder": "Me gustaría unirme a tu equipo para ayudar con el reclutamiento...",
+      "assigned_role": "Rol Asignado",
+      "review_note": "Nota (Opcional)",
+      "review_note_placeholder": "Bienvenido al equipo!",
+      "denial_reason": "Motivo del Rechazo",
+      "denial_reason_placeholder": "Por favor, proporciona un motivo para denegar esta solicitud..."
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "denied": "Denegada",
+      "cancelled": "Cancelada"
+    },
+    "errors": {
+      "create_failed": "Error al enviar solicitud de conexión",
+      "approve_failed": "Error al aprobar solicitud",
+      "deny_failed": "Error al denegar solicitud",
+      "cancel_failed": "Error al cancelar solicitud"
+    }
+  },
+  "team": {
+    "page_title": "Gestión de Equipo",
+    "invite_member": "Invitar Miembro",
+    "invite_member_title": "Invitar Miembro del Equipo",
+    "email_label": "Dirección de Correo Electrónico",
+    "email_helper": "Ingresa la dirección de correo electrónico de la persona que deseas invitar",
+    "role_label": "Rol",
+    "role_helper": "Selecciona el rol para este miembro del equipo",
+    "send_invitation": "Enviar Invitación",
+    "current_members": "Miembros Actuales",
+    "pending_invitations": "Invitaciones Pendientes",
+    "connection_requests": "Solicitudes de Conexión",
+    "no_members": "No se encontraron miembros del equipo",
+    "no_pending_invitations": "No hay invitaciones pendientes",
+    "no_connection_requests": "No hay solicitudes de conexión pendientes",
+    "no_company": "Debes pertenecer a una empresa para gestionar el equipo",
+    "edit_role": "Editar Rol",
+    "remove_member": "Eliminar Miembro",
+    "invitation_sent": "Invitación enviada exitosamente",
+    "invitation_cancelled": "Invitación cancelada",
+    "invitation_accepted": "Invitación aceptada exitosamente",
+    "confirm_cancel_invitation": "¿Estás seguro de que deseas cancelar esta invitación?",
+    "invited_as": "Invitado como {{role}}",
+    "invited_by": "Invitado por {{name}}",
+    "expires_at": "Expira {{date}}",
+    "requested_role": "Rol solicitado: {{role}}",
+    "approve": "Aprobar",
+    "deny": "Denegar"
   }
 }

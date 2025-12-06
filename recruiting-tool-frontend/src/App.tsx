@@ -33,6 +33,8 @@ import SubscriptionPage from './pages/profile/SubscriptionPage';
 import OnboardingWizard from './pages/onboarding/OnboardingWizard';
 import HROnboardingWizard from './pages/onboarding/HROnboardingWizard';
 import ApplicantOnboarding from './pages/applicant/ApplicantOnboarding';
+import CalendarSettingsPage from './pages/settings/CalendarSettingsPage';
+import TeamManagementPage from './pages/TeamManagementPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -90,6 +92,8 @@ function App() {
 						<Route path="/hr/job-positions/:uid" element={<HRJobPositionDetailPage />} />
 						<Route path="/hr/analytics" element={<AnalyticsPage />} />
 						<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
+						<Route path="/settings/calendar" element={<CalendarSettingsPage />} />
+						<Route path="/settings/team" element={<TeamManagementPage />} />
 					</Route>
 				</Route>
 

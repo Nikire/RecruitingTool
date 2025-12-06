@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {getCurrentUser, login, register} from '../../api/auth';
+import {getCurrentUser, login, register, updateProfile} from '../../api/auth';
 import {User} from '../../types/user.types';
 import {useUserAtom} from './state/useUserAtom';
 import {showSuccessToast, showErrorToast} from '../../utils/toast';
@@ -117,4 +117,22 @@ export function useLogout() {
 		setUser(null);
 		queryClient.removeQueries({queryKey: [AUTH_KEY, 'me']});
 	};
+}
+
+export function useUpdateProfile() {
+	const queryClient = useQueryClient();
+	const {setUser} = useUserAtom();
+
+	return useMutation({
+		mutationFn: updateProfile,
+		onSuccess: (updatedUser) => {
+			// Update user in cache and atom
+			queryClient.setQueryData([AUTH_KEY, 'me'], updatedUser);
+			setUser(updatedUser);
+			showSuccessToast('Profile updated successfully!');
+		},
+		onError: (error) => {
+			showErrorToast(error, 'Failed to update profile. Please try again.');
+		},
+	});
 }

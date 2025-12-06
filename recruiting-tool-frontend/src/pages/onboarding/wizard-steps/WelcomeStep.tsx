@@ -82,19 +82,28 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
 					<Typography variant="h6" gutterBottom fontWeight="bold">
 						{t('onboarding.welcome.features_title')}
 					</Typography>
-					<Grid container spacing={2}>
+					<Grid container spacing={3}>
 						{features.map((feature, index) => (
-							<Grid item xs={12} md={6} key={index}>
-								<Box sx={{ display: 'flex', gap: 2, alignItems: 'flex-start' }}>
-									<Box sx={{ mt: 0.5 }}>{feature.icon}</Box>
-									<Box>
-										<Typography variant="subtitle1" fontWeight="bold">
-											{t(feature.titleKey)}
-										</Typography>
-										<Typography variant="body2" color="textSecondary">
-											{t(feature.descriptionKey)}
-										</Typography>
-									</Box>
+							<Grid item xs={12} sm={6} md={4} key={index}>
+								<Box
+									sx={{
+										display: 'flex',
+										flexDirection: 'column',
+										alignItems: 'center',
+										textAlign: 'center',
+										p: 2,
+										height: '100%',
+										borderRadius: 1,
+										bgcolor: 'action.hover',
+									}}
+								>
+									<Box sx={{ mb: 1.5 }}>{feature.icon}</Box>
+									<Typography variant="subtitle1" fontWeight="bold" gutterBottom>
+										{t(feature.titleKey)}
+									</Typography>
+									<Typography variant="body2" color="textSecondary">
+										{t(feature.descriptionKey)}
+									</Typography>
 								</Box>
 							</Grid>
 						))}

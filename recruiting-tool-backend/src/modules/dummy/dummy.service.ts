@@ -59,6 +59,14 @@ interface DummyDataStructure {
     applicationDeadline?: string;
     isUrgent?: boolean;
     isFeatured?: boolean;
+    city?: string;
+    state?: string;
+    country?: string;
+    showSalary?: boolean;
+    tags?: string[];
+    isHighlighted?: boolean;
+    viewCount?: number;
+    applicationCount?: number;
     stages: Array<{
       title: string;
       type: StageType;
@@ -74,6 +82,9 @@ interface DummyDataStructure {
     source?: string;
     sourceDetails?: string;
     sourceUrl?: string;
+    utmSource?: string;
+    utmMedium?: string;
+    utmCampaign?: string;
   }>;
   candidateNotes: Array<{
     content: string;
@@ -509,6 +520,9 @@ export class DummyService implements OnApplicationBootstrap {
             source: candidate.source as any,
             sourceDetails: candidate.sourceDetails,
             sourceUrl: candidate.sourceUrl,
+            utmSource: candidate.utmSource,
+            utmMedium: candidate.utmMedium,
+            utmCampaign: candidate.utmCampaign,
             createdAt: candidateCreatedAt, // Temporal pattern
           },
         });

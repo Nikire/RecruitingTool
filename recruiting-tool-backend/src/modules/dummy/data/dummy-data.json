@@ -307,7 +307,15 @@
       ],
       "applicationDeadline": "2025-12-31T23:59:59Z",
       "isUrgent": false,
-      "isFeatured": true
+      "isFeatured": true,
+      "city": "San Francisco",
+      "state": "California",
+      "country": "United States",
+      "showSalary": true,
+      "tags": ["javascript", "typescript", "react", "backend", "fullstack"],
+      "isHighlighted": true,
+      "viewCount": 142,
+      "applicationCount": 23
     },
     {
       "title": "Frontend Developer",
@@ -400,7 +408,15 @@
       ],
       "applicationDeadline": "2025-11-30T23:59:59Z",
       "isUrgent": true,
-      "isFeatured": false
+      "isFeatured": false,
+      "city": "New York",
+      "state": "New York",
+      "country": "United States",
+      "showSalary": false,
+      "tags": ["marketing", "seo", "content", "analytics", "remote"],
+      "isHighlighted": false,
+      "viewCount": 87,
+      "applicationCount": 15
     },
     {
       "title": "DevOps Engineer",
@@ -467,7 +483,15 @@
       ],
       "applicationDeadline": "2026-01-15T23:59:59Z",
       "isUrgent": false,
-      "isFeatured": true
+      "isFeatured": true,
+      "city": "Austin",
+      "state": "Texas",
+      "country": "United States",
+      "showSalary": true,
+      "tags": ["data-science", "python", "machine-learning", "analytics", "senior"],
+      "isHighlighted": true,
+      "viewCount": 201,
+      "applicationCount": 34
     },
     {
       "title": "Product Manager",
@@ -500,7 +524,50 @@
           "description": "Final offer discussion",
           "estimatedTime": 15
         }
-      ]
+      ],
+      "jobCategory": "Product",
+      "jobType": "FULL_TIME",
+      "workLocation": "HYBRID",
+      "salaryMin": 90000,
+      "salaryMax": 140000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "YEARLY",
+      "benefits": [
+        "Health Insurance",
+        "Stock Options",
+        "401k Match",
+        "Unlimited PTO"
+      ],
+      "requirements": [
+        "5+ years of product management experience",
+        "Proven track record of launching successful products",
+        "Strong analytical and communication skills"
+      ],
+      "responsibilities": [
+        "Define product vision and roadmap",
+        "Work with engineering and design teams",
+        "Analyze user feedback and metrics"
+      ],
+      "experienceLevel": "SENIOR",
+      "educationLevel": "Bachelor's degree in Business or related field",
+      "skills": [
+        "Product Strategy",
+        "Agile/Scrum",
+        "User Research",
+        "Data Analysis",
+        "Roadmapping"
+      ],
+      "applicationDeadline": "2026-02-28T23:59:59Z",
+      "isUrgent": false,
+      "isFeatured": false,
+      "city": "Seattle",
+      "state": "Washington",
+      "country": "United States",
+      "showSalary": true,
+      "tags": ["product", "management", "strategy", "leadership", "hybrid"],
+      "isHighlighted": false,
+      "viewCount": 156,
+      "applicationCount": 28
     }
   ],
   "candidates": [
@@ -510,7 +577,10 @@
       "jobPositionIndex": 0,
       "companyIndex": 0,
       "source": "LINKEDIN",
-      "sourceUrl": "https://www.linkedin.com/jobs/view/123456"
+      "sourceUrl": "https://www.linkedin.com/jobs/view/123456",
+      "utmSource": "linkedin",
+      "utmMedium": "social",
+      "utmCampaign": "fall_2025_hiring"
     },
     {
       "name": "Jane Smith",
@@ -526,7 +596,10 @@
       "jobPositionIndex": 1,
       "companyIndex": 0,
       "source": "INDEED",
-      "sourceUrl": "https://www.indeed.com/viewjob?jk=789012"
+      "sourceUrl": "https://www.indeed.com/viewjob?jk=789012",
+      "utmSource": "indeed",
+      "utmMedium": "job_board",
+      "utmCampaign": "tech_jobs_q4"
     },
     {
       "name": "Sarah Davis",

@@ -33,11 +33,11 @@ const ApplicantOnboarding: React.FC = () => {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
 
   const steps = [
-    t('onboarding.steps.welcome'),
-    t('onboarding.steps.profile'),
-    t('onboarding.steps.resume'),
-    t('onboarding.steps.preferences'),
-    t('onboarding.steps.completion'),
+    t('applicant_onboarding.steps.welcome'),
+    t('applicant_onboarding.steps.profile'),
+    t('applicant_onboarding.steps.resume'),
+    t('applicant_onboarding.steps.preferences'),
+    t('applicant_onboarding.steps.completion'),
   ];
 
   const handleNext = () => {

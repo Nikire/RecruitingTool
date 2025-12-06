@@ -45,25 +45,25 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Typography variant="h5" gutterBottom>
-        {t('onboarding.profile.title')}
+        {t('applicant_onboarding.profile.title')}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        {t('onboarding.profile.subtitle')}
+        {t('applicant_onboarding.profile.subtitle')}
       </Typography>
 
       <FormErrorSummary errors={errors} />
 
       <TextField
-        label={t('onboarding.profile.full_name')}
+        label={t('applicant_onboarding.profile.full_name')}
         fullWidth
         margin="normal"
-        {...register('fullName', validationRules.required(t('onboarding.profile.full_name')))}
+        {...register('fullName', validationRules.required(t('applicant_onboarding.profile.full_name')))}
         error={!!errors.fullName}
         helperText={errors.fullName?.message}
       />
 
       <TextField
-        label={t('onboarding.profile.phone_number')}
+        label={t('applicant_onboarding.profile.phone_number')}
         fullWidth
         margin="normal"
         {...register('phoneNumber', validationRules.phone())}
@@ -72,17 +72,17 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
       />
 
       <TextField
-        label={t('onboarding.profile.location')}
+        label={t('applicant_onboarding.profile.location')}
         fullWidth
         margin="normal"
-        {...register('location', validationRules.required(t('onboarding.profile.location')))}
+        {...register('location', validationRules.required(t('applicant_onboarding.profile.location')))}
         error={!!errors.location}
         helperText={errors.location?.message}
-        placeholder={t('onboarding.profile.location_placeholder')}
+        placeholder={t('applicant_onboarding.profile.location_placeholder')}
       />
 
       <TextField
-        label={t('onboarding.profile.linkedin_url')}
+        label={t('applicant_onboarding.profile.linkedin_url')}
         fullWidth
         margin="normal"
         {...register('linkedinUrl', validationRules.url())}
@@ -92,7 +92,7 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
       />
 
       <TextField
-        label={t('onboarding.profile.portfolio_url')}
+        label={t('applicant_onboarding.profile.portfolio_url')}
         fullWidth
         margin="normal"
         {...register('portfolioUrl', validationRules.url())}

@@ -16,15 +16,23 @@ export interface User {
 	department?: string;
 	bio?: string;
 	linkedinUrl?: string;
+	portfolioUrl?: string;
+	location?: string;
 	timezone?: string;
+	resumeUrl?: string;
+	resumeFileName?: string;
+	onboardingCompleted?: boolean;
 }
 
 export enum UserRoles {
 	SUPER_ADMIN = 'SUPER_ADMIN',
 	ADMIN = 'ADMIN',
 	HR = 'HR',
+	HR_MANAGER = 'HR_MANAGER',
+	RECRUITER = 'RECRUITER',
 	USER = 'USER',
 	COMPANY_OWNER = 'COMPANY_OWNER',
+	COMPANY_ADMIN = 'COMPANY_ADMIN',
 }
 
 export interface CreateUserDto {
@@ -48,4 +56,26 @@ export interface UpdateUserDto {
 	bio?: string;
 	linkedinUrl?: string;
 	timezone?: string;
+}
+
+// Company Roles Management
+export interface CompanyMember {
+	uid: string;
+	name: string;
+	email: string;
+	roles: UserRoles[];
+	isActive: boolean;
+	position?: string;
+	department?: string;
+	lastLoginAt?: string;
+	createdAt: string;
+}
+
+export interface AssignRoleDto {
+	userUid: string;
+	roles: UserRoles[];
+}
+
+export interface UpdateRoleDto {
+	roles: UserRoles[];
 }

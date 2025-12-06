@@ -28,6 +28,7 @@ import NavbarDrawer from './NavbarDrawer';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
 import LanguageSelector from '../common/LanguageSelector';
+import { NotificationBell } from '../notifications';
 import {canManageResources, isAdmin} from '../../utils/permissions';
 import {
 	Person as ProfileIcon,
@@ -240,21 +241,10 @@ const Navbar: React.FC = () => {
 
 							{isAuthenticated ? (
 								<>
-									{/* Notifications Icon */}
-									<IconButton
-										color="inherit"
-										sx={{
-											display: {xs: 'none', sm: 'inline-flex'},
-											'&:hover': {
-												bgcolor: alpha(theme.palette.common.white, 0.1),
-											},
-										}}
-										aria-label={t('navbar.notifications')}
-									>
-										<Badge badgeContent={0} color="error">
-											<NotificationsIcon />
-										</Badge>
-									</IconButton>
+									{/* Notifications Bell with Dropdown */}
+									<Box sx={{ display: { xs: 'none', sm: 'block' } }}>
+										<NotificationBell />
+									</Box>
 
 									{/* User Avatar with Dropdown */}
 									<IconButton

@@ -37,6 +37,9 @@ export class CandidateService {
           source: createCandidateDto.source,
           sourceDetails: createCandidateDto.sourceDetails,
           sourceUrl: createCandidateDto.sourceUrl,
+          utmSource: createCandidateDto.utmSource,
+          utmMedium: createCandidateDto.utmMedium,
+          utmCampaign: createCandidateDto.utmCampaign,
         },
       });
 
