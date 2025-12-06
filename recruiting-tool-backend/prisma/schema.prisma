@@ -57,7 +57,9 @@ model User {
   uid                     String                 @unique @default(uuid()) @db.Uuid
   name                    String
   email                   String
-  password                String
+  password                String?
+  auth0Id                 String?                @unique
+  provider                String?                @default("local")
   roles                   RolesType[]            @default([USER])
   profilePicture          String?
   phoneNumber             String?
@@ -112,6 +114,8 @@ model User {
   @@index([companyId, isActive])
   @@index([createdAt])
   @@index([lastLoginAt])
+  @@index([auth0Id])
+  @@index([provider])
   @@map("User")
 }
 

@@ -961,7 +961,16 @@
     "logging_in": "Iniciando sesión...",
     "signing_up": "Registrando...",
     "login_failed": "Error al iniciar sesión. Por favor intente nuevamente.",
-    "signup_failed": "Error al registrarse. Por favor intente nuevamente."
+    "signup_failed": "Error al registrarse. Por favor intente nuevamente.",
+    "social": {
+      "login_with_google": "Continuar con Google",
+      "login_with_github": "Continuar con GitHub",
+      "signup_with_google": "Registrarse con Google",
+      "signup_with_github": "Registrarse con GitHub",
+      "or": "o",
+      "redirecting": "Redirigiendo...",
+      "sign_in_with_email": "O inicia sesión con correo"
+    }
   },
   "registration_wizard": {
     "steps": {

@@ -955,7 +955,16 @@
     "logging_in": "Logging in...",
     "signing_up": "Signing up...",
     "login_failed": "Login failed. Please try again.",
-    "signup_failed": "Signup failed. Please try again."
+    "signup_failed": "Signup failed. Please try again.",
+    "social": {
+      "login_with_google": "Continue with Google",
+      "login_with_github": "Continue with GitHub",
+      "signup_with_google": "Sign up with Google",
+      "signup_with_github": "Sign up with GitHub",
+      "or": "or",
+      "redirecting": "Redirecting...",
+      "sign_in_with_email": "Or sign in with email"
+    }
   },
   "registration_wizard": {
     "steps": {

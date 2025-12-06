@@ -66,3 +66,13 @@ export class RefreshTokenDto {
   @IsString()
   refreshToken: string;
 }
+
+export class Auth0CallbackDto {
+  @ApiProperty({
+    description: 'Auth0 JWT token',
+    example: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  @IsNotEmpty()
+  @IsString()
+  auth0Token: string;
+}

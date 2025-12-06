@@ -1,10 +1,11 @@
-import { Body, Controller, Get, Headers, Post } from '@nestjs/common';
+import { Body, Controller, Get, Headers, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
+import { Auth0CallbackDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
-import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiTooManyRequestsResponse } from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiTooManyRequestsResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { SkipThrottle } from 'src/common/decorators/throttle.decorator';
+import { Auth0Guard } from './guards/auth0.guard';
 
 @ApiTags('Auth')
 @ApiResponse({
@@ -51,7 +52,10 @@ export class AuthController {
 
   @Get('me')
   @SkipThrottle() // Skip throttling for token verification
-  @ApiOperation({ summary: 'Get current authenticated user' })
+  @ApiOperation({
+    summary: 'Get current authenticated user',
+    description: 'Works with both local JWT and Auth0 tokens',
+  })
   @ApiResponse({
     status: 200,
     description: 'Returns user details if token is valid',
@@ -129,5 +133,32 @@ export class AuthController {
     const user = await this.authService.verifyToken(token);
     await this.authService.completeOnboarding(user.id);
     return { message: 'Onboarding completed successfully', onboardingCompleted: true };
+  }
+
+  @Post('social/callback')
+  @UseGuards(Auth0Guard)
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Handle Auth0 social login callback',
+    description: 'Validates Auth0 token and creates/links user account. Returns local JWT tokens for subsequent requests.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'User authenticated successfully via Auth0. Returns local JWT tokens.',
+    type: RegisteredUserDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid Auth0 token or Auth0 not configured',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many authentication attempts',
+  })
+  @Throttle({ default: { limit: 10, ttl: 60000 } }) // 10 attempts per minute
+  async auth0Callback(@Request() req): Promise<RegisteredUserDto> {
+    // req.user is populated by Auth0Guard/Auth0Strategy
+    const auth0User = req.user;
+
+    // Handle the callback and return local JWT tokens
+    return this.authService.handleAuth0Callback(auth0User);
   }
 }

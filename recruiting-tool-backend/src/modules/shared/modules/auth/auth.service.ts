@@ -294,4 +294,79 @@ export class AuthService {
       data: { onboardingCompleted: true },
     });
   }
+
+  /**
+   * Handle Auth0 social login callback
+   * Links or creates user account based on Auth0 profile
+   */
+  async handleAuth0Callback(auth0User: {
+    auth0Id: string;
+    email: string;
+    name: string;
+    provider: string;
+    emailVerified?: boolean;
+  }): Promise<RegisteredUserDto> {
+    // Check if user already exists by auth0Id
+    let user = await this.databaseService.user.findUnique({
+      where: { auth0Id: auth0User.auth0Id },
+    });
+
+    // If not found by auth0Id, check by email
+    if (!user && auth0User.email) {
+      user = await this.databaseService.user.findFirst({
+        where: {
+          email: auth0User.email,
+          companyId: null, // Only match users without company (prevents cross-company linking)
+        },
+      });
+
+      // If found by email, link Auth0 identity
+      if (user) {
+        user = await this.databaseService.user.update({
+          where: { id: user.id },
+          data: {
+            auth0Id: auth0User.auth0Id,
+            provider: auth0User.provider,
+          },
+        });
+      }
+    }
+
+    // If still no user, create new account
+    if (!user) {
+      user = await this.databaseService.user.create({
+        data: {
+          email: auth0User.email,
+          name: auth0User.name,
+          auth0Id: auth0User.auth0Id,
+          provider: auth0User.provider,
+          password: null, // No password for social login users
+          roles: ['USER' as any],
+        },
+      });
+    }
+
+    // Check if user is active
+    if (!user.isActive) {
+      throw new UnauthorizedException('User account has been deactivated');
+    }
+
+    // Generate access and refresh tokens
+    const { accessToken, refreshToken } = await this.generateTokens(user.id, user.email, user.roles, user.companyId);
+
+    // Update last login time
+    await this.usersService.updateLastLogin(user.id);
+
+    // Log the login activity
+    await this.userActivityService.logActivity(user.id, {
+      action: 'LOGIN',
+      metadata: { loginMethod: auth0User.provider },
+    });
+
+    return {
+      user: { ...UserMapper(user) },
+      token: accessToken,
+      refreshToken,
+    };
+  }
 }

@@ -3,6 +3,7 @@ import { Box, Typography, TextField, Button, Checkbox, FormControlLabel, Link } 
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { RegistrationFormData } from '../RegistrationWizard';
+import SocialLoginButtons from '../../../components/auth/SocialLoginButtons';
 
 interface AccountCreationStepProps {
 	formData: RegistrationFormData;
@@ -55,6 +56,9 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({ formData, onN
 			<Typography variant="body2" color="textSecondary" sx={{ mb: 3 }}>
 				{t('registration_wizard.account_creation.subtitle')}
 			</Typography>
+
+			{/* Social Login Buttons (only shown if Auth0 is configured) */}
+			<SocialLoginButtons context="signup" />
 
 			<form onSubmit={handleSubmit(onSubmit)}>
 				<TextField

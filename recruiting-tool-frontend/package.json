@@ -25,6 +25,7 @@
 		"agent:log": "node -e \"const fs=require('fs');const msg=process.argv[1];const date=new Date().toISOString().slice(0,19).replace('T',' ');fs.appendFileSync('../.claude/logs/agent-activity.log','['+date+'] [npm-script] '+msg+'\\n---\\n');\""
 	},
 	"dependencies": {
+		"@auth0/auth0-react": "^2.10.0",
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.0",
 		"@fontsource/roboto": "^5.1.1",
