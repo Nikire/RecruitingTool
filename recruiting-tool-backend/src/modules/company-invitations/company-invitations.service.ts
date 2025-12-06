@@ -111,14 +111,31 @@ export class CompanyInvitationsService {
       },
     });
 
-    // TODO: Send invitation email
+    // Send invitation email
     this.logger.log(
       `Invitation created for ${dto.email} to join ${company.name} as ${dto.role}`,
     );
 
-    // TODO: In production, send email with invitation link
-    // const invitationLink = `${process.env.FRONTEND_URL}/invitations/accept/${invitation.token}`;
-    // await this.emailService.sendTeamInvitation(dto.email, company.name, inviter.name, invitation.role, invitationLink);
+    // Send email with invitation link
+    const frontendUrl =
+      process.env.FRONTEND_URL || 'http://localhost:5173';
+    const invitationLink = `${frontendUrl}/invitations/accept/${invitation.token}`;
+
+    try {
+      await this.emailService.sendTeamInvitation(dto.email, {
+        inviteeName: dto.email.split('@')[0], // Use email username as fallback name
+        companyName: company.name,
+        inviterName: inviter.name,
+        role: dto.role,
+        invitationLink,
+        expiresAt: invitation.expiresAt,
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to send invitation email to ${dto.email}: ${error.message}`,
+      );
+      // Don't fail the invitation creation if email fails
+    }
 
     return this.mapToResponseDto(invitation);
   }

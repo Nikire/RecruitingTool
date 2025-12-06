@@ -53,7 +53,8 @@
     "deny": "Deny",
     "denying": "Denying...",
     "send": "Send",
-    "sending": "Sending..."
+    "sending": "Sending...",
+    "go_to_dashboard": "Go to Dashboard"
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -2356,6 +2357,38 @@
     "expires_at": "Expires {{date}}",
     "requested_role": "Requested role: {{role}}",
     "approve": "Approve",
-    "deny": "Deny"
+    "deny": "Deny",
+    "join_team_title": "Join Team",
+    "join_team_description": "You've been invited to join a team. Review the details below and accept the invitation to continue.",
+    "logged_in_as": "Logged in as",
+    "invitation_acceptance_info": "By accepting this invitation, you will join the company with the assigned role. Your current company affiliation (if any) will be replaced.",
+    "accept_invitation_button": "Accept Invitation",
+    "accepting_invitation": "Accepting invitation...",
+    "invitation_accepted_title": "Welcome to the Team!",
+    "invitation_accepted_message": "You have successfully joined {{company}} as {{role}}.",
+    "redirecting_to_dashboard": "Redirecting to dashboard in 3 seconds...",
+    "invitation_error_title": "Invitation Error",
+    "invalid_invitation_token": "Invalid invitation token"
+  },
+  "check_status": {
+    "title": "Check Application Status",
+    "subtitle": "Enter your access code to check the status of your application",
+    "access_code_label": "Access Code",
+    "access_code_placeholder": "Enter 8-character code",
+    "access_code_helper": "Enter the access code provided to you by email",
+    "access_code_required": "Access code is required",
+    "invalid_code": "Invalid or expired access code",
+    "too_many_requests": "Too many requests. Please try again in a minute",
+    "error": "Failed to check status. Please try again later",
+    "check_button": "Check Status",
+    "checking": "Checking...",
+    "status_found": "Application Status",
+    "candidate": "Candidate",
+    "position": "Position",
+    "company": "Company",
+    "current_stage": "Current Stage",
+    "status_label": "Status",
+    "last_updated": "Last Updated",
+    "privacy_notice": "For your privacy, only limited information is displayed"
   }
 }

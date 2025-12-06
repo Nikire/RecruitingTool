@@ -1,6 +1,12 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
-import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto } from './dto/hiring-process.dto';
+import {
+  CreateHiringProcessDto,
+  UpdateHiringProcessDto,
+  HiringProcessResponseDto,
+  HiringProcessFindDto,
+  AccessCodeResponseDto,
+} from './dto/hiring-process.dto';
 import { HiringProcessFilterDto } from './dto/hiring-process-filter.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User, HiringProcessStatus } from '@prisma/client';
@@ -118,5 +124,18 @@ export class HiringProcessController {
   @ApiParam({ name: 'stageUid', required: true, description: 'Target Stage UID' })
   moveToStage(@Param('uid') uid: string, @Param('stageUid') stageUid: string, @CurrentUser() currentUser: User) {
     return this.hiringProcessService.moveToSpecificStage(uid, stageUid, currentUser);
+  }
+
+  @Auth(['HR', 'ADMIN'])
+  @Post(':uid/generate-access-code')
+  @ApiOperation({ summary: 'Generate access code for candidate self-service status check - HR role required' })
+  @ApiResponse({
+    status: 201,
+    description: 'Access code generated successfully',
+    type: AccessCodeResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'Hiring Process UID' })
+  generateAccessCode(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<AccessCodeResponseDto> {
+    return this.hiringProcessService.generateAccessCode(uid, currentUser);
   }
 }

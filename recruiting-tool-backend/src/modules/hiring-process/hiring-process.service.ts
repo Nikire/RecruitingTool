@@ -333,4 +333,118 @@ export class HiringProcessService {
       throw new InternalServerErrorException(`Failed to move to specific stage: ${error.message}`);
     }
   }
+
+  /**
+   * Generate an access code for a hiring process (HR only)
+   * Access code is 8 alphanumeric characters and expires in 30 days
+   */
+  async generateAccessCode(hiringProcessUid: string, user: User) {
+    try {
+      // Verify hiring process exists and user has access
+      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { uid: hiringProcessUid },
+      });
+
+      if (!hiringProcess) {
+        throw new EntityNotFoundException('Hiring process', hiringProcessUid);
+      }
+
+      verifyCompanyAccess(user, hiringProcess.companyId);
+
+      // Generate 8-character alphanumeric code
+      const accessCode = this.generateRandomCode(8);
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30); // 30 days from now
+
+      // Update hiring process with access code
+      await this.databaseService.hiringProcess.update({
+        where: { uid: hiringProcessUid },
+        data: {
+          accessCode,
+          codeExpiresAt: expiresAt,
+        },
+      });
+
+      return {
+        accessCode,
+        expiresAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to generate access code: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get hiring process status by access code (PUBLIC endpoint - no auth)
+   * Returns limited information for candidate privacy
+   */
+  async getStatusByAccessCode(accessCode: string) {
+    try {
+      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { accessCode },
+        include: {
+          candidate: true,
+          jobPosition: true,
+          company: true,
+          stages: {
+            where: { deletedAt: null },
+            orderBy: { position: 'asc' },
+          },
+        },
+      });
+
+      if (!hiringProcess) {
+        throw new NotFoundException('Invalid or expired access code');
+      }
+
+      // Check if code is expired
+      if (hiringProcess.codeExpiresAt && hiringProcess.codeExpiresAt < new Date()) {
+        throw new NotFoundException('Access code has expired');
+      }
+
+      // Update access tracking
+      await this.databaseService.hiringProcess.update({
+        where: { accessCode },
+        data: {
+          lastAccessedAt: new Date(),
+          accessCount: { increment: 1 },
+        },
+      });
+
+      // Find current stage (first stage with CURRENT status)
+      const currentStage = hiringProcess.stages.find((stage) => stage.status === 'CURRENT');
+
+      // Extract first name only for privacy
+      const candidateName = hiringProcess.candidate?.name?.split(' ')[0] || 'Candidate';
+
+      return {
+        candidateName,
+        positionTitle: hiringProcess.jobPosition?.title || 'Position',
+        companyName: hiringProcess.company?.name || 'Company',
+        currentStage: currentStage?.title,
+        status: hiringProcess.status,
+        lastUpdated: hiringProcess.updatedAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to retrieve status: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generate a random alphanumeric code of specified length
+   */
+  private generateRandomCode(length: number): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  }
 }

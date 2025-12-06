@@ -73,3 +73,38 @@ export class HiringProcessFindDto {
   @IsString()
   candidateUid?: string;
 }
+
+export class GenerateAccessCodeDto {
+  @ApiProperty({ description: 'The UID of the hiring process', example: '123e4567-e89b-12d3-a456-426614174000' })
+  @IsString()
+  @IsNotEmpty()
+  hiringProcessUid: string;
+}
+
+export class AccessCodeResponseDto {
+  @ApiProperty({ description: 'The generated access code', example: 'A1B2C3D4' })
+  accessCode: string;
+
+  @ApiProperty({ description: 'When the access code expires' })
+  expiresAt: Date;
+}
+
+export class PublicStatusResponseDto {
+  @ApiProperty({ description: 'The first name of the candidate for privacy', example: 'John' })
+  candidateName: string;
+
+  @ApiProperty({ description: 'The title of the job position', example: 'Senior Software Engineer' })
+  positionTitle: string;
+
+  @ApiProperty({ description: 'The name of the company', example: 'Tech Corp' })
+  companyName: string;
+
+  @ApiProperty({ description: 'The current stage title', example: 'Technical Interview', required: false })
+  currentStage?: string;
+
+  @ApiProperty({ description: 'The status of the hiring process', example: 'IN_PROGRESS', enum: HiringProcessStatus })
+  status: HiringProcessStatus;
+
+  @ApiProperty({ description: 'When the hiring process was last updated' })
+  lastUpdated: Date;
+}

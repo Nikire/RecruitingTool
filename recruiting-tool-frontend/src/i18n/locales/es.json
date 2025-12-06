@@ -53,7 +53,8 @@
     "deny": "Denegar",
     "denying": "Denegando...",
     "send": "Enviar",
-    "sending": "Enviando..."
+    "sending": "Enviando...",
+    "go_to_dashboard": "Ir al Panel"
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -2362,6 +2363,38 @@
     "expires_at": "Expira {{date}}",
     "requested_role": "Rol solicitado: {{role}}",
     "approve": "Aprobar",
-    "deny": "Denegar"
+    "deny": "Denegar",
+    "join_team_title": "Unirse al Equipo",
+    "join_team_description": "Has sido invitado a unirte a un equipo. Revisa los detalles a continuación y acepta la invitación para continuar.",
+    "logged_in_as": "Conectado como",
+    "invitation_acceptance_info": "Al aceptar esta invitación, te unirás a la empresa con el rol asignado. Tu afiliación actual a la empresa (si existe) será reemplazada.",
+    "accept_invitation_button": "Aceptar Invitación",
+    "accepting_invitation": "Aceptando invitación...",
+    "invitation_accepted_title": "¡Bienvenido al Equipo!",
+    "invitation_accepted_message": "Te has unido exitosamente a {{company}} como {{role}}.",
+    "redirecting_to_dashboard": "Redirigiendo al panel en 3 segundos...",
+    "invitation_error_title": "Error de Invitación",
+    "invalid_invitation_token": "Token de invitación inválido"
+  },
+  "check_status": {
+    "title": "Verificar Estado de Solicitud",
+    "subtitle": "Ingresa tu código de acceso para verificar el estado de tu solicitud",
+    "access_code_label": "Código de Acceso",
+    "access_code_placeholder": "Ingresa código de 8 caracteres",
+    "access_code_helper": "Ingresa el código de acceso que te fue enviado por correo electrónico",
+    "access_code_required": "El código de acceso es obligatorio",
+    "invalid_code": "Código de acceso inválido o expirado",
+    "too_many_requests": "Demasiadas solicitudes. Por favor, intenta de nuevo en un minuto",
+    "error": "Error al verificar el estado. Por favor, intenta más tarde",
+    "check_button": "Verificar Estado",
+    "checking": "Verificando...",
+    "status_found": "Estado de la Solicitud",
+    "candidate": "Candidato",
+    "position": "Posición",
+    "company": "Empresa",
+    "current_stage": "Etapa Actual",
+    "status_label": "Estado",
+    "last_updated": "Última Actualización",
+    "privacy_notice": "Para tu privacidad, solo se muestra información limitada"
   }
 }

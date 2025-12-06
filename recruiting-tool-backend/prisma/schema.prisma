@@ -278,19 +278,23 @@ model JobPosition {
 }
 
 model HiringProcess {
-  id            Int                 @id @default(autoincrement())
-  uid           String              @unique @default(uuid()) @db.Uuid
-  title         String
-  status        HiringProcessStatus @default(OPEN)
-  createdAt     DateTime            @default(now())
-  updatedAt     DateTime            @updatedAt
-  candidateId   Int?
-  candidate     Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id], onDelete: SetNull)
-  stages        Stage[]
-  jobPosition   JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
-  jobPositionId Int
-  companyId     Int
-  company       Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  id             Int                 @id @default(autoincrement())
+  uid            String              @unique @default(uuid()) @db.Uuid
+  title          String
+  status         HiringProcessStatus @default(OPEN)
+  accessCode     String?             @unique
+  codeExpiresAt  DateTime?
+  lastAccessedAt DateTime?
+  accessCount    Int                 @default(0)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  candidateId    Int?
+  candidate      Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id], onDelete: SetNull)
+  stages         Stage[]
+  jobPosition    JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
+  jobPositionId  Int
+  companyId      Int
+  company        Company             @relation(fields: [companyId], references: [id], onDelete: Restrict)
 
   @@unique([candidateId, jobPositionId])
   @@index([status])
@@ -302,6 +306,8 @@ model HiringProcess {
   @@index([uid])
   @@index([jobPositionId, status])
   @@index([candidateId, status])
+  @@index([accessCode])
+  @@index([codeExpiresAt])
 }
 
 enum HiringProcessStatus {

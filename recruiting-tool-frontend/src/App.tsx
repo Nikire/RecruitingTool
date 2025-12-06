@@ -35,6 +35,8 @@ import HROnboardingWizard from './pages/onboarding/HROnboardingWizard';
 import ApplicantOnboarding from './pages/applicant/ApplicantOnboarding';
 import CalendarSettingsPage from './pages/settings/CalendarSettingsPage';
 import TeamManagementPage from './pages/TeamManagementPage';
+import AcceptInvitationPage from './pages/invitations/AcceptInvitationPage';
+import CheckStatusPage from './pages/status/CheckStatusPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -66,6 +68,7 @@ function App() {
 					<Route path="/logout" element={<Logout />} />
 					<Route path="/careers" element={<CareersPage />} />
 					<Route path="/careers/:uid" element={<JobPositionDetailPage />} />
+					<Route path="/check-status" element={<CheckStatusPage />} />
 					<Route path="/book-interview/:token" element={<BookInterviewPage />} />
 					<Route path="/booking-confirmed/:token" element={<BookingConfirmedPage />} />
 
@@ -79,6 +82,7 @@ function App() {
 						<Route path="/applicant/onboarding" element={<ApplicantOnboarding />} />
 						<Route path="/profile" element={<ProfilePage />} />
 						<Route path="/profile/subscription" element={<SubscriptionPage />} />
+						<Route path="/invitations/accept/:token" element={<AcceptInvitationPage />} />
 					</Route>
 				</Route>
 

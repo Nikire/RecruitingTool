@@ -20,6 +20,8 @@ import {
   PasswordResetData,
   welcomeTemplate,
   WelcomeData,
+  teamInvitationTemplate,
+  TeamInvitationData,
 } from './templates';
 
 @Injectable()
@@ -370,6 +372,26 @@ ${text}
   async sendWelcomeEmail(userEmail: string, data: WelcomeData): Promise<void> {
     const { subject, text, html } = welcomeTemplate(data);
     await this.sendEmail(userEmail, subject, text, html, 'WELCOME');
+  }
+
+  /**
+   * Send team invitation email
+   */
+  async sendTeamInvitation(
+    recipientEmail: string,
+    data: TeamInvitationData,
+  ): Promise<void> {
+    const { subject, text, html } = teamInvitationTemplate(data);
+    await this.sendEmail(
+      recipientEmail,
+      subject,
+      text,
+      html,
+      'TEAM_INVITATION',
+    );
+    this.logger.log(
+      `Team invitation sent to ${recipientEmail} for ${data.companyName}`,
+    );
   }
 
   /**
