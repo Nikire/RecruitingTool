@@ -1,5 +1,5 @@
-import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
+import { BadRequestException, Injectable, UnauthorizedException, ForbiddenException } from '@nestjs/common';
+import { LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto, LinkedAccountsResponseDto } from './dto/auth.dto';
 import * as bycrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from 'src/modules/users/users.service';
@@ -367,6 +367,143 @@ export class AuthService {
       user: { ...UserMapper(user) },
       token: accessToken,
       refreshToken,
+    };
+  }
+
+  /**
+   * Link a social account (Auth0) to the current user
+   * Prevents linking if auth0Id already belongs to another user
+   */
+  async linkSocialAccount(
+    userId: number,
+    auth0User: {
+      auth0Id: string;
+      email: string;
+      name: string;
+      provider: string;
+      emailVerified?: boolean;
+    },
+  ): Promise<{ message: string }> {
+    // Get current user
+    const currentUser = await this.databaseService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!currentUser) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Check if this auth0Id is already linked to another user
+    const existingUser = await this.databaseService.user.findUnique({
+      where: { auth0Id: auth0User.auth0Id },
+    });
+
+    if (existingUser && existingUser.id !== userId) {
+      throw new BadRequestException('This social account is already linked to another user');
+    }
+
+    // If user already has this auth0Id, nothing to do
+    if (currentUser.auth0Id === auth0User.auth0Id) {
+      throw new BadRequestException('This social account is already linked to your account');
+    }
+
+    // If user already has a different auth0Id, prevent linking
+    if (currentUser.auth0Id && currentUser.auth0Id !== auth0User.auth0Id) {
+      throw new BadRequestException('You already have a different social account linked. Please unlink it first.');
+    }
+
+    // Link the social account
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: {
+        auth0Id: auth0User.auth0Id,
+        provider: auth0User.provider,
+      },
+    });
+
+    // Log the activity
+    await this.userActivityService.logActivity(userId, {
+      action: 'LINK_SOCIAL_ACCOUNT',
+      metadata: { provider: auth0User.provider },
+    });
+
+    return { message: 'Social account linked successfully' };
+  }
+
+  /**
+   * Unlink social account from the current user
+   * Prevents unlinking if it's the only authentication method
+   */
+  async unlinkSocialAccount(userId: number): Promise<{ message: string }> {
+    // Get current user
+    const currentUser = await this.databaseService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!currentUser) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Check if user has a local password
+    const hasLocalPassword = !!currentUser.password;
+    const hasSocialAccount = !!currentUser.auth0Id;
+
+    // Prevent unlinking if it's the only auth method
+    if (!hasLocalPassword && hasSocialAccount) {
+      throw new ForbiddenException('Cannot unlink social account. You must set a password first to have an alternative login method.');
+    }
+
+    // If no social account is linked, nothing to do
+    if (!currentUser.auth0Id) {
+      throw new BadRequestException('No social account is currently linked');
+    }
+
+    // Unlink the social account
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: {
+        auth0Id: null,
+        provider: 'local',
+      },
+    });
+
+    // Log the activity
+    await this.userActivityService.logActivity(userId, {
+      action: 'UNLINK_SOCIAL_ACCOUNT',
+      metadata: { provider: currentUser.provider },
+    });
+
+    return { message: 'Social account unlinked successfully' };
+  }
+
+  /**
+   * Get list of linked accounts for the current user
+   */
+  async getLinkedAccounts(userId: number): Promise<LinkedAccountsResponseDto> {
+    // Get current user
+    const currentUser = await this.databaseService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!currentUser) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    // Determine available providers
+    const availableProviders = ['google', 'github']; // Can be expanded
+
+    const linkedAccounts = availableProviders.map((provider) => {
+      const isLinked = currentUser.auth0Id && currentUser.provider === provider;
+      return {
+        provider,
+        isLinked,
+        email: isLinked ? currentUser.email : undefined,
+      };
+    });
+
+    return {
+      linkedAccounts,
+      hasLocalPassword: !!currentUser.password,
     };
   }
 }

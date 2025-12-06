@@ -79,3 +79,15 @@ export interface AssignRoleDto {
 export interface UpdateRoleDto {
 	roles: UserRoles[];
 }
+
+// Account Linking
+export interface LinkedAccount {
+	provider: string;
+	isLinked: boolean;
+	email?: string;
+}
+
+export interface LinkedAccountsResponse {
+	linkedAccounts: LinkedAccount[];
+	hasLocalPassword: boolean;
+}
