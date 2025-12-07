@@ -2,43 +2,27 @@ import {useState, useMemo, useCallback, useRef, useEffect} from 'react';
 import {
 	Typography,
 	Box,
-	Grid,
 	Container,
-	Paper,
-	Skeleton,
 	Stack,
 	Chip,
-	MenuItem,
-	Select,
-	FormControl,
-	InputLabel,
 	Drawer,
 	IconButton,
 	Button,
-	Divider,
 	useMediaQuery,
 	useTheme,
-	Pagination,
-	SelectChangeEvent,
-	Slider,
-	TextField,
-	Avatar,
-	ListItemIcon,
-	ListItemText,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {usePublicJobPositions} from '../../hooks/api/useJobPositions';
 import {usePublicCompaniesWithJobs} from '../../hooks/api/useCompanies';
 import {PublicJobPositionFilters} from '../../api/jobPositions';
-import CompactJobCard from '../../components/careers/CompactJobCard';
 import JobSearchFilters from '../../components/careers/JobSearchFilters';
 import {ApplyToJobDialog} from '../../components/dialogs/ApplyToJobDialog';
 import {useDialog} from '../../hooks/useDialog';
-import WorkIcon from '@mui/icons-material/Work';
-import SearchOffIcon from '@mui/icons-material/SearchOff';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
-import BusinessIcon from '@mui/icons-material/Business';
+import FilterSidebar from '../../components/careers/FilterSidebar';
+import JobCardsGrid from '../../components/careers/JobCardsGrid';
+import LoadingSkeletons from '../../components/careers/LoadingSkeletons';
 
 interface Filters {
 	search: string;
@@ -193,199 +177,6 @@ const CareersPage: React.FC = () => {
 		window.scrollTo({top: 0, behavior: 'smooth'});
 	}, []);
 
-	// Filter sidebar component (memoized to prevent recreation)
-	const FilterSidebar = useMemo(() => (
-		<Paper
-			elevation={0}
-			sx={{
-				p: 3,
-				border: 1,
-				borderColor: 'divider',
-				borderRadius: 2,
-				position: 'sticky',
-				top: 24,
-			}}
-		>
-			<Box
-				sx={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-					mb: 3,
-				}}
-			>
-				<Typography variant="h6" sx={{fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1}}>
-					<FilterListIcon />
-					{t('careersFilters.filters')}
-				</Typography>
-				{activeFilterCount > 0 && (
-					<Button size="small" onClick={handleClearFilters}>
-						{t('careersFilters.clear_all')}
-					</Button>
-				)}
-			</Box>
-
-			<Stack spacing={3}>
-				{/* Company Filter */}
-				<FormControl fullWidth size="small">
-					<InputLabel>{t('careersFilters.company')}</InputLabel>
-					<Select
-						value={filters.company}
-						onChange={(e: SelectChangeEvent) => handleFilterChange('company', e.target.value)}
-						label={t('careersFilters.company')}
-						disabled={isLoadingCompanies}
-					>
-						<MenuItem value="">{t('careersFilters.all_companies')}</MenuItem>
-						{companies.map((company) => (
-							<MenuItem key={company.uid} value={company.uid}>
-								<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-									{company.logoUrl ? (
-										<Avatar
-											src={company.logoUrl}
-											alt={company.name}
-											sx={{ width: 20, height: 20 }}
-										/>
-									) : (
-										<BusinessIcon sx={{ fontSize: 20, color: 'text.secondary' }} />
-									)}
-									<Typography variant="body2">{company.name}</Typography>
-								</Box>
-							</MenuItem>
-						))}
-					</Select>
-				</FormControl>
-
-				{/* Category Filter */}
-				<FormControl fullWidth size="small">
-					<InputLabel>{t('careersFilters.category')}</InputLabel>
-					<Select
-						value={filters.category}
-						onChange={(e: SelectChangeEvent) => handleFilterChange('category', e.target.value)}
-						label={t('careersFilters.category')}
-					>
-						<MenuItem value="">{t('careersFilters.all_categories')}</MenuItem>
-						<MenuItem value="Engineering">{t('careersFilters.engineering')}</MenuItem>
-						<MenuItem value="Marketing">{t('careersFilters.marketing')}</MenuItem>
-						<MenuItem value="Sales">{t('careersFilters.sales')}</MenuItem>
-						<MenuItem value="Design">{t('careersFilters.design')}</MenuItem>
-						<MenuItem value="Product">{t('careersFilters.product')}</MenuItem>
-					</Select>
-				</FormControl>
-
-				{/* Job Type Filter */}
-				<FormControl fullWidth size="small">
-					<InputLabel>{t('careersFilters.job_type')}</InputLabel>
-					<Select
-						value={filters.jobType}
-						onChange={(e: SelectChangeEvent) => handleFilterChange('jobType', e.target.value)}
-						label={t('careersFilters.job_type')}
-					>
-						<MenuItem value="">{t('careersFilters.all_types')}</MenuItem>
-						<MenuItem value="FULL_TIME">{t('careersFilters.full_time')}</MenuItem>
-						<MenuItem value="PART_TIME">{t('careersFilters.part_time')}</MenuItem>
-						<MenuItem value="CONTRACT">{t('careersFilters.contract')}</MenuItem>
-						<MenuItem value="INTERNSHIP">{t('careersFilters.internship')}</MenuItem>
-						<MenuItem value="TEMPORARY">{t('careersFilters.temporary')}</MenuItem>
-					</Select>
-				</FormControl>
-
-				{/* Work Location Filter */}
-				<FormControl fullWidth size="small">
-					<InputLabel>{t('careersFilters.work_location')}</InputLabel>
-					<Select
-						value={filters.workLocation}
-						onChange={(e: SelectChangeEvent) => handleFilterChange('workLocation', e.target.value)}
-						label={t('careersFilters.work_location')}
-					>
-						<MenuItem value="">{t('careersFilters.all_locations')}</MenuItem>
-						<MenuItem value="REMOTE">{t('careersFilters.remote')}</MenuItem>
-						<MenuItem value="HYBRID">{t('careersFilters.hybrid')}</MenuItem>
-						<MenuItem value="ON_SITE">{t('careersFilters.onsite')}</MenuItem>
-					</Select>
-				</FormControl>
-
-				{/* Experience Level Filter */}
-				<FormControl fullWidth size="small">
-					<InputLabel>{t('careersFilters.experience_level')}</InputLabel>
-					<Select
-						value={filters.experienceLevel}
-						onChange={(e: SelectChangeEvent) => handleFilterChange('experienceLevel', e.target.value)}
-						label={t('careersFilters.experience_level')}
-					>
-						<MenuItem value="">{t('careersFilters.all_levels')}</MenuItem>
-						<MenuItem value="ENTRY">{t('careersFilters.entry_level')}</MenuItem>
-						<MenuItem value="MID">{t('careersFilters.mid_level')}</MenuItem>
-						<MenuItem value="SENIOR">{t('careersFilters.senior_level')}</MenuItem>
-						<MenuItem value="LEAD">{t('careersFilters.lead_level')}</MenuItem>
-						<MenuItem value="EXECUTIVE">{t('careersFilters.executive_level')}</MenuItem>
-					</Select>
-				</FormControl>
-
-				<Divider />
-
-				{/* Salary Range Filter */}
-				<Box>
-					<Typography variant="body2" sx={{mb: 1, fontWeight: 600}}>
-						{t('careersFilters.salary_range')}
-					</Typography>
-					<Typography
-						variant="body2"
-						color="primary"
-						sx={{mb: 2, fontWeight: 500, textAlign: 'center'}}
-					>
-						{formatSalary(salaryRange[0])} - {formatSalary(salaryRange[1])}
-					</Typography>
-					<Slider
-						value={salaryRange}
-						onChange={handleSalaryRangeChange}
-						valueLabelDisplay="auto"
-						valueLabelFormat={formatSalary}
-						min={MIN_SALARY}
-						max={MAX_SALARY}
-						step={SALARY_STEP}
-						marks={[
-							{value: MIN_SALARY, label: formatSalary(MIN_SALARY)},
-							{value: MAX_SALARY, label: formatSalary(MAX_SALARY)},
-						]}
-						sx={{
-							'& .MuiSlider-markLabel': {
-								fontSize: '0.75rem',
-							},
-						}}
-					/>
-				</Box>
-			</Stack>
-		</Paper>
-	), [filters, activeFilterCount, salaryRange, companies, isLoadingCompanies, handleFilterChange, handleClearFilters, handleSalaryRangeChange, formatSalary, t]);
-
-	// Skeleton loader for loading state (memoized)
-	const SkeletonCard = useMemo(() => (
-		<Paper
-			sx={{
-				p: 3,
-				height: 320,
-				display: 'flex',
-				flexDirection: 'column',
-				gap: 2,
-			}}
-		>
-			<Stack direction="row" spacing={2} alignItems="center">
-				<Skeleton variant="circular" width={56} height={56} />
-				<Box sx={{flex: 1}}>
-					<Skeleton variant="text" width="60%" />
-				</Box>
-			</Stack>
-			<Skeleton variant="text" width="90%" height={40} />
-			<Skeleton variant="text" width="70%" />
-			<Stack direction="row" spacing={1}>
-				<Skeleton variant="rectangular" width={80} height={24} sx={{borderRadius: 2}} />
-				<Skeleton variant="rectangular" width={80} height={24} sx={{borderRadius: 2}} />
-			</Stack>
-			<Box sx={{flex: 1}} />
-			<Skeleton variant="rectangular" height={48} sx={{borderRadius: 1}} />
-		</Paper>
-	), []);
-
 	return (
 		<Box
 			sx={{
@@ -446,7 +237,24 @@ const CareersPage: React.FC = () => {
 					{/* Desktop Filter Sidebar */}
 					{!isMobile && (
 						<Box sx={{width: 280, flexShrink: 0}}>
-							{FilterSidebar}
+							<FilterSidebar
+								company={filters.company}
+								category={filters.category}
+								jobType={filters.jobType}
+								workLocation={filters.workLocation}
+								experienceLevel={filters.experienceLevel}
+								salaryRange={salaryRange}
+								activeFilterCount={activeFilterCount}
+								companies={companies}
+								isLoadingCompanies={isLoadingCompanies}
+								minSalary={MIN_SALARY}
+								maxSalary={MAX_SALARY}
+								salaryStep={SALARY_STEP}
+								onFilterChange={handleFilterChange}
+								onSalaryRangeChange={handleSalaryRangeChange}
+								onClearFilters={handleClearFilters}
+								formatSalary={formatSalary}
+							/>
 						</Box>
 					)}
 
@@ -474,7 +282,24 @@ const CareersPage: React.FC = () => {
 								<CloseIcon />
 							</IconButton>
 						</Box>
-						{FilterSidebar}
+						<FilterSidebar
+							company={filters.company}
+							category={filters.category}
+							jobType={filters.jobType}
+							workLocation={filters.workLocation}
+							experienceLevel={filters.experienceLevel}
+							salaryRange={salaryRange}
+							activeFilterCount={activeFilterCount}
+							companies={companies}
+							isLoadingCompanies={isLoadingCompanies}
+							minSalary={MIN_SALARY}
+							maxSalary={MAX_SALARY}
+							salaryStep={SALARY_STEP}
+							onFilterChange={handleFilterChange}
+							onSalaryRangeChange={handleSalaryRangeChange}
+							onClearFilters={handleClearFilters}
+							formatSalary={formatSalary}
+						/>
 					</Drawer>
 
 					{/* Job listings */}
@@ -512,133 +337,23 @@ const CareersPage: React.FC = () => {
 						)}
 
 						{/* Loading state */}
-						{isLoading && (
-							<Grid container spacing={3}>
-								{[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
-									<Grid
-										item
-										key={i}
-										xs={12}
-										sm={6}
-										lg={4}
-										sx={{
-											overflow: 'visible',
-											display: 'flex',
-											justifyContent: 'center',
-										}}
-									>
-										<Box sx={{width: 400, maxWidth: '100%'}}>
-											{SkeletonCard}
-										</Box>
-									</Grid>
-								))}
-							</Grid>
-						)}
+						{isLoading && <LoadingSkeletons count={9} />}
 
-						{/* Error state */}
-						{error && !isLoading && (
-							<Box sx={{textAlign: 'center', py: 8}}>
-								<Typography color="error" variant="h6" gutterBottom>
-									{t('errors.fetch_failed')}
-								</Typography>
-								<Typography color="text.secondary">
-									{t('errors.try_again')}
-								</Typography>
-							</Box>
-						)}
-
-						{/* Empty state - no jobs */}
-						{!isLoading &&
-							!error &&
-							openJobsCount === 0 &&
-							!filters.search &&
-							activeFilterCount === 0 && (
-								<Box sx={{textAlign: 'center', py: 8}}>
-									<WorkIcon
-										sx={{fontSize: 80, color: 'text.disabled', mb: 2}}
-									/>
-									<Typography variant="h5" gutterBottom sx={{fontWeight: 600}}>
-										{t('careers.no_positions_yet')}
-									</Typography>
-									<Typography color="text.secondary">
-										{t('careers.check_back_soon')}
-									</Typography>
-								</Box>
-							)}
-
-						{/* Empty state - no search/filter results */}
-						{!isLoading &&
-							!error &&
-							openJobsCount === 0 &&
-							(filters.search || activeFilterCount > 0) && (
-								<Box sx={{textAlign: 'center', py: 8}}>
-									<SearchOffIcon
-										sx={{fontSize: 80, color: 'text.disabled', mb: 2}}
-									/>
-									<Typography variant="h5" gutterBottom sx={{fontWeight: 600}}>
-										{t('careers.no_results_found')}
-									</Typography>
-									<Typography color="text.secondary" sx={{mb: 3}}>
-										{t('careers.try_different_keywords')}
-									</Typography>
-									<Button variant="outlined" onClick={handleClearFilters}>
-										{t('careersFilters.clear_all')}
-									</Button>
-								</Box>
-							)}
-
-						{/* Job cards grid */}
-						{!isLoading && !error && jobPositions.length > 0 && (
-							<>
-								<Grid container spacing={3}>
-									{jobPositions.map((job) => (
-										<Grid
-											key={job.uid}
-											item
-											xs={12}
-											sm={6}
-											lg={4}
-											sx={{
-												overflow: 'visible',
-												display: 'flex',
-												justifyContent: 'center',
-											}}
-										>
-											<CompactJobCard
-												jobPosition={job}
-												onApplyClick={handleApplyClick}
-											/>
-										</Grid>
-									))}
-								</Grid>
-
-								{/* Pagination */}
-								{totalPages > 1 && (
-									<Box
-										sx={{
-											display: 'flex',
-											justifyContent: 'center',
-											mt: 6,
-										}}
-									>
-										<Pagination
-											count={totalPages}
-											page={page}
-											onChange={handlePageChange}
-											color="primary"
-											size={isMobile ? 'medium' : 'large'}
-											showFirstButton
-											showLastButton
-											sx={{
-												'& .MuiPaginationItem-root': {
-													fontWeight: 600,
-												},
-											}}
-										/>
-									</Box>
-								)}
-							</>
-						)}
+						{/* Job cards grid and all states */}
+						<JobCardsGrid
+							jobPositions={jobPositions}
+							isLoading={isLoading}
+							error={error}
+							openJobsCount={openJobsCount}
+							hasActiveFilters={activeFilterCount > 0}
+							hasSearchQuery={!!filters.search}
+							totalPages={totalPages}
+							currentPage={page}
+							isMobile={isMobile}
+							onApplyClick={handleApplyClick}
+							onPageChange={handlePageChange}
+							onClearFilters={handleClearFilters}
+						/>
 					</Box>
 				</Box>
 
