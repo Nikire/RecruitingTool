@@ -1,11 +1,11 @@
-import {Typography, Button, Box, Menu, MenuItem, ListItemIcon, ListItemText} from '@mui/material';
+import {Typography, Button, Box, Menu, MenuItem, ListItemIcon, ListItemText, CircularProgress} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import {useState} from 'react';
-import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {useAuthMe} from '../../hooks/api/useAuth';
 import {useCandidatesSearch} from '../../hooks/api/state/useSearchState';
 import {useSearchPaginationHandlers} from '../../hooks/useSearchPaginationHandlers';
 import {useDialog} from '../../hooks/useDialog';
@@ -22,12 +22,21 @@ const CandidatesPage: React.FC = () => {
 	const createDialog = useDialog<never>();
 	const manualDialog = useDialog<never>();
 	const importDialog = useDialog<never>();
-	const {user} = useUserAtom();
+	const {user, isLoading: userLoading} = useAuthMe();
 	const [searchState, setSearchState] = useCandidatesSearch();
 	const {page, limit, search} = searchState;
 	const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
 	const canManage = canManageResources(user);
+
+	// Wait for user data to load before checking permissions (fixes race condition)
+	if (userLoading) {
+		return (
+			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
+				<CircularProgress />
+			</Box>
+		);
+	}
 
 	const {handleSearch, handlePageChange, handleLimitChange} =
 		useSearchPaginationHandlers(setSearchState);

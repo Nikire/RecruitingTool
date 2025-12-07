@@ -27,7 +27,7 @@ import { useCompanyConnectionRequests } from '../hooks/useConnectionRequests';
 import { InvitationStatus } from '../types/invitations';
 
 interface TabPanelProps {
-  children?: React.Node;
+  children?: React.ReactNode;
   index: number;
   value: number;
 }

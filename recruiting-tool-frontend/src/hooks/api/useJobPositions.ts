@@ -21,6 +21,9 @@ export function usePublicJobPositions(filters?: PublicJobPositionFilters, option
 		queryKey: [JOB_POSITIONS_KEY, 'public', filters],
 		queryFn: () => getPublicJobPositions(filters),
 		enabled: options?.enabled !== false,
+		staleTime: 2 * 60 * 1000, // 2 minutes - data is considered fresh
+		gcTime: 10 * 60 * 1000, // 10 minutes - cache retention time
+		refetchOnWindowFocus: false, // Don't refetch when user returns to tab
 	});
 }
 
@@ -29,6 +32,9 @@ export function usePublicJobPosition(uid: string, options?: { enabled?: boolean 
 		queryKey: [JOB_POSITIONS_KEY, 'public', uid],
 		queryFn: () => getPublicJobPosition(uid),
 		enabled: options?.enabled !== false && !!uid,
+		staleTime: 5 * 60 * 1000, // 5 minutes - individual jobs change less frequently
+		gcTime: 15 * 60 * 1000, // 15 minutes
+		refetchOnWindowFocus: false,
 	});
 }
 

@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add';
 import {useApplications} from '../../hooks/api/useApplications';
 import {useCandidates} from '../../hooks/api/useCandidates';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
-import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {useAuthMe} from '../../hooks/api/useAuth';
 import {canManageResources} from '../../utils/permissions';
 import {Navigate} from 'react-router-dom';
 import {useDialog} from '../../hooks/useDialog';
@@ -20,6 +20,7 @@ import {Application} from '../../types/application.types';
 import {ApplicationListItem, QuickActionButton} from '../../components/dashboard';
 import {UnifiedStatCard} from '../../components/common';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
+import {CircularProgress} from '@mui/material';
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -27,14 +28,23 @@ import SkeletonLoader from '../../components/common/SkeletonLoader';
  */
 const HRDashboard: React.FC = () => {
 	const {t} = useTranslation();
-	const {user} = useUserAtom();
+	const {user, isLoading: userLoading, isAuthenticated} = useAuthMe();
 	const navigate = useNavigate();
 	const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
 	const manualCandidateDialog = useDialog<never>();
 
-	// Permission check
+	// Wait for user data to load before checking permissions (fixes race condition)
+	if (userLoading) {
+		return (
+			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
+				<CircularProgress />
+			</Box>
+		);
+	}
+
+	// Permission check - only after user data is loaded
 	const hasAccess = canManageResources(user);
-	if (!hasAccess) {
+	if (!isAuthenticated || !hasAccess) {
 		return <Navigate to="/login" />;
 	}
 

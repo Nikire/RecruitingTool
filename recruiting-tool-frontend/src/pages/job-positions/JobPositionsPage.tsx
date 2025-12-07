@@ -28,7 +28,7 @@ import JobPositionFilters, {
 } from '../../components/job-positions/JobPositionFilters';
 import {useListJobPositions} from '../../hooks/api/useJobPositions';
 import {useNavigate} from 'react-router-dom';
-import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {useAuthMe} from '../../hooks/api/useAuth';
 import {canManageResources} from '../../utils/permissions';
 import {useDialog} from '../../hooks/useDialog';
 
@@ -37,8 +37,17 @@ const JobPositionsPage: React.FC = () => {
 	const theme = useTheme();
 	const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 	const navigate = useNavigate();
-	const {user} = useUserAtom();
+	const {user, isLoading: userLoading} = useAuthMe();
 	const canManage = canManageResources(user);
+
+	// Wait for user data to load before rendering (fixes race condition)
+	if (userLoading) {
+		return (
+			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
+				<CircularProgress />
+			</Box>
+		);
+	}
 
 	const [selectedJobPosition, setSelectedJobPosition] =
 		useState<JobPosition | null>(null);

@@ -7,9 +7,10 @@ import {
 	Select,
 	MenuItem,
 	Paper,
+	CircularProgress,
 } from '@mui/material';
-import {useUserAtom} from '../../../hooks/api/state/useUserAtom';
-import {isAdmin} from '../../../utils/permissions';
+import {useAuthMe} from '../../../hooks/api/useAuth';
+import {canManageResources} from '../../../utils/permissions';
 import {ApplicationStatus} from '../../../types/application.types';
 import ApplicationsTable from '../../../components/applications/ApplicationsTable';
 import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
@@ -17,13 +18,23 @@ import {useTranslation} from 'react-i18next';
 
 const ApplicationsPage: React.FC = () => {
 	const {t} = useTranslation();
-	const {user} = useUserAtom();
-	const hasAdminAccess = isAdmin(user);
+	const {user, isLoading: userLoading} = useAuthMe();
 	const [statusFilter, setStatusFilter] = useState<ApplicationStatus | ''>('');
 
-	// Check if user has admin access
-	if (!hasAdminAccess) {
-		return <AccessDeniedMessage requiredRoles={['ADMIN', 'SUPER_ADMIN']} />;
+	// Wait for user data to load before checking permissions (fixes race condition)
+	if (userLoading) {
+		return (
+			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
+				<CircularProgress />
+			</Box>
+		);
+	}
+
+	const canManage = canManageResources(user);
+
+	// Check if user has HR or admin access
+	if (!canManage) {
+		return <AccessDeniedMessage requiredRoles={['HR', 'ADMIN', 'SUPER_ADMIN']} />;
 	}
 
 	const ApplicationStatusOptions: {

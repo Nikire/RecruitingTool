@@ -1,4 +1,4 @@
-import {useState, useMemo} from 'react';
+import {useState, useMemo, useCallback, useRef, useEffect} from 'react';
 import {
 	Typography,
 	Box,
@@ -82,12 +82,15 @@ const CareersPage: React.FC = () => {
 	// Mobile filter drawer state
 	const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
 
-	// Salary range state for slider
+	// Salary range state for slider (separate from filters for debouncing)
 	const [salaryRange, setSalaryRange] = useState<number[]>([MIN_SALARY, MAX_SALARY]);
+
+	// Debounce timer ref
+	const salaryDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
 	// Fetch companies with open job positions
 	const {data: companiesData, isLoading: isLoadingCompanies} = usePublicCompaniesWithJobs();
-	const companies = companiesData || [];
+	const companies = useMemo(() => companiesData || [], [companiesData]);
 
 	// Build API filters from UI state
 	const apiFilters: PublicJobPositionFilters = useMemo(() => {
@@ -113,20 +116,21 @@ const CareersPage: React.FC = () => {
 	// Fetch public job positions with server-side filtering
 	const {data, isLoading, error} = usePublicJobPositions(apiFilters, {enabled: true});
 
-	const jobPositions = data?.data || [];
-	const totalPages = data?.totalPages || 0;
-	const openJobsCount = data?.total || 0;
+	const jobPositions = useMemo(() => data?.data || [], [data?.data]);
+	const totalPages = useMemo(() => data?.totalPages || 0, [data?.totalPages]);
+	const openJobsCount = useMemo(() => data?.total || 0, [data?.total]);
 
-	const handleApplyClick = (uid: string, title: string) => {
+	// Memoized handlers to prevent re-creating functions on every render
+	const handleApplyClick = useCallback((uid: string, title: string) => {
 		applyDialog.openWith({uid, title});
-	};
+	}, [applyDialog]);
 
-	const handleFilterChange = (key: keyof Filters, value: string) => {
+	const handleFilterChange = useCallback((key: keyof Filters, value: string) => {
 		setFilters((prev) => ({...prev, [key]: value}));
 		setPage(1); // Reset to first page when filters change
-	};
+	}, []);
 
-	const handleClearFilters = () => {
+	const handleClearFilters = useCallback(() => {
 		setFilters({
 			search: '',
 			category: '',
@@ -139,39 +143,58 @@ const CareersPage: React.FC = () => {
 		});
 		setSalaryRange([MIN_SALARY, MAX_SALARY]);
 		setPage(1);
-	};
+	}, []);
 
-	const handleSalaryRangeChange = (_event: Event, newValue: number | number[]) => {
+	// Debounced salary range handler (500ms delay)
+	const handleSalaryRangeChange = useCallback((_event: Event, newValue: number | number[]) => {
 		const range = newValue as number[];
-		setSalaryRange(range);
-		setFilters((prev) => ({
-			...prev,
-			salaryMin: range[0] === MIN_SALARY ? '' : range[0].toString(),
-			salaryMax: range[1] === MAX_SALARY ? '' : range[1].toString(),
-		}));
-		setPage(1);
-	};
+		setSalaryRange(range); // Update UI immediately
 
-	const formatSalary = (value: number): string => {
+		// Clear previous timer
+		if (salaryDebounceTimer.current) {
+			clearTimeout(salaryDebounceTimer.current);
+		}
+
+		// Set new timer to update filters after delay
+		salaryDebounceTimer.current = setTimeout(() => {
+			setFilters((prev) => ({
+				...prev,
+				salaryMin: range[0] === MIN_SALARY ? '' : range[0].toString(),
+				salaryMax: range[1] === MAX_SALARY ? '' : range[1].toString(),
+			}));
+			setPage(1);
+		}, 500); // 500ms debounce
+	}, []);
+
+	// Cleanup debounce timer on unmount
+	useEffect(() => {
+		return () => {
+			if (salaryDebounceTimer.current) {
+				clearTimeout(salaryDebounceTimer.current);
+			}
+		};
+	}, []);
+
+	const formatSalary = useCallback((value: number): string => {
 		if (value === 0) return '$0';
 		if (value >= 1000) {
 			return `$${(value / 1000).toFixed(0)}k`;
 		}
 		return `$${value}`;
-	};
+	}, []);
 
 	const activeFilterCount = useMemo(() => {
 		return Object.entries(filters).filter(([key, value]) => key !== 'search' && value !== '')
 			.length;
 	}, [filters]);
 
-	const handlePageChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+	const handlePageChange = useCallback((_event: React.ChangeEvent<unknown>, value: number) => {
 		setPage(value);
 		window.scrollTo({top: 0, behavior: 'smooth'});
-	};
+	}, []);
 
-	// Filter sidebar component
-	const FilterSidebar = () => (
+	// Filter sidebar component (memoized to prevent recreation)
+	const FilterSidebar = useMemo(() => (
 		<Paper
 			elevation={0}
 			sx={{
@@ -333,10 +356,10 @@ const CareersPage: React.FC = () => {
 				</Box>
 			</Stack>
 		</Paper>
-	);
+	), [filters, activeFilterCount, salaryRange, companies, isLoadingCompanies, handleFilterChange, handleClearFilters, handleSalaryRangeChange, formatSalary, t]);
 
-	// Skeleton loader for loading state
-	const SkeletonCard = () => (
+	// Skeleton loader for loading state (memoized)
+	const SkeletonCard = useMemo(() => (
 		<Paper
 			sx={{
 				p: 3,
@@ -361,7 +384,7 @@ const CareersPage: React.FC = () => {
 			<Box sx={{flex: 1}} />
 			<Skeleton variant="rectangular" height={48} sx={{borderRadius: 1}} />
 		</Paper>
-	);
+	), []);
 
 	return (
 		<Box
@@ -423,7 +446,7 @@ const CareersPage: React.FC = () => {
 					{/* Desktop Filter Sidebar */}
 					{!isMobile && (
 						<Box sx={{width: 280, flexShrink: 0}}>
-							<FilterSidebar />
+							{FilterSidebar}
 						</Box>
 					)}
 
@@ -451,7 +474,7 @@ const CareersPage: React.FC = () => {
 								<CloseIcon />
 							</IconButton>
 						</Box>
-						<FilterSidebar />
+						{FilterSidebar}
 					</Drawer>
 
 					{/* Job listings */}
@@ -505,7 +528,7 @@ const CareersPage: React.FC = () => {
 										}}
 									>
 										<Box sx={{width: 400, maxWidth: '100%'}}>
-											<SkeletonCard />
+											{SkeletonCard}
 										</Box>
 									</Grid>
 								))}

@@ -1,6 +1,16 @@
 import { Page, expect } from '@playwright/test';
 
 /**
+ * Dismiss DataGrid onboarding popovers by setting localStorage flag
+ * This prevents the "How to use" tooltips from blocking E2E tests
+ */
+export async function dismissDataGridOnboarding(page: Page): Promise<void> {
+  await page.evaluate(() => {
+    localStorage.setItem('datagrid_onboarding_global_dismissed', 'true');
+  });
+}
+
+/**
  * Test User Credentials
  * These users are seeded from dummy data
  */
@@ -35,6 +45,9 @@ export async function login(
 ): Promise<void> {
   // Navigate to login page
   await page.goto('/login');
+
+  // Dismiss DataGrid onboarding popovers to prevent blocking E2E tests
+  await dismissDataGridOnboarding(page);
 
   // Wait for login form to be visible
   await page.waitForSelector('form', { state: 'visible', timeout: 5000 });

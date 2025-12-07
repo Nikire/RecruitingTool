@@ -1,3 +1,4 @@
+import React from 'react';
 import {
 	Card,
 	CardContent,
@@ -42,7 +43,7 @@ interface CompactJobCardProps {
 	onApplyClick: (uid: string, title: string) => void;
 }
 
-const CompactJobCard: React.FC<CompactJobCardProps> = ({jobPosition, onApplyClick}) => {
+const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(({jobPosition, onApplyClick}) => {
 	const {t} = useTranslation();
 	const navigate = useNavigate();
 
@@ -384,6 +385,8 @@ const CompactJobCard: React.FC<CompactJobCardProps> = ({jobPosition, onApplyClic
 			</CardContent>
 		</Card>
 	);
-};
+});
+
+CompactJobCard.displayName = 'CompactJobCard';
 
 export default CompactJobCard;

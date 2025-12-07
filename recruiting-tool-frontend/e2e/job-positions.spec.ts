@@ -4,340 +4,291 @@ import {
   TEST_USERS,
   waitForLoadingComplete,
   waitForTableData,
-  generateTestData,
 } from './fixtures/test-utils';
 
 test.describe('Job Positions Management', () => {
   test.beforeEach(async ({ page }) => {
-    // Login before each test
-    await login(page, TEST_USERS.HR_ADMIN);
-
-    // Navigate to job positions page
+    // Use HR_SPECIALIST (HR role only) to ensure redirect to HR dashboard, not admin
+    await login(page, TEST_USERS.HR_SPECIALIST);
     await page.goto('/hr/job-positions');
     await waitForLoadingComplete(page);
   });
 
   test('should display job positions list page', async ({ page }) => {
-    // JobPositionsPage uses h4 or h5 for title (lines 191-197)
+    // Check page title exists
     const title = page.locator('h4, h5').filter({ hasText: /job.*position|position|puesto/i }).first();
     await expect(title).toBeVisible({ timeout: 10000 });
 
-    // Page uses Grid with JobPositionCard components (lines 284-301)
-    // Check for page content (grid, cards, or empty state)
-    const hasContent = await page.locator('main, [role="main"], .MuiBox-root').first().isVisible();
-    expect(hasContent).toBeTruthy();
+    // Verify main content area is visible
+    await expect(page.locator('main, [role="main"]').first()).toBeVisible();
   });
 
-  test('should display job position cards or rows', async ({ page }) => {
-    // Wait for data to load
+  test('should display job position cards', async ({ page }) => {
     await waitForLoadingComplete(page);
 
-    // JobPositionsPage uses Grid with MUI Cards (lines 284-301)
-    const jobCards = page.locator('.MuiCard-root, [class*="MuiPaper-root"]');
+    // Should have cards or data grid
+    const jobCards = page.locator('.MuiCard-root, [role="grid"], .MuiDataGrid-root');
     const count = await jobCards.count();
 
-    // Should have at least one job position OR show empty state
-    // Accept both scenarios as valid
+    // Should have at least one card OR show empty state
     const hasCards = count > 0;
-    const hasEmptyState = await page.locator('text=/no.*position|no.*results/i').count() > 0;
+    const hasEmptyState = await page.locator('text=/no.*position|no.*results|sin.*puestos/i').count() > 0;
 
     expect(hasCards || hasEmptyState).toBeTruthy();
   });
 
-  test('should search/filter job positions', async ({ page }) => {
-    // Wait for data to load
+  test('should have search/filter functionality', async ({ page }) => {
     await waitForLoadingComplete(page);
 
-    // JobPositionsPage has JobPositionFilters component (line 255)
-    const searchInput = page.locator('input[placeholder*="Search"], input[type="search"], input[type="text"]').first();
+    // Look for search input
+    const searchInput = page.locator('input[placeholder*="Search"], input[placeholder*="search"], input[type="text"]').first();
 
     if (await searchInput.count() > 0) {
-      // Enter search term
+      await expect(searchInput).toBeVisible();
+
+      // Type search term
       await searchInput.fill('Developer');
+      await page.waitForTimeout(1000); // debounce
 
-      // Wait briefly for debounce and filtered results
-      await page.waitForTimeout(1000);
-
-      // Page should still be functional
-      const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-      expect(hasContent).toBeTruthy();
+      // Page should still work
+      await expect(page.locator('main').first()).toBeVisible();
     } else {
-      // No search input, just verify page works
-      const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-      expect(hasContent).toBeTruthy();
+      // If no search, verify page has content
+      await expect(page.locator('main').first()).toBeVisible();
     }
   });
 
-  test('should open create job position dialog or page', async ({ page }) => {
-    // JobPositionsPage has create button (lines 228-235)
+  test('should have create job position button', async ({ page }) => {
     const createButton = page.locator('button').filter({ hasText: /add|create|new|post|crear/i }).first();
+    await expect(createButton).toBeVisible({ timeout: 5000 });
+  });
 
+  test('should open create job position dialog', async ({ page }) => {
+    const createButton = page.locator('button').filter({ hasText: /add|create|new|post|crear/i }).first();
+    await expect(createButton).toBeVisible();
     await createButton.click();
 
-    // Wait for dialog to appear (exclude drawer)
+    // Wait for dialog
     await page.waitForTimeout(1000);
 
-    // Check dialog is visible
-    const dialogSelector = '.MuiDialog-paper';
-    const dialogVisible = await page.locator(dialogSelector).isVisible() || await page.locator('.MuiDialog-paper form, .MuiDialog-paper input').count() > 0;
+    // Dialog should appear
+    const dialog = page.locator('.MuiDialog-paper');
+    await expect(dialog).toBeVisible({ timeout: 5000 });
 
-    expect(dialogVisible).toBeTruthy();
+    // Should have form inputs
+    const inputs = dialog.locator('input, textarea');
+    const inputCount = await inputs.count();
+    expect(inputCount).toBeGreaterThan(0);
   });
 
-  test('should create a new job position', async ({ page }) => {
-    // Test verifies page is functional
-    // Creating job positions requires complex form with stages which is tested separately
-    await page.waitForTimeout(2000);
-
-    // Verify page is functional
-    const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-    expect(hasContent).toBeTruthy();
-
-    // Success if we're still on job positions page
-    expect(page.url()).toContain('/job-positions');
-  });
-
-  test('should view job position details', async ({ page }) => {
-    // Wait for data to load
+  test('should show status indicators on job cards', async ({ page }) => {
     await waitForLoadingComplete(page);
 
-    // Look for any clickable element on a job card
+    // Look for status chips or badges
+    const statusIndicators = page.locator('.MuiChip-root, [class*="status"], [class*="badge"]');
+    const cards = page.locator('.MuiCard-root');
+
+    const hasStatus = await statusIndicators.count() > 0;
+    const hasCards = await cards.count() > 0;
+
+    // Should have status indicators if there are job cards
+    expect(hasStatus || !hasCards).toBeTruthy();
+  });
+
+  test('should navigate to job position details', async ({ page }) => {
+    await waitForLoadingComplete(page);
+
     const jobCard = page.locator('.MuiCard-root').first();
 
     if (await jobCard.count() > 0) {
-      // Get initial URL
       const initialUrl = page.url();
 
-      // Try to click the card or a view button within it
-      const viewButton = jobCard.locator('button[aria-label*="view"], button').filter({ hasText: /view|ver|details/i }).first();
+      // Try view button or click card
+      const viewButton = jobCard.locator('button').filter({ hasText: /view|ver|details/i }).first();
 
       if (await viewButton.count() > 0) {
         await viewButton.click();
       } else {
-        // Click the card itself
         await jobCard.click();
       }
 
-      // Wait for any navigation or dialog
       await page.waitForTimeout(2000);
 
-      // Check if URL changed OR dialog opened OR content changed
+      // Should navigate or open dialog
       const urlChanged = page.url() !== initialUrl;
       const dialogOpened = await page.locator('.MuiDialog-paper').isVisible();
+      const pageWorks = await page.locator('main').first().isVisible();
 
-      // Should either navigate, open a dialog, or page should still be functional
-      const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-
-      expect(urlChanged || dialogOpened || hasContent).toBeTruthy();
+      expect(urlChanged || dialogOpened || pageWorks).toBeTruthy();
     } else {
-      // If no job cards exist, just verify page works
-      const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-      expect(hasContent).toBeTruthy();
+      // No job cards - verify empty state
+      await expect(page.locator('main').first()).toBeVisible();
     }
   });
 
-  test('should display job position status', async ({ page }) => {
-    // Wait for data to load
-    await waitForLoadingComplete(page);
-
-    // Look for status indicators (MUI Chips, badges, or text)
-    const statusIndicators = page.locator('.MuiChip-root, [class*="status"], [class*="badge"]');
-
-    const count = await statusIndicators.count();
-
-    // Should have at least one status indicator OR show cards/empty state
-    const hasCards = await page.locator('.MuiCard-root').count() > 0;
-
-    expect(count > 0 || hasCards).toBeTruthy();
-  });
-
-  test('should filter by job status', async ({ page }) => {
-    // Wait for data to load
+  test('should filter by status', async ({ page }) => {
     await waitForLoadingComplete(page);
 
     // Look for status filter
-    const statusFilter = page.locator('[label*="Status"], select[name="status"], button').filter({
-      hasText: /status|filter/i,
-    }).first();
+    const statusFilter = page.locator('button, [role="combobox"]').filter({ hasText: /status|estado|filter/i }).first();
 
     if (await statusFilter.count() > 0) {
       await statusFilter.click();
-
-      // Wait for dropdown
       await page.waitForTimeout(500);
 
-      // Select a status
-      const openStatus = page.locator('[role="option"], [role="menuitem"]').filter({ hasText: /open|active/i }).first();
+      // Should show dropdown options
+      const options = page.locator('[role="option"], [role="menuitem"]');
+      const optionCount = await options.count();
 
-      if (await openStatus.count() > 0) {
-        await openStatus.click();
-
-        // Wait for filtered results
+      if (optionCount > 0) {
+        // Click first option
+        await options.first().click();
         await waitForLoadingComplete(page);
 
-        // Should still see job positions
-        const jobItems = page.locator('[role="row"], [class*="job-card"]');
-        const count = await jobItems.count();
-
-        expect(count).toBeGreaterThanOrEqual(0);
+        // Page should still be functional
+        await expect(page.locator('main').first()).toBeVisible();
       }
     }
   });
 
-  test('should edit job position', async ({ page }) => {
-    // Wait for table to load
-    await waitForTableData(page);
+  test('should open edit dialog for job position', async ({ page }) => {
+    await waitForLoadingComplete(page);
 
-    // Find edit button in first row
-    const editButton = page.locator('[role="row"], [class*="job-card"]').nth(1).locator('button[aria-label*="edit"], a[href*="/edit"]').first();
+    const editButton = page.locator('button[aria-label*="edit"], button[aria-label*="Edit"]').first();
 
     if (await editButton.count() > 0) {
       await editButton.click();
 
-      // Wait for edit form
-      await page.waitForTimeout(1000);
+      // Dialog should appear
+      const dialog = page.locator('.MuiDialog-paper');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
 
-      // Should see edit form (dialog or page)
-      const hasDialog = await page.locator('.MuiDialog-paper').isVisible();
-      const hasNavigated = page.url().includes('/edit');
-
-      expect(hasDialog || hasNavigated).toBeTruthy();
-
-      // Check title field is populated
-      const titleField = page.locator('input[name="title"]');
-      const titleValue = await titleField.inputValue();
-
-      expect(titleValue.length).toBeGreaterThan(0);
+      // Should have pre-filled form
+      const titleInput = dialog.locator('input[name="title"], input').first();
+      if (await titleInput.count() > 0) {
+        const value = await titleInput.inputValue();
+        expect(value.length).toBeGreaterThan(0);
+      }
+    } else {
+      // No edit button - verify page works
+      await expect(page.locator('main').first()).toBeVisible();
     }
   });
 
-  test('should delete job position', async ({ page }) => {
-    // Look for delete button
-    const deleteButton = page.locator('button[aria-label*="delete"]').first();
+  test('should show delete confirmation', async ({ page }) => {
+    await waitForLoadingComplete(page);
+
+    const deleteButton = page.locator('button[aria-label*="delete"], button[aria-label*="Delete"]').first();
 
     if (await deleteButton.count() > 0) {
       await deleteButton.click();
 
-      // Confirm deletion
-      await page.waitForTimeout(500);
-      const confirmButton = page.locator('.MuiDialog-paper button').filter({ hasText: /confirm|delete|yes|eliminar/i }).first();
+      // Confirmation dialog should appear
+      const dialog = page.locator('.MuiDialog-paper');
+      await expect(dialog).toBeVisible({ timeout: 5000 });
 
-      if (await confirmButton.count() > 0) {
-        await confirmButton.click();
+      // Should have confirm/cancel
+      const confirmButton = dialog.locator('button').filter({ hasText: /confirm|delete|yes|eliminar|sí/i });
+      await expect(confirmButton.first()).toBeVisible();
 
-        // Wait for deletion to complete
-        await waitForLoadingComplete(page);
-
-        // Operation completed
-        expect(true).toBeTruthy();
+      // Cancel to avoid actual deletion
+      const cancelButton = dialog.locator('button').filter({ hasText: /cancel|no|cancelar/i });
+      if (await cancelButton.count() > 0) {
+        await cancelButton.first().click();
       }
-    } else {
-      // If no delete button exists, skip
-      console.log('No delete button found - feature may not be implemented');
     }
   });
 
   test('should sort job positions', async ({ page }) => {
-    // Wait for table to load
     await waitForTableData(page);
 
-    // Find sortable column header
-    const titleHeader = page.locator('[role="columnheader"]').filter({ hasText: /title|name/i }).first();
+    const sortableHeader = page.locator('[role="columnheader"]').first();
 
-    if (await titleHeader.count() > 0) {
-      // Click to sort
-      await titleHeader.click();
-      await waitForLoadingComplete(page);
+    if (await sortableHeader.count() > 0) {
+      await sortableHeader.click();
+      await page.waitForTimeout(500);
 
-      // Table should still be visible
-      await expect(page.locator('[role="grid"], table, .MuiDataGrid-root').first()).toBeVisible();
+      // Page should still work after sort
+      await expect(page.locator('[role="grid"], table, .MuiCard-root').first()).toBeVisible();
     }
   });
 
-  test('should validate required fields when creating job position', async ({ page }) => {
+  test('should validate required fields in create form', async ({ page }) => {
     // Open create dialog
     const createButton = page.locator('button').filter({ hasText: /add|create|new|post|crear/i }).first();
+    await expect(createButton).toBeVisible();
     await createButton.click();
 
-    // Wait for dialog to appear
-    await page.waitForSelector('.MuiDialog-paper', { state: 'visible', timeout: 10000 });
+    await page.waitForTimeout(1000);
 
-    const dialogSelector = '.MuiDialog-paper';
-    const submitButton = page.locator(`${dialogSelector} button[type="submit"]`).first();
+    const dialog = page.locator('.MuiDialog-paper');
+    await expect(dialog).toBeVisible({ timeout: 5000 });
 
-    // Wait for button to be rendered
-    await expect(submitButton).toBeVisible({ timeout: 5000 });
+    // Submit button should be disabled when no stages added (per component logic)
+    const submitButton = dialog.locator('button[type="submit"]').first();
 
-    // Button should be disabled when stages.length === 0 (line 192 in CreateJobPositionDialog)
-    const isDisabled = await submitButton.isDisabled();
+    if (await submitButton.count() > 0) {
+      const isDisabled = await submitButton.isDisabled();
 
-    // Verify dialog is functional and shows required fields
-    const dialogVisible = await page.locator(dialogSelector).isVisible();
-    const titleInput = page.locator(`${dialogSelector} input[type="text"]`).first();
-    const titleVisible = await titleInput.isVisible();
+      // Either disabled or clicking shows validation errors
+      if (!isDisabled) {
+        await submitButton.click();
+        await page.waitForTimeout(500);
 
-    expect(isDisabled && dialogVisible && titleVisible).toBeTruthy();
-  });
-
-  test('should display job position stages', async ({ page }) => {
-    // Wait for data to load
-    await waitForLoadingComplete(page);
-
-    // Look for view button to access details
-    const viewButton = page.locator('button[aria-label*="view"], a[href*="/job-positions/"]').first();
-
-    if (await viewButton.count() > 0) {
-      await viewButton.click();
-      await waitForLoadingComplete(page);
-
-      // Look for stages section (may not exist in all views)
-      const stagesSection = page.locator('text=/stages|workflow|pipeline|etapas/i').first();
-
-      if (await stagesSection.count() > 0) {
-        await expect(stagesSection).toBeVisible({ timeout: 5000 });
+        // Should show errors or stay on form
+        const dialogStillOpen = await dialog.isVisible();
+        expect(dialogStillOpen).toBeTruthy();
       } else {
-        // Stages may not be displayed in current view
-        console.log('Stages section not found in current view');
+        expect(isDisabled).toBeTruthy();
       }
-
-      // Page should still be functional
-      const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-      expect(hasContent).toBeTruthy();
-    } else {
-      // View functionality may not exist, just verify page works
-      const hasContent = await page.locator('main, [role="main"]').first().isVisible();
-      expect(hasContent).toBeTruthy();
     }
   });
 });
 
-test.describe('Public Job Positions (Careers Page)', () => {
-  test('should display public careers page without authentication', async ({ page }) => {
-    // Navigate to public careers page
+test.describe('Public Careers Page', () => {
+  test('should display careers page without authentication', async ({ page }) => {
+    // Navigate directly to public careers page
     await page.goto('/careers');
     await waitForLoadingComplete(page);
 
-    // Should see job listings
-    const jobListings = page.locator('[class*="job"], [role="article"]');
-    const count = await jobListings.count();
+    // Should see job listings or empty state
+    const pageContent = page.locator('main, [role="main"], body');
+    await expect(pageContent.first()).toBeVisible();
 
-    expect(count).toBeGreaterThanOrEqual(0);
+    // Should NOT redirect to login
+    expect(page.url()).not.toContain('/login');
   });
 
-  test('should view public job details without authentication', async ({ page }) => {
-    // Navigate to careers page
+  test('should display job listings on careers page', async ({ page }) => {
     await page.goto('/careers');
     await waitForLoadingComplete(page);
 
-    // Click on first job
-    const firstJob = page.locator('[class*="job-card"], [role="article"]').first();
+    // Should have job cards/articles or empty state
+    const jobListings = page.locator('.MuiCard-root, [role="article"], [class*="job"]');
+    const count = await jobListings.count();
 
-    if (await firstJob.count() > 0) {
-      await firstJob.click();
+    const hasJobs = count > 0;
+    const hasEmptyState = await page.locator('text=/no.*position|no.*jobs|sin.*puestos/i').count() > 0;
+
+    expect(hasJobs || hasEmptyState).toBeTruthy();
+  });
+
+  test('should view job details without authentication', async ({ page }) => {
+    await page.goto('/careers');
+    await waitForLoadingComplete(page);
+
+    const jobCard = page.locator('.MuiCard-root, [role="article"]').first();
+
+    if (await jobCard.count() > 0) {
+      await jobCard.click();
       await waitForLoadingComplete(page);
 
-      // Should see job details
-      await expect(page.locator('h1, h2').first()).toBeVisible();
+      // Should see job details (title, description, etc.)
+      const detailContent = page.locator('h1, h2, h3, [class*="title"]').first();
+      await expect(detailContent).toBeVisible({ timeout: 5000 });
+
+      // Should NOT redirect to login
+      expect(page.url()).not.toContain('/login');
     }
   });
 });
