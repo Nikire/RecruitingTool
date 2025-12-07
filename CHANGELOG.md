@@ -7,6 +7,96 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 0.8.0 - 2025-12-07
+
+### 🚀 Features
+
+#### Screenshot-Based UI Development System (#183)
+- **Agent workflow integration for visual reference during development**
+  - Created `e2e/utils/screenshot.ts` utility for capturing screenshots
+  - Added `scripts/capture-screenshot.ts` CLI script for manual captures
+  - Created `/screenshot` slash command for agent workflows
+  - Updated `ui-component-specialist` and `fullstack-feature` agents with screenshot workflow
+  - Added `screenshots/` directory to `.gitignore`
+  - Value: Enables agents to reference visual mockups during UI development
+
+#### Subscription Management Upgrade Flow (#187)
+- **Upgrade button now functional with Stripe checkout integration**
+  - Opens upgrade dialog with Stripe checkout link
+  - Displays current plan and target plan information
+  - Shows feature comparison between plans
+  - Proper i18n support for all UI text
+  - Value: Enables users to easily upgrade subscription tiers
+
+### 🐛 Bug Fixes
+
+#### Teams Section Type Error (#185)
+- **Fixed "Lo is not a function" error in TeamManagementPage**
+  - Changed invalid `React.Node` type to `React.ReactNode`
+  - Root cause: Incorrect TypeScript type definition
+  - Solution: Use proper React type for node elements
+  - Files: `recruiting-tool-frontend/src/pages/TeamManagementPage.tsx`
+
+### ⚡ Performance
+
+#### Careers Page Filters Optimization (#184)
+- **Eliminated unnecessary re-renders during filtering and search**
+  - Added `React.memo` to `CompactJobCard` component
+  - Implemented `useCallback` for stable filter handlers
+  - Added `useMemo` for derived filter state
+  - Implemented 300ms debounce on search input
+  - Enhanced React Query caching (5-minute staleTime)
+  - Benefits: Faster filter interactions, reduced API calls, smoother UX
+  - Files: `CompactJobCard.tsx`, `CareersPage.tsx`, `useJobPositions.ts`
+
+### 📝 Documentation
+
+#### Component Sizing Audit (#186)
+- **Comprehensive documentation of sizing patterns across codebase**
+  - Documented dialog sizing patterns (xs, sm, md, lg, xl, fullWidth, fullScreen)
+  - Cataloged button sizing conventions (small, medium, large)
+  - Identified common spacing patterns (8px grid system)
+  - Listed responsive breakpoints and mobile touch targets
+  - Added sizing quick reference guide
+  - Files: `.claude/docs/COMPONENTS.md`
+
+### 🧪 Testing
+
+#### Comprehensive E2E Test Suite Expansion (#188)
+- **Expanded test coverage from 59 to 157 tests (166% increase)**
+  - Created 7 new test suites:
+    - `subscription.spec.ts` - 7 tests (plan comparison, upgrade flow, cancellation)
+    - `team-management.spec.ts` - 11 tests (CRUD, role management, activation)
+    - `email-templates.spec.ts` - 10 tests (CRUD, variable insertion, preview)
+    - `user-profile.spec.ts` - 12 tests (profile updates, password change, avatar)
+    - `calendar-settings.spec.ts` - 10 tests (Google Calendar integration, availability)
+    - `analytics.spec.ts` - 11 tests (charts, date ranges, export)
+    - `admin-panel.spec.ts` - 24 tests (user management, companies, system)
+    - `onboarding.spec.ts` - 13 tests (wizard flow, company setup, skip logic)
+  - Improved existing test suites:
+    - Enhanced `candidates.spec.ts` with better selectors and assertions
+    - Refactored `hiring-process.spec.ts` for reliability
+    - Optimized `job-positions.spec.ts` with shared utilities
+  - Added test utilities in `e2e/fixtures/test-utils.ts`
+  - Benefits: Higher confidence in releases, faster bug detection
+  - Total coverage: 157 E2E tests across 11 suites
+
+### 🗃️ Database
+
+#### AppModule Configuration
+- **Added AppModule configuration changes**
+  - Files: `recruiting-tool-backend/src/app.module.ts`
+
+### Breaking Changes
+None
+
+### Migration Notes
+- No database migrations required
+- Frontend packages updated (tsx dependency added)
+- Run `yarn install` in frontend directory
+
+---
+
 ## Version 0.7.0 - 2025-11-20
 
 ### 🚀 Major Features
