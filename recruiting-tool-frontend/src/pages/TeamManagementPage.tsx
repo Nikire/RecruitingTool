@@ -42,7 +42,7 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 
 const TeamManagementPage: React.FC = () => {
   const { t } = useTranslation();
-  const [user] = useUserAtom();
+  const { user } = useUserAtom();
   const [activeTab, setActiveTab] = useState(0);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 

@@ -86,7 +86,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
         </Box>
 
         <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-          {roles.map((role) => (
+          {roles?.map((role) => (
             <Chip
               key={role}
               label={t(`roles.${role.toLowerCase()}`)}
