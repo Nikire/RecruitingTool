@@ -47,8 +47,8 @@ export default defineConfig({
     // Screenshot on failure
     screenshot: 'only-on-failure',
 
-    // Video on first retry
-    video: 'retain-on-failure',
+    // Video recording - 'on' for all tests, 'retain-on-failure' for failures only
+    video: 'on',
 
     // Maximum time each action can take
     actionTimeout: 10000,
