@@ -1,6 +1,16 @@
-# RecruitingTool
+# BorderLess
 
-Recruiting tool is a modern app based on HR tools. This app provides a simple way to keep track of recruitments, helping HR teams manage candidates, streamline the hiring process, and make data-driven decisions. It offers features such as applicant tracking, interview scheduling, collaborative feedback, and customizable dashboards to monitor progress. The tool also supports technical interview applications, allowing companies to assess candidates' skills through coding tests, project submissions, and live technical challenges. Additionally, it provides a fully customizable hiring process, enabling HR teams to tailor workflows, evaluation criteria, and interview stages to meet specific organizational needs. With seamless integration to popular job boards, it ensures all recruitment acticvities are centralized for maximum efficiency.
+**EMP Employment Solutions**
+
+BorderLess is a modern, AI-powered applicant tracking system (ATS) designed for small and medium businesses. It provides a comprehensive solution to manage the entire hiring process - from posting job positions to onboarding new hires - helping HR teams find the best talent efficiently.
+
+## Why BorderLess?
+
+The name "BorderLess" represents our vision of breaking down barriers in recruitment:
+- **No Geographic Borders** - Hire talent from anywhere in the world
+- **No Budget Barriers** - Enterprise features at SMB-friendly pricing
+- **No Technical Limits** - Self-hosted or cloud, your choice
+- **No Process Constraints** - Fully customizable hiring workflows
 
 ## Features
 
@@ -9,15 +19,18 @@ Recruiting tool is a modern app based on HR tools. This app provides a simple wa
 - **Job Positions**: Create and manage job positions with customizable stages
 - **Hiring Processes**: Track candidates through customized hiring workflows
 - **Candidate Management**: Full CRUD operations with profile management
+- **AI-Powered Screening**: Intelligent resume parsing and candidate scoring
+- **Interview Scheduling**: Automated scheduling with calendar integration
 - **File Storage**: Upload and manage candidate documents (resumes, cover letters, etc.)
   - Drag-and-drop file upload with visual feedback
   - Support for PDF, DOC, DOCX, and TXT files (max 10MB)
   - MinIO (S3-compatible) storage for local development
   - AWS S3 support for production environments
   - Secure file downloads with signed URLs
-- **User Profiles**: Customizable user profiles with profile pictures and additional fields
+- **User Profiles**: Customizable user profiles with profile pictures
 - **Authentication**: JWT-based authentication with secure token management
-- **Toast Notifications**: Real-time feedback for all operations
+- **Real-time Notifications**: In-app and email notifications for key events
+- **Multi-language Support**: English and Spanish out of the box
 
 ## Installation (Docker)
 
@@ -69,6 +82,34 @@ The application uses MinIO for local development and can be configured to use AW
 - ✅ Always use `yarn install` (NOT `npm install`)
 - ❌ Never create `package-lock.json` - only `yarn.lock` should exist
 
-## Swagger
+## API Documentation
 
 You can see the API documentation by visiting the following URL once you got the app running: `http://localhost:{YOUR-SELECTED-BACKEND-PORT}/api`
+
+## Tech Stack
+
+**Backend:**
+- NestJS + TypeScript
+- Prisma ORM
+- PostgreSQL
+- JWT Authentication
+
+**Frontend:**
+- React 19 + TypeScript
+- Vite
+- Material-UI (MUI)
+- React Query + Jotai
+- react-i18next
+
+**Infrastructure:**
+- Docker + Docker Compose
+- MinIO (S3-compatible storage)
+- Stripe (payments)
+
+## License
+
+Copyright © 2024-2025 EMP Employment Solutions. All rights reserved.
+
+---
+
+**BorderLess** - *Breaking down barriers in recruitment*

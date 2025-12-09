@@ -816,7 +816,7 @@
   },
   "navbar": {
     "home": "Inicio",
-    "app_title": "Herramienta de Reclutamiento",
+    "app_title": "BorderLess",
     "logout": "Cerrar Sesión",
     "login": "Iniciar Sesión",
     "signup": "Registrarse",
@@ -1143,6 +1143,8 @@
     "switch_to": "Cambiar a",
     "english": "English",
     "spanish": "Español",
+    "en": "Inglés",
+    "es": "Español",
     "current_language": "Idioma Actual"
   },
   "home": {
@@ -1622,7 +1624,7 @@
     "integrations": "Integraciones",
     "system_health": "Salud del Sistema",
     "application_name": "Nombre de la Aplicación",
-    "default_app_name": "Herramienta de Reclutamiento",
+    "default_app_name": "BorderLess",
     "default_timezone": "Zona Horaria Predeterminada",
     "default_language": "Idioma Predeterminado",
     "date_format": "Formato de Fecha",
@@ -1943,7 +1945,7 @@
       }
     },
     "welcome": {
-      "title": "¡Bienvenido a Recruiting Tool!",
+      "title": "¡Bienvenido a BorderLess!",
       "subtitle": "Tu configuración está completa",
       "description": "¡Todo listo! Exploremos las características clave que te ayudarán a optimizar tu proceso de contratación.",
       "features_title": "Características Clave al Alcance",
@@ -2023,7 +2025,13 @@
       "subheadline": "Rastrea candidatos, gestiona entrevistas y construye equipos increíbles con nuestra plataforma todo-en-uno",
       "cta_primary": "Iniciar Prueba Gratuita",
       "cta_secondary": "Ver Demo",
-      "image_placeholder": "Imagen Principal"
+      "image_placeholder": "Imagen Principal",
+      "new_headline": "Rompe las Barreras de Contratación",
+      "new_subheadline": "Optimiza el reclutamiento con filtrado por IA, programación automatizada y contratación colaborativa. Diseñado para equipos de 1 a 200.",
+      "cta_start_free": "Comenzar Gratis",
+      "cta_start_now": "Comenzar Ahora",
+      "cta_view_pricing": "Ver Precios",
+      "cta_learn_more": "Saber Más"
     },
     "stats": {
       "candidates_processed": "Candidatos Procesados",
@@ -2034,6 +2042,9 @@
     "features": {
       "section_title": "Todo lo que Necesitas para Contratar Mejor",
       "section_subtitle": "Funciones potentes diseñadas para hacer el reclutamiento más fácil y efectivo",
+      "section_label": "CARACTERÍSTICAS",
+      "section_new_title": "Todo lo que necesitas para contratar de forma más inteligente",
+      "section_new_subtitle": "Herramientas poderosas diseñadas para optimizar todo tu proceso de contratación",
       "multi_stage_hiring": {
         "title": "Procesos de Contratación Multi-Etapa",
         "description": "Crea flujos de trabajo personalizables con múltiples etapas para tu proceso"
@@ -2057,11 +2068,36 @@
       "team_collaboration": {
         "title": "Colaboración en Equipo",
         "description": "Permite colaboración fluida entre equipos de RRHH, gerentes de contratación y entrevistadores"
+      },
+      "email_templates": {
+        "title": "Plantillas de Email",
+        "description": "Comunicación profesional y personalizable con candidatos"
+      },
+      "self_hosted": {
+        "title": "Opción Auto-Alojada",
+        "description": "Privacidad de datos y control - sin dependencia de proveedores"
+      }
+    },
+    "how_it_works": {
+      "section_label": "CÓMO FUNCIONA",
+      "section_title": "Comienza en 3 simples pasos",
+      "step1": {
+        "title": "Publica Empleos y Personaliza el Pipeline",
+        "description": "Crea posiciones de trabajo y adapta tu flujo de contratación a tus necesidades"
+      },
+      "step2": {
+        "title": "La IA Filtra y Clasifica Aplicaciones",
+        "description": "Deja que la IA califique y clasifique automáticamente candidatos según sus calificaciones"
+      },
+      "step3": {
+        "title": "Programa y Contrata a los Mejores",
+        "description": "Programa entrevistas fácilmente y toma decisiones de contratación basadas en datos"
       }
     },
     "pricing": {
       "section_title": "Precios Simples y Transparentes",
       "section_subtitle": "Elige el plan que se ajuste al tamaño de tu equipo y necesidades de contratación",
+      "section_label": "PRECIOS",
       "per_month": "mes",
       "recommended": "Recomendado",
       "cta": "Comenzar",
@@ -2106,7 +2142,9 @@
     "social_proof": {
       "section_title": "Confiado por Equipos de Reclutamiento en Todo el Mundo",
       "section_subtitle": "Mira lo que nuestros clientes dicen sobre su experiencia",
+      "section_label": "TESTIMONIOS",
       "trusted_by": "Confiado por empresas líderes",
+      "trusted_bar": "Confiado por más de 500 empresas en todo el mundo",
       "company_logo": "Empresa",
       "testimonial_1": {
         "quote": "Esta plataforma ha transformado completamente cómo gestionamos nuestro proceso de contratación. Hemos reducido nuestro tiempo de contratación en un 40%.",
@@ -2128,7 +2166,7 @@
       }
     },
     "footer": {
-      "brand_name": "Recruiting Tool",
+      "brand_name": "BorderLess",
       "brand_description": "Software de reclutamiento moderno diseñado para ayudarte a construir equipos increíbles más rápido y eficientemente.",
       "product": "Producto",
       "features": "Características",
@@ -2146,7 +2184,12 @@
       "privacy": "Política de Privacidad",
       "terms": "Términos de Servicio",
       "security": "Seguridad",
-      "copyright": "© {{year}} Recruiting Tool. Todos los derechos reservados."
+      "copyright": "© {{year}} BorderLess por EMP Employment Solutions. Todos los derechos reservados."
+    },
+    "final_cta": {
+      "title": "¿Listo para optimizar tu contratación?",
+      "subtitle": "Únete a cientos de equipos que ya están contratando mejor con BorderLess",
+      "button": "Comenzar Gratis Hoy"
     }
   },
   "applicant_onboarding": {

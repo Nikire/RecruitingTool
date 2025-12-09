@@ -57,11 +57,16 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
 
       <ListItemText
         primary={
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5, overflow: 'hidden' }}>
             <Typography
               variant="body2"
               fontWeight={notification.isRead ? 'normal' : 'bold'}
-              sx={{ flex: 1 }}
+              sx={{
+                flex: 1,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
             >
               {notification.title}
             </Typography>

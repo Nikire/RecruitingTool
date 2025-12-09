@@ -2,7 +2,7 @@ import {Route, Routes} from 'react-router-dom';
 import Login from './pages/auth/Login';
 import RegistrationWizard from './pages/auth/RegistrationWizard';
 import Logout from './pages/auth/Logout';
-import Home from './pages/home/Home';
+// Home component is now unused - LandingPage is the root page
 import LandingPage from './pages/landing/LandingPage';
 import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
@@ -46,14 +46,9 @@ function App() {
 		<>
 			<Toaster />
 			<Routes>
-				{/* Landing Page - Marketing Page */}
+				{/* Landing Page - Marketing Page (root) */}
 				<Route element={<LandingPageLayout />}>
-					<Route path="/landing" element={<LandingPage />} />
-				</Route>
-
-				{/* Home Page - Original landing page for logged-in users */}
-				<Route element={<LandingPageLayout />}>
-					<Route index element={<Home />} />
+					<Route index element={<LandingPage />} />
 				</Route>
 
 				{/* Test Routes - Development Only */}

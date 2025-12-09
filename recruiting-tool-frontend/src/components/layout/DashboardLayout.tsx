@@ -22,6 +22,7 @@ import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
 import {useTranslation} from 'react-i18next';
 import LanguageSelector from '../common/LanguageSelector';
+import {NotificationBell} from '../notifications';
 import {useNotificationSSE} from '../../hooks/useNotificationSSE';
 
 const drawerWidth = 240;
@@ -267,6 +268,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 							{displayTitle}
 						</Typography>
 						<LanguageSelector />
+						<NotificationBell />
 						<IconButton
 							component={NavLink}
 							to="/profile"

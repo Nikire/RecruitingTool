@@ -810,7 +810,7 @@
   },
   "navbar": {
     "home": "Home",
-    "app_title": "Recruiting Tool",
+    "app_title": "BorderLess",
     "logout": "Logout",
     "login": "Login",
     "signup": "Signup",
@@ -1137,6 +1137,8 @@
     "switch_to": "Switch to",
     "english": "English",
     "spanish": "Español",
+    "en": "English",
+    "es": "Spanish",
     "current_language": "Current Language"
   },
   "home": {
@@ -1616,7 +1618,7 @@
     "integrations": "Integrations",
     "system_health": "System Health",
     "application_name": "Application Name",
-    "default_app_name": "Recruiting Tool",
+    "default_app_name": "BorderLess",
     "default_timezone": "Default Timezone",
     "default_language": "Default Language",
     "date_format": "Date Format",
@@ -1937,7 +1939,7 @@
       }
     },
     "welcome": {
-      "title": "Welcome to Recruiting Tool!",
+      "title": "Welcome to BorderLess!",
       "subtitle": "Your setup is complete",
       "description": "You're all set! Let's explore the key features that will help you streamline your hiring process.",
       "features_title": "Key Features at Your Fingertips",
@@ -2017,7 +2019,13 @@
       "subheadline": "Track candidates, manage interviews, and build amazing teams with our all-in-one recruiting platform",
       "cta_primary": "Start Free Trial",
       "cta_secondary": "Watch Demo",
-      "image_placeholder": "Hero Image"
+      "image_placeholder": "Hero Image",
+      "new_headline": "Break Hiring Barriers",
+      "new_subheadline": "Streamline recruiting with AI-powered screening, automated scheduling, and collaborative hiring. Built for teams of 1-200.",
+      "cta_start_free": "Start Free",
+      "cta_start_now": "Start Now",
+      "cta_view_pricing": "View Pricing",
+      "cta_learn_more": "Learn More"
     },
     "stats": {
       "candidates_processed": "Candidates Processed",
@@ -2028,6 +2036,9 @@
     "features": {
       "section_title": "Everything You Need to Hire Better",
       "section_subtitle": "Powerful features designed to make recruiting easier and more effective",
+      "section_label": "FEATURES",
+      "section_new_title": "Everything you need to hire smarter",
+      "section_new_subtitle": "Powerful tools designed to streamline your entire hiring process",
       "multi_stage_hiring": {
         "title": "Multi-Stage Hiring Pipelines",
         "description": "Create customizable hiring workflows with multiple stages to match your process"
@@ -2051,11 +2062,36 @@
       "team_collaboration": {
         "title": "Team Collaboration",
         "description": "Enable seamless collaboration between HR teams, hiring managers, and interviewers"
+      },
+      "email_templates": {
+        "title": "Email Templates",
+        "description": "Professional, customizable candidate communication"
+      },
+      "self_hosted": {
+        "title": "Self-Hosted Option",
+        "description": "Data privacy and control - no vendor lock-in"
+      }
+    },
+    "how_it_works": {
+      "section_label": "HOW IT WORKS",
+      "section_title": "Get started in 3 simple steps",
+      "step1": {
+        "title": "Post Jobs & Customize Pipeline",
+        "description": "Create job positions and tailor your hiring workflow to your needs"
+      },
+      "step2": {
+        "title": "AI Screens & Ranks Applications",
+        "description": "Let AI automatically score and rank candidates based on qualifications"
+      },
+      "step3": {
+        "title": "Schedule & Hire the Best",
+        "description": "Effortlessly schedule interviews and make data-driven hiring decisions"
       }
     },
     "pricing": {
       "section_title": "Simple, Transparent Pricing",
       "section_subtitle": "Choose the plan that fits your team size and hiring needs",
+      "section_label": "PRICING",
       "per_month": "mo",
       "recommended": "Recommended",
       "cta": "Get Started",
@@ -2100,7 +2136,9 @@
     "social_proof": {
       "section_title": "Trusted by Recruiting Teams Worldwide",
       "section_subtitle": "See what our customers have to say about their experience",
+      "section_label": "TESTIMONIALS",
       "trusted_by": "Trusted by leading companies",
+      "trusted_bar": "Trusted by 500+ companies worldwide",
       "company_logo": "Company",
       "testimonial_1": {
         "quote": "This platform has completely transformed how we manage our hiring process. We've cut our time-to-hire by 40%.",
@@ -2122,7 +2160,7 @@
       }
     },
     "footer": {
-      "brand_name": "Recruiting Tool",
+      "brand_name": "BorderLess",
       "brand_description": "Modern recruiting software designed to help you build amazing teams faster and more efficiently.",
       "product": "Product",
       "features": "Features",
@@ -2140,7 +2178,12 @@
       "privacy": "Privacy Policy",
       "terms": "Terms of Service",
       "security": "Security",
-      "copyright": "© {{year}} Recruiting Tool. All rights reserved."
+      "copyright": "© {{year}} BorderLess by EMP Employment Solutions. All rights reserved."
+    },
+    "final_cta": {
+      "title": "Ready to streamline your hiring?",
+      "subtitle": "Join hundreds of teams who are already hiring better with BorderLess",
+      "button": "Start Free Today"
     }
   },
   "applicant_onboarding": {

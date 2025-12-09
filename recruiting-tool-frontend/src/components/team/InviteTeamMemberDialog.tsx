@@ -62,13 +62,8 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberDialogProps> = ({
     onClose();
   };
 
-  // Available roles for invitation (excluding super admin and user)
-  const invitableRoles = [
-    RolesType.HR,
-    RolesType.HR_MANAGER,
-    RolesType.RECRUITER,
-    RolesType.COMPANY_ADMIN,
-  ];
+  // Available roles for invitation - only HR role is available for team invites
+  const invitableRoles = [RolesType.HR];
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -105,7 +100,7 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberDialogProps> = ({
               >
                 {invitableRoles.map((role) => (
                   <MenuItem key={role} value={role}>
-                    {t(`roles.${role.toLowerCase()}`)}
+                    {t(`team.roles.${role}`)}
                   </MenuItem>
                 ))}
               </TextField>

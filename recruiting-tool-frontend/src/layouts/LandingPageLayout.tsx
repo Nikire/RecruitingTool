@@ -1,6 +1,7 @@
 import { Box, Toolbar } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/navbar/Navbar';
+import { useAuthMe } from '../hooks/api/useAuth';
 
 /**
  * LandingPageLayout - Specialized layout for public landing pages
@@ -10,10 +11,14 @@ import Navbar from '../components/navbar/Navbar';
  * - Includes Navbar for navigation
  * - Allows child pages to control their own spacing
  * - Optimized for hero sections and marketing content
+ * - Restores auth state on page load (via useAuthMe)
  *
  * Used for: Home page, marketing pages
  */
 const LandingPageLayout = () => {
+	// Restore auth state on page load - ensures navbar shows correct auth status
+	useAuthMe();
+
 	return (
 		<>
 			<Navbar />
