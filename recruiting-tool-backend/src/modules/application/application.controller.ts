@@ -29,7 +29,7 @@ export class ApplicationController {
     return this.applicationService.create(createApplicationDto);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get()
   @ApiOperation({ summary: 'Get all applications (HR/ADMIN only)' })
   @ApiResponse({
@@ -41,7 +41,7 @@ export class ApplicationController {
     return this.applicationService.findAll(filterDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':uid')
   @ApiOperation({ summary: 'Get single application (HR/ADMIN only)' })
   @ApiResponse({
@@ -54,7 +54,7 @@ export class ApplicationController {
     return this.applicationService.findOne(uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Put(':uid')
   @ApiOperation({ summary: 'Update application (HR/ADMIN only)' })
   @ApiResponse({
@@ -68,7 +68,7 @@ export class ApplicationController {
     return this.applicationService.update(uid, updateApplicationDto, currentUser.uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete application (HR/ADMIN only)' })
   @ApiResponse({
@@ -81,7 +81,7 @@ export class ApplicationController {
     return this.applicationService.remove(uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Put(':uid/accept')
   @ApiOperation({ summary: 'Accept application and create candidate + hiring process (HR/ADMIN only)' })
   @ApiResponse({

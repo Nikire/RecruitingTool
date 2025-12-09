@@ -36,6 +36,7 @@
     "reset": "Restablecer",
     "retry": "Reintentar",
     "my_profile": "Mi Perfil",
+    "subscription": "Suscripción",
     "back_to_careers": "Volver a Carreras",
     "n_a": "N/A",
     "refresh": "Actualizar",
@@ -46,7 +47,14 @@
     "print": "Imprimir",
     "unknown": "Desconocido",
     "gotIt": "Entendido",
-    "created": "Creado"
+    "created": "Creado",
+    "approve": "Aprobar",
+    "approving": "Aprobando...",
+    "deny": "Denegar",
+    "denying": "Denegando...",
+    "send": "Enviar",
+    "sending": "Enviando...",
+    "go_to_dashboard": "Ir al Panel"
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -175,7 +183,28 @@
     "import_csv_hint": "Importación masiva de candidatos desde un archivo CSV",
     "search_placeholder": "Buscar por nombre o correo...",
     "delete_title": "Eliminar Candidato",
-    "delete_message": "¿Está seguro que desea eliminar este candidato?"
+    "delete_message": "¿Está seguro que desea eliminar este candidato?",
+    "source_label": "Fuente del Candidato",
+    "source_details_label": "Detalles de la Fuente",
+    "source_filter_label": "Filtrar por Fuente",
+    "all_sources": "Todas las Fuentes",
+    "sources": {
+      "WEBSITE": "Sitio Web",
+      "LINKEDIN": "LinkedIn",
+      "INDEED": "Indeed",
+      "GLASSDOOR": "Glassdoor",
+      "REFERRAL": "Referencia",
+      "JOB_FAIR": "Feria de Empleo",
+      "UNIVERSITY": "Universidad",
+      "RECRUITER": "Reclutador",
+      "DIRECT_APPLY": "Aplicación Directa",
+      "SOCIAL_MEDIA": "Redes Sociales",
+      "MANUAL": "Entrada Manual",
+      "CSV_IMPORT": "Importación CSV",
+      "OTHER": "Otro",
+      "CAREER_PAGE": "Página de Carreras",
+      "JOB_BOARD": "Portal de Empleo"
+    }
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -197,7 +226,58 @@
     "subtitle": "Gestiona las ofertas de trabajo de tu empresa",
     "create_new": "Crear Posición de Trabajo",
     "search_placeholder": "Buscar posiciones...",
-    "in_progress_count": "En Progreso: {{count}}"
+    "in_progress_count": "En Progreso: {{count}}",
+    "pagination_showing": "Mostrando {{start}}-{{end}} de {{total}} posiciones",
+    "pagination_info": "{{from}}-{{to}} de {{count}}",
+    "per_page": "Por página",
+    "created_success": "¡Posición de trabajo creada exitosamente!",
+    "updated_success": "¡Posición de trabajo actualizada exitosamente!",
+    "deleted_success": "¡Posición de trabajo eliminada exitosamente!",
+    "create_error": "Error al crear posición de trabajo",
+    "update_error": "Error al actualizar posición de trabajo",
+    "delete_error": "Error al eliminar posición de trabajo"
+  },
+  "job_position_card": {
+    "full_time": "Tiempo completo",
+    "part_time": "Medio tiempo",
+    "contract": "Contrato",
+    "remote": "Remoto",
+    "applicants_count": "{{count}} aplicante",
+    "applicants_count_plural": "{{count}} aplicantes",
+    "no_results": "No hay posiciones que coincidan con tus filtros",
+    "no_positions": "Aún no hay posiciones de trabajo",
+    "view_mode": "Modo de vista",
+    "grid_view": "Vista de cuadrícula",
+    "list_view": "Vista de lista",
+    "list_view_coming_soon": "Vista de lista próximamente",
+    "use_grid_view": "Por favor usa la vista de cuadrícula por ahora"
+  },
+  "job_position_filters": {
+    "search_placeholder": "Buscar por título...",
+    "status_label": "Estado",
+    "all_statuses": "Todos los Estados",
+    "department_label": "Departamento",
+    "all_departments": "Todos los Departamentos",
+    "engineering": "Ingeniería",
+    "marketing": "Marketing",
+    "sales": "Ventas",
+    "hr": "Recursos Humanos",
+    "finance": "Finanzas",
+    "operations": "Operaciones",
+    "location_label": "Ubicación",
+    "location_placeholder": "ej., Remoto, Nueva York, Londres",
+    "date_from_label": "Creado Desde",
+    "date_to_label": "Creado Hasta",
+    "sort_by_label": "Ordenar Por",
+    "sort_order_label": "Orden",
+    "sort_newest": "Más Reciente",
+    "sort_title": "Título del Trabajo",
+    "sort_updated": "Actualizado Recientemente",
+    "sort_ascending": "Ascendente (A-Z, Más Antiguo)",
+    "sort_descending": "Descendente (Z-A, Más Reciente)",
+    "clear_filters": "Limpiar Filtros",
+    "active_filters": "{{count}} filtro activo",
+    "active_filters_plural": "{{count}} filtros activos"
   },
   "hiring_processes": {
     "title": "Procesos de Contratación",
@@ -445,6 +525,31 @@
     "invalid_image_type": "Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF o WebP)",
     "image_size_limit": "El tamaño de la imagen debe ser menor a 2MB"
   },
+  "linked_accounts": {
+    "title": "Cuentas Vinculadas",
+    "subtitle": "Administra tus cuentas sociales conectadas",
+    "connected": "Conectada",
+    "not_connected": "No Conectada",
+    "connect": "Conectar",
+    "disconnect": "Desconectar",
+    "connecting": "Conectando...",
+    "disconnecting": "Desconectando...",
+    "google": "Google",
+    "github": "GitHub",
+    "google_description": "Inicia sesión con tu cuenta de Google",
+    "github_description": "Inicia sesión con tu cuenta de GitHub",
+    "connected_email": "Conectada como: {{email}}",
+    "no_password_warning": "Debes establecer una contraseña antes de desconectar tu único método de inicio de sesión",
+    "disconnect_confirm_title": "Desconectar Cuenta",
+    "disconnect_confirm_message": "¿Estás seguro de que quieres desconectar esta cuenta? Necesitarás tu contraseña para iniciar sesión.",
+    "link_success": "Cuenta vinculada exitosamente",
+    "unlink_success": "Cuenta desconectada exitosamente",
+    "link_error": "Error al vincular la cuenta",
+    "unlink_error": "Error al desconectar la cuenta",
+    "alternative_login_required": "No se puede desconectar. Establece una contraseña primero para tener un método de inicio de sesión alternativo.",
+    "already_linked": "Esta cuenta ya está vinculada",
+    "linked_to_another": "Esta cuenta social ya está vinculada a otro usuario"
+  },
   "email_templates": {
     "title": "Plantillas de Correo",
     "create_title": "Crear Plantilla de Correo",
@@ -553,7 +658,12 @@
     "phone_required": "El número de teléfono es obligatorio",
     "submit_application": "Enviar Aplicación",
     "submitting": "Enviando...",
-    "success_message": "¡Aplicación enviada exitosamente! Te contactaremos pronto."
+    "success_message": "¡Aplicación enviada exitosamente! Te contactaremos pronto.",
+    "autofill_from_profile": "Autocompletar desde Perfil",
+    "autofilling": "Autocompletando...",
+    "autofill_success": "Formulario completado con tus datos de perfil",
+    "autofill_error": "Error al cargar datos del perfil",
+    "no_profile_data": "Inicia sesión para usar el autocompletado"
   },
   "edit_profile": {
     "title": "Editar Perfil",
@@ -592,6 +702,16 @@
     "body_helper": "Usa las variables de arriba para personalización",
     "available_variables": "Variables Disponibles (clic para insertar):",
     "mark_default": "Marcar como plantilla predeterminada",
+    "type_label": "Tipo de Plantilla",
+    "type_helper": "Selecciona el tipo para la selección automática de correos (opcional)",
+    "type_none": "Ninguno (Personalizado)",
+    "type_application_received": "Solicitud Recibida",
+    "type_application_rejected": "Solicitud Rechazada",
+    "type_application_shortlisted": "Solicitud Preseleccionada",
+    "type_interview_invitation": "Invitación a Entrevista",
+    "type_interview_reminder": "Recordatorio de Entrevista",
+    "type_offer_letter": "Carta de Oferta",
+    "type_custom": "Personalizado",
     "variable_candidate_name": "Nombre del candidato",
     "variable_position_title": "Título de la posición",
     "variable_company_name": "Nombre de la empresa",
@@ -696,13 +816,17 @@
   },
   "navbar": {
     "home": "Inicio",
-    "app_title": "Herramienta de Reclutamiento",
+    "app_title": "BorderLess",
     "logout": "Cerrar Sesión",
     "login": "Iniciar Sesión",
     "signup": "Registrarse",
     "careers": "Carreras",
     "hr_panel": "Panel de RRHH",
-    "admin_panel": "Panel de Administración"
+    "admin_panel": "Panel de Administración",
+    "menu": "Menú",
+    "notifications": "Notificaciones",
+    "profile": "Perfil",
+    "subscription": "Suscripción"
   },
   "access": {
     "denied": "Acceso Denegado",
@@ -844,6 +968,7 @@
     "title": "Plantillas de Correo",
     "table_name": "Nombre",
     "table_subject": "Asunto",
+    "table_type": "Tipo",
     "table_default": "Predeterminada",
     "table_created_by": "Creada Por",
     "table_created_at": "Creada el",
@@ -861,7 +986,88 @@
     "logging_in": "Iniciando sesión...",
     "signing_up": "Registrando...",
     "login_failed": "Error al iniciar sesión. Por favor intente nuevamente.",
-    "signup_failed": "Error al registrarse. Por favor intente nuevamente."
+    "signup_failed": "Error al registrarse. Por favor intente nuevamente.",
+    "social": {
+      "login_with_google": "Continuar con Google",
+      "login_with_github": "Continuar con GitHub",
+      "signup_with_google": "Registrarse con Google",
+      "signup_with_github": "Registrarse con GitHub",
+      "or": "o",
+      "redirecting": "Redirigiendo...",
+      "sign_in_with_email": "O inicia sesión con correo"
+    }
+  },
+  "registration_wizard": {
+    "steps": {
+      "role_selection": "Elige tu Rol",
+      "account_creation": "Crear Cuenta",
+      "role_information": "Información Adicional",
+      "confirmation": "Confirmar y Completar"
+    },
+    "role_selection": {
+      "title": "¿Cómo quieres usar nuestra plataforma?",
+      "subtitle": "Elige el rol que mejor describa tus necesidades"
+    },
+    "roles": {
+      "hr": {
+        "title": "RRHH / Reclutador",
+        "description": "Quiero contratar talento para mi empresa"
+      },
+      "applicant": {
+        "title": "Candidato",
+        "description": "Estoy buscando trabajo"
+      },
+      "company_owner": {
+        "title": "Propietario de Empresa",
+        "description": "Quiero configurar mi empresa"
+      }
+    },
+    "account_creation": {
+      "title": "Crea tu Cuenta",
+      "subtitle": "Ingresa tus datos para comenzar",
+      "confirm_password": "Confirmar Contraseña",
+      "confirm_password_required": "Por favor confirma tu contraseña",
+      "passwords_must_match": "Las contraseñas deben coincidir",
+      "accept_terms": "Acepto los",
+      "terms_of_service": "Términos de Servicio",
+      "terms_required": "Debes aceptar los Términos de Servicio"
+    },
+    "role_info": {
+      "title": "Información Adicional",
+      "hr_subtitle": "Cuéntanos sobre tu rol. Podrás unirte a una empresa después del registro.",
+      "company": "Seleccionar Empresa",
+      "company_required": "Por favor selecciona una empresa",
+      "company_helper": "Elige la empresa para la que trabajas",
+      "no_companies": "No hay empresas disponibles",
+      "job_title": "Tu Cargo",
+      "job_title_helper": "Opcional: ej., Gerente de RRHH, Reclutador",
+      "applicant_subtitle": "Ayúdanos a conocer tu experiencia (opcional)",
+      "skills_summary": "Resumen de Habilidades y Experiencia",
+      "skills_helper": "Breve descripción de tus habilidades y experiencia",
+      "resume_upload": "Subir CV (Opcional)",
+      "resume_helper": "Formato PDF, DOC o DOCX",
+      "choose_file": "Elegir Archivo",
+      "company_name": "Nombre de la Empresa",
+      "company_name_required": "El nombre de la empresa es requerido",
+      "company_name_helper": "El nombre de tu empresa será visible para los candidatos",
+      "company_owner_subtitle": "Ingresa el nombre de tu empresa. Configurarás detalles adicionales después del registro."
+    },
+    "confirmation": {
+      "title": "Revisar y Completar Registro",
+      "review_message": "Por favor revisa tu información antes de completar el registro",
+      "role_label": "Rol Seleccionado:",
+      "name_label": "Nombre Completo:",
+      "email_label": "Correo Electrónico:",
+      "job_title_label": "Cargo:",
+      "company_name_label": "Nombre de Empresa:",
+      "next_steps": "Después del registro, serás redirigido a tu panel personalizado",
+      "success_title": "¡Bienvenido!",
+      "success_message": "Tu cuenta ha sido creada exitosamente.",
+      "redirecting": "Redirigiendo a tu panel...",
+      "setting_up": "Configurando tu cuenta...",
+      "creating_account": "Creando Cuenta...",
+      "error_message": "Error en el registro. Por favor intenta nuevamente"
+    }
   },
   "companies_page": {
     "title": "Gestión de Empresas",
@@ -920,21 +1126,25 @@
     "job_positions": "Posiciones de Trabajo",
     "email_templates": "Plantillas de Correo",
     "aria_label": "navegación de rrhh",
-    "analytics": "Análisis"
+    "analytics": "Análisis",
+    "team": "Equipo"
   },
   "admin_layout": {
     "title": "Panel de Administración",
-    "dashboard": "Dashboard de Admin",
+    "dashboard": "Dashboard",
     "companies": "Empresas",
     "users": "Usuarios",
-    "aria_label": "navegación de administración",
-    "settings": "Configuración del Sistema"
+    "deleted_records": "Registros Eliminados",
+    "settings": "Configuración",
+    "aria_label": "navegación de administrador"
   },
   "language": {
     "select_language": "Seleccionar Idioma",
     "switch_to": "Cambiar a",
     "english": "English",
     "spanish": "Español",
+    "en": "Inglés",
+    "es": "Español",
     "current_language": "Idioma Actual"
   },
   "home": {
@@ -1054,9 +1264,77 @@
   "careers": {
     "title": "Posiciones Abiertas",
     "subtitle": "Explora nuestras ofertas de trabajo actuales y aplica hoy",
-    "search_placeholder": "Buscar trabajos...",
+    "search_placeholder": "Buscar por puesto o empresa...",
     "posted": "Publicado",
-    "posted_date": "Fecha de Publicación"
+    "posted_date": "Fecha de Publicación",
+    "hero_title": "Únete a Nuestro Equipo",
+    "hero_subtitle": "Descubre oportunidades profesionales emocionantes y sé parte de algo increíble",
+    "open_positions_count": "{{count}} Posición Abierta",
+    "open_positions_count_plural": "{{count}} Posiciones Abiertas",
+    "company_name": "Empresa",
+    "apply_now": "Aplicar Ahora",
+    "new_position": "Nuevo",
+    "posted_today": "Publicado hoy",
+    "posted_yesterday": "Publicado ayer",
+    "posted_days_ago": "Publicado hace {{days}}d",
+    "posted_weeks_ago": "Publicado hace {{weeks}}sem",
+    "posted_months_ago": "Publicado hace {{months}}m",
+    "no_positions_yet": "No Hay Posiciones Abiertas Aún",
+    "check_back_soon": "Vuelve pronto para nuevas oportunidades",
+    "no_results_found": "No Se Encontraron Trabajos",
+    "try_different_keywords": "Intenta ajustar tu búsqueda o vuelve más tarde para nuevas posiciones"
+  },
+  "careersHero": {
+    "title": "Encuentra Tu Próxima Oportunidad",
+    "subtitle": "Explora ofertas de trabajo de las mejores empresas y da el siguiente paso en tu carrera"
+  },
+  "careersFilters": {
+    "filters": "Filtros",
+    "clear_all": "Limpiar Todo",
+    "company": "Empresa",
+    "all_companies": "Todas las Empresas",
+    "category": "Categoría de Trabajo",
+    "all_categories": "Todas las Categorías",
+    "engineering": "Ingeniería",
+    "marketing": "Marketing",
+    "sales": "Ventas",
+    "design": "Diseño",
+    "product": "Producto",
+    "job_type": "Tipo de Trabajo",
+    "all_types": "Todos los Tipos",
+    "full_time": "Tiempo Completo",
+    "part_time": "Tiempo Parcial",
+    "contract": "Contrato",
+    "internship": "Pasantía",
+    "temporary": "Temporal",
+    "work_location": "Ubicación de Trabajo",
+    "all_locations": "Todas las Ubicaciones",
+    "remote": "Remoto",
+    "hybrid": "Híbrido",
+    "onsite": "Presencial",
+    "experience_level": "Nivel de Experiencia",
+    "all_levels": "Todos los Niveles",
+    "entry_level": "Nivel de Entrada",
+    "mid_level": "Nivel Medio",
+    "senior_level": "Nivel Senior",
+    "lead_level": "Líder / Gerente",
+    "executive_level": "Ejecutivo",
+    "salary_range": "Rango Salarial",
+    "salary_min": "Salario Mínimo",
+    "salary_max": "Salario Máximo",
+    "salary_range_label": "Rango Salarial"
+  },
+  "careersResults": {
+    "showing_results": "Mostrando {{count}} de {{total}} trabajos",
+    "showing_results_plural": "Mostrando {{count}} de {{total}} trabajos"
+  },
+  "careersSort": {
+    "sort_by": "Ordenar Por",
+    "newest_first": "Más Recientes Primero",
+    "oldest_first": "Más Antiguos Primero",
+    "salary_high_to_low": "Salario: Mayor a Menor",
+    "salary_low_to_high": "Salario: Menor a Mayor",
+    "title_a_to_z": "Título: A-Z"
   },
   "user_roles": {
     "super_admin": "Super Administrador",
@@ -1346,7 +1624,7 @@
     "integrations": "Integraciones",
     "system_health": "Salud del Sistema",
     "application_name": "Nombre de la Aplicación",
-    "default_app_name": "Herramienta de Reclutamiento",
+    "default_app_name": "BorderLess",
     "default_timezone": "Zona Horaria Predeterminada",
     "default_language": "Idioma Predeterminado",
     "date_format": "Formato de Fecha",
@@ -1466,15 +1744,6 @@
     "purge_success": "Registro eliminado permanentemente",
     "purge_error": "Error al eliminar el registro"
   },
-  "admin_layout": {
-    "title": "Panel de Administración",
-    "dashboard": "Dashboard",
-    "companies": "Empresas",
-    "users": "Usuarios",
-    "deleted_records": "Registros Eliminados",
-    "settings": "Configuración",
-    "aria_label": "navegación de administrador"
-  },
   "subscription": {
     "title": "Gestión de Suscripción",
     "description": "Administra tu plan de suscripción y consulta detalles de uso",
@@ -1567,5 +1836,672 @@
       "billing_portal_failed": "Error al abrir el portal de facturación. Por favor, inténtalo de nuevo.",
       "cancel_failed": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
     }
+  },
+  "onboarding": {
+    "steps": {
+      "plan_selection": "Seleccionar Plan",
+      "payment": "Pago",
+      "company_setup": "Configuración de Empresa",
+      "welcome": "Bienvenida"
+    },
+    "plan_selection": {
+      "title": "Elige Tu Plan",
+      "subtitle": "Selecciona el plan que mejor se adapte a tus necesidades de contratación. Puedes cambiar tu plan en cualquier momento.",
+      "recommended": "Recomendado",
+      "select_plan": "Seleccionar Plan",
+      "change_plan_later": "Puedes cambiar tu plan en cualquier momento desde la configuración de tu cuenta"
+    },
+    "plans": {
+      "free": {
+        "name": "Gratis",
+        "price": "$0/mes",
+        "description": "Perfecto para equipos pequeños que comienzan con la contratación"
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "$99/mes",
+        "description": "Para equipos en crecimiento con necesidades avanzadas de contratación"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "price": "Personalizado",
+        "description": "Para grandes organizaciones con requisitos personalizados"
+      },
+      "features": {
+        "basic_candidate_management": "Gestión básica de candidatos",
+        "up_to_candidates": "Hasta 50 candidatos",
+        "basic_job_postings": "Hasta 5 ofertas de empleo",
+        "email_notifications": "Notificaciones por email",
+        "ai_resume_screening": "Análisis de currículums con IA",
+        "advanced_analytics": "Análisis avanzados",
+        "priority_support": "Soporte prioritario",
+        "everything_in_free": "Todo lo incluido en Gratis",
+        "unlimited_candidates": "Candidatos ilimitados",
+        "custom_email_templates": "Plantillas de email personalizadas",
+        "calendar_integration": "Integración con calendario",
+        "everything_in_professional": "Todo lo incluido en Profesional",
+        "unlimited_users": "Miembros de equipo ilimitados",
+        "dedicated_account_manager": "Gerente de cuenta dedicado",
+        "custom_integrations": "Integraciones personalizadas",
+        "sla_guarantee": "Garantía de SLA",
+        "advanced_security": "Características de seguridad avanzadas",
+        "custom_branding": "Marca personalizada"
+      }
+    },
+    "payment": {
+      "title": "Completa Tu Pago",
+      "plan_summary": "Resumen del Plan",
+      "selected_plan": "Plan Seleccionado",
+      "price": "Precio",
+      "billing_info": "Facturado mensualmente. Cancela en cualquier momento.",
+      "secure_payment_notice": "Tu pago es procesado de forma segura a través de Stripe. Nunca almacenamos la información de tu tarjeta de crédito.",
+      "whats_included": "Qué Incluye",
+      "proceed_to_payment": "Proceder al Pago",
+      "processing": "Procesando...",
+      "error_message": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
+      "success_message": "¡Pago exitoso! Tu suscripción ya está activa.",
+      "features": {
+        "cancel_anytime": "Cancela en cualquier momento, sin compromisos",
+        "no_setup_fees": "Sin cargos de configuración ni ocultos",
+        "secure_processing": "Procesamiento de pago seguro",
+        "instant_access": "Acceso instantáneo después del pago"
+      }
+    },
+    "company_setup": {
+      "title": "Completa el Perfil de Tu Empresa",
+      "subtitle": "Ayúdanos a personalizar tu experiencia proporcionando información adicional sobre tu empresa.",
+      "optional_notice": "Estos detalles son opcionales. Siempre puedes actualizarlos más tarde en la configuración de tu empresa.",
+      "industry_label": "Industria",
+      "industry_helper": "Selecciona la industria principal de tu empresa",
+      "select_industry": "Selecciona una industria",
+      "timezone_label": "Zona Horaria",
+      "timezone_helper": "Tu zona horaria local para programar entrevistas",
+      "select_timezone": "Selecciona una zona horaria",
+      "team_size_label": "Tamaño del Equipo",
+      "team_size_helper": "Número aproximado de empleados",
+      "select_team_size": "Selecciona el tamaño del equipo",
+      "employees": "empleados",
+      "logo_label": "Logo de la Empresa",
+      "logo_helper": "Sube el logo de tu empresa (PNG, JPG o SVG)",
+      "upload_logo": "Subir Logo",
+      "change_logo": "Cambiar Logo",
+      "remove_logo": "Eliminar Logo",
+      "logo_preview": "Vista Previa del Logo",
+      "drag_drop_logo": "Arrastra y suelta tu logo aquí, o haz clic para seleccionar",
+      "logo_size_limit": "Tamaño máximo de archivo: 5MB",
+      "logo_upload_error": "Error al subir el logo. Por favor, inténtalo de nuevo.",
+      "skip": "Omitir",
+      "industries": {
+        "technology": "Tecnología",
+        "healthcare": "Salud",
+        "finance": "Finanzas",
+        "retail": "Comercio Minorista",
+        "manufacturing": "Manufactura",
+        "education": "Educación",
+        "consulting": "Consultoría",
+        "real_estate": "Bienes Raíces",
+        "hospitality": "Hospitalidad",
+        "other": "Otro"
+      }
+    },
+    "welcome": {
+      "title": "¡Bienvenido a BorderLess!",
+      "subtitle": "Tu configuración está completa",
+      "description": "¡Todo listo! Exploremos las características clave que te ayudarán a optimizar tu proceso de contratación.",
+      "features_title": "Características Clave al Alcance",
+      "features": {
+        "candidate_management": {
+          "title": "Gestión de Candidatos",
+          "description": "Rastrea y gestiona todos tus candidatos en un panel centralizado"
+        },
+        "job_postings": {
+          "title": "Ofertas de Empleo",
+          "description": "Crea y publica ofertas de empleo para atraer al mejor talento"
+        },
+        "analytics": {
+          "title": "Análisis e Información",
+          "description": "Toma decisiones de contratación basadas en datos con análisis potentes"
+        },
+        "email_templates": {
+          "title": "Plantillas de Email",
+          "description": "Comunícate eficientemente con plantillas de email personalizables"
+        },
+        "interview_scheduling": {
+          "title": "Programación de Entrevistas",
+          "description": "Programa entrevistas sin problemas con integración de calendario"
+        }
+      },
+      "quick_start_title": "Guía de Inicio Rápido",
+      "quick_steps": {
+        "create_first_job": "Crea tu primera oferta de empleo",
+        "add_team_members": "Invita a miembros del equipo a colaborar",
+        "setup_email_templates": "Personaliza tus plantillas de email",
+        "explore_dashboard": "Explora el panel de análisis"
+      },
+      "resources_title": "Recursos Útiles",
+      "resources": {
+        "documentation": "Ver Documentación",
+        "support": "Contactar Soporte"
+      },
+      "complete_setup": "Ir al Panel"
+    }
+  },
+  "hr_onboarding": {
+    "steps": {
+      "welcome": "Bienvenida",
+      "profile_setup": "Configuración de Perfil",
+      "complete": "Completar"
+    },
+    "welcome": {
+      "title": "Bienvenido a Tu Panel de RRHH",
+      "subtitle": "Configuremos tu cuenta para comenzar a gestionar tu proceso de reclutamiento.",
+      "your_company": "Tu Empresa",
+      "info_message": "Has sido invitado a unirte a esta empresa como miembro del equipo de RRHH. Completa tu perfil para comenzar."
+    },
+    "profile_setup": {
+      "title": "Completa Tu Perfil",
+      "subtitle": "Cuéntanos un poco sobre ti para personalizar tu experiencia.",
+      "position_label": "Cargo",
+      "position_helper": "Ej., Gerente de RRHH, Reclutador, Especialista en Adquisición de Talento",
+      "department_label": "Departamento",
+      "department_helper": "Ej., Recursos Humanos, Reclutamiento",
+      "phone_label": "Número de Teléfono",
+      "phone_helper": "Tu número de contacto",
+      "timezone_label": "Zona Horaria",
+      "timezone_helper": "Ej., America/New_York, Europe/Madrid",
+      "bio_label": "Biografía Profesional",
+      "bio_helper": "Cuéntanos sobre tu experiencia y especialización (opcional)",
+      "saving": "Guardando..."
+    },
+    "completion": {
+      "title": "¡Perfil Completo!",
+      "message": "Tu perfil de RRHH se ha configurado exitosamente. Redirigiendo a tu panel...",
+      "redirecting": "Redirigiendo al panel..."
+    }
+  },
+  "landing": {
+    "hero": {
+      "headline": "Optimiza tu Proceso de Contratación con Software de Reclutamiento Moderno",
+      "subheadline": "Rastrea candidatos, gestiona entrevistas y construye equipos increíbles con nuestra plataforma todo-en-uno",
+      "cta_primary": "Iniciar Prueba Gratuita",
+      "cta_secondary": "Ver Demo",
+      "image_placeholder": "Imagen Principal",
+      "new_headline": "Rompe las Barreras de Contratación",
+      "new_subheadline": "Optimiza el reclutamiento con filtrado por IA, programación automatizada y contratación colaborativa. Diseñado para equipos de 1 a 200.",
+      "cta_start_free": "Comenzar Gratis",
+      "cta_start_now": "Comenzar Ahora",
+      "cta_view_pricing": "Ver Precios",
+      "cta_learn_more": "Saber Más"
+    },
+    "stats": {
+      "candidates_processed": "Candidatos Procesados",
+      "companies": "Empresas Usando",
+      "satisfaction": "Satisfacción del Cliente",
+      "time_saved": "Tiempo Ahorrado"
+    },
+    "features": {
+      "section_title": "Todo lo que Necesitas para Contratar Mejor",
+      "section_subtitle": "Funciones potentes diseñadas para hacer el reclutamiento más fácil y efectivo",
+      "section_label": "CARACTERÍSTICAS",
+      "section_new_title": "Todo lo que necesitas para contratar de forma más inteligente",
+      "section_new_subtitle": "Herramientas poderosas diseñadas para optimizar todo tu proceso de contratación",
+      "multi_stage_hiring": {
+        "title": "Procesos de Contratación Multi-Etapa",
+        "description": "Crea flujos de trabajo personalizables con múltiples etapas para tu proceso"
+      },
+      "candidate_tracking": {
+        "title": "Seguimiento de Candidatos",
+        "description": "Centraliza toda la información, currículums y comunicaciones de candidatos en un solo lugar"
+      },
+      "ai_screening": {
+        "title": "Filtrado de Currículums con IA",
+        "description": "Filtra y clasifica candidatos automáticamente usando tecnología de IA avanzada"
+      },
+      "interview_scheduling": {
+        "title": "Programación de Entrevistas",
+        "description": "Programa entrevistas sin esfuerzo con integración automática de calendario"
+      },
+      "analytics": {
+        "title": "Análisis e Informes",
+        "description": "Toma decisiones basadas en datos con análisis completos de reclutamiento"
+      },
+      "team_collaboration": {
+        "title": "Colaboración en Equipo",
+        "description": "Permite colaboración fluida entre equipos de RRHH, gerentes de contratación y entrevistadores"
+      },
+      "email_templates": {
+        "title": "Plantillas de Email",
+        "description": "Comunicación profesional y personalizable con candidatos"
+      },
+      "self_hosted": {
+        "title": "Opción Auto-Alojada",
+        "description": "Privacidad de datos y control - sin dependencia de proveedores"
+      }
+    },
+    "how_it_works": {
+      "section_label": "CÓMO FUNCIONA",
+      "section_title": "Comienza en 3 simples pasos",
+      "step1": {
+        "title": "Publica Empleos y Personaliza el Pipeline",
+        "description": "Crea posiciones de trabajo y adapta tu flujo de contratación a tus necesidades"
+      },
+      "step2": {
+        "title": "La IA Filtra y Clasifica Aplicaciones",
+        "description": "Deja que la IA califique y clasifique automáticamente candidatos según sus calificaciones"
+      },
+      "step3": {
+        "title": "Programa y Contrata a los Mejores",
+        "description": "Programa entrevistas fácilmente y toma decisiones de contratación basadas en datos"
+      }
+    },
+    "pricing": {
+      "section_title": "Precios Simples y Transparentes",
+      "section_subtitle": "Elige el plan que se ajuste al tamaño de tu equipo y necesidades de contratación",
+      "section_label": "PRECIOS",
+      "per_month": "mes",
+      "recommended": "Recomendado",
+      "cta": "Comenzar",
+      "free": {
+        "name": "Gratis",
+        "price": "$0",
+        "description": "Perfecto para equipos pequeños que comienzan",
+        "features": {
+          "positions": "Hasta 5 posiciones de trabajo",
+          "candidates": "Hasta 50 candidatos",
+          "basic_analytics": "Análisis básicos",
+          "email_support": "Soporte por email"
+        }
+      },
+      "professional": {
+        "name": "Profesional",
+        "price": "$29",
+        "description": "Para equipos en crecimiento con necesidades avanzadas",
+        "features": {
+          "unlimited_positions": "Posiciones de trabajo ilimitadas",
+          "unlimited_candidates": "Candidatos ilimitados",
+          "ai_screening": "Filtrado de currículums con IA",
+          "advanced_analytics": "Análisis e informes avanzados",
+          "priority_support": "Soporte prioritario",
+          "custom_branding": "Marca personalizada"
+        }
+      },
+      "enterprise": {
+        "name": "Empresarial",
+        "price": "$99",
+        "description": "Para grandes organizaciones a escala",
+        "features": {
+          "everything_professional": "Todo en Profesional",
+          "dedicated_support": "Gerente de cuenta dedicado",
+          "sso": "Inicio de sesión único (SSO)",
+          "api_access": "Acceso a API",
+          "custom_integrations": "Integraciones personalizadas",
+          "sla": "Garantía SLA"
+        }
+      }
+    },
+    "social_proof": {
+      "section_title": "Confiado por Equipos de Reclutamiento en Todo el Mundo",
+      "section_subtitle": "Mira lo que nuestros clientes dicen sobre su experiencia",
+      "section_label": "TESTIMONIOS",
+      "trusted_by": "Confiado por empresas líderes",
+      "trusted_bar": "Confiado por más de 500 empresas en todo el mundo",
+      "company_logo": "Empresa",
+      "testimonial_1": {
+        "quote": "Esta plataforma ha transformado completamente cómo gestionamos nuestro proceso de contratación. Hemos reducido nuestro tiempo de contratación en un 40%.",
+        "author": "Sarah Johnson",
+        "role": "Directora de RRHH",
+        "company": "TechCorp Inc."
+      },
+      "testimonial_2": {
+        "quote": "La función de filtrado con IA nos ahorra innumerables horas. Ahora podemos enfocarnos en los mejores candidatos en lugar de revisar cientos de currículums.",
+        "author": "Michael Chen",
+        "role": "Gerente de Adquisición de Talento",
+        "company": "Growth Ventures"
+      },
+      "testimonial_3": {
+        "quote": "Las funciones de colaboración facilitan que todo nuestro equipo de contratación esté en la misma página. ¡Altamente recomendado!",
+        "author": "Emma Rodriguez",
+        "role": "CEO",
+        "company": "Startup Labs"
+      }
+    },
+    "footer": {
+      "brand_name": "BorderLess",
+      "brand_description": "Software de reclutamiento moderno diseñado para ayudarte a construir equipos increíbles más rápido y eficientemente.",
+      "product": "Producto",
+      "features": "Características",
+      "pricing": "Precios",
+      "careers": "Empleos",
+      "company": "Empresa",
+      "about": "Acerca de",
+      "contact": "Contacto",
+      "blog": "Blog",
+      "resources": "Recursos",
+      "documentation": "Documentación",
+      "support": "Soporte",
+      "api": "API",
+      "legal": "Legal",
+      "privacy": "Política de Privacidad",
+      "terms": "Términos de Servicio",
+      "security": "Seguridad",
+      "copyright": "© {{year}} BorderLess por EMP Employment Solutions. Todos los derechos reservados."
+    },
+    "final_cta": {
+      "title": "¿Listo para optimizar tu contratación?",
+      "subtitle": "Únete a cientos de equipos que ya están contratando mejor con BorderLess",
+      "button": "Comenzar Gratis Hoy"
+    }
+  },
+  "applicant_onboarding": {
+    "steps": {
+      "welcome": "Bienvenida",
+      "profile": "Completar Perfil",
+      "resume": "Subir Currículum",
+      "preferences": "Preferencias",
+      "completion": "¡Listo!"
+    },
+    "welcome": {
+      "title": "¡Bienvenido a Nuestra Plataforma!",
+      "subtitle": "Vamos a configurar tu cuenta para que puedas comenzar a explorar oportunidades laborales increíbles.",
+      "what_to_expect": "Qué Esperar",
+      "step1_desc": "Completa tu perfil con información esencial",
+      "step2_desc": "Sube tu currículum (opcional pero recomendado)",
+      "step3_desc": "Cuéntanos sobre tus preferencias laborales",
+      "step4_desc": "¡Comienza a navegar y aplicar a empleos!",
+      "get_started": "Comenzar"
+    },
+    "profile": {
+      "title": "Completa Tu Perfil",
+      "subtitle": "Ayuda a los empleadores a conocerte mejor completando tu perfil.",
+      "full_name": "Nombre Completo",
+      "phone_number": "Número de Teléfono",
+      "location": "Ubicación / Ciudad",
+      "location_placeholder": "ej., Madrid, España",
+      "linkedin_url": "URL de LinkedIn (Opcional)",
+      "portfolio_url": "URL de Portafolio (Opcional)"
+    },
+    "resume": {
+      "title": "Sube Tu Currículum",
+      "subtitle": "Sube tu currículum para ayudar a los empleadores a entender tu experiencia y habilidades.",
+      "upload_prompt": "Haz clic para subir o arrastra y suelta tu currículum",
+      "file_formats": "Formatos soportados: PDF, DOC, DOCX (Máx 5MB)",
+      "invalid_file_type": "Tipo de archivo inválido. Por favor sube un archivo PDF, DOC o DOCX.",
+      "file_too_large": "El archivo es demasiado grande. El tamaño máximo es 5MB.",
+      "uploading": "Subiendo currículum...",
+      "upload_error": "Error al subir el currículum. Por favor intenta de nuevo.",
+      "skip": "Omitir por ahora"
+    },
+    "preferences": {
+      "title": "Preferencias Laborales",
+      "subtitle": "Déjanos saber qué tipo de trabajo buscas para mostrarte las mejores coincidencias.",
+      "desired_job_types": "Tipos de Trabajo Deseados",
+      "preferred_locations": "Ubicaciones de Trabajo Preferidas",
+      "salary_expectation": "Expectativa Salarial (Opcional)",
+      "salary_optional": "Opcional - ej., $50,000 - $70,000",
+      "select_multiple": "Puedes seleccionar múltiples opciones"
+    },
+    "completion": {
+      "title": "¡Todo Listo!",
+      "subtitle": "Tu perfil está completo. Ahora puedes navegar empleos y enviar aplicaciones.",
+      "summary": "Resumen de Tu Perfil",
+      "profile": "Nombre",
+      "location": "Ubicación",
+      "resume": "Currículum",
+      "preferences": "Preferencias Laborales",
+      "skipped": "Omitido",
+      "finish": "Comenzar a Explorar Empleos",
+      "completing": "Completando...",
+      "error": "Error al completar la bienvenida. Por favor intenta de nuevo."
+    }
+  },
+  "job_type": {
+    "full_time": "Tiempo Completo",
+    "part_time": "Tiempo Parcial",
+    "contract": "Contrato",
+    "internship": "Pasantía",
+    "temporary": "Temporal"
+  },
+  "work_location": {
+    "remote": "Remoto",
+    "hybrid": "Híbrido",
+    "on_site": "Presencial"
+  },
+  "careersJob": {
+    "location_not_specified": "Ubicación no especificada",
+    "from": "Desde",
+    "up_to": "Hasta",
+    "featured": "Destacado"
+  },
+  "calendar_settings": {
+    "title": "Configuración del Calendario",
+    "google_calendar": "Integración con Google Calendar",
+    "connection_status": "Estado de Conexión",
+    "connected": "Conectado",
+    "not_connected": "No Conectado",
+    "connect": "Conectar Google Calendar",
+    "connecting": "Conectando...",
+    "disconnect": "Desconectar",
+    "disconnecting": "Desconectando...",
+    "connected_message": "Tu Google Calendar está conectado y listo para usar en la programación de entrevistas con enlaces de Meet.",
+    "not_connected_message": "Conecta tu Google Calendar para crear automáticamente eventos de entrevista con enlaces de Google Meet.",
+    "oauth_info": "Serás redirigido a Google para autorizar el acceso al calendario. Solo solicitamos permiso para gestionar eventos del calendario.",
+    "connection_check": "Verificando estado de conexión...",
+    "connect_error": "Error al conectar Google Calendar. Por favor intenta de nuevo.",
+    "disconnect_error": "Error al desconectar Google Calendar. Por favor intenta de nuevo.",
+    "disconnected_success": "Google Calendar desconectado exitosamente.",
+    "refresh_status": "Actualizar estado de conexión",
+    "working_hours": "Horario Laboral",
+    "working_hours_description": "Establece tu horario laboral disponible para la programación de entrevistas. Esto ayuda a prevenir que se programen reuniones fuera de tus horas preferidas.",
+    "days": {
+      "monday": "Lunes",
+      "tuesday": "Martes",
+      "wednesday": "Miércoles",
+      "thursday": "Jueves",
+      "friday": "Viernes",
+      "saturday": "Sábado",
+      "sunday": "Domingo"
+    },
+    "enabled": "Habilitado",
+    "disabled": "Deshabilitado",
+    "start_time": "Hora de Inicio",
+    "end_time": "Hora de Fin",
+    "meeting_settings": "Configuración de Reuniones",
+    "buffer_time": "Tiempo de Espera Entre Reuniones",
+    "buffer_time_helper": "Espacio de tiempo para agregar entre reuniones consecutivas",
+    "no_buffer": "Sin espera",
+    "minutes": "minutos",
+    "default_duration": "Duración Predeterminada de Reunión",
+    "default_duration_helper": "Duración estándar para nuevas reuniones de entrevista",
+    "settings_saved": "¡Configuración del calendario guardada exitosamente!"
+  },
+  "notifications": {
+    "title": "Notificaciones",
+    "empty": "Sin notificaciones",
+    "mark_all_read": "Marcar todas como leídas",
+    "delete": "Eliminar notificación",
+    "view_all": "Ver todas las notificaciones",
+    "unread_indicator": "Notificación no leída",
+    "unread_count": "{{count}} sin leer",
+    "just_now": "Justo ahora",
+    "minutes_ago": "Hace {{count}} minutos",
+    "minutes_ago_one": "Hace 1 minuto",
+    "hours_ago": "Hace {{count}} horas",
+    "hours_ago_one": "Hace 1 hora",
+    "days_ago": "Hace {{count}} días",
+    "days_ago_one": "Hace 1 día",
+    "bell": {
+      "aria_label": "Notificaciones"
+    },
+    "types": {
+      "application_received": "Nueva Aplicación",
+      "application_status": "Actualización de Estado de Aplicación",
+      "application_accepted": "Aplicación Aceptada",
+      "application_rejected": "Aplicación Rechazada",
+      "interview_scheduled": "Entrevista Programada",
+      "interview_updated": "Entrevista Actualizada",
+      "interview_cancelled": "Entrevista Cancelada",
+      "interview_reminder": "Recordatorio de Entrevista",
+      "hiring_process_status": "Actualización de Proceso de Contratación",
+      "team_invitation": "Invitación de Equipo",
+      "team_role_changed": "Rol de Equipo Cambiado",
+      "subscription_payment": "Pago Procesado",
+      "subscription_expired": "Suscripción Expirada",
+      "subscription_trial_ending": "Prueba por Finalizar",
+      "account_verification": "Verificación de Cuenta",
+      "job_position_published": "Posición de Trabajo Publicada",
+      "job_position_closed": "Posición de Trabajo Cerrada",
+      "system": "Notificación del Sistema"
+    },
+    "messages": {
+      "all_marked_read": "{{count}} notificaciones marcadas como leídas",
+      "deleted": "Notificación eliminada",
+      "created": "Notificación creada"
+    },
+    "errors": {
+      "load_failed": "Error al cargar notificaciones",
+      "mark_read_failed": "Error al marcar notificación como leída",
+      "mark_all_read_failed": "Error al marcar todas como leídas",
+      "delete_failed": "Error al eliminar notificación",
+      "create_failed": "Error al crear notificación"
+    }
+  },
+  "company_roles": {
+    "title": "Gestión de Equipo",
+    "members": "Miembros del Equipo",
+    "no_members": "No se encontraron miembros del equipo",
+    "add_member": "Agregar Miembro",
+    "edit_role": "Editar Rol",
+    "remove_member": "Eliminar Miembro",
+    "delegatable_roles": "Roles Asignables",
+    "role_assigned_success": "Rol asignado exitosamente",
+    "role_assigned_error": "Error al asignar rol",
+    "role_updated_success": "Rol actualizado exitosamente",
+    "role_updated_error": "Error al actualizar rol",
+    "user_removed_success": "Usuario eliminado de la empresa exitosamente",
+    "user_removed_error": "Error al eliminar usuario",
+    "confirm_remove": "¿Estás seguro de que quieres eliminar este usuario de la empresa?",
+    "member_since": "Miembro desde",
+    "last_login": "Último acceso",
+    "active": "Activo",
+    "inactive": "Inactivo",
+    "roles": {
+      "USER": "Usuario",
+      "HR": "Recursos Humanos",
+      "HR_MANAGER": "Gerente de RH",
+      "RECRUITER": "Reclutador",
+      "ADMIN": "Administrador",
+      "COMPANY_ADMIN": "Administrador de Empresa",
+      "COMPANY_OWNER": "Propietario de Empresa",
+      "SUPER_ADMIN": "Super Administrador"
+    },
+    "role_descriptions": {
+      "USER": "Usuario básico con acceso de solo lectura",
+      "RECRUITER": "Puede asistir en contratación y ver candidatos",
+      "HR": "Puede gestionar procesos de contratación y candidatos",
+      "HR_MANAGER": "Puede gestionar equipo de RH y delegar roles",
+      "COMPANY_ADMIN": "Puede gestionar configuración de empresa y delegar la mayoría de roles",
+      "COMPANY_OWNER": "Control total de la empresa y puede delegar todos los roles",
+      "ADMIN": "Administrador del sistema (heredado)",
+      "SUPER_ADMIN": "Administrador a nivel de sistema"
+    }
+  },
+  "connection_requests": {
+    "request_to_join": "Solicitar Unirse a la Empresa",
+    "request_description": "Envía una solicitud para unirte a {{companyName}}. Tu solicitud será revisada por los administradores de la empresa.",
+    "approval_notice": "Tu solicitud será revisada por los administradores de la empresa. Se te notificará una vez que se tome una decisión.",
+    "request_sent": "Solicitud de conexión enviada exitosamente",
+    "request_approved": "Solicitud de conexión aprobada",
+    "request_denied": "Solicitud de conexión denegada",
+    "request_cancelled": "Solicitud de conexión cancelada",
+    "no_pending_requests": "No hay solicitudes de conexión pendientes",
+    "requested_role": "Rol Solicitado",
+    "approve_dialog_title": "Aprobar Solicitud de Conexión",
+    "approve_dialog_description": "Aprobar la solicitud de {{userName}} para unirse a tu empresa?",
+    "deny_dialog_title": "Denegar Solicitud de Conexión",
+    "deny_dialog_description": "Denegar la solicitud de {{userName}} para unirse a tu empresa?",
+    "fields": {
+      "role": "Rol",
+      "message": "Mensaje (Opcional)",
+      "message_help": "Explica por qué quieres unirte a esta empresa (opcional)",
+      "message_placeholder": "Me gustaría unirme a tu equipo para ayudar con el reclutamiento...",
+      "assigned_role": "Rol Asignado",
+      "review_note": "Nota (Opcional)",
+      "review_note_placeholder": "Bienvenido al equipo!",
+      "denial_reason": "Motivo del Rechazo",
+      "denial_reason_placeholder": "Por favor, proporciona un motivo para denegar esta solicitud..."
+    },
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "denied": "Denegada",
+      "cancelled": "Cancelada"
+    },
+    "errors": {
+      "create_failed": "Error al enviar solicitud de conexión",
+      "approve_failed": "Error al aprobar solicitud",
+      "deny_failed": "Error al denegar solicitud",
+      "cancel_failed": "Error al cancelar solicitud"
+    }
+  },
+  "team": {
+    "page_title": "Gestión de Equipo",
+    "invite_member": "Invitar Miembro",
+    "invite_member_title": "Invitar Miembro del Equipo",
+    "email_label": "Dirección de Correo Electrónico",
+    "email_helper": "Ingresa la dirección de correo electrónico de la persona que deseas invitar",
+    "role_label": "Rol",
+    "role_helper": "Selecciona el rol para este miembro del equipo",
+    "send_invitation": "Enviar Invitación",
+    "current_members": "Miembros Actuales",
+    "pending_invitations": "Invitaciones Pendientes",
+    "connection_requests": "Solicitudes de Conexión",
+    "no_members": "No se encontraron miembros del equipo",
+    "no_pending_invitations": "No hay invitaciones pendientes",
+    "no_connection_requests": "No hay solicitudes de conexión pendientes",
+    "no_company": "Debes pertenecer a una empresa para gestionar el equipo",
+    "edit_role": "Editar Rol",
+    "remove_member": "Eliminar Miembro",
+    "invitation_sent": "Invitación enviada exitosamente",
+    "invitation_cancelled": "Invitación cancelada",
+    "invitation_accepted": "Invitación aceptada exitosamente",
+    "confirm_cancel_invitation": "¿Estás seguro de que deseas cancelar esta invitación?",
+    "invited_as": "Invitado como {{role}}",
+    "invited_by": "Invitado por {{name}}",
+    "expires_at": "Expira {{date}}",
+    "requested_role": "Rol solicitado: {{role}}",
+    "approve": "Aprobar",
+    "deny": "Denegar",
+    "join_team_title": "Unirse al Equipo",
+    "join_team_description": "Has sido invitado a unirte a un equipo. Revisa los detalles a continuación y acepta la invitación para continuar.",
+    "logged_in_as": "Conectado como",
+    "invitation_acceptance_info": "Al aceptar esta invitación, te unirás a la empresa con el rol asignado. Tu afiliación actual a la empresa (si existe) será reemplazada.",
+    "accept_invitation_button": "Aceptar Invitación",
+    "accepting_invitation": "Aceptando invitación...",
+    "invitation_accepted_title": "¡Bienvenido al Equipo!",
+    "invitation_accepted_message": "Te has unido exitosamente a {{company}} como {{role}}.",
+    "redirecting_to_dashboard": "Redirigiendo al panel en 3 segundos...",
+    "invitation_error_title": "Error de Invitación",
+    "invalid_invitation_token": "Token de invitación inválido"
+  },
+  "check_status": {
+    "title": "Verificar Estado de Solicitud",
+    "subtitle": "Ingresa tu código de acceso para verificar el estado de tu solicitud",
+    "access_code_label": "Código de Acceso",
+    "access_code_placeholder": "Ingresa código de 8 caracteres",
+    "access_code_helper": "Ingresa el código de acceso que te fue enviado por correo electrónico",
+    "access_code_required": "El código de acceso es obligatorio",
+    "invalid_code": "Código de acceso inválido o expirado",
+    "too_many_requests": "Demasiadas solicitudes. Por favor, intenta de nuevo en un minuto",
+    "error": "Error al verificar el estado. Por favor, intenta más tarde",
+    "check_button": "Verificar Estado",
+    "checking": "Verificando...",
+    "status_found": "Estado de la Solicitud",
+    "candidate": "Candidato",
+    "position": "Posición",
+    "company": "Empresa",
+    "current_stage": "Etapa Actual",
+    "status_label": "Estado",
+    "last_updated": "Última Actualización",
+    "privacy_notice": "Para tu privacidad, solo se muestra información limitada"
   }
 }

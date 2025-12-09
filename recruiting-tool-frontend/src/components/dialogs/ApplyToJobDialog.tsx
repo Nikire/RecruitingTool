@@ -9,14 +9,18 @@ import {
 	Box,
 	Typography,
 	Alert,
+	CircularProgress,
 } from '@mui/material';
 import AttachFileIcon from '@mui/icons-material/AttachFile';
+import PersonIcon from '@mui/icons-material/Person';
 import {useTranslation} from 'react-i18next';
 import {useCreateApplication} from '../../hooks/api/useApplications';
 import {usePublicJobPosition} from '../../hooks/api/useJobPositions';
+import {useAuthMe} from '../../hooks/api/useAuth';
 import {CustomQuestionRenderer} from '../forms/CustomQuestionRenderer';
 import {CustomAnswers} from '../../types/customQuestions';
 import {uploadResumePublic} from '../../api/files';
+import {showSuccessToast, showErrorToast} from '../../utils/toast';
 
 interface ApplyToJobDialogProps {
 	open: boolean;
@@ -34,7 +38,9 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 	const {t} = useTranslation();
 	const {mutateAsync: createApplication, isPending: submitting} = useCreateApplication();
 	const {data: jobPosition, isLoading: loadingJob} = usePublicJobPosition(jobUid);
+	const {user, isAuthenticated} = useAuthMe();
 	const [uploading, setUploading] = useState(false);
+	const [autoFilling, setAutoFilling] = useState(false);
 
 	const [formData, setFormData] = useState({
 		applicantName: '',
@@ -169,6 +175,31 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 		onClose();
 	};
 
+	const handleAutoFill = async () => {
+		if (!isAuthenticated || !user) {
+			showErrorToast(new Error(t('apply_job.no_profile_data')), t('apply_job.no_profile_data'));
+			return;
+		}
+
+		setAutoFilling(true);
+		try {
+			// Auto-fill form with user profile data
+			setFormData({
+				applicantName: user.name || '',
+				applicantEmail: user.email || '',
+				applicantPhone: user.phoneNumber || '',
+				coverLetter: formData.coverLetter, // Keep existing cover letter
+			});
+
+			showSuccessToast(t('apply_job.autofill_success'));
+		} catch (error) {
+			console.error('Auto-fill failed:', error);
+			showErrorToast(error as Error, t('apply_job.autofill_error'));
+		} finally {
+			setAutoFilling(false);
+		}
+	};
+
 	return (
 		<Dialog
 			open={open}
@@ -215,6 +246,31 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 							gap: {xs: 1.5, sm: 2},
 						}}
 					>
+						{isAuthenticated && user && (
+							<Button
+								variant="outlined"
+								startIcon={autoFilling ? <CircularProgress size={16} /> : <PersonIcon />}
+								onClick={handleAutoFill}
+								disabled={autoFilling || submitting}
+								fullWidth
+								sx={{
+									justifyContent: 'center',
+									py: {xs: 1.25, sm: 1},
+									minHeight: 44,
+									fontSize: {xs: '0.9rem', sm: '0.95rem'},
+									textTransform: 'none',
+									borderRadius: 1,
+									borderColor: 'primary.main',
+									color: 'primary.main',
+									'&:hover': {
+										borderColor: 'primary.dark',
+										backgroundColor: 'primary.light',
+									},
+								}}
+							>
+								{autoFilling ? t('apply_job.autofilling') : t('apply_job.autofill_from_profile')}
+							</Button>
+						)}
 						<TextField
 							fullWidth
 							label={t('apply_job.full_name')}

@@ -7,16 +7,26 @@ export class AuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const token = request.headers['authorization'];
+
+    // Try to get token from Authorization header first
+    let tokenString = request.headers['authorization'];
+    let token: string | undefined;
+
+    if (tokenString) {
+      token = tokenString.split(' ')[1];
+    } else {
+      // Fallback: check for token in query parameters (for SSE connections)
+      token = request.query?.token;
+    }
 
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
 
     try {
-      const user = await this.authService.verifyToken(token.split(' ')[1]);
+      const user = await this.authService.verifyToken(token);
       request.currentUser = user;
-      request.token = token.split(' ')[1];
+      request.token = token;
       return true;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');

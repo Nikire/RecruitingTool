@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, NotificationType } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import * as Handlebars from 'handlebars';
 import {
@@ -20,7 +20,11 @@ import {
   PasswordResetData,
   welcomeTemplate,
   WelcomeData,
+  teamInvitationTemplate,
+  TeamInvitationData,
 } from './templates';
+import { NotificationsService } from '../notifications/notifications.service';
+import { DatabaseService } from '../shared/modules/database/database.service';
 
 @Injectable()
 export class EmailService {
@@ -28,7 +32,27 @@ export class EmailService {
   private transporter: nodemailer.Transporter;
   private prisma = new PrismaClient();
 
-  constructor(private configService: ConfigService) {
+  // Email type to notification type mapping
+  private readonly emailToNotificationTypeMap: Record<string, NotificationType> = {
+    APPLICATION_CONFIRMATION: NotificationType.APPLICATION_SUBMITTED,
+    HR_NOTIFICATION: NotificationType.APPLICATION_RECEIVED,
+    APPLICATION_ACCEPTED: NotificationType.APPLICATION_ACCEPTED,
+    APPLICATION_RECEIVED: NotificationType.APPLICATION_RECEIVED,
+    STATUS_CHANGE: NotificationType.APPLICATION_STATUS,
+    INTERVIEW_SCHEDULED: NotificationType.INTERVIEW_SCHEDULED,
+    INTERVIEW_CANCELLED: NotificationType.INTERVIEW_CANCELLED,
+    INTERVIEW_REMINDER: NotificationType.INTERVIEW_REMINDER_24H,
+    INTERVIEW_RESCHEDULED: NotificationType.INTERVIEW_RESCHEDULED,
+    PASSWORD_RESET: NotificationType.ACCOUNT_PASSWORD_CHANGED,
+    WELCOME: NotificationType.ACCOUNT_WELCOME,
+    TEAM_INVITATION: NotificationType.TEAM_INVITATION_SENT,
+  };
+
+  constructor(
+    private configService: ConfigService,
+    private notificationsService: NotificationsService,
+    private databaseService: DatabaseService,
+  ) {
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
 
     if (smtpEnabled) {
@@ -330,6 +354,63 @@ ${text}
     } catch (error) {
       this.logger.warn(`Failed to log email to database: ${error.message}`);
     }
+
+    // Mirror email as notification if recipient is a registered user
+    await this.mirrorEmailAsNotification(to, subject, text, emailType, relatedEntityId);
+  }
+
+  /**
+   * Create a notification for a user if they have an account
+   * This mirrors important emails as in-app notifications
+   */
+  private async mirrorEmailAsNotification(
+    recipientEmail: string,
+    subject: string,
+    message: string,
+    emailType: string,
+    relatedEntityId?: string,
+  ): Promise<void> {
+    try {
+      // Check if the recipient email belongs to a user account
+      // Use findFirst since email is not unique alone (email + companyId is unique)
+      const user = await this.databaseService.user.findFirst({
+        where: { email: recipientEmail, isActive: true },
+      });
+
+      if (!user) {
+        // No user account found, skip notification creation
+        this.logger.debug(`No user account found for ${recipientEmail}, skipping notification`);
+        return;
+      }
+
+      // Map email type to notification type
+      const notificationType = this.emailToNotificationTypeMap[emailType];
+
+      if (!notificationType) {
+        this.logger.debug(`No notification type mapping for email type: ${emailType}`);
+        return;
+      }
+
+      // Create notification metadata with relatedEntityId for navigation
+      const metadata: any = {};
+      if (relatedEntityId) {
+        metadata.relatedEntityId = relatedEntityId;
+      }
+
+      // Create the notification
+      await this.notificationsService.create({
+        userUid: user.uid,
+        type: notificationType,
+        title: subject,
+        message: message.replace(/\n/g, ' ').substring(0, 500), // Clean message and limit length
+        metadata: Object.keys(metadata).length > 0 ? metadata : undefined,
+      });
+
+      this.logger.log(`Notification created for user ${user.uid} (${recipientEmail}) - Type: ${notificationType}`);
+    } catch (error) {
+      // Don't fail email sending if notification creation fails
+      this.logger.warn(`Failed to create notification for ${recipientEmail}: ${error.message}`);
+    }
   }
 
   /**
@@ -370,6 +451,26 @@ ${text}
   async sendWelcomeEmail(userEmail: string, data: WelcomeData): Promise<void> {
     const { subject, text, html } = welcomeTemplate(data);
     await this.sendEmail(userEmail, subject, text, html, 'WELCOME');
+  }
+
+  /**
+   * Send team invitation email
+   */
+  async sendTeamInvitation(
+    recipientEmail: string,
+    data: TeamInvitationData,
+  ): Promise<void> {
+    const { subject, text, html } = teamInvitationTemplate(data);
+    await this.sendEmail(
+      recipientEmail,
+      subject,
+      text,
+      html,
+      'TEAM_INVITATION',
+    );
+    this.logger.log(
+      `Team invitation sent to ${recipientEmail} for ${data.companyName}`,
+    );
   }
 
   /**

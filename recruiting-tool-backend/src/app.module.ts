@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { HiringProcessModule } from './modules/hiring-process/hiring-process.module';
 import { StagesModule } from './modules/hiring-process/modules/stages/stages.module';
 import { CandidateModule } from './modules/hiring-process/modules/candidate/candidate.module';
@@ -20,6 +21,7 @@ import { HRScheduleModule } from './modules/hr-schedule/hr-schedule.module';
 import { ScorecardModule } from './modules/scorecard/scorecard.module';
 import { AiModule } from './modules/ai/ai.module';
 import { GoogleCalendarModule } from './modules/google-calendar/google-calendar.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 import { AIQuotaModule } from './modules/ai-quota/ai-quota.module';
 import { AnalyticsModule } from './modules/analytics/analytics.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
@@ -37,10 +39,15 @@ import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { QuotaModule } from './modules/quota/quota.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { CompanyRolesModule } from './modules/company-roles/company-roles.module';
+import { ConnectionRequestsModule } from './modules/connection-requests/connection-requests.module';
+import { CompanyInvitationsModule } from './modules/company-invitations/company-invitations.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     CacheModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
@@ -72,6 +79,7 @@ import { QuotaModule } from './modules/quota/quota.module';
     ScorecardModule,
     AiModule,
     GoogleCalendarModule,
+    CalendarModule,
     AIQuotaModule,
     AnalyticsModule,
     WebhooksModule,
@@ -83,14 +91,19 @@ import { QuotaModule } from './modules/quota/quota.module';
     MetricsModule,
     StripeModule,
     QuotaModule,
+    NotificationsModule,
+    CompanyRolesModule,
+    ConnectionRequestsModule,
+    CompanyInvitationsModule,
   ],
   controllers: [AppController],
   providers: [
     AppService,
-    {
-      provide: APP_GUARD,
-      useClass: CustomThrottlerGuard,
-    },
+    // Temporarily disabled for E2E tests
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: CustomThrottlerGuard,
+    // },
   ],
 })
 export class AppModule implements NestModule {

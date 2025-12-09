@@ -1,4 +1,4 @@
-import {Box, Typography, Grid, Button, Paper} from '@mui/material';
+import {Box, Grid, Button, Paper, Typography} from '@mui/material';
 import {useNavigate} from 'react-router-dom';
 import {useState} from 'react';
 import {useTranslation} from 'react-i18next';
@@ -10,16 +10,16 @@ import AddIcon from '@mui/icons-material/Add';
 import {useApplications} from '../../hooks/api/useApplications';
 import {useCandidates} from '../../hooks/api/useCandidates';
 import {useJobPositions} from '../../hooks/api/useJobPositions';
-import {useUserAtom} from '../../hooks/api/state/useUserAtom';
+import {useAuthMe} from '../../hooks/api/useAuth';
 import {canManageResources} from '../../utils/permissions';
 import {Navigate} from 'react-router-dom';
 import {useDialog} from '../../hooks/useDialog';
 import ApplicationDetailDialog from '../../components/dialogs/ApplicationDetailDialog';
 import ManualCandidateDialog from '../../components/dialogs/ManualCandidateDialog';
 import {Application} from '../../types/application.types';
-import {ApplicationListItem, QuickActionButton} from '../../components/dashboard';
-import {UnifiedStatCard} from '../../components/common';
+import {ApplicationListItem, QuickActionButton, StatisticsCards, StatCardData} from '../../components/dashboard';
 import SkeletonLoader from '../../components/common/SkeletonLoader';
+import {CenteredLoadingSpinner, PageHeader} from '../../components/common';
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -27,14 +27,19 @@ import SkeletonLoader from '../../components/common/SkeletonLoader';
  */
 const HRDashboard: React.FC = () => {
 	const {t} = useTranslation();
-	const {user} = useUserAtom();
+	const {user, isLoading: userLoading, isAuthenticated} = useAuthMe();
 	const navigate = useNavigate();
 	const [selectedApplication, setSelectedApplication] = useState<Application | null>(null);
 	const manualCandidateDialog = useDialog<never>();
 
-	// Permission check
+	// Wait for user data to load before checking permissions (fixes race condition)
+	if (userLoading) {
+		return <CenteredLoadingSpinner />;
+	}
+
+	// Permission check - only after user data is loaded
 	const hasAccess = canManageResources(user);
-	if (!hasAccess) {
+	if (!isAuthenticated || !hasAccess) {
 		return <Navigate to="/login" />;
 	}
 
@@ -56,7 +61,7 @@ const HRDashboard: React.FC = () => {
 	const isLoading = applicationsLoading || candidatesLoading || jobPositionsLoading;
 
 	// Dashboard stat cards data
-	const statsData = [
+	const statsData: StatCardData[] = [
 		{
 			title: 'dashboard.stats.applications',
 			value: totalApplications,
@@ -120,55 +125,18 @@ const HRDashboard: React.FC = () => {
 
 	return (
 		<Box>
-			<Box
-				sx={{
-					mb: {xs: 2, sm: 4},
-					display: 'flex',
-					flexDirection: {xs: 'column', sm: 'row'},
-					justifyContent: 'space-between',
-					alignItems: {xs: 'flex-start', sm: 'center'},
-					gap: 2,
+			<PageHeader
+				title="dashboard.title"
+				action={{
+					label: 'dashboard.create_position',
+					icon: <AddIcon />,
+					onClick: () => navigate('/hr/job-positions'),
+					ariaLabel: t('dashboard.create_position'),
 				}}
-			>
-				<Typography
-					variant="h4"
-					component="h1"
-					sx={{fontSize: {xs: '1.5rem', sm: '2.125rem'}}}
-				>
-					{t('dashboard.title')}
-				</Typography>
-				<Button
-					variant="contained"
-					startIcon={<AddIcon />}
-					onClick={() => navigate('/hr/job-positions')}
-					sx={{
-						width: {xs: '100%', sm: 'auto'},
-						minHeight: '44px', // Minimum touch target
-					}}
-					aria-label={t('dashboard.create_position')}
-				>
-					{t('dashboard.create_position')}
-				</Button>
-			</Box>
+			/>
 
 			{/* Statistics Cards */}
-			<Grid container spacing={{xs: 2, sm: 3}} sx={{mb: {xs: 3, sm: 4}}}>
-				{statsData.map((stat, index) => (
-					<Grid item xs={12} sm={6} md={3} key={index}>
-						<UnifiedStatCard
-							title={stat.title}
-							value={stat.value}
-							subtitle={stat.subtitle}
-							icon={stat.icon}
-							color={stat.iconColor}
-							isLoading={isLoading}
-							onClick={stat.onClick}
-							translate={stat.translate}
-							variant="statistic"
-						/>
-					</Grid>
-				))}
-			</Grid>
+			<StatisticsCards stats={statsData} isLoading={isLoading} />
 
 			{/* Recent Applications */}
 			<Paper sx={{p: {xs: 2, sm: 3}}}>

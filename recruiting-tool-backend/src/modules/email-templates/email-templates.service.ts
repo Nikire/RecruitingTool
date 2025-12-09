@@ -43,6 +43,7 @@ export class EmailTemplatesService {
         name: createDto.name,
         subject: createDto.subject,
         body: createDto.body,
+        type: createDto.type,
         companyId: companyId,
         createdById: userId,
         isDefault: createDto.isDefault || false,
@@ -121,6 +122,7 @@ export class EmailTemplatesService {
         name: updateDto.name,
         subject: updateDto.subject,
         body: updateDto.body,
+        type: updateDto.type,
         isDefault: updateDto.isDefault,
       },
       include: {
@@ -192,5 +194,39 @@ export class EmailTemplatesService {
       renderedSubject,
       renderedBody,
     };
+  }
+
+  /**
+   * Find email template by type for a specific company
+   * Used for automated email selection
+   */
+  async findByType(companyUid: string, type: string): Promise<EmailTemplateResponseDto | null> {
+    const company = await this.databaseService.company.findUnique({
+      where: { uid: companyUid },
+    });
+
+    if (!company) {
+      throw new NotFoundException(`Company ${companyUid} not found`);
+    }
+
+    const emailTemplate = await this.databaseService.emailTemplate.findFirst({
+      where: {
+        companyId: company.id,
+        type: type as any, // Type conversion for enum
+      },
+      include: {
+        company: true,
+        createdBy: true,
+      },
+      orderBy: {
+        createdAt: 'desc', // Get most recent template of this type
+      },
+    });
+
+    if (!emailTemplate) {
+      return null;
+    }
+
+    return EmailTemplateMapper(emailTemplate);
   }
 }

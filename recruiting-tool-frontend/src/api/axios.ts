@@ -12,14 +12,30 @@ const api = axios.create({
 	withCredentials: true,
 });
 
-// Token validation helper
-function isValidToken(token: string | null): boolean {
+// JWT token validation helper (for access tokens)
+function isValidJwtToken(token: string | null): boolean {
 	if (!token) return false;
 	if (typeof token !== 'string') return false;
 	if (token === 'null' || token === 'undefined' || token === '') return false;
 	// Basic JWT format check: should have 3 parts separated by dots
 	const parts = token.split('.');
 	return parts.length === 3;
+}
+
+// Refresh token validation helper (refresh tokens are hex strings, not JWTs)
+function isValidRefreshToken(token: string | null): boolean {
+	if (!token) return false;
+	if (typeof token !== 'string') return false;
+	if (token === 'null' || token === 'undefined' || token === '') return false;
+	// Refresh tokens are 128-char hex strings from crypto.randomBytes(64)
+	return token.length >= 32;
+}
+
+// Helper to check if current page is a public route (should not redirect to login)
+function isPublicRoute(): boolean {
+	const currentPath = window.location.pathname;
+	const publicRoutes = ['/careers', '/login', '/register', '/book-interview', '/booking-confirmed'];
+	return publicRoutes.some(route => currentPath.startsWith(route));
 }
 
 // Flag to prevent multiple simultaneous refresh attempts
@@ -52,7 +68,7 @@ api.interceptors.request.use((config) => {
 	const token = localStorage.getItem('authToken');
 
 	// Validate token before using it
-	if (token && !isValidToken(token)) {
+	if (token && !isValidJwtToken(token)) {
 		console.warn('[AUTH] Invalid token detected in localStorage, clearing it');
 		localStorage.removeItem('authToken');
 		return config; // Continue request without token
@@ -100,13 +116,16 @@ api.interceptors.response.use(
 			const refreshToken = localStorage.getItem('refreshToken');
 
 			// Validate refresh token before using it
-			if (!refreshToken || !isValidToken(refreshToken)) {
-				// Invalid or missing refresh token, logout
+			if (!refreshToken || !isValidRefreshToken(refreshToken)) {
+				// Invalid or missing refresh token, clear auth state
 				console.warn('[AUTH] Invalid or missing refresh token, clearing auth state');
 				isRefreshing = false;
 				localStorage.removeItem('authToken');
 				localStorage.removeItem('refreshToken');
-				window.location.href = '/login';
+				// Only redirect to login if NOT on a public route
+				if (!isPublicRoute()) {
+					window.location.href = '/login';
+				}
 				return Promise.reject(error);
 			}
 
@@ -130,14 +149,14 @@ api.interceptors.response.use(
 				const { accessToken, refreshToken: newRefreshToken } = responseData;
 
 				// Validate new tokens before storing
-				if (!accessToken || !isValidToken(accessToken)) {
-				console.error('[AUTH] Invalid access token received from refresh endpoint');
-				throw new Error('Invalid access token received');
+				if (!accessToken || !isValidJwtToken(accessToken)) {
+					console.error('[AUTH] Invalid access token received from refresh endpoint');
+					throw new Error('Invalid access token received');
 				}
 
-				if (!newRefreshToken || !isValidToken(newRefreshToken)) {
-				console.error('[AUTH] Invalid refresh token received from refresh endpoint');
-				throw new Error('Invalid refresh token received');
+				if (!newRefreshToken || !isValidRefreshToken(newRefreshToken)) {
+					console.error('[AUTH] Invalid refresh token received from refresh endpoint');
+					throw new Error('Invalid refresh token received');
 				}
 
 				// Store new tokens
@@ -155,13 +174,16 @@ api.interceptors.response.use(
 				// Retry the original request
 				return api(originalRequest);
 			} catch (refreshError) {
-				// Refresh failed, logout user
+				// Refresh failed, clear auth state
 				processQueue(refreshError as Error, null);
 				isRefreshing = false;
 
 				localStorage.removeItem('authToken');
 				localStorage.removeItem('refreshToken');
-				window.location.href = '/login';
+				// Only redirect to login if NOT on a public route
+				if (!isPublicRoute()) {
+					window.location.href = '/login';
+				}
 
 				return Promise.reject(refreshError);
 			}

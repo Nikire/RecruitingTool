@@ -187,6 +187,27 @@ services:
       retries: 3
       start_period: 30s
 
+  stripe-cli:
+    image: stripe/stripe-cli:latest
+    container_name: recruitingtool-stripe-cli
+    restart: unless-stopped
+    command:
+      - listen
+      - --api-key
+      - ${STRIPE_SECRET_KEY}
+      - --forward-to
+      - http://backend:4000/api/stripe/webhook
+      - --skip-verify
+    environment:
+      - STRIPE_API_KEY=${STRIPE_SECRET_KEY}
+    networks:
+      - app-network
+    depends_on:
+      backend:
+        condition: service_healthy
+    # Note: The webhook signing secret will be displayed in logs on startup
+    # Use: docker logs recruitingtool-stripe-cli to see it
+
 networks:
   app-network:
     driver: bridge

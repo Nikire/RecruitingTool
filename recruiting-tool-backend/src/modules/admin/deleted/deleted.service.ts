@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PrismaService } from '../../../database/prisma.service';
+import { DatabaseService } from '../../shared/modules/database/database.service';
 import {
   DeletedCandidateDto,
   DeletedJobPositionDto,
@@ -10,13 +10,13 @@ import {
 
 @Injectable()
 export class DeletedService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private databaseService: DatabaseService) {}
 
   /**
    * Get all soft-deleted candidates
    */
   async getDeletedCandidates(companyId?: number): Promise<DeletedCandidateDto[]> {
-    const candidates = await this.prisma.candidate.findMany({
+    const candidates = await this.databaseService.candidate.findMany({
       where: {
         deletedAt: { not: null },
       },
@@ -45,7 +45,7 @@ export class DeletedService {
    * Get all soft-deleted job positions for a company
    */
   async getDeletedJobPositions(companyId: number): Promise<DeletedJobPositionDto[]> {
-    const jobPositions = await this.prisma.jobPosition.findMany({
+    const jobPositions = await this.databaseService.jobPosition.findMany({
       where: {
         companyId,
         deletedAt: { not: null },
@@ -75,7 +75,7 @@ export class DeletedService {
    * Get all soft-deleted applications
    */
   async getDeletedApplications(companyId?: number): Promise<DeletedApplicationDto[]> {
-    const applications = await this.prisma.application.findMany({
+    const applications = await this.databaseService.application.findMany({
       where: {
         deletedAt: { not: null },
         ...(companyId && {
@@ -109,7 +109,7 @@ export class DeletedService {
    * Get all soft-deleted interviews
    */
   async getDeletedInterviews(companyId?: number): Promise<DeletedInterviewDto[]> {
-    const interviews = await this.prisma.interview.findMany({
+    const interviews = await this.databaseService.interview.findMany({
       where: {
         deletedAt: { not: null },
         ...(companyId && {
@@ -143,7 +143,7 @@ export class DeletedService {
    * Restore a soft-deleted candidate
    */
   async restoreCandidate(uid: string): Promise<DeletedCandidateDto> {
-    const candidate = await this.prisma.candidate.findUnique({
+    const candidate = await this.databaseService.candidate.findUnique({
       where: { uid },
     });
 
@@ -155,7 +155,7 @@ export class DeletedService {
       throw new NotFoundException(`Candidate with UID ${uid} is not deleted`);
     }
 
-    const restored = await this.prisma.candidate.update({
+    const restored = await this.databaseService.candidate.update({
       where: { uid },
       data: { deletedAt: null },
       select: {
@@ -182,7 +182,7 @@ export class DeletedService {
    * Restore a soft-deleted job position
    */
   async restoreJobPosition(uid: string, companyId: number): Promise<DeletedJobPositionDto> {
-    const jobPosition = await this.prisma.jobPosition.findUnique({
+    const jobPosition = await this.databaseService.jobPosition.findUnique({
       where: { uid },
     });
 
@@ -194,7 +194,7 @@ export class DeletedService {
       throw new NotFoundException(`Job position with UID ${uid} is not deleted`);
     }
 
-    const restored = await this.prisma.jobPosition.update({
+    const restored = await this.databaseService.jobPosition.update({
       where: { uid },
       data: { deletedAt: null },
       select: {
@@ -221,7 +221,7 @@ export class DeletedService {
    * Restore a soft-deleted application
    */
   async restoreApplication(uid: string): Promise<DeletedApplicationDto> {
-    const application = await this.prisma.application.findUnique({
+    const application = await this.databaseService.application.findUnique({
       where: { uid },
     });
 
@@ -233,7 +233,7 @@ export class DeletedService {
       throw new NotFoundException(`Application with UID ${uid} is not deleted`);
     }
 
-    const restored = await this.prisma.application.update({
+    const restored = await this.databaseService.application.update({
       where: { uid },
       data: { deletedAt: null },
       select: {
@@ -260,7 +260,7 @@ export class DeletedService {
    * Restore a soft-deleted interview
    */
   async restoreInterview(uid: string): Promise<DeletedInterviewDto> {
-    const interview = await this.prisma.interview.findUnique({
+    const interview = await this.databaseService.interview.findUnique({
       where: { uid },
     });
 
@@ -272,7 +272,7 @@ export class DeletedService {
       throw new NotFoundException(`Interview with UID ${uid} is not deleted`);
     }
 
-    const restored = await this.prisma.interview.update({
+    const restored = await this.databaseService.interview.update({
       where: { uid },
       data: { deletedAt: null },
       select: {
@@ -297,7 +297,7 @@ export class DeletedService {
    * Permanently delete a candidate (GDPR compliance)
    */
   async purgeCandidate(uid: string): Promise<PurgeResponseDto> {
-    const candidate = await this.prisma.candidate.findUnique({
+    const candidate = await this.databaseService.candidate.findUnique({
       where: { uid },
     });
 
@@ -305,7 +305,7 @@ export class DeletedService {
       throw new NotFoundException(`Candidate with UID ${uid} not found`);
     }
 
-    await this.prisma.candidate.delete({
+    await this.databaseService.candidate.delete({
       where: { uid },
     });
 
@@ -319,7 +319,7 @@ export class DeletedService {
    * Permanently delete a job position (GDPR compliance)
    */
   async purgeJobPosition(uid: string, companyId: number): Promise<PurgeResponseDto> {
-    const jobPosition = await this.prisma.jobPosition.findUnique({
+    const jobPosition = await this.databaseService.jobPosition.findUnique({
       where: { uid },
     });
 
@@ -327,7 +327,7 @@ export class DeletedService {
       throw new NotFoundException(`Job position with UID ${uid} not found`);
     }
 
-    await this.prisma.jobPosition.delete({
+    await this.databaseService.jobPosition.delete({
       where: { uid },
     });
 
@@ -341,7 +341,7 @@ export class DeletedService {
    * Permanently delete an application (GDPR compliance)
    */
   async purgeApplication(uid: string): Promise<PurgeResponseDto> {
-    const application = await this.prisma.application.findUnique({
+    const application = await this.databaseService.application.findUnique({
       where: { uid },
     });
 
@@ -349,7 +349,7 @@ export class DeletedService {
       throw new NotFoundException(`Application with UID ${uid} not found`);
     }
 
-    await this.prisma.application.delete({
+    await this.databaseService.application.delete({
       where: { uid },
     });
 
@@ -363,7 +363,7 @@ export class DeletedService {
    * Permanently delete an interview (GDPR compliance)
    */
   async purgeInterview(uid: string): Promise<PurgeResponseDto> {
-    const interview = await this.prisma.interview.findUnique({
+    const interview = await this.databaseService.interview.findUnique({
       where: { uid },
     });
 
@@ -371,7 +371,7 @@ export class DeletedService {
       throw new NotFoundException(`Interview with UID ${uid} not found`);
     }
 
-    await this.prisma.interview.delete({
+    await this.databaseService.interview.delete({
       where: { uid },
     });
 

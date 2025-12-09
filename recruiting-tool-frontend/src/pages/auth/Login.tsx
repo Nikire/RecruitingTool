@@ -6,6 +6,8 @@ import {useLogin} from '../../hooks/api/useAuth';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {getDefaultDashboard} from '../../utils/permissions';
 import {AuthGroupWrapper, AuthPageWrapper, FormWrapper} from './Auth.styles';
+import SocialLoginButtons from '../../components/auth/SocialLoginButtons';
+
 interface LoginFormData {
 	email: string;
 	password: string;
@@ -31,6 +33,9 @@ const Login: React.FC = () => {
 			<AuthGroupWrapper>
 				<Typography variant="h4">{t('auth.login_title')}</Typography>
 				<Divider />
+
+				{/* Social Login Buttons (only shown if Auth0 is configured) */}
+				<SocialLoginButtons context="login" />
 
 				<FormWrapper onSubmit={handleSubmit(onSubmit)}>
 					<TextField

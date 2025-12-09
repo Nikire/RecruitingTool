@@ -146,6 +146,34 @@ export class SseService {
   }
 
   /**
+   * Emit notification event
+   */
+  emitNotification(
+    notificationUid: string,
+    type: string,
+    title: string,
+    message: string,
+    metadata: Record<string, any> | undefined,
+    userUid: string,
+    companyUid?: string,
+  ): void {
+    const event = new SSEEventDto(
+      SSEEventType.NOTIFICATION,
+      {
+        notificationUid,
+        type,
+        title,
+        message,
+        metadata,
+      },
+      userUid,
+      companyUid,
+    );
+
+    this.emitEvent(event);
+  }
+
+  /**
    * Emit heartbeat event to keep connection alive
    */
   emitHeartbeat(): void {

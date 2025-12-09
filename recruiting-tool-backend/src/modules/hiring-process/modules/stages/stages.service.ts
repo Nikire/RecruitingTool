@@ -1,19 +1,24 @@
-import { Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateStageDto, UpdateStageDto, StageResponseDto } from './dto/stages.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { StageMapper } from './entities/stage.entity';
-import { StageStatus } from '@prisma/client';
+import { StageStatus, NotificationType, RolesType, User } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CreateStageNoteDto, UpdateStageNoteDto, StageNoteResponseDto } from './dto/stage-note.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { StageMetricsResponseDto } from './dto/stage-time-tracking.dto';
 import { SseService } from 'src/modules/sse/sse.service';
+import { NotificationsService } from 'src/modules/notifications/notifications.service';
+import { getUserCompanyId } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class StagesService {
+  private readonly logger = new Logger(StagesService.name);
+
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly sseService: SseService,
+    private readonly notificationsService: NotificationsService,
   ) {}
   async create(createStageDto: CreateStageDto) {
     const { jobPositionUid, title, type, description, estimatedTime } = createStageDto;
@@ -42,7 +47,7 @@ export class StagesService {
     return StageMapper(stage);
   }
 
-  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<StageResponseDto>> {
+  async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<StageResponseDto>> {
     const { page = 1, pageSize = 10, search, sortBy = 'position', sortOrder = 'desc' } = paginationDto;
     const skip = (page - 1) * pageSize;
 
@@ -55,6 +60,23 @@ export class StagesService {
 
     // Exclude soft-deleted stages
     where.deletedAt = null;
+
+    // Add company filter - stages belong to either HiringProcess or JobPosition
+    const userCompanyId = getUserCompanyId(user);
+    if (userCompanyId !== null) {
+      where.OR = [
+        {
+          hiringProcess: {
+            companyId: userCompanyId,
+          },
+        },
+        {
+          JobPosition: {
+            companyId: userCompanyId,
+          },
+        },
+      ];
+    }
 
     // Get total count
     const total = await this.databaseService.stage.count({ where });
@@ -82,25 +104,55 @@ export class StagesService {
     };
   }
 
-  async findOne(uid: string) {
+  async findOne(uid: string, user?: User) {
     const stage = await this.databaseService.stage.findFirst({
       where: { uid, deletedAt: null },
+      include: {
+        hiringProcess: true,
+        JobPosition: true,
+      },
     });
 
     if (!stage) {
-      throw new NotFoundException(`Stage with UID ${uid} not found`);
+      throw new EntityNotFoundException('Stage', uid);
+    }
+
+    // Verify company access if user is provided
+    if (user) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const stageCompanyId = stage.hiringProcess?.companyId || stage.JobPosition?.companyId;
+        if (stageCompanyId !== userCompanyId) {
+          throw new EntityNotFoundException('Stage', uid);
+        }
+      }
     }
 
     return StageMapper(stage);
   }
 
-  async update(uid: string, updateStageDto: UpdateStageDto) {
+  async update(uid: string, updateStageDto: UpdateStageDto, user?: User) {
     const stage = await this.databaseService.stage.findFirst({
       where: { uid, deletedAt: null },
+      include: {
+        hiringProcess: true,
+        JobPosition: true,
+      },
     });
 
     if (!stage) {
-      throw new NotFoundException(`Stage with UID ${uid} not found`);
+      throw new EntityNotFoundException('Stage', uid);
+    }
+
+    // Verify company access if user is provided
+    if (user) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const stageCompanyId = stage.hiringProcess?.companyId || stage.JobPosition?.companyId;
+        if (stageCompanyId !== userCompanyId) {
+          throw new EntityNotFoundException('Stage', uid);
+        }
+      }
     }
 
     const { position, ...updateData } = updateStageDto;
@@ -140,12 +192,27 @@ export class StagesService {
     return StageMapper(updatedStage);
   }
 
-  async remove(uid: string) {
+  async remove(uid: string, user?: User) {
     const stageToDelete = await this.databaseService.stage.findFirst({
       where: { uid, deletedAt: null },
+      include: {
+        hiringProcess: true,
+        JobPosition: true,
+      },
     });
 
-    if (!stageToDelete) throw new NotFoundException(`Stage with UID ${uid} not found`);
+    if (!stageToDelete) throw new EntityNotFoundException('Stage', uid);
+
+    // Verify company access if user is provided
+    if (user) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const stageCompanyId = stageToDelete.hiringProcess?.companyId || stageToDelete.JobPosition?.companyId;
+        if (stageCompanyId !== userCompanyId) {
+          throw new EntityNotFoundException('Stage', uid);
+        }
+      }
+    }
 
     const hiringProcessId = stageToDelete.hiringProcessId;
     const deletedPosition = stageToDelete.position;
@@ -300,6 +367,68 @@ export class StagesService {
           undefined, // userUid - send to all users
           jobPosition.company?.uid, // companyUid - filter by company
         );
+
+        // Send notifications for stage progression
+        try {
+          // Notify HR users
+          const hrUsers = await this.databaseService.user.findMany({
+            where: {
+              companyId: jobPosition.companyId,
+              roles: {
+                hasSome: [RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
+              },
+            },
+          });
+
+          for (const hrUser of hrUsers) {
+            try {
+              await this.notificationsService.create({
+                userUid: hrUser.uid,
+                type: NotificationType.CANDIDATE_STAGE_ADVANCED,
+                title: 'Candidate Advanced to Next Stage',
+                message: `${hiringProcess.candidate.name} advanced from ${currentStage.title} to ${nextStage.title} for ${jobPosition.title}`,
+                metadata: {
+                  hiringProcessUid: hiringProcess.uid,
+                  candidateUid: hiringProcess.candidate.uid,
+                  candidateName: hiringProcess.candidate.name,
+                  jobPositionUid: jobPosition.uid,
+                  jobPositionTitle: jobPosition.title,
+                  previousStage: currentStage.title,
+                  newStage: nextStage.title,
+                },
+              });
+            } catch (notifError) {
+              this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${notifError.message}`);
+            }
+          }
+
+          // Notify candidate if they have a user account
+          const candidateUser = await this.databaseService.user.findFirst({
+            where: { email: hiringProcess.candidate.email },
+          });
+
+          if (candidateUser) {
+            try {
+              await this.notificationsService.create({
+                userUid: candidateUser.uid,
+                type: NotificationType.CANDIDATE_STAGE_ADVANCED,
+                title: 'You Advanced to Next Stage',
+                message: `You've advanced to ${nextStage.title} for ${jobPosition.title}`,
+                metadata: {
+                  hiringProcessUid: hiringProcess.uid,
+                  jobPositionUid: jobPosition.uid,
+                  jobPositionTitle: jobPosition.title,
+                  previousStage: currentStage.title,
+                  newStage: nextStage.title,
+                },
+              });
+            } catch (notifError) {
+              this.logger.error(`Failed to create notification for candidate ${candidateUser.uid}: ${notifError.message}`);
+            }
+          }
+        } catch (notifError) {
+          this.logger.error(`Failed to send stage progression notifications: ${notifError.message}`);
+        }
       }
     }
 
@@ -388,6 +517,72 @@ export class StagesService {
           undefined, // userUid - send to all users
           jobPosition.company?.uid, // companyUid - filter by company
         );
+
+        // Send notifications for stage change
+        try {
+          const notificationType = targetStage.position > (currentStage?.position || 0)
+            ? NotificationType.CANDIDATE_STAGE_ADVANCED
+            : NotificationType.HIRING_PROCESS_STAGE_CHANGED;
+
+          // Notify HR users
+          const hrUsers = await this.databaseService.user.findMany({
+            where: {
+              companyId: jobPosition.companyId,
+              roles: {
+                hasSome: [RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
+              },
+            },
+          });
+
+          for (const hrUser of hrUsers) {
+            try {
+              await this.notificationsService.create({
+                userUid: hrUser.uid,
+                type: notificationType,
+                title: 'Candidate Stage Changed',
+                message: `${hiringProcess.candidate.name} moved to ${targetStage.title} for ${jobPosition.title}`,
+                metadata: {
+                  hiringProcessUid: hiringProcess.uid,
+                  candidateUid: hiringProcess.candidate.uid,
+                  candidateName: hiringProcess.candidate.name,
+                  jobPositionUid: jobPosition.uid,
+                  jobPositionTitle: jobPosition.title,
+                  previousStage: currentStage?.title,
+                  newStage: targetStage.title,
+                },
+              });
+            } catch (notifError) {
+              this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${notifError.message}`);
+            }
+          }
+
+          // Notify candidate if they have a user account
+          const candidateUser = await this.databaseService.user.findFirst({
+            where: { email: hiringProcess.candidate.email },
+          });
+
+          if (candidateUser) {
+            try {
+              await this.notificationsService.create({
+                userUid: candidateUser.uid,
+                type: notificationType,
+                title: 'Your Stage Changed',
+                message: `You've been moved to ${targetStage.title} for ${jobPosition.title}`,
+                metadata: {
+                  hiringProcessUid: hiringProcess.uid,
+                  jobPositionUid: jobPosition.uid,
+                  jobPositionTitle: jobPosition.title,
+                  previousStage: currentStage?.title,
+                  newStage: targetStage.title,
+                },
+              });
+            } catch (notifError) {
+              this.logger.error(`Failed to create notification for candidate ${candidateUser.uid}: ${notifError.message}`);
+            }
+          }
+        } catch (notifError) {
+          this.logger.error(`Failed to send stage change notifications: ${notifError.message}`);
+        }
       }
     }
 

@@ -34,6 +34,7 @@ import { SubscriptionPlan, SubscriptionStatus } from '../../types/subscription.t
 const SubscriptionPage: React.FC = () => {
   const { t } = useTranslation();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
 
   const { data: subscription, isLoading: isLoadingSubscription, isError: isErrorSubscription } = useSubscription();
@@ -45,8 +46,8 @@ const SubscriptionPage: React.FC = () => {
   const handleUpgrade = (plan: SubscriptionPlan) => {
     if (plan === SubscriptionPlan.FREE) return;
 
-    const successUrl = `${window.location.origin}/settings/subscription?success=true`;
-    const cancelUrl = `${window.location.origin}/settings/subscription?canceled=true`;
+    const successUrl = `${window.location.origin}/profile/subscription?success=true`;
+    const cancelUrl = `${window.location.origin}/profile/subscription?canceled=true`;
 
     createCheckout(
       {
@@ -263,7 +264,10 @@ const SubscriptionPage: React.FC = () => {
             quotaStatus={quota}
             onUpgrade={
               subscription?.plan !== SubscriptionPlan.ENTERPRISE
-                ? () => setSelectedPlan(SubscriptionPlan.PROFESSIONAL)
+                ? () => {
+                    setSelectedPlan(SubscriptionPlan.PROFESSIONAL);
+                    setUpgradeDialogOpen(true);
+                  }
                 : undefined
             }
           />
@@ -276,7 +280,7 @@ const SubscriptionPage: React.FC = () => {
       </Typography>
 
       <Grid container spacing={3}>
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.FREE}
             price={t('subscription.plans.free.price')}
@@ -286,7 +290,7 @@ const SubscriptionPage: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.PROFESSIONAL}
             price={t('subscription.plans.professional.price')}
@@ -302,7 +306,7 @@ const SubscriptionPage: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={4}>
+        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.ENTERPRISE}
             price={t('subscription.plans.enterprise.price')}
@@ -332,6 +336,76 @@ const SubscriptionPage: React.FC = () => {
             startIcon={isCanceling && <CircularProgress size={20} />}
           >
             {isCanceling ? t('common.deleting') : t('subscription.dialogs.cancel.confirm')}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Upgrade Plan Dialog */}
+      <Dialog
+        open={upgradeDialogOpen}
+        onClose={() => {
+          setUpgradeDialogOpen(false);
+          setSelectedPlan(null);
+        }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {selectedPlan
+            ? t('subscription.upgrade_to_plan')
+            : t('subscription.available_plans')}
+        </DialogTitle>
+        <DialogContent>
+          {selectedPlan && (
+            <>
+              <DialogContentText sx={{ mb: 2 }}>
+                {t(`subscription.plans.${selectedPlan.toLowerCase()}.description`)}
+              </DialogContentText>
+              <Box sx={{ mb: 2 }}>
+                <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
+                  {t(`subscription.plans.${selectedPlan.toLowerCase()}.price`)}
+                  <Typography component="span" variant="body1" color="text.secondary">
+                    /{t('subscription.per_month')}
+                  </Typography>
+                </Typography>
+              </Box>
+              <Typography variant="subtitle2" gutterBottom>
+                {t('subscription.quota.features')}:
+              </Typography>
+              <Box component="ul" sx={{ pl: 2, mt: 1 }}>
+                {getPlanFeatures(selectedPlan).map((feature, index) => (
+                  <Typography component="li" variant="body2" key={index} sx={{ mb: 0.5 }}>
+                    {feature}
+                  </Typography>
+                ))}
+              </Box>
+            </>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => {
+              setUpgradeDialogOpen(false);
+              setSelectedPlan(null);
+            }}
+            disabled={isCreatingCheckout}
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            onClick={() => {
+              if (selectedPlan) {
+                handleUpgrade(selectedPlan);
+                setUpgradeDialogOpen(false);
+                setSelectedPlan(null);
+              }
+            }}
+            color="primary"
+            variant="contained"
+            disabled={isCreatingCheckout || !selectedPlan}
+            startIcon={isCreatingCheckout && <CircularProgress size={20} />}
+          >
+            {isCreatingCheckout ? t('common.loading') : t('subscription.upgrade_to_plan')}
           </Button>
         </DialogActions>
       </Dialog>

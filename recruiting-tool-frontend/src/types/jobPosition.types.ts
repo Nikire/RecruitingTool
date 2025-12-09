@@ -21,6 +21,10 @@ export interface JobPosition {
 	createdAt?: Date | string;
 }
 
+export type JobType = 'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'INTERNSHIP' | 'TEMPORARY';
+export type WorkLocation = 'REMOTE' | 'HYBRID' | 'ON_SITE';
+export type ExperienceLevel = 'ENTRY' | 'MID' | 'SENIOR' | 'LEAD' | 'EXECUTIVE';
+
 export interface PublicJobPosition {
 	uid: string;
 	title: string;
@@ -38,6 +42,14 @@ export interface PublicJobPosition {
 		position: number;
 		status?: string;
 	}>;
+	// New fields from Issue #164
+	jobCategory?: string;
+	jobType?: JobType;
+	workLocation?: WorkLocation;
+	experienceLevel?: ExperienceLevel;
+	salaryMin?: number;
+	salaryMax?: number;
+	salaryCurrency?: string;
 	createdAt: Date | string;
 }
 

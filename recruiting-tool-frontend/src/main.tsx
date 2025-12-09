@@ -15,6 +15,7 @@ import {BrowserRouter} from 'react-router';
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import recruitingToolPalette from './palette.ts';
 import ErrorBoundary from './components/error/ErrorBoundary.tsx';
+import Auth0ProviderWithNavigate from './providers/Auth0ProviderWithNavigate.tsx';
 
 import './i18n/i18n.ts';
 
@@ -61,7 +62,9 @@ createRoot(document.getElementById('root')!).render(
 					<StyledThemeProvider theme={theme}>
 						<JotaiProvider>
 							<BrowserRouter>
-								<App />
+								<Auth0ProviderWithNavigate>
+									<App />
+								</Auth0ProviderWithNavigate>
 							</BrowserRouter>
 						</JotaiProvider>
 					</StyledThemeProvider>

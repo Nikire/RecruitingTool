@@ -2,6 +2,12 @@ import api from './axios';
 import { Company, CreateCompanyDto, UpdateCompanyDto } from '../types/company.types';
 import { PaginationParams, PaginatedResponse } from '../types/pagination.types';
 
+export interface PublicCompany {
+	uid: string;
+	name: string;
+	logoUrl?: string;
+}
+
 export const companiesApi = {
   getAll: async (): Promise<Company[]> => {
     const response = await api.get('/company');
@@ -30,6 +36,11 @@ export const companiesApi = {
 
   delete: async (uid: string): Promise<{message: string}> => {
     const response = await api.delete(`/company/${uid}`);
+    return response.data;
+  },
+
+  getPublicWithJobs: async (): Promise<PublicCompany[]> => {
+    const response = await api.get('/company/public/with-jobs');
     return response.data;
   },
 };

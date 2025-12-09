@@ -20,13 +20,13 @@ export class StripeController {
   constructor(private readonly stripeService: StripeService) {}
 
   @Post('checkout')
-  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.COMPANY_OWNER])
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Create Stripe Checkout session',
     description:
-      'Creates a Stripe Checkout session for subscribing to a paid plan. Only accessible by company admins.',
+      'Creates a Stripe Checkout session for subscribing to a paid plan. Accessible by company admins and owners.',
   })
   @ApiResponse({
     status: 200,
@@ -61,7 +61,7 @@ export class StripeController {
   }
 
   @Get('subscription')
-  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.HR])
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.COMPANY_OWNER, RolesType.HR])
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get current subscription',
@@ -90,13 +90,13 @@ export class StripeController {
   }
 
   @Post('cancel')
-  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.COMPANY_OWNER])
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Cancel subscription',
     description:
-      'Cancels the subscription at the end of the current billing period. Only accessible by company admins.',
+      'Cancels the subscription at the end of the current billing period. Accessible by company admins and owners.',
   })
   @ApiResponse({
     status: 200,
@@ -130,13 +130,13 @@ export class StripeController {
   }
 
   @Post('billing-portal')
-  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.COMPANY_OWNER])
   @ApiBearerAuth()
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Create Stripe Customer Portal session',
     description:
-      'Creates a Stripe Customer Portal session where users can manage their subscription, update payment methods, and view billing history. Only accessible by company admins.',
+      'Creates a Stripe Customer Portal session where users can manage their subscription, update payment methods, and view billing history. Accessible by company admins and owners.',
   })
   @ApiResponse({
     status: 200,

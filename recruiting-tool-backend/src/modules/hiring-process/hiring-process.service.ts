@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateHiringProcessDto, HiringProcessFindDto, HiringProcessResponseDto, UpdateHiringProcessDto } from './dto/hiring-process.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { HiringProcessOneMapper, includeHiringProcess } from './entities/hiring-process.entity';
@@ -7,19 +7,23 @@ import { JobPositionService } from '../job-position/job-position.service';
 import { CandidateService } from './modules/candidate/candidate.service';
 import { StagesService } from './modules/stages/stages.service';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
-import { User } from '@prisma/client';
+import { User, NotificationType, RolesType } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { QuotaService } from '../quota/quota.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class HiringProcessService {
+  private readonly logger = new Logger(HiringProcessService.name);
+
   constructor(
     @Inject(DatabaseService) private databaseService: DatabaseService,
     @Inject(forwardRef(() => JobPositionService)) private readonly jobPositionService: JobPositionService,
     private readonly candidateService: CandidateService,
     private readonly stagesService: StagesService,
     private readonly quotaService: QuotaService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   async create(createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
@@ -74,6 +78,63 @@ export class HiringProcessService {
         // Note: jobPositionUid is intentionally omitted - stages belong to hiring process only
       }));
       await this.stagesService.bulkCreateStages(copiedStages);
+
+      // Notify HR users about new hiring process started
+      try {
+        const hrUsers = await this.databaseService.user.findMany({
+          where: {
+            companyId,
+            roles: {
+              hasSome: [RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
+            },
+          },
+        });
+
+        for (const hrUser of hrUsers) {
+          try {
+            await this.notificationsService.create({
+              userUid: hrUser.uid,
+              type: NotificationType.HIRING_PROCESS_STARTED,
+              title: 'New Hiring Process Started',
+              message: `Hiring process started for ${candidate.name} - ${jobPosition.title}`,
+              metadata: {
+                hiringProcessUid: newHiringProcess.uid,
+                candidateUid: candidate.uid,
+                candidateName: candidate.name,
+                jobPositionUid: jobPosition.uid,
+                jobPositionTitle: jobPosition.title,
+              },
+            });
+          } catch (notifError) {
+            this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${notifError.message}`);
+          }
+        }
+
+        // Notify candidate if they have a user account
+        const candidateUser = await this.databaseService.user.findFirst({
+          where: { email: candidate.email },
+        });
+
+        if (candidateUser) {
+          try {
+            await this.notificationsService.create({
+              userUid: candidateUser.uid,
+              type: NotificationType.CANDIDATE_ADDED_TO_PROCESS,
+              title: 'Added to Hiring Process',
+              message: `You've been added to the hiring process for ${jobPosition.title}`,
+              metadata: {
+                hiringProcessUid: newHiringProcess.uid,
+                jobPositionUid: jobPosition.uid,
+                jobPositionTitle: jobPosition.title,
+              },
+            });
+          } catch (notifError) {
+            this.logger.error(`Failed to create notification for candidate ${candidateUser.uid}: ${notifError.message}`);
+          }
+        }
+      } catch (notifError) {
+        this.logger.error(`Failed to send hiring process started notifications: ${notifError.message}`);
+      }
 
       return HiringProcessOneMapper(newHiringProcess);
     } catch (error) {
@@ -241,6 +302,10 @@ export class HiringProcessService {
       // Verify company access before update
       const existingHiringProcess = await this.databaseService.hiringProcess.findUnique({
         where: { uid },
+        include: {
+          candidate: true,
+          jobPosition: true,
+        },
       });
 
       if (!existingHiringProcess) {
@@ -249,11 +314,105 @@ export class HiringProcessService {
 
       verifyCompanyAccess(user, existingHiringProcess.companyId);
 
+      // Track status change for notifications
+      const statusChanged = updateHiringProcessDto.status && updateHiringProcessDto.status !== existingHiringProcess.status;
+      const oldStatus = existingHiringProcess.status;
+
       const hiringProcess = await this.databaseService.hiringProcess.update({
         where: { uid },
         data: { ...updateHiringProcessDto },
         include: includeHiringProcess,
       });
+
+      // Send notifications if status changed
+      if (statusChanged) {
+        try {
+          // Determine notification type based on new status
+          let notificationType: NotificationType;
+          let title: string;
+          let message: string;
+
+          if (updateHiringProcessDto.status === 'CLOSED') {
+            notificationType = NotificationType.HIRING_PROCESS_COMPLETED;
+            title = 'Hiring Process Completed';
+            message = `Hiring process for ${existingHiringProcess.candidate?.name || 'candidate'} - ${existingHiringProcess.jobPosition?.title || 'position'} has been completed`;
+          } else if (updateHiringProcessDto.status === 'REJECTED') {
+            notificationType = NotificationType.CANDIDATE_STAGE_REJECTED;
+            title = 'Candidate Rejected';
+            message = `${existingHiringProcess.candidate?.name || 'Candidate'} was rejected for ${existingHiringProcess.jobPosition?.title || 'position'}`;
+          } else if (updateHiringProcessDto.status === 'CANCELLED') {
+            notificationType = NotificationType.HIRING_PROCESS_STAGE_CHANGED;
+            title = 'Hiring Process Cancelled';
+            message = `Hiring process for ${existingHiringProcess.candidate?.name || 'candidate'} - ${existingHiringProcess.jobPosition?.title || 'position'} has been cancelled`;
+          } else {
+            // Generic status change (OPEN, IN_PROGRESS)
+            notificationType = NotificationType.HIRING_PROCESS_STAGE_CHANGED;
+            title = 'Hiring Process Status Changed';
+            message = `Hiring process status changed from ${oldStatus} to ${updateHiringProcessDto.status}`;
+          }
+
+          // Notify HR users
+          const hrUsers = await this.databaseService.user.findMany({
+            where: {
+              companyId: existingHiringProcess.companyId,
+              roles: {
+                hasSome: [RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
+              },
+            },
+          });
+
+          for (const hrUser of hrUsers) {
+            try {
+              await this.notificationsService.create({
+                userUid: hrUser.uid,
+                type: notificationType,
+                title,
+                message,
+                metadata: {
+                  hiringProcessUid: uid,
+                  candidateUid: existingHiringProcess.candidate?.uid,
+                  candidateName: existingHiringProcess.candidate?.name,
+                  jobPositionUid: existingHiringProcess.jobPosition?.uid,
+                  jobPositionTitle: existingHiringProcess.jobPosition?.title,
+                  oldStatus,
+                  newStatus: updateHiringProcessDto.status,
+                },
+              });
+            } catch (notifError) {
+              this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${notifError.message}`);
+            }
+          }
+
+          // Notify candidate if they have a user account
+          if (existingHiringProcess.candidate?.email) {
+            const candidateUser = await this.databaseService.user.findFirst({
+              where: { email: existingHiringProcess.candidate.email },
+            });
+
+            if (candidateUser) {
+              try {
+                await this.notificationsService.create({
+                  userUid: candidateUser.uid,
+                  type: notificationType,
+                  title,
+                  message,
+                  metadata: {
+                    hiringProcessUid: uid,
+                    jobPositionUid: existingHiringProcess.jobPosition?.uid,
+                    jobPositionTitle: existingHiringProcess.jobPosition?.title,
+                    oldStatus,
+                    newStatus: updateHiringProcessDto.status,
+                  },
+                });
+              } catch (notifError) {
+                this.logger.error(`Failed to create notification for candidate ${candidateUser.uid}: ${notifError.message}`);
+              }
+            }
+          }
+        } catch (notifError) {
+          this.logger.error(`Failed to send status change notifications: ${notifError.message}`);
+        }
+      }
 
       return HiringProcessOneMapper(hiringProcess);
     } catch (error) {
@@ -332,5 +491,119 @@ export class HiringProcessService {
       }
       throw new InternalServerErrorException(`Failed to move to specific stage: ${error.message}`);
     }
+  }
+
+  /**
+   * Generate an access code for a hiring process (HR only)
+   * Access code is 8 alphanumeric characters and expires in 30 days
+   */
+  async generateAccessCode(hiringProcessUid: string, user: User) {
+    try {
+      // Verify hiring process exists and user has access
+      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { uid: hiringProcessUid },
+      });
+
+      if (!hiringProcess) {
+        throw new EntityNotFoundException('Hiring process', hiringProcessUid);
+      }
+
+      verifyCompanyAccess(user, hiringProcess.companyId);
+
+      // Generate 8-character alphanumeric code
+      const accessCode = this.generateRandomCode(8);
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 30); // 30 days from now
+
+      // Update hiring process with access code
+      await this.databaseService.hiringProcess.update({
+        where: { uid: hiringProcessUid },
+        data: {
+          accessCode,
+          codeExpiresAt: expiresAt,
+        },
+      });
+
+      return {
+        accessCode,
+        expiresAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to generate access code: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get hiring process status by access code (PUBLIC endpoint - no auth)
+   * Returns limited information for candidate privacy
+   */
+  async getStatusByAccessCode(accessCode: string) {
+    try {
+      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { accessCode },
+        include: {
+          candidate: true,
+          jobPosition: true,
+          company: true,
+          stages: {
+            where: { deletedAt: null },
+            orderBy: { position: 'asc' },
+          },
+        },
+      });
+
+      if (!hiringProcess) {
+        throw new NotFoundException('Invalid or expired access code');
+      }
+
+      // Check if code is expired
+      if (hiringProcess.codeExpiresAt && hiringProcess.codeExpiresAt < new Date()) {
+        throw new NotFoundException('Access code has expired');
+      }
+
+      // Update access tracking
+      await this.databaseService.hiringProcess.update({
+        where: { accessCode },
+        data: {
+          lastAccessedAt: new Date(),
+          accessCount: { increment: 1 },
+        },
+      });
+
+      // Find current stage (first stage with CURRENT status)
+      const currentStage = hiringProcess.stages.find((stage) => stage.status === 'CURRENT');
+
+      // Extract first name only for privacy
+      const candidateName = hiringProcess.candidate?.name?.split(' ')[0] || 'Candidate';
+
+      return {
+        candidateName,
+        positionTitle: hiringProcess.jobPosition?.title || 'Position',
+        companyName: hiringProcess.company?.name || 'Company',
+        currentStage: currentStage?.title,
+        status: hiringProcess.status,
+        lastUpdated: hiringProcess.updatedAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to retrieve status: ${error.message}`);
+    }
+  }
+
+  /**
+   * Generate a random alphanumeric code of specified length
+   */
+  private generateRandomCode(length: number): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
   }
 }

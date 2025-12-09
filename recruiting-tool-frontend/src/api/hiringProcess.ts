@@ -43,3 +43,25 @@ export function progressStage(uid: string): Promise<HiringProcess> {
 export function moveToStage(uid: string, stageUid: string): Promise<HiringProcess> {
 	return api.post(`/hiring-process/${uid}/move-to-stage/${stageUid}`).then((res) => res.data);
 }
+
+export interface AccessCodeResponse {
+	accessCode: string;
+	expiresAt: Date;
+}
+
+export interface PublicStatusResponse {
+	candidateName: string;
+	positionTitle: string;
+	companyName: string;
+	currentStage?: string;
+	status: string;
+	lastUpdated: Date;
+}
+
+export function generateAccessCode(uid: string): Promise<AccessCodeResponse> {
+	return api.post(`/hiring-process/${uid}/generate-access-code`).then((res) => res.data);
+}
+
+export function getStatusByAccessCode(accessCode: string): Promise<PublicStatusResponse> {
+	return api.get(`/public/status/${accessCode}`).then((res) => res.data);
+}

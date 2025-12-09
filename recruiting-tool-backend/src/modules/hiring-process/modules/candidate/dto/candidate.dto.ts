@@ -45,6 +45,36 @@ export class CreateCandidateDto {
   @IsUrl()
   @IsOptional()
   sourceUrl?: string;
+
+  @ApiProperty({
+    description: 'UTM source parameter for tracking',
+    example: 'linkedin',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  utmSource?: string;
+
+  @ApiProperty({
+    description: 'UTM medium parameter for tracking',
+    example: 'social',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  utmMedium?: string;
+
+  @ApiProperty({
+    description: 'UTM campaign parameter for tracking',
+    example: 'summer_hiring_2024',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  utmCampaign?: string;
 }
 
 export class UpdateCandidateDto {
@@ -91,6 +121,36 @@ export class UpdateCandidateDto {
   @IsUrl()
   @IsOptional()
   sourceUrl?: string;
+
+  @ApiProperty({
+    description: 'UTM source parameter for tracking',
+    example: 'linkedin',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  utmSource?: string;
+
+  @ApiProperty({
+    description: 'UTM medium parameter for tracking',
+    example: 'social',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  utmMedium?: string;
+
+  @ApiProperty({
+    description: 'UTM campaign parameter for tracking',
+    example: 'summer_hiring_2024',
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  utmCampaign?: string;
 }
 
 export class CreateManualCandidateDto {
@@ -166,6 +226,27 @@ export class CandidateResponseDto {
     required: false,
   })
   sourceUrl?: string;
+
+  @ApiProperty({
+    description: 'UTM source parameter for tracking',
+    example: 'linkedin',
+    required: false,
+  })
+  utmSource?: string;
+
+  @ApiProperty({
+    description: 'UTM medium parameter for tracking',
+    example: 'social',
+    required: false,
+  })
+  utmMedium?: string;
+
+  @ApiProperty({
+    description: 'UTM campaign parameter for tracking',
+    example: 'summer_hiring_2024',
+    required: false,
+  })
+  utmCampaign?: string;
 
   @ApiProperty({ description: 'Hiring process related to this Candidate' })
   hiringProcess?: HiringProcessResponseDto;

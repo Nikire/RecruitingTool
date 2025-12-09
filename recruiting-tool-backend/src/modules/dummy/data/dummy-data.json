@@ -78,6 +78,110 @@
       "bio": "Supporting the hiring team with scheduling, coordination, and candidate communication.",
       "linkedinUrl": "https://linkedin.com/in/dianaprince",
       "timezone": "America/Los_Angeles"
+    },
+    {
+      "name": "Edward Martinez",
+      "email": "edward@techinnovations.com",
+      "password": "password123",
+      "roles": [
+        "COMPANY_OWNER",
+        "ADMIN"
+      ],
+      "companyIndex": 0,
+      "profilePicture": "https://i.pravatar.cc/150?img=11",
+      "phoneNumber": "+1-555-0103",
+      "position": "CEO & Founder",
+      "department": "Executive",
+      "bio": "Founder and CEO of Tech Innovations Inc. Leading the company vision and strategic direction.",
+      "linkedinUrl": "https://linkedin.com/in/edwardmartinez",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Fiona Chen",
+      "email": "fiona@digitalsolutions.com",
+      "password": "password123",
+      "roles": [
+        "COMPANY_OWNER",
+        "ADMIN"
+      ],
+      "companyIndex": 1,
+      "profilePicture": "https://i.pravatar.cc/150?img=47",
+      "phoneNumber": "+1-555-0203",
+      "position": "CEO & Co-Founder",
+      "department": "Executive",
+      "bio": "Co-founder of Digital Solutions Corp. Passionate about digital transformation and innovation.",
+      "linkedinUrl": "https://linkedin.com/in/fionachen",
+      "timezone": "America/Los_Angeles"
+    },
+    {
+      "name": "Test User",
+      "email": "test.user@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "USER"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9001",
+      "position": "Test User Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - USER role with minimal permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test HR User",
+      "email": "test.hr@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "HR"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9002",
+      "position": "Test HR Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - HR role with recruiting permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test Company Owner",
+      "email": "test.owner@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "COMPANY_OWNER"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9003",
+      "position": "Test Owner Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - COMPANY_OWNER role with company management permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test Admin",
+      "email": "test.admin@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "ADMIN"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9004",
+      "position": "Test Admin Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - ADMIN role with system administration permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test Super Admin",
+      "email": "test.superadmin@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "SUPER_ADMIN"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9005",
+      "position": "Test Super Admin Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - SUPER_ADMIN role with full system access",
+      "timezone": "America/New_York"
     }
   ],
   "profiles": [
@@ -135,6 +239,104 @@
         "theme": "light",
         "language": "en",
         "weekStartsOn": "sunday"
+      }
+    },
+    {
+      "userIndex": 4,
+      "bio": "Founder and CEO of Tech Innovations Inc. Leading the company vision and strategic direction. Expert in software development and tech entrepreneurship.",
+      "phone": "+1-555-0103",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": true,
+        "theme": "dark",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 5,
+      "bio": "Co-founder of Digital Solutions Corp. Passionate about digital transformation and innovation. Building a team that drives change.",
+      "phone": "+1-555-0203",
+      "location": "San Francisco, CA, USA",
+      "timezone": "America/Los_Angeles",
+      "preferences": {
+        "emailNotifications": true,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 6,
+      "bio": "Test account for security audit - USER role with minimal permissions. Used for permission testing and access control verification.",
+      "phone": "+1-555-9001",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 7,
+      "bio": "Test account for security audit - HR role with recruiting permissions. Used for testing HR-specific features and access controls.",
+      "phone": "+1-555-9002",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 8,
+      "bio": "Test account for security audit - COMPANY_OWNER role with company management permissions. Used for testing company-level access controls.",
+      "phone": "+1-555-9003",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 9,
+      "bio": "Test account for security audit - ADMIN role with system administration permissions. Used for testing admin-level access controls.",
+      "phone": "+1-555-9004",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 10,
+      "bio": "Test account for security audit - SUPER_ADMIN role with full system access. Used for testing highest-level permissions and security boundaries.",
+      "phone": "+1-555-9005",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
       }
     }
   ],
@@ -209,7 +411,51 @@
           "description": "Present the job offer",
           "estimatedTime": 15
         }
-      ]
+      ],
+      "jobCategory": "Engineering",
+      "jobType": "FULL_TIME",
+      "workLocation": "HYBRID",
+      "salaryMin": 80000,
+      "salaryMax": 120000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "YEARLY",
+      "benefits": [
+        "Health Insurance",
+        "401k Match",
+        "Flexible PTO",
+        "Remote Work Options"
+      ],
+      "requirements": [
+        "5+ years of software development experience",
+        "Bachelor's degree in Computer Science or related field",
+        "Strong problem-solving skills"
+      ],
+      "responsibilities": [
+        "Design and implement scalable software solutions",
+        "Lead technical discussions and code reviews",
+        "Mentor junior developers"
+      ],
+      "experienceLevel": "SENIOR",
+      "educationLevel": "Bachelor's degree",
+      "skills": [
+        "JavaScript",
+        "TypeScript",
+        "React",
+        "Node.js",
+        "PostgreSQL",
+        "Docker"
+      ],
+      "applicationDeadline": "2025-12-31T23:59:59Z",
+      "isUrgent": false,
+      "isFeatured": true,
+      "city": "San Francisco",
+      "state": "California",
+      "country": "United States",
+      "showSalary": true,
+      "tags": ["javascript", "typescript", "react", "backend", "fullstack"],
+      "isHighlighted": true,
+      "viewCount": 142,
+      "applicationCount": 23
     },
     {
       "title": "Frontend Developer",
@@ -269,7 +515,48 @@
           "description": "Present the compensation package",
           "estimatedTime": 15
         }
-      ]
+      ],
+      "jobCategory": "Marketing",
+      "jobType": "FULL_TIME",
+      "workLocation": "REMOTE",
+      "salaryMin": 60000,
+      "salaryMax": 90000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "YEARLY",
+      "benefits": [
+        "Health Insurance",
+        "Remote Work Stipend",
+        "Professional Development Budget"
+      ],
+      "requirements": [
+        "3+ years in digital marketing",
+        "Experience with SEO and content marketing",
+        "Strong analytical skills"
+      ],
+      "responsibilities": [
+        "Develop and execute marketing campaigns",
+        "Analyze campaign performance",
+        "Manage social media presence"
+      ],
+      "experienceLevel": "MID",
+      "educationLevel": "Bachelor's degree in Marketing",
+      "skills": [
+        "SEO",
+        "Content Marketing",
+        "Google Analytics",
+        "Social Media Management"
+      ],
+      "applicationDeadline": "2025-11-30T23:59:59Z",
+      "isUrgent": true,
+      "isFeatured": false,
+      "city": "New York",
+      "state": "New York",
+      "country": "United States",
+      "showSalary": false,
+      "tags": ["marketing", "seo", "content", "analytics", "remote"],
+      "isHighlighted": false,
+      "viewCount": 87,
+      "applicationCount": 15
     },
     {
       "title": "DevOps Engineer",
@@ -302,7 +589,49 @@
           "description": "Discuss terms and offer",
           "estimatedTime": 20
         }
-      ]
+      ],
+      "jobCategory": "Data Science",
+      "jobType": "CONTRACT",
+      "workLocation": "REMOTE",
+      "salaryMin": 70,
+      "salaryMax": 100,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "HOURLY",
+      "benefits": [
+        "Flexible Schedule",
+        "Project Bonuses"
+      ],
+      "requirements": [
+        "Expert knowledge in Python and SQL",
+        "Experience with machine learning frameworks",
+        "Strong statistics background"
+      ],
+      "responsibilities": [
+        "Develop predictive models",
+        "Analyze complex datasets",
+        "Present findings to stakeholders"
+      ],
+      "experienceLevel": "SENIOR",
+      "educationLevel": "Master's degree in Data Science",
+      "skills": [
+        "Python",
+        "TensorFlow",
+        "SQL",
+        "Pandas",
+        "Scikit-learn",
+        "Data Visualization"
+      ],
+      "applicationDeadline": "2026-01-15T23:59:59Z",
+      "isUrgent": false,
+      "isFeatured": true,
+      "city": "Austin",
+      "state": "Texas",
+      "country": "United States",
+      "showSalary": true,
+      "tags": ["data-science", "python", "machine-learning", "analytics", "senior"],
+      "isHighlighted": true,
+      "viewCount": 201,
+      "applicationCount": 34
     },
     {
       "title": "Product Manager",
@@ -335,7 +664,50 @@
           "description": "Final offer discussion",
           "estimatedTime": 15
         }
-      ]
+      ],
+      "jobCategory": "Product",
+      "jobType": "FULL_TIME",
+      "workLocation": "HYBRID",
+      "salaryMin": 90000,
+      "salaryMax": 140000,
+      "salaryCurrency": "USD",
+      "salaryPeriod": "YEARLY",
+      "benefits": [
+        "Health Insurance",
+        "Stock Options",
+        "401k Match",
+        "Unlimited PTO"
+      ],
+      "requirements": [
+        "5+ years of product management experience",
+        "Proven track record of launching successful products",
+        "Strong analytical and communication skills"
+      ],
+      "responsibilities": [
+        "Define product vision and roadmap",
+        "Work with engineering and design teams",
+        "Analyze user feedback and metrics"
+      ],
+      "experienceLevel": "SENIOR",
+      "educationLevel": "Bachelor's degree in Business or related field",
+      "skills": [
+        "Product Strategy",
+        "Agile/Scrum",
+        "User Research",
+        "Data Analysis",
+        "Roadmapping"
+      ],
+      "applicationDeadline": "2026-02-28T23:59:59Z",
+      "isUrgent": false,
+      "isFeatured": false,
+      "city": "Seattle",
+      "state": "Washington",
+      "country": "United States",
+      "showSalary": true,
+      "tags": ["product", "management", "strategy", "leadership", "hybrid"],
+      "isHighlighted": false,
+      "viewCount": 156,
+      "applicationCount": 28
     }
   ],
   "candidates": [
@@ -345,7 +717,10 @@
       "jobPositionIndex": 0,
       "companyIndex": 0,
       "source": "LINKEDIN",
-      "sourceUrl": "https://www.linkedin.com/jobs/view/123456"
+      "sourceUrl": "https://www.linkedin.com/jobs/view/123456",
+      "utmSource": "linkedin",
+      "utmMedium": "social",
+      "utmCampaign": "fall_2025_hiring"
     },
     {
       "name": "Jane Smith",
@@ -361,7 +736,10 @@
       "jobPositionIndex": 1,
       "companyIndex": 0,
       "source": "INDEED",
-      "sourceUrl": "https://www.indeed.com/viewjob?jk=789012"
+      "sourceUrl": "https://www.indeed.com/viewjob?jk=789012",
+      "utmSource": "indeed",
+      "utmMedium": "job_board",
+      "utmCampaign": "tech_jobs_q4"
     },
     {
       "name": "Sarah Davis",

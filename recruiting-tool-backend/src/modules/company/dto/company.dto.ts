@@ -14,6 +14,11 @@ export class CreateCompanyDto {
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
 }
 
 export class UpdateCompanyDto {
@@ -29,6 +34,11 @@ export class UpdateCompanyDto {
   @IsString()
   @MaxLength(500)
   description?: string;
+
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  @IsOptional()
+  @IsString()
+  logoUrl?: string;
 }
 
 export class CompanyResponseDto {
@@ -41,9 +51,23 @@ export class CompanyResponseDto {
   @ApiProperty({ description: 'The description of the company', example: 'A leading technology company', required: false })
   description?: string;
 
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  logoUrl?: string;
+
   @ApiProperty({ description: 'Number of users in the company', example: 5, required: false })
   userCount?: number;
 
   @ApiProperty({ description: 'Number of job positions', example: 10, required: false })
   jobPositionCount?: number;
+}
+
+export class PublicCompanyResponseDto {
+  @ApiProperty({ description: 'The UID of the company', example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ description: 'The name of the company', example: 'Tech Corp' })
+  name: string;
+
+  @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
+  logoUrl?: string;
 }

@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InterviewService } from './interview.service';
-import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, AddInterviewerDto, RescheduleInterviewDto, InterviewRescheduleHistoryDto } from './dto/interview.dto';
+import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, AddInterviewerDto, RescheduleInterviewDto, InterviewRescheduleHistoryDto, CheckAvailabilityDto, AvailabilityCheckResponseDto } from './dto/interview.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType, User } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -27,8 +27,8 @@ export class InterviewController {
   @ApiOperation({ summary: 'Get interview by UID' })
   @ApiResponse({ status: 200, description: 'Interview details', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async findOne(@Param('uid') uid: string): Promise<InterviewResponseDto> {
-    return this.interviewService.findOne(uid);
+  async findOne(@Param('uid') uid: string, @CurrentUser() user: any): Promise<InterviewResponseDto> {
+    return this.interviewService.findOne(uid, user);
   }
 
   @Get('stage/:stageUid')
@@ -45,8 +45,8 @@ export class InterviewController {
   @ApiOperation({ summary: 'Update an interview' })
   @ApiResponse({ status: 200, description: 'Interview updated successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async update(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto): Promise<InterviewResponseDto> {
-    return this.interviewService.update(uid, updateInterviewDto);
+  async update(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto, @CurrentUser() user: any): Promise<InterviewResponseDto> {
+    return this.interviewService.update(uid, updateInterviewDto, user);
   }
 
   @Put(':uid/cancel')
@@ -105,6 +105,29 @@ export class InterviewController {
   @ApiResponse({ status: 404, description: 'Interview not found' })
   async getRescheduleHistory(@Param('uid') uid: string): Promise<InterviewRescheduleHistoryDto[]> {
     return this.interviewService.getRescheduleHistory(uid);
+  }
+
+  @Post('check-availability')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({
+    summary: 'Check interviewer availability and detect conflicts',
+    description: 'Check if proposed interviewers are available at a specific time. Detects calendar conflicts and optionally suggests alternative time slots.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Availability check completed successfully',
+    type: AvailabilityCheckResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'One or more interviewers not found',
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid request data',
+  })
+  async checkAvailability(@Body() dto: CheckAvailabilityDto): Promise<AvailabilityCheckResponseDto> {
+    return this.interviewService.checkAvailability(dto);
   }
 
   @Delete(':uid')

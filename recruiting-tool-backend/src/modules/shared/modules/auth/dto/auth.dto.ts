@@ -66,3 +66,58 @@ export class RefreshTokenDto {
   @IsString()
   refreshToken: string;
 }
+
+export class Auth0CallbackDto {
+  @ApiProperty({
+    description: 'Auth0 JWT token',
+    example: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  @IsNotEmpty()
+  @IsString()
+  auth0Token: string;
+}
+
+export class LinkSocialAccountDto {
+  @ApiProperty({
+    description: 'Auth0 JWT token from social provider',
+    example: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...',
+  })
+  @IsNotEmpty()
+  @IsString()
+  auth0Token: string;
+}
+
+export class LinkedAccountResponseDto {
+  @ApiProperty({
+    description: 'Auth0 provider type',
+    example: 'google-oauth2',
+  })
+  provider: string;
+
+  @ApiProperty({
+    description: 'Whether this provider is linked',
+    example: true,
+  })
+  isLinked: boolean;
+
+  @ApiProperty({
+    description: 'Provider email if linked',
+    example: 'user@example.com',
+    required: false,
+  })
+  email?: string;
+}
+
+export class LinkedAccountsResponseDto {
+  @ApiProperty({
+    description: 'List of linked account providers',
+    type: [LinkedAccountResponseDto],
+  })
+  linkedAccounts: LinkedAccountResponseDto[];
+
+  @ApiProperty({
+    description: 'Whether the user has a local password',
+    example: true,
+  })
+  hasLocalPassword: boolean;
+}

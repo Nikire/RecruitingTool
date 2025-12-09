@@ -8,5 +8,8 @@ export function CandidateMapper(candidate: Candidate) {
     source: candidate.source,
     sourceDetails: candidate.sourceDetails,
     sourceUrl: candidate.sourceUrl,
+    utmSource: candidate.utmSource,
+    utmMedium: candidate.utmMedium,
+    utmCampaign: candidate.utmCampaign,
   };
 }

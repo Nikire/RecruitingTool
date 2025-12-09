@@ -1,6 +1,6 @@
 import { forwardRef, Inject, NotFoundException, ForbiddenException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto } from './dto/job-position.dto';
+import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto, JobPositionFiltersDto, PaginatedPublicJobPositionResponseDto } from './dto/job-position.dto';
 import { includeJobPosition, JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
@@ -292,13 +292,121 @@ export class JobPositionService {
     }
   }
 
-  async findAllPublic(): Promise<Array<PublicJobPositionResponseDto>> {
+  async findAllPublic(filters?: JobPositionFiltersDto): Promise<PaginatedPublicJobPositionResponseDto> {
     try {
+      // Extract pagination params with defaults
+      const page = filters?.page || 1;
+      const limit = filters?.limit || 12;
+      const skip = (page - 1) * limit;
+
+      // Build where clause
+      const where: Prisma.JobPositionWhereInput = {
+        status: 'OPEN',
+        deletedAt: null, // Exclude soft-deleted records
+      };
+
+      // Search filter (title, description)
+      if (filters?.search) {
+        where.OR = [
+          { title: { contains: filters.search, mode: 'insensitive' } },
+          { description: { contains: filters.search, mode: 'insensitive' } },
+        ];
+      }
+
+      // Category filter
+      if (filters?.category) {
+        where.jobCategory = { contains: filters.category, mode: 'insensitive' };
+      }
+
+      // Job type filter
+      if (filters?.jobType) {
+        where.jobType = filters.jobType;
+      }
+
+      // Work location filter
+      if (filters?.workLocation) {
+        where.workLocation = filters.workLocation;
+      }
+
+      // Experience level filter
+      if (filters?.experienceLevel) {
+        where.experienceLevel = filters.experienceLevel;
+      }
+
+      // Salary range filters
+      if (filters?.salaryMin !== undefined || filters?.salaryMax !== undefined) {
+        where.AND = [];
+
+        if (filters?.salaryMin !== undefined) {
+          where.AND.push({
+            OR: [
+              { salaryMax: { gte: filters.salaryMin } }, // Max salary meets minimum
+              { salaryMin: { gte: filters.salaryMin } }, // Min salary meets minimum
+            ],
+          });
+        }
+
+        if (filters?.salaryMax !== undefined) {
+          where.AND.push({
+            OR: [
+              { salaryMin: { lte: filters.salaryMax } }, // Min salary within maximum
+              { salaryMax: { lte: filters.salaryMax } }, // Max salary within maximum
+            ],
+          });
+        }
+      }
+
+      // Company filter (by UID)
+      if (filters?.companyUid) {
+        const company = await this.databaseService.company.findUnique({
+          where: { uid: filters.companyUid },
+          select: { id: true },
+        });
+        if (company) {
+          where.companyId = company.id;
+        }
+      }
+
+      // City filter
+      if (filters?.city) {
+        where.city = { contains: filters.city, mode: 'insensitive' };
+      }
+
+      // Country filter
+      if (filters?.country) {
+        where.country = { contains: filters.country, mode: 'insensitive' };
+      }
+
+      // Build orderBy clause
+      let orderBy: Prisma.JobPositionOrderByWithRelationInput = { createdAt: 'desc' };
+
+      if (filters?.sortBy) {
+        const sortOrder = filters.sortOrder || 'desc';
+
+        switch (filters.sortBy) {
+          case 'title':
+            orderBy = { title: sortOrder };
+            break;
+          case 'salary':
+            // Sort by average of min and max salary
+            orderBy = { salaryMin: sortOrder };
+            break;
+          case 'createdAt':
+          default:
+            orderBy = { createdAt: sortOrder };
+            break;
+        }
+      }
+
+      // Get total count for pagination
+      const total = await this.databaseService.jobPosition.count({ where });
+
+      // Get paginated data
       const jobPositions = await this.databaseService.jobPosition.findMany({
-        where: {
-          status: 'OPEN',
-          deletedAt: null, // Exclude soft-deleted records
-        },
+        where,
+        skip,
+        take: limit,
+        orderBy,
         include: {
           company: true,
           stages: {
@@ -307,21 +415,53 @@ export class JobPositionService {
             },
           },
         },
-        orderBy: {
-          createdAt: 'desc',
-        },
       });
-      return jobPositions.map((jp) => ({
+
+      const data = jobPositions.map((jp) => ({
         uid: jp.uid,
         title: jp.title,
         description: jp.description,
         status: jp.status,
+        jobCategory: jp.jobCategory,
+        jobType: jp.jobType,
+        workLocation: jp.workLocation,
+        salaryMin: jp.salaryMin,
+        salaryMax: jp.salaryMax,
+        salaryCurrency: jp.salaryCurrency,
+        salaryPeriod: jp.salaryPeriod,
+        benefits: jp.benefits,
+        requirements: jp.requirements,
+        responsibilities: jp.responsibilities,
+        experienceLevel: jp.experienceLevel,
+        educationLevel: jp.educationLevel,
+        skills: jp.skills,
+        applicationDeadline: jp.applicationDeadline,
+        isUrgent: jp.isUrgent,
+        isFeatured: jp.isFeatured,
+        city: jp.city,
+        state: jp.state,
+        country: jp.country,
+        showSalary: jp.showSalary,
+        tags: jp.tags,
+        isHighlighted: jp.isHighlighted,
+        viewCount: jp.viewCount,
+        applicationCount: jp.applicationCount,
         companyName: jp.company?.name || 'Unknown Company',
         companyDescription: jp.company?.description,
         createdAt: jp.createdAt,
         customQuestions: jp.customQuestions as any,
         stages: jp.stages,
       }));
+
+      const totalPages = Math.ceil(total / limit);
+
+      return {
+        data,
+        total,
+        page,
+        limit,
+        totalPages,
+      };
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -363,6 +503,30 @@ export class JobPositionService {
         title: jobPosition.title,
         description: jobPosition.description,
         status: jobPosition.status,
+        jobCategory: jobPosition.jobCategory,
+        jobType: jobPosition.jobType,
+        workLocation: jobPosition.workLocation,
+        salaryMin: jobPosition.salaryMin,
+        salaryMax: jobPosition.salaryMax,
+        salaryCurrency: jobPosition.salaryCurrency,
+        salaryPeriod: jobPosition.salaryPeriod,
+        benefits: jobPosition.benefits,
+        requirements: jobPosition.requirements,
+        responsibilities: jobPosition.responsibilities,
+        experienceLevel: jobPosition.experienceLevel,
+        educationLevel: jobPosition.educationLevel,
+        skills: jobPosition.skills,
+        applicationDeadline: jobPosition.applicationDeadline,
+        isUrgent: jobPosition.isUrgent,
+        isFeatured: jobPosition.isFeatured,
+        city: jobPosition.city,
+        state: jobPosition.state,
+        country: jobPosition.country,
+        showSalary: jobPosition.showSalary,
+        tags: jobPosition.tags,
+        isHighlighted: jobPosition.isHighlighted,
+        viewCount: jobPosition.viewCount,
+        applicationCount: jobPosition.applicationCount,
         companyName: jobPosition.company?.name || 'Unknown Company',
         companyDescription: jobPosition.company?.description,
         createdAt: jobPosition.createdAt,

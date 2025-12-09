@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsOptional, IsEnum, IsInt, Min, IsDateString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsNotEmpty, IsOptional, IsEnum, IsInt, Min, IsDateString, IsArray, IsBoolean } from 'class-validator';
 import { InterviewStatus } from '@prisma/client';
+import { Type } from 'class-transformer';
 
 export class CreateInterviewDto {
   @ApiProperty({
@@ -387,4 +388,141 @@ export class InterviewResponseDto {
     example: '2025-11-20T15:30:00.000Z',
   })
   updatedAt: Date;
+}
+
+export class CheckAvailabilityDto {
+  @ApiProperty({
+    description: 'Array of interviewer UIDs to check availability for',
+    example: ['123e4567-e89b-12d3-a456-426614174001', '123e4567-e89b-12d3-a456-426614174002'],
+    type: [String],
+  })
+  @IsArray()
+  @IsString({ each: true })
+  @IsNotEmpty({ each: true })
+  interviewerUids: string[];
+
+  @ApiProperty({
+    description: 'Proposed interview start time (ISO 8601)',
+    example: '2025-12-15T14:00:00.000Z',
+  })
+  @IsDateString()
+  @IsNotEmpty()
+  proposedStartTime: string;
+
+  @ApiProperty({
+    description: 'Duration of the interview in minutes',
+    example: 60,
+  })
+  @IsInt()
+  @Min(1)
+  duration: number;
+
+  @ApiPropertyOptional({
+    description: 'Timezone (IANA format)',
+    example: 'America/New_York',
+    default: 'UTC',
+  })
+  @IsOptional()
+  @IsString()
+  timeZone?: string;
+
+  @ApiPropertyOptional({
+    description: 'Buffer time in minutes before and after the interview',
+    example: 15,
+    default: 15,
+  })
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  bufferMinutes?: number;
+
+  @ApiPropertyOptional({
+    description: 'Whether to suggest alternative time slots if there are conflicts',
+    default: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  suggestAlternatives?: boolean;
+}
+
+export class ConflictDto {
+  @ApiProperty({
+    description: 'UID of the interviewer with a conflict',
+    example: '123e4567-e89b-12d3-a456-426614174001',
+  })
+  interviewerUid: string;
+
+  @ApiProperty({
+    description: 'Name of the interviewer with a conflict',
+    example: 'John Doe',
+  })
+  interviewerName: string;
+
+  @ApiProperty({
+    description: 'Start time of the conflicting event',
+    example: '2025-12-15T14:00:00.000Z',
+  })
+  conflictStart: string;
+
+  @ApiProperty({
+    description: 'End time of the conflicting event',
+    example: '2025-12-15T15:00:00.000Z',
+  })
+  conflictEnd: string;
+
+  @ApiProperty({
+    description: 'Type of conflict',
+    example: 'calendar_event',
+  })
+  conflictType: string;
+}
+
+export class AlternativeSlotDto {
+  @ApiProperty({
+    description: 'Suggested start time for the interview',
+    example: '2025-12-15T15:30:00.000Z',
+  })
+  startTime: string;
+
+  @ApiProperty({
+    description: 'Suggested end time for the interview',
+    example: '2025-12-15T16:30:00.000Z',
+  })
+  endTime: string;
+
+  @ApiProperty({
+    description: 'All interviewers available for this slot',
+    default: true,
+  })
+  allAvailable: boolean;
+
+  @ApiPropertyOptional({
+    description: 'UIDs of interviewers who are unavailable during this slot',
+    type: [String],
+  })
+  unavailableInterviewers?: string[];
+}
+
+export class AvailabilityCheckResponseDto {
+  @ApiProperty({
+    description: 'Whether all interviewers are available at the proposed time',
+  })
+  available: boolean;
+
+  @ApiPropertyOptional({
+    description: 'List of conflicts detected',
+    type: [ConflictDto],
+  })
+  conflicts?: ConflictDto[];
+
+  @ApiPropertyOptional({
+    description: 'Alternative time slots suggested (if requested)',
+    type: [AlternativeSlotDto],
+  })
+  alternativeSlots?: AlternativeSlotDto[];
+
+  @ApiProperty({
+    description: 'Timestamp when this availability check was performed',
+  })
+  checkedAt: Date;
 }

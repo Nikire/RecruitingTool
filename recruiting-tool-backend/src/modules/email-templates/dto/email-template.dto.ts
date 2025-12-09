@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
+import { IsBoolean, IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID, MaxLength, MinLength } from 'class-validator';
+import { EmailTemplateType } from '@prisma/client';
 
 export class CreateEmailTemplateDto {
   @ApiProperty({ description: 'Name of the email template', example: 'Application Received Confirmation' })
@@ -28,6 +29,16 @@ export class CreateEmailTemplateDto {
   @IsUUID()
   @IsOptional()
   companyUid?: string;
+
+  @ApiProperty({
+    description: 'Template type for automated email selection',
+    enum: EmailTemplateType,
+    example: EmailTemplateType.APPLICATION_RECEIVED,
+    required: false
+  })
+  @IsEnum(EmailTemplateType)
+  @IsOptional()
+  type?: EmailTemplateType;
 
   @ApiProperty({ description: 'Is this a default template', example: false, required: false })
   @IsBoolean()
@@ -59,6 +70,16 @@ export class UpdateEmailTemplateDto {
   @IsOptional()
   body?: string;
 
+  @ApiProperty({
+    description: 'Template type for automated email selection',
+    enum: EmailTemplateType,
+    example: EmailTemplateType.APPLICATION_RECEIVED,
+    required: false
+  })
+  @IsEnum(EmailTemplateType)
+  @IsOptional()
+  type?: EmailTemplateType;
+
   @ApiProperty({ description: 'Is this a default template', example: false, required: false })
   @IsBoolean()
   @IsOptional()
@@ -83,6 +104,14 @@ export class EmailTemplateResponseDto {
 
   @ApiProperty({ description: 'UID of the company (null for system-wide templates)', example: '123e4567-e89b-12d3-a456-426614174001', nullable: true })
   companyUid: string | null;
+
+  @ApiProperty({
+    description: 'Template type for automated email selection',
+    enum: EmailTemplateType,
+    example: EmailTemplateType.APPLICATION_RECEIVED,
+    nullable: true
+  })
+  type: EmailTemplateType | null;
 
   @ApiProperty({ description: 'UID of the user who created the template', example: '123e4567-e89b-12d3-a456-426614174001' })
   createdByUid: string;

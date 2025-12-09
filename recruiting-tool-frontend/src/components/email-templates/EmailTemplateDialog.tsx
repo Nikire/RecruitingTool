@@ -15,13 +15,14 @@ import {
   Alert,
   Paper,
   Divider,
+  MenuItem,
 } from '@mui/material';
 import { useState } from 'react';
 import { Visibility } from '@mui/icons-material';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useCreateEmailTemplate, useUpdateEmailTemplate, usePreviewEmailTemplate } from '../../hooks/api/useEmailTemplates';
-import { EmailTemplate } from '../../types/emailTemplate.types';
+import { EmailTemplate, EmailTemplateType } from '../../types/emailTemplate.types';
 import { useUserAtom } from '../../hooks/api/state/useUserAtom';
 
 interface EmailTemplateDialogProps {
@@ -34,6 +35,7 @@ interface EmailTemplateFormData {
   name: string;
   subject: string;
   body: string;
+  type: EmailTemplateType | '';
   isDefault: boolean;
 }
 
@@ -64,6 +66,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
       name: template?.name || '',
       subject: template?.subject || '',
       body: template?.body || '',
+      type: template?.type || '',
       isDefault: template?.isDefault || false,
     },
   });
@@ -88,6 +91,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
             name: data.name,
             subject: data.subject,
             body: data.body,
+            type: data.type || undefined,
             isDefault: data.isDefault,
           },
         },
@@ -105,6 +109,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
           subject: data.subject,
           body: data.body,
           companyUid: user.company.uid,
+          type: data.type || undefined,
           isDefault: data.isDefault,
         },
         {
@@ -193,6 +198,40 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({ open, onClose
             helperText={errors.subject?.message}
             placeholder={t('email_template.subject_placeholder')}
           />
+
+          <TextField
+            select
+            label={t('email_template.type_label')}
+            fullWidth
+            margin="normal"
+            {...register('type')}
+            error={!!errors.type}
+            helperText={errors.type?.message || t('email_template.type_helper')}
+            defaultValue={template?.type || ''}
+          >
+            <MenuItem value="">{t('email_template.type_none')}</MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_RECEIVED}>
+              {t('email_template.type_application_received')}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_REJECTED}>
+              {t('email_template.type_application_rejected')}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_SHORTLISTED}>
+              {t('email_template.type_application_shortlisted')}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.INTERVIEW_INVITATION}>
+              {t('email_template.type_interview_invitation')}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.INTERVIEW_REMINDER}>
+              {t('email_template.type_interview_reminder')}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.OFFER_LETTER}>
+              {t('email_template.type_offer_letter')}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.CUSTOM}>
+              {t('email_template.type_custom')}
+            </MenuItem>
+          </TextField>
 
           <Box sx={{ mt: 2, mb: 1 }}>
             <Typography variant="body2" color="text.secondary" gutterBottom>

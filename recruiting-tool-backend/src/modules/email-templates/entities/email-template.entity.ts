@@ -13,6 +13,7 @@ export const EmailTemplateMapper = (emailTemplate: EmailTemplateWithRelations): 
     subject: emailTemplate.subject,
     body: emailTemplate.body,
     companyUid: emailTemplate.company?.uid || null,
+    type: emailTemplate.type || null,
     createdByUid: emailTemplate.createdBy?.uid || '',
     createdByName: emailTemplate.createdBy?.name || '',
     isDefault: emailTemplate.isDefault,

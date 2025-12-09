@@ -8,9 +8,13 @@ import {
 	Typography,
 	CircularProgress,
 	InputAdornment,
+	MenuItem,
+	Select,
+	FormControl,
+	InputLabel,
 } from '@mui/material';
 import ErrorIcon from '@mui/icons-material/Error';
-import {useForm} from 'react-hook-form';
+import {useForm, Controller} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {useCreateCandidate} from '../../hooks/api/useCandidates';
 import {useValidationRules} from '../../utils/validation';
@@ -26,7 +30,27 @@ interface CreateCandidateDialogProps {
 interface CandidateFormData {
 	name: string;
 	email: string;
+	source?: string;
+	sourceDetails?: string;
 }
+
+const APPLICATION_SOURCES = [
+	'DIRECT_APPLY',
+	'LINKEDIN',
+	'INDEED',
+	'GLASSDOOR',
+	'REFERRAL',
+	'JOB_FAIR',
+	'UNIVERSITY',
+	'RECRUITER',
+	'SOCIAL_MEDIA',
+	'MANUAL',
+	'CSV_IMPORT',
+	'WEBSITE',
+	'CAREER_PAGE',
+	'JOB_BOARD',
+	'OTHER',
+] as const;
 
 const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 	open,
@@ -39,11 +63,14 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 		register,
 		handleSubmit,
 		reset,
+		control,
 		formState: {errors},
 	} = useForm<CandidateFormData>({
 		defaultValues: {
 			name: '',
 			email: '',
+			source: 'DIRECT_APPLY',
+			sourceDetails: '',
 		},
 	});
 
@@ -125,6 +152,38 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
 								</InputAdornment>
 							) : null,
 						}}
+					/>
+
+					<FormControl fullWidth margin="normal">
+						<InputLabel id="source-label">{t('candidates.source_label')}</InputLabel>
+						<Controller
+							name="source"
+							control={control}
+							render={({field}) => (
+								<Select
+									{...field}
+									labelId="source-label"
+									label={t('candidates.source_label')}
+								>
+									{APPLICATION_SOURCES.map((source) => (
+										<MenuItem key={source} value={source}>
+											{t(`candidates.sources.${source}`)}
+										</MenuItem>
+									))}
+								</Select>
+							)}
+						/>
+					</FormControl>
+
+					<TextField
+						label={t('candidates.source_details_label')}
+						fullWidth
+						margin="normal"
+						multiline
+						rows={2}
+						{...register('sourceDetails')}
+						placeholder={t('validation.field_required', {field: t('candidates.source_details_label')})}
+						helperText={t('candidates.source_details_label')}
 					/>
 
 					{isError && (

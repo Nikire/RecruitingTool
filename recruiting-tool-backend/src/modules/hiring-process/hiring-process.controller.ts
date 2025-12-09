@@ -1,6 +1,12 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
-import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto } from './dto/hiring-process.dto';
+import {
+  CreateHiringProcessDto,
+  UpdateHiringProcessDto,
+  HiringProcessResponseDto,
+  HiringProcessFindDto,
+  AccessCodeResponseDto,
+} from './dto/hiring-process.dto';
 import { HiringProcessFilterDto } from './dto/hiring-process-filter.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User, HiringProcessStatus } from '@prisma/client';
@@ -19,7 +25,7 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 export class HiringProcessController {
   constructor(private readonly hiringProcessService: HiringProcessService) {}
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Post()
   @ApiOperation({ summary: 'Creates a Hiring Process - HR role required' })
   @ApiResponse({
@@ -32,7 +38,7 @@ export class HiringProcessController {
     return this.hiringProcessService.create(createHiringProcessDto);
   }
 
-  @Auth(['HR', 'ADMIN', 'USER'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @Get('list')
   @ApiOperation({ summary: 'Get paginated hiring processes list with advanced filtering and search' })
   @ApiResponse({
@@ -43,7 +49,7 @@ export class HiringProcessController {
     return this.hiringProcessService.list(filterDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN', 'USER'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @Get()
   @ApiOperation({ summary: 'Get hiring process list' })
   @ApiResponse({
@@ -55,7 +61,7 @@ export class HiringProcessController {
     return this.hiringProcessService.findAll(hiringProcessFindDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN', 'USER'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @Get(':uid')
   @ApiOperation({ summary: 'Get one hiring process' })
   @ApiResponse({
@@ -68,7 +74,7 @@ export class HiringProcessController {
     return this.hiringProcessService.findOne(uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Put(':uid')
   @ApiOperation({ summary: 'Update one hiring process' })
   @ApiResponse({
@@ -82,7 +88,7 @@ export class HiringProcessController {
     return this.hiringProcessService.update(uid, updateHiringProcessDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete one hiring process - HR role required' })
   @ApiResponse({
@@ -95,7 +101,7 @@ export class HiringProcessController {
     return this.hiringProcessService.remove(uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Post(':uid/progress-stage')
   @ApiOperation({ summary: 'Progress to next stage in hiring process' })
   @ApiResponse({
@@ -107,7 +113,7 @@ export class HiringProcessController {
     return this.hiringProcessService.progressToNextStage(uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Post(':uid/move-to-stage/:stageUid')
   @ApiOperation({ summary: 'Move candidate to specific stage in hiring process' })
   @ApiResponse({
@@ -118,5 +124,18 @@ export class HiringProcessController {
   @ApiParam({ name: 'stageUid', required: true, description: 'Target Stage UID' })
   moveToStage(@Param('uid') uid: string, @Param('stageUid') stageUid: string, @CurrentUser() currentUser: User) {
     return this.hiringProcessService.moveToSpecificStage(uid, stageUid, currentUser);
+  }
+
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
+  @Post(':uid/generate-access-code')
+  @ApiOperation({ summary: 'Generate access code for candidate self-service status check - HR role required' })
+  @ApiResponse({
+    status: 201,
+    description: 'Access code generated successfully',
+    type: AccessCodeResponseDto,
+  })
+  @ApiParam({ name: 'uid', required: true, description: 'Hiring Process UID' })
+  generateAccessCode(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<AccessCodeResponseDto> {
+    return this.hiringProcessService.generateAccessCode(uid, currentUser);
   }
 }

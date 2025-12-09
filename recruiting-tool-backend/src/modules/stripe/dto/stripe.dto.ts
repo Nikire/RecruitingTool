@@ -16,7 +16,7 @@ export class CreateCheckoutSessionDto {
     description: 'URL to redirect to after successful payment',
     example: 'https://app.recruitingtool.com/subscription/success',
   })
-  @IsUrl()
+  @IsUrl({ require_tld: false }) // Allow localhost for development
   @IsNotEmpty()
   successUrl: string;
 
@@ -24,7 +24,7 @@ export class CreateCheckoutSessionDto {
     description: 'URL to redirect to after canceled payment',
     example: 'https://app.recruitingtool.com/subscription/cancel',
   })
-  @IsUrl()
+  @IsUrl({ require_tld: false }) // Allow localhost for development
   @IsNotEmpty()
   cancelUrl: string;
 }
@@ -117,7 +117,7 @@ export class CreateBillingPortalDto {
     description: 'URL to redirect to after user exits the billing portal',
     example: 'https://app.recruitingtool.com/subscription',
   })
-  @IsUrl()
+  @IsUrl({ require_tld: false }) // Allow localhost for development
   @IsNotEmpty()
   returnUrl: string;
 }

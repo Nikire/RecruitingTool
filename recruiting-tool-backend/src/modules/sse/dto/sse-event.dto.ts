@@ -5,6 +5,7 @@ export enum SSEEventType {
   INTERVIEW_SCHEDULED = 'INTERVIEW_SCHEDULED',
   NEW_APPLICATION = 'NEW_APPLICATION',
   SCORE_UPDATED = 'SCORE_UPDATED',
+  NOTIFICATION = 'NOTIFICATION',
   HEARTBEAT = 'HEARTBEAT',
 }
 
@@ -92,4 +93,12 @@ export interface ScoreUpdatedPayload {
   score: number;
   scoredBy: 'AI' | 'MANUAL';
   jobPositionTitle: string;
+}
+
+export interface NotificationPayload {
+  notificationUid: string;
+  type: string;
+  title: string;
+  message: string;
+  metadata?: Record<string, any>;
 }

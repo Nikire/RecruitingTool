@@ -189,7 +189,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 				<Typography variant="h5" gutterBottom fontWeight={600} mb={3}>
 					{t('analytics.overview')}
 				</Typography>
-				<Grid spacing={3}>
+				<Grid container spacing={3}>
 					{metricCards.map((card, index) => (
 						<Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
 							<MetricCard data={card} />
