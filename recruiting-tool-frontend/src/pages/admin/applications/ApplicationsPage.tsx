@@ -7,13 +7,12 @@ import {
 	Select,
 	MenuItem,
 	Paper,
-	CircularProgress,
 } from '@mui/material';
 import {useAuthMe} from '../../../hooks/api/useAuth';
 import {canManageResources} from '../../../utils/permissions';
 import {ApplicationStatus} from '../../../types/application.types';
 import ApplicationsTable from '../../../components/applications/ApplicationsTable';
-import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage';
+import {AccessDeniedMessage, CenteredLoadingSpinner} from '../../../components/common';
 import {useTranslation} from 'react-i18next';
 
 const ApplicationsPage: React.FC = () => {
@@ -23,11 +22,7 @@ const ApplicationsPage: React.FC = () => {
 
 	// Wait for user data to load before checking permissions (fixes race condition)
 	if (userLoading) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <CenteredLoadingSpinner />;
 	}
 
 	const canManage = canManageResources(user);

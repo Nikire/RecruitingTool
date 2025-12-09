@@ -27,8 +27,8 @@ export class InterviewController {
   @ApiOperation({ summary: 'Get interview by UID' })
   @ApiResponse({ status: 200, description: 'Interview details', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async findOne(@Param('uid') uid: string): Promise<InterviewResponseDto> {
-    return this.interviewService.findOne(uid);
+  async findOne(@Param('uid') uid: string, @CurrentUser() user: any): Promise<InterviewResponseDto> {
+    return this.interviewService.findOne(uid, user);
   }
 
   @Get('stage/:stageUid')
@@ -45,8 +45,8 @@ export class InterviewController {
   @ApiOperation({ summary: 'Update an interview' })
   @ApiResponse({ status: 200, description: 'Interview updated successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
-  async update(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto): Promise<InterviewResponseDto> {
-    return this.interviewService.update(uid, updateInterviewDto);
+  async update(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto, @CurrentUser() user: any): Promise<InterviewResponseDto> {
+    return this.interviewService.update(uid, updateInterviewDto, user);
   }
 
   @Put(':uid/cancel')

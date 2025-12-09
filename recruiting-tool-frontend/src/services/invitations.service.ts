@@ -1,7 +1,5 @@
-import axios from 'axios';
+import api from '../api/axios';
 import { CompanyInvitation, CreateInvitationDto, InvitationStatus } from '../types/invitations';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 export const invitationsService = {
   /**
@@ -11,8 +9,8 @@ export const invitationsService = {
     companyUid: string,
     data: CreateInvitationDto,
   ): Promise<CompanyInvitation> {
-    const response = await axios.post<CompanyInvitation>(
-      `${API_BASE_URL}/companies/${companyUid}/invitations`,
+    const response = await api.post<CompanyInvitation>(
+      `/companies/${companyUid}/invitations`,
       data,
     );
     return response.data;
@@ -26,8 +24,8 @@ export const invitationsService = {
     status?: InvitationStatus,
   ): Promise<CompanyInvitation[]> {
     const params = status ? { status } : {};
-    const response = await axios.get<CompanyInvitation[]>(
-      `${API_BASE_URL}/companies/${companyUid}/invitations`,
+    const response = await api.get<CompanyInvitation[]>(
+      `/companies/${companyUid}/invitations`,
       { params },
     );
     return response.data;
@@ -40,8 +38,8 @@ export const invitationsService = {
     companyUid: string,
     invitationUid: string,
   ): Promise<{ message: string }> {
-    const response = await axios.delete<{ message: string }>(
-      `${API_BASE_URL}/companies/${companyUid}/invitations/${invitationUid}`,
+    const response = await api.delete<{ message: string }>(
+      `/companies/${companyUid}/invitations/${invitationUid}`,
     );
     return response.data;
   },
@@ -50,8 +48,8 @@ export const invitationsService = {
    * Accept an invitation
    */
   async acceptInvitation(token: string): Promise<CompanyInvitation> {
-    const response = await axios.post<CompanyInvitation>(
-      `${API_BASE_URL}/invitations/accept/${token}`,
+    const response = await api.post<CompanyInvitation>(
+      `/invitations/accept/${token}`,
     );
     return response.data;
   },

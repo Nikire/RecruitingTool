@@ -89,7 +89,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           {roles?.map((role) => (
             <Chip
               key={role}
-              label={t(`roles.${role.toLowerCase()}`)}
+              label={t(`company_roles.roles.${role}`)}
               size="small"
               color="primary"
               variant="outlined"

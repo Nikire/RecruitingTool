@@ -4,12 +4,13 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { ApplicationStatus, StageStatus, User } from '@prisma/client';
+import { ApplicationStatus, StageStatus, User, NotificationType } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { SseService } from '../sse/sse.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class ApplicationService {
@@ -21,6 +22,7 @@ export class ApplicationService {
     private sseService: SseService,
     private configService: ConfigService,
     private auditLogService: AuditLogService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
@@ -111,6 +113,34 @@ export class ApplicationService {
         undefined, // userUid - send to all users
         jobPosition.company?.uid, // companyUid - filter by company
       );
+
+      // Create notification for HR users about new application
+      const hrUsers = await this.databaseService.user.findMany({
+        where: {
+          companyId: jobPosition.companyId,
+          roles: { hasSome: ['HR', 'HR_MANAGER', 'RECRUITER'] },
+        },
+      });
+
+      for (const hrUser of hrUsers) {
+        try {
+          await this.notificationsService.create({
+            userUid: hrUser.uid,
+            type: NotificationType.APPLICATION_RECEIVED,
+            title: 'New Application Received',
+            message: `${application.applicantName} applied for ${jobPosition.title}`,
+            metadata: {
+              applicationUid: application.uid,
+              applicantName: application.applicantName,
+              applicantEmail: application.applicantEmail,
+              jobPositionUid: jobPosition.uid,
+              jobPositionTitle: jobPosition.title,
+            },
+          });
+        } catch (error) {
+          this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${error.message}`);
+        }
+      }
 
       return ApplicationMapper(application);
     } catch (error) {
@@ -240,6 +270,36 @@ export class ApplicationService {
           oldStatus,
           updateApplicationDto.status,
         );
+
+        // Create notification for HR users about application status change
+        const hrUsers = await this.databaseService.user.findMany({
+          where: {
+            companyId: application.jobPosition.companyId,
+            roles: { hasSome: ['HR', 'HR_MANAGER', 'RECRUITER'] },
+          },
+        });
+
+        for (const hrUser of hrUsers) {
+          try {
+            await this.notificationsService.create({
+              userUid: hrUser.uid,
+              type: NotificationType.APPLICATION_STATUS,
+              title: 'Application Status Changed',
+              message: `Application from ${updatedApplication.applicantName} for ${application.jobPosition.title} is now ${updateApplicationDto.status}`,
+              metadata: {
+                applicationUid: updatedApplication.uid,
+                applicantName: updatedApplication.applicantName,
+                applicantEmail: updatedApplication.applicantEmail,
+                jobPositionUid: application.jobPosition.uid,
+                jobPositionTitle: application.jobPosition.title,
+                oldStatus,
+                newStatus: updateApplicationDto.status,
+              },
+            });
+          } catch (error) {
+            this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${error.message}`);
+          }
+        }
       }
 
       return ApplicationMapper(updatedApplication);

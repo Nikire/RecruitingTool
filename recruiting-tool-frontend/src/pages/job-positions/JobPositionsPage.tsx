@@ -1,17 +1,16 @@
 import {useState} from 'react';
 import {
-	Typography,
 	Box,
 	useTheme,
 	useMediaQuery,
 	Button,
 	Grid,
 	Paper,
-	CircularProgress,
 	ToggleButton,
 	ToggleButtonGroup,
 	Skeleton,
 	TablePagination,
+	Typography,
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import AddIcon from '@mui/icons-material/Add';
@@ -31,6 +30,7 @@ import {useNavigate} from 'react-router-dom';
 import {useAuthMe} from '../../hooks/api/useAuth';
 import {canManageResources} from '../../utils/permissions';
 import {useDialog} from '../../hooks/useDialog';
+import {CenteredLoadingSpinner, PageHeader} from '../../components/common';
 
 const JobPositionsPage: React.FC = () => {
 	const {t} = useTranslation();
@@ -42,11 +42,7 @@ const JobPositionsPage: React.FC = () => {
 
 	// Wait for user data to load before rendering (fixes race condition)
 	if (userLoading) {
-		return (
-			<Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh'}}>
-				<CircularProgress />
-			</Box>
-		);
+		return <CenteredLoadingSpinner />;
 	}
 
 	const [selectedJobPosition, setSelectedJobPosition] =
@@ -187,35 +183,19 @@ const JobPositionsPage: React.FC = () => {
 	return (
 		<Box>
 			{/* Header */}
-			<Box
-				sx={{
-					display: 'flex',
-					justifyContent: 'space-between',
-					alignItems: 'center',
-					mb: {xs: 2, sm: 3},
-				}}
-			>
-				<Box>
-					<Typography
-						variant={isMobile ? 'h5' : 'h4'}
-						sx={{
-							fontSize: {xs: '1.5rem', sm: '1.75rem', md: '2rem'},
-							fontWeight: 600,
-							mb: 0.5,
-						}}
-					>
-						{t('job_positions.title')}
-					</Typography>
-					<Typography
-						variant="body2"
-						color="textSecondary"
-						sx={{fontSize: {xs: '0.875rem', sm: '1rem'}}}
-					>
-						{t('job_positions.subtitle')}
-					</Typography>
-				</Box>
-				<Box sx={{display: 'flex', gap: 1, alignItems: 'center'}}>
-					{/* View Toggle */}
+			<PageHeader
+				title="job_positions.title"
+				subtitle="job_positions.subtitle"
+				action={
+					canManage
+						? {
+								label: 'job_positions.create_new',
+								icon: <AddIcon />,
+								onClick: () => setCreateDialogOpen(true),
+							}
+						: undefined
+				}
+				secondaryActions={
 					<ToggleButtonGroup
 						value={viewMode}
 						exclusive
@@ -231,20 +211,8 @@ const JobPositionsPage: React.FC = () => {
 							<ViewListIcon />
 						</ToggleButton>
 					</ToggleButtonGroup>
-
-					{canManage && (
-						<Button
-							variant="contained"
-							color="primary"
-							startIcon={<AddIcon />}
-							onClick={() => setCreateDialogOpen(true)}
-							sx={{display: {xs: 'none', sm: 'flex'}}}
-						>
-							{t('job_positions.create_new')}
-						</Button>
-					)}
-				</Box>
-			</Box>
+				}
+			/>
 
 			{/* Mobile Create Button */}
 			{canManage && (

@@ -56,7 +56,7 @@ export class JobPositionController {
     return this.jobPositionService.findOnePublic(uid);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @CheckQuota('jobPositions')
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
@@ -78,7 +78,7 @@ export class JobPositionController {
     return this.jobPositionService.create(currentUser.uid, createJobPositionDto);
   }
 
-  @Auth(['HR', 'ADMIN', 'USER'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
@@ -93,7 +93,7 @@ export class JobPositionController {
     return this.jobPositionService.list(paginationDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN', 'USER'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
@@ -111,7 +111,7 @@ export class JobPositionController {
     return this.jobPositionService.findAll(currentUser);
   }
 
-  @Auth(['HR', 'ADMIN', 'USER'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
@@ -128,7 +128,7 @@ export class JobPositionController {
     return this.jobPositionService.findOne(uid, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
@@ -146,7 +146,7 @@ export class JobPositionController {
     return this.jobPositionService.update(uid, updateJobPositionDto, currentUser);
   }
 
-  @Auth(['HR', 'ADMIN'])
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @ApiBearerAuth()
   @ApiUnauthorizedResponse({
     description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",

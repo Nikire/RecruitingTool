@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Typography,
   Button,
   Paper,
   Grid,
   Tabs,
   Tab,
   Chip,
-  CircularProgress,
   Alert,
   Card,
   CardContent,
@@ -25,6 +23,7 @@ import { useCompanyMembers } from '../hooks/useCompanyRoles';
 import { useCompanyInvitations, useCancelInvitation } from '../hooks/useInvitations';
 import { useCompanyConnectionRequests } from '../hooks/useConnectionRequests';
 import { InvitationStatus } from '../types/invitations';
+import {PageHeader, CenteredLoadingSpinner} from '../components/common';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -87,18 +86,18 @@ const TeamManagementPage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h4">{t('team.page_title')}</Typography>
-        {canManage && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => setInviteDialogOpen(true)}
-          >
-            {t('team.invite_member')}
-          </Button>
-        )}
-      </Box>
+      <PageHeader
+        title="team.page_title"
+        action={
+          canManage
+            ? {
+                label: 'team.invite_member',
+                icon: <AddIcon />,
+                onClick: () => setInviteDialogOpen(true),
+              }
+            : undefined
+        }
+      />
 
       <Paper sx={{ mb: 3 }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
@@ -139,9 +138,7 @@ const TeamManagementPage: React.FC = () => {
       {/* Current Members Tab */}
       <TabPanel value={activeTab} index={0}>
         {isLoadingMembers ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress />
-          </Box>
+          <CenteredLoadingSpinner minHeight="30vh" />
         ) : !members || members.length === 0 ? (
           <Alert severity="info">{t('team.no_members')}</Alert>
         ) : (
@@ -165,9 +162,7 @@ const TeamManagementPage: React.FC = () => {
       {/* Pending Invitations Tab */}
       <TabPanel value={activeTab} index={1}>
         {isLoadingInvitations ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress />
-          </Box>
+          <CenteredLoadingSpinner minHeight="30vh" />
         ) : pendingInvitations.length === 0 ? (
           <Alert severity="info">{t('team.no_pending_invitations')}</Alert>
         ) : (
@@ -219,9 +214,7 @@ const TeamManagementPage: React.FC = () => {
       {/* Connection Requests Tab */}
       <TabPanel value={activeTab} index={2}>
         {isLoadingRequests ? (
-          <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
-            <CircularProgress />
-          </Box>
+          <CenteredLoadingSpinner minHeight="30vh" />
         ) : !connectionRequests || connectionRequests.length === 0 ? (
           <Alert severity="info">{t('team.no_connection_requests')}</Alert>
         ) : (

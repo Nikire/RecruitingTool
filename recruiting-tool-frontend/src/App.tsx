@@ -6,6 +6,8 @@ import Home from './pages/home/Home';
 import LandingPage from './pages/landing/LandingPage';
 import HiringProcessPage from './pages/hiring-process/HiringProcessPage';
 import {ProtectedRoute} from './lib/ProtectedRoute/ProtectedRoute';
+import {RoleGuard} from './lib/RoleGuard';
+import {UserRoles} from './types/user.types';
 import DocumentContainer from './layouts/DocumentContainer';
 import MainLayout from './layouts/MainLayout';
 import LandingPageLayout from './layouts/LandingPageLayout';
@@ -86,29 +88,45 @@ function App() {
 					</Route>
 				</Route>
 
-				{/* HR Panel Routes - accessible to HR, ADMIN, and SUPER_ADMIN */}
+				{/* HR Panel Routes - accessible to HR, COMPANY_OWNER, ADMIN, and SUPER_ADMIN */}
 				<Route element={<ProtectedRoute />}>
-					<Route element={<HRLayout />}>
-						<Route path="/hr/dashboard" element={<HRDashboard />} />
-						<Route path="/hr/applications" element={<ApplicationsPage />} />
-						<Route path="/hr/candidates" element={<CandidatesPage />} />
-						<Route path="/hr/job-positions" element={<JobPositionsPage />} />
-						<Route path="/hr/job-positions/:uid" element={<HRJobPositionDetailPage />} />
-						<Route path="/hr/analytics" element={<AnalyticsPage />} />
-						<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
-						<Route path="/settings/calendar" element={<CalendarSettingsPage />} />
-						<Route path="/settings/team" element={<TeamManagementPage />} />
+					<Route
+						element={
+							<RoleGuard
+								allowedRoles={[UserRoles.HR, UserRoles.COMPANY_OWNER, UserRoles.ADMIN, UserRoles.SUPER_ADMIN]}
+							/>
+						}
+					>
+						<Route element={<HRLayout />}>
+							<Route path="/hr/dashboard" element={<HRDashboard />} />
+							<Route path="/hr/applications" element={<ApplicationsPage />} />
+							<Route path="/hr/candidates" element={<CandidatesPage />} />
+							<Route path="/hr/job-positions" element={<JobPositionsPage />} />
+							<Route path="/hr/job-positions/:uid" element={<HRJobPositionDetailPage />} />
+							<Route path="/hr/analytics" element={<AnalyticsPage />} />
+							<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
+							<Route path="/settings/calendar" element={<CalendarSettingsPage />} />
+							<Route path="/settings/team" element={<TeamManagementPage />} />
+						</Route>
 					</Route>
 				</Route>
 
 				{/* Admin Panel Routes - accessible to ADMIN and SUPER_ADMIN only */}
 				<Route element={<ProtectedRoute />}>
-					<Route element={<AdminLayout />}>
-						<Route path="/admin" element={<AdminDashboard />} />
-						<Route path="/admin/companies" element={<CompaniesPage />} />
-						<Route path="/admin/users" element={<UserManagementPage />} />
-						<Route path="/admin/deleted-records" element={<DeletedRecordsPage />} />
-						<Route path="/admin/settings" element={<SystemSettingsPage />} />
+					<Route
+						element={
+							<RoleGuard
+								allowedRoles={[UserRoles.ADMIN, UserRoles.SUPER_ADMIN]}
+							/>
+						}
+					>
+						<Route element={<AdminLayout />}>
+							<Route path="/admin" element={<AdminDashboard />} />
+							<Route path="/admin/companies" element={<CompaniesPage />} />
+							<Route path="/admin/users" element={<UserManagementPage />} />
+							<Route path="/admin/deleted-records" element={<DeletedRecordsPage />} />
+							<Route path="/admin/settings" element={<SystemSettingsPage />} />
+						</Route>
 					</Route>
 				</Route>
 			</Routes>

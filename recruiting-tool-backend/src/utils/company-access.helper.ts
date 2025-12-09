@@ -6,30 +6,32 @@ import { User, RolesType } from '@prisma/client';
  */
 
 /**
- * Check if user is ADMIN or SUPER_ADMIN (can access all companies)
+ * Check if user is SUPER_ADMIN (can access all companies globally)
  */
-export function isAdminRole(user: User): boolean {
-  return user.roles.includes(RolesType.ADMIN) || user.roles.includes(RolesType.SUPER_ADMIN);
+export function isSuperAdminRole(user: User): boolean {
+  return user.roles.includes(RolesType.SUPER_ADMIN);
 }
 
 /**
- * Check if user is HR or regular USER (company-restricted)
+ * Check if user is company-restricted (ADMIN, HR, or USER)
+ * These roles can only access data from their assigned company
  */
 export function isCompanyRestrictedRole(user: User): boolean {
-  return user.roles.includes(RolesType.HR) || user.roles.includes(RolesType.USER);
+  return user.roles.includes(RolesType.ADMIN) || user.roles.includes(RolesType.HR) || user.roles.includes(RolesType.USER) || user.roles.includes(RolesType.COMPANY_OWNER);
 }
 
 /**
  * Get user's companyId with validation
- * Throws ForbiddenException if HR/USER doesn't have a company
+ * Returns null only for SUPER_ADMIN (global access)
+ * All other roles must have a company and are restricted to it
  */
 export function getUserCompanyId(user: User): number | null {
-  // ADMIN and SUPER_ADMIN can access all companies
-  if (isAdminRole(user)) {
+  // SUPER_ADMIN can access all companies
+  if (isSuperAdminRole(user)) {
     return null;
   }
 
-  // HR and USER must have a company
+  // ADMIN, HR, USER, COMPANY_OWNER must have a company
   if (isCompanyRestrictedRole(user)) {
     if (!user.companyId) {
       throw new ForbiddenException('User must belong to a company to access this resource');
@@ -44,14 +46,15 @@ export function getUserCompanyId(user: User): number | null {
 /**
  * Verify that a resource belongs to the user's company
  * Throws ForbiddenException if access is denied
+ * Only SUPER_ADMIN can access resources from any company
  */
 export function verifyCompanyAccess(user: User, resourceCompanyId: number | null): void {
-  // ADMIN and SUPER_ADMIN can access any resource
-  if (isAdminRole(user)) {
+  // SUPER_ADMIN can access any resource
+  if (isSuperAdminRole(user)) {
     return;
   }
 
-  // HR and USER can only access their own company's resources
+  // ADMIN, HR, USER, COMPANY_OWNER can only access their own company's resources
   if (isCompanyRestrictedRole(user)) {
     if (!user.companyId) {
       throw new ForbiddenException('User must belong to a company');

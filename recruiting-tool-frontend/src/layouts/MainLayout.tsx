@@ -3,13 +3,17 @@ import {Outlet, useLocation, useNavigate} from 'react-router-dom';
 import {useEffect} from 'react';
 import Navbar from '../components/navbar/Navbar';
 import {useAuthMe} from '../hooks/api/useAuth';
+import {useNotificationSSE} from '../hooks/useNotificationSSE';
 
 const MainLayout = () => {
 	const location = useLocation();
 	const navigate = useNavigate();
 
 	// Validate user session on every page
-	const {isError} = useAuthMe();
+	const {isError, data: currentUser} = useAuthMe();
+
+	// Establish SSE connection for real-time notifications (only when authenticated)
+	useNotificationSSE();
 
 	// Redirect to login if session is invalid or user is not authenticated
 	useEffect(() => {

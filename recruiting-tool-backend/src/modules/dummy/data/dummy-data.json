@@ -112,6 +112,76 @@
       "bio": "Co-founder of Digital Solutions Corp. Passionate about digital transformation and innovation.",
       "linkedinUrl": "https://linkedin.com/in/fionachen",
       "timezone": "America/Los_Angeles"
+    },
+    {
+      "name": "Test User",
+      "email": "test.user@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "USER"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9001",
+      "position": "Test User Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - USER role with minimal permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test HR User",
+      "email": "test.hr@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "HR"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9002",
+      "position": "Test HR Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - HR role with recruiting permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test Company Owner",
+      "email": "test.owner@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "COMPANY_OWNER"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9003",
+      "position": "Test Owner Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - COMPANY_OWNER role with company management permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test Admin",
+      "email": "test.admin@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "ADMIN"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9004",
+      "position": "Test Admin Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - ADMIN role with system administration permissions",
+      "timezone": "America/New_York"
+    },
+    {
+      "name": "Test Super Admin",
+      "email": "test.superadmin@security-audit.com",
+      "password": "TestPassword123!",
+      "roles": [
+        "SUPER_ADMIN"
+      ],
+      "companyIndex": 0,
+      "phoneNumber": "+1-555-9005",
+      "position": "Test Super Admin Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - SUPER_ADMIN role with full system access",
+      "timezone": "America/New_York"
     }
   ],
   "profiles": [
@@ -193,6 +263,76 @@
       "timezone": "America/Los_Angeles",
       "preferences": {
         "emailNotifications": true,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 6,
+      "bio": "Test account for security audit - USER role with minimal permissions. Used for permission testing and access control verification.",
+      "phone": "+1-555-9001",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 7,
+      "bio": "Test account for security audit - HR role with recruiting permissions. Used for testing HR-specific features and access controls.",
+      "phone": "+1-555-9002",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 8,
+      "bio": "Test account for security audit - COMPANY_OWNER role with company management permissions. Used for testing company-level access controls.",
+      "phone": "+1-555-9003",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 9,
+      "bio": "Test account for security audit - ADMIN role with system administration permissions. Used for testing admin-level access controls.",
+      "phone": "+1-555-9004",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
+        "smsNotifications": false,
+        "theme": "light",
+        "language": "en",
+        "weekStartsOn": "monday"
+      }
+    },
+    {
+      "userIndex": 10,
+      "bio": "Test account for security audit - SUPER_ADMIN role with full system access. Used for testing highest-level permissions and security boundaries.",
+      "phone": "+1-555-9005",
+      "location": "New York, NY, USA",
+      "timezone": "America/New_York",
+      "preferences": {
+        "emailNotifications": false,
         "smsNotifications": false,
         "theme": "light",
         "language": "en",

@@ -10,6 +10,7 @@ import {
 	alpha,
 	IconButton,
 } from '@mui/material';
+import { FeatureCard, TestimonialCard } from '../../components/common';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -281,33 +282,12 @@ const LandingPage = () => {
 				<Grid container spacing={4}>
 					{features.map((feature, index) => (
 						<Grid item xs={12} sm={6} md={4} key={index}>
-							<Card
-								sx={{
-									height: '100%',
-									transition: 'transform 0.3s, box-shadow 0.3s',
-									'&:hover': {
-										transform: 'translateY(-8px)',
-										boxShadow: theme.shadows[8],
-									},
-								}}
-							>
-								<CardContent sx={{ p: 3 }}>
-									<Box
-										sx={{
-											color: feature.color,
-											mb: 2,
-										}}
-									>
-										{feature.icon}
-									</Box>
-									<Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-										{feature.title}
-									</Typography>
-									<Typography variant="body2" color="text.secondary">
-										{feature.description}
-									</Typography>
-								</CardContent>
-							</Card>
+							<FeatureCard
+								icon={feature.icon}
+								title={feature.title}
+								description={feature.description}
+								color={feature.color}
+							/>
 						</Grid>
 					))}
 				</Grid>
@@ -457,38 +437,12 @@ const LandingPage = () => {
 				<Grid container spacing={4}>
 					{testimonials.map((testimonial, index) => (
 						<Grid item xs={12} md={4} key={index}>
-							<Card sx={{ height: '100%', p: 3 }}>
-								<CardContent>
-									<Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic' }}>
-										"{testimonial.quote}"
-									</Typography>
-									<Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-										<Box
-											sx={{
-												width: 48,
-												height: 48,
-												borderRadius: '50%',
-												bgcolor: alpha(theme.palette.primary.main, 0.1),
-												display: 'flex',
-												alignItems: 'center',
-												justifyContent: 'center',
-												fontWeight: 600,
-												color: theme.palette.primary.main,
-											}}
-										>
-											{testimonial.author.charAt(0)}
-										</Box>
-										<Box>
-											<Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-												{testimonial.author}
-											</Typography>
-											<Typography variant="caption" color="text.secondary">
-												{testimonial.role}, {testimonial.company}
-											</Typography>
-										</Box>
-									</Box>
-								</CardContent>
-							</Card>
+							<TestimonialCard
+								quote={testimonial.quote}
+								author={testimonial.author}
+								role={testimonial.role}
+								company={testimonial.company}
+							/>
 						</Grid>
 					))}
 				</Grid>

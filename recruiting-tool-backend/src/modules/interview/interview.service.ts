@@ -2,15 +2,18 @@ import { Injectable, NotFoundException, BadRequestException, Logger } from '@nes
 import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, RescheduleInterviewDto, CheckAvailabilityDto, AvailabilityCheckResponseDto, ConflictDto, AlternativeSlotDto } from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
-import { InterviewStatus, User } from '@prisma/client';
+import { InterviewStatus, User, NotificationType } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { GoogleCalendarService } from '../google-calendar/google-calendar.service';
 import { InterviewCalendarService } from './interview-calendar.service';
 import { SseService } from '../sse/sse.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { Inject } from '@nestjs/common';
+import { getUserCompanyId } from 'src/utils/company-access.helper';
+import { EntityNotFoundException } from 'src/common/exceptions';
 
 @Injectable()
 export class InterviewService {
@@ -23,6 +26,7 @@ export class InterviewService {
     private readonly interviewCalendarService: InterviewCalendarService,
     private readonly sseService: SseService,
     private readonly auditLogService: AuditLogService,
+    private readonly notificationsService: NotificationsService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
 
@@ -145,6 +149,36 @@ export class InterviewService {
           undefined, // userUid - send to all users
           jobPosition.company?.uid, // companyUid - filter by company
         );
+
+        // Create notification for HR users about interview scheduled
+        const hrUsers = await this.databaseService.user.findMany({
+          where: {
+            companyId: jobPosition.companyId,
+            roles: { hasSome: ['HR', 'HR_MANAGER', 'RECRUITER'] },
+          },
+        });
+
+        for (const hrUser of hrUsers) {
+          try {
+            await this.notificationsService.create({
+              userUid: hrUser.uid,
+              type: NotificationType.INTERVIEW_SCHEDULED,
+              title: 'Interview Scheduled',
+              message: `Interview scheduled for ${stage.hiringProcess.candidate.name} on ${scheduledDate} at ${scheduledTime}`,
+              metadata: {
+                interviewUid: interview.uid,
+                candidateUid: stage.hiringProcess.candidate.uid,
+                candidateName: stage.hiringProcess.candidate.name,
+                jobPositionUid: jobPosition.uid,
+                jobPositionTitle: jobPosition.title,
+                scheduledDate,
+                scheduledTime,
+              },
+            });
+          } catch (error) {
+            this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${error.message}`);
+          }
+        }
       }
     }
 
@@ -170,12 +204,17 @@ export class InterviewService {
     return endDate.toISOString();
   }
 
-  async findOne(uid: string): Promise<InterviewResponseDto> {
+  async findOne(uid: string, user?: User): Promise<InterviewResponseDto> {
     const interview = await this.databaseService.interview.findFirst({
       where: { uid, deletedAt: null },
       include: {
         scheduledBy: true,
-        stage: true,
+        stage: {
+          include: {
+            hiringProcess: true,
+            JobPosition: true,
+          },
+        },
         interviewers: {
           include: {
             user: true,
@@ -185,7 +224,18 @@ export class InterviewService {
     });
 
     if (!interview) {
-      throw new NotFoundException(`Interview with UID ${uid} not found`);
+      throw new EntityNotFoundException('Interview', uid);
+    }
+
+    // Verify company access if user is provided
+    if (user) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const interviewCompanyId = interview.stage.hiringProcess?.companyId || interview.stage.JobPosition?.companyId;
+        if (interviewCompanyId !== userCompanyId) {
+          throw new EntityNotFoundException('Interview', uid);
+        }
+      }
     }
 
     return InterviewMapper(interview);
@@ -217,7 +267,7 @@ export class InterviewService {
     return interviews.map(InterviewMapper);
   }
 
-  async update(uid: string, updateInterviewDto: UpdateInterviewDto): Promise<InterviewResponseDto> {
+  async update(uid: string, updateInterviewDto: UpdateInterviewDto, user?: User): Promise<InterviewResponseDto> {
     const existingInterview = await this.databaseService.interview.findUnique({
       where: { uid },
       include: {
@@ -228,6 +278,7 @@ export class InterviewService {
                 candidate: true,
               },
             },
+            JobPosition: true,
           },
         },
         scheduledBy: true,
@@ -235,7 +286,18 @@ export class InterviewService {
     });
 
     if (!existingInterview) {
-      throw new NotFoundException(`Interview with UID ${uid} not found`);
+      throw new EntityNotFoundException('Interview', uid);
+    }
+
+    // Verify company access if user is provided
+    if (user) {
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        const interviewCompanyId = existingInterview.stage.hiringProcess?.companyId || existingInterview.stage.JobPosition?.companyId;
+        if (interviewCompanyId !== userCompanyId) {
+          throw new EntityNotFoundException('Interview', uid);
+        }
+      }
     }
 
     const { scheduledDate, scheduledTime, duration, meetingLink, location, notes, status } = updateInterviewDto;
@@ -290,6 +352,42 @@ export class InterviewService {
       );
     }
 
+    // Create notification for HR users about interview update
+    if (interview.stage.hiringProcess?.candidate) {
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { id: interview.stage.hiringProcess.jobPositionId },
+      });
+
+      if (jobPosition) {
+        const hrUsers = await this.databaseService.user.findMany({
+          where: {
+            companyId: jobPosition.companyId,
+            roles: { hasSome: ['HR', 'HR_MANAGER', 'RECRUITER'] },
+          },
+        });
+
+        for (const hrUser of hrUsers) {
+          try {
+            await this.notificationsService.create({
+              userUid: hrUser.uid,
+              type: NotificationType.INTERVIEW_UPDATED,
+              title: 'Interview Updated',
+              message: `Interview for ${interview.stage.hiringProcess.candidate.name} has been updated`,
+              metadata: {
+                interviewUid: interview.uid,
+                candidateUid: interview.stage.hiringProcess.candidate.uid,
+                candidateName: interview.stage.hiringProcess.candidate.name,
+                jobPositionUid: jobPosition.uid,
+                jobPositionTitle: jobPosition.title,
+              },
+            });
+          } catch (error) {
+            this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${error.message}`);
+          }
+        }
+      }
+    }
+
     return InterviewMapper(interview);
   }
 
@@ -340,6 +438,41 @@ export class InterviewService {
     // Send cancellation email
     if (existingInterview.stage.hiringProcess?.candidate) {
       await this.emailService.sendInterviewCancelled(existingInterview.stage.hiringProcess.candidate, existingInterview.scheduledBy, existingInterview, reason);
+
+      // Create notification for HR users about interview cancellation
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { id: existingInterview.stage.hiringProcess.jobPositionId },
+      });
+
+      if (jobPosition) {
+        const hrUsers = await this.databaseService.user.findMany({
+          where: {
+            companyId: jobPosition.companyId,
+            roles: { hasSome: ['HR', 'HR_MANAGER', 'RECRUITER'] },
+          },
+        });
+
+        for (const hrUser of hrUsers) {
+          try {
+            await this.notificationsService.create({
+              userUid: hrUser.uid,
+              type: NotificationType.INTERVIEW_CANCELLED,
+              title: 'Interview Cancelled',
+              message: `Interview for ${existingInterview.stage.hiringProcess.candidate.name} has been cancelled${reason ? `: ${reason}` : ''}`,
+              metadata: {
+                interviewUid: existingInterview.uid,
+                candidateUid: existingInterview.stage.hiringProcess.candidate.uid,
+                candidateName: existingInterview.stage.hiringProcess.candidate.name,
+                jobPositionUid: jobPosition.uid,
+                jobPositionTitle: jobPosition.title,
+                reason,
+              },
+            });
+          } catch (error) {
+            this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${error.message}`);
+          }
+        }
+      }
     }
 
     return InterviewMapper(interview);

@@ -8,9 +8,10 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { RoleHierarchyService } from './services/role-hierarchy.service';
 import { AssignRoleDto, UpdateRoleDto, CompanyMemberResponseDto } from './dto/company-roles.dto';
-import { RolesType } from '@prisma/client';
+import { RolesType, NotificationType } from '@prisma/client';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @Injectable()
@@ -20,6 +21,7 @@ export class CompanyRolesService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly roleHierarchyService: RoleHierarchyService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -155,6 +157,9 @@ export class CompanyRolesService {
         throw new ForbiddenException(validationError);
       }
 
+      // Store old roles for notification
+      const oldRoles = targetUser.roles;
+
       // Update user roles
       const updatedUser = await this.databaseService.user.update({
         where: { uid: userUid },
@@ -162,6 +167,27 @@ export class CompanyRolesService {
           roles: updateRoleDto.roles,
         },
       });
+
+      // Notify the user about role change
+      try {
+        await this.notificationsService.create({
+          userUid: targetUser.uid,
+          type: NotificationType.TEAM_ROLE_CHANGED,
+          title: 'Role Changed',
+          message: `Your role has been updated at ${company.name}. New role${updateRoleDto.roles.length > 1 ? 's' : ''}: ${updateRoleDto.roles.join(', ')}.`,
+          metadata: {
+            companyUid: company.uid,
+            companyName: company.name,
+            oldRoles,
+            newRoles: updateRoleDto.roles,
+          },
+        });
+      } catch (error) {
+        this.logger.error(
+          `Failed to create notification for role change: ${error.message}`,
+        );
+        // Don't fail the role update if notification fails
+      }
 
       return this.mapToCompanyMemberDto(updatedUser);
     } catch (error) {
@@ -219,6 +245,25 @@ export class CompanyRolesService {
           roles: [RolesType.USER], // Reset to basic user role
         },
       });
+
+      // Notify the user about removal
+      try {
+        await this.notificationsService.create({
+          userUid: targetUser.uid,
+          type: NotificationType.TEAM_MEMBER_REMOVED,
+          title: 'Removed from Team',
+          message: `You have been removed from ${company.name}.`,
+          metadata: {
+            companyUid: company.uid,
+            companyName: company.name,
+          },
+        });
+      } catch (error) {
+        this.logger.error(
+          `Failed to create notification for team member removal: ${error.message}`,
+        );
+        // Don't fail the removal if notification fails
+      }
 
       return {
         message: `User ${targetUser.name} removed from company successfully`,

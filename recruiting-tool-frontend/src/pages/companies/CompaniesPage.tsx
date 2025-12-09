@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {Box, Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions, TextField} from '@mui/material';
+import {Box, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField} from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import { Add as AddIcon } from '@mui/icons-material';
 import { useCreateCompany, useDeleteCompany } from '../../hooks/api/useCompanies';
@@ -14,7 +14,7 @@ import SearchBar from '../../components/search/SearchBar';
 import CompaniesList from '../../components/companies/CompaniesList';
 import UpdateCompanyDialog from '../../components/dialogs/UpdateCompanyDialog';
 import ConfirmDeleteDialog from '../../components/dialogs/ConfirmDeleteDialog';
-import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
+import {AccessDeniedMessage, PageHeader} from '../../components/common';
 
 export const CompaniesPage: React.FC = () => {
   const {t} = useTranslation();
@@ -64,32 +64,15 @@ export const CompaniesPage: React.FC = () => {
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: 'flex',
-          flexDirection: {xs: 'column', sm: 'row'},
-          justifyContent: 'space-between',
-          alignItems: {xs: 'flex-start', sm: 'center'},
-          mb: {xs: 2, sm: 3},
-          gap: 2,
+      <PageHeader
+        title="companies.title"
+        action={{
+          label: 'companies.add_company',
+          icon: <AddIcon />,
+          onClick: createDialog.open,
+          ariaLabel: t('companies.add_company'),
         }}
-      >
-        <Typography variant="h4" sx={{fontSize: {xs: '1.5rem', sm: '2.125rem'}}}>
-          {t('companies.title')}
-        </Typography>
-        <Button
-          variant="contained"
-          startIcon={<AddIcon />}
-          onClick={createDialog.open}
-          sx={{
-            width: {xs: '100%', sm: 'auto'},
-            minHeight: '44px',
-          }}
-          aria-label={t('companies.add_company')}
-        >
-          {t('companies.add_company')}
-        </Button>
-      </Box>
+      />
 
       <Box sx={{ mb: 3, maxWidth: {xs: '100%', sm: 400} }}>
         <SearchBar onSearch={handleSearch} placeholder={t('companies.search_placeholder')} value={search} />

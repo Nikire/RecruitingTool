@@ -22,6 +22,7 @@ import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import UserAvatar from '../user/UserAvatar';
 import {useTranslation} from 'react-i18next';
 import LanguageSelector from '../common/LanguageSelector';
+import {useNotificationSSE} from '../../hooks/useNotificationSSE';
 
 const drawerWidth = 240;
 
@@ -95,6 +96,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 	const navigate = useNavigate();
 	const {t} = useTranslation();
 	const [mobileOpen, setMobileOpen] = useState(false);
+
+	// Establish SSE connection for real-time notifications
+	useNotificationSSE();
 
 	const handleDrawerToggle = () => {
 		setMobileOpen(!mobileOpen);

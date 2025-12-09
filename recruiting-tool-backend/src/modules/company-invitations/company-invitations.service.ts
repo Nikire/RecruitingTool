@@ -8,7 +8,8 @@ import {
 } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
-import { RolesType, InvitationStatus } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
+import { RolesType, InvitationStatus, NotificationType } from '@prisma/client';
 import {
   CreateInvitationDto,
   CompanyInvitationResponseDto,
@@ -23,6 +24,7 @@ export class CompanyInvitationsService {
   constructor(
     private readonly database: DatabaseService,
     private readonly emailService: EmailService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -135,6 +137,35 @@ export class CompanyInvitationsService {
         `Failed to send invitation email to ${dto.email}: ${error.message}`,
       );
       // Don't fail the invitation creation if email fails
+    }
+
+    // Notify the invitee if they already have an account
+    try {
+      const inviteeUser = await this.database.user.findFirst({
+        where: { email: dto.email },
+      });
+
+      if (inviteeUser) {
+        await this.notificationsService.create({
+          userUid: inviteeUser.uid,
+          type: NotificationType.TEAM_INVITATION_SENT,
+          title: 'Team Invitation',
+          message: `You've been invited to join ${company.name} as ${dto.role}.`,
+          metadata: {
+            companyUid: company.uid,
+            companyName: company.name,
+            invitationUid: invitation.uid,
+            role: dto.role,
+            inviterUid: inviter.uid,
+            inviterName: inviter.name,
+          },
+        });
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to create notification for invitation: ${error.message}`,
+      );
+      // Don't fail the invitation creation if notification fails
     }
 
     return this.mapToResponseDto(invitation);
@@ -330,6 +361,63 @@ export class CompanyInvitationsService {
     this.logger.log(
       `User ${user.email} accepted invitation to join ${invitation.company.name}`,
     );
+
+    // Notify the inviter about the accepted invitation
+    try {
+      await this.notificationsService.create({
+        userUid: invitation.invitedBy.uid,
+        type: NotificationType.TEAM_INVITATION_ACCEPTED,
+        title: 'Invitation Accepted',
+        message: `${user.name} has accepted your invitation to join ${invitation.company.name} as ${invitation.role}.`,
+        metadata: {
+          companyUid: invitation.company.uid,
+          companyName: invitation.company.name,
+          invitationUid: invitation.uid,
+          newMemberUid: user.uid,
+          newMemberName: user.name,
+          role: invitation.role,
+        },
+      });
+    } catch (error) {
+      this.logger.error(
+        `Failed to create notification for accepted invitation: ${error.message}`,
+      );
+      // Don't fail the invitation acceptance if notification fails
+    }
+
+    // Notify company HR/Owner users about new team member
+    try {
+      const companyAdmins = await this.database.user.findMany({
+        where: {
+          companyId: invitation.companyId,
+          roles: {
+            hasSome: [RolesType.COMPANY_OWNER, RolesType.COMPANY_ADMIN],
+          },
+          uid: { not: invitation.invitedBy.uid }, // Don't duplicate notification to inviter
+        },
+      });
+
+      for (const admin of companyAdmins) {
+        await this.notificationsService.create({
+          userUid: admin.uid,
+          type: NotificationType.TEAM_MEMBER_ADDED,
+          title: 'New Team Member',
+          message: `${user.name} has joined your team as ${invitation.role}.`,
+          metadata: {
+            companyUid: invitation.company.uid,
+            companyName: invitation.company.name,
+            newMemberUid: user.uid,
+            newMemberName: user.name,
+            role: invitation.role,
+          },
+        });
+      }
+    } catch (error) {
+      this.logger.error(
+        `Failed to create notifications for new team member: ${error.message}`,
+      );
+      // Don't fail the invitation acceptance if notification fails
+    }
 
     return this.mapToResponseDto(updatedInvitation);
   }

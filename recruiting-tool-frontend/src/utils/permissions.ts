@@ -49,7 +49,7 @@ export const isAdmin = (user: User | null): boolean => {
 
 /**
  * Gets the default dashboard route for a user based on their roles
- * Priority: SUPER_ADMIN > ADMIN/COMPANY_OWNER > HR > regular users
+ * Priority: SUPER_ADMIN > ADMIN > HR/COMPANY_OWNER > regular users
  * @param user - The user to get the dashboard for
  * @returns The appropriate dashboard route
  */
@@ -61,13 +61,13 @@ export const getDefaultDashboard = (user: User | null): string => {
 		return '/admin';
 	}
 
-	// Admins and Company Owners go to admin panel
-	if (user.roles.includes(UserRoles.ADMIN) || user.roles.includes(UserRoles.COMPANY_OWNER)) {
+	// ONLY Admins go to admin panel (NOT Company Owners)
+	if (user.roles.includes(UserRoles.ADMIN)) {
 		return '/admin';
 	}
 
-	// HR goes to HR dashboard
-	if (user.roles.includes(UserRoles.HR)) {
+	// HR and Company Owners go to HR dashboard
+	if (user.roles.includes(UserRoles.HR) || user.roles.includes(UserRoles.COMPANY_OWNER)) {
 		return '/hr/dashboard';
 	}
 

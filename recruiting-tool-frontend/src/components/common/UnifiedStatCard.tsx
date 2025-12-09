@@ -86,6 +86,9 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
 		<Card
 			sx={{
 				height: '100%',
+				width: '100%',
+				flex: 1,
+				minHeight: isStatistic ? 120 : 100,
 				display: 'flex',
 				flexDirection: 'column',
 				cursor: isClickable ? 'pointer' : 'default',
@@ -149,7 +152,16 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
 					)}
 				</Box>
 				{displaySubtitle && (
-					<Typography variant="body2" color="text.secondary">
+					<Typography
+						variant="body2"
+						color="text.secondary"
+						sx={{
+							overflow: 'hidden',
+							textOverflow: 'ellipsis',
+							whiteSpace: 'nowrap',
+						}}
+						title={displaySubtitle}
+					>
 						{displaySubtitle}
 					</Typography>
 				)}

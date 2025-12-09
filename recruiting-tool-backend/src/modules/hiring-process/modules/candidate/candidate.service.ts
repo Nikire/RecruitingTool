@@ -5,7 +5,7 @@ import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto, CreateMan
 import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
-import { User, ApplicationSource, StageStatus } from '@prisma/client';
+import { User, ApplicationSource, StageStatus, NotificationType, RolesType } from '@prisma/client';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CandidateJourneyResponseDto, CandidateJourneyStepDto } from '../stages/dto/stage-time-tracking.dto';
@@ -15,6 +15,7 @@ import { CandidateActivityService } from './services/candidate-activity.service'
 import { CandidateActivityType } from '@prisma/client';
 import { StorageService } from 'src/modules/storage/storage.service';
 import { AuditLogService } from 'src/modules/audit-log/audit-log.service';
+import { NotificationsService } from 'src/modules/notifications/notifications.service';
 
 @Injectable()
 export class CandidateService {
@@ -26,6 +27,7 @@ export class CandidateService {
     private emailService: EmailService,
     private storageService: StorageService,
     private auditLogService: AuditLogService,
+    private notificationsService: NotificationsService,
   ) {}
 
   async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
@@ -619,6 +621,13 @@ export class CandidateService {
       // Find candidate by UID to get the numeric ID
       const candidate = await this.databaseService.candidate.findFirst({
         where: { uid: createNoteDto.candidateUid, deletedAt: null },
+        include: {
+          hiringProcesses: {
+            include: {
+              company: true,
+            },
+          },
+        },
       });
 
       if (!candidate) {
@@ -636,6 +645,46 @@ export class CandidateService {
           candidate: true,
         },
       });
+
+      // Notify other HR team members (not the author) about the new note
+      try {
+        // Get company IDs from hiring processes
+        const companyIds = [...new Set(candidate.hiringProcesses.map((hp) => hp.companyId))];
+
+        for (const companyId of companyIds) {
+          const hrUsers = await this.databaseService.user.findMany({
+            where: {
+              companyId,
+              id: { not: authorUserId }, // Exclude the author
+              roles: {
+                hasSome: [RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN],
+              },
+            },
+          });
+
+          for (const hrUser of hrUsers) {
+            try {
+              await this.notificationsService.create({
+                userUid: hrUser.uid,
+                type: NotificationType.CANDIDATE_NOTE_ADDED,
+                title: 'New Candidate Note',
+                message: `${note.author.name} added a note to ${candidate.name}'s profile`,
+                metadata: {
+                  candidateUid: candidate.uid,
+                  candidateName: candidate.name,
+                  noteUid: note.uid,
+                  authorUid: note.author.uid,
+                  authorName: note.author.name,
+                },
+              });
+            } catch (notifError) {
+              this.logger.error(`Failed to create notification for user ${hrUser.uid}: ${notifError.message}`);
+            }
+          }
+        }
+      } catch (notifError) {
+        this.logger.error(`Failed to send candidate note notifications: ${notifError.message}`);
+      }
 
       return {
         uid: note.uid,

@@ -6,9 +6,10 @@ import { JobPositionModule } from '../job-position/job-position.module';
 import { CandidateModule } from './modules/candidate/candidate.module';
 import { StagesModule } from './modules/stages/stages.module';
 import { QuotaModule } from '../quota/quota.module';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [forwardRef(() => JobPositionModule), CandidateModule, StagesModule, QuotaModule],
+  imports: [forwardRef(() => JobPositionModule), CandidateModule, StagesModule, QuotaModule, NotificationsModule],
   controllers: [HiringProcessController, HiringProcessPublicController],
   providers: [HiringProcessService],
   exports: [HiringProcessService],

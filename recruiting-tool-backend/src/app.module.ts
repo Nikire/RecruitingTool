@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { HiringProcessModule } from './modules/hiring-process/hiring-process.module';
 import { StagesModule } from './modules/hiring-process/modules/stages/stages.module';
 import { CandidateModule } from './modules/hiring-process/modules/candidate/candidate.module';
@@ -46,6 +47,7 @@ import { CompanyInvitationsModule } from './modules/company-invitations/company-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    ScheduleModule.forRoot(),
     CacheModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],

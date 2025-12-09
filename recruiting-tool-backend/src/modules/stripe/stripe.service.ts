@@ -8,7 +8,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
+import { SubscriptionPlan, SubscriptionStatus, NotificationType, RolesType } from '@prisma/client';
 import {
   CreateCheckoutSessionDto,
   SubscriptionResponseDto,
@@ -17,6 +17,7 @@ import {
   CreateBillingPortalDto,
   BillingPortalResponseDto,
 } from './dto/stripe.dto';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class StripeService {
@@ -27,6 +28,7 @@ export class StripeService {
   constructor(
     private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
+    private readonly notificationsService: NotificationsService,
   ) {
     const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (!apiKey) {
@@ -284,12 +286,24 @@ export class StripeService {
 
       // Get current period end from the first subscription item
       const currentPeriodEnd = stripeSubscription.items?.data?.[0]?.current_period_end;
+      const cancelDate = currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : new Date();
+
+      // Create notification for subscription cancellation
+      await this.createSubscriptionNotification(
+        companyId,
+        NotificationType.SUBSCRIPTION_CANCELLED,
+        'Subscription Cancellation Scheduled',
+        `Your ${company.subscription.plan} subscription will be cancelled on ${cancelDate.toLocaleDateString()}. You'll be downgraded to the FREE plan after that date.`,
+        {
+          subscriptionUid: company.subscription.uid,
+          planName: company.subscription.plan,
+          cancelDate: cancelDate.toISOString(),
+        },
+      );
 
       return {
         message: 'Subscription will be canceled at the end of the current billing period',
-        cancelAt: currentPeriodEnd
-          ? new Date(currentPeriodEnd * 1000)
-          : new Date(), // Fallback to current date if not available
+        cancelAt: cancelDate,
       };
     } catch (error) {
       this.logger.error(`Failed to cancel subscription: ${error.message}`, error.stack);
@@ -567,6 +581,21 @@ export class StripeService {
     }
 
     this.logger.log(`Subscription created for company ${companyId}: ${stripeSubscription.id}`);
+
+    // Create notification for plan upgrade (new paid subscription)
+    if (plan !== SubscriptionPlan.FREE) {
+      await this.createSubscriptionNotification(
+        parseInt(companyId),
+        NotificationType.SUBSCRIPTION_PLAN_UPGRADED,
+        'Subscription Plan Activated',
+        `You've been upgraded to the ${plan} plan! Enjoy your new features and benefits.`,
+        {
+          subscriptionUid: company.subscription?.uid || null,
+          planName: plan,
+          status: this.mapStripeStatus(stripeSubscription.status),
+        },
+      );
+    }
   }
 
   /**
@@ -575,6 +604,7 @@ export class StripeService {
   private async handleSubscriptionUpdated(stripeSubscription: Stripe.Subscription): Promise<void> {
     const subscription = await this.databaseService.subscription.findUnique({
       where: { stripeSubscriptionId: stripeSubscription.id },
+      include: { company: true },
     });
 
     if (!subscription) {
@@ -582,8 +612,9 @@ export class StripeService {
       return;
     }
 
-    // Determine plan from price ID
-    const plan = this.determinePlanFromPriceId(stripeSubscription.items.data[0]?.price.id);
+    // Determine new plan from price ID
+    const newPlan = this.determinePlanFromPriceId(stripeSubscription.items.data[0]?.price.id);
+    const oldPlan = subscription.plan;
 
     // Get current period from the first subscription item
     const currentPeriodStart = stripeSubscription.items?.data?.[0]?.current_period_start;
@@ -593,7 +624,7 @@ export class StripeService {
       where: { id: subscription.id },
       data: {
         status: this.mapStripeStatus(stripeSubscription.status),
-        plan,
+        plan: newPlan,
         currentPeriodStart: currentPeriodStart
           ? new Date(currentPeriodStart * 1000)
           : null,
@@ -606,6 +637,42 @@ export class StripeService {
     });
 
     this.logger.log(`Subscription updated: ${stripeSubscription.id}`);
+
+    // Create notification if plan changed
+    if (oldPlan !== newPlan) {
+      const isPlanUpgrade = this.isPlanUpgrade(oldPlan, newPlan);
+
+      await this.createSubscriptionNotification(
+        subscription.companyId,
+        isPlanUpgrade
+          ? NotificationType.SUBSCRIPTION_PLAN_UPGRADED
+          : NotificationType.SUBSCRIPTION_PLAN_DOWNGRADED,
+        isPlanUpgrade ? 'Plan Upgraded' : 'Plan Downgraded',
+        isPlanUpgrade
+          ? `Your plan has been upgraded from ${oldPlan} to ${newPlan}. Enjoy your new features!`
+          : `Your plan has been changed from ${oldPlan} to ${newPlan}.`,
+        {
+          subscriptionUid: subscription.uid,
+          oldPlan,
+          newPlan,
+        },
+      );
+    }
+
+    // Create notification for subscription renewal
+    if (stripeSubscription.status === 'active' && !stripeSubscription.cancel_at_period_end) {
+      await this.createSubscriptionNotification(
+        subscription.companyId,
+        NotificationType.SUBSCRIPTION_RENEWED,
+        'Subscription Renewed',
+        `Your ${newPlan} subscription has been renewed successfully until ${new Date(currentPeriodEnd * 1000).toLocaleDateString()}.`,
+        {
+          subscriptionUid: subscription.uid,
+          planName: newPlan,
+          renewedUntil: new Date(currentPeriodEnd * 1000).toISOString(),
+        },
+      );
+    }
   }
 
   /**
@@ -621,6 +688,8 @@ export class StripeService {
       return;
     }
 
+    const oldPlan = subscription.plan;
+
     // Mark as canceled and downgrade to FREE plan
     await this.databaseService.subscription.update({
       where: { id: subscription.id },
@@ -632,6 +701,19 @@ export class StripeService {
     });
 
     this.logger.log(`Subscription deleted (downgraded to FREE): ${stripeSubscription.id}`);
+
+    // Create notification for subscription cancellation
+    await this.createSubscriptionNotification(
+      subscription.companyId,
+      NotificationType.SUBSCRIPTION_CANCELLED,
+      'Subscription Cancelled',
+      `Your ${oldPlan} subscription has been cancelled. You've been downgraded to the FREE plan.`,
+      {
+        subscriptionUid: subscription.uid,
+        oldPlan,
+        newPlan: SubscriptionPlan.FREE,
+      },
+    );
   }
 
   /**
@@ -662,6 +744,24 @@ export class StripeService {
     });
 
     this.logger.log(`Payment succeeded for subscription: ${subscriptionId}`);
+
+    // Create notification for successful payment
+    const amount = invoice.amount_paid ? (invoice.amount_paid / 100).toFixed(2) : '0.00';
+    const currency = invoice.currency?.toUpperCase() || 'USD';
+
+    await this.createSubscriptionNotification(
+      subscription.companyId,
+      NotificationType.SUBSCRIPTION_PAYMENT_SUCCESS,
+      'Payment Successful',
+      `Payment of ${currency} $${amount} processed successfully for your ${subscription.plan} plan.`,
+      {
+        subscriptionUid: subscription.uid,
+        planName: subscription.plan,
+        amount,
+        currency,
+        invoiceId: invoice.id,
+      },
+    );
   }
 
   /**
@@ -692,6 +792,72 @@ export class StripeService {
     });
 
     this.logger.log(`Payment failed for subscription: ${subscriptionId}`);
+
+    // Create notification for failed payment
+    const amount = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : '0.00';
+    const currency = invoice.currency?.toUpperCase() || 'USD';
+
+    await this.createSubscriptionNotification(
+      subscription.companyId,
+      NotificationType.SUBSCRIPTION_PAYMENT_FAILED,
+      'Payment Failed',
+      `Payment of ${currency} $${amount} for your ${subscription.plan} plan failed. Please update your payment method to avoid service interruption.`,
+      {
+        subscriptionUid: subscription.uid,
+        planName: subscription.plan,
+        amount,
+        currency,
+        invoiceId: invoice.id,
+      },
+    );
+  }
+
+  /**
+   * Create subscription notification for Company Owners
+   */
+  private async createSubscriptionNotification(
+    companyId: number,
+    type: NotificationType,
+    title: string,
+    message: string,
+    metadata?: Record<string, any>,
+  ): Promise<void> {
+    try {
+      // Find all Company Owners for this company
+      const companyOwners = await this.databaseService.user.findMany({
+        where: {
+          companyId,
+          roles: { has: RolesType.COMPANY_OWNER },
+          isActive: true,
+        },
+        select: { uid: true },
+      });
+
+      if (companyOwners.length === 0) {
+        this.logger.warn(`No active Company Owners found for company ${companyId}`);
+        return;
+      }
+
+      // Create notification for each Company Owner
+      const notificationPromises = companyOwners.map((owner) =>
+        this.notificationsService.create({
+          userUid: owner.uid,
+          type,
+          title,
+          message,
+          metadata: metadata || null,
+        }),
+      );
+
+      await Promise.all(notificationPromises);
+      this.logger.log(`Created ${type} notifications for ${companyOwners.length} company owner(s)`);
+    } catch (error) {
+      // Don't throw - notification failures shouldn't break subscription operations
+      this.logger.error(
+        `Failed to create subscription notification: ${error.message}`,
+        error.stack,
+      );
+    }
   }
 
   /**
@@ -712,5 +878,18 @@ export class StripeService {
     }
 
     return SubscriptionPlan.FREE;
+  }
+
+  /**
+   * Determine if a plan change is an upgrade
+   */
+  private isPlanUpgrade(oldPlan: SubscriptionPlan, newPlan: SubscriptionPlan): boolean {
+    const planHierarchy: Record<SubscriptionPlan, number> = {
+      [SubscriptionPlan.FREE]: 0,
+      [SubscriptionPlan.PROFESSIONAL]: 1,
+      [SubscriptionPlan.ENTERPRISE]: 2,
+    };
+
+    return planHierarchy[newPlan] > planHierarchy[oldPlan];
   }
 }

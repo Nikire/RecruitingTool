@@ -12,7 +12,7 @@ import { DatabaseService } from 'src/modules/shared/modules/database/database.se
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { StageMetricsResponseDto } from './dto/stage-time-tracking.dto';
 
-@Auth(['HR', 'ADMIN'])
+@Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
 @ApiBearerAuth()
 @ApiTags('Stages')
 @Controller('stages')
@@ -38,8 +38,8 @@ export class StagesController {
 
   @Get('list')
   @ApiOperation({ summary: 'Get paginated stages list with filtering' })
-  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<StageResponseDto>> {
-    return this.stagesService.list(paginationDto);
+  list(@Query() paginationDto: PaginationDto, @CurrentUser() user: any): Promise<PaginatedResponse<StageResponseDto>> {
+    return this.stagesService.list(paginationDto, user);
   }
 
   @Get(':uid')
@@ -47,23 +47,23 @@ export class StagesController {
   @CacheTTL(300000) // Cache for 5 minutes - stage templates rarely change
   @ApiOperation({ summary: 'Get a stage by UID' })
   @ApiParam({ name: 'uid', type: String, description: 'Stage UID' })
-  findOne(@Param('uid') uid: string) {
-    return this.stagesService.findOne(uid);
+  findOne(@Param('uid') uid: string, @CurrentUser() user: any) {
+    return this.stagesService.findOne(uid, user);
   }
 
   @Put(':uid')
   @ApiOperation({ summary: 'Update a stage' })
   @ApiParam({ name: 'uid', type: String, description: 'Stage UID' })
   @ApiBody({ type: UpdateStageDto })
-  update(@Param('uid') uid: string, @Body() updateStageDto: UpdateStageDto) {
-    return this.stagesService.update(uid, updateStageDto);
+  update(@Param('uid') uid: string, @Body() updateStageDto: UpdateStageDto, @CurrentUser() user: any) {
+    return this.stagesService.update(uid, updateStageDto, user);
   }
 
   @Delete(':uid')
   @ApiOperation({ summary: 'Delete a stage' })
   @ApiParam({ name: 'uid', type: String, description: 'Stage UID' })
-  remove(@Param('uid') uid: string) {
-    return this.stagesService.remove(uid);
+  remove(@Param('uid') uid: string, @CurrentUser() user: any) {
+    return this.stagesService.remove(uid, user);
   }
 
   // Stage Notes endpoints

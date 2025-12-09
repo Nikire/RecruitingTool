@@ -1,5 +1,6 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
+import { SseService } from '../sse/sse.service';
 import {
   CreateNotificationDto,
   NotificationResponseDto,
@@ -12,6 +13,7 @@ export class NotificationsService {
 
   constructor(
     private databaseService: DatabaseService,
+    private sseService: SseService,
   ) {}
 
   /**
@@ -40,13 +42,21 @@ export class NotificationsService {
       },
       include: {
         user: {
-          select: { uid: true },
+          select: { uid: true, company: { select: { uid: true } } },
         },
       },
     });
 
-    // TODO: Emit SSE event for real-time notification (requires SSE service integration)
-    // this.sseService.emitNotification(...);
+    // Emit SSE event for real-time notification delivery
+    this.sseService.emitNotification(
+      notification.uid,
+      notification.type,
+      notification.title,
+      notification.message,
+      notification.metadata,
+      user.uid,
+      user.company?.uid,
+    );
 
     return this.mapToResponseDto(notification);
   }

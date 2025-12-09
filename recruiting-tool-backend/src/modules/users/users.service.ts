@@ -257,6 +257,9 @@ export class UsersService {
     try {
       const user = await this.databaseService.user.findFirst({
         where: { email },
+        include: {
+          company: true,
+        },
       });
 
       if (!user) {

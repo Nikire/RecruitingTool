@@ -26,7 +26,7 @@ import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
   description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
 })
 @ApiNotFoundResponse({ description: 'Candidate not found' })
-@Auth(['HR', 'ADMIN'])
+@Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
 export class CandidateController {
   constructor(
     private readonly candidateService: CandidateService,

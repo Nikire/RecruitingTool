@@ -1,7 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+import api from '../api/axios';
 
 export interface CompanyMember {
   uid: string;
@@ -18,8 +16,8 @@ export const useCompanyMembers = (companyUid: string) => {
   return useQuery({
     queryKey: ['companyMembers', companyUid],
     queryFn: async () => {
-      const response = await axios.get<CompanyMember[]>(
-        `${API_BASE_URL}/companies/${companyUid}/roles`,
+      const response = await api.get<CompanyMember[]>(
+        `/companies/${companyUid}/roles`,
       );
       return response.data;
     },

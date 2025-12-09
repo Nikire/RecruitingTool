@@ -7,12 +7,14 @@ import { CandidateActivityService } from './services/candidate-activity.service'
 import { EmailModule } from 'src/modules/email/email.module';
 import { StorageModule } from 'src/modules/storage/storage.module';
 import { AuditLogModule } from 'src/modules/audit-log/audit-log.module';
+import { NotificationsModule } from 'src/modules/notifications/notifications.module';
 
 @Module({
   imports: [
     EmailModule,
     StorageModule,
     AuditLogModule,
+    NotificationsModule,
     MulterModule.register({
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB max file size

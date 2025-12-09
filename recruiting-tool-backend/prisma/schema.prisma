@@ -53,53 +53,53 @@ model Company {
 }
 
 model User {
-  id                      Int                    @id @default(autoincrement())
-  uid                     String                 @unique @default(uuid()) @db.Uuid
-  name                    String
-  email                   String
-  password                String?
-  auth0Id                 String?                @unique
-  provider                String?                @default("local")
-  roles                   RolesType[]            @default([USER])
-  profilePicture          String?
-  phoneNumber             String?
-  position                String?
-  department              String?
-  bio                     String?
-  linkedinUrl             String?
-  portfolioUrl            String?
-  location                String?
-  timezone                String?
-  googleRefreshToken      String?
-  resumeUrl               String?
-  resumeFileName          String?
-  onboardingCompleted     Boolean                @default(false)
-  isActive                Boolean                @default(true)
-  deactivatedAt           DateTime?
-  deactivatedBy           Int?
-  lastLoginAt             DateTime?
-  createdAt               DateTime               @default(now())
-  updatedAt               DateTime               @updatedAt
-  companyId               Int?
-  company                 Company?               @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  profile                 Profile?
-  jobPositions            JobPosition[]          @relation("JobPositionsUser")
-  fileUploads             FileUpload[]           @relation("FileUploadsUser")
-  reviewedApplications    Application[]          @relation("ApplicationReviewer")
-  candidateNotes          CandidateNote[]        @relation("CandidateNoteAuthor")
-  emailTemplates          EmailTemplate[]        @relation("EmailTemplateCreatedBy")
-  scheduledInterviews     Interview[]            @relation("InterviewScheduledBy")
-  interviewParticipations InterviewInterviewer[] @relation("InterviewParticipations")
-  interviewReschedules    InterviewReschedule[]  @relation("InterviewReschedules")
-  stageNotes              StageNote[]            @relation("StageNoteAuthor")
-  activityLogs            UserActivityLog[]      @relation("UserActivityLogs")
-  schedules               HRSchedule[]           @relation("UserSchedules")
-  scorecardEvaluations    Scorecard[]            @relation("ScorecardEvaluations")
-  aiUsageLogs             AIUsageLog[]           @relation("UserAIUsageLogs")
-  candidateActivities     CandidateActivity[]    @relation("CandidateActivityUser")
-  refreshTokens           RefreshToken[]         @relation("UserRefreshTokens")
-  auditLogs               AuditLog[]             @relation("UserAuditLogs")
-  calendarConnections     CalendarConnection[]   @relation("UserCalendarConnections")
+  id                         Int                    @id @default(autoincrement())
+  uid                        String                 @unique @default(uuid()) @db.Uuid
+  name                       String
+  email                      String
+  password                   String?
+  auth0Id                    String?                @unique
+  provider                   String?                @default("local")
+  roles                      RolesType[]            @default([USER])
+  profilePicture             String?
+  phoneNumber                String?
+  position                   String?
+  department                 String?
+  bio                        String?
+  linkedinUrl                String?
+  portfolioUrl               String?
+  location                   String?
+  timezone                   String?
+  googleRefreshToken         String?
+  resumeUrl                  String?
+  resumeFileName             String?
+  onboardingCompleted        Boolean                @default(false)
+  isActive                   Boolean                @default(true)
+  deactivatedAt              DateTime?
+  deactivatedBy              Int?
+  lastLoginAt                DateTime?
+  createdAt                  DateTime               @default(now())
+  updatedAt                  DateTime               @updatedAt
+  companyId                  Int?
+  company                    Company?               @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  profile                    Profile?
+  jobPositions               JobPosition[]          @relation("JobPositionsUser")
+  fileUploads                FileUpload[]           @relation("FileUploadsUser")
+  reviewedApplications       Application[]          @relation("ApplicationReviewer")
+  candidateNotes             CandidateNote[]        @relation("CandidateNoteAuthor")
+  emailTemplates             EmailTemplate[]        @relation("EmailTemplateCreatedBy")
+  scheduledInterviews        Interview[]            @relation("InterviewScheduledBy")
+  interviewParticipations    InterviewInterviewer[] @relation("InterviewParticipations")
+  interviewReschedules       InterviewReschedule[]  @relation("InterviewReschedules")
+  stageNotes                 StageNote[]            @relation("StageNoteAuthor")
+  activityLogs               UserActivityLog[]      @relation("UserActivityLogs")
+  schedules                  HRSchedule[]           @relation("UserSchedules")
+  scorecardEvaluations       Scorecard[]            @relation("ScorecardEvaluations")
+  aiUsageLogs                AIUsageLog[]           @relation("UserAIUsageLogs")
+  candidateActivities        CandidateActivity[]    @relation("CandidateActivityUser")
+  refreshTokens              RefreshToken[]         @relation("UserRefreshTokens")
+  auditLogs                  AuditLog[]             @relation("UserAuditLogs")
+  calendarConnections        CalendarConnection[]   @relation("UserCalendarConnections")
   notifications              Notification[]         @relation("UserNotifications")
   connectionRequests         ConnectionRequest[]    @relation("UserConnectionRequests")
   reviewedConnectionRequests ConnectionRequest[]    @relation("ReviewedConnectionRequests")
@@ -470,19 +470,19 @@ enum EmailTemplateType {
 }
 
 model EmailTemplate {
-  id          Int                 @id @default(autoincrement())
-  uid         String              @unique @default(uuid()) @db.Uuid
+  id          Int                @id @default(autoincrement())
+  uid         String             @unique @default(uuid()) @db.Uuid
   name        String
   subject     String
-  body        String              @db.Text
+  body        String             @db.Text
   type        EmailTemplateType?
   companyId   Int?
-  company     Company?            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  company     Company?           @relation(fields: [companyId], references: [id], onDelete: Cascade)
   createdById Int
-  createdBy   User                @relation("EmailTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
-  isDefault   Boolean             @default(false)
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  createdBy   User               @relation("EmailTemplateCreatedBy", fields: [createdById], references: [id], onDelete: Restrict)
+  isDefault   Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
 
   @@unique([name, companyId])
   @@index([companyId])
@@ -1003,12 +1003,84 @@ enum SubscriptionPlan {
 }
 
 enum NotificationType {
+  // Interview notifications
   INTERVIEW_SCHEDULED
   INTERVIEW_UPDATED
   INTERVIEW_CANCELLED
+  INTERVIEW_REMINDER_24H
+  INTERVIEW_REMINDER_1H
+  INTERVIEW_RESCHEDULED
+  INTERVIEW_COMPLETED
+  INTERVIEW_FEEDBACK_SUBMITTED
+
+  // Application notifications
   APPLICATION_RECEIVED
+  APPLICATION_SUBMITTED
+  APPLICATION_REVIEWED
+  APPLICATION_ACCEPTED
+  APPLICATION_REJECTED
   APPLICATION_STATUS
+
+  // Hiring process notifications
+  HIRING_PROCESS_STARTED
+  HIRING_PROCESS_STAGE_CHANGED
+  HIRING_PROCESS_COMPLETED
+  HIRING_PROCESS_OFFER_EXTENDED
+  HIRING_PROCESS_OFFER_ACCEPTED
+  HIRING_PROCESS_OFFER_REJECTED
+
+  // Candidate notifications
+  CANDIDATE_STAGE_ADVANCED
+  CANDIDATE_STAGE_REJECTED
+  CANDIDATE_ADDED_TO_PROCESS
+  CANDIDATE_REMOVED_FROM_PROCESS
+  CANDIDATE_NOTE_ADDED
+  CANDIDATE_SCORE_UPDATED
+
+  // Team management notifications
+  TEAM_INVITATION_SENT
+  TEAM_INVITATION_ACCEPTED
+  TEAM_INVITATION_REJECTED
+  TEAM_INVITATION_EXPIRED
+  TEAM_MEMBER_ADDED
+  TEAM_MEMBER_REMOVED
+  TEAM_ROLE_CHANGED
+
+  // Company notifications
+  COMPANY_CONNECTION_REQUESTED
+  COMPANY_CONNECTION_APPROVED
+  COMPANY_CONNECTION_REJECTED
+  COMPANY_SETTINGS_UPDATED
+
+  // Subscription notifications
+  SUBSCRIPTION_TRIAL_ENDING
+  SUBSCRIPTION_TRIAL_ENDED
+  SUBSCRIPTION_PLAN_UPGRADED
+  SUBSCRIPTION_PLAN_DOWNGRADED
+  SUBSCRIPTION_PAYMENT_SUCCESS
+  SUBSCRIPTION_PAYMENT_FAILED
+  SUBSCRIPTION_RENEWED
+  SUBSCRIPTION_CANCELLED
+  SUBSCRIPTION_LIMIT_WARNING
+  SUBSCRIPTION_LIMIT_REACHED
+
+  // Account/Profile notifications
+  ACCOUNT_EMAIL_VERIFIED
+  ACCOUNT_PASSWORD_CHANGED
+  ACCOUNT_PROFILE_UPDATED
+  ACCOUNT_WELCOME
+
+  // Job position notifications
+  JOB_POSITION_CREATED
+  JOB_POSITION_PUBLISHED
+  JOB_POSITION_CLOSED
+  JOB_POSITION_UPDATED
+
+  // System notifications
   SYSTEM
+  SYSTEM_MAINTENANCE
+  SYSTEM_ANNOUNCEMENT
+  SYSTEM_FEATURE_UPDATE
 }
 
 enum JobType {
@@ -1066,21 +1138,21 @@ model Subscription {
 }
 
 model ConnectionRequest {
-  id            Int                       @id @default(autoincrement())
-  uid           String                    @unique @default(uuid()) @db.Uuid
+  id            Int                     @id @default(autoincrement())
+  uid           String                  @unique @default(uuid()) @db.Uuid
   userId        Int
-  user          User                      @relation("UserConnectionRequests", fields: [userId], references: [id], onDelete: Cascade)
+  user          User                    @relation("UserConnectionRequests", fields: [userId], references: [id], onDelete: Cascade)
   companyId     Int
-  company       Company                   @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  requestedRole RolesType                 @default(HR)
-  status        ConnectionRequestStatus   @default(PENDING)
-  message       String?                   @db.Text
+  company       Company                 @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  requestedRole RolesType               @default(HR)
+  status        ConnectionRequestStatus @default(PENDING)
+  message       String?                 @db.Text
   reviewedById  Int?
-  reviewedBy    User?                     @relation("ReviewedConnectionRequests", fields: [reviewedById], references: [id], onDelete: SetNull)
+  reviewedBy    User?                   @relation("ReviewedConnectionRequests", fields: [reviewedById], references: [id], onDelete: SetNull)
   reviewedAt    DateTime?
-  reviewNote    String?                   @db.Text
-  createdAt     DateTime                  @default(now())
-  updatedAt     DateTime                  @updatedAt
+  reviewNote    String?                 @db.Text
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
 
   @@unique([userId, companyId])
   @@index([companyId, status])
