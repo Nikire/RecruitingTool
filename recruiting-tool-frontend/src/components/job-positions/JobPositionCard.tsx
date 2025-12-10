@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import {useTranslation} from 'react-i18next';
 import {JobPosition} from '../../types/jobPosition.types';
-import {formatDistanceToNow} from 'date-fns';
+import {formatRelativeTime} from '../../utils/dateFormatters';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import EditIcon from '@mui/icons-material/Edit';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -46,10 +46,10 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
 	onEdit,
 	onMore,
 }) => {
-	const {t} = useTranslation();
+	const {t, i18n} = useTranslation();
 
 	const postedDate = jobPosition.createdAt
-		? formatDistanceToNow(new Date(jobPosition.createdAt), {addSuffix: true})
+		? formatRelativeTime(jobPosition.createdAt, i18n.language)
 		: t('common.unknown');
 
 	const applicantCount = jobPosition.hiringProcesses?.length || 0;

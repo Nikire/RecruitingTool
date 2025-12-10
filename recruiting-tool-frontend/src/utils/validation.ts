@@ -43,6 +43,40 @@ export const useValidationRules = () => {
     }),
 
     /**
+     * Password validation
+     * @param minLength - Minimum password length (default: 8)
+     * @param requireSpecialChars - Require special characters (default: false)
+     */
+    password: (minLength = 8, requireSpecialChars = false): RegisterOptions => {
+      const rules: RegisterOptions = {
+        required: t('validation.password_required'),
+        minLength: {
+          value: minLength,
+          message: t('validation.password_min_length', { min: minLength }),
+        },
+      };
+
+      if (requireSpecialChars) {
+        rules.pattern = {
+          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/,
+          message: t('validation.password_complexity'),
+        };
+      }
+
+      return rules;
+    },
+
+    /**
+     * Confirm password validation (matches another field)
+     * @param passwordFieldValue - The value of the password field to match against
+     */
+    confirmPassword: (passwordFieldValue: string): RegisterOptions => ({
+      required: t('validation.confirm_password_required'),
+      validate: (value: string) =>
+        value === passwordFieldValue || t('validation.passwords_must_match'),
+    }),
+
+    /**
      * Minimum length validation
      * @param min - Minimum number of characters
      */
@@ -81,6 +115,16 @@ export const useValidationRules = () => {
       pattern: {
         value: /^https?:\/\/.+/,
         message: t('validation.url_invalid'),
+      },
+    }),
+
+    /**
+     * LinkedIn URL validation (optional)
+     */
+    linkedinUrl: (): RegisterOptions => ({
+      pattern: {
+        value: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
+        message: t('validation.linkedin_invalid'),
       },
     }),
 

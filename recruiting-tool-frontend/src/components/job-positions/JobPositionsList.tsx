@@ -18,6 +18,7 @@ import {useNavigate} from 'react-router-dom';
 import {ApplyToJobDialog} from '../dialogs/ApplyToJobDialog';
 import {useDialog} from '../../hooks/useDialog';
 import {EnhancedDataGrid, DateCell, StatusCell, CellRow, CellColumn, ActionsCell} from '../tables';
+import {formatDate} from '../../utils/dateFormatters';
 
 interface JobPositionsListProps {
 	page: number;
@@ -56,7 +57,7 @@ const JobPositionCardView: React.FC<{
 	onViewDetails: (uid: string) => void;
 	publicMode?: boolean;
 }> = ({jobPosition, onApplyClick, onViewDetails, publicMode = false}) => {
-	const {t} = useTranslation();
+	const {t, i18n} = useTranslation();
 	return (
 		<Card
 			sx={{
@@ -99,7 +100,7 @@ const JobPositionCardView: React.FC<{
 
 				{jobPosition.createdAt && (
 					<Typography variant="caption" color="textSecondary" sx={{display: 'block', mb: 1}}>
-						{t('careers.posted')}: {new Date(jobPosition.createdAt).toLocaleDateString()}
+						{t('careers.posted')}: {formatDate(jobPosition.createdAt, 'MMM dd, yyyy', i18n.language)}
 					</Typography>
 				)}
 

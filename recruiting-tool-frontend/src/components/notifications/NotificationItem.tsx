@@ -11,8 +11,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useTranslation } from 'react-i18next';
 import { Notification } from '../../types/notification';
-import { formatDistanceToNow } from 'date-fns';
-import { enUS, es } from 'date-fns/locale';
+import { formatRelativeTime } from '../../utils/dateFormatters';
 import { getNotificationIcon, getNotificationColor } from '../../utils/notificationUtils';
 
 interface NotificationItemProps {
@@ -27,7 +26,6 @@ interface NotificationItemProps {
  */
 const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClick, onDelete }) => {
   const { t, i18n } = useTranslation();
-  const locale = i18n.language === 'es' ? es : enUS;
 
   const handleDelete = (event: React.MouseEvent) => {
     event.stopPropagation();
@@ -100,10 +98,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
               {notification.message}
             </Typography>
             <Typography variant="caption" color="textSecondary">
-              {formatDistanceToNow(new Date(notification.createdAt), {
-                addSuffix: true,
-                locale,
-              })}
+              {formatRelativeTime(notification.createdAt, i18n.language)}
             </Typography>
           </>
         }

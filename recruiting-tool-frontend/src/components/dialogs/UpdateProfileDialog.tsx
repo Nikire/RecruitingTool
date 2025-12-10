@@ -3,6 +3,7 @@ import {useForm} from 'react-hook-form';
 import {useTranslation} from 'react-i18next';
 import {User, UpdateUserDto} from '../../types/user.types';
 import {useUpdateUser} from '../../hooks/api/useUsers';
+import {useValidationRules} from '../../utils/validation';
 
 interface UpdateProfileDialogProps {
 	open: boolean;
@@ -12,6 +13,7 @@ interface UpdateProfileDialogProps {
 
 const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose, user}) => {
 	const {t} = useTranslation();
+	const validationRules = useValidationRules();
 	const {mutate: updateUser, isPending} = useUpdateUser();
 
 	const {
@@ -81,7 +83,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 								<TextField
 									fullWidth
 									label={t('edit_profile.full_name')}
-									{...register('name', {required: t('validation.name_required')})}
+									{...register('name', validationRules.required(t('edit_profile.full_name')))}
 									error={!!errors.name}
 									helperText={errors.name?.message}
 									variant="outlined"
@@ -93,13 +95,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 									fullWidth
 									label={t('edit_profile.email_address')}
 									type="email"
-									{...register('email', {
-										required: t('validation.email_required'),
-										pattern: {
-											value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-											message: t('edit_profile.email_invalid'),
-										},
-									})}
+									{...register('email', validationRules.email())}
 									error={!!errors.email}
 									helperText={errors.email?.message}
 									variant="outlined"
@@ -177,7 +173,9 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({open, onClose,
 									fullWidth
 									label={t('edit_profile.linkedin_profile')}
 									placeholder={t('edit_profile.linkedin_placeholder')}
-									{...register('linkedinUrl')}
+									{...register('linkedinUrl', validationRules.linkedinUrl())}
+									error={!!errors.linkedinUrl}
+									helperText={errors.linkedinUrl?.message}
 									variant="outlined"
 								/>
 							</Grid>

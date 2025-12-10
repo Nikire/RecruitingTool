@@ -18,19 +18,14 @@ import {useListCandidates, useDeleteCandidate} from '../../hooks/api/useCandidat
 import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 import {Candidate} from '../../types/candidate';
+import {SearchableListProps} from '../../types';
 import UpdateCandidateDialog from '../dialogs/UpdateCandidateDialog';
 import {ConfirmationDialog} from '../common';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
 import {EnhancedDataGrid, ActionsCell, DateCell} from '../tables';
 
-interface CandidatesListProps {
-	page: number;
-	limit: number;
-	search: string;
-	onPageChange: (page: number) => void;
-	onLimitChange: (limit: number) => void;
-}
+interface CandidatesListProps extends SearchableListProps {}
 
 // Skeleton loader for mobile loading state
 const CandidateCardSkeleton = () => (
