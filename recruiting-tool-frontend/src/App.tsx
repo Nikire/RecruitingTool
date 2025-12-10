@@ -40,6 +40,7 @@ import TeamManagementPage from './pages/TeamManagementPage';
 import AcceptInvitationPage from './pages/invitations/AcceptInvitationPage';
 import CheckStatusPage from './pages/status/CheckStatusPage';
 import NotificationsPage from './pages/notifications/NotificationsPage';
+import BillingPage from './pages/billing/BillingPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -104,6 +105,21 @@ function App() {
 							<Route path="/hr/email-templates" element={<EmailTemplatesPage />} />
 							<Route path="/settings/calendar" element={<CalendarSettingsPage />} />
 							<Route path="/settings/team" element={<TeamManagementPage />} />
+						</Route>
+					</Route>
+				</Route>
+
+				{/* Billing Route - accessible to COMPANY_OWNER only */}
+				<Route element={<ProtectedRoute />}>
+					<Route
+						element={
+							<RoleGuard
+								allowedRoles={[UserRoles.COMPANY_OWNER]}
+							/>
+						}
+					>
+						<Route element={<HRLayout />}>
+							<Route path="/hr/billing" element={<BillingPage />} />
 						</Route>
 					</Route>
 				</Route>

@@ -16,6 +16,8 @@ import {
   CancelSubscriptionResponseDto,
   CreateBillingPortalDto,
   BillingPortalResponseDto,
+  InvoicesResponseDto,
+  InvoiceResponseDto,
 } from './dto/stripe.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -144,8 +146,11 @@ export class StripeService {
         customerId = await this.createCustomer(companyId, user.email, company.name);
       }
 
-      // Get price ID based on plan
-      const priceId = this.getPriceId(dto.plan);
+      // Get billing interval (default to monthly if not specified)
+      const interval = dto.interval || 'monthly';
+
+      // Get price ID based on plan and interval
+      const priceId = this.getPriceId(dto.plan, interval);
 
       // Create Checkout session
       const session = await this.stripe!.checkout.sessions.create({
@@ -164,11 +169,13 @@ export class StripeService {
           companyId: companyId.toString(),
           companyUid: company.uid,
           plan: dto.plan,
+          interval,
         },
         subscription_data: {
           metadata: {
             companyId: companyId.toString(),
             companyUid: company.uid,
+            interval,
           },
         },
       });
@@ -423,20 +430,86 @@ export class StripeService {
   }
 
   /**
-   * Get Stripe Price ID based on plan
+   * Get Stripe Price ID based on plan and interval
    */
-  private getPriceId(plan: 'PROFESSIONAL' | 'ENTERPRISE'): string {
-    const priceId = this.configService.get<string>(
-      plan === 'PROFESSIONAL'
+  private getPriceId(plan: 'PROFESSIONAL' | 'ENTERPRISE', interval: 'monthly' | 'annual' = 'monthly'): string {
+    let envVar: string;
+
+    if (interval === 'annual') {
+      envVar = plan === 'PROFESSIONAL'
+        ? 'STRIPE_PROFESSIONAL_ANNUAL_PRICE_ID'
+        : 'STRIPE_ENTERPRISE_ANNUAL_PRICE_ID';
+    } else {
+      envVar = plan === 'PROFESSIONAL'
         ? 'STRIPE_PROFESSIONAL_PRICE_ID'
-        : 'STRIPE_ENTERPRISE_PRICE_ID',
-    );
+        : 'STRIPE_ENTERPRISE_PRICE_ID';
+    }
+
+    const priceId = this.configService.get<string>(envVar);
 
     if (!priceId) {
-      throw new BadRequestException(`Price ID for ${plan} plan is not configured`);
+      throw new BadRequestException(`Price ID for ${plan} ${interval} plan is not configured`);
     }
 
     return priceId;
+  }
+
+  /**
+   * Get invoices for a company
+   */
+  async getInvoices(companyId: number): Promise<InvoicesResponseDto> {
+    this.ensureEnabled();
+    try {
+      const company = await this.databaseService.company.findUnique({
+        where: { id: companyId },
+        include: { subscription: true },
+      });
+
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
+
+      // Return empty list if no Stripe customer
+      if (!company.subscription?.stripeCustomerId) {
+        return {
+          invoices: [],
+          total: 0,
+        };
+      }
+
+      // Fetch invoices from Stripe
+      const stripeInvoices = await this.stripe!.invoices.list({
+        customer: company.subscription.stripeCustomerId,
+        limit: 100, // Fetch up to 100 invoices
+      });
+
+      // Map Stripe invoices to our DTO
+      const invoices: InvoiceResponseDto[] = stripeInvoices.data.map((invoice) => ({
+        id: invoice.id,
+        invoiceNumber: invoice.number || invoice.id,
+        amountDue: invoice.amount_due,
+        amountPaid: invoice.amount_paid,
+        currency: invoice.currency,
+        status: invoice.status || 'draft',
+        createdAt: new Date(invoice.created * 1000),
+        dueDate: invoice.due_date ? new Date(invoice.due_date * 1000) : undefined,
+        pdfUrl: invoice.invoice_pdf || '',
+        hostedInvoiceUrl: invoice.hosted_invoice_url || '',
+      }));
+
+      this.logger.log(`Retrieved ${invoices.length} invoices for company ${company.uid}`);
+
+      return {
+        invoices,
+        total: stripeInvoices.data.length,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to get invoices: ${error.message}`, error.stack);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to get invoices');
+    }
   }
 
   /**

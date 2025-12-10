@@ -224,6 +224,13 @@ interface DummyDataStructure {
     cost?: number;
     createdAt: string;
   }>;
+  feedback: Array<{
+    content: string;
+    category: 'FEATURE_REQUEST' | 'BUG_REPORT' | 'GENERAL';
+    rating?: number;
+    userIndex: number;
+    companyIndex: number;
+  }>;
 }
 
 @Injectable()
@@ -1200,6 +1207,29 @@ export class DummyService implements OnApplicationBootstrap {
         this.logger.log(
           `Created AI usage log: ${user.name} - ${log.operation} (${log.tokensUsed || 0} tokens, date: ${usageDate.toISOString().split('T')[0]})`,
         );
+      }
+    }
+
+    // Create feedback submissions (idempotent - check first)
+    const existingFeedbackCount = await this.databaseService.feedback.count();
+    if (existingFeedbackCount === 0) {
+      this.logger.log('Creating user feedback submissions...');
+      for (const feedbackData of data.feedback) {
+        const user = createdUsers[feedbackData.userIndex];
+        const company = createdCompanies[feedbackData.companyIndex];
+
+        if (!user || !company) continue;
+
+        await this.databaseService.feedback.create({
+          data: {
+            content: feedbackData.content,
+            category: feedbackData.category as any,
+            rating: feedbackData.rating,
+            userId: user.id,
+            companyId: company.id,
+          },
+        });
+        this.logger.log(`Created feedback: ${feedbackData.category} from ${user.name}`);
       }
     }
 

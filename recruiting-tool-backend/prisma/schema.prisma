@@ -46,6 +46,7 @@ model Company {
   subscription       Subscription?
   connectionRequests ConnectionRequest[]
   invitations        CompanyInvitation[] @relation("CompanyInvitations")
+  feedback           Feedback[]          @relation("CompanyFeedback")
 
   @@index([uid])
   @@index([name])
@@ -104,6 +105,7 @@ model User {
   connectionRequests         ConnectionRequest[]    @relation("UserConnectionRequests")
   reviewedConnectionRequests ConnectionRequest[]    @relation("ReviewedConnectionRequests")
   sentInvitations            CompanyInvitation[]    @relation("UserInvitations")
+  feedback                   Feedback[]             @relation("UserFeedback")
 
   @@unique([email, companyId])
   @@index([email])
@@ -888,6 +890,32 @@ enum BatchStatus {
   COMPLETED
   FAILED
   CANCELLED
+}
+
+model Feedback {
+  id        Int              @id @default(autoincrement())
+  uid       String           @unique @default(uuid()) @db.Uuid
+  content   String
+  category  FeedbackCategory
+  rating    Int?
+  userId    Int
+  user      User             @relation("UserFeedback", fields: [userId], references: [id], onDelete: Cascade)
+  companyId Int
+  company   Company          @relation("CompanyFeedback", fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([category])
+  @@index([createdAt])
+  @@index([uid])
+}
+
+enum FeedbackCategory {
+  FEATURE_REQUEST
+  BUG_REPORT
+  GENERAL
 }
 
 enum CandidateActivityType {

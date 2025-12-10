@@ -7,6 +7,7 @@ import {
   CheckoutSessionResponse,
   BillingPortalResponse,
   CancelSubscriptionResponse,
+  InvoicesResponse,
 } from '../types/subscription.types';
 
 // API functions
@@ -33,6 +34,11 @@ export const subscriptionApi = {
 
   cancelSubscription: async (): Promise<CancelSubscriptionResponse> => {
     const response = await api.post('/stripe/cancel');
+    return response.data;
+  },
+
+  getInvoices: async (): Promise<InvoicesResponse> => {
+    const response = await api.get('/stripe/invoices');
     return response.data;
   },
 };
@@ -102,5 +108,16 @@ export const useCancelSubscription = () => {
       // Invalidate and refetch subscription data
       queryClient.invalidateQueries({ queryKey: ['subscription'] });
     },
+  });
+};
+
+/**
+ * Hook to fetch billing invoices
+ */
+export const useInvoices = () => {
+  return useQuery({
+    queryKey: ['invoices'],
+    queryFn: subscriptionApi.getInvoices,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };

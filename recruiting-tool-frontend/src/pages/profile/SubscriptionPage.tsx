@@ -20,7 +20,8 @@ import {
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import toast from 'react-hot-toast';
-import PricingCard from '../../components/subscription/PricingCard';
+import PricingCard, { BillingInterval } from '../../components/subscription/PricingCard';
+import BillingToggle from '../../components/subscription/BillingToggle';
 import QuotaDisplay from '../../components/subscription/QuotaDisplay';
 import {
   useSubscription,
@@ -36,6 +37,7 @@ const SubscriptionPage: React.FC = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [billingInterval, setBillingInterval] = useState<BillingInterval>('monthly');
 
   const { data: subscription, isLoading: isLoadingSubscription, isError: isErrorSubscription } = useSubscription();
   const { data: quota, isLoading: isLoadingQuota } = useQuota();
@@ -52,6 +54,7 @@ const SubscriptionPage: React.FC = () => {
     createCheckout(
       {
         plan,
+        interval: billingInterval,
         successUrl,
         cancelUrl,
       },
@@ -279,11 +282,16 @@ const SubscriptionPage: React.FC = () => {
         {t('subscription.available_plans')}
       </Typography>
 
-      <Grid container spacing={3}>
+      {/* Billing Toggle */}
+      <BillingToggle value={billingInterval} onChange={setBillingInterval} discount={20} />
+
+      <Grid container spacing={3} justifyContent="center">
         <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.FREE}
-            price={t('subscription.plans.free.price')}
+            monthlyPrice={0}
+            annualPrice={0}
+            interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.FREE)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.FREE}
             upgradeDisabled
@@ -293,7 +301,9 @@ const SubscriptionPage: React.FC = () => {
         <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.PROFESSIONAL}
-            price={t('subscription.plans.professional.price')}
+            monthlyPrice={79}
+            annualPrice={758}
+            interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.PROFESSIONAL}
             onUpgrade={() => handleUpgrade(SubscriptionPlan.PROFESSIONAL)}
@@ -309,7 +319,9 @@ const SubscriptionPage: React.FC = () => {
         <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
           <PricingCard
             plan={SubscriptionPlan.ENTERPRISE}
-            price={t('subscription.plans.enterprise.price')}
+            monthlyPrice={299}
+            annualPrice={2870}
+            interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}
             onUpgrade={() => handleUpgrade(SubscriptionPlan.ENTERPRISE)}

@@ -24,6 +24,7 @@ import {useTranslation} from 'react-i18next';
 import LanguageSelector from '../common/LanguageSelector';
 import {NotificationBell} from '../notifications';
 import {useNotificationSSE} from '../../hooks/useNotificationSSE';
+import {FeedbackButton} from '../feedback';
 
 const drawerWidth = 240;
 
@@ -294,6 +295,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 				<Toolbar /> {/* Spacer for fixed AppBar */}
 				{children || <Outlet />}
 			</Box>
+
+			{/* Floating Feedback Button */}
+			<FeedbackButton />
 		</Box>
 	);
 };

@@ -1123,7 +1123,8 @@
     "email_templates": "Email Templates",
     "aria_label": "hr navigation",
     "analytics": "Analytics",
-    "team": "Team"
+    "team": "Team",
+    "billing": "Billing"
   },
   "admin_layout": {
     "title": "Admin Panel",
@@ -1142,6 +1143,26 @@
     "en": "English",
     "es": "Spanish",
     "current_language": "Current Language"
+  },
+  "billing": {
+    "title": "Billing & Invoices",
+    "subtitle": "View and download your billing invoices",
+    "no_invoices": "No Invoices Available",
+    "no_invoices_description": "You don't have any invoices yet. Invoices will appear here once you subscribe to a paid plan.",
+    "invoice_number": "Invoice #",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "actions": "Actions",
+    "download_pdf": "Download PDF",
+    "view_invoice": "View Invoice",
+    "total_invoices": "Total: {{count}} invoice(s)",
+    "error_loading": "Failed to load invoices. Please try again later.",
+    "status_paid": "Paid",
+    "status_open": "Open",
+    "status_draft": "Draft",
+    "status_void": "Void",
+    "status_uncollectible": "Uncollectible"
   },
   "home": {
     "hero": {
@@ -1831,6 +1852,15 @@
       "checkout_failed": "Failed to create checkout session. Please try again.",
       "billing_portal_failed": "Failed to open billing portal. Please try again.",
       "cancel_failed": "Failed to cancel subscription. Please try again."
+    },
+    "billing": {
+      "toggle_label": "Billing Interval",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "save_percent": "Save {{percent}}%",
+      "annual_savings": "Save {{percent}}% with annual billing",
+      "billed_monthly": "Billed monthly",
+      "billed_annually": "Billed annually"
     }
   },
   "onboarding": {
@@ -2514,5 +2544,34 @@
     "status_label": "Status",
     "last_updated": "Last Updated",
     "privacy_notice": "For your privacy, only limited information is displayed"
+  },
+  "feedback": {
+    "button_label": "Feedback",
+    "modal_title": "Share Your Feedback",
+    "modal_description": "We'd love to hear your thoughts! Help us improve by sharing your feedback.",
+    "category_label": "Category",
+    "category_placeholder": "Select a category",
+    "content_label": "Your Feedback",
+    "content_placeholder": "Tell us what's on your mind...",
+    "content_helper": "Please provide detailed feedback to help us improve",
+    "rating_label": "Rating (Optional)",
+    "rating_helper": "Rate your experience from 1 (poor) to 5 (excellent)",
+    "submit_button": "Submit Feedback",
+    "submitting": "Submitting...",
+    "categories": {
+      "FEATURE_REQUEST": "Feature Request",
+      "BUG_REPORT": "Bug Report",
+      "GENERAL": "General Feedback"
+    },
+    "messages": {
+      "submitted": "Thank you for your feedback!",
+      "submit_failed": "Failed to submit feedback. Please try again."
+    },
+    "validation": {
+      "category_required": "Please select a category",
+      "content_required": "Please provide your feedback",
+      "content_min_length": "Feedback must be at least 10 characters",
+      "rating_invalid": "Rating must be between 1 and 5"
+    }
   }
 }

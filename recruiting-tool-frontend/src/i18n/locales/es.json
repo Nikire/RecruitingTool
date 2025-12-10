@@ -1129,7 +1129,8 @@
     "email_templates": "Plantillas de Correo",
     "aria_label": "navegación de rrhh",
     "analytics": "Análisis",
-    "team": "Equipo"
+    "team": "Equipo",
+    "billing": "Facturación"
   },
   "admin_layout": {
     "title": "Panel de Administración",
@@ -1148,6 +1149,26 @@
     "en": "Inglés",
     "es": "Español",
     "current_language": "Idioma Actual"
+  },
+  "billing": {
+    "title": "Facturación y Facturas",
+    "subtitle": "Vea y descargue sus facturas de facturación",
+    "no_invoices": "No Hay Facturas Disponibles",
+    "no_invoices_description": "Aún no tiene ninguna factura. Las facturas aparecerán aquí una vez que se suscriba a un plan de pago.",
+    "invoice_number": "Factura #",
+    "date": "Fecha",
+    "amount": "Monto",
+    "status": "Estado",
+    "actions": "Acciones",
+    "download_pdf": "Descargar PDF",
+    "view_invoice": "Ver Factura",
+    "total_invoices": "Total: {{count}} factura(s)",
+    "error_loading": "Error al cargar las facturas. Por favor, inténtelo de nuevo más tarde.",
+    "status_paid": "Pagada",
+    "status_open": "Abierta",
+    "status_draft": "Borrador",
+    "status_void": "Anulada",
+    "status_uncollectible": "Incobrable"
   },
   "home": {
     "hero": {
@@ -1837,6 +1858,15 @@
       "checkout_failed": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
       "billing_portal_failed": "Error al abrir el portal de facturación. Por favor, inténtalo de nuevo.",
       "cancel_failed": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
+    },
+    "billing": {
+      "toggle_label": "Intervalo de Facturación",
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "save_percent": "Ahorra {{percent}}%",
+      "annual_savings": "Ahorra {{percent}}% con facturación anual",
+      "billed_monthly": "Facturado mensualmente",
+      "billed_annually": "Facturado anualmente"
     }
   },
   "onboarding": {
@@ -2520,5 +2550,34 @@
     "status_label": "Estado",
     "last_updated": "Última Actualización",
     "privacy_notice": "Para tu privacidad, solo se muestra información limitada"
+  },
+  "feedback": {
+    "button_label": "Comentarios",
+    "modal_title": "Comparte tus Comentarios",
+    "modal_description": "¡Nos encantaría conocer tu opinión! Ayúdanos a mejorar compartiendo tus comentarios.",
+    "category_label": "Categoría",
+    "category_placeholder": "Selecciona una categoría",
+    "content_label": "Tus Comentarios",
+    "content_placeholder": "Cuéntanos qué piensas...",
+    "content_helper": "Por favor proporciona comentarios detallados para ayudarnos a mejorar",
+    "rating_label": "Calificación (Opcional)",
+    "rating_helper": "Califica tu experiencia del 1 (pobre) al 5 (excelente)",
+    "submit_button": "Enviar Comentarios",
+    "submitting": "Enviando...",
+    "categories": {
+      "FEATURE_REQUEST": "Solicitud de Función",
+      "BUG_REPORT": "Reporte de Error",
+      "GENERAL": "Comentarios Generales"
+    },
+    "messages": {
+      "submitted": "¡Gracias por tus comentarios!",
+      "submit_failed": "Error al enviar comentarios. Por favor, intenta nuevamente."
+    },
+    "validation": {
+      "category_required": "Por favor selecciona una categoría",
+      "content_required": "Por favor proporciona tus comentarios",
+      "content_min_length": "Los comentarios deben tener al menos 10 caracteres",
+      "rating_invalid": "La calificación debe estar entre 1 y 5"
+    }
   }
 }

@@ -3163,5 +3163,48 @@
       "cost": 0.0156,
       "createdAt": "2025-11-25T11:15:00Z"
     }
+  ],
+  "feedback": [
+    {
+      "content": "It would be great to have bulk candidate import from LinkedIn. This would save us a lot of time when sourcing candidates.",
+      "category": "FEATURE_REQUEST",
+      "rating": 5,
+      "userIndex": 0,
+      "companyIndex": 0
+    },
+    {
+      "content": "The interview scheduling feature is not syncing correctly with Google Calendar. Sometimes events disappear after 24 hours.",
+      "category": "BUG_REPORT",
+      "rating": 2,
+      "userIndex": 1,
+      "companyIndex": 0
+    },
+    {
+      "content": "Love the new analytics dashboard! The visualizations are very helpful for tracking our hiring metrics.",
+      "category": "GENERAL",
+      "rating": 5,
+      "userIndex": 0,
+      "companyIndex": 0
+    },
+    {
+      "content": "Could you add support for video interview integrations? We use Zoom and Microsoft Teams extensively.",
+      "category": "FEATURE_REQUEST",
+      "rating": 4,
+      "userIndex": 2,
+      "companyIndex": 1
+    },
+    {
+      "content": "The application form builder is intuitive and easy to use. Great job on the UX!",
+      "category": "GENERAL",
+      "userIndex": 3,
+      "companyIndex": 1
+    },
+    {
+      "content": "Email templates sometimes don't save properly when using special characters. Getting a 500 error.",
+      "category": "BUG_REPORT",
+      "rating": 1,
+      "userIndex": 2,
+      "companyIndex": 1
+    }
   ]
 }

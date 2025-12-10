@@ -71,6 +71,7 @@ export const isFeatureEnabled = (
 // Create Checkout Session DTO
 export interface CreateCheckoutSessionDto {
   plan: SubscriptionPlan;
+  interval?: 'monthly' | 'annual';
   successUrl: string;
   cancelUrl: string;
 }
@@ -90,4 +91,24 @@ export interface BillingPortalResponse {
 export interface CancelSubscriptionResponse {
   message: string;
   cancelAt: string;
+}
+
+// Invoice Response DTO
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  amountDue: number;
+  amountPaid: number;
+  currency: string;
+  status: string;
+  createdAt: string;
+  dueDate?: string;
+  pdfUrl: string;
+  hostedInvoiceUrl: string;
+}
+
+// Invoices Response
+export interface InvoicesResponse {
+  invoices: Invoice[];
+  total: number;
 }

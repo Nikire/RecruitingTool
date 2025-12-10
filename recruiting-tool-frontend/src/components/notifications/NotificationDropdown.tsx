@@ -46,12 +46,10 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
       markAsRead(notification.uid);
     }
 
-    // Navigate to the relevant page if path is available
+    // Navigate to the relevant page if path is available, otherwise go to notifications page
     const navigationPath = getNotificationNavigationPath(notification);
-    if (navigationPath) {
-      navigate(navigationPath);
-      onClose();
-    }
+    navigate(navigationPath || '/notifications');
+    onClose();
   };
 
   const handleDelete = (uid: string) => {

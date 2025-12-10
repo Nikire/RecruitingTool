@@ -5,17 +5,27 @@ import WorkIcon from '@mui/icons-material/Work';
 import EmailIcon from '@mui/icons-material/Email';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import PeopleIcon from '@mui/icons-material/People';
+import ReceiptIcon from '@mui/icons-material/Receipt';
 import {DashboardLayout, DashboardMenuItem} from '../components/layout';
 import { useTranslation } from 'react-i18next';
+import { useUserAtom } from '../hooks/api/state/useUserAtom';
+import { hasRole } from '../utils/permissions';
+import { UserRoles } from '../types/user.types';
 
 /**
  * HRLayout - Layout component for HR panel with dedicated navigation
- * Accessible to HR, ADMIN, and SUPER_ADMIN roles
+ * Accessible to HR, COMPANY_OWNER, ADMIN, and SUPER_ADMIN roles
  */
 const HRLayout: React.FC = () => {
 	const { t } = useTranslation();
+	const { user } = useUserAtom();
+	const isCompanyOwner = hasRole(user, UserRoles.COMPANY_OWNER);
 
-	const menuItems: DashboardMenuItem[] = [
+	interface ExtendedMenuItem extends DashboardMenuItem {
+		requiresCompanyOwner?: boolean;
+	}
+
+	const menuItems: ExtendedMenuItem[] = [
 		{
 			text: t('hr_layout.dashboard'),
 			icon: <DashboardIcon />,
@@ -51,13 +61,28 @@ const HRLayout: React.FC = () => {
 			icon: <PeopleIcon />,
 			path: '/settings/team',
 		},
+		{
+			text: t('hr_layout.billing'),
+			icon: <ReceiptIcon />,
+			path: '/hr/billing',
+			requiresCompanyOwner: true,
+		},
 	];
+
+	// Filter menu items based on company owner status
+	const canShowMenuItem = (item: ExtendedMenuItem) => {
+		if (item.requiresCompanyOwner && !isCompanyOwner) {
+			return false;
+		}
+		return true;
+	};
 
 	return (
 		<DashboardLayout
 			title={t('hr_layout.title')}
 			menuItems={menuItems}
 			ariaLabel={t('hr_layout.aria_label')}
+			canShowMenuItem={canShowMenuItem}
 		/>
 	);
 };

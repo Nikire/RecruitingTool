@@ -12,6 +12,7 @@ import {
   CancelSubscriptionResponseDto,
   CreateBillingPortalDto,
   BillingPortalResponseDto,
+  InvoicesResponseDto,
 } from './dto/stripe.dto';
 
 @ApiTags('Stripe Subscriptions')
@@ -168,6 +169,39 @@ export class StripeController {
     @Body() dto: CreateBillingPortalDto,
   ): Promise<BillingPortalResponseDto> {
     return this.stripeService.createBillingPortalSession(user.companyId, dto);
+  }
+
+  @Get('invoices')
+  @Auth([RolesType.COMPANY_OWNER])
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get billing invoices',
+    description:
+      'Retrieves the list of billing invoices from Stripe for the company. Accessible only by company owners.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Invoices retrieved successfully',
+    type: InvoicesResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - user is not a company owner',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Company not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  async getInvoices(@CurrentUser() user: any): Promise<InvoicesResponseDto> {
+    return this.stripeService.getInvoices(user.companyId);
   }
 
   @Post('webhook')
