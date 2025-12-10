@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
-import OpenAI from 'openai';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { SseService } from '../sse/sse.service';
@@ -9,31 +8,20 @@ import { SseService } from '../sse/sse.service';
 @Injectable()
 export class ScoringService {
   private readonly logger = new Logger(ScoringService.name);
-  private openai: OpenAI;
 
   constructor(
     private configService: ConfigService,
     private databaseService: DatabaseService,
     private sseService: SseService,
   ) {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey) {
-      this.logger.warn('OpenAI API key not configured. AI scoring features will be disabled.');
-      this.openai = null;
-    } else {
-      this.openai = new OpenAI({
-        apiKey: apiKey,
-      });
-    }
+    this.logger.warn('AI scoring features are currently disabled. Gemini integration will be added in the future.');
   }
 
   /**
    * Score a candidate for a specific job position using AI
    */
   async scoreCandidate(candidateUid: string, jobPositionUid: string): Promise<CandidateScoreResponseDto> {
-    if (!this.openai) {
-      throw new InternalServerErrorException('OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.');
-    }
+    throw new InternalServerErrorException('AI API is not configured. Gemini integration will be added in the future.');
 
     try {
       this.logger.log(`Starting candidate scoring: ${candidateUid} for job ${jobPositionUid}`);
@@ -254,7 +242,7 @@ export class ScoringService {
   }
 
   /**
-   * Generate AI-powered scoring using OpenAI
+   * Generate AI-powered scoring using Gemini (future implementation)
    */
   private async generateAIScoring(
     candidate: any,
@@ -268,7 +256,7 @@ export class ScoringService {
     };
     analysis: ScoreAnalysisDto;
   }> {
-    const model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
+    throw new InternalServerErrorException('AI scoring is not configured. Gemini integration will be added in the future.');
 
     const prompt = `
 You are an expert HR recruiter and candidate evaluator. Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
@@ -319,45 +307,7 @@ Return a JSON object with this exact structure:
 IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
 `;
 
-    try {
-      const completion = await this.openai.chat.completions.create({
-        model: model,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are an expert HR recruiter. You evaluate candidates objectively and provide detailed, constructive feedback. You return your analysis as valid JSON only.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.4, // Balanced temperature for consistent but nuanced scoring
-        response_format: { type: 'json_object' },
-      });
-
-      const responseContent = completion.choices[0].message.content;
-      const result = JSON.parse(responseContent);
-
-      // Validate scores are within range
-      const validateScore = (score: number): number => {
-        return Math.min(100, Math.max(0, score));
-      };
-
-      return {
-        scores: {
-          skills: validateScore(result.scores.skills),
-          experience: validateScore(result.scores.experience),
-          education: validateScore(result.scores.education),
-          overall: validateScore(result.scores.overall),
-        },
-        analysis: result.analysis,
-      };
-    } catch (error) {
-      this.logger.error(`OpenAI API error during scoring: ${error.message}`, error.stack);
-      throw new InternalServerErrorException(`Failed to generate AI scoring: ${error.message}`);
-    }
+    // AI integration code removed - will be replaced with Gemini
   }
 
   /**

@@ -1,6 +1,5 @@
 import { Injectable, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
 import axios from 'axios';
 import * as mammoth from 'mammoth';
 import { ParseResumeResponseDto, ParsedResumeDataDto } from './dto/parse-resume.dto';
@@ -23,27 +22,16 @@ const loadPdfParse = async (): Promise<PdfParseFn> => {
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private openai: OpenAI;
 
   constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey) {
-      this.logger.warn('OpenAI API key not configured. AI features will be disabled.');
-      this.openai = null;
-    } else {
-      this.openai = new OpenAI({
-        apiKey: apiKey,
-      });
-    }
+    this.logger.warn('AI features are currently disabled. Gemini integration will be added in the future.');
   }
 
   /**
    * Parse a resume from a file URL and extract structured data using AI
    */
   async parseResume(fileUrl: string): Promise<ParseResumeResponseDto> {
-    if (!this.openai) {
-      throw new InternalServerErrorException('OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.');
-    }
+    throw new InternalServerErrorException('AI API is not configured. Gemini integration will be added in the future.');
 
     try {
       this.logger.log(`Starting resume parsing for file: ${fileUrl}`);
@@ -137,10 +125,10 @@ export class AiService {
   }
 
   /**
-   * Analyze resume text with OpenAI and extract structured data
+   * Analyze resume text with AI and extract structured data
    */
   private async analyzeResumeWithAI(text: string): Promise<ParsedResumeDataDto> {
-    const model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
+    throw new InternalServerErrorException('AI analysis is not configured. Gemini integration will be added in the future.');
 
     const prompt = `
 You are a professional resume parser. Analyze the following resume text and extract structured information.
@@ -179,42 +167,7 @@ ${text}
 IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
 `;
 
-    try {
-      const completion = await this.openai.chat.completions.create({
-        model: model,
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a resume parsing assistant. You extract structured data from resumes and return it as valid JSON.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.3, // Lower temperature for more consistent parsing
-        response_format: { type: 'json_object' },
-      });
-
-      const responseContent = completion.choices[0].message.content;
-      const parsedData = JSON.parse(responseContent);
-
-      // Ensure arrays exist even if empty
-      return {
-        fullName: parsedData.fullName || null,
-        email: parsedData.email || null,
-        phone: parsedData.phone || null,
-        skills: parsedData.skills || [],
-        experience: parsedData.experience || [],
-        education: parsedData.education || [],
-        summary: parsedData.summary || null,
-        languages: parsedData.languages || [],
-        certifications: parsedData.certifications || [],
-      };
-    } catch (error) {
-      this.logger.error(`OpenAI API error: ${error.message}`, error.stack);
-      throw new InternalServerErrorException(`Failed to analyze resume with AI: ${error.message}`);
-    }
+    // AI integration code removed - will be replaced with Gemini
   }
 
   /**

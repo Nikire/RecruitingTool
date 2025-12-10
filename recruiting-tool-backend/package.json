@@ -68,7 +68,6 @@
     "jwks-rsa": "^3.2.0",
     "mammoth": "^1.11.0",
     "nodemailer": "^7.0.10",
-    "openai": "^6.9.1",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pdf-parse": "^2.4.5",

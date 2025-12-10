@@ -27,7 +27,7 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Parse resume using AI',
-    description: 'Upload a resume file URL and extract structured data using OpenAI. Supports PDF, DOCX, and TXT formats.',
+    description: 'Upload a resume file URL and extract structured data using AI. Supports PDF, DOCX, and TXT formats. (Currently disabled - Gemini integration coming soon)',
   })
   @ApiResponse({
     status: 200,
@@ -51,7 +51,7 @@ export class AiController {
   })
   @ApiResponse({
     status: 500,
-    description: 'Internal server error - OpenAI API error or configuration issue',
+    description: 'Internal server error - AI API error or configuration issue',
   })
   async parseResume(@Body() parseResumeDto: ParseResumeRequestDto): Promise<ParseResumeResponseDto> {
     return this.aiService.parseResume(parseResumeDto.fileUrl);
@@ -63,7 +63,7 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Score a candidate for a job position using AI',
-    description: 'Analyze a candidate against job requirements and generate scores for skills, experience, and education match. Includes detailed AI analysis.',
+    description: 'Analyze a candidate against job requirements and generate scores for skills, experience, and education match. Includes detailed AI analysis. (Currently disabled - Gemini integration coming soon)',
   })
   @ApiResponse({
     status: 200,
@@ -91,7 +91,7 @@ export class AiController {
   })
   @ApiResponse({
     status: 500,
-    description: 'Internal server error - OpenAI API error or configuration issue',
+    description: 'Internal server error - AI API error or configuration issue',
   })
   async scoreCandidate(@Body() scoreCandidateDto: ScoreCandidateDto): Promise<CandidateScoreResponseDto> {
     return this.scoringService.scoreCandidate(scoreCandidateDto.candidateUid, scoreCandidateDto.jobPositionUid);
