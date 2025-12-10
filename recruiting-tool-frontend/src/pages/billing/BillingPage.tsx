@@ -17,9 +17,10 @@ import {
 import { useTranslation } from 'react-i18next';
 import DownloadIcon from '@mui/icons-material/Download';
 import ReceiptIcon from '@mui/icons-material/Receipt';
-import { useInvoices } from '../../api/subscription';
+import { useInvoices, useSubscription, useBillingPortal } from '../../api/subscription';
 import { CenteredLoadingSpinner, PageHeader } from '../../components/common';
-import { Invoice } from '../../types/subscription.types';
+import { Invoice, SubscriptionStatus } from '../../types/subscription.types';
+import { Button } from '@mui/material';
 
 /**
  * BillingPage - Billing and invoice management page for Company Owners
@@ -28,6 +29,8 @@ import { Invoice } from '../../types/subscription.types';
 const BillingPage: React.FC = () => {
 	const { t } = useTranslation();
 	const { data, isLoading, isError } = useInvoices();
+	const { data: subscription, isLoading: subscriptionLoading } = useSubscription();
+	const billingPortal = useBillingPortal();
 
 	if (isLoading) {
 		return <CenteredLoadingSpinner />;
@@ -47,6 +50,27 @@ const BillingPage: React.FC = () => {
 	const invoices = data?.invoices || [];
 	const hasInvoices = invoices.length > 0;
 
+	const handleManageBilling = () => {
+		billingPortal.mutate({ returnUrl: window.location.origin + '/hr/billing' });
+	};
+
+	const getSubscriptionStatusColor = (status: SubscriptionStatus) => {
+		switch (status) {
+			case SubscriptionStatus.ACTIVE:
+				return 'success';
+			case SubscriptionStatus.TRIALING:
+				return 'info';
+			case SubscriptionStatus.PAST_DUE:
+				return 'warning';
+			case SubscriptionStatus.EXPIRED:
+			case SubscriptionStatus.CANCELED:
+			case SubscriptionStatus.UNPAID:
+				return 'error';
+			default:
+				return 'default';
+		}
+	};
+
 	return (
 		<Box sx={{ p: 3 }}>
 			<PageHeader
@@ -54,6 +78,55 @@ const BillingPage: React.FC = () => {
 				subtitle={t('billing.subtitle')}
 				icon={<ReceiptIcon />}
 			/>
+
+			{/* Subscription Status Card */}
+			{subscription && (
+				<Paper sx={{ p: 3, mt: 3 }}>
+					<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
+						<Box>
+							<Typography variant="h6" gutterBottom>
+								{t('subscription.current_subscription')}
+							</Typography>
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+								<Typography variant="body1">
+									{t('subscription.plan_label')}: <strong>{subscription.plan}</strong>
+								</Typography>
+								<Chip
+									label={t(`subscription.status.${subscription.status.toLowerCase()}`)}
+									color={getSubscriptionStatusColor(subscription.status) as any}
+									size="small"
+								/>
+							</Box>
+							{subscription.gracePeriodEndsAt && subscription.status === SubscriptionStatus.PAST_DUE && (
+								<Alert severity="warning" sx={{ mt: 2 }}>
+									<Typography variant="body2">
+										{t('billing.grace_period_expires')}: {new Date(subscription.gracePeriodEndsAt).toLocaleDateString()}
+									</Typography>
+								</Alert>
+							)}
+							{subscription.status === SubscriptionStatus.EXPIRED && (
+								<Alert severity="error" sx={{ mt: 2 }}>
+									<Typography variant="body2">
+										{t('billing.subscription_expired')}
+									</Typography>
+								</Alert>
+							)}
+							{subscription.currentPeriodEnd && (
+								<Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+									{t('subscription.billing_period_ends')}: {new Date(subscription.currentPeriodEnd).toLocaleDateString()}
+								</Typography>
+							)}
+						</Box>
+						<Button
+							variant="contained"
+							onClick={handleManageBilling}
+							disabled={billingPortal.isPending || !subscription.stripeCustomerId}
+						>
+							{t('subscription.manage_billing')}
+						</Button>
+					</Box>
+				</Paper>
+			)}
 
 			{!hasInvoices ? (
 				<Paper sx={{ p: 4, textAlign: 'center', mt: 3 }}>

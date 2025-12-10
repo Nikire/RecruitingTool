@@ -240,6 +240,8 @@ export class StripeService {
         currentPeriodEnd: subscription.currentPeriodEnd,
         trialEnd: subscription.trialEnd,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        gracePeriodEndsAt: subscription.gracePeriodEndsAt,
+        subscriptionEndsAt: subscription.subscriptionEndsAt,
       };
     } catch (error) {
       this.logger.error(`Failed to get subscription: ${error.message}`, error.stack);
@@ -770,6 +772,7 @@ export class StripeService {
         status: SubscriptionStatus.CANCELED,
         plan: SubscriptionPlan.FREE,
         cancelAtPeriodEnd: false,
+        subscriptionEndsAt: new Date(), // Mark when subscription ended
       },
     });
 
@@ -808,11 +811,12 @@ export class StripeService {
       return;
     }
 
-    // Update subscription to ACTIVE after successful payment
+    // Update subscription to ACTIVE after successful payment and clear grace period
     await this.databaseService.subscription.update({
       where: { id: subscription.id },
       data: {
         status: SubscriptionStatus.ACTIVE,
+        gracePeriodEndsAt: null,
       },
     });
 
@@ -856,15 +860,20 @@ export class StripeService {
       return;
     }
 
+    // Set grace period to 7 days from now
+    const gracePeriodEndsAt = new Date();
+    gracePeriodEndsAt.setDate(gracePeriodEndsAt.getDate() + 7);
+
     // Update subscription to PAST_DUE after failed payment
     await this.databaseService.subscription.update({
       where: { id: subscription.id },
       data: {
         status: SubscriptionStatus.PAST_DUE,
+        gracePeriodEndsAt,
       },
     });
 
-    this.logger.log(`Payment failed for subscription: ${subscriptionId}`);
+    this.logger.log(`Payment failed for subscription: ${subscriptionId}. Grace period set until ${gracePeriodEndsAt.toISOString()}`);
 
     // Create notification for failed payment
     const amount = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : '0.00';
@@ -873,14 +882,15 @@ export class StripeService {
     await this.createSubscriptionNotification(
       subscription.companyId,
       NotificationType.SUBSCRIPTION_PAYMENT_FAILED,
-      'Payment Failed',
-      `Payment of ${currency} $${amount} for your ${subscription.plan} plan failed. Please update your payment method to avoid service interruption.`,
+      'Payment Failed - Grace Period Active',
+      `Payment of ${currency} $${amount} for your ${subscription.plan} plan failed. You have until ${gracePeriodEndsAt.toLocaleDateString()} to update your payment method to avoid service interruption.`,
       {
         subscriptionUid: subscription.uid,
         planName: subscription.plan,
         amount,
         currency,
         invoiceId: invoice.id,
+        gracePeriodEndsAt: gracePeriodEndsAt.toISOString(),
       },
     );
   }

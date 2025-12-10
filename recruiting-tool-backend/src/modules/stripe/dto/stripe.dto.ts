@@ -92,6 +92,20 @@ export class SubscriptionResponseDto {
     example: false,
   })
   cancelAtPeriodEnd: boolean;
+
+  @ApiProperty({
+    description: 'Grace period end date (for PAST_DUE subscriptions)',
+    example: '2025-01-22T00:00:00Z',
+    required: false,
+  })
+  gracePeriodEndsAt?: Date;
+
+  @ApiProperty({
+    description: 'Subscription end date (when subscription actually ends)',
+    example: '2025-02-01T00:00:00Z',
+    required: false,
+  })
+  subscriptionEndsAt?: Date;
 }
 
 export class CheckoutSessionResponseDto {

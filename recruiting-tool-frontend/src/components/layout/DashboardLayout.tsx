@@ -25,6 +25,8 @@ import LanguageSelector from '../common/LanguageSelector';
 import {NotificationBell} from '../notifications';
 import {useNotificationSSE} from '../../hooks/useNotificationSSE';
 import {FeedbackButton} from '../feedback';
+import {SubscriptionWarningBanner} from '../subscription';
+import {useSubscription} from '../../api/subscription';
 
 const drawerWidth = 240;
 
@@ -98,6 +100,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 	const navigate = useNavigate();
 	const {t} = useTranslation();
 	const [mobileOpen, setMobileOpen] = useState(false);
+	const {data: subscription} = useSubscription();
 
 	// Establish SSE connection for real-time notifications
 	useNotificationSSE();
@@ -293,6 +296,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 				aria-label={t('aria.main_content')}
 			>
 				<Toolbar /> {/* Spacer for fixed AppBar */}
+				{subscription && <SubscriptionWarningBanner subscription={subscription} />}
 				{children || <Outlet />}
 			</Box>
 

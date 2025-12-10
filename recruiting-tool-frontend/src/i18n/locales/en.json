@@ -1162,7 +1162,9 @@
     "status_open": "Open",
     "status_draft": "Draft",
     "status_void": "Void",
-    "status_uncollectible": "Uncollectible"
+    "status_uncollectible": "Uncollectible",
+    "grace_period_expires": "Grace period expires",
+    "subscription_expired": "Your subscription has expired. Please update your payment method to restore access."
   },
   "home": {
     "hero": {
@@ -1780,7 +1782,23 @@
       "active": "Active",
       "past_due": "Past Due",
       "canceled": "Canceled",
-      "unpaid": "Unpaid"
+      "unpaid": "Unpaid",
+      "expired": "Expired"
+    },
+    "warning_banner": {
+      "title": "Payment Failed - Grace Period Active",
+      "expires_today": "Your grace period expires today.",
+      "expires_tomorrow": "Your grace period expires tomorrow.",
+      "expires_in_days": "Your grace period expires in {{days}} days.",
+      "update_payment_prompt": "Please update your payment method to avoid service interruption.",
+      "update_payment_button": "Update Payment Method"
+    },
+    "expired_modal": {
+      "title": "Subscription Expired",
+      "access_blocked": "Your subscription has expired and access to premium features has been suspended.",
+      "feature_blocked": "Access to {{feature}} is not available with an expired subscription.",
+      "update_prompt": "Please update your payment method to restore access to all features.",
+      "go_to_billing": "Go to Billing"
     },
     "plans": {
       "free": {

@@ -1049,6 +1049,7 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELED
   UNPAID
+  EXPIRED
 }
 
 enum SubscriptionPlan {
@@ -1180,6 +1181,8 @@ model Subscription {
   currentPeriodEnd     DateTime?
   trialEnd             DateTime?
   cancelAtPeriodEnd    Boolean            @default(false)
+  gracePeriodEndsAt    DateTime?
+  subscriptionEndsAt   DateTime?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
 
@@ -1190,6 +1193,8 @@ model Subscription {
   @@index([plan])
   @@index([uid])
   @@index([currentPeriodEnd])
+  @@index([gracePeriodEndsAt])
+  @@index([subscriptionEndsAt])
 }
 
 model ConnectionRequest {

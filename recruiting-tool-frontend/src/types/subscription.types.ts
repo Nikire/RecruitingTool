@@ -12,6 +12,7 @@ export enum SubscriptionStatus {
   PAST_DUE = 'PAST_DUE',
   CANCELED = 'CANCELED',
   UNPAID = 'UNPAID',
+  EXPIRED = 'EXPIRED',
 }
 
 // Subscription Response DTO
@@ -24,6 +25,8 @@ export interface Subscription {
   currentPeriodEnd: string | null;
   trialEnd: string | null;
   cancelAtPeriodEnd: boolean;
+  gracePeriodEndsAt: string | null;
+  subscriptionEndsAt: string | null;
   createdAt: string;
   updatedAt: string;
 }

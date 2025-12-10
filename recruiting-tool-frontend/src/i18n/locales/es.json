@@ -1168,7 +1168,9 @@
     "status_open": "Abierta",
     "status_draft": "Borrador",
     "status_void": "Anulada",
-    "status_uncollectible": "Incobrable"
+    "status_uncollectible": "Incobrable",
+    "grace_period_expires": "El período de gracia expira",
+    "subscription_expired": "Tu suscripción ha expirado. Por favor actualiza tu método de pago para restaurar el acceso."
   },
   "home": {
     "hero": {
@@ -1786,7 +1788,23 @@
       "active": "Activo",
       "past_due": "Vencido",
       "canceled": "Cancelado",
-      "unpaid": "Sin Pagar"
+      "unpaid": "Sin Pagar",
+      "expired": "Expirado"
+    },
+    "warning_banner": {
+      "title": "Pago Fallido - Período de Gracia Activo",
+      "expires_today": "Tu período de gracia expira hoy.",
+      "expires_tomorrow": "Tu período de gracia expira mañana.",
+      "expires_in_days": "Tu período de gracia expira en {{days}} días.",
+      "update_payment_prompt": "Por favor actualiza tu método de pago para evitar la interrupción del servicio.",
+      "update_payment_button": "Actualizar Método de Pago"
+    },
+    "expired_modal": {
+      "title": "Suscripción Expirada",
+      "access_blocked": "Tu suscripción ha expirado y el acceso a funciones premium ha sido suspendido.",
+      "feature_blocked": "El acceso a {{feature}} no está disponible con una suscripción expirada.",
+      "update_prompt": "Por favor actualiza tu método de pago para restaurar el acceso a todas las funciones.",
+      "go_to_billing": "Ir a Facturación"
     },
     "plans": {
       "free": {
