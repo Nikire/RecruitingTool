@@ -29,6 +29,7 @@ import AccessDeniedMessage from '../../../components/common/AccessDeniedMessage'
 import LoadingSpinner from '../../../components/common/LoadingSpinner';
 import ErrorMessage from '../../../components/common/ErrorMessage';
 import EmptyState from '../../../components/common/EmptyState';
+import {TableHeaderCell} from '../../../components/common';
 import {useTranslation} from 'react-i18next';
 
 const EmailTemplatesPage: React.FC = () => {
@@ -136,25 +137,35 @@ const EmailTemplatesPage: React.FC = () => {
 						<Table>
 							<TableHead>
 								<TableRow>
-									<TableCell>{t('email_templates_page.table_name')}</TableCell>
-									<TableCell>
-										{t('email_templates_page.table_subject')}
-									</TableCell>
-									<TableCell>
-										{t('email_templates_page.table_type')}
-									</TableCell>
-									<TableCell>
-										{t('email_templates_page.table_default')}
-									</TableCell>
-									<TableCell>
-										{t('email_templates_page.table_created_by')}
-									</TableCell>
-									<TableCell>
-										{t('email_templates_page.table_created_at')}
-									</TableCell>
-									<TableCell align="right">
-										{t('email_templates_page.table_actions')}
-									</TableCell>
+									<TableHeaderCell
+										label="email_templates_page.table_name"
+										translate
+									/>
+									<TableHeaderCell
+										label="email_templates_page.table_subject"
+										translate
+									/>
+									<TableHeaderCell
+										label="email_templates_page.table_type"
+										translate
+									/>
+									<TableHeaderCell
+										label="email_templates_page.table_default"
+										translate
+									/>
+									<TableHeaderCell
+										label="email_templates_page.table_created_by"
+										translate
+									/>
+									<TableHeaderCell
+										label="email_templates_page.table_created_at"
+										translate
+									/>
+									<TableHeaderCell
+										label="email_templates_page.table_actions"
+										align="right"
+										translate
+									/>
 								</TableRow>
 							</TableHead>
 							<TableBody>

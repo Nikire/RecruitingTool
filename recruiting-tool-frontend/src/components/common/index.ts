@@ -21,3 +21,6 @@ export {default as CenteredLoadingSpinner} from './CenteredLoadingSpinner';
 export type {CenteredLoadingSpinnerProps} from './CenteredLoadingSpinner';
 export {default as MetadataDisplay} from './MetadataDisplay';
 export type {MetadataDisplayProps, MetadataItem} from './MetadataDisplay';
+export {default as ConfirmationDialog} from './ConfirmationDialog';
+export {default as TableHeaderCell} from './TableHeaderCell';
+export type {TableHeaderCellProps} from './TableHeaderCell';

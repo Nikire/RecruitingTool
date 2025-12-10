@@ -1,5 +1,6 @@
 import {Typography, Button, Box, Chip} from '@mui/material';
 import {useTranslation} from 'react-i18next';
+import {useState, useMemo} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import {GridColDef} from '@mui/x-data-grid';
 import {EnhancedDataGrid, CellRow, ActionsCell, DateCell} from '../../components/tables';
@@ -12,6 +13,7 @@ import ConfirmDeleteDialog from '../../components/dialogs/ConfirmDeleteDialog';
 import {canManageResources} from '../../utils/permissions';
 import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
 import {EmailTemplate} from '../../types/emailTemplate.types';
+import SearchBar from '../../components/search/SearchBar';
 
 const EmailTemplatesPage: React.FC = () => {
 	const {t} = useTranslation();
@@ -20,11 +22,27 @@ const EmailTemplatesPage: React.FC = () => {
 	const updateDialog = useDialog<EmailTemplate>();
 	const previewDialog = useDialog<string>();
 	const deleteDialog = useDialog<EmailTemplate>();
+	const [searchQuery, setSearchQuery] = useState('');
 
 	const {data: templates, isLoading} = useEmailTemplates();
 	const {mutate: deleteTemplate, isPending: isDeleting} = useDeleteEmailTemplate();
 
 	const canManage = canManageResources(user);
+
+	// Filter templates based on search query
+	const filteredTemplates = useMemo(() => {
+		if (!templates || !searchQuery.trim()) {
+			return templates || [];
+		}
+
+		const query = searchQuery.toLowerCase();
+		return templates.filter(
+			(template) =>
+				template.name.toLowerCase().includes(query) ||
+				template.subject.toLowerCase().includes(query) ||
+				(template.createdByName && template.createdByName.toLowerCase().includes(query)),
+		);
+	}, [templates, searchQuery]);
 
 	const handleDelete = () => {
 		if (deleteDialog.selectedItem) {
@@ -139,9 +157,16 @@ const EmailTemplatesPage: React.FC = () => {
 				)}
 			</Box>
 
+			<SearchBar
+				onSearch={setSearchQuery}
+				placeholder={t('email_templates.search_placeholder')}
+				value={searchQuery}
+				containerSx={{mb: 2}}
+			/>
+
 			<Box sx={{height: 600, width: '100%'}}>
 				<EnhancedDataGrid
-					rows={templates || []}
+					rows={filteredTemplates}
 					columns={columns}
 					loading={isLoading}
 					pageSizeOptions={[10, 25, 50, 100]}

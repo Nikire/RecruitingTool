@@ -1438,6 +1438,7 @@
     "dialog": "Dialog",
     "error_icon": "Error indicator",
     "warning_icon": "Warning indicator",
+    "info_icon": "Information indicator",
     "loading": "Loading",
     "file_upload": "File upload",
     "avatar": "Avatar for {{name}}",

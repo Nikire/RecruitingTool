@@ -1444,6 +1444,7 @@
     "dialog": "Diálogo",
     "error_icon": "Indicador de error",
     "warning_icon": "Indicador de advertencia",
+    "info_icon": "Indicador de información",
     "loading": "Cargando",
     "file_upload": "Subir archivo",
     "avatar": "Avatar para {{name}}",

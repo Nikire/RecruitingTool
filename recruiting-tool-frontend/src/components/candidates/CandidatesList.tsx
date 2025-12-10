@@ -19,7 +19,7 @@ import {useDialog} from '../../hooks/useDialog';
 import {useConfirmDelete} from '../../hooks/useConfirmDelete';
 import {Candidate} from '../../types/candidate';
 import UpdateCandidateDialog from '../dialogs/UpdateCandidateDialog';
-import ConfirmDeleteDialog from '../dialogs/ConfirmDeleteDialog';
+import {ConfirmationDialog} from '../common';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {canManageResources} from '../../utils/permissions';
 import {EnhancedDataGrid, ActionsCell, DateCell} from '../tables';
@@ -237,14 +237,15 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 					candidate={updateDialog.selectedItem}
 				/>
 
-				<ConfirmDeleteDialog
+				<ConfirmationDialog
 					open={deleteConfirm.isOpen}
 					onClose={deleteConfirm.handleCancel}
 					onConfirm={deleteConfirm.handleConfirm}
 					title={t('candidates.delete_title')}
-					message={t('candidates.delete_message')}
-					itemName={deleteConfirm.selectedItem?.name}
-					isDeleting={deleteConfirm.isDeleting}
+					message={`${t('candidates.delete_message')} ${deleteConfirm.selectedItem?.name ? deleteConfirm.selectedItem.name : ''}`}
+					confirmText={t('common.delete')}
+					severity="error"
+					isLoading={deleteConfirm.isDeleting}
 				/>
 			</>
 		);
@@ -295,14 +296,15 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 				candidate={updateDialog.selectedItem}
 			/>
 
-			<ConfirmDeleteDialog
+			<ConfirmationDialog
 				open={deleteConfirm.isOpen}
 				onClose={deleteConfirm.handleCancel}
 				onConfirm={deleteConfirm.handleConfirm}
 				title={t('candidates.delete_title')}
-				message={t('candidates.delete_message')}
-				itemName={deleteConfirm.selectedItem?.name}
-				isDeleting={deleteConfirm.isDeleting}
+				message={`${t('candidates.delete_message')} ${deleteConfirm.selectedItem?.name ? deleteConfirm.selectedItem.name : ''}`}
+				confirmText={t('common.delete')}
+				severity="error"
+				isLoading={deleteConfirm.isDeleting}
 			/>
 		</>
 	);

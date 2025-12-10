@@ -1,5 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
-import {TextField, InputAdornment} from '@mui/material';
+import {TextField, InputAdornment, Box, SxProps, Theme} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import {useTranslation} from 'react-i18next';
 
@@ -8,9 +8,10 @@ interface SearchBarProps {
 	placeholder?: string;
 	debounceMs?: number;
 	value?: string;
+	containerSx?: SxProps<Theme>;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({onSearch, placeholder = 'Search...', debounceMs = 300, value = ''}) => {
+const SearchBar: React.FC<SearchBarProps> = ({onSearch, placeholder = 'Search...', debounceMs = 300, value = '', containerSx}) => {
 	const {t} = useTranslation();
 	const [localValue, setLocalValue] = useState(value);
 	const timerRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,35 +46,37 @@ const SearchBar: React.FC<SearchBarProps> = ({onSearch, placeholder = 'Search...
 	}, []);
 
 	return (
-		<TextField
-			fullWidth
-			size="small"
-			placeholder={placeholder}
-			value={localValue}
-			onChange={handleChange}
-			inputProps={{
-				minLength: 0,
-				style: {
-					fontSize: 'clamp(0.9rem, 2vw, 1rem)',
-				},
-				'aria-label': t('aria.search'),
-			}}
-			InputProps={{
-				startAdornment: (
-					<InputAdornment position="start">
-						<SearchIcon sx={{fontSize: {xs: 20, sm: 24}}} aria-hidden="true" />
-					</InputAdornment>
-				),
-			}}
-			sx={{
-				'& .MuiInputBase-root': {
-					minHeight: {xs: 44, sm: 40},
-				},
-				'& .MuiOutlinedInput-input': {
-					padding: {xs: '10px 14px', sm: '8px 14px'},
-				},
-			}}
-		/>
+		<Box sx={containerSx}>
+			<TextField
+				fullWidth
+				size="small"
+				placeholder={placeholder}
+				value={localValue}
+				onChange={handleChange}
+				inputProps={{
+					minLength: 0,
+					style: {
+						fontSize: 'clamp(0.9rem, 2vw, 1rem)',
+					},
+					'aria-label': t('aria.search'),
+				}}
+				InputProps={{
+					startAdornment: (
+						<InputAdornment position="start">
+							<SearchIcon sx={{fontSize: {xs: 20, sm: 24}}} aria-hidden="true" />
+						</InputAdornment>
+					),
+				}}
+				sx={{
+					'& .MuiInputBase-root': {
+						minHeight: {xs: 44, sm: 40},
+					},
+					'& .MuiOutlinedInput-input': {
+						padding: {xs: '10px 14px', sm: '8px 14px'},
+					},
+				}}
+			/>
+		</Box>
 	);
 };
 
