@@ -810,68 +810,112 @@
   ],
   "emailTemplates": [
     {
-      "name": "Application Received Confirmation",
+      "name": "Application Received - Default",
       "subject": "Thank you for your application - {{positionTitle}}",
-      "body": "Dear {{candidateName}},\n\nThank you for applying to the {{positionTitle}} position at {{companyName}}.\n\nWe have received your application and our team is currently reviewing it. We will get back to you within 5-7 business days with the next steps.\n\nIf you have any questions in the meantime, please don't hesitate to reach out.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <p>Thank you for applying to the <strong>{{positionTitle}}</strong> position at {{companyName}}.</p>\n    \n    <p>We have successfully received your application and our team is currently reviewing it. We appreciate the time and effort you put into your application.</p>\n    \n    <p><strong>What happens next?</strong></p>\n    <ul>\n      <li>Our hiring team will review your application</li>\n      <li>We will get back to you within 5-7 business days</li>\n      <li>If your profile matches our requirements, we'll invite you for the next steps</li>\n    </ul>\n    \n    <p>If you have any questions in the meantime, please don't hesitate to reach out.</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Acquisition Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "APPLICATION_RECEIVED",
       "companyIndex": 0,
       "createdByUserIndex": 0,
       "isDefault": true
     },
     {
-      "name": "Interview Invitation",
+      "name": "Application Rejected - Default",
+      "subject": "Update on your application - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <p>Thank you for your interest in the <strong>{{positionTitle}}</strong> position at {{companyName}} and for taking the time to apply.</p>\n    \n    <p>After careful consideration of all applications, we have decided to move forward with other candidates whose qualifications more closely match our current needs for this specific role.</p>\n    \n    <p>We were impressed by your background and encourage you to:</p>\n    <ul>\n      <li>Check our careers page regularly for new opportunities</li>\n      <li>Apply for future positions that match your skills and experience</li>\n      <li>Connect with us on LinkedIn to stay updated</li>\n    </ul>\n    \n    <p>We appreciate your interest in joining our team and wish you the very best in your job search.</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Acquisition Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "APPLICATION_REJECTED",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Application Shortlisted - Default",
+      "subject": "Great news about your application - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .highlight { background-color: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <div class=\"highlight\">\n      <strong>Congratulations!</strong> Your application for the <strong>{{positionTitle}}</strong> position has been shortlisted.\n    </div>\n    \n    <p>We were impressed by your qualifications and experience. Your profile stood out among many excellent candidates, and we would like to move forward with the next steps in our selection process.</p>\n    \n    <p><strong>What's next?</strong></p>\n    <ul>\n      <li>Our team will be in touch within the next 2-3 business days</li>\n      <li>We will schedule an interview or assessment based on the role requirements</li>\n      <li>Please keep an eye on your email for further communication</li>\n    </ul>\n    \n    <p>In the meantime, feel free to learn more about {{companyName}} and our culture on our website.</p>\n    \n    <p>We look forward to getting to know you better!</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Acquisition Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "APPLICATION_SHORTLISTED",
+      "companyIndex": 0,
+      "createdByUserIndex": 0,
+      "isDefault": true
+    },
+    {
+      "name": "Interview Invitation - Default",
       "subject": "Interview Invitation - {{positionTitle}} at {{companyName}}",
-      "body": "Dear {{candidateName}},\n\nWe are pleased to invite you for an interview for the {{positionTitle}} position at {{companyName}}.\n\nInterview Details:\nDate: {{interviewDate}}\nTime: {{interviewTime}}\n\nPlease confirm your availability at your earliest convenience.\n\nWe look forward to speaking with you!\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .interview-details { background-color: #e7f3ff; padding: 20px; border-radius: 8px; margin: 20px 0; }\n    .interview-details h3 { margin-top: 0; color: #0056b3; }\n    .detail-row { margin: 10px 0; }\n    .detail-label { font-weight: bold; width: 120px; display: inline-block; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <p>We are pleased to invite you for an interview for the <strong>{{positionTitle}}</strong> position at {{companyName}}!</p>\n    \n    <p>Your application and qualifications impressed us, and we would like to learn more about you and discuss how you can contribute to our team.</p>\n    \n    <div class=\"interview-details\">\n      <h3>Interview Details</h3>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Date:</span> {{interviewDate}}\n      </div>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Time:</span> {{interviewTime}}\n      </div>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Duration:</span> Approximately 45-60 minutes\n      </div>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Location:</span> {{interviewLocation}}\n      </div>\n    </div>\n    \n    <p><strong>Please confirm your availability</strong> by replying to this email at your earliest convenience.</p>\n    \n    <p><strong>Interview Preparation Tips:</strong></p>\n    <ul>\n      <li>Review the job description and requirements</li>\n      <li>Research {{companyName}} and our recent projects</li>\n      <li>Prepare examples of your relevant experience</li>\n      <li>Have questions ready for the interviewer</li>\n    </ul>\n    \n    <p>If you need to reschedule or have any questions, please don't hesitate to reach out.</p>\n    \n    <p>We look forward to speaking with you!</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Acquisition Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "INTERVIEW_INVITATION",
       "companyIndex": 0,
       "createdByUserIndex": 0,
       "isDefault": true
     },
     {
-      "name": "Rejection - Early Stage",
-      "subject": "Update on your application - {{positionTitle}}",
-      "body": "Dear {{candidateName}},\n\nThank you for your interest in the {{positionTitle}} position at {{companyName}} and for taking the time to apply.\n\nAfter careful consideration, we have decided to move forward with other candidates whose qualifications more closely match our current needs.\n\nWe appreciate your interest in joining our team and encourage you to apply for future positions that match your skills and experience.\n\nBest of luck in your job search.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "name": "Interview Reminder - Default",
+      "subject": "Reminder: Interview Tomorrow - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .reminder-box { background-color: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; }\n    .interview-details { background-color: #e7f3ff; padding: 15px; border-radius: 8px; margin: 15px 0; }\n    .detail-row { margin: 8px 0; }\n    .detail-label { font-weight: bold; width: 120px; display: inline-block; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <div class=\"reminder-box\">\n      <strong>Friendly Reminder:</strong> Your interview for the <strong>{{positionTitle}}</strong> position is scheduled for tomorrow!\n    </div>\n    \n    <p>We're looking forward to meeting with you and learning more about your experience and qualifications.</p>\n    \n    <div class=\"interview-details\">\n      <h3 style=\"margin-top: 0; color: #0056b3;\">Interview Details</h3>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Date:</span> {{interviewDate}}\n      </div>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Time:</span> {{interviewTime}}\n      </div>\n      <div class=\"detail-row\">\n        <span class=\"detail-label\">Location:</span> {{interviewLocation}}\n      </div>\n    </div>\n    \n    <p><strong>Before the interview:</strong></p>\n    <ul>\n      <li>Test your internet connection if it's a virtual interview</li>\n      <li>Have a copy of your resume handy</li>\n      <li>Prepare any questions you'd like to ask</li>\n      <li>Plan to join 5 minutes early</li>\n    </ul>\n    \n    <p>If you need to reschedule or have any last-minute questions, please contact us immediately.</p>\n    \n    <p>See you tomorrow!</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Acquisition Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "INTERVIEW_REMINDER",
       "companyIndex": 0,
       "createdByUserIndex": 0,
       "isDefault": true
     },
     {
-      "name": "Rejection - Final Stage",
-      "subject": "Update regarding {{positionTitle}} position",
-      "body": "Dear {{candidateName}},\n\nThank you for your time and effort throughout the interview process for the {{positionTitle}} position at {{companyName}}.\n\nAfter thorough consideration, we have decided to proceed with another candidate for this role. This was a difficult decision, as we were impressed by your qualifications and the conversations we had.\n\nWe genuinely appreciate your interest in {{companyName}} and would like to keep your information on file for future opportunities that may be a better fit.\n\nThank you again for your time, and we wish you the very best in your career.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
-      "companyIndex": 0,
-      "createdByUserIndex": 0,
-      "isDefault": true
-    },
-    {
-      "name": "Offer Letter",
+      "name": "Job Offer Letter - Default",
       "subject": "Job Offer - {{positionTitle}} at {{companyName}}",
-      "body": "Dear {{candidateName}},\n\nWe are delighted to offer you the position of {{positionTitle}} at {{companyName}}!\n\nWe were very impressed with your skills and experience throughout the interview process, and we believe you will be a valuable addition to our team.\n\nPlease find the detailed offer letter attached to this email. We kindly request that you review the terms and respond within 5 business days.\n\nIf you have any questions about the offer, please don't hesitate to reach out.\n\nWe look forward to welcoming you to the team!\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .offer-box { background-color: #d4edda; padding: 25px; border-left: 4px solid #28a745; margin: 20px 0; text-align: center; }\n    .offer-box h2 { margin: 0 0 10px 0; color: #155724; }\n    .next-steps { background-color: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <div class=\"offer-box\">\n      <h2>Congratulations!</h2>\n      <p style=\"font-size: 18px; margin: 0;\">We are delighted to offer you the position of <strong>{{positionTitle}}</strong> at {{companyName}}!</p>\n    </div>\n    \n    <p>After careful consideration and evaluation throughout the interview process, we are confident that you will be a valuable addition to our team. Your skills, experience, and enthusiasm impressed everyone you met with.</p>\n    \n    <p><strong>Offer Details:</strong></p>\n    <ul>\n      <li>A detailed offer letter is attached to this email</li>\n      <li>The offer includes compensation, benefits, and start date information</li>\n      <li>Please review all terms and conditions carefully</li>\n    </ul>\n    \n    <div class=\"next-steps\">\n      <h3 style=\"margin-top: 0;\">Next Steps</h3>\n      <ol>\n        <li><strong>Review the offer:</strong> Please take your time to review the attached offer letter</li>\n        <li><strong>Ask questions:</strong> If you have any questions, we're here to help</li>\n        <li><strong>Respond:</strong> We kindly request your response within 5 business days</li>\n        <li><strong>Acceptance:</strong> Sign and return the offer letter to confirm your acceptance</li>\n      </ol>\n    </div>\n    \n    <p>We understand this is an important decision and want to ensure you have all the information you need. Please don't hesitate to reach out if you have any questions about the offer, our benefits, or anything else.</p>\n    \n    <p>We are excited about the possibility of you joining our team and look forward to your response!</p>\n    \n    <p>Warmest regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Acquisition Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "OFFER_LETTER",
       "companyIndex": 0,
       "createdByUserIndex": 0,
       "isDefault": true
     },
     {
-      "name": "Status Update",
-      "subject": "Update on your application - {{positionTitle}}",
-      "body": "Dear {{candidateName}},\n\nWe wanted to provide you with an update on your application for the {{positionTitle}} position at {{companyName}}.\n\nYour application is still under review, and we are working through the selection process. We appreciate your patience and will be in touch soon with next steps.\n\nThank you for your continued interest in joining our team.\n\nBest regards,\n{{hrName}}\n{{companyName}} Talent Acquisition Team",
-      "companyIndex": 0,
-      "createdByUserIndex": 0,
-      "isDefault": true
-    },
-    {
-      "name": "Application Received",
-      "subject": "Application Received - {{positionTitle}}",
-      "body": "Hello {{candidateName}},\n\nThank you for applying to {{companyName}} for the {{positionTitle}} role.\n\nYour application has been successfully received and is being reviewed by our hiring team. We'll be in touch if your qualifications match our requirements.\n\nBest regards,\n{{hrName}}\nTalent Team",
+      "name": "Application Received - Company 2",
+      "subject": "We received your application - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Hello {{candidateName}},</p>\n    \n    <p>Thank you for applying to the <strong>{{positionTitle}}</strong> position at {{companyName}}.</p>\n    \n    <p>We have successfully received your application. Our team will review it and get back to you within 5-7 business days.</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}} Talent Team</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "APPLICATION_RECEIVED",
       "companyIndex": 1,
       "createdByUserIndex": 2,
       "isDefault": true
     },
     {
-      "name": "Technical Interview Invitation",
-      "subject": "Technical Interview - {{positionTitle}}",
-      "body": "Hi {{candidateName}},\n\nCongratulations! We'd like to invite you to a technical interview for the {{positionTitle}} position.\n\nScheduled for: {{interviewDate}} at {{interviewTime}}\n\nThe interview will assess your technical skills and problem-solving abilities. Please confirm your availability.\n\nLooking forward to it!\n\n{{hrName}}\n{{companyName}}",
+      "name": "Application Rejected - Company 2",
+      "subject": "Application Status - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <p>Thank you for your interest in the <strong>{{positionTitle}}</strong> position at {{companyName}}.</p>\n    \n    <p>After reviewing all applications, we have decided to proceed with other candidates for this position.</p>\n    \n    <p>We encourage you to apply for future openings that match your qualifications.</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}}</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "APPLICATION_REJECTED",
       "companyIndex": 1,
       "createdByUserIndex": 2,
-      "isDefault": false
+      "isDefault": true
+    },
+    {
+      "name": "Application Shortlisted - Company 2",
+      "subject": "Good news - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .highlight { background-color: #d4edda; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Hello {{candidateName}},</p>\n    \n    <div class=\"highlight\">\n      <strong>Great news!</strong> You've been shortlisted for the <strong>{{positionTitle}}</strong> position.\n    </div>\n    \n    <p>We were impressed with your application and would like to proceed to the next stage.</p>\n    \n    <p>We'll be in touch soon with next steps.</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}}</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "APPLICATION_SHORTLISTED",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "isDefault": true
+    },
+    {
+      "name": "Interview Invitation - Company 2",
+      "subject": "Interview Invitation - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .interview-details { background-color: #e7f3ff; padding: 20px; border-radius: 8px; margin: 20px 0; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Hi {{candidateName}},</p>\n    \n    <p>We'd like to invite you to an interview for the <strong>{{positionTitle}}</strong> position.</p>\n    \n    <div class=\"interview-details\">\n      <h3>Interview Details</h3>\n      <p><strong>Date:</strong> {{interviewDate}}<br>\n      <strong>Time:</strong> {{interviewTime}}<br>\n      <strong>Location:</strong> {{interviewLocation}}</p>\n    </div>\n    \n    <p>Please confirm your availability.</p>\n    \n    <p>Looking forward to meeting you!<br>\n    {{hrName}}<br>\n    {{companyName}}</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "INTERVIEW_INVITATION",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "isDefault": true
+    },
+    {
+      "name": "Interview Reminder - Company 2",
+      "subject": "Reminder: Interview Tomorrow",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .reminder-box { background-color: #fff3cd; padding: 20px; border-left: 4px solid #ffc107; margin: 20px 0; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Hi {{candidateName}},</p>\n    \n    <div class=\"reminder-box\">\n      <strong>Reminder:</strong> Your interview is tomorrow!\n    </div>\n    \n    <p><strong>Date:</strong> {{interviewDate}}<br>\n    <strong>Time:</strong> {{interviewTime}}<br>\n    <strong>Location:</strong> {{interviewLocation}}</p>\n    \n    <p>See you tomorrow!</p>\n    \n    <p>Best,<br>\n    {{hrName}}<br>\n    {{companyName}}</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "INTERVIEW_REMINDER",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "isDefault": true
+    },
+    {
+      "name": "Job Offer - Company 2",
+      "subject": "Job Offer - {{positionTitle}}",
+      "body": "<!DOCTYPE html>\n<html>\n<head>\n  <style>\n    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }\n    .header { background-color: #f8f9fa; padding: 20px; text-align: center; }\n    .content { padding: 20px; }\n    .offer-box { background-color: #d4edda; padding: 25px; border-left: 4px solid #28a745; margin: 20px 0; text-align: center; }\n    .footer { background-color: #f8f9fa; padding: 15px; text-align: center; font-size: 12px; color: #666; }\n  </style>\n</head>\n<body>\n  <div class=\"header\">\n    <h2>{{companyName}}</h2>\n  </div>\n  <div class=\"content\">\n    <p>Dear {{candidateName}},</p>\n    \n    <div class=\"offer-box\">\n      <h2>Congratulations!</h2>\n      <p>We're pleased to offer you the <strong>{{positionTitle}}</strong> position!</p>\n    </div>\n    \n    <p>Please find the detailed offer letter attached. We request your response within 5 business days.</p>\n    \n    <p>We look forward to welcoming you to the team!</p>\n    \n    <p>Best regards,<br>\n    {{hrName}}<br>\n    {{companyName}}</p>\n  </div>\n  <div class=\"footer\">\n    <p>&copy; {{companyName}}. All rights reserved.</p>\n  </div>\n</body>\n</html>",
+      "type": "OFFER_LETTER",
+      "companyIndex": 1,
+      "createdByUserIndex": 2,
+      "isDefault": true
     }
   ],
   "fileUploads": [

@@ -95,6 +95,7 @@ interface DummyDataStructure {
     name: string;
     subject: string;
     body: string;
+    type: string;
     companyIndex: number;
     createdByUserIndex: number;
     isDefault: boolean;
@@ -676,6 +677,7 @@ export class DummyService implements OnApplicationBootstrap {
               name: template.name,
               subject: template.subject,
               body: template.body,
+              type: template.type as any,
               companyId: createdCompanies[template.companyIndex].id,
               createdById: createdUsers[template.createdByUserIndex].id,
               isDefault: template.isDefault,

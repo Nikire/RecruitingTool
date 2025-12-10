@@ -63,7 +63,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
   };
 
   const handleViewAll = () => {
-    // TODO: Navigate to full notifications page when implemented
+    navigate('/notifications');
     onClose();
   };
 

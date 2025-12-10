@@ -8,8 +8,22 @@ import {
 	TextField,
 	Divider,
 	Grid,
+	alpha,
 } from '@mui/material';
-import {Save as SaveIcon, Refresh as RefreshIcon} from '@mui/icons-material';
+import {
+	Save as SaveIcon,
+	Refresh as RefreshIcon,
+	Person as PersonIcon,
+	Email as EmailIcon,
+	Phone as PhoneIcon,
+	Work as WorkIcon,
+	Business as BusinessIcon,
+	Language as LanguageIcon,
+	LinkedIn as LinkedInIcon,
+	Schedule as ScheduleIcon,
+	Info as InfoIcon,
+	VerifiedUser as VerifiedUserIcon,
+} from '@mui/icons-material';
 import {useTranslation} from 'react-i18next';
 import {useUserAtom} from '../../hooks/api/state/useUserAtom';
 import {useForm} from 'react-hook-form';
@@ -139,7 +153,17 @@ const ProfilePage: React.FC = () => {
 			<Grid container spacing={3}>
 				{/* Profile Overview Card */}
 				<Grid size={{xs: 12, md: 4}}>
-					<Card>
+					<Card
+						sx={{
+							background: (theme) =>
+								`linear-gradient(135deg, ${alpha(
+									theme.palette.primary.main,
+									0.05
+								)} 0%, ${alpha(theme.palette.secondary.main, 0.05)} 100%)`,
+							borderTop: 3,
+							borderColor: 'primary.main',
+						}}
+					>
 						<CardContent
 							sx={{
 								display: 'flex',
@@ -204,30 +228,68 @@ const ProfilePage: React.FC = () => {
 									);
 								}}
 							/>
-							<Typography variant="h5" gutterBottom sx={{mt: 2}}>
+							<Typography variant="h5" gutterBottom sx={{mt: 2, fontWeight: 600}}>
 								{watchedName || user.name}
-							</Typography>
-							<Typography variant="body2" color="text.secondary" gutterBottom>
-								{user.email}
 							</Typography>
 							<Box
 								sx={{
-									mt: 2,
 									display: 'flex',
-									gap: 1,
-									flexWrap: 'wrap',
-									justifyContent: 'center',
+									alignItems: 'center',
+									gap: 0.5,
+									mb: 2,
 								}}
 							>
-								{user.roles.map((role) => (
-									<Chip
-										key={role}
-										label={role}
-										size="small"
-										color="primary"
-										variant="outlined"
-									/>
-								))}
+								<EmailIcon
+									sx={{fontSize: 16, color: 'text.secondary'}}
+								/>
+								<Typography variant="body2" color="text.secondary">
+									{user.email}
+								</Typography>
+							</Box>
+
+							{/* Account Status Badge */}
+							<Box sx={{mb: 2}}>
+								<Chip
+									icon={<VerifiedUserIcon />}
+									label={t('profile_page.account_active')}
+									color="success"
+									size="medium"
+									sx={{fontWeight: 600}}
+								/>
+							</Box>
+
+							{/* Roles Section */}
+							<Divider sx={{width: '100%', my: 2}} />
+							<Box sx={{width: '100%'}}>
+								<Typography
+									variant="subtitle2"
+									sx={{
+										mb: 1,
+										fontWeight: 600,
+										color: 'text.secondary',
+										textAlign: 'center',
+									}}
+								>
+									{t('profile_page.roles')}
+								</Typography>
+								<Box
+									sx={{
+										display: 'flex',
+										gap: 1,
+										flexWrap: 'wrap',
+										justifyContent: 'center',
+									}}
+								>
+									{user.roles.map((role) => (
+										<Chip
+											key={role}
+											label={role}
+											size="small"
+											color="primary"
+											sx={{fontWeight: 500}}
+										/>
+									))}
+								</Box>
 							</Box>
 						</CardContent>
 					</Card>
@@ -238,13 +300,37 @@ const ProfilePage: React.FC = () => {
 					<Card>
 						<CardContent sx={{p: 3}}>
 							{/* Basic Information Section */}
-							<Box sx={{mb: 4}}>
-								<Typography
-									variant="h6"
-									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
-								>
-									{t('profile_page.basic_info')}
-								</Typography>
+							<Box
+								sx={{
+									mb: 4,
+									p: 3,
+									borderRadius: 2,
+									backgroundColor: (theme) =>
+										alpha(theme.palette.info.main, 0.05),
+									border: (theme) =>
+										`1px solid ${alpha(theme.palette.info.main, 0.2)}`,
+								}}
+							>
+								<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
+									<Box
+										sx={{
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'center',
+											width: 40,
+											height: 40,
+											borderRadius: '50%',
+											backgroundColor: 'info.main',
+											color: 'white',
+											mr: 2,
+										}}
+									>
+										<PersonIcon />
+									</Box>
+									<Typography variant="h6" sx={{fontWeight: 600}}>
+										{t('profile_page.basic_info')}
+									</Typography>
+								</Box>
 								<Grid container spacing={2.5}>
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
@@ -257,6 +343,13 @@ const ProfilePage: React.FC = () => {
 											helperText={errors.name?.message}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<PersonIcon
+														sx={{mr: 1, color: 'info.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 
@@ -276,6 +369,13 @@ const ProfilePage: React.FC = () => {
 											helperText={errors.email?.message}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<EmailIcon
+														sx={{mr: 1, color: 'info.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 
@@ -287,21 +387,50 @@ const ProfilePage: React.FC = () => {
 											{...register('phoneNumber')}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<PhoneIcon
+														sx={{mr: 1, color: 'info.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 								</Grid>
 							</Box>
 
-							<Divider sx={{my: 3}} />
-
 							{/* Professional Information Section */}
-							<Box sx={{mb: 4}}>
-								<Typography
-									variant="h6"
-									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
-								>
-									{t('profile_page.professional_info')}
-								</Typography>
+							<Box
+								sx={{
+									mb: 4,
+									p: 3,
+									borderRadius: 2,
+									backgroundColor: (theme) =>
+										alpha(theme.palette.success.main, 0.05),
+									border: (theme) =>
+										`1px solid ${alpha(theme.palette.success.main, 0.2)}`,
+								}}
+							>
+								<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
+									<Box
+										sx={{
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'center',
+											width: 40,
+											height: 40,
+											borderRadius: '50%',
+											backgroundColor: 'success.main',
+											color: 'white',
+											mr: 2,
+										}}
+									>
+										<WorkIcon />
+									</Box>
+									<Typography variant="h6" sx={{fontWeight: 600}}>
+										{t('profile_page.professional_info')}
+									</Typography>
+								</Box>
 								<Grid container spacing={2.5}>
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
@@ -311,6 +440,13 @@ const ProfilePage: React.FC = () => {
 											{...register('position')}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<WorkIcon
+														sx={{mr: 1, color: 'success.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 
@@ -322,21 +458,50 @@ const ProfilePage: React.FC = () => {
 											{...register('department')}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<BusinessIcon
+														sx={{mr: 1, color: 'success.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 								</Grid>
 							</Box>
 
-							<Divider sx={{my: 3}} />
-
 							{/* Additional Information Section */}
-							<Box sx={{mb: 4}}>
-								<Typography
-									variant="h6"
-									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
-								>
-									{t('profile_page.additional_info')}
-								</Typography>
+							<Box
+								sx={{
+									mb: 4,
+									p: 3,
+									borderRadius: 2,
+									backgroundColor: (theme) =>
+										alpha(theme.palette.warning.main, 0.05),
+									border: (theme) =>
+										`1px solid ${alpha(theme.palette.warning.main, 0.2)}`,
+								}}
+							>
+								<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
+									<Box
+										sx={{
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'center',
+											width: 40,
+											height: 40,
+											borderRadius: '50%',
+											backgroundColor: 'warning.main',
+											color: 'white',
+											mr: 2,
+										}}
+									>
+										<LanguageIcon />
+									</Box>
+									<Typography variant="h6" sx={{fontWeight: 600}}>
+										{t('profile_page.additional_info')}
+									</Typography>
+								</Box>
 								<Grid container spacing={2.5}>
 									<Grid size={{xs: 12, sm: 6}}>
 										<TextField
@@ -346,6 +511,13 @@ const ProfilePage: React.FC = () => {
 											{...register('timezone')}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<ScheduleIcon
+														sx={{mr: 1, color: 'warning.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 
@@ -357,21 +529,49 @@ const ProfilePage: React.FC = () => {
 											{...register('linkedinUrl')}
 											variant="outlined"
 											size="small"
+											InputProps={{
+												startAdornment: (
+													<LinkedInIcon
+														sx={{mr: 1, color: 'warning.main'}}
+													/>
+												),
+											}}
 										/>
 									</Grid>
 								</Grid>
 							</Box>
 
-							<Divider sx={{my: 3}} />
-
 							{/* Bio Section */}
-							<Box>
-								<Typography
-									variant="h6"
-									sx={{mb: 2, fontWeight: 600, color: 'primary.main'}}
-								>
-									{t('profile_page.about_you')}
-								</Typography>
+							<Box
+								sx={{
+									p: 3,
+									borderRadius: 2,
+									backgroundColor: (theme) =>
+										alpha(theme.palette.secondary.main, 0.05),
+									border: (theme) =>
+										`1px solid ${alpha(theme.palette.secondary.main, 0.2)}`,
+								}}
+							>
+								<Box sx={{display: 'flex', alignItems: 'center', mb: 2}}>
+									<Box
+										sx={{
+											display: 'flex',
+											alignItems: 'center',
+											justifyContent: 'center',
+											width: 40,
+											height: 40,
+											borderRadius: '50%',
+											backgroundColor: 'secondary.main',
+											color: 'white',
+											mr: 2,
+										}}
+									>
+										<InfoIcon />
+									</Box>
+									<Typography variant="h6" sx={{fontWeight: 600}}>
+										{t('profile_page.about_you')}
+									</Typography>
+								</Box>
 								<TextField
 									fullWidth
 									label={t('profile_page.bio')}

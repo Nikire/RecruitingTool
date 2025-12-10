@@ -947,7 +947,9 @@
     "timezone": "Timezone",
     "linkedin_profile": "LinkedIn Profile",
     "about_you": "About You",
-    "bio": "Bio"
+    "bio": "Bio",
+    "account_active": "Account Active",
+    "roles": "Roles"
   },
   "applications_page": {
     "all_applications": "All Applications",
@@ -2325,6 +2327,21 @@
     "days_ago_one": "1 day ago",
     "bell": {
       "aria_label": "Notifications"
+    },
+    "page": {
+      "title": "Notifications",
+      "subtitle": "Manage and view all your notifications in one place",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read",
+      "filter_aria": "Filter notifications",
+      "filter_all": "Show all notifications",
+      "filter_unread": "Show unread notifications only",
+      "filter_read": "Show read notifications only",
+      "empty_all": "No notifications",
+      "empty_unread": "No unread notifications",
+      "empty_read": "No read notifications",
+      "empty_subtitle": "You're all caught up!"
     },
     "types": {
       "application_received": "New Application",

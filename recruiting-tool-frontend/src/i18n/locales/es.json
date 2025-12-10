@@ -953,7 +953,9 @@
     "timezone": "Zona Horaria",
     "linkedin_profile": "Perfil de LinkedIn",
     "about_you": "Sobre Ti",
-    "bio": "Biografía"
+    "bio": "Biografía",
+    "account_active": "Cuenta Activa",
+    "roles": "Roles"
   },
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",
@@ -2331,6 +2333,21 @@
     "days_ago_one": "Hace 1 día",
     "bell": {
       "aria_label": "Notificaciones"
+    },
+    "page": {
+      "title": "Notificaciones",
+      "subtitle": "Gestiona y visualiza todas tus notificaciones en un solo lugar",
+      "all": "Todas",
+      "unread": "Sin leer",
+      "read": "Leídas",
+      "filter_aria": "Filtrar notificaciones",
+      "filter_all": "Mostrar todas las notificaciones",
+      "filter_unread": "Mostrar solo notificaciones sin leer",
+      "filter_read": "Mostrar solo notificaciones leídas",
+      "empty_all": "Sin notificaciones",
+      "empty_unread": "Sin notificaciones sin leer",
+      "empty_read": "Sin notificaciones leídas",
+      "empty_subtitle": "¡Estás al día!"
     },
     "types": {
       "application_received": "Nueva Aplicación",

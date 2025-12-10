@@ -39,6 +39,7 @@ import CalendarSettingsPage from './pages/settings/CalendarSettingsPage';
 import TeamManagementPage from './pages/TeamManagementPage';
 import AcceptInvitationPage from './pages/invitations/AcceptInvitationPage';
 import CheckStatusPage from './pages/status/CheckStatusPage';
+import NotificationsPage from './pages/notifications/NotificationsPage';
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -79,6 +80,7 @@ function App() {
 						<Route path="/applicant/onboarding" element={<ApplicantOnboarding />} />
 						<Route path="/profile" element={<ProfilePage />} />
 						<Route path="/profile/subscription" element={<SubscriptionPage />} />
+						<Route path="/notifications" element={<NotificationsPage />} />
 						<Route path="/invitations/accept/:token" element={<AcceptInvitationPage />} />
 					</Route>
 				</Route>
