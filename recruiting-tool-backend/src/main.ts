@@ -38,8 +38,8 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Recruiting Tool API')
-    .setDescription('API for managing recruitment processes, user roles and more.')
+    .setTitle('BorderLess API')
+    .setDescription('API for managing recruitment processes, user roles and more by EMP Employment Solutions.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();

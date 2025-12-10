@@ -1,7 +1,7 @@
 {
-  "name": "recruiting-tool-backend",
+  "name": "borderless-backend",
   "version": "0.0.1",
-  "description": "Backend for the recruiting tool",
+  "description": "Backend for BorderLess by EMP Employment Solutions",
   "author": "Erik Pastuszek",
   "private": true,
   "license": "MIT",

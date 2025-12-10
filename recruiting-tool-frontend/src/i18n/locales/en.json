@@ -2406,6 +2406,25 @@
       "create_failed": "Failed to create notification"
     }
   },
+  "notificationPreferences": {
+    "title": "Notification Preferences",
+    "description": "Control which notifications you receive via email and in the app",
+    "emailNotifications": "Email Notifications",
+    "emailDescription": "Receive notifications via email",
+    "inAppNotifications": "In-App Notifications",
+    "inAppDescription": "Receive notifications within the application",
+    "emailApplicationStatus": "Application status updates",
+    "emailInterviewScheduled": "Interview scheduled",
+    "emailNewCandidate": "New candidate added",
+    "emailSystemAnnouncement": "System announcements",
+    "inAppApplicationStatus": "Application status updates",
+    "inAppInterviewScheduled": "Interview scheduled",
+    "inAppNewCandidate": "New candidate added",
+    "inAppSystemAnnouncement": "System announcements",
+    "updated": "Notification preferences updated",
+    "updateFailed": "Failed to update notification preferences",
+    "loadError": "Failed to load notification preferences"
+  },
   "company_roles": {
     "title": "Team Management",
     "members": "Team Members",

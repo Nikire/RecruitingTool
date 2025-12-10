@@ -68,7 +68,7 @@ ${nextSteps}
 Thank you for your interest in joining our team.
 
 Best regards,
-The Recruiting Team
+The BorderLess Team - EMP Employment Solutions
   `.trim();
 
   const html = `
@@ -111,7 +111,7 @@ The Recruiting Team
         </p>
 
         <div style="${emailBaseStyles.footer}">
-          <p>Best regards,<br>The Recruiting Team</p>
+          <p>Best regards,<br>The BorderLess Team - EMP Employment Solutions</p>
         </div>
       </div>
     </div>

@@ -23,7 +23,7 @@ This link will expire in ${expirationText}. If you did not request a password re
 For security reasons, please do not share this link with anyone.
 
 Best regards,
-The Recruiting Team
+The BorderLess Team - EMP Employment Solutions
   `.trim();
 
   const html = `
@@ -63,7 +63,7 @@ The Recruiting Team
         </p>
 
         <div style="${emailBaseStyles.footer}">
-          <p>Best regards,<br>The Recruiting Team</p>
+          <p>Best regards,<br>The BorderLess Team - EMP Employment Solutions</p>
         </div>
       </div>
     </div>

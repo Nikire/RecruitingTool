@@ -55,7 +55,7 @@ We apologize for any inconvenience this may cause. Please confirm that you are a
 We look forward to speaking with you!
 
 Best regards,
-${data.hrName || 'The Recruiting Team'}
+${data.hrName || 'The BorderLess Team - EMP Employment Solutions'}
   `.trim();
 
   const html = `
@@ -155,7 +155,7 @@ ${data.hrName || 'The Recruiting Team'}
         </p>
 
         <div style="${emailBaseStyles.footer}">
-          <p>Best regards,<br>${data.hrName || 'The Recruiting Team'}</p>
+          <p>Best regards,<br>${data.hrName || 'The BorderLess Team - EMP Employment Solutions'}</p>
         </div>
       </div>
     </div>

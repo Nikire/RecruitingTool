@@ -2412,6 +2412,25 @@
       "create_failed": "Error al crear notificación"
     }
   },
+  "notificationPreferences": {
+    "title": "Preferencias de Notificación",
+    "description": "Controla qué notificaciones recibes por correo electrónico y en la aplicación",
+    "emailNotifications": "Notificaciones por Correo",
+    "emailDescription": "Recibir notificaciones por correo electrónico",
+    "inAppNotifications": "Notificaciones en la Aplicación",
+    "inAppDescription": "Recibir notificaciones dentro de la aplicación",
+    "emailApplicationStatus": "Actualizaciones de estado de solicitudes",
+    "emailInterviewScheduled": "Entrevista programada",
+    "emailNewCandidate": "Nuevo candidato agregado",
+    "emailSystemAnnouncement": "Anuncios del sistema",
+    "inAppApplicationStatus": "Actualizaciones de estado de solicitudes",
+    "inAppInterviewScheduled": "Entrevista programada",
+    "inAppNewCandidate": "Nuevo candidato agregado",
+    "inAppSystemAnnouncement": "Anuncios del sistema",
+    "updated": "Preferencias de notificación actualizadas",
+    "updateFailed": "Error al actualizar preferencias de notificación",
+    "loadError": "Error al cargar preferencias de notificación"
+  },
   "company_roles": {
     "title": "Gestión de Equipo",
     "members": "Miembros del Equipo",

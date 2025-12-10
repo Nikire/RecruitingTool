@@ -2,7 +2,7 @@ import {ThemeOptions} from '@mui/material';
 import {green, grey} from '@mui/material/colors';
 
 /**
- * Recruiting Tool Theme Configuration
+ * BorderLess Theme Configuration
  *
  * Typography System:
  * - Font Family: Roboto (400, 500, 700 weights) for excellent readability
@@ -31,7 +31,7 @@ import {green, grey} from '@mui/material/colors';
  * - Touch targets: Minimum 44px height for interactive elements
  * - Font smoothing: Optimized for both desktop and mobile displays
  */
-const recruitingToolPalette: ThemeOptions = {
+const borderlessPalette: ThemeOptions = {
 	palette: {
 		primary: {
 			main: green.A400,
@@ -206,4 +206,4 @@ const recruitingToolPalette: ThemeOptions = {
 	},
 };
 
-export default recruitingToolPalette;
+export default borderlessPalette;

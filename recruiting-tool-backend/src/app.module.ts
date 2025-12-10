@@ -40,6 +40,7 @@ import { PerformanceMiddleware } from './common/middleware/performance.middlewar
 import { StripeModule } from './modules/stripe/stripe.module';
 import { QuotaModule } from './modules/quota/quota.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { NotificationPreferencesModule } from './modules/notification-preferences/notification-preferences.module';
 import { CompanyRolesModule } from './modules/company-roles/company-roles.module';
 import { ConnectionRequestsModule } from './modules/connection-requests/connection-requests.module';
 import { CompanyInvitationsModule } from './modules/company-invitations/company-invitations.module';
@@ -93,6 +94,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
     StripeModule,
     QuotaModule,
     NotificationsModule,
+    NotificationPreferencesModule,
     CompanyRolesModule,
     ConnectionRequestsModule,
     CompanyInvitationsModule,

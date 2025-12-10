@@ -36,6 +36,7 @@ import OnboardingWizard from './pages/onboarding/OnboardingWizard';
 import HROnboardingWizard from './pages/onboarding/HROnboardingWizard';
 import ApplicantOnboarding from './pages/applicant/ApplicantOnboarding';
 import CalendarSettingsPage from './pages/settings/CalendarSettingsPage';
+import NotificationPreferencesPage from './pages/settings/NotificationPreferencesPage';
 import TeamManagementPage from './pages/TeamManagementPage';
 import AcceptInvitationPage from './pages/invitations/AcceptInvitationPage';
 import CheckStatusPage from './pages/status/CheckStatusPage';
@@ -82,6 +83,7 @@ function App() {
 						<Route path="/profile" element={<ProfilePage />} />
 						<Route path="/profile/subscription" element={<SubscriptionPage />} />
 						<Route path="/notifications" element={<NotificationsPage />} />
+						<Route path="/settings/notifications" element={<NotificationPreferencesPage />} />
 						<Route path="/invitations/accept/:token" element={<AcceptInvitationPage />} />
 					</Route>
 				</Route>
