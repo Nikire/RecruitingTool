@@ -125,10 +125,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
         </CellRow>
       ),
       mobileRender: (app) => (
-        <StatusCell
-          status={app.status}
-          colorMap={applicationStatusColors}
-        />
+        <StatusCell status={app.status} colorMap={applicationStatusColors} />
       ),
     },
     {

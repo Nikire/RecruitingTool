@@ -163,11 +163,15 @@ const DefaultMobileCard = <T,>({
             .map((col, index) => {
               if (col.mobileRender) {
                 return (
-                  <Box key={`${col.field}-${index}`}>{col.mobileRender(item)}</Box>
+                  <Box key={`${col.field}-${index}`}>
+                    {col.mobileRender(item)}
+                  </Box>
                 );
               }
               // Fallback: render field value as text
-              const value = (item as Record<string, unknown>)[col.field as string];
+              const value = (item as Record<string, unknown>)[
+                col.field as string
+              ];
               return (
                 <Typography
                   key={`${col.field}-${index}`}
@@ -289,7 +293,7 @@ export const DataTable = <T,>({
               columns={columns}
               getRowId={getRowId}
             />
-          )
+          ),
         )}
       </Box>
     );
