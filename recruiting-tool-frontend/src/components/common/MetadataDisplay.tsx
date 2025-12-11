@@ -50,7 +50,6 @@ const MetadataDisplay: React.FC<MetadataDisplayProps> = ({
   items,
   direction = "row",
   translate = false,
-  columns = 4,
 }) => {
   const { t } = useTranslation();
 

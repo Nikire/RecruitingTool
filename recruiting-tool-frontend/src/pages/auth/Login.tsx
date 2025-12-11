@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { Typography, TextField, Button, Divider } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLogin } from "../../hooks/api/useAuth";
-import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { getDefaultDashboard } from "../../utils/permissions";
 import { AuthGroupWrapper, AuthPageWrapper, FormWrapper } from "./Auth.styles";
 import SocialLoginButtons from "../../components/auth/SocialLoginButtons";

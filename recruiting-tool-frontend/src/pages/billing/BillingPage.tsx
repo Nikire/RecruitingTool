@@ -12,7 +12,6 @@ import {
   IconButton,
   Tooltip,
   Alert,
-  Link as MuiLink,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import DownloadIcon from "@mui/icons-material/Download";
@@ -33,8 +32,7 @@ import { Button } from "@mui/material";
 const BillingPage: React.FC = () => {
   const { t } = useTranslation();
   const { data, isLoading, isError } = useInvoices();
-  const { data: subscription, isLoading: subscriptionLoading } =
-    useSubscription();
+  const { data: subscription, isLoading: isLoading } = useSubscription();
   const billingPortal = useBillingPortal();
 
   if (isLoading) {
@@ -111,7 +109,7 @@ const BillingPage: React.FC = () => {
                   label={t(
                     `subscription.status.${subscription.status.toLowerCase()}`,
                   )}
-                  color={getSubscriptionStatusColor(subscription.status) as any}
+                  color={getSubscriptionStatusColor(subscription.status)}
                   size="small"
                 />
               </Box>

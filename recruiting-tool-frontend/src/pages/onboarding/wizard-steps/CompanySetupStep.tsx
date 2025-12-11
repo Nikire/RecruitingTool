@@ -9,7 +9,6 @@ import {
   CardContent,
   Alert,
   Avatar,
-  IconButton,
 } from "@mui/material";
 import {
   CloudUpload as UploadIcon,

@@ -1,14 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../test/test-utils";
+import { renderWithProviders, waitFor } from "../../test/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import JobPositionsPage from "../../pages/job-positions/JobPositionsPage";
 import { server } from "../../test/mocks/server";
-import { http, HttpResponse } from "msw";
-import {
-  emptyHandlers,
-  errorHandlers,
-  mockJobPositions,
-} from "../../test/mocks/handlers";
+import { emptyHandlers, errorHandlers } from "../../test/mocks/handlers";
 
 const renderJobPositionsPage = () => {
   return renderWithProviders(

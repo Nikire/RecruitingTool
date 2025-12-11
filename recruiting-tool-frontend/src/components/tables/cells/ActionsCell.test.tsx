@@ -138,7 +138,7 @@ describe("ActionsCell", () => {
       const user = userEvent.setup();
       const mockParentClick = vi.fn();
 
-      const { container } = renderWithProviders(
+      renderWithProviders(
         <div onClick={mockParentClick}>
           <ActionsCell onView={mockOnView} />
         </div>,

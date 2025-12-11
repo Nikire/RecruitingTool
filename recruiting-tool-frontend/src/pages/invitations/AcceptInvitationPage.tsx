@@ -8,7 +8,6 @@ import {
   CircularProgress,
   Alert,
   Divider,
-  Chip,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
@@ -56,8 +55,9 @@ const AcceptInvitationPage: React.FC = () => {
           navigate("/hr/dashboard");
         }, 3000);
       },
-      onError: (err: any) => {
-        setError(err.response?.data?.message || t("errors.operation_failed"));
+      onError: (err: unknown) => {
+        const error = err as { response?: { data?: { message?: string } } };
+        setError(error.response?.data?.message || t("errors.operation_failed"));
       },
     });
   };

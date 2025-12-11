@@ -11,7 +11,7 @@ import NotificationDropdown from "./NotificationDropdown";
 const NotificationBell: React.FC = () => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const { data: unreadCount = 0, isLoading } = useUnreadCount();
+  const { data: unreadCount = 0 } = useUnreadCount();
 
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);

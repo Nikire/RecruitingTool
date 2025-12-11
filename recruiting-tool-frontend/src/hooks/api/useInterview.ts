@@ -27,9 +27,10 @@ export const useCreateInterview = () => {
         queryKey: ["interviews", "stage", data.stageUid],
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error(
-        error?.response?.data?.message || t("errors.interview_schedule_failed"),
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("errors.interview_schedule_failed"),
       );
     },
   });
@@ -66,9 +67,10 @@ export const useUpdateInterview = () => {
         queryKey: ["interviews", "stage", data.stageUid],
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error(
-        error?.response?.data?.message || t("errors.interview_update_failed"),
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("errors.interview_update_failed"),
       );
     },
   });
@@ -88,9 +90,10 @@ export const useCancelInterview = () => {
         queryKey: ["interviews", "stage", data.stageUid],
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error(
-        error?.response?.data?.message || t("errors.interview_cancel_failed"),
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("errors.interview_cancel_failed"),
       );
     },
   });
@@ -101,7 +104,7 @@ export const useDeleteInterview = () => {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: ({ uid, stageUid }: { uid: string; stageUid: string }) =>
+    mutationFn: ({ uid }: { uid: string; stageUid: string }) =>
       deleteInterview(uid),
     onSuccess: (_, variables) => {
       toast.success(t("success.interview_deleted"));
@@ -110,9 +113,10 @@ export const useDeleteInterview = () => {
         queryKey: ["interviews", "stage", variables.stageUid],
       });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       toast.error(
-        error?.response?.data?.message || t("errors.interview_delete_failed"),
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("errors.interview_delete_failed"),
       );
     },
   });

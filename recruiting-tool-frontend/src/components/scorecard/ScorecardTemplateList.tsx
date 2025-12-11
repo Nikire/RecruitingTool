@@ -3,7 +3,7 @@
  * Displays list of scorecard templates with create/edit/delete actions
  */
 
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -14,9 +14,7 @@ import {
   Typography,
   Grid,
   IconButton,
-  Chip,
   CircularProgress,
-  Alert,
 } from "@mui/material";
 import {
   Add as AddIcon,

@@ -48,7 +48,13 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
   const hasTarget = data.some((item) => item.target !== undefined);
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: HiringTrendData }>;
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

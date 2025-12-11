@@ -11,7 +11,6 @@ import {
   Select,
   MenuItem,
   Typography,
-  CircularProgress,
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";

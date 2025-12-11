@@ -17,10 +17,8 @@ import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/material/styles";
 
 // Icons
-import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import PeopleIcon from "@mui/icons-material/People";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import AssessmentIcon from "@mui/icons-material/Assessment";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StarIcon from "@mui/icons-material/Star";
@@ -30,7 +28,6 @@ import GitHubIcon from "@mui/icons-material/GitHub";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import EmailIcon from "@mui/icons-material/Email";
 import CloudIcon from "@mui/icons-material/Cloud";
-import SpeedIcon from "@mui/icons-material/Speed";
 import LooksOneIcon from "@mui/icons-material/LooksOne";
 import LooksTwoIcon from "@mui/icons-material/LooksTwo";
 import Looks3Icon from "@mui/icons-material/Looks3";

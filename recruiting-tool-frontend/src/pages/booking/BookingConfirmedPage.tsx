@@ -1,12 +1,10 @@
 import React from "react";
-import { useParams } from "react-router-dom";
-import { Box, Container, Typography, Paper, Button } from "@mui/material";
+import { Box, Container, Typography, Paper } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EmailIcon from "@mui/icons-material/Email";
 
 const BookingConfirmedPage: React.FC = () => {
-  const { token } = useParams<{ token: string }>();
   const { t } = useTranslation();
 
   return (

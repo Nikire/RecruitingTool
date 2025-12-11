@@ -171,13 +171,8 @@ export function useDeleteStageNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({
-      noteUid,
-      stageUid,
-    }: {
-      noteUid: string;
-      stageUid: string;
-    }) => deleteStageNote(noteUid),
+    mutationFn: ({ noteUid }: { noteUid: string; stageUid: string }) =>
+      deleteStageNote(noteUid),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
         queryKey: [STAGE_NOTES_KEY, variables.stageUid],

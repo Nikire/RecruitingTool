@@ -9,7 +9,7 @@ export class DeletedService {
   /**
    * Get all soft-deleted candidates
    */
-  async getDeletedCandidates(_companyId?: number): Promise<DeletedCandidateDto[]> {
+  async getDeletedCandidates(): Promise<DeletedCandidateDto[]> {
     const candidates = await this.databaseService.candidate.findMany({
       where: {
         deletedAt: { not: null },

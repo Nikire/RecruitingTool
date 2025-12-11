@@ -1,5 +1,5 @@
 import { Controller, Post, Body, UseGuards, Get, HttpCode } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiSecurity, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { WebhooksService } from './webhooks.service';
 import { CandidateCreatedWebhookDto, InterviewScheduledWebhookDto, StageChangedWebhookDto, ApplicationStatusChangedWebhookDto } from './dto/webhook.dto';
 import { WebhookAuthGuard } from './guards/webhook-auth.guard';

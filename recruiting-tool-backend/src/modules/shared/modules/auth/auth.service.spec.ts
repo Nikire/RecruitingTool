@@ -13,8 +13,6 @@ jest.mock('bcryptjs');
 describe('AuthService', () => {
   let service: AuthService;
   let usersService: UsersService;
-  let jwtService: JwtService;
-  let userActivityService: UserActivityService;
   let databaseService: DatabaseService;
 
   const mockUser = {

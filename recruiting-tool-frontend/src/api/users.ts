@@ -48,8 +48,14 @@ export const usersApi = {
     return response.data;
   },
 
-  getActivity: async (uid: string): Promise<any[]> => {
-    const response = await axiosInstance.get<any[]>(`/users/${uid}/activity`);
+  getActivity: async (
+    uid: string,
+  ): Promise<
+    Array<{ action: string; timestamp: string; details?: string }>
+  > => {
+    const response = await axiosInstance.get<
+      Array<{ action: string; timestamp: string; details?: string }>
+    >(`/users/${uid}/activity`);
     return response.data;
   },
 

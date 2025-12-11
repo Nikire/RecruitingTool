@@ -28,6 +28,7 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { canManageResources } from "../../utils/permissions";
 import { EnhancedDataGrid, ActionsCell, DateCell } from "../tables";
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 interface CandidatesListProps extends SearchableListProps {}
 
 // Skeleton loader for mobile loading state
@@ -187,7 +188,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
             width: 120,
             sortable: false,
             filterable: false,
-            renderCell: (params: any) => (
+            renderCell: (params: { row: Candidate }) => (
               <ActionsCell
                 onEdit={() => handleEditClick(params.row)}
                 onDelete={() => handleDeleteClick(params.row)}

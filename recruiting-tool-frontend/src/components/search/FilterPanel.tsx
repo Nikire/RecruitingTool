@@ -93,7 +93,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     });
   };
 
-  const handleSkillsChange = (_event: any, newValue: string[]) => {
+  const handleSkillsChange = (
+    _event: React.SyntheticEvent,
+    newValue: string[],
+  ) => {
     onFiltersChange({
       ...filters,
       skills: newValue.length > 0 ? newValue : undefined,

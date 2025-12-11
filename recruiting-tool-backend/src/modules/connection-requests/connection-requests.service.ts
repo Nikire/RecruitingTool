@@ -2,14 +2,7 @@ import { Injectable, Logger, NotFoundException, BadRequestException, ForbiddenEx
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RolesType, NotificationType } from '@prisma/client';
-import {
-  CreateConnectionRequestDto,
-  ApproveConnectionRequestDto,
-  DenyConnectionRequestDto,
-  ConnectionRequestResponseDto,
-  ConnectionRequestStatus,
-  GetConnectionRequestsQueryDto,
-} from './dto';
+import { CreateConnectionRequestDto, ApproveConnectionRequestDto, DenyConnectionRequestDto, ConnectionRequestResponseDto, GetConnectionRequestsQueryDto } from './dto';
 
 @Injectable()
 export class ConnectionRequestsService {

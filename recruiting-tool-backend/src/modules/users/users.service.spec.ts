@@ -13,8 +13,6 @@ jest.mock('bcryptjs');
 describe('UsersService', () => {
   let service: UsersService;
   let databaseService: DatabaseService;
-  let storageService: StorageService;
-  let userActivityService: UserActivityService;
 
   const mockUser = {
     id: 1,

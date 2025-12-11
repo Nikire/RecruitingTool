@@ -2,7 +2,7 @@ import { Injectable, Logger, BadRequestException, InternalServerErrorException }
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { google, calendar_v3 } from 'googleapis';
-import { OAuth2Client, Credentials } from 'google-auth-library';
+import { OAuth2Client } from 'google-auth-library';
 import { CreateCalendarEventDto, UpdateCalendarEventDto, GetAvailabilityDto, CalendarEventResponseDto, AvailabilityResponseDto, AvailabilitySlotDto } from './dto/calendar.dto';
 
 @Injectable()

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum, IsUrl, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsUrl, IsOptional } from 'class-validator';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 
 export class CreateCheckoutSessionDto {

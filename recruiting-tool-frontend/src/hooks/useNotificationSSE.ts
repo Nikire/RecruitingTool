@@ -4,11 +4,10 @@ import {
   NOTIFICATIONS_QUERY_KEY,
   UNREAD_COUNT_QUERY_KEY,
 } from "./useNotifications";
-import { Notification } from "../types/notification";
 
 interface SSEEvent {
   type: string;
-  payload: any;
+  payload: unknown;
   timestamp: string;
   userUid?: string;
   companyUid?: string;

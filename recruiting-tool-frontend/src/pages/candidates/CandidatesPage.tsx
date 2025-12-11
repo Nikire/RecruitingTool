@@ -40,13 +40,14 @@ const CandidatesPage: React.FC = () => {
 
   const canManage = canManageResources(user);
 
+  // Call hooks before any early returns
+  const { handlePageChange, handleLimitChange } =
+    useSearchPaginationHandlers(setSearchState);
+
   // Wait for user data to load before checking permissions (fixes race condition)
   if (userLoading) {
     return <CenteredLoadingSpinner />;
   }
-
-  const { handleSearch, handlePageChange, handleLimitChange } =
-    useSearchPaginationHandlers(setSearchState);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -71,6 +72,13 @@ const CandidatesPage: React.FC = () => {
     importDialog.open();
   };
 
+  // Check if user has access (HR, ADMIN, or SUPER_ADMIN)
+  if (!canManage) {
+    return (
+      <AccessDeniedMessage requiredRoles={["HR", "ADMIN", "SUPER_ADMIN"]} />
+    );
+  }
+
   // Handle filter changes from FilterBar
   const handleFilterChange = (filters: FilterBarFilters) => {
     setSearchState({
@@ -78,13 +86,6 @@ const CandidatesPage: React.FC = () => {
       search: filters.search,
     });
   };
-
-  // Check if user has access (HR, ADMIN, or SUPER_ADMIN)
-  if (!canManage) {
-    return (
-      <AccessDeniedMessage requiredRoles={["HR", "ADMIN", "SUPER_ADMIN"]} />
-    );
-  }
 
   return (
     <Box>

@@ -9,7 +9,6 @@ import {
   Extension as ExtensionIcon,
   HealthAndSafety as HealthIcon,
   Public as PublicIcon,
-  AccessTime as AccessTimeIcon,
   Language as LanguageIcon,
   CalendarMonth as CalendarIcon,
 } from "@mui/icons-material";
@@ -123,7 +122,7 @@ const SystemSettingsPage: React.FC = () => {
       // await testEmailConnection();
       await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
       toast.success(t("settings.email_test_success"));
-    } catch (error) {
+    } catch {
       toast.error(t("settings.email_test_failed"));
     } finally {
       setTestingEmail(false);

@@ -3,11 +3,11 @@ import { HiringProcessService } from './hiring-process.service';
 import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto, AccessCodeResponseDto } from './dto/hiring-process.dto';
 import { HiringProcessFilterDto } from './dto/hiring-process-filter.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
-import { User, HiringProcessStatus } from '@prisma/client';
+import { User } from '@prisma/client';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { PaginatedResponse } from 'src/dto/pagination.dto';
 
 @ApiTags('Hiring Process')
 @ApiBearerAuth()

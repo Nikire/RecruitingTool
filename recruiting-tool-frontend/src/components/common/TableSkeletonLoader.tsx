@@ -1,5 +1,4 @@
 import {
-  Box,
   Paper,
   Skeleton,
   Table,

@@ -65,7 +65,7 @@ const JobPositionCardSkeleton = () => (
 
 // Mobile card view component
 const JobPositionCardView: React.FC<{
-  jobPosition: any;
+  jobPosition: Record<string, unknown>;
   onApplyClick: (uid: string, title: string) => void;
   onViewDetails: (uid: string) => void;
   publicMode?: boolean;
@@ -292,7 +292,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
       field: "stages",
       headerName: t("stages.title"),
       width: 100,
-      valueGetter: (value: any[]) => value?.length || 0,
+      valueGetter: (value: unknown[]) => value?.length || 0,
     },
     ...(!publicMode
       ? [

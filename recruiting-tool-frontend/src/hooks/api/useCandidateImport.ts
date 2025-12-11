@@ -27,9 +27,10 @@ export const usePreviewCandidateImport = () => {
 
       return response.data;
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errorMessage =
-        error.response?.data?.message || "Failed to preview CSV file";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to preview CSV file";
       toast.error(errorMessage);
     },
   });
@@ -72,9 +73,10 @@ export const useImportCandidates = () => {
         toast.error(`${data.errorCount} row(s) failed to import`);
       }
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errorMessage =
-        error.response?.data?.message || "Failed to import candidates";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to import candidates";
       toast.error(errorMessage);
     },
   });
@@ -100,9 +102,10 @@ export const downloadCandidateImportTemplate = async () => {
     window.URL.revokeObjectURL(url);
 
     toast.success("Template downloaded successfully");
-  } catch (error: any) {
+  } catch (error: unknown) {
     const errorMessage =
-      error.response?.data?.message || "Failed to download template";
+      (error as { response?: { data?: { message?: string } } })?.response?.data
+        ?.message || "Failed to download template";
     toast.error(errorMessage);
   }
 };

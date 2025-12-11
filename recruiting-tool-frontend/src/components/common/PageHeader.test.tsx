@@ -222,7 +222,7 @@ describe("PageHeader", () => {
         onClick: vi.fn(),
       };
 
-      const { container } = renderWithProviders(
+      renderWithProviders(
         <PageHeader title="common.dashboard" action={mockAction} />,
       );
 

@@ -3,7 +3,6 @@ import {
   login,
   TEST_USERS,
   waitForLoadingComplete,
-  waitForTableData,
 } from "./fixtures/test-utils";
 
 test.describe("Applications Management (Hiring Processes)", () => {

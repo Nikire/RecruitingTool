@@ -10,7 +10,6 @@ import { RolesType } from '@prisma/client';
  */
 describe('RBAC Service Logic', () => {
   let guard: RolesGuard;
-  let reflector: Reflector;
 
   const mockReflector = {
     getAllAndOverride: jest.fn(),

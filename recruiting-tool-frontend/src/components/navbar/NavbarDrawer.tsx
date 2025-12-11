@@ -43,7 +43,6 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
   isOpen,
   onClose,
   color,
-  linkSx,
   handleMenuClick,
   isAuthenticated,
   user,

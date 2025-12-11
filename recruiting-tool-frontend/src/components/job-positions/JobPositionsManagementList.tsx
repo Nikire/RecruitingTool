@@ -102,7 +102,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
       field: "stages",
       headerName: t("job_positions_table.header_stages"),
       width: 100,
-      valueGetter: (value: any[]) => value?.length || 0,
+      valueGetter: (value: unknown[]) => value?.length || 0,
     },
     {
       field: "hiringProcesses",

@@ -111,7 +111,7 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
           </FormControl>
         );
 
-      case QuestionType.CHECKBOX:
+      case QuestionType.CHECKBOX: {
         const checkboxValue = Array.isArray(value) ? value : [];
         return (
           <FormControl component="fieldset" error={!!error} fullWidth>
@@ -154,6 +154,7 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
             )}
           </FormControl>
         );
+      }
 
       default:
         return null;

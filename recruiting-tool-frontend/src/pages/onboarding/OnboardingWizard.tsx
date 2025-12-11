@@ -44,7 +44,6 @@ const OnboardingWizard: React.FC = () => {
   // Handle Stripe redirect - check for payment success/cancelled in URL
   useEffect(() => {
     const payment = searchParams.get("payment");
-    const step = searchParams.get("step");
 
     if (payment === "success") {
       // Payment was successful - advance to company setup step

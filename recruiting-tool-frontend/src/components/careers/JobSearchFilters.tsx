@@ -1,11 +1,4 @@
-import {
-  Box,
-  TextField,
-  InputAdornment,
-  Chip,
-  Stack,
-  Typography,
-} from "@mui/material";
+import { Box, TextField, InputAdornment } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";

@@ -15,7 +15,6 @@ import {
   TableRow,
   Card,
   CardContent,
-  Alert,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { usePublicJobPosition } from "../../hooks/api/useJobPositions";
@@ -26,9 +25,7 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { canManageResources } from "../../utils/permissions";
 import { ApplyToJobDialog } from "../../components/dialogs/ApplyToJobDialog";
 import {
-  StatusFilterChips,
   MetadataDisplay,
-  MetadataItem,
   CenteredLoadingSpinner,
 } from "../../components/common";
 import { StagesList, CustomQuestionsList } from "../../components/job-position";

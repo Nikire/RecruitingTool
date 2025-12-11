@@ -45,9 +45,10 @@ export function useUploadFile() {
 
       toast.success(`File "${data.originalName}" uploaded successfully`);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errorMessage =
-        error?.response?.data?.message || "Failed to upload file";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to upload file";
       toast.error(errorMessage);
     },
   });
@@ -59,12 +60,13 @@ export function useUploadFile() {
 export function useUploadImage() {
   return useMutation({
     mutationFn: filesApi.uploadImage,
-    onSuccess: (_data) => {
+    onSuccess: () => {
       toast.success("Image uploaded successfully");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errorMessage =
-        error?.response?.data?.message || "Failed to upload image";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to upload image";
       toast.error(errorMessage);
     },
   });
@@ -80,9 +82,10 @@ export function useDownloadFile() {
     onSuccess: () => {
       toast.success("File downloaded successfully");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errorMessage =
-        error?.response?.data?.message || "Failed to download file";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to download file";
       toast.error(errorMessage);
     },
   });
@@ -101,9 +104,10 @@ export function useDeleteFile() {
       queryClient.invalidateQueries({ queryKey: ["files"] });
       toast.success("File deleted successfully");
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const errorMessage =
-        error?.response?.data?.message || "Failed to delete file";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to delete file";
       toast.error(errorMessage);
     },
   });

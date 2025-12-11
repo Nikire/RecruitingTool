@@ -1,10 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import {
-  renderWithProviders,
-  screen,
-  waitFor,
-  userEvent,
-} from "../../test/test-utils";
+import { renderWithProviders, waitFor } from "../../test/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import CandidatesPage from "../../pages/candidates/CandidatesPage";
 import { server } from "../../test/mocks/server";

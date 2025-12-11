@@ -1,7 +1,7 @@
 import { Injectable, Logger, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SubscriptionPlan } from '@prisma/client';
-import { PLAN_LIMITS, QuotaResource, PlanLimits } from './config/plan-limits.config';
+import { PLAN_LIMITS, QuotaResource } from './config/plan-limits.config';
 import { QuotaStatusDto, QuotaUsageDto, FeatureAccessDto } from './dto/quota.dto';
 
 @Injectable()

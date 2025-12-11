@@ -10,7 +10,7 @@ const MainLayout = () => {
   const navigate = useNavigate();
 
   // Validate user session on every page
-  const { isError, data: currentUser } = useAuthMe();
+  const { isError } = useAuthMe();
 
   // Establish SSE connection for real-time notifications (only when authenticated)
   useNotificationSSE();

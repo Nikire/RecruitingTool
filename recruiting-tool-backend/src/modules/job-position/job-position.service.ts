@@ -1,4 +1,4 @@
-import { forwardRef, Inject, NotFoundException, ForbiddenException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import {
   CreateJobPositionDto,

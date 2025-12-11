@@ -10,7 +10,6 @@ import {
   cancelConnectionRequest,
 } from "../../services/api/connection-requests";
 import {
-  CreateConnectionRequestDto,
   ApproveConnectionRequestDto,
   DenyConnectionRequestDto,
   GetConnectionRequestsQuery,
@@ -31,10 +30,10 @@ export const useCreateConnectionRequest = () => {
       });
       toast.success(t("connection_requests.request_sent"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message =
-        error.response?.data?.message ||
-        t("connection_requests.errors.create_failed");
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("connection_requests.errors.create_failed");
       toast.error(message);
     },
   });
@@ -83,10 +82,10 @@ export const useApproveConnectionRequest = () => {
       queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
       toast.success(t("connection_requests.request_approved"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message =
-        error.response?.data?.message ||
-        t("connection_requests.errors.approve_failed");
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("connection_requests.errors.approve_failed");
       toast.error(message);
     },
   });
@@ -111,10 +110,10 @@ export const useDenyConnectionRequest = () => {
       queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
       toast.success(t("connection_requests.request_denied"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message =
-        error.response?.data?.message ||
-        t("connection_requests.errors.deny_failed");
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("connection_requests.errors.deny_failed");
       toast.error(message);
     },
   });
@@ -135,10 +134,10 @@ export const useCancelConnectionRequest = () => {
       });
       toast.success(t("connection_requests.request_cancelled"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message =
-        error.response?.data?.message ||
-        t("connection_requests.errors.cancel_failed");
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("connection_requests.errors.cancel_failed");
       toast.error(message);
     },
   });

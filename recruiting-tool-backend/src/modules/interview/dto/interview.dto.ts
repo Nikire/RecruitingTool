@@ -1,7 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsOptional, IsEnum, IsInt, Min, IsDateString, IsArray, IsBoolean } from 'class-validator';
 import { InterviewStatus } from '@prisma/client';
-import { Type } from 'class-transformer';
 
 export class CreateInterviewDto {
   @ApiProperty({

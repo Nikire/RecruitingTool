@@ -32,7 +32,7 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange(value);
   };
 
-  const handleLimitChange = (event: any) => {
+  const handleLimitChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     onLimitChange(Number(event.target.value));
   };
 

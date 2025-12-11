@@ -6,7 +6,6 @@ import {
   waitFor,
 } from "../../test/test-utils";
 import CreateCandidateDialog from "./CreateCandidateDialog";
-import { QueryClient } from "@tanstack/react-query";
 import * as useCandidatesHook from "../../hooks/api/useCandidates";
 
 // Mock the useCandidates hook
@@ -26,7 +25,7 @@ describe("CreateCandidateDialog", () => {
       mutate: mockMutate,
       isPending: false,
       isError: false,
-    } as any);
+    } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
   });
 
   describe("Rendering", () => {
@@ -285,13 +284,13 @@ describe("CreateCandidateDialog", () => {
 
       // Mock successful mutation
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
-        mutate: (data: any, options: any) => {
+        mutate: (data: unknown, options: { onSuccess: () => void }) => {
           // Immediately call onSuccess callback
           options.onSuccess();
         },
         isPending: false,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog
@@ -320,14 +319,14 @@ describe("CreateCandidateDialog", () => {
       const user = userEvent.setup();
 
       // Mock successful mutation
-      let capturedCallback: any;
+      let capturedCallback: unknown;
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
-        mutate: (data: any, options: any) => {
+        mutate: (data: unknown, options: { onSuccess: () => void }) => {
           capturedCallback = options.onSuccess;
         },
         isPending: false,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       const { rerender } = renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -374,7 +373,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -391,7 +390,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -407,7 +406,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -428,7 +427,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: false,
         isError: true,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -444,7 +443,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: false,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,

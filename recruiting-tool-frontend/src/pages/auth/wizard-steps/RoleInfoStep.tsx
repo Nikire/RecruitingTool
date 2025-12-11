@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, TextField, Button, MenuItem } from "@mui/material";
+import { Box, Typography, TextField, Button } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { RegistrationFormData } from "../RegistrationWizard";

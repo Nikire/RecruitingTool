@@ -108,7 +108,13 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
   }
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: PipelineFunnelData }>;
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (

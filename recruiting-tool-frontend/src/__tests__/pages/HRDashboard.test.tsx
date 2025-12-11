@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { renderWithProviders, screen, waitFor } from "../../test/test-utils";
+import { renderWithProviders, waitFor } from "../../test/test-utils";
 import { BrowserRouter } from "react-router-dom";
 import HRDashboard from "../../pages/hr/HRDashboard";
 import { server } from "../../test/mocks/server";

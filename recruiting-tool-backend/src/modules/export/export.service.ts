@@ -201,6 +201,7 @@ export class ExportService {
    */
   private async exportCompanies(where: Record<string, unknown>): Promise<unknown[]> {
     // Remove companyId filter for companies export (they don't have companyId)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { companyId, ...restWhere } = where;
 
     return this.databaseService.company.findMany({
@@ -342,6 +343,7 @@ export class ExportService {
    */
   private async generatePdf(data: Record<string, unknown>[], entity: ExportEntity): Promise<Buffer> {
     try {
+      // eslint-disable-next-line @typescript-eslint/no-var-requires
       const vfs = require('pdfmake/build/vfs_fonts');
       const fonts = {
         Roboto: {

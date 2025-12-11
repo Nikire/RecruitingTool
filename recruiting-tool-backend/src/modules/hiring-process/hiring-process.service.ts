@@ -72,6 +72,7 @@ export class HiringProcessService {
 
       // Copy stages from job position template, but link them ONLY to the hiring process
       // Do NOT include jobPositionUid so stages are isolated to this hiring process
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const copiedStages = jobPosition.stages.map(({ uid, jobPositionUid, status, position, ...rest }) => ({
         ...rest,
         hiringProcessUid: newHiringProcess.uid,
@@ -436,7 +437,7 @@ export class HiringProcessService {
 
       verifyCompanyAccess(user, existingHiringProcess.companyId);
 
-      const hiringProcess = await this.databaseService.hiringProcess.delete({
+      await this.databaseService.hiringProcess.delete({
         where: { uid },
       });
 

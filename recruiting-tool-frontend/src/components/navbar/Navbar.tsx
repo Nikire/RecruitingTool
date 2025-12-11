@@ -1,8 +1,4 @@
-import {
-  Menu as MenuIcon,
-  WorkOutline as WorkIcon,
-  Notifications as NotificationsIcon,
-} from "@mui/icons-material";
+import { Menu as MenuIcon, WorkOutline as WorkIcon } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -14,7 +10,6 @@ import {
   alpha,
   useTheme,
   useMediaQuery,
-  Badge,
   Menu,
   MenuItem,
   ListItemIcon,
@@ -32,7 +27,6 @@ import { NotificationBell } from "../notifications";
 import { canManageResources, isAdmin } from "../../utils/permissions";
 import {
   Person as ProfileIcon,
-  Settings as SettingsIcon,
   CreditCard as SubscriptionIcon,
   Logout as LogoutIcon,
   Dashboard as DashboardIcon,

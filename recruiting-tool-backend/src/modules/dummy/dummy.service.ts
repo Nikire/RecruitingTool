@@ -274,7 +274,7 @@ export class DummyService implements OnApplicationBootstrap {
    * @param totalStages - Total number of stages
    * @returns Date for this stage, progressing from startDate
    */
-  private getStageProgressionDate(startDate: Date, stageIndex: number, totalStages: number): Date {
+  private getStageProgressionDate(startDate: Date, stageIndex: number): Date {
     // Average days between stages: 3-7 days
     const daysPerStage = 3 + Math.random() * 4;
     const daysElapsed = stageIndex * daysPerStage;
@@ -294,7 +294,7 @@ export class DummyService implements OnApplicationBootstrap {
    * @param totalStages - Total number of stages
    * @returns true if candidate should continue to this stage
    */
-  private shouldCandidateProgressToStage(stageIndex: number, totalStages: number): boolean {
+  private shouldCandidateProgressToStage(stageIndex: number): boolean {
     // Realistic hiring funnel drop-off rates:
     // Initial screening: 100% make it
     // Technical interview: 70% make it

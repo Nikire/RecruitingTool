@@ -1,8 +1,6 @@
 import { useState } from "react";
 import {
   Box,
-  useTheme,
-  useMediaQuery,
   Button,
   Grid,
   Paper,
@@ -17,7 +15,7 @@ import AddIcon from "@mui/icons-material/Add";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import InboxIcon from "@mui/icons-material/Inbox";
-import { JobPosition, JobPositionStatus } from "../../types/jobPosition.types";
+import { JobPosition } from "../../types/jobPosition.types";
 import ManageStagesDialog from "../../components/dialogs/ManageStagesDialog";
 import CreateJobPositionDialog from "../../components/dialogs/CreateJobPositionDialog";
 import UpdateJobPositionDialog from "../../components/dialogs/UpdateJobPositionDialog";
@@ -34,16 +32,9 @@ import { CenteredLoadingSpinner, PageHeader } from "../../components/common";
 
 const JobPositionsPage: React.FC = () => {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const navigate = useNavigate();
   const { user, isLoading: userLoading } = useAuthMe();
   const canManage = canManageResources(user);
-
-  // Wait for user data to load before rendering (fixes race condition)
-  if (userLoading) {
-    return <CenteredLoadingSpinner />;
-  }
 
   const [selectedJobPosition, setSelectedJobPosition] =
     useState<JobPosition | null>(null);
@@ -86,6 +77,11 @@ const JobPositionsPage: React.FC = () => {
 
   const jobPositions = data?.data || [];
   const totalCount = data?.meta?.total || 0;
+
+  // Wait for user data to load before rendering (fixes race condition)
+  if (userLoading) {
+    return <CenteredLoadingSpinner />;
+  }
 
   const handleViewModeChange = (
     _event: React.MouseEvent<HTMLElement>,

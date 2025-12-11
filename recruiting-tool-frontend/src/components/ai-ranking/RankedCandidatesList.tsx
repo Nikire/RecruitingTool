@@ -87,7 +87,7 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
 
   // Filter and sort candidates
   const filteredAndSortedCandidates = React.useMemo(() => {
-    let filtered = candidates.filter((candidate) => {
+    const filtered = candidates.filter((candidate) => {
       // Tier filter
       if (tierFilter !== "all" && candidate.scoreTier !== tierFilter) {
         return false;

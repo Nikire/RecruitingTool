@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsDateString, IsArray, IsNumber, IsEmail, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsArray, IsEmail, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CalendarAttendeeDto {

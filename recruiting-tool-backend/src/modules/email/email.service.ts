@@ -76,7 +76,6 @@ export class EmailService {
       return;
     }
 
-    const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@recruiting.com');
     const teamName = companyName ? `${companyName} Recruiting Team` : 'The Recruiting Team';
 
     const subject = `Application Received: ${jobTitle}`;
@@ -116,8 +115,6 @@ ${teamName}
       this.logger.log(`Application emails disabled - skipping HR notification for ${hrEmail}`);
       return;
     }
-
-    const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@recruiting.com');
 
     const subject = `New Application: ${jobTitle}`;
     const text = `

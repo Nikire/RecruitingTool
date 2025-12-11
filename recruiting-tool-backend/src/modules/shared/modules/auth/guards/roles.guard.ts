@@ -10,9 +10,6 @@ const permissionRoles = {
   4: RolesType.USER,
 } satisfies Record<number, RolesType>;
 
-type EnsureAllRolesPresent<T extends Record<number, RolesType>> = RolesType extends T[keyof T] ? T : never;
-
-const _check: EnsureAllRolesPresent<typeof permissionRoles> = permissionRoles;
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
@@ -45,7 +42,7 @@ export class RolesGuard implements CanActivate {
     } */
   }
   private getRoleLevel(role: RolesType): number {
-    const entry = Object.entries(permissionRoles).find(([_, r]) => r === role);
+    const entry = Object.entries(permissionRoles).find(([, r]) => r === role);
     return entry ? Number(entry[0]) : Infinity;
   }
 }

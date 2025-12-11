@@ -13,10 +13,8 @@ import HiringTrendsChart from "./HiringTrendsChart";
 import SourceDistributionChart from "./SourceDistributionChart";
 import {
   OverviewMetricsDto,
-  PipelineFunnelDto,
   TimeToHireDto,
   MetricCardData,
-  MetricTrend,
   StageConversionRate,
 } from "../../types/analytics";
 import {
@@ -47,7 +45,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   const { t } = useTranslation();
 
   // Fetch additional analytics data
-  const { data: pipelineData } = useAnalyticsPipeline(dateRange);
+  useAnalyticsPipeline(dateRange);
   const { data: timeToHireData } = useAnalyticsTimeToHire(dateRange);
   const { data: sourcesData } = useAnalyticsSources(dateRange);
 

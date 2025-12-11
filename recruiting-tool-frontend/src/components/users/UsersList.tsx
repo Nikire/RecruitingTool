@@ -203,7 +203,7 @@ const UsersList: React.FC<UsersListProps> = ({
       field: "company",
       headerName: t("users.company_label"),
       width: 150,
-      valueGetter: (value: any) => value?.name || "-",
+      valueGetter: (value: { name?: string } | unknown) => value?.name || "-",
     },
     {
       field: "createdAt",

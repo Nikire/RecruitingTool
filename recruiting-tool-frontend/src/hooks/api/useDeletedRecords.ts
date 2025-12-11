@@ -7,7 +7,6 @@ import {
   DeletedJobPosition,
   DeletedApplication,
   DeletedInterview,
-  DeletedEntityType,
 } from "../../types/deleted.types";
 
 /**

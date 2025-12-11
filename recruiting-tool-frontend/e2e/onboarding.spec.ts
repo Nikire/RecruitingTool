@@ -76,7 +76,7 @@ test.describe("Onboarding Wizard", () => {
 
     if ((await nextButton.count()) > 0) {
       // Get current step
-      const currentStep = await page
+      await page
         .locator('.MuiStep-root.Mui-active, [class*="active"]')
         .count();
 

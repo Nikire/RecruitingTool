@@ -37,7 +37,7 @@ export class FlexibleAuthGuard extends AuthGuard(['auth0', 'jwt']) {
    * Handle request after successful authentication
    * This method is called after a strategy successfully validates a token
    */
-  handleRequest(err: any, user: any, info: any, context: ExecutionContext) {
+  handleRequest(err: any, user: any) {
     // If there's an error or no user, reject
     if (err || !user) {
       throw err || new UnauthorizedException('Authentication failed');

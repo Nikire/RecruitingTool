@@ -8,7 +8,6 @@ import {
   Typography,
   Box,
   CircularProgress,
-  MenuItem,
   Checkbox,
   FormControl,
   FormLabel,
@@ -70,10 +69,16 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   const { data: companiesData } = useCompanies();
   const companies = companiesData || [];
 
-  const selectedRoles = watch("roles");
+  watch("roles");
 
   const onSubmit = (data: UserFormData) => {
-    const createData: any = {
+    const createData: {
+      name: string;
+      email: string;
+      password: string;
+      roles: UserRoles[];
+      companyUid?: string;
+    } = {
       name: data.name,
       email: data.email,
       password: data.password,

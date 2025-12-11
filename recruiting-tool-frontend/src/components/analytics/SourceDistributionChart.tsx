@@ -58,7 +58,14 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
     innerRadius,
     outerRadius,
     percent,
-  }: any) => {
+  }: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+  }) => {
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -83,7 +90,13 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
   };
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: SourceData }>;
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -104,8 +117,14 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
   };
 
   // Custom legend
-  const renderLegend = (props: any) => {
+  interface LegendEntry {
+    color: string;
+    value: string;
+    payload: SourceData;
+  }
+  const renderLegend = (props: { payload?: LegendEntry[] }) => {
     const { payload } = props;
+    if (!payload) return null;
 
     return (
       <Box
@@ -116,7 +135,7 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
           mt: 2,
         }}
       >
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: LegendEntry, index: number) => (
           <Box
             key={`legend-${index}`}
             sx={{

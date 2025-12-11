@@ -69,7 +69,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
       field: "company",
       headerName: t("companies.title"),
       width: 150,
-      valueGetter: (value: any) => value?.name || t("common.n_a"),
+      valueGetter: (value: { name?: string }) => value?.name || t("common.n_a"),
     },
     {
       field: "status",
@@ -89,7 +89,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
       field: "stages",
       headerName: t("stages.title"),
       width: 120,
-      valueGetter: (value: any[]) =>
+      valueGetter: (value: unknown[]) =>
         `${value?.length || 0} ${t("stages.title").toLowerCase()}`,
     },
     {

@@ -19,6 +19,7 @@ export class CompanyRolesService {
   /**
    * Get all members of a company
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getCompanyMembers(companyUid: string, currentUserRoles: RolesType[]): Promise<CompanyMemberResponseDto[]> {
     try {
       // Find the company

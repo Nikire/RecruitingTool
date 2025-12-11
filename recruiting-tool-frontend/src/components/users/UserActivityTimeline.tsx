@@ -27,7 +27,7 @@ interface ActivityLog {
   action: string;
   timestamp: string;
   details?: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 const getActivityIcon = (action: string) => {

@@ -80,7 +80,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
         uid: interview.uid,
         data: { status: InterviewStatus.COMPLETED },
       });
-    } catch (error) {
+    } catch {
       // Error handled by mutation
     }
   };
@@ -89,7 +89,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
     try {
       await cancelMutation.mutateAsync(interview.uid);
       setConfirmCancelOpen(false);
-    } catch (error) {
+    } catch {
       // Error handled by mutation
     }
   };
@@ -101,7 +101,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
         stageUid: interview.stageUid,
       });
       setConfirmDeleteOpen(false);
-    } catch (error) {
+    } catch {
       // Error handled by mutation
     }
   };

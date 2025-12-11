@@ -1,7 +1,6 @@
 import { Injectable, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../../shared/modules/database/database.service';
 import { CreateUserActivityLogDto, UserActivityLogResponseDto } from '../dto/users.dto';
-import { UserActivityLog } from '@prisma/client';
 
 @Injectable()
 export class UserActivityService {

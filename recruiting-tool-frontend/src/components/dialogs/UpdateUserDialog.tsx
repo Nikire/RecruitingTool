@@ -95,7 +95,13 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
     if (!user) return;
 
     // Don't send password if it's empty
-    const updateData: any = {
+    const updateData: {
+      name: string;
+      email: string;
+      roles: UserRoles[];
+      password?: string;
+      companyUid?: string;
+    } = {
       name: data.name,
       email: data.email,
       roles: data.roles,

@@ -25,7 +25,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const renderAnswer = (question: CustomQuestion, answer: any) => {
+  const renderAnswer = (question: CustomQuestion, answer: unknown) => {
     if (!answer) {
       return (
         <Typography

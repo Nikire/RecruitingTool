@@ -131,7 +131,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
       }
 
       handleClose();
-    } catch (error) {
+    } catch {
       // Error handled by mutation
     }
   };

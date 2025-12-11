@@ -38,8 +38,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
   const { t } = useTranslation();
   const { mutateAsync: createApplication, isPending: submitting } =
     useCreateApplication();
-  const { data: jobPosition, isLoading: loadingJob } =
-    usePublicJobPosition(jobUid);
+  const { data: jobPosition } = usePublicJobPosition(jobUid);
   const { user, isAuthenticated } = useAuthMe();
   const [uploading, setUploading] = useState(false);
   const [autoFilling, setAutoFilling] = useState(false);

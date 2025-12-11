@@ -18,7 +18,6 @@ import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useCreateCandidate } from "../../hooks/api/useCandidates";
 import { useValidationRules } from "../../utils/validation";
-import { useIsMobile } from "../../hooks/useMediaQuery";
 import FormErrorSummary from "../common/FormErrorSummary";
 
 interface CreateCandidateDialogProps {

@@ -38,6 +38,13 @@ const HRDashboard: React.FC = () => {
     useState<Application | null>(null);
   const manualCandidateDialog = useDialog<never>();
 
+  // Call all hooks before any early returns
+  const { data: applications, isLoading: applicationsLoading } =
+    useApplications();
+  const { data: candidates, isLoading: candidatesLoading } = useCandidates();
+  const { data: jobPositions, isLoading: jobPositionsLoading } =
+    useJobPositions();
+
   // Wait for user data to load before checking permissions (fixes race condition)
   if (userLoading) {
     return <CenteredLoadingSpinner />;
@@ -48,13 +55,6 @@ const HRDashboard: React.FC = () => {
   if (!isAuthenticated || !hasAccess) {
     return <Navigate to="/login" />;
   }
-
-  // Fetch data
-  const { data: applications, isLoading: applicationsLoading } =
-    useApplications();
-  const { data: candidates, isLoading: candidatesLoading } = useCandidates();
-  const { data: jobPositions, isLoading: jobPositionsLoading } =
-    useJobPositions();
 
   // Calculate statistics
   const totalApplications = applications?.length || 0;

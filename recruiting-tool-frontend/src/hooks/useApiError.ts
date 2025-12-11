@@ -25,7 +25,7 @@ export const useApiError = () => {
    * - Returns normalized error structure
    */
   const handleError = useCallback(
-    (error: any, defaultMessage?: string): NormalizedError => {
+    (error: unknown, defaultMessage?: string): NormalizedError => {
       // Extract normalized error from interceptor
       const normalized: NormalizedError = normalizeErrorObject(
         error,
@@ -55,7 +55,7 @@ export const useApiError = () => {
    * Useful for background operations or when you want to handle errors manually
    */
   const handleErrorSilently = useCallback(
-    (error: any, defaultMessage?: string): NormalizedError => {
+    (error: unknown, defaultMessage?: string): NormalizedError => {
       const normalized: NormalizedError = normalizeErrorObject(
         error,
         defaultMessage,
@@ -82,7 +82,7 @@ export const useApiError = () => {
  * Normalizes error objects from various sources into a consistent structure
  */
 function normalizeErrorObject(
-  error: any,
+  error: unknown,
   defaultMessage?: string,
 ): NormalizedError {
   // Default normalized error
@@ -97,29 +97,48 @@ function normalizeErrorObject(
   }
 
   // If error has response (Axios error)
-  if (error.response) {
-    const { data, status } = error.response;
+  const errorWithResponse = error as {
+    response?: { data?: unknown; status?: number };
+  };
+  if (errorWithResponse.response) {
+    const { data, status } = errorWithResponse.response;
 
-    normalized.statusCode = status;
+    normalized.statusCode = status || -1;
 
     // Extract message
     if (data) {
       if (typeof data === "string") {
         normalized.message = data;
-      } else if (data.message) {
-        // Handle array of messages or single message
-        if (Array.isArray(data.message)) {
-          normalized.message = data.message.join(", ");
-        } else {
-          normalized.message = data.message;
+      } else if (
+        typeof data === "object" &&
+        data !== null &&
+        "message" in data
+      ) {
+        const dataObj = data as { message?: unknown };
+        if (dataObj.message) {
+          // Handle array of messages or single message
+          if (Array.isArray(dataObj.message)) {
+            normalized.message = (dataObj.message as string[]).join(", ");
+          } else if (typeof dataObj.message === "string") {
+            normalized.message = dataObj.message;
+          }
         }
-      } else if (data.error) {
-        normalized.message = data.error;
+      } else if (typeof data === "object" && data !== null && "error" in data) {
+        const dataWithError = data as { error?: string };
+        if (dataWithError.error) {
+          normalized.message = dataWithError.error;
+        }
       }
 
       // Extract validation errors
-      if (data.errors && typeof data.errors === "object") {
-        normalized.errors = data.errors;
+      if (typeof data === "object" && data !== null && "errors" in data) {
+        const dataWithErrors = data as { errors?: unknown };
+        if (
+          dataWithErrors.errors &&
+          typeof dataWithErrors.errors === "object"
+        ) {
+          normalized.errors = dataWithErrors.errors;
+        }
       }
     }
 
@@ -127,7 +146,8 @@ function normalizeErrorObject(
   }
 
   // If error has request but no response (network error)
-  if (error.request) {
+  const errorWithRequest = error as { request?: unknown };
+  if (errorWithRequest.request) {
     normalized.message = "Network error - unable to reach server";
     normalized.statusCode = 0;
     return normalized;
@@ -140,8 +160,12 @@ function normalizeErrorObject(
   }
 
   // If error has message property
-  if (error.message && typeof error.message === "string") {
-    normalized.message = error.message;
+  const errorWithMessage = error as { message?: unknown };
+  if (
+    errorWithMessage.message &&
+    typeof errorWithMessage.message === "string"
+  ) {
+    normalized.message = errorWithMessage.message;
     return normalized;
   }
 

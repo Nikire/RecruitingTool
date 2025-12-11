@@ -19,7 +19,7 @@ export const useCreateFeedback = () => {
       queryClient.invalidateQueries({ queryKey: [FEEDBACK_QUERY_KEY] });
       toast.success(t("feedback.messages.submitted"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to submit feedback:", error);
       toast.error(t("feedback.messages.submit_failed"));
     },

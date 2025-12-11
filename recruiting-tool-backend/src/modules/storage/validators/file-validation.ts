@@ -1,4 +1,4 @@
-import { BadRequestException, Logger } from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 import * as FileType from 'file-type';
 
 /**
@@ -66,25 +66,20 @@ export class FileValidator {
    * Validate document file (PDF, DOC, DOCX, TXT)
    */
   static async validateDocument(file: Express.Multer.File): Promise<FileValidationResult> {
-    return this.validateFile(file, ALLOWED_DOCUMENT_TYPES, MAX_FILE_SIZES.document, 'document');
+    return this.validateFile(file, ALLOWED_DOCUMENT_TYPES, MAX_FILE_SIZES.document);
   }
 
   /**
    * Validate image file (JPG, PNG, GIF, WebP)
    */
   static async validateImage(file: Express.Multer.File): Promise<FileValidationResult> {
-    return this.validateFile(file, ALLOWED_IMAGE_TYPES, MAX_FILE_SIZES.image, 'image');
+    return this.validateFile(file, ALLOWED_IMAGE_TYPES, MAX_FILE_SIZES.image);
   }
 
   /**
    * Core file validation logic
    */
-  private static async validateFile(
-    file: Express.Multer.File,
-    allowedTypes: Record<string, readonly string[]>,
-    maxSize: number,
-    fileCategory: 'document' | 'image',
-  ): Promise<FileValidationResult> {
+  private static async validateFile(file: Express.Multer.File, allowedTypes: Record<string, readonly string[]>, maxSize: number): Promise<FileValidationResult> {
     try {
       // 1. Check if file exists
       if (!file || !file.buffer) {

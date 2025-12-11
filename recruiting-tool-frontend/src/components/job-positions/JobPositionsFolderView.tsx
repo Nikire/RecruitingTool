@@ -14,7 +14,7 @@ import { useListJobPositions } from "../../hooks/api/useJobPositions";
 import { useNavigate } from "react-router-dom";
 
 interface JobPositionsFolderViewProps {
-  hiringProcesses?: any[];
+  hiringProcesses?: unknown[];
 }
 
 const JobPositionsFolderView: React.FC<JobPositionsFolderViewProps> = ({

@@ -46,7 +46,7 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
 
       // Navigate to careers page
       onComplete();
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error completing onboarding:", err);
       setError(
         err.response?.data?.message ||

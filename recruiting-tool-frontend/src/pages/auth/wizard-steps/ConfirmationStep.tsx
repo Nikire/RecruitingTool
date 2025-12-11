@@ -15,13 +15,11 @@ import { getDefaultDashboard } from "../../../utils/permissions";
 
 interface ConfirmationStepProps {
   formData: RegistrationFormData;
-  onComplete: () => void;
   onBack: () => void;
 }
 
 const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
   formData,
-  onComplete,
   onBack,
 }) => {
   const { t } = useTranslation();
@@ -61,7 +59,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   const handleRegister = () => {
     // Prepare registration data based on role
-    const registrationData: any = {
+    const registrationData: Record<string, unknown> = {
       name: formData.name,
       email: formData.email,
       password: formData.password,

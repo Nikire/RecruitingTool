@@ -6,7 +6,6 @@ import { RolesType } from '@prisma/client';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
-  let reflector: Reflector;
 
   const mockReflector = {
     getAllAndOverride: jest.fn(),

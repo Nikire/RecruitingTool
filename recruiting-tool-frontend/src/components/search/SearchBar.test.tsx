@@ -1,10 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import {
-  renderWithProviders,
-  screen,
-  userEvent,
-  waitFor,
-} from "../../test/test-utils";
+import { renderWithProviders, screen, userEvent } from "../../test/test-utils";
 import SearchBar from "./SearchBar";
 
 describe("SearchBar", () => {

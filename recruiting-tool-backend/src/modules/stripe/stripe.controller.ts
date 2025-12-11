@@ -212,7 +212,7 @@ export class StripeController {
 
       // Handle the event asynchronously (don't block Stripe)
       setImmediate(() => {
-        this.stripeService.handleWebhookEvent(event).catch((error) => {
+        this.stripeService.handleWebhookEvent(event).catch(() => {
           // Error is already logged in the service
         });
       });

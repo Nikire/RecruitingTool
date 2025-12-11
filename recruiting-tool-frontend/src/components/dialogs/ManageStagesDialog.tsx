@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useBulkCreateStages } from "../../hooks/api/useStages";
-import { Stage, StageType, STAGE_TYPE_LABELS } from "../../types/stage.types";
+import { Stage } from "../../types/stage.types";
 import StageItem from "../job-positions/StageItem";
 import StageBuilder from "../job-positions/StageBuilder";
 

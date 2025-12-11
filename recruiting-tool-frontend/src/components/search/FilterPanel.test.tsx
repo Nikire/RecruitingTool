@@ -1,10 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import {
-  renderWithProviders,
-  screen,
-  userEvent,
-  within,
-} from "../../test/test-utils";
+import { renderWithProviders, screen, userEvent } from "../../test/test-utils";
 import FilterPanel from "./FilterPanel";
 import { SearchFilters } from "../../types/search";
 import { mockStatusOptions, mockSkillsOptions } from "../../test/test-data";
@@ -138,7 +133,7 @@ describe("FilterPanel", () => {
 
   describe("Status Filter", () => {
     it("should render all status options", async () => {
-      const user = userEvent.setup();
+      userEvent.setup();
       renderWithProviders(
         <FilterPanel
           filters={defaultFilters}

@@ -45,6 +45,10 @@ export const CompaniesPage: React.FC = () => {
     description: "",
   });
 
+  // Call hooks before any early returns
+  const { handleSearch, handlePageChange, handleLimitChange } =
+    useSearchPaginationHandlers(setSearchState);
+
   // Check if user is SUPER_ADMIN
   const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
 
@@ -69,9 +73,6 @@ export const CompaniesPage: React.FC = () => {
       },
     });
   };
-
-  const { handleSearch, handlePageChange, handleLimitChange } =
-    useSearchPaginationHandlers(setSearchState);
 
   return (
     <Box>

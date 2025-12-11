@@ -1,6 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, it, expect, vi } from "vitest";
-import userEvent from "@testing-library/user-event";
+import { describe, it, expect } from "vitest";
 import EntitySelect from "./EntitySelect";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { I18nextProvider } from "react-i18next";

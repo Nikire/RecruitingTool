@@ -24,10 +24,7 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { useCandidateActivities } from "../../hooks/api/useCandidateActivities";
-import {
-  CandidateActivity,
-  CandidateActivityType,
-} from "../../types/candidate-activity.types";
+import { CandidateActivityType } from "../../types/candidate-activity.types";
 
 interface CandidateActivityTimelineProps {
   candidateUid: string;

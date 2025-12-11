@@ -14,7 +14,6 @@ import { useTranslation } from "react-i18next";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import BusinessIcon from "@mui/icons-material/Business";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useNavigate } from "react-router-dom";
 

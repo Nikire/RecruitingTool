@@ -4,7 +4,6 @@ import {
   Button,
   Typography,
   Alert,
-  LinearProgress,
   CircularProgress,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -64,7 +63,7 @@ const ResumeStep: React.FC<ResumeStepProps> = ({ data, onNext, onBack }) => {
       try {
         await uploadResumeMutation.mutateAsync(selectedFile);
         onNext({ resumeFile: selectedFile, resumeSkipped: false });
-      } catch (error) {
+      } catch {
         // Error is already handled by the mutation (toast shown)
         setError(t("applicant_onboarding.resume.upload_error"));
       }

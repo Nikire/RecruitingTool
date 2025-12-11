@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Headers, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Auth0CallbackDto, LinkedAccountsResponseDto, LinkSocialAccountDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
+import { LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
 import {
   ApiBadRequestResponse,

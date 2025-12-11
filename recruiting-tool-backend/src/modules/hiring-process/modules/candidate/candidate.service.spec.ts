@@ -14,9 +14,6 @@ describe('CandidateService', () => {
   let service: CandidateService;
   let databaseService: DatabaseService;
   let candidateActivityService: CandidateActivityService;
-  let emailService: EmailService;
-  let storageService: StorageService;
-  let auditLogService: AuditLogService;
 
   const mockCandidate = {
     id: 1,

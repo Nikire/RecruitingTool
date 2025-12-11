@@ -62,9 +62,10 @@ export function useCompleteHROnboarding() {
 
       showSuccessToast(data.message);
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       const message =
-        error.response?.data?.message || "Failed to complete onboarding";
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to complete onboarding";
       showErrorToast(message);
     },
   });

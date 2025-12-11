@@ -14,7 +14,7 @@ import { ApiResponse, ApiErrorResponse } from "../types/api.types";
 /**
  * Checks if a response follows the backend's normalized structure
  */
-function isNormalizedResponse(data: any): data is ApiResponse {
+function isNormalizedResponse(data: unknown): data is ApiResponse {
   return (
     data !== null &&
     typeof data === "object" &&
@@ -37,7 +37,10 @@ export function responseNormalizerInterceptor(
     // Validate success field
     if (!apiResponse.success) {
       // If success is false, treat it as an error
-      const error: any = new Error("API request failed");
+      const error = new Error("API request failed") as Error & {
+        response: AxiosResponse;
+        apiResponse: ApiResponse;
+      };
       error.response = response;
       error.apiResponse = apiResponse;
       throw error;
@@ -55,7 +58,9 @@ export function responseNormalizerInterceptor(
 /**
  * Error interceptor to handle API errors consistently
  */
-export function errorNormalizerInterceptor(error: any): Promise<never> {
+export function errorNormalizerInterceptor(
+  error: Error & { response?: AxiosResponse },
+): Promise<never> {
   // If the error has a response (HTTP error from server)
   if (error.response) {
     const data = error.response.data;

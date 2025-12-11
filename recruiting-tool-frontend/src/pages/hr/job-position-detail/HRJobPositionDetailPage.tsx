@@ -41,7 +41,6 @@ import {
 import {
   CenteredLoadingSpinner,
   MetadataDisplay,
-  MetadataItem,
 } from "../../../components/common";
 
 const getStatusColor = (

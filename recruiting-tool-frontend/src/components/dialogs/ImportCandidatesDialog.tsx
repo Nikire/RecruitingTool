@@ -23,7 +23,6 @@ import {
   CloudUpload as UploadIcon,
   Download as DownloadIcon,
   CheckCircle as CheckCircleIcon,
-  Error as ErrorIcon,
   ExpandMore as ExpandMoreIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -69,7 +68,7 @@ const ImportCandidatesDialog: React.FC<ImportCandidatesDialogProps> = ({
       try {
         const result = await previewMutation.mutateAsync(file);
         setPreview(result);
-      } catch (error) {
+      } catch {
         // Error is handled by the mutation
       }
     }
@@ -88,7 +87,7 @@ const ImportCandidatesDialog: React.FC<ImportCandidatesDialogProps> = ({
           handleClose();
         }, 2000);
       }
-    } catch (error) {
+    } catch {
       // Error is handled by the mutation
     }
   };

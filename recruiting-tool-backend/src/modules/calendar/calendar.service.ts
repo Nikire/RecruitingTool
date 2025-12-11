@@ -4,7 +4,7 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import { CalendarProvider } from '@prisma/client';
-import { CalendarConnectionResponseDto, ConnectionStatusDto } from './dto/calendar-connection.dto';
+import { ConnectionStatusDto } from './dto/calendar-connection.dto';
 
 @Injectable()
 export class CalendarService {

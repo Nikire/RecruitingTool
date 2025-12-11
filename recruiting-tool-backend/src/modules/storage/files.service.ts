@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { StorageService } from './storage.service';
 import { FileUploadResponseDto } from './dto/file-upload.dto';

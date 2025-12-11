@@ -49,7 +49,7 @@ export function useMarkAsRead() {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to mark notification as read:", error);
       toast.error(t("notifications.errors.mark_read_failed"));
     },
@@ -72,7 +72,7 @@ export function useMarkAllAsRead() {
         t("notifications.messages.all_marked_read", { count: data.count }),
       );
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to mark all as read:", error);
       toast.error(t("notifications.errors.mark_all_read_failed"));
     },
@@ -93,7 +93,7 @@ export function useDeleteNotification() {
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
       toast.success(t("notifications.messages.deleted"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to delete notification:", error);
       toast.error(t("notifications.errors.delete_failed"));
     },
@@ -115,7 +115,7 @@ export function useCreateNotification() {
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
       toast.success(t("notifications.messages.created"));
     },
-    onError: (error: any) => {
+    onError: (error: unknown) => {
       console.error("Failed to create notification:", error);
       toast.error(t("notifications.errors.create_failed"));
     },

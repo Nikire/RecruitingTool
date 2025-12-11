@@ -16,7 +16,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { Stage, StageStatus } from "../../types/stage.types";
+import { Stage } from "../../types/stage.types";
 import {
   useProgressStage,
   useMoveToStage,
@@ -45,21 +45,6 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
   const moveToStageMutation = useMoveToStage();
   const isLoading =
     progressStageMutation.isPending || moveToStageMutation.isPending;
-
-  const getStageStatusColor = (status: StageStatus): string => {
-    switch (status) {
-      case "DONE":
-        return "#4caf50";
-      case "CURRENT":
-        return "#2196f3";
-      case "OPEN":
-        return "#9e9e9e";
-      case "CANCELLED":
-        return "#f44336";
-      default:
-        return "#757575";
-    }
-  };
 
   const handleProgressToNext = async () => {
     await progressStageMutation.mutateAsync(hiringProcessUid);
