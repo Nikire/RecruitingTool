@@ -32,7 +32,7 @@ import { Button } from "@mui/material";
 const BillingPage: React.FC = () => {
   const { t } = useTranslation();
   const { data, isLoading, isError } = useInvoices();
-  const { data: subscription, isLoading: isLoading } = useSubscription();
+  const { data: subscription, isLoading: isSubscriptionLoading } = useSubscription();
   const billingPortal = useBillingPortal();
 
   if (isLoading) {

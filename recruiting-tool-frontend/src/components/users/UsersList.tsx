@@ -1,15 +1,4 @@
-import {
-  Box,
-  Typography,
-  Card,
-  CardContent,
-  Skeleton,
-  Stack,
-  IconButton,
-  useMediaQuery,
-  useTheme,
-} from "@mui/material";
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
@@ -19,12 +8,11 @@ import UpdateUserDialog from "../dialogs/UpdateUserDialog";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { hasRole } from "../../utils/permissions";
-import EmptyState from "../common/EmptyState";
-import ErrorMessage from "../common/ErrorMessage";
 import { useDialog } from "../../hooks/useDialog";
 import { useConfirmDelete } from "../../hooks/useConfirmDelete";
 import { StatusChip } from "../common";
-import { EnhancedDataGrid, ActionsCell, DateCell } from "../tables";
+import { ActionsCell, DateCell } from "../tables";
+import { DataTable, DataTableColumn } from "../shared/DataTable";
 
 interface UsersListProps {
   page: number;
@@ -34,117 +22,6 @@ interface UsersListProps {
   onLimitChange: (limit: number) => void;
 }
 
-// Skeleton loader for loading state
-const UserCardSkeleton = () => (
-  <Card sx={{ mb: 2, p: 2 }}>
-    <Stack spacing={1}>
-      <Skeleton variant="text" width="70%" height={28} />
-      <Skeleton variant="text" width="50%" height={20} />
-      <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-        <Skeleton variant="rectangular" width={80} height={24} />
-        <Skeleton variant="rectangular" width={80} height={24} />
-      </Box>
-      <Skeleton variant="text" width="60%" height={20} />
-      <Skeleton variant="text" width="40%" height={20} />
-      <Box sx={{ display: "flex", gap: 1, mt: 2, justifyContent: "flex-end" }}>
-        <Skeleton variant="circular" width={40} height={40} />
-        <Skeleton variant="circular" width={40} height={40} />
-      </Box>
-    </Stack>
-  </Card>
-);
-
-// Mobile card view component
-const UserCardView: React.FC<{
-  user: User;
-  isSuperAdmin: boolean;
-  onEdit: (user: User) => void;
-  onDelete: (user: User) => void;
-}> = ({ user, isSuperAdmin, onEdit, onDelete }) => {
-  const { t } = useTranslation();
-  return (
-    <Card
-      sx={{
-        mb: 2,
-        p: 2,
-        transition: "all 0.2s ease-in-out",
-        "&:hover": {
-          boxShadow: 3,
-          transform: "translateY(-2px)",
-        },
-      }}
-    >
-      <CardContent sx={{ p: 0, "&:last-child": { pb: 0 } }}>
-        <Typography
-          variant="h6"
-          sx={{ mb: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
-        >
-          {user.name}
-        </Typography>
-
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
-          {user.email}
-        </Typography>
-
-        <Box sx={{ display: "flex", gap: 0.5, mb: 1, flexWrap: "wrap" }}>
-          {user.roles.map((role) => (
-            <StatusChip key={role} status={role} type="userRole" size="small" />
-          ))}
-        </Box>
-
-        <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
-          {t("users.company_label")}: {user.company?.name || "-"}
-        </Typography>
-
-        <Typography
-          variant="caption"
-          color="textSecondary"
-          sx={{ display: "block", mb: 2 }}
-        >
-          {t("users.created_label")}:{" "}
-          {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}
-        </Typography>
-
-        {isSuperAdmin && (
-          <Box
-            sx={{
-              display: "flex",
-              gap: 1,
-              justifyContent: "flex-end",
-              mt: 2,
-            }}
-          >
-            <IconButton
-              size="small"
-              color="primary"
-              onClick={() => onEdit(user)}
-              aria-label={t("users.edit_user_tooltip")}
-              sx={{
-                minHeight: 44,
-                minWidth: 44,
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton
-              size="small"
-              color="error"
-              onClick={() => onDelete(user)}
-              aria-label={t("users.delete_user_tooltip")}
-              sx={{
-                minHeight: 44,
-                minWidth: 44,
-              }}
-            >
-              <DeleteIcon />
-            </IconButton>
-          </Box>
-        )}
-      </CardContent>
-    </Card>
-  );
-};
-
 const UsersList: React.FC<UsersListProps> = ({
   page,
   limit,
@@ -153,8 +30,6 @@ const UsersList: React.FC<UsersListProps> = ({
   onLimitChange,
 }) => {
   const { t } = useTranslation();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { user: currentUser } = useUserAtom();
   const isSuperAdmin = hasRole(currentUser, UserRoles.SUPER_ADMIN);
 
@@ -174,26 +49,46 @@ const UsersList: React.FC<UsersListProps> = ({
   const users = data?.data || [];
   const totalRows = data?.meta?.total || 0;
 
-  const columns: GridColDef[] = [
+  const columns: DataTableColumn<User>[] = [
     {
       field: "name",
       headerName: t("users.name_label"),
       flex: 1,
       minWidth: 150,
+      mobileRender: (user) => (
+        <Typography
+          variant="h6"
+          sx={{ mb: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+        >
+          {user.name}
+        </Typography>
+      ),
     },
     {
       field: "email",
       headerName: t("users.email_label"),
       flex: 1,
       minWidth: 200,
+      mobileRender: (user) => (
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
+          {user.email}
+        </Typography>
+      ),
     },
     {
       field: "roles",
       headerName: t("users.roles_label"),
       width: 200,
-      renderCell: (params: GridRenderCellParams<User>) => (
+      renderCell: (params) => (
         <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
           {params.row.roles.map((role) => (
+            <StatusChip key={role} status={role} type="userRole" size="small" />
+          ))}
+        </Box>
+      ),
+      mobileRender: (user) => (
+        <Box sx={{ display: "flex", gap: 0.5, mb: 1, flexWrap: "wrap" }}>
+          {user.roles.map((role) => (
             <StatusChip key={role} status={role} type="userRole" size="small" />
           ))}
         </Box>
@@ -204,12 +99,27 @@ const UsersList: React.FC<UsersListProps> = ({
       headerName: t("users.company_label"),
       width: 150,
       valueGetter: (value: { name?: string } | unknown) => value?.name || "-",
+      mobileRender: (user) => (
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
+          {t("users.company_label")}: {user.company?.name || "-"}
+        </Typography>
+      ),
     },
     {
       field: "createdAt",
       headerName: t("users.created_label"),
       width: 130,
       renderCell: (params) => <DateCell value={params.value} />,
+      mobileRender: (user) => (
+        <Typography
+          variant="caption"
+          color="textSecondary"
+          sx={{ display: "block", mb: 2 }}
+        >
+          {t("users.created_label")}:{" "}
+          {user.createdAt ? new Date(user.createdAt).toLocaleDateString() : "-"}
+        </Typography>
+      ),
     },
     ...(isSuperAdmin
       ? [
@@ -221,102 +131,70 @@ const UsersList: React.FC<UsersListProps> = ({
             filterable: false,
             align: "right" as const,
             headerAlign: "right" as const,
-            renderCell: (params: GridRenderCellParams<User>) => (
+            renderCell: (params: { row: User }) => (
               <ActionsCell
                 onEdit={() => updateDialog.openWith(params.row)}
                 onDelete={() => deleteConfirm.confirmDelete(params.row)}
               />
             ),
-          } as GridColDef,
+            mobileRender: (user: User) => (
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 1,
+                  justifyContent: "flex-end",
+                  mt: 2,
+                }}
+              >
+                <IconButton
+                  size="small"
+                  color="primary"
+                  onClick={() => updateDialog.openWith(user)}
+                  aria-label={t("users.edit_user_tooltip")}
+                  sx={{
+                    minHeight: 44,
+                    minWidth: 44,
+                  }}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  size="small"
+                  color="error"
+                  onClick={() => deleteConfirm.confirmDelete(user)}
+                  aria-label={t("users.delete_user_tooltip")}
+                  sx={{
+                    minHeight: 44,
+                    minWidth: 44,
+                  }}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ),
+          } as DataTableColumn<User>,
         ]
       : []),
   ];
 
-  // Show skeleton loader on INITIAL load, not on refetch
-  if (isLoading && !data) {
-    if (isMobile) {
-      return (
-        <Box sx={{ width: "100%" }}>
-          {[1, 2, 3].map((i) => (
-            <UserCardSkeleton key={i} />
-          ))}
-        </Box>
-      );
-    }
-    // Desktop loading is handled by EnhancedDataGrid
-  }
-
-  if (error && !data) {
-    return <ErrorMessage message="users.error_loading" />;
-  }
-
-  // Mobile view (card layout)
-  if (isMobile) {
-    return (
-      <>
-        {users.length > 0 ? (
-          <Box sx={{ width: "100%" }}>
-            {users.map((user) => (
-              <UserCardView
-                key={user.uid}
-                user={user}
-                isSuperAdmin={isSuperAdmin}
-                onEdit={updateDialog.openWith}
-                onDelete={deleteConfirm.confirmDelete}
-              />
-            ))}
-          </Box>
-        ) : (
-          <EmptyState message="users.no_users" />
-        )}
-
-        <UpdateUserDialog
-          open={updateDialog.isOpen}
-          onClose={updateDialog.close}
-          user={updateDialog.selectedItem}
-        />
-
-        <ConfirmDeleteDialog
-          open={deleteConfirm.isOpen}
-          onClose={deleteConfirm.handleCancel}
-          onConfirm={deleteConfirm.handleConfirm}
-          title={t("users.delete_user_title")}
-          message={t("users.delete_user_message")}
-          itemName={deleteConfirm.selectedItem?.name}
-          isDeleting={deleteConfirm.isDeleting}
-        />
-      </>
-    );
-  }
-
-  // Desktop view (DataGrid)
   return (
     <>
-      <Box sx={{ height: 600, width: "100%" }}>
-        <EnhancedDataGrid
-          rows={users}
-          columns={columns}
-          loading={isLoading}
-          getRowId={(row) => row.uid}
-          rowCount={totalRows}
-          paginationMode="server"
-          paginationModel={{ page: page - 1, pageSize: limit }}
-          onPaginationModelChange={(model) => {
-            if (model.page !== page - 1) {
-              onPageChange(model.page + 1);
-            }
-            if (model.pageSize !== limit) {
-              onLimitChange(model.pageSize);
-            }
-          }}
-          pageSizeOptions={[10, 25, 50, 100]}
-          disableRowSelectionOnClick
-          onboardingKey="users-list"
-          localeText={{
-            noRowsLabel: t("users.no_users"),
-          }}
-        />
-      </Box>
+      <DataTable
+        data={users}
+        columns={columns}
+        getRowId={(row) => row.uid}
+        loading={isLoading}
+        error={!!error}
+        emptyMessage="users.no_users"
+        errorMessage="users.error_loading"
+        onboardingKey="users-list"
+        page={page}
+        limit={limit}
+        totalRows={totalRows}
+        onPageChange={onPageChange}
+        onLimitChange={onLimitChange}
+        serverPagination={true}
+      />
 
       <UpdateUserDialog
         open={updateDialog.isOpen}

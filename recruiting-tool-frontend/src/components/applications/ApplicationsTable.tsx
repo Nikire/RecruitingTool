@@ -1,20 +1,17 @@
 import { useState } from "react";
 import { Typography, Box, Paper } from "@mui/material";
-import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useApplications } from "../../hooks/api/useApplications";
 import { Application, ApplicationStatus } from "../../types/application.types";
 import ApplicationDetailDialog from "../dialogs/ApplicationDetailDialog";
-import EmptyState from "../common/EmptyState";
-import ErrorMessage from "../common/ErrorMessage";
 import {
-  EnhancedDataGrid,
   DateCell,
   StatusCell,
   ActionsCell,
   CellColumn,
   CellRow,
 } from "../tables";
+import { DataTable, DataTableColumn } from "../shared/DataTable";
 
 interface ApplicationsTableProps {
   statusFilter?: ApplicationStatus;
@@ -54,31 +51,47 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
     REJECTED: "error",
   };
 
-  const columns: GridColDef[] = [
+  const columns: DataTableColumn<Application>[] = [
     {
       field: "applicantName",
       headerName: t("applications.applicant_name"),
       flex: 1,
       minWidth: 150,
+      mobileRender: (app) => (
+        <Typography variant="h6" sx={{ mb: 1 }}>
+          {app.applicantName}
+        </Typography>
+      ),
     },
     {
       field: "applicantEmail",
       headerName: t("applications.email"),
       flex: 1,
       minWidth: 180,
+      mobileRender: (app) => (
+        <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
+          {app.applicantEmail}
+        </Typography>
+      ),
     },
     {
       field: "applicantPhone",
       headerName: t("applications.phone"),
       width: 130,
       renderCell: (params) => params.value || "-",
+      mobileRender: (app) =>
+        app.applicantPhone ? (
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
+            {app.applicantPhone}
+          </Typography>
+        ) : null,
     },
     {
       field: "jobPositionTitle",
       headerName: t("applications.job_position"),
       flex: 1,
       minWidth: 180,
-      renderCell: (params: GridRenderCellParams<Application>) => (
+      renderCell: (params) => (
         <CellColumn gap={0.25}>
           <Typography variant="body2">{params.value}</Typography>
           {params.row.companyName && (
@@ -87,6 +100,16 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
             </Typography>
           )}
         </CellColumn>
+      ),
+      mobileRender: (app) => (
+        <Box sx={{ mb: 1 }}>
+          <Typography variant="body2">{app.jobPositionTitle}</Typography>
+          {app.companyName && (
+            <Typography variant="caption" color="text.secondary">
+              {app.companyName}
+            </Typography>
+          )}
+        </Box>
       ),
     },
     {
@@ -101,12 +124,23 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
           />
         </CellRow>
       ),
+      mobileRender: (app) => (
+        <StatusCell
+          status={app.status}
+          colorMap={applicationStatusColors}
+        />
+      ),
     },
     {
       field: "appliedAt",
       headerName: t("applications.applied_date"),
       width: 170,
       renderCell: (params) => <DateCell value={params.value} showTime />,
+      mobileRender: (app) => (
+        <Typography variant="caption" color="textSecondary">
+          {new Date(app.appliedAt).toLocaleString()}
+        </Typography>
+      ),
     },
     {
       field: "actions",
@@ -116,22 +150,16 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       filterable: false,
       align: "center",
       headerAlign: "center",
-      renderCell: (params: GridRenderCellParams<Application>) => (
+      renderCell: (params) => (
         <ActionsCell onView={() => handleViewClick(params.row)} />
       ),
+      showInMobile: false, // Hide actions in mobile, rely on row click
     },
   ];
 
-  if (isError) {
-    return <ErrorMessage message="applications.error_loading" />;
-  }
-
-  if (!isLoading && (!applications || applications.length === 0)) {
-    const emptyMessage = statusFilter
-      ? "applications.no_applications_with_status"
-      : "applications.no_applications_submitted";
-    return <EmptyState message={emptyMessage} />;
-  }
+  const emptyMessage = statusFilter
+    ? "applications.no_applications_with_status"
+    : "applications.no_applications_submitted";
 
   return (
     <>
@@ -145,29 +173,27 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
         </Box>
       </Paper>
 
-      <Box sx={{ height: 600, width: "100%" }}>
-        <EnhancedDataGrid
-          rows={applications || []}
-          columns={columns}
-          loading={isLoading}
-          getRowId={(row) => row.uid}
-          pageSizeOptions={[10, 25, 50, 100]}
-          initialState={{
+      <DataTable
+        data={applications || []}
+        columns={columns}
+        getRowId={(row) => row.uid}
+        loading={isLoading}
+        error={isError}
+        emptyMessage={emptyMessage}
+        errorMessage="applications.error_loading"
+        onboardingKey="applications-table"
+        dataGridProps={{
+          initialState: {
             pagination: { paginationModel: { pageSize: 25 } },
-          }}
-          disableRowSelectionOnClick
-          onRowClick={(params) => handleViewClick(params.row)}
-          onboardingKey="applications-table"
-          localeText={{
-            noRowsLabel: t("applications.no_applications_submitted"),
-          }}
-          sx={{
+          },
+          onRowClick: (params) => handleViewClick(params.row),
+          sx: {
             "& .MuiDataGrid-row": {
               cursor: "pointer",
             },
-          }}
-        />
-      </Box>
+          },
+        }}
+      />
 
       <ApplicationDetailDialog
         open={dialogOpen}
