@@ -1,8 +1,17 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box, Skeleton } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { useTheme } from '@mui/material/styles';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import React from "react";
+import { Card, CardContent, Typography, Box, Skeleton } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useTheme } from "@mui/material/styles";
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 
 export interface PipelineFunnelData {
   /** Stage name */
@@ -63,7 +72,7 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
 
   if (isLoading) {
     return (
-      <Card sx={{ height: '100%' }}>
+      <Card sx={{ height: "100%" }}>
         <CardContent>
           <Skeleton variant="text" width="40%" height={32} sx={{ mb: 2 }} />
           <Skeleton variant="rectangular" height={300} />
@@ -74,7 +83,7 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
 
   if (!data || data.length === 0) {
     return (
-      <Card sx={{ height: '100%' }}>
+      <Card sx={{ height: "100%" }}>
         <CardContent>
           {title && (
             <Typography variant="h6" gutterBottom>
@@ -83,14 +92,14 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
           )}
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               height: 300,
             }}
           >
             <Typography variant="body2" color="text.secondary">
-              {t('analytics.no_data')}
+              {t("analytics.no_data")}
             </Typography>
           </Box>
         </CardContent>
@@ -105,10 +114,10 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
       return (
         <Box
           sx={{
-            bgcolor: 'background.paper',
+            bgcolor: "background.paper",
             p: 1.5,
             border: 1,
-            borderColor: 'divider',
+            borderColor: "divider",
             borderRadius: 1,
             boxShadow: 2,
           }}
@@ -117,11 +126,12 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
             {data.stage}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t('analytics.count')}: {data.count}
+            {t("analytics.count")}: {data.count}
           </Typography>
           {data.conversionRate !== undefined && (
             <Typography variant="body2" color="primary">
-              {t('analytics.conversion_rate')}: {data.conversionRate.toFixed(1)}%
+              {t("analytics.conversion_rate")}: {data.conversionRate.toFixed(1)}
+              %
             </Typography>
           )}
         </Box>
@@ -131,7 +141,7 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
   };
 
   return (
-    <Card sx={{ height: '100%' }}>
+    <Card sx={{ height: "100%" }}>
       <CardContent>
         {title && (
           <Typography variant="h6" gutterBottom>
@@ -151,7 +161,10 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="count" radius={[0, 8, 8, 0]}>
               {data.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={stageColors[index % stageColors.length]} />
+                <Cell
+                  key={`cell-${index}`}
+                  fill={stageColors[index % stageColors.length]}
+                />
               ))}
             </Bar>
           </BarChart>
@@ -159,11 +172,19 @@ const PipelineFunnel: React.FC<PipelineFunnelProps> = ({
 
         {/* Summary */}
         {data.length > 1 && (
-          <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+          <Box sx={{ mt: 2, pt: 2, borderTop: 1, borderColor: "divider" }}>
             <Typography variant="body2" color="text.secondary">
-              {t('analytics.funnel_summary')}:{' '}
-              <Typography component="span" variant="body2" fontWeight="bold" color="primary">
-                {((data[data.length - 1].count / data[0].count) * 100).toFixed(1)}%
+              {t("analytics.funnel_summary")}:{" "}
+              <Typography
+                component="span"
+                variant="body2"
+                fontWeight="bold"
+                color="primary"
+              >
+                {((data[data.length - 1].count / data[0].count) * 100).toFixed(
+                  1,
+                )}
+                %
               </Typography>
             </Typography>
           </Box>

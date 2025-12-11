@@ -1,24 +1,24 @@
-import {Button, Grid} from '@mui/material';
-import {useTranslation} from 'react-i18next';
+import { Button, Grid } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 /**
  * Props for the QuickActionButton component
  */
 export interface QuickActionButtonProps {
-	/** Icon element to display at the start of the button */
-	icon: React.ReactNode;
-	/** Button label (can be i18n key or plain text) */
-	label: string;
-	/** Click handler for the button */
-	onClick: () => void;
-	/** Whether to translate the label using i18n (default: false) */
-	translate?: boolean;
-	/** Grid size for xs breakpoint (default: 12) */
-	xs?: number;
-	/** Grid size for sm breakpoint (default: 6) */
-	sm?: number;
-	/** Grid size for md breakpoint (default: 4) */
-	md?: number;
+  /** Icon element to display at the start of the button */
+  icon: React.ReactNode;
+  /** Button label (can be i18n key or plain text) */
+  label: string;
+  /** Click handler for the button */
+  onClick: () => void;
+  /** Whether to translate the label using i18n (default: false) */
+  translate?: boolean;
+  /** Grid size for xs breakpoint (default: 12) */
+  xs?: number;
+  /** Grid size for sm breakpoint (default: 6) */
+  sm?: number;
+  /** Grid size for md breakpoint (default: 4) */
+  md?: number;
 }
 
 /**
@@ -48,31 +48,31 @@ export interface QuickActionButtonProps {
  * @category Dashboard
  */
 const QuickActionButton: React.FC<QuickActionButtonProps> = ({
-	icon,
-	label,
-	onClick,
-	translate = false,
-	xs = 12,
-	sm = 6,
-	md = 4,
+  icon,
+  label,
+  onClick,
+  translate = false,
+  xs = 12,
+  sm = 6,
+  md = 4,
 }) => {
-	const {t} = useTranslation();
+  const { t } = useTranslation();
 
-	const displayLabel = translate ? t(label) : label;
+  const displayLabel = translate ? t(label) : label;
 
-	return (
-		<Grid item xs={xs} sm={sm} md={md}>
-			<Button
-				variant="outlined"
-				fullWidth
-				startIcon={icon}
-				onClick={onClick}
-				sx={{py: 2}}
-			>
-				{displayLabel}
-			</Button>
-		</Grid>
-	);
+  return (
+    <Grid item xs={xs} sm={sm} md={md}>
+      <Button
+        variant="outlined"
+        fullWidth
+        startIcon={icon}
+        onClick={onClick}
+        sx={{ py: 2 }}
+      >
+        {displayLabel}
+      </Button>
+    </Grid>
+  );
 };
 
 export default QuickActionButton;

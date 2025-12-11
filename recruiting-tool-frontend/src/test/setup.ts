@@ -1,11 +1,11 @@
-import '@testing-library/jest-dom';
-import { cleanup } from '@testing-library/react';
-import { afterEach, beforeAll, afterAll } from 'vitest';
-import { server } from './mocks/server';
+import "@testing-library/jest-dom";
+import { cleanup } from "@testing-library/react";
+import { afterEach, beforeAll, afterAll } from "vitest";
+import { server } from "./mocks/server";
 
 // Start MSW server before all tests
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'warn' });
+  server.listen({ onUnhandledRequest: "warn" });
 });
 
 // Reset handlers after each test
@@ -20,7 +20,7 @@ afterAll(() => {
 });
 
 // Mock window.matchMedia
-Object.defineProperty(window, 'matchMedia', {
+Object.defineProperty(window, "matchMedia", {
   writable: true,
   value: (query: string) => ({
     matches: false,
@@ -43,4 +43,4 @@ global.IntersectionObserver = class IntersectionObserver {
     return [];
   }
   unobserve() {}
-} as any;
+} as unknown as typeof IntersectionObserver;

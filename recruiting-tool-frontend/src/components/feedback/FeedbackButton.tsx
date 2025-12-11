@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { Fab, Tooltip, Zoom } from '@mui/material';
-import FeedbackIcon from '@mui/icons-material/Feedback';
-import { useTranslation } from 'react-i18next';
-import FeedbackModal from './FeedbackModal';
+import React, { useState } from "react";
+import { Fab, Tooltip, Zoom } from "@mui/material";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import { useTranslation } from "react-i18next";
+import FeedbackModal from "./FeedbackModal";
 
 const FeedbackButton: React.FC = () => {
   const { t } = useTranslation();
@@ -13,14 +13,14 @@ const FeedbackButton: React.FC = () => {
 
   return (
     <>
-      <Tooltip title={t('feedback.button_label')} placement="left">
+      <Tooltip title={t("feedback.button_label")} placement="left">
         <Zoom in={true} timeout={300}>
           <Fab
             color="primary"
-            aria-label={t('feedback.button_label')}
+            aria-label={t("feedback.button_label")}
             onClick={handleOpen}
             sx={{
-              position: 'fixed',
+              position: "fixed",
               bottom: 24,
               right: 24,
               zIndex: 1000,

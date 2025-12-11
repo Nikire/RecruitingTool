@@ -3,8 +3,8 @@
  * Submit scorecard evaluation during/after interview
  */
 
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -22,9 +22,12 @@ import {
   Alert,
   Chip,
   LinearProgress,
-} from '@mui/material';
-import { ExpandMore as ExpandMoreIcon, Star as StarIcon } from '@mui/icons-material';
-import { ScorecardTemplate, CriterionScoreDto } from '../../types/scorecard';
+} from "@mui/material";
+import {
+  ExpandMore as ExpandMoreIcon,
+  Star as StarIcon,
+} from "@mui/icons-material";
+import { ScorecardTemplate, CriterionScoreDto } from "../../types/scorecard";
 
 interface ScorecardFormProps {
   open: boolean;
@@ -64,7 +67,7 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
           criterionName: criterion.name,
           maxScore: criterion.maxScore,
           score: 0,
-          notes: '',
+          notes: "",
         });
       });
     });
@@ -72,17 +75,25 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
   };
 
   const [scores, setScores] = useState<ScoreEntry[]>(initializeScores());
-  const [overallNotes, setOverallNotes] = useState('');
+  const [overallNotes, setOverallNotes] = useState("");
 
-  const updateScore = (criterionUid: string, field: 'score' | 'notes', value: number | string) => {
+  const updateScore = (
+    criterionUid: string,
+    field: "score" | "notes",
+    value: number | string,
+  ) => {
     setScores(
       scores.map((score) =>
-        score.criterionUid === criterionUid ? { ...score, [field]: value } : score
-      )
+        score.criterionUid === criterionUid
+          ? { ...score, [field]: value }
+          : score,
+      ),
     );
   };
 
-  const getScoreForCriterion = (criterionUid: string): ScoreEntry | undefined => {
+  const getScoreForCriterion = (
+    criterionUid: string,
+  ): ScoreEntry | undefined => {
     return scores.find((s) => s.criterionUid === criterionUid);
   };
 
@@ -91,7 +102,7 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
 
     template.categories.forEach((category) => {
       const categoryScores = scores.filter((s) =>
-        category.criteria.some((c) => c.uid === s.criterionUid)
+        category.criteria.some((c) => c.uid === s.criterionUid),
       );
 
       if (categoryScores.length === 0) return;
@@ -99,7 +110,9 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
       // Calculate average normalized score for this category
       const categoryAverage =
         categoryScores.reduce((sum, s) => {
-          const criterion = category.criteria.find((c) => c.uid === s.criterionUid);
+          const criterion = category.criteria.find(
+            (c) => c.uid === s.criterionUid,
+          );
           if (!criterion) return sum;
           return sum + (s.score / criterion.maxScore) * 100;
         }, 0) / categoryScores.length;
@@ -126,7 +139,7 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
 
   const handleClose = () => {
     setScores(initializeScores());
-    setOverallNotes('');
+    setOverallNotes("");
     onClose();
   };
 
@@ -139,7 +152,9 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Box>
-          <Typography variant="h6">{t('scorecard.submit_scorecard')}</Typography>
+          <Typography variant="h6">
+            {t("scorecard.submit_scorecard")}
+          </Typography>
           <Typography variant="body2" color="textSecondary">
             {template.name}
           </Typography>
@@ -149,22 +164,25 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
       <DialogContent>
         {/* Progress Indicator */}
         <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+          <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
             <Typography variant="body2" color="textSecondary">
-              {t('scorecard.completion_progress')}
+              {t("scorecard.completion_progress")}
             </Typography>
             <Typography variant="body2" fontWeight="bold">
               {Math.round(getCompletionPercentage())}%
             </Typography>
           </Box>
-          <LinearProgress variant="determinate" value={getCompletionPercentage()} />
+          <LinearProgress
+            variant="determinate"
+            value={getCompletionPercentage()}
+          />
         </Box>
 
         {/* Overall Score Preview */}
         <Alert severity="info" sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
             <Typography variant="body2">
-              {t('scorecard.overall_score')}:
+              {t("scorecard.overall_score")}:
             </Typography>
             <Chip
               label={`${calculateWeightedScore()}/100`}
@@ -180,20 +198,24 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
               <Box
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  width: '100%',
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
                   mr: 1,
                 }}
               >
                 <Typography fontWeight="bold">{category.name}</Typography>
-                <Chip label={`${category.weight}%`} size="small" color="primary" />
+                <Chip
+                  label={`${category.weight}%`}
+                  size="small"
+                  color="primary"
+                />
               </Box>
             </AccordionSummary>
 
             <AccordionDetails>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+              <Box sx={{ display: "flex", flexDirection: "column", gap: 3 }}>
                 {category.criteria.map((criterion) => {
                   const scoreEntry = getScoreForCriterion(criterion.uid);
                   if (!scoreEntry) return null;
@@ -203,8 +225,8 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
                       key={criterion.uid}
                       sx={{
                         p: 2,
-                        border: '1px solid',
-                        borderColor: 'divider',
+                        border: "1px solid",
+                        borderColor: "divider",
                         borderRadius: 1,
                       }}
                     >
@@ -213,7 +235,11 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
                         {criterion.name}
                       </Typography>
                       {criterion.description && (
-                        <Typography variant="body2" color="textSecondary" gutterBottom>
+                        <Typography
+                          variant="body2"
+                          color="textSecondary"
+                          gutterBottom
+                        >
                           {criterion.description}
                         </Typography>
                       )}
@@ -225,13 +251,17 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
                             <Rating
                               value={scoreEntry.score}
                               onChange={(_, value) =>
-                                updateScore(criterion.uid, 'score', value || 0)
+                                updateScore(criterion.uid, "score", value || 0)
                               }
                               max={criterion.maxScore}
                               size="large"
                               icon={<StarIcon fontSize="inherit" />}
                             />
-                            <Typography variant="caption" color="textSecondary" sx={{ ml: 1 }}>
+                            <Typography
+                              variant="caption"
+                              color="textSecondary"
+                              sx={{ ml: 1 }}
+                            >
                               {scoreEntry.score} / {criterion.maxScore}
                             </Typography>
                           </Box>
@@ -240,7 +270,11 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
                             <Slider
                               value={scoreEntry.score}
                               onChange={(_, value) =>
-                                updateScore(criterion.uid, 'score', value as number)
+                                updateScore(
+                                  criterion.uid,
+                                  "score",
+                                  value as number,
+                                )
                               }
                               min={0}
                               max={criterion.maxScore}
@@ -254,15 +288,17 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
 
                       {/* Criterion Notes */}
                       <TextField
-                        label={t('scorecard.criterion_notes')}
+                        label={t("scorecard.criterion_notes")}
                         value={scoreEntry.notes}
-                        onChange={(e) => updateScore(criterion.uid, 'notes', e.target.value)}
+                        onChange={(e) =>
+                          updateScore(criterion.uid, "notes", e.target.value)
+                        }
                         fullWidth
                         multiline
                         rows={2}
                         size="small"
                         sx={{ mt: 2 }}
-                        placeholder={t('scorecard.criterion_notes_placeholder')}
+                        placeholder={t("scorecard.criterion_notes_placeholder")}
                       />
                     </Box>
                   );
@@ -275,23 +311,27 @@ const ScorecardForm: React.FC<ScorecardFormProps> = ({
         {/* Overall Notes */}
         <Box sx={{ mt: 3 }}>
           <TextField
-            label={t('scorecard.overall_notes')}
+            label={t("scorecard.overall_notes")}
             value={overallNotes}
             onChange={(e) => setOverallNotes(e.target.value)}
             fullWidth
             multiline
             rows={3}
-            placeholder={t('scorecard.overall_notes_placeholder')}
+            placeholder={t("scorecard.overall_notes_placeholder")}
           />
         </Box>
       </DialogContent>
 
       <DialogActions>
         <Button onClick={handleClose} disabled={isSubmitting}>
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
-        <Button onClick={handleSubmit} variant="contained" disabled={isSubmitting}>
-          {isSubmitting ? t('common.submitting') : t('scorecard.submit')}
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? t("common.submitting") : t("scorecard.submit")}
         </Button>
       </DialogActions>
     </Dialog>

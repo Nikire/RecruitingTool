@@ -1,6 +1,6 @@
-import React from 'react';
-import { Paper, Typography, Box, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Paper, Typography, Box, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import {
   LineChart,
   Line,
@@ -11,8 +11,8 @@ import {
   ResponsiveContainer,
   Legend,
   ReferenceLine,
-} from 'recharts';
-import { HiringTrendData } from '../../types/analytics';
+} from "recharts";
+import { HiringTrendData } from "../../types/analytics";
 
 interface HiringTrendsChartProps {
   data: HiringTrendData[];
@@ -30,9 +30,9 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
 
   if (!data || data.length === 0) {
     return (
-      <Paper sx={{ p: 3, textAlign: 'center' }}>
+      <Paper sx={{ p: 3, textAlign: "center" }}>
         <Typography variant="body2" color="text.secondary">
-          {t('analytics.no_data')}
+          {t("analytics.no_data")}
         </Typography>
       </Paper>
     );
@@ -57,11 +57,11 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
             {data.month}
           </Typography>
           <Typography variant="body2" color="primary">
-            {t('analytics.hires')}: {data.count}
+            {t("analytics.hires")}: {data.count}
           </Typography>
           {data.target !== undefined && (
             <Typography variant="body2" color="text.secondary">
-              {t('analytics.target')}: {data.target}
+              {t("analytics.target")}: {data.target}
             </Typography>
           )}
         </Paper>
@@ -71,14 +71,22 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}
+    >
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h6" fontWeight={600}>
-          {t('analytics.hiring_trends')}
+          {t("analytics.hiring_trends")}
         </Typography>
         <Box textAlign="right">
           <Typography variant="caption" color="text.secondary" display="block">
-            {t('analytics.total_hires')}
+            {t("analytics.total_hires")}
           </Typography>
           <Typography variant="h6" fontWeight={600} color="primary">
             {totalHires}
@@ -98,18 +106,15 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
           />
           <YAxis
             label={{
-              value: t('analytics.number_of_hires'),
+              value: t("analytics.number_of_hires"),
               angle: -90,
-              position: 'insideLeft',
+              position: "insideLeft",
               style: { fill: theme.palette.text.secondary },
             }}
             tick={{ fill: theme.palette.text.secondary }}
           />
           <Tooltip content={<CustomTooltip />} />
-          <Legend
-            wrapperStyle={{ paddingTop: '20px' }}
-            iconType="line"
-          />
+          <Legend wrapperStyle={{ paddingTop: "20px" }} iconType="line" />
 
           {/* Average reference line */}
           <ReferenceLine
@@ -117,7 +122,7 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
             stroke={theme.palette.warning.main}
             strokeDasharray="5 5"
             label={{
-              value: t('analytics.average'),
+              value: t("analytics.average"),
               fill: theme.palette.warning.main,
               fontSize: 12,
             }}
@@ -127,7 +132,7 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
           <Line
             type="monotone"
             dataKey="count"
-            name={t('analytics.actual_hires')}
+            name={t("analytics.actual_hires")}
             stroke={theme.palette.primary.main}
             strokeWidth={3}
             dot={{
@@ -143,7 +148,7 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
             <Line
               type="monotone"
               dataKey="target"
-              name={t('analytics.target')}
+              name={t("analytics.target")}
               stroke={theme.palette.success.main}
               strokeWidth={2}
               strokeDasharray="5 5"
@@ -163,15 +168,15 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
           mt: 2,
           pt: 2,
           borderTop: `1px solid ${theme.palette.divider}`,
-          display: 'flex',
-          justifyContent: 'space-around',
-          flexWrap: 'wrap',
+          display: "flex",
+          justifyContent: "space-around",
+          flexWrap: "wrap",
           gap: 2,
         }}
       >
         <Box textAlign="center">
           <Typography variant="caption" color="text.secondary">
-            {t('analytics.average_per_month')}
+            {t("analytics.average_per_month")}
           </Typography>
           <Typography variant="h6" fontWeight={600}>
             {avgHires}
@@ -179,7 +184,7 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
         </Box>
         <Box textAlign="center">
           <Typography variant="caption" color="text.secondary">
-            {t('analytics.best_month')}
+            {t("analytics.best_month")}
           </Typography>
           <Typography variant="h6" fontWeight={600}>
             {Math.max(...data.map((d) => d.count))}
@@ -187,7 +192,7 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
         </Box>
         <Box textAlign="center">
           <Typography variant="caption" color="text.secondary">
-            {t('analytics.total_period')}
+            {t("analytics.total_period")}
           </Typography>
           <Typography variant="h6" fontWeight={600}>
             {totalHires}

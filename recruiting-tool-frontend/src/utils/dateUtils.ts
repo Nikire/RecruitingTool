@@ -3,10 +3,10 @@
  */
 export const formatDate = (dateString: string): string => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
   }).format(date);
 };
 
@@ -15,12 +15,12 @@ export const formatDate = (dateString: string): string => {
  */
 export const formatDateTime = (dateString: string): string => {
   const date = new Date(dateString);
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+  return new Intl.DateTimeFormat("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
   }).format(date);
 };
 
@@ -35,9 +35,9 @@ export const getRelativeTime = (dateString: string): string => {
   const diffHours = Math.floor(diffMins / 60);
   const diffDays = Math.floor(diffHours / 24);
 
-  if (diffMins < 1) return 'Just now';
-  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? 's' : ''} ago`;
-  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
-  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins} minute${diffMins > 1 ? "s" : ""} ago`;
+  if (diffHours < 24) return `${diffHours} hour${diffHours > 1 ? "s" : ""} ago`;
+  if (diffDays < 7) return `${diffDays} day${diffDays > 1 ? "s" : ""} ago`;
   return formatDate(dateString);
 };

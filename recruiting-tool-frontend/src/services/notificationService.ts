@@ -1,26 +1,32 @@
-import api from '../api/axios';
-import { Notification, CreateNotificationDto, GetNotificationsQuery } from '../types/notification';
+import api from "../api/axios";
+import {
+  Notification,
+  CreateNotificationDto,
+  GetNotificationsQuery,
+} from "../types/notification";
 
-const BASE_URL = '/notifications';
+const BASE_URL = "/notifications";
 
 export const notificationService = {
   /**
    * Get all notifications for current user
    */
-  async getNotifications(query?: GetNotificationsQuery): Promise<Notification[]> {
+  async getNotifications(
+    query?: GetNotificationsQuery,
+  ): Promise<Notification[]> {
     const params = new URLSearchParams();
     if (query?.isRead !== undefined) {
-      params.append('isRead', String(query.isRead));
+      params.append("isRead", String(query.isRead));
     }
     if (query?.limit) {
-      params.append('limit', String(query.limit));
+      params.append("limit", String(query.limit));
     }
     if (query?.skip) {
-      params.append('skip', String(query.skip));
+      params.append("skip", String(query.skip));
     }
 
     const response = await api.get<Notification[]>(
-      `${BASE_URL}${params.toString() ? `?${params.toString()}` : ''}`,
+      `${BASE_URL}${params.toString() ? `?${params.toString()}` : ""}`,
     );
     return response.data;
   },
@@ -29,7 +35,9 @@ export const notificationService = {
    * Get unread notification count
    */
   async getUnreadCount(): Promise<number> {
-    const response = await api.get<{ count: number }>(`${BASE_URL}/unread-count`);
+    const response = await api.get<{ count: number }>(
+      `${BASE_URL}/unread-count`,
+    );
     return response.data.count;
   },
 

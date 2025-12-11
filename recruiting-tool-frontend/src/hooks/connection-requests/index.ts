@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-toastify';
-import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import {
   createConnectionRequest,
   getMyConnectionRequests,
@@ -8,13 +8,13 @@ import {
   approveConnectionRequest,
   denyConnectionRequest,
   cancelConnectionRequest,
-} from '../../services/api/connection-requests';
+} from "../../services/api/connection-requests";
 import {
   CreateConnectionRequestDto,
   ApproveConnectionRequestDto,
   DenyConnectionRequestDto,
   GetConnectionRequestsQuery,
-} from '../../types/connection-requests';
+} from "../../types/connection-requests";
 
 /**
  * Hook to create a connection request
@@ -26,13 +26,15 @@ export const useCreateConnectionRequest = () => {
   return useMutation({
     mutationFn: createConnectionRequest,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['connection-requests', 'my'] });
-      toast.success(t('connection_requests.request_sent'));
+      queryClient.invalidateQueries({
+        queryKey: ["connection-requests", "my"],
+      });
+      toast.success(t("connection_requests.request_sent"));
     },
     onError: (error: any) => {
       const message =
         error.response?.data?.message ||
-        t('connection_requests.errors.create_failed');
+        t("connection_requests.errors.create_failed");
       toast.error(message);
     },
   });
@@ -43,7 +45,7 @@ export const useCreateConnectionRequest = () => {
  */
 export const useMyConnectionRequests = (query?: GetConnectionRequestsQuery) => {
   return useQuery({
-    queryKey: ['connection-requests', 'my', query],
+    queryKey: ["connection-requests", "my", query],
     queryFn: () => getMyConnectionRequests(query),
   });
 };
@@ -56,7 +58,7 @@ export const useCompanyConnectionRequests = (
   query?: GetConnectionRequestsQuery,
 ) => {
   return useQuery({
-    queryKey: ['connection-requests', 'company', companyUid, query],
+    queryKey: ["connection-requests", "company", companyUid, query],
     queryFn: () => getCompanyConnectionRequests(companyUid, query),
     enabled: !!companyUid,
   });
@@ -78,13 +80,13 @@ export const useApproveConnectionRequest = () => {
       dto: ApproveConnectionRequestDto;
     }) => approveConnectionRequest(requestUid, dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['connection-requests'] });
-      toast.success(t('connection_requests.request_approved'));
+      queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
+      toast.success(t("connection_requests.request_approved"));
     },
     onError: (error: any) => {
       const message =
         error.response?.data?.message ||
-        t('connection_requests.errors.approve_failed');
+        t("connection_requests.errors.approve_failed");
       toast.error(message);
     },
   });
@@ -106,13 +108,13 @@ export const useDenyConnectionRequest = () => {
       dto: DenyConnectionRequestDto;
     }) => denyConnectionRequest(requestUid, dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['connection-requests'] });
-      toast.success(t('connection_requests.request_denied'));
+      queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
+      toast.success(t("connection_requests.request_denied"));
     },
     onError: (error: any) => {
       const message =
         error.response?.data?.message ||
-        t('connection_requests.errors.deny_failed');
+        t("connection_requests.errors.deny_failed");
       toast.error(message);
     },
   });
@@ -128,13 +130,15 @@ export const useCancelConnectionRequest = () => {
   return useMutation({
     mutationFn: cancelConnectionRequest,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['connection-requests', 'my'] });
-      toast.success(t('connection_requests.request_cancelled'));
+      queryClient.invalidateQueries({
+        queryKey: ["connection-requests", "my"],
+      });
+      toast.success(t("connection_requests.request_cancelled"));
     },
     onError: (error: any) => {
       const message =
         error.response?.data?.message ||
-        t('connection_requests.errors.cancel_failed');
+        t("connection_requests.errors.cancel_failed");
       toast.error(message);
     },
   });

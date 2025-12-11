@@ -22,7 +22,7 @@
  * setSelected([]);
  * ```
  */
-import {atom, useAtom, useAtomValue, useSetAtom} from 'jotai';
+import { atom, useAtom } from "jotai";
 
 // ============================================================================
 // Selection Atoms
@@ -60,22 +60,30 @@ export const selectedUsersAtom = atom<string[]>([]);
 /**
  * Count of selected candidates
  */
-export const selectedCandidatesCountAtom = atom((get) => get(selectedCandidatesAtom).length);
+export const selectedCandidatesCountAtom = atom(
+  (get) => get(selectedCandidatesAtom).length,
+);
 
 /**
  * Whether any candidates are selected
  */
-export const hasCandidatesSelectedAtom = atom((get) => get(selectedCandidatesAtom).length > 0);
+export const hasCandidatesSelectedAtom = atom(
+  (get) => get(selectedCandidatesAtom).length > 0,
+);
 
 /**
  * Count of selected applications
  */
-export const selectedApplicationsCountAtom = atom((get) => get(selectedApplicationsAtom).length);
+export const selectedApplicationsCountAtom = atom(
+  (get) => get(selectedApplicationsAtom).length,
+);
 
 /**
  * Whether any applications are selected
  */
-export const hasApplicationsSelectedAtom = atom((get) => get(selectedApplicationsAtom).length > 0);
+export const hasApplicationsSelectedAtom = atom(
+  (get) => get(selectedApplicationsAtom).length > 0,
+);
 
 // ============================================================================
 // Custom Hooks for Selection Management
@@ -102,97 +110,97 @@ export const hasApplicationsSelectedAtom = atom((get) => get(selectedApplication
  * ```
  */
 export function useCandidateSelection() {
-	const [selected, setSelected] = useAtom(selectedCandidatesAtom);
+  const [selected, setSelected] = useAtom(selectedCandidatesAtom);
 
-	const toggle = (uid: string) => {
-		setSelected((prev) =>
-			prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
-		);
-	};
+  const toggle = (uid: string) => {
+    setSelected((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid],
+    );
+  };
 
-	const selectAll = (uids: string[]) => {
-		setSelected(uids);
-	};
+  const selectAll = (uids: string[]) => {
+    setSelected(uids);
+  };
 
-	const clearAll = () => {
-		setSelected([]);
-	};
+  const clearAll = () => {
+    setSelected([]);
+  };
 
-	const isSelected = (uid: string) => selected.includes(uid);
+  const isSelected = (uid: string) => selected.includes(uid);
 
-	return {
-		selected,
-		toggle,
-		selectAll,
-		clearAll,
-		isSelected,
-		count: selected.length,
-		hasSelection: selected.length > 0,
-	};
+  return {
+    selected,
+    toggle,
+    selectAll,
+    clearAll,
+    isSelected,
+    count: selected.length,
+    hasSelection: selected.length > 0,
+  };
 }
 
 /**
  * Hook for managing application selection
  */
 export function useApplicationSelection() {
-	const [selected, setSelected] = useAtom(selectedApplicationsAtom);
+  const [selected, setSelected] = useAtom(selectedApplicationsAtom);
 
-	const toggle = (uid: string) => {
-		setSelected((prev) =>
-			prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
-		);
-	};
+  const toggle = (uid: string) => {
+    setSelected((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid],
+    );
+  };
 
-	const selectAll = (uids: string[]) => {
-		setSelected(uids);
-	};
+  const selectAll = (uids: string[]) => {
+    setSelected(uids);
+  };
 
-	const clearAll = () => {
-		setSelected([]);
-	};
+  const clearAll = () => {
+    setSelected([]);
+  };
 
-	const isSelected = (uid: string) => selected.includes(uid);
+  const isSelected = (uid: string) => selected.includes(uid);
 
-	return {
-		selected,
-		toggle,
-		selectAll,
-		clearAll,
-		isSelected,
-		count: selected.length,
-		hasSelection: selected.length > 0,
-	};
+  return {
+    selected,
+    toggle,
+    selectAll,
+    clearAll,
+    isSelected,
+    count: selected.length,
+    hasSelection: selected.length > 0,
+  };
 }
 
 /**
  * Hook for managing job position selection
  */
 export function useJobPositionSelection() {
-	const [selected, setSelected] = useAtom(selectedJobPositionsAtom);
+  const [selected, setSelected] = useAtom(selectedJobPositionsAtom);
 
-	const toggle = (uid: string) => {
-		setSelected((prev) =>
-			prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid]
-		);
-	};
+  const toggle = (uid: string) => {
+    setSelected((prev) =>
+      prev.includes(uid) ? prev.filter((id) => id !== uid) : [...prev, uid],
+    );
+  };
 
-	const selectAll = (uids: string[]) => {
-		setSelected(uids);
-	};
+  const selectAll = (uids: string[]) => {
+    setSelected(uids);
+  };
 
-	const clearAll = () => {
-		setSelected([]);
-	};
+  const clearAll = () => {
+    setSelected([]);
+  };
 
-	const isSelected = (uid: string) => selected.includes(uid);
+  const isSelected = (uid: string) => selected.includes(uid);
 
-	return {
-		selected,
-		toggle,
-		selectAll,
-		clearAll,
-		isSelected,
-		count: selected.length,
-		hasSelection: selected.length > 0,
-	};
+  return {
+    selected,
+    toggle,
+    selectAll,
+    clearAll,
+    isSelected,
+    count: selected.length,
+    hasSelection: selected.length > 0,
+  };
 }

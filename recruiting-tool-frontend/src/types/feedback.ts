@@ -1,7 +1,7 @@
 export enum FeedbackCategory {
-  FEATURE_REQUEST = 'FEATURE_REQUEST',
-  BUG_REPORT = 'BUG_REPORT',
-  GENERAL = 'GENERAL',
+  FEATURE_REQUEST = "FEATURE_REQUEST",
+  BUG_REPORT = "BUG_REPORT",
+  GENERAL = "GENERAL",
 }
 
 export interface Feedback {

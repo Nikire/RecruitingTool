@@ -5,18 +5,22 @@
  * In production, this would connect to a real AI backend service.
  */
 
-import { CandidateScore, getScoreTier, ScoreBreakdown } from '../types/ai-ranking';
+import {
+  CandidateScore,
+  getScoreTier,
+  ScoreBreakdown,
+} from "../types/ai-ranking";
 
 /**
  * Generate mock score breakdown with realistic variation
  */
 function generateMockBreakdown(): ScoreBreakdown {
   return {
-    skillsMatch: Math.floor(Math.random() * 40) + 60,        // 60-100
-    experienceMatch: Math.floor(Math.random() * 40) + 55,    // 55-95
-    educationMatch: Math.floor(Math.random() * 40) + 50,     // 50-90
-    locationMatch: Math.floor(Math.random() * 50) + 40,      // 40-90
-    availability: Math.floor(Math.random() * 40) + 60,       // 60-100
+    skillsMatch: Math.floor(Math.random() * 40) + 60, // 60-100
+    experienceMatch: Math.floor(Math.random() * 40) + 55, // 55-95
+    educationMatch: Math.floor(Math.random() * 40) + 50, // 50-90
+    locationMatch: Math.floor(Math.random() * 50) + 40, // 40-90
+    availability: Math.floor(Math.random() * 40) + 60, // 60-100
   };
 }
 
@@ -27,10 +31,10 @@ function calculateOverallScore(breakdown: ScoreBreakdown): number {
   // Weighted scoring: skills and experience are more important
   const weights = {
     skillsMatch: 0.35,
-    experienceMatch: 0.30,
+    experienceMatch: 0.3,
     educationMatch: 0.15,
-    locationMatch: 0.10,
-    availability: 0.10,
+    locationMatch: 0.1,
+    availability: 0.1,
   };
 
   const weighted =
@@ -50,7 +54,7 @@ function generateMockScore(
   candidateUid: string,
   candidateName: string,
   candidateEmail: string,
-  jobPositionUid: string
+  jobPositionUid: string,
 ): CandidateScore {
   const breakdown = generateMockBreakdown();
   const overallScore = calculateOverallScore(breakdown);
@@ -72,7 +76,7 @@ function generateMockScore(
  * Mock database of candidate scores
  * In production, this would be fetched from backend API
  */
-let mockScoresCache: Map<string, CandidateScore[]> = new Map();
+const mockScoresCache: Map<string, CandidateScore[]> = new Map();
 
 /**
  * Get AI scores for all candidates for a specific job position
@@ -80,7 +84,9 @@ let mockScoresCache: Map<string, CandidateScore[]> = new Map();
  * @param jobPositionUid - Job position UID
  * @returns Promise resolving to array of candidate scores, sorted by overall score (descending)
  */
-export async function getCandidateScores(jobPositionUid: string): Promise<CandidateScore[]> {
+export async function getCandidateScores(
+  jobPositionUid: string,
+): Promise<CandidateScore[]> {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 500));
 
@@ -91,19 +97,24 @@ export async function getCandidateScores(jobPositionUid: string): Promise<Candid
 
   // Generate mock scores (in production, fetch from API)
   const mockCandidates = [
-    { uid: 'cand-001', name: 'Sarah Johnson', email: 'sarah.j@example.com' },
-    { uid: 'cand-002', name: 'Michael Chen', email: 'michael.c@example.com' },
-    { uid: 'cand-003', name: 'Emily Rodriguez', email: 'emily.r@example.com' },
-    { uid: 'cand-004', name: 'James Anderson', email: 'james.a@example.com' },
-    { uid: 'cand-005', name: 'Lisa Thompson', email: 'lisa.t@example.com' },
-    { uid: 'cand-006', name: 'David Martinez', email: 'david.m@example.com' },
-    { uid: 'cand-007', name: 'Jessica Lee', email: 'jessica.l@example.com' },
-    { uid: 'cand-008', name: 'Robert Wilson', email: 'robert.w@example.com' },
+    { uid: "cand-001", name: "Sarah Johnson", email: "sarah.j@example.com" },
+    { uid: "cand-002", name: "Michael Chen", email: "michael.c@example.com" },
+    { uid: "cand-003", name: "Emily Rodriguez", email: "emily.r@example.com" },
+    { uid: "cand-004", name: "James Anderson", email: "james.a@example.com" },
+    { uid: "cand-005", name: "Lisa Thompson", email: "lisa.t@example.com" },
+    { uid: "cand-006", name: "David Martinez", email: "david.m@example.com" },
+    { uid: "cand-007", name: "Jessica Lee", email: "jessica.l@example.com" },
+    { uid: "cand-008", name: "Robert Wilson", email: "robert.w@example.com" },
   ];
 
   const scores = mockCandidates
     .map((candidate) =>
-      generateMockScore(candidate.uid, candidate.name, candidate.email, jobPositionUid)
+      generateMockScore(
+        candidate.uid,
+        candidate.name,
+        candidate.email,
+        jobPositionUid,
+      ),
     )
     .sort((a, b) => b.overallScore - a.overallScore); // Sort by score descending
 
@@ -122,7 +133,7 @@ export async function getCandidateScores(jobPositionUid: string): Promise<Candid
  */
 export async function getCandidateScore(
   candidateUid: string,
-  jobPositionUid: string
+  jobPositionUid: string,
 ): Promise<CandidateScore | null> {
   // Simulate API delay
   await new Promise((resolve) => setTimeout(resolve, 300));

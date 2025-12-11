@@ -8,21 +8,21 @@
 /**
  * Standard API response wrapper from the backend
  */
-export interface ApiResponse<T = any> {
-	data: T;
-	success: boolean;
-	statusCode: number;
-	message?: string; // Optional success message
+export interface ApiResponse<T = unknown> {
+  data: T;
+  success: boolean;
+  statusCode: number;
+  message?: string; // Optional success message
 }
 
 /**
  * Error response structure from the backend
  */
 export interface ApiErrorResponse {
-	message: string | string[];
-	error?: string;
-	statusCode: number;
-	errors?: ValidationErrors; // Field-level validation errors
+  message: string | string[];
+  error?: string;
+  statusCode: number;
+  errors?: ValidationErrors; // Field-level validation errors
 }
 
 /**
@@ -36,7 +36,7 @@ export interface ApiErrorResponse {
  * }
  */
 export interface ValidationErrors {
-	[field: string]: string[];
+  [field: string]: string[];
 }
 
 /**
@@ -44,10 +44,10 @@ export interface ValidationErrors {
  * This is what the error interceptor provides to components
  */
 export interface NormalizedError {
-	message: string;
-	statusCode: number;
-	errors?: ValidationErrors;
-	originalError?: any;
+  message: string;
+  statusCode: number;
+  errors?: ValidationErrors;
+  originalError?: unknown;
 }
 
 /**

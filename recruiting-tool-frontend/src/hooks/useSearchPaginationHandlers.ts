@@ -1,21 +1,21 @@
-import {useCallback} from 'react';
+import { useCallback } from "react";
 
 /**
  * Search state interface used across the application
  */
 export interface SearchState {
-	search: string;
-	page: number;
-	limit: number;
+  search: string;
+  page: number;
+  limit: number;
 }
 
 /**
  * Handlers returned by the useSearchPaginationHandlers hook
  */
 export interface SearchPaginationHandlers {
-	handleSearch: (value: string) => void;
-	handlePageChange: (page: number) => void;
-	handleLimitChange: (limit: number) => void;
+  handleSearch: (value: string) => void;
+  handlePageChange: (page: number) => void;
+  handleLimitChange: (limit: number) => void;
 }
 
 /**
@@ -47,43 +47,43 @@ export interface SearchPaginationHandlers {
  * ```
  */
 export const useSearchPaginationHandlers = (
-	setSearchState: React.Dispatch<React.SetStateAction<SearchState>>
+  setSearchState: React.Dispatch<React.SetStateAction<SearchState>>,
 ): SearchPaginationHandlers => {
-	/**
-	 * Handle search input changes
-	 * Resets to page 1 when search term changes
-	 */
-	const handleSearch = useCallback(
-		(value: string) => {
-			setSearchState((prev) => ({...prev, search: value, page: 1}));
-		},
-		[setSearchState]
-	);
+  /**
+   * Handle search input changes
+   * Resets to page 1 when search term changes
+   */
+  const handleSearch = useCallback(
+    (value: string) => {
+      setSearchState((prev) => ({ ...prev, search: value, page: 1 }));
+    },
+    [setSearchState],
+  );
 
-	/**
-	 * Handle page navigation
-	 */
-	const handlePageChange = useCallback(
-		(newPage: number) => {
-			setSearchState((prev) => ({...prev, page: newPage}));
-		},
-		[setSearchState]
-	);
+  /**
+   * Handle page navigation
+   */
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      setSearchState((prev) => ({ ...prev, page: newPage }));
+    },
+    [setSearchState],
+  );
 
-	/**
-	 * Handle items per page changes
-	 * Resets to page 1 when limit changes
-	 */
-	const handleLimitChange = useCallback(
-		(newLimit: number) => {
-			setSearchState((prev) => ({...prev, limit: newLimit, page: 1}));
-		},
-		[setSearchState]
-	);
+  /**
+   * Handle items per page changes
+   * Resets to page 1 when limit changes
+   */
+  const handleLimitChange = useCallback(
+    (newLimit: number) => {
+      setSearchState((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+    },
+    [setSearchState],
+  );
 
-	return {
-		handleSearch,
-		handlePageChange,
-		handleLimitChange,
-	};
+  return {
+    handleSearch,
+    handlePageChange,
+    handleLimitChange,
+  };
 };

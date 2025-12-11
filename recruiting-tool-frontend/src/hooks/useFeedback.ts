@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { feedbackService } from '../services/feedbackService';
-import { CreateFeedbackDto, Feedback } from '../types/feedback';
-import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { feedbackService } from "../services/feedbackService";
+import { CreateFeedbackDto, Feedback } from "../types/feedback";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
-const FEEDBACK_QUERY_KEY = 'feedback';
+const FEEDBACK_QUERY_KEY = "feedback";
 
 /**
  * Hook to submit feedback
@@ -17,11 +17,11 @@ export const useCreateFeedback = () => {
     mutationFn: (dto: CreateFeedbackDto) => feedbackService.createFeedback(dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [FEEDBACK_QUERY_KEY] });
-      toast.success(t('feedback.messages.submitted'));
+      toast.success(t("feedback.messages.submitted"));
     },
     onError: (error: any) => {
-      console.error('Failed to submit feedback:', error);
-      toast.error(t('feedback.messages.submit_failed'));
+      console.error("Failed to submit feedback:", error);
+      toast.error(t("feedback.messages.submit_failed"));
     },
   });
 };
@@ -31,7 +31,7 @@ export const useCreateFeedback = () => {
  */
 export const useAllFeedback = () => {
   return useQuery<Feedback[], Error>({
-    queryKey: [FEEDBACK_QUERY_KEY, 'all'],
+    queryKey: [FEEDBACK_QUERY_KEY, "all"],
     queryFn: () => feedbackService.getAllFeedback(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -42,7 +42,7 @@ export const useAllFeedback = () => {
  */
 export const useMyFeedback = () => {
   return useQuery<Feedback[], Error>({
-    queryKey: [FEEDBACK_QUERY_KEY, 'my'],
+    queryKey: [FEEDBACK_QUERY_KEY, "my"],
     queryFn: () => feedbackService.getMyFeedback(),
     staleTime: 5 * 60 * 1000, // 5 minutes
   });

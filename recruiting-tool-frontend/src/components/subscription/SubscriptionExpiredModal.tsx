@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,10 +7,10 @@ import {
   Button,
   Typography,
   Box,
-} from '@mui/material';
-import { Block as BlockIcon } from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+} from "@mui/material";
+import { Block as BlockIcon } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
 interface SubscriptionExpiredModalProps {
   open: boolean;
@@ -32,35 +32,37 @@ const SubscriptionExpiredModal: React.FC<SubscriptionExpiredModalProps> = ({
 
   const handleGoToBilling = () => {
     onClose();
-    navigate('/billing');
+    navigate("/billing");
   };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
       <DialogTitle>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <BlockIcon color="error" />
           <Typography variant="h6" component="span">
-            {t('subscription.expired_modal.title')}
+            {t("subscription.expired_modal.title")}
           </Typography>
         </Box>
       </DialogTitle>
       <DialogContent>
         <Typography variant="body1" gutterBottom>
           {featureName
-            ? t('subscription.expired_modal.feature_blocked', { feature: featureName })
-            : t('subscription.expired_modal.access_blocked')}
+            ? t("subscription.expired_modal.feature_blocked", {
+                feature: featureName,
+              })
+            : t("subscription.expired_modal.access_blocked")}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-          {t('subscription.expired_modal.update_prompt')}
+          {t("subscription.expired_modal.update_prompt")}
         </Typography>
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color="inherit">
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
         <Button onClick={handleGoToBilling} variant="contained" color="primary">
-          {t('subscription.expired_modal.go_to_billing')}
+          {t("subscription.expired_modal.go_to_billing")}
         </Button>
       </DialogActions>
     </Dialog>

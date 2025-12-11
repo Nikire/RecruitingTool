@@ -1,7 +1,7 @@
-import api from '../api/axios';
-import { Feedback, CreateFeedbackDto } from '../types/feedback';
+import api from "../api/axios";
+import { Feedback, CreateFeedbackDto } from "../types/feedback";
 
-const BASE_URL = '/feedback';
+const BASE_URL = "/feedback";
 
 export const feedbackService = {
   /**

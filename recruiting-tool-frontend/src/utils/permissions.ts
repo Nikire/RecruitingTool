@@ -1,9 +1,14 @@
-import {User, UserRoles} from '../types/user.types';
+import { User, UserRoles } from "../types/user.types";
 
 /**
  * Management roles that have permissions to create, update, and delete resources
  */
-const MANAGEMENT_ROLES = [UserRoles.HR, UserRoles.ADMIN, UserRoles.SUPER_ADMIN, UserRoles.COMPANY_OWNER] as const;
+const MANAGEMENT_ROLES = [
+  UserRoles.HR,
+  UserRoles.ADMIN,
+  UserRoles.SUPER_ADMIN,
+  UserRoles.COMPANY_OWNER,
+] as const;
 
 /**
  * Checks if the user has management permissions (HR, ADMIN, or SUPER_ADMIN roles)
@@ -11,8 +16,8 @@ const MANAGEMENT_ROLES = [UserRoles.HR, UserRoles.ADMIN, UserRoles.SUPER_ADMIN, 
  * @returns true if the user has any management role, false otherwise
  */
 export const canManageResources = (user: User | null): boolean => {
-	if (!user || !Array.isArray(user.roles)) return false;
-	return MANAGEMENT_ROLES.some(role => user.roles.includes(role));
+  if (!user || !Array.isArray(user.roles)) return false;
+  return MANAGEMENT_ROLES.some((role) => user.roles.includes(role));
 };
 
 /**
@@ -22,8 +27,8 @@ export const canManageResources = (user: User | null): boolean => {
  * @returns true if the user has the specified role, false otherwise
  */
 export const hasRole = (user: User | null, role: UserRoles): boolean => {
-	if (!user || !Array.isArray(user.roles)) return false;
-	return user.roles.includes(role);
+  if (!user || !Array.isArray(user.roles)) return false;
+  return user.roles.includes(role);
 };
 
 /**
@@ -33,8 +38,8 @@ export const hasRole = (user: User | null, role: UserRoles): boolean => {
  * @returns true if the user has any of the specified roles, false otherwise
  */
 export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
-	if (!user || !Array.isArray(user.roles)) return false;
-	return roles.some(role => user.roles.includes(role));
+  if (!user || !Array.isArray(user.roles)) return false;
+  return roles.some((role) => user.roles.includes(role));
 };
 
 /**
@@ -43,8 +48,11 @@ export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
  * @returns true if the user is an admin, false otherwise
  */
 export const isAdmin = (user: User | null): boolean => {
-	if (!user || !Array.isArray(user.roles)) return false;
-	return user.roles.includes(UserRoles.ADMIN) || user.roles.includes(UserRoles.SUPER_ADMIN);
+  if (!user || !Array.isArray(user.roles)) return false;
+  return (
+    user.roles.includes(UserRoles.ADMIN) ||
+    user.roles.includes(UserRoles.SUPER_ADMIN)
+  );
 };
 
 /**
@@ -54,23 +62,26 @@ export const isAdmin = (user: User | null): boolean => {
  * @returns The appropriate dashboard route
  */
 export const getDefaultDashboard = (user: User | null): string => {
-	if (!user || !Array.isArray(user.roles)) return '/careers';
+  if (!user || !Array.isArray(user.roles)) return "/careers";
 
-	// Super admins go to admin panel
-	if (user.roles.includes(UserRoles.SUPER_ADMIN)) {
-		return '/admin';
-	}
+  // Super admins go to admin panel
+  if (user.roles.includes(UserRoles.SUPER_ADMIN)) {
+    return "/admin";
+  }
 
-	// ONLY Admins go to admin panel (NOT Company Owners)
-	if (user.roles.includes(UserRoles.ADMIN)) {
-		return '/admin';
-	}
+  // ONLY Admins go to admin panel (NOT Company Owners)
+  if (user.roles.includes(UserRoles.ADMIN)) {
+    return "/admin";
+  }
 
-	// HR and Company Owners go to HR dashboard
-	if (user.roles.includes(UserRoles.HR) || user.roles.includes(UserRoles.COMPANY_OWNER)) {
-		return '/hr/dashboard';
-	}
+  // HR and Company Owners go to HR dashboard
+  if (
+    user.roles.includes(UserRoles.HR) ||
+    user.roles.includes(UserRoles.COMPANY_OWNER)
+  ) {
+    return "/hr/dashboard";
+  }
 
-	// Regular users go to careers page
-	return '/careers';
+  // Regular users go to careers page
+  return "/careers";
 };

@@ -1,6 +1,6 @@
-import { Button, CircularProgress } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import { Button, CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 
 /**
  * TestConnectionButton - Button for testing service connections
@@ -19,18 +19,18 @@ export interface TestConnectionButtonProps {
   /** Custom button label (i18n key), defaults to 'settings.test_connection' */
   label?: string;
   /** Button size */
-  size?: 'small' | 'medium' | 'large';
+  size?: "small" | "medium" | "large";
   /** Button variant */
-  variant?: 'text' | 'outlined' | 'contained';
+  variant?: "text" | "outlined" | "contained";
 }
 
 const TestConnectionButton: React.FC<TestConnectionButtonProps> = ({
   onTest,
   isLoading = false,
   disabled = false,
-  label = 'settings.test_connection',
-  size = 'small',
-  variant = 'outlined',
+  label = "settings.test_connection",
+  size = "small",
+  variant = "outlined",
 }) => {
   const { t } = useTranslation();
 
@@ -53,7 +53,7 @@ const TestConnectionButton: React.FC<TestConnectionButtonProps> = ({
       }
       sx={{ minWidth: 120 }}
     >
-      {isLoading ? t('settings.testing') : t(label)}
+      {isLoading ? t("settings.testing") : t(label)}
     </Button>
   );
 };

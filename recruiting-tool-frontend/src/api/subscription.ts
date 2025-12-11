@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import api from './axios';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "./axios";
 import {
   Subscription,
   QuotaStatus,
@@ -8,37 +8,39 @@ import {
   BillingPortalResponse,
   CancelSubscriptionResponse,
   InvoicesResponse,
-} from '../types/subscription.types';
+} from "../types/subscription.types";
 
 // API functions
 export const subscriptionApi = {
   getSubscription: async (): Promise<Subscription> => {
-    const response = await api.get('/stripe/subscription');
+    const response = await api.get("/stripe/subscription");
     return response.data;
   },
 
   getQuota: async (): Promise<QuotaStatus> => {
-    const response = await api.get('/quota');
+    const response = await api.get("/quota");
     return response.data;
   },
 
-  createCheckoutSession: async (data: CreateCheckoutSessionDto): Promise<CheckoutSessionResponse> => {
-    const response = await api.post('/stripe/checkout', data);
+  createCheckoutSession: async (
+    data: CreateCheckoutSessionDto,
+  ): Promise<CheckoutSessionResponse> => {
+    const response = await api.post("/stripe/checkout", data);
     return response.data;
   },
 
   getBillingPortal: async (): Promise<BillingPortalResponse> => {
-    const response = await api.post('/stripe/billing-portal');
+    const response = await api.post("/stripe/billing-portal");
     return response.data;
   },
 
   cancelSubscription: async (): Promise<CancelSubscriptionResponse> => {
-    const response = await api.post('/stripe/cancel');
+    const response = await api.post("/stripe/cancel");
     return response.data;
   },
 
   getInvoices: async (): Promise<InvoicesResponse> => {
-    const response = await api.get('/stripe/invoices');
+    const response = await api.get("/stripe/invoices");
     return response.data;
   },
 };
@@ -50,7 +52,7 @@ export const subscriptionApi = {
  */
 export const useSubscription = () => {
   return useQuery({
-    queryKey: ['subscription'],
+    queryKey: ["subscription"],
     queryFn: subscriptionApi.getSubscription,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -61,7 +63,7 @@ export const useSubscription = () => {
  */
 export const useQuota = () => {
   return useQuery({
-    queryKey: ['quota'],
+    queryKey: ["quota"],
     queryFn: subscriptionApi.getQuota,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -106,7 +108,7 @@ export const useCancelSubscription = () => {
     mutationFn: subscriptionApi.cancelSubscription,
     onSuccess: () => {
       // Invalidate and refetch subscription data
-      queryClient.invalidateQueries({ queryKey: ['subscription'] });
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
     },
   });
 };
@@ -116,7 +118,7 @@ export const useCancelSubscription = () => {
  */
 export const useInvoices = () => {
   return useQuery({
-    queryKey: ['invoices'],
+    queryKey: ["invoices"],
     queryFn: subscriptionApi.getInvoices,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });

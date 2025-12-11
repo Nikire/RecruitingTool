@@ -1,19 +1,19 @@
-import {useState, useCallback} from 'react';
+import { useState, useCallback } from "react";
 
 /**
  * Return type for the useDialog hook
  */
 export interface UseDialogReturn<T> {
-	/** Whether the dialog is currently open */
-	isOpen: boolean;
-	/** The currently selected item, or null if no item is selected */
-	selectedItem: T | null;
-	/** Open the dialog without selecting an item (for create operations) */
-	open: () => void;
-	/** Open the dialog with a specific item (for edit operations) */
-	openWith: (item: T) => void;
-	/** Close the dialog and clear the selected item */
-	close: () => void;
+  /** Whether the dialog is currently open */
+  isOpen: boolean;
+  /** The currently selected item, or null if no item is selected */
+  selectedItem: T | null;
+  /** Open the dialog without selecting an item (for create operations) */
+  open: () => void;
+  /** Open the dialog with a specific item (for edit operations) */
+  openWith: (item: T) => void;
+  /** Close the dialog and clear the selected item */
+  close: () => void;
 }
 
 /**
@@ -65,40 +65,40 @@ export interface UseDialogReturn<T> {
  * ```
  */
 export const useDialog = <T>(): UseDialogReturn<T> => {
-	const [isOpen, setIsOpen] = useState(false);
-	const [selectedItem, setSelectedItem] = useState<T | null>(null);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<T | null>(null);
 
-	/**
-	 * Open the dialog without selecting an item
-	 * Useful for create operations
-	 */
-	const open = useCallback(() => {
-		setIsOpen(true);
-		setSelectedItem(null);
-	}, []);
+  /**
+   * Open the dialog without selecting an item
+   * Useful for create operations
+   */
+  const open = useCallback(() => {
+    setIsOpen(true);
+    setSelectedItem(null);
+  }, []);
 
-	/**
-	 * Open the dialog with a specific item
-	 * Useful for edit operations
-	 */
-	const openWith = useCallback((item: T) => {
-		setSelectedItem(item);
-		setIsOpen(true);
-	}, []);
+  /**
+   * Open the dialog with a specific item
+   * Useful for edit operations
+   */
+  const openWith = useCallback((item: T) => {
+    setSelectedItem(item);
+    setIsOpen(true);
+  }, []);
 
-	/**
-	 * Close the dialog and clear the selected item
-	 */
-	const close = useCallback(() => {
-		setIsOpen(false);
-		setSelectedItem(null);
-	}, []);
+  /**
+   * Close the dialog and clear the selected item
+   */
+  const close = useCallback(() => {
+    setIsOpen(false);
+    setSelectedItem(null);
+  }, []);
 
-	return {
-		isOpen,
-		selectedItem,
-		open,
-		openWith,
-		close,
-	};
+  return {
+    isOpen,
+    selectedItem,
+    open,
+    openWith,
+    close,
+  };
 };

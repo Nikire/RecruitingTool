@@ -7,13 +7,20 @@
  * @module dateFormatters
  */
 
-import { format, formatDistance, formatDistanceToNow, formatRelative, isValid, parseISO } from 'date-fns';
-import { es, enUS } from 'date-fns/locale';
+import {
+  format,
+  formatDistance,
+  formatDistanceToNow,
+  formatRelative,
+  isValid,
+  parseISO,
+} from "date-fns";
+import { es, enUS } from "date-fns/locale";
 
 /**
  * Supported languages for date formatting
  */
-export type SupportedLanguage = 'en' | 'es';
+export type SupportedLanguage = "en" | "es";
 
 /**
  * Get date-fns locale based on language code
@@ -21,7 +28,7 @@ export type SupportedLanguage = 'en' | 'es';
  * @returns date-fns locale object
  */
 export const getDateLocale = (language: SupportedLanguage | string): Locale => {
-	return language === 'es' ? es : enUS;
+  return language === "es" ? es : enUS;
 };
 
 /**
@@ -30,11 +37,11 @@ export const getDateLocale = (language: SupportedLanguage | string): Locale => {
  * @returns Valid Date object or null
  */
 const parseDate = (date: string | Date | null | undefined): Date | null => {
-	if (!date) return null;
+  if (!date) return null;
 
-	const parsedDate = typeof date === 'string' ? parseISO(date) : date;
+  const parsedDate = typeof date === "string" ? parseISO(date) : date;
 
-	return isValid(parsedDate) ? parsedDate : null;
+  return isValid(parsedDate) ? parsedDate : null;
 };
 
 /**
@@ -52,15 +59,15 @@ const parseDate = (date: string | Date | null | undefined): Date | null => {
  * ```
  */
 export const formatDate = (
-	date: string | Date | null | undefined,
-	formatStr: string = 'MMM dd, yyyy',
-	language: SupportedLanguage | string = 'en'
+  date: string | Date | null | undefined,
+  formatStr: string = "MMM dd, yyyy",
+  language: SupportedLanguage | string = "en",
 ): string => {
-	const parsedDate = parseDate(date);
-	if (!parsedDate) return '-';
+  const parsedDate = parseDate(date);
+  if (!parsedDate) return "-";
 
-	const locale = getDateLocale(language);
-	return format(parsedDate, formatStr, { locale });
+  const locale = getDateLocale(language);
+  return format(parsedDate, formatStr, { locale });
 };
 
 /**
@@ -76,14 +83,14 @@ export const formatDate = (
  * ```
  */
 export const formatDateTime = (
-	date: string | Date | null | undefined,
-	language: SupportedLanguage | string = 'en'
+  date: string | Date | null | undefined,
+  language: SupportedLanguage | string = "en",
 ): string => {
-	const parsedDate = parseDate(date);
-	if (!parsedDate) return '-';
+  const parsedDate = parseDate(date);
+  if (!parsedDate) return "-";
 
-	const locale = getDateLocale(language);
-	return format(parsedDate, 'MMM dd, yyyy, h:mm a', { locale });
+  const locale = getDateLocale(language);
+  return format(parsedDate, "MMM dd, yyyy, h:mm a", { locale });
 };
 
 /**
@@ -101,15 +108,15 @@ export const formatDateTime = (
  * ```
  */
 export const formatRelativeTime = (
-	date: string | Date | null | undefined,
-	language: SupportedLanguage | string = 'en',
-	addSuffix: boolean = true
+  date: string | Date | null | undefined,
+  language: SupportedLanguage | string = "en",
+  addSuffix: boolean = true,
 ): string => {
-	const parsedDate = parseDate(date);
-	if (!parsedDate) return '-';
+  const parsedDate = parseDate(date);
+  if (!parsedDate) return "-";
 
-	const locale = getDateLocale(language);
-	return formatDistanceToNow(parsedDate, { addSuffix, locale });
+  const locale = getDateLocale(language);
+  return formatDistanceToNow(parsedDate, { addSuffix, locale });
 };
 
 /**
@@ -126,15 +133,15 @@ export const formatRelativeTime = (
  * ```
  */
 export const formatRelativeDescription = (
-	date: string | Date | null | undefined,
-	baseDate: Date = new Date(),
-	language: SupportedLanguage | string = 'en'
+  date: string | Date | null | undefined,
+  baseDate: Date = new Date(),
+  language: SupportedLanguage | string = "en",
 ): string => {
-	const parsedDate = parseDate(date);
-	if (!parsedDate) return '-';
+  const parsedDate = parseDate(date);
+  if (!parsedDate) return "-";
 
-	const locale = getDateLocale(language);
-	return formatRelative(parsedDate, baseDate, { locale });
+  const locale = getDateLocale(language);
+  return formatRelative(parsedDate, baseDate, { locale });
 };
 
 /**
@@ -152,28 +159,28 @@ export const formatRelativeDescription = (
  * ```
  */
 export const formatDateRange = (
-	startDate: string | Date | null | undefined,
-	endDate: string | Date | null | undefined,
-	language: SupportedLanguage | string = 'en'
+  startDate: string | Date | null | undefined,
+  endDate: string | Date | null | undefined,
+  language: SupportedLanguage | string = "en",
 ): string => {
-	const parsedStartDate = parseDate(startDate);
-	const parsedEndDate = parseDate(endDate);
+  const parsedStartDate = parseDate(startDate);
+  const parsedEndDate = parseDate(endDate);
 
-	if (!parsedStartDate || !parsedEndDate) return '-';
+  if (!parsedStartDate || !parsedEndDate) return "-";
 
-	const locale = getDateLocale(language);
+  const locale = getDateLocale(language);
 
-	// Same year - show compact format: "Dec 10 - Dec 15, 2025"
-	if (parsedStartDate.getFullYear() === parsedEndDate.getFullYear()) {
-		const start = format(parsedStartDate, 'MMM dd', { locale });
-		const end = format(parsedEndDate, 'MMM dd, yyyy', { locale });
-		return `${start} - ${end}`;
-	}
+  // Same year - show compact format: "Dec 10 - Dec 15, 2025"
+  if (parsedStartDate.getFullYear() === parsedEndDate.getFullYear()) {
+    const start = format(parsedStartDate, "MMM dd", { locale });
+    const end = format(parsedEndDate, "MMM dd, yyyy", { locale });
+    return `${start} - ${end}`;
+  }
 
-	// Different years - show full format: "Dec 10, 2025 - Jan 5, 2026"
-	const start = format(parsedStartDate, 'MMM dd, yyyy', { locale });
-	const end = format(parsedEndDate, 'MMM dd, yyyy', { locale });
-	return `${start} - ${end}`;
+  // Different years - show full format: "Dec 10, 2025 - Jan 5, 2026"
+  const start = format(parsedStartDate, "MMM dd, yyyy", { locale });
+  const end = format(parsedEndDate, "MMM dd, yyyy", { locale });
+  return `${start} - ${end}`;
 };
 
 /**
@@ -190,17 +197,17 @@ export const formatDateRange = (
  * ```
  */
 export const formatDateDistance = (
-	startDate: string | Date | null | undefined,
-	endDate: string | Date | null | undefined,
-	language: SupportedLanguage | string = 'en'
+  startDate: string | Date | null | undefined,
+  endDate: string | Date | null | undefined,
+  language: SupportedLanguage | string = "en",
 ): string => {
-	const parsedStartDate = parseDate(startDate);
-	const parsedEndDate = parseDate(endDate);
+  const parsedStartDate = parseDate(startDate);
+  const parsedEndDate = parseDate(endDate);
 
-	if (!parsedStartDate || !parsedEndDate) return '-';
+  if (!parsedStartDate || !parsedEndDate) return "-";
 
-	const locale = getDateLocale(language);
-	return formatDistance(parsedStartDate, parsedEndDate, { locale });
+  const locale = getDateLocale(language);
+  return formatDistance(parsedStartDate, parsedEndDate, { locale });
 };
 
 /**
@@ -215,8 +222,10 @@ export const formatDateDistance = (
  * isValidDate(null) // false
  * ```
  */
-export const isValidDate = (date: string | Date | null | undefined): boolean => {
-	return parseDate(date) !== null;
+export const isValidDate = (
+  date: string | Date | null | undefined,
+): boolean => {
+  return parseDate(date) !== null;
 };
 
 /**
@@ -229,9 +238,11 @@ export const isValidDate = (date: string | Date | null | undefined): boolean => 
  * formatDateISO(new Date()) // "2025-12-10T15:30:00.000Z"
  * ```
  */
-export const formatDateISO = (date: string | Date | null | undefined): string | null => {
-	const parsedDate = parseDate(date);
-	if (!parsedDate) return null;
+export const formatDateISO = (
+  date: string | Date | null | undefined,
+): string | null => {
+  const parsedDate = parseDate(date);
+  if (!parsedDate) return null;
 
-	return parsedDate.toISOString();
+  return parsedDate.toISOString();
 };

@@ -1,5 +1,5 @@
-import toast from 'react-hot-toast';
-import { ValidationErrors } from '../types/api.types';
+import toast from "react-hot-toast";
+import { ValidationErrors } from "../types/api.types";
 
 /**
  * Toast notification utilities with consistent styling
@@ -8,16 +8,16 @@ import { ValidationErrors } from '../types/api.types';
 export const showSuccessToast = (message: string) => {
   toast.success(message, {
     duration: 3000,
-    position: 'top-right',
+    position: "top-right",
     style: {
-      background: '#4caf50',
-      color: '#fff',
-      padding: '16px',
-      borderRadius: '8px',
+      background: "#4caf50",
+      color: "#fff",
+      padding: "16px",
+      borderRadius: "8px",
     },
     iconTheme: {
-      primary: '#fff',
-      secondary: '#4caf50',
+      primary: "#fff",
+      secondary: "#4caf50",
     },
   });
 };
@@ -25,12 +25,28 @@ export const showSuccessToast = (message: string) => {
 /**
  * Extract validation errors from error object
  */
-function extractValidationErrors(error: any): ValidationErrors | null {
-  if (!error || typeof error !== 'object') return null;
+interface ErrorWithResponse {
+  response?: {
+    data?: {
+      errors?: ValidationErrors;
+      message?: string | string[];
+      error?: string;
+    };
+    statusText?: string;
+  };
+  message?: string;
+}
 
+function extractValidationErrors(error: unknown): ValidationErrors | null {
+  if (!error || typeof error !== "object") return null;
+
+  const err = error as ErrorWithResponse;
   // Check response.data.errors
-  if (error.response?.data?.errors && typeof error.response.data.errors === 'object') {
-    return error.response.data.errors;
+  if (
+    err.response?.data?.errors &&
+    typeof err.response.data.errors === "object"
+  ) {
+    return err.response.data.errors;
   }
 
   return null;
@@ -44,33 +60,40 @@ function formatValidationErrors(errors: ValidationErrors): string {
 
   for (const [field, messages] of Object.entries(errors)) {
     if (Array.isArray(messages)) {
-      errorMessages.push(`${field}: ${messages.join(', ')}`);
+      errorMessages.push(`${field}: ${messages.join(", ")}`);
     }
   }
 
-  return errorMessages.join('\n');
+  return errorMessages.join("\n");
 }
 
-export const showErrorToast = (error: unknown, defaultMessage = 'An error occurred') => {
+export const showErrorToast = (
+  error: unknown,
+  defaultMessage = "An error occurred",
+) => {
   let errorMessage = defaultMessage;
   let validationErrors: ValidationErrors | null = null;
 
   // Extract error message from different error formats
-  if (error && typeof error === 'object') {
+  if (error && typeof error === "object") {
     // Extract validation errors first
     validationErrors = extractValidationErrors(error);
 
-    if ('response' in error && error.response && typeof error.response === 'object') {
-      const response = error.response as any;
+    if (
+      "response" in error &&
+      error.response &&
+      typeof error.response === "object"
+    ) {
+      const response = error.response as ErrorWithResponse["response"];
 
       // Handle various error response formats
       if (response.data) {
-        if (typeof response.data === 'string') {
+        if (typeof response.data === "string") {
           errorMessage = response.data;
         } else if (response.data.message) {
           // Handle array of messages or single message
           if (Array.isArray(response.data.message)) {
-            errorMessage = response.data.message.join(', ');
+            errorMessage = response.data.message.join(", ");
           } else {
             errorMessage = response.data.message;
           }
@@ -80,10 +103,10 @@ export const showErrorToast = (error: unknown, defaultMessage = 'An error occurr
       } else if (response.statusText) {
         errorMessage = response.statusText;
       }
-    } else if ('message' in error && typeof error.message === 'string') {
+    } else if ("message" in error && typeof error.message === "string") {
       errorMessage = error.message;
     }
-  } else if (typeof error === 'string') {
+  } else if (typeof error === "string") {
     errorMessage = error;
   }
 
@@ -97,17 +120,17 @@ export const showErrorToast = (error: unknown, defaultMessage = 'An error occurr
 
   toast.error(errorMessage, {
     duration: 5000,
-    position: 'top-right',
+    position: "top-right",
     style: {
-      background: '#f44336',
-      color: '#fff',
-      padding: '16px',
-      borderRadius: '8px',
-      whiteSpace: 'pre-line', // Preserve line breaks
+      background: "#f44336",
+      color: "#fff",
+      padding: "16px",
+      borderRadius: "8px",
+      whiteSpace: "pre-line", // Preserve line breaks
     },
     iconTheme: {
-      primary: '#fff',
-      secondary: '#f44336',
+      primary: "#fff",
+      secondary: "#f44336",
     },
   });
 };
@@ -115,13 +138,13 @@ export const showErrorToast = (error: unknown, defaultMessage = 'An error occurr
 export const showWarningToast = (message: string) => {
   toast(message, {
     duration: 4000,
-    position: 'top-right',
-    icon: '⚠️',
+    position: "top-right",
+    icon: "⚠️",
     style: {
-      background: '#ff9800',
-      color: '#fff',
-      padding: '16px',
-      borderRadius: '8px',
+      background: "#ff9800",
+      color: "#fff",
+      padding: "16px",
+      borderRadius: "8px",
     },
   });
 };
@@ -129,25 +152,25 @@ export const showWarningToast = (message: string) => {
 export const showInfoToast = (message: string) => {
   toast(message, {
     duration: 3000,
-    position: 'top-right',
-    icon: 'ℹ️',
+    position: "top-right",
+    icon: "ℹ️",
     style: {
-      background: '#2196f3',
-      color: '#fff',
-      padding: '16px',
-      borderRadius: '8px',
+      background: "#2196f3",
+      color: "#fff",
+      padding: "16px",
+      borderRadius: "8px",
     },
   });
 };
 
 export const showLoadingToast = (message: string) => {
   return toast.loading(message, {
-    position: 'top-right',
+    position: "top-right",
     style: {
-      background: '#fff',
-      color: '#333',
-      padding: '16px',
-      borderRadius: '8px',
+      background: "#fff",
+      color: "#333",
+      padding: "16px",
+      borderRadius: "8px",
     },
   });
 };

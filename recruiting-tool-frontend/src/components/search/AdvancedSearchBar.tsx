@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback } from "react";
 import {
   Box,
   TextField,
@@ -9,14 +9,14 @@ import {
   Paper,
   useMediaQuery,
   useTheme,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import SearchIcon from '@mui/icons-material/Search';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import CloseIcon from '@mui/icons-material/Close';
-import FilterPanel from './FilterPanel';
-import ActiveFilters from './ActiveFilters';
-import { SearchFilters, FilterOption, ActiveFilter } from '../../types/search';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import CloseIcon from "@mui/icons-material/Close";
+import FilterPanel from "./FilterPanel";
+import ActiveFilters from "./ActiveFilters";
+import { SearchFilters, FilterOption, ActiveFilter } from "../../types/search";
 
 export interface AdvancedSearchBarProps {
   filters: SearchFilters;
@@ -72,14 +72,14 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
 }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [showFilters, setShowFilters] = useState(false);
-  const [searchQuery, setSearchQuery] = useState(filters.query || '');
+  const [searchQuery, setSearchQuery] = useState(filters.query || "");
 
   // Calculate active filter count
   const activeFilterCount = Object.keys(filters).filter((key) => {
-    if (key === 'query') return false; // Don't count query as a filter
+    if (key === "query") return false; // Don't count query as a filter
     const value = filters[key as keyof SearchFilters];
     if (Array.isArray(value)) return value.length > 0;
     return value !== undefined && value !== null;
@@ -91,37 +91,37 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
 
     if (filters.status && filters.status.length > 0) {
       activeFilters.push({
-        type: 'status',
-        label: t('search.status'),
+        type: "status",
+        label: t("search.status"),
         value: filters.status,
-        displayValue: `${t('search.status')}: ${filters.status.join(', ')}`,
+        displayValue: `${t("search.status")}: ${filters.status.join(", ")}`,
       });
     }
 
     if (filters.skills && filters.skills.length > 0) {
       activeFilters.push({
-        type: 'skills',
-        label: t('search.skills'),
+        type: "skills",
+        label: t("search.skills"),
         value: filters.skills,
-        displayValue: `${t('search.skills')}: ${filters.skills.join(', ')}`,
+        displayValue: `${t("search.skills")}: ${filters.skills.join(", ")}`,
       });
     }
 
     if (filters.location) {
       activeFilters.push({
-        type: 'location',
-        label: t('search.location'),
+        type: "location",
+        label: t("search.location"),
         value: filters.location,
-        displayValue: `${t('search.location')}: ${filters.location}`,
+        displayValue: `${t("search.location")}: ${filters.location}`,
       });
     }
 
     if (filters.experience) {
       activeFilters.push({
-        type: 'experience',
-        label: t('search.experience'),
+        type: "experience",
+        label: t("search.experience"),
         value: filters.experience,
-        displayValue: t('search.experience_years', {
+        displayValue: t("search.experience_years", {
           min: filters.experience.min,
           max: filters.experience.max,
         }),
@@ -130,23 +130,26 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
 
     if (filters.salary) {
       activeFilters.push({
-        type: 'salary',
-        label: t('search.salary'),
+        type: "salary",
+        label: t("search.salary"),
         value: filters.salary,
-        displayValue: t('search.salary_range', {
+        displayValue: t("search.salary_range", {
           min: filters.salary.min,
           max: filters.salary.max,
         }),
       });
     }
 
-    if (filters.dateRange && (filters.dateRange.start || filters.dateRange.end)) {
+    if (
+      filters.dateRange &&
+      (filters.dateRange.start || filters.dateRange.end)
+    ) {
       activeFilters.push({
-        type: 'dateRange',
-        label: t('search.date_range'),
+        type: "dateRange",
+        label: t("search.date_range"),
         value: filters.dateRange,
-        displayValue: `${t('search.date_range')}: ${filters.dateRange.start || '...'} - ${
-          filters.dateRange.end || '...'
+        displayValue: `${t("search.date_range")}: ${filters.dateRange.start || "..."} - ${
+          filters.dateRange.end || "..."
         }`,
       });
     }
@@ -161,8 +164,8 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
   };
 
   const handleClearSearch = () => {
-    setSearchQuery('');
-    onSearch('');
+    setSearchQuery("");
+    onSearch("");
   };
 
   const handleToggleFilters = () => {
@@ -197,11 +200,11 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
       <Paper
         elevation={0}
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           p: 1,
-          border: '1px solid',
-          borderColor: 'divider',
+          border: "1px solid",
+          borderColor: "divider",
           borderRadius: 1,
           mb: 1,
         }}
@@ -209,7 +212,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
         <TextField
           fullWidth
           size="small"
-          placeholder={placeholder || t('search.search_placeholder')}
+          placeholder={placeholder || t("search.search_placeholder")}
           value={searchQuery}
           onChange={handleSearchChange}
           InputProps={{
@@ -223,7 +226,7 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
                 <IconButton
                   size="small"
                   onClick={handleClearSearch}
-                  aria-label={t('search.clear_search')}
+                  aria-label={t("search.clear_search")}
                 >
                   <CloseIcon fontSize="small" />
                 </IconButton>
@@ -231,9 +234,9 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
             ),
           }}
           sx={{
-            '& .MuiOutlinedInput-root': {
-              '& fieldset': {
-                border: 'none',
+            "& .MuiOutlinedInput-root": {
+              "& fieldset": {
+                border: "none",
               },
             },
           }}
@@ -241,8 +244,8 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
 
         <IconButton
           onClick={handleToggleFilters}
-          color={showFilters ? 'primary' : 'default'}
-          aria-label={t('search.toggle_filters')}
+          color={showFilters ? "primary" : "default"}
+          aria-label={t("search.toggle_filters")}
           aria-expanded={showFilters}
         >
           <Badge badgeContent={activeFilterCount} color="primary">

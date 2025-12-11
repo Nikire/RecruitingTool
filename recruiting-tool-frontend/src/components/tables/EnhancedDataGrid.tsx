@@ -1,42 +1,42 @@
-import {useRef} from 'react';
-import {Box} from '@mui/material';
-import {DataGridProps, GridToolbarContainer} from '@mui/x-data-grid';
-import {useTranslation} from 'react-i18next';
-import StyledDataGrid from './StyledDataGrid';
-import DataGridOnboarding from './DataGridOnboarding';
-import DataGridToolbarHelp from './DataGridToolbarHelp';
+import { useRef } from "react";
+import { Box } from "@mui/material";
+import { DataGridProps, GridToolbarContainer } from "@mui/x-data-grid";
+import { useTranslation } from "react-i18next";
+import StyledDataGrid from "./StyledDataGrid";
+import DataGridOnboarding from "./DataGridOnboarding";
+import DataGridToolbarHelp from "./DataGridToolbarHelp";
 
 interface EnhancedDataGridProps extends DataGridProps {
-	/**
-	 * Unique key for onboarding state storage.
-	 * Use a descriptive key like 'email-templates' or 'job-positions'.
-	 */
-	onboardingKey: string;
-	/**
-	 * Whether to show the onboarding tooltip for first-time users.
-	 * @default true
-	 */
-	showOnboarding?: boolean;
-	/**
-	 * Whether to show the help icon in the toolbar.
-	 * @default true
-	 */
-	showToolbarHelp?: boolean;
+  /**
+   * Unique key for onboarding state storage.
+   * Use a descriptive key like 'email-templates' or 'job-positions'.
+   */
+  onboardingKey: string;
+  /**
+   * Whether to show the onboarding tooltip for first-time users.
+   * @default true
+   */
+  showOnboarding?: boolean;
+  /**
+   * Whether to show the help icon in the toolbar.
+   * @default true
+   */
+  showToolbarHelp?: boolean;
 }
 
 /**
  * Custom toolbar with help icon
  */
-const EnhancedToolbar: React.FC<{showHelp: boolean; customToolbar?: React.FC}> = ({
-	showHelp,
-	customToolbar: CustomToolbar,
-}) => {
-	return (
-		<GridToolbarContainer sx={{justifyContent: 'flex-end', pr: 1}}>
-			{CustomToolbar && <CustomToolbar />}
-			{showHelp && <DataGridToolbarHelp />}
-		</GridToolbarContainer>
-	);
+const EnhancedToolbar: React.FC<{
+  showHelp: boolean;
+  customToolbar?: React.FC;
+}> = ({ showHelp, customToolbar: CustomToolbar }) => {
+  return (
+    <GridToolbarContainer sx={{ justifyContent: "flex-end", pr: 1 }}>
+      {CustomToolbar && <CustomToolbar />}
+      {showHelp && <DataGridToolbarHelp />}
+    </GridToolbarContainer>
+  );
 };
 
 /**
@@ -58,43 +58,43 @@ const EnhancedToolbar: React.FC<{showHelp: boolean; customToolbar?: React.FC}> =
  * ```
  */
 const EnhancedDataGrid: React.FC<EnhancedDataGridProps> = ({
-	onboardingKey,
-	showOnboarding = true,
-	showToolbarHelp = true,
-	slots,
-	...props
+  onboardingKey,
+  showOnboarding = true,
+  showToolbarHelp = true,
+  slots,
+  ...props
 }) => {
-	const {t} = useTranslation();
-	const containerRef = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
+  const containerRef = useRef<HTMLDivElement>(null);
 
-	// Merge custom toolbar with our enhanced toolbar
-	const customToolbar = slots?.toolbar as React.FC | undefined;
+  // Merge custom toolbar with our enhanced toolbar
+  const customToolbar = slots?.toolbar as React.FC | undefined;
 
-	return (
-		<Box ref={containerRef} sx={{width: '100%', height: '100%'}}>
-			<StyledDataGrid
-				{...props}
-				slots={{
-					...slots,
-					toolbar: showToolbarHelp
-						? () => (
-								<EnhancedToolbar
-									showHelp={showToolbarHelp}
-									customToolbar={customToolbar}
-								/>
-						  )
-						: slots?.toolbar,
-				}}
-				aria-label={t('dataGrid.ariaLabel')}
-			/>
-			{showOnboarding && (
-				<DataGridOnboarding
-					onboardingKey={onboardingKey}
-					containerRef={containerRef}
-				/>
-			)}
-		</Box>
-	);
+  return (
+    <Box ref={containerRef} sx={{ width: "100%", height: "100%" }}>
+      <StyledDataGrid
+        {...props}
+        slots={{
+          ...slots,
+          toolbar: showToolbarHelp
+            ? () => (
+                <EnhancedToolbar
+                  showHelp={showToolbarHelp}
+                  customToolbar={customToolbar}
+                />
+              )
+            : slots?.toolbar,
+        }}
+        aria-label={t("dataGrid.ariaLabel")}
+      />
+      {showOnboarding && (
+        <DataGridOnboarding
+          onboardingKey={onboardingKey}
+          containerRef={containerRef}
+        />
+      )}
+    </Box>
+  );
 };
 
 export default EnhancedDataGrid;

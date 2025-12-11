@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -10,11 +10,11 @@ import {
   Rating,
   Box,
   Typography,
-} from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { FeedbackCategory, CreateFeedbackDto } from '../../types/feedback';
-import { useCreateFeedback } from '../../hooks/useFeedback';
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { FeedbackCategory, CreateFeedbackDto } from "../../types/feedback";
+import { useCreateFeedback } from "../../hooks/useFeedback";
 
 interface FeedbackModalProps {
   open: boolean;
@@ -32,7 +32,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
     formState: { errors },
   } = useForm<CreateFeedbackDto>({
     defaultValues: {
-      content: '',
+      content: "",
       category: undefined,
       rating: undefined,
     },
@@ -44,7 +44,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
       reset();
       onClose();
     } catch (error) {
-      console.error('Failed to submit feedback:', error);
+      console.error("Failed to submit feedback:", error);
     }
   };
 
@@ -55,10 +55,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t('feedback.modal_title')}</DialogTitle>
+      <DialogTitle>{t("feedback.modal_title")}</DialogTitle>
       <DialogContent>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          {t('feedback.modal_description')}
+          {t("feedback.modal_description")}
         </Typography>
 
         <form id="feedback-form" onSubmit={handleSubmit(onSubmit)}>
@@ -67,27 +67,27 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
             name="category"
             control={control}
             rules={{
-              required: t('feedback.validation.category_required'),
+              required: t("feedback.validation.category_required"),
             }}
             render={({ field }) => (
               <TextField
                 {...field}
                 select
                 fullWidth
-                label={t('feedback.category_label')}
-                placeholder={t('feedback.category_placeholder')}
+                label={t("feedback.category_label")}
+                placeholder={t("feedback.category_placeholder")}
                 error={!!errors.category}
                 helperText={errors.category?.message}
                 sx={{ mb: 2 }}
               >
                 <MenuItem value={FeedbackCategory.FEATURE_REQUEST}>
-                  {t('feedback.categories.FEATURE_REQUEST')}
+                  {t("feedback.categories.FEATURE_REQUEST")}
                 </MenuItem>
                 <MenuItem value={FeedbackCategory.BUG_REPORT}>
-                  {t('feedback.categories.BUG_REPORT')}
+                  {t("feedback.categories.BUG_REPORT")}
                 </MenuItem>
                 <MenuItem value={FeedbackCategory.GENERAL}>
-                  {t('feedback.categories.GENERAL')}
+                  {t("feedback.categories.GENERAL")}
                 </MenuItem>
               </TextField>
             )}
@@ -98,10 +98,10 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
             name="content"
             control={control}
             rules={{
-              required: t('feedback.validation.content_required'),
+              required: t("feedback.validation.content_required"),
               minLength: {
                 value: 10,
-                message: t('feedback.validation.content_min_length'),
+                message: t("feedback.validation.content_min_length"),
               },
             }}
             render={({ field }) => (
@@ -110,9 +110,11 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
                 fullWidth
                 multiline
                 rows={4}
-                label={t('feedback.content_label')}
-                placeholder={t('feedback.content_placeholder')}
-                helperText={errors.content?.message || t('feedback.content_helper')}
+                label={t("feedback.content_label")}
+                placeholder={t("feedback.content_placeholder")}
+                helperText={
+                  errors.content?.message || t("feedback.content_helper")
+                }
                 error={!!errors.content}
                 sx={{ mb: 2 }}
               />
@@ -122,7 +124,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
           {/* Optional Rating */}
           <Box sx={{ mb: 2 }}>
             <Typography variant="body2" gutterBottom>
-              {t('feedback.rating_label')}
+              {t("feedback.rating_label")}
             </Typography>
             <Controller
               name="rating"
@@ -130,11 +132,11 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
               rules={{
                 min: {
                   value: 1,
-                  message: t('feedback.validation.rating_invalid'),
+                  message: t("feedback.validation.rating_invalid"),
                 },
                 max: {
                   value: 5,
-                  message: t('feedback.validation.rating_invalid'),
+                  message: t("feedback.validation.rating_invalid"),
                 },
               }}
               render={({ field }) => (
@@ -145,11 +147,19 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
                     onChange={(_, value) => field.onChange(value)}
                     size="large"
                   />
-                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
-                    {t('feedback.rating_helper')}
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 0.5, display: "block" }}
+                  >
+                    {t("feedback.rating_helper")}
                   </Typography>
                   {errors.rating && (
-                    <Typography variant="caption" color="error" sx={{ display: 'block' }}>
+                    <Typography
+                      variant="caption"
+                      color="error"
+                      sx={{ display: "block" }}
+                    >
                       {errors.rating.message}
                     </Typography>
                   )}
@@ -161,7 +171,7 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} disabled={createFeedback.isPending}>
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
         <Button
           type="submit"
@@ -169,7 +179,9 @@ const FeedbackModal: React.FC<FeedbackModalProps> = ({ open, onClose }) => {
           variant="contained"
           disabled={createFeedback.isPending}
         >
-          {createFeedback.isPending ? t('feedback.submitting') : t('feedback.submit_button')}
+          {createFeedback.isPending
+            ? t("feedback.submitting")
+            : t("feedback.submit_button")}
         </Button>
       </DialogActions>
     </Dialog>

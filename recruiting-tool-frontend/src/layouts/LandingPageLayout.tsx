@@ -1,7 +1,7 @@
-import { Box, Toolbar } from '@mui/material';
-import { Outlet } from 'react-router-dom';
-import Navbar from '../components/navbar/Navbar';
-import { useAuthMe } from '../hooks/api/useAuth';
+import { Box, Toolbar } from "@mui/material";
+import { Outlet } from "react-router-dom";
+import Navbar from "../components/navbar/Navbar";
+import { useAuthMe } from "../hooks/api/useAuth";
 
 /**
  * LandingPageLayout - Specialized layout for public landing pages
@@ -16,18 +16,18 @@ import { useAuthMe } from '../hooks/api/useAuth';
  * Used for: Home page, marketing pages
  */
 const LandingPageLayout = () => {
-	// Restore auth state on page load - ensures navbar shows correct auth status
-	useAuthMe();
+  // Restore auth state on page load - ensures navbar shows correct auth status
+  useAuthMe();
 
-	return (
-		<>
-			<Navbar />
-			<Toolbar /> {/* Offset spacer for fixed AppBar */}
-			<Box sx={{ width: '100%' }}>
-				<Outlet />
-			</Box>
-		</>
-	);
+  return (
+    <>
+      <Navbar />
+      <Toolbar /> {/* Offset spacer for fixed AppBar */}
+      <Box sx={{ width: "100%" }}>
+        <Outlet />
+      </Box>
+    </>
+  );
 };
 
 export default LandingPageLayout;

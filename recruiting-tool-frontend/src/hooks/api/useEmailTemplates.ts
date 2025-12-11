@@ -1,4 +1,4 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getEmailTemplates,
   getEmailTemplate,
@@ -6,11 +6,15 @@ import {
   updateEmailTemplate,
   deleteEmailTemplate,
   previewEmailTemplate,
-} from '../../api/emailTemplates';
-import { CreateEmailTemplateDto, UpdateEmailTemplateDto, PreviewEmailTemplateDto } from '../../types/emailTemplate.types';
-import { showSuccessToast, showErrorToast } from '../../utils/toast';
+} from "../../api/emailTemplates";
+import {
+  CreateEmailTemplateDto,
+  UpdateEmailTemplateDto,
+  PreviewEmailTemplateDto,
+} from "../../types/emailTemplate.types";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const EMAIL_TEMPLATES_KEY = 'email-templates';
+const EMAIL_TEMPLATES_KEY = "email-templates";
 
 export function useEmailTemplates(companyUid?: string) {
   return useQuery({
@@ -34,10 +38,10 @@ export function useCreateEmailTemplate() {
     mutationFn: (data: CreateEmailTemplateDto) => createEmailTemplate(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
-      showSuccessToast('Email template created successfully!');
+      showSuccessToast("Email template created successfully!");
     },
     onError: (error) => {
-      showErrorToast(error, 'Failed to create email template');
+      showErrorToast(error, "Failed to create email template");
     },
   });
 }
@@ -46,14 +50,19 @@ export function useUpdateEmailTemplate() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uid, data }: { uid: string; data: UpdateEmailTemplateDto }) =>
-      updateEmailTemplate(uid, data),
+    mutationFn: ({
+      uid,
+      data,
+    }: {
+      uid: string;
+      data: UpdateEmailTemplateDto;
+    }) => updateEmailTemplate(uid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
-      showSuccessToast('Email template updated successfully!');
+      showSuccessToast("Email template updated successfully!");
     },
     onError: (error) => {
-      showErrorToast(error, 'Failed to update email template');
+      showErrorToast(error, "Failed to update email template");
     },
   });
 }
@@ -65,20 +74,25 @@ export function useDeleteEmailTemplate() {
     mutationFn: (uid: string) => deleteEmailTemplate(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
-      showSuccessToast('Email template deleted successfully!');
+      showSuccessToast("Email template deleted successfully!");
     },
     onError: (error) => {
-      showErrorToast(error, 'Failed to delete email template');
+      showErrorToast(error, "Failed to delete email template");
     },
   });
 }
 
 export function usePreviewEmailTemplate() {
   return useMutation({
-    mutationFn: ({ uid, data }: { uid: string; data?: PreviewEmailTemplateDto }) =>
-      previewEmailTemplate(uid, data),
+    mutationFn: ({
+      uid,
+      data,
+    }: {
+      uid: string;
+      data?: PreviewEmailTemplateDto;
+    }) => previewEmailTemplate(uid, data),
     onError: (error) => {
-      showErrorToast(error, 'Failed to preview email template');
+      showErrorToast(error, "Failed to preview email template");
     },
   });
 }

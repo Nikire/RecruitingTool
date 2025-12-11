@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../api/axios';
+import { useQuery } from "@tanstack/react-query";
+import api from "../api/axios";
 
 export interface CompanyMember {
   uid: string;
@@ -14,7 +14,7 @@ export interface CompanyMember {
  */
 export const useCompanyMembers = (companyUid: string) => {
   return useQuery({
-    queryKey: ['companyMembers', companyUid],
+    queryKey: ["companyMembers", companyUid],
     queryFn: async () => {
       const response = await api.get<CompanyMember[]>(
         `/companies/${companyUid}/roles`,

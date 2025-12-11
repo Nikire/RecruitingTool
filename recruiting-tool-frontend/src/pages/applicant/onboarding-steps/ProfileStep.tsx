@@ -1,10 +1,10 @@
-import React from 'react';
-import { Box, TextField, Button, Typography } from '@mui/material';
-import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { useValidationRules } from '../../../utils/validation';
-import FormErrorSummary from '../../../components/common/FormErrorSummary';
-import { OnboardingData } from '../ApplicantOnboarding';
+import React from "react";
+import { Box, TextField, Button, Typography } from "@mui/material";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useValidationRules } from "../../../utils/validation";
+import FormErrorSummary from "../../../components/common/FormErrorSummary";
+import { OnboardingData } from "../ApplicantOnboarding";
 
 interface ProfileStepProps {
   data: OnboardingData;
@@ -30,11 +30,11 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
     formState: { errors },
   } = useForm<ProfileFormData>({
     defaultValues: {
-      fullName: data.fullName || '',
-      phoneNumber: data.phoneNumber || '',
-      location: data.location || '',
-      linkedinUrl: data.linkedinUrl || '',
-      portfolioUrl: data.portfolioUrl || '',
+      fullName: data.fullName || "",
+      phoneNumber: data.phoneNumber || "",
+      location: data.location || "",
+      linkedinUrl: data.linkedinUrl || "",
+      portfolioUrl: data.portfolioUrl || "",
     },
   });
 
@@ -45,66 +45,72 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Typography variant="h5" gutterBottom>
-        {t('applicant_onboarding.profile.title')}
+        {t("applicant_onboarding.profile.title")}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        {t('applicant_onboarding.profile.subtitle')}
+        {t("applicant_onboarding.profile.subtitle")}
       </Typography>
 
       <FormErrorSummary errors={errors} />
 
       <TextField
-        label={t('applicant_onboarding.profile.full_name')}
+        label={t("applicant_onboarding.profile.full_name")}
         fullWidth
         margin="normal"
-        {...register('fullName', validationRules.required(t('applicant_onboarding.profile.full_name')))}
+        {...register(
+          "fullName",
+          validationRules.required(t("applicant_onboarding.profile.full_name")),
+        )}
         error={!!errors.fullName}
         helperText={errors.fullName?.message}
       />
 
       <TextField
-        label={t('applicant_onboarding.profile.phone_number')}
+        label={t("applicant_onboarding.profile.phone_number")}
         fullWidth
         margin="normal"
-        {...register('phoneNumber', validationRules.phone())}
+        {...register("phoneNumber", validationRules.phone())}
         error={!!errors.phoneNumber}
         helperText={errors.phoneNumber?.message}
       />
 
       <TextField
-        label={t('applicant_onboarding.profile.location')}
+        label={t("applicant_onboarding.profile.location")}
         fullWidth
         margin="normal"
-        {...register('location', validationRules.required(t('applicant_onboarding.profile.location')))}
+        {...register(
+          "location",
+          validationRules.required(t("applicant_onboarding.profile.location")),
+        )}
         error={!!errors.location}
         helperText={errors.location?.message}
-        placeholder={t('applicant_onboarding.profile.location_placeholder')}
+        placeholder={t("applicant_onboarding.profile.location_placeholder")}
       />
 
       <TextField
-        label={t('applicant_onboarding.profile.linkedin_url')}
+        label={t("applicant_onboarding.profile.linkedin_url")}
         fullWidth
         margin="normal"
-        {...register('linkedinUrl', validationRules.url())}
+        {...register("linkedinUrl", validationRules.url())}
         error={!!errors.linkedinUrl}
         helperText={errors.linkedinUrl?.message}
         placeholder="https://linkedin.com/in/yourprofile"
       />
 
       <TextField
-        label={t('applicant_onboarding.profile.portfolio_url')}
+        label={t("applicant_onboarding.profile.portfolio_url")}
         fullWidth
         margin="normal"
-        {...register('portfolioUrl', validationRules.url())}
+        {...register("portfolioUrl", validationRules.url())}
         error={!!errors.portfolioUrl}
         helperText={errors.portfolioUrl?.message}
         placeholder="https://yourportfolio.com"
       />
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-        <Button onClick={onBack}>{t('common.back')}</Button>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+        <Button onClick={onBack}>{t("common.back")}</Button>
         <Button type="submit" variant="contained">
-          {t('common.next')}
+          {t("common.next")}
         </Button>
       </Box>
     </form>

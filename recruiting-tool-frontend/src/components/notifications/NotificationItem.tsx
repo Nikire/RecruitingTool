@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   MenuItem,
   Typography,
@@ -7,12 +7,15 @@ import {
   ListItemAvatar,
   Avatar,
   Box,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useTranslation } from 'react-i18next';
-import { Notification } from '../../types/notification';
-import { formatRelativeTime } from '../../utils/dateFormatters';
-import { getNotificationIcon, getNotificationColor } from '../../utils/notificationUtils';
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useTranslation } from "react-i18next";
+import { Notification } from "../../types/notification";
+import { formatRelativeTime } from "../../utils/dateFormatters";
+import {
+  getNotificationIcon,
+  getNotificationColor,
+} from "../../utils/notificationUtils";
 
 interface NotificationItemProps {
   notification: Notification;
@@ -24,7 +27,11 @@ interface NotificationItemProps {
  * NotificationItem component displays a single notification with read/unread status
  * and actionable navigation
  */
-const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onClick, onDelete }) => {
+const NotificationItem: React.FC<NotificationItemProps> = ({
+  notification,
+  onClick,
+  onDelete,
+}) => {
   const { t, i18n } = useTranslation();
 
   const handleDelete = (event: React.MouseEvent) => {
@@ -38,32 +45,41 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
       sx={{
         py: 1.5,
         px: 2,
-        alignItems: 'flex-start',
-        backgroundColor: notification.isRead ? 'transparent' : 'action.hover',
-        borderLeft: notification.isRead ? 'none' : '3px solid',
-        borderLeftColor: notification.isRead ? 'transparent' : 'primary.main',
-        '&:hover': {
-          backgroundColor: 'action.selected',
+        alignItems: "flex-start",
+        backgroundColor: notification.isRead ? "transparent" : "action.hover",
+        borderLeft: notification.isRead ? "none" : "3px solid",
+        borderLeftColor: notification.isRead ? "transparent" : "primary.main",
+        "&:hover": {
+          backgroundColor: "action.selected",
         },
       }}
     >
       <ListItemAvatar>
-        <Avatar sx={{ bgcolor: `${getNotificationColor(notification.type)}.main` }}>
+        <Avatar
+          sx={{ bgcolor: `${getNotificationColor(notification.type)}.main` }}
+        >
           {getNotificationIcon(notification.type)}
         </Avatar>
       </ListItemAvatar>
 
       <ListItemText
         primary={
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5, overflow: 'hidden' }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              mb: 0.5,
+              overflow: "hidden",
+            }}
+          >
             <Typography
               variant="body2"
-              fontWeight={notification.isRead ? 'normal' : 'bold'}
+              fontWeight={notification.isRead ? "normal" : "bold"}
               sx={{
                 flex: 1,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
             >
               {notification.title}
@@ -73,11 +89,11 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
                 sx={{
                   width: 8,
                   height: 8,
-                  borderRadius: '50%',
-                  bgcolor: 'primary.main',
+                  borderRadius: "50%",
+                  bgcolor: "primary.main",
                   ml: 1,
                 }}
-                aria-label={t('notifications.unread_indicator')}
+                aria-label={t("notifications.unread_indicator")}
               />
             )}
           </Box>
@@ -88,10 +104,10 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
               variant="body2"
               color="textSecondary"
               sx={{
-                display: '-webkit-box',
+                display: "-webkit-box",
                 WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
                 mb: 0.5,
               }}
             >
@@ -109,7 +125,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onCli
         size="small"
         onClick={handleDelete}
         sx={{ ml: 1 }}
-        aria-label={t('notifications.delete')}
+        aria-label={t("notifications.delete")}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

@@ -1,13 +1,13 @@
-import axios from './axios';
+import axios from "./axios";
 import {
   TimeSlotResponse,
   BookingTokenResponse,
   GenerateTimeSlotsRequest,
   GenerateCustomTimeSlotsRequest,
   SelectTimeSlotRequest,
-} from '../types/timeSlots.types';
+} from "../types/timeSlots.types";
 
-const TIME_SLOTS_BASE_URL = '/time-slots';
+const TIME_SLOTS_BASE_URL = "/time-slots";
 
 // ==================== PROTECTED ENDPOINTS (HR/ADMIN) ====================
 
@@ -15,11 +15,11 @@ const TIME_SLOTS_BASE_URL = '/time-slots';
  * Generate time slots from HR schedule availability
  */
 export const generateTimeSlots = async (
-  data: GenerateTimeSlotsRequest
+  data: GenerateTimeSlotsRequest,
 ): Promise<TimeSlotResponse[]> => {
   const response = await axios.post<TimeSlotResponse[]>(
     `${TIME_SLOTS_BASE_URL}/generate`,
-    data
+    data,
   );
   return response.data;
 };
@@ -28,11 +28,11 @@ export const generateTimeSlots = async (
  * Generate custom time slots manually
  */
 export const generateCustomTimeSlots = async (
-  data: GenerateCustomTimeSlotsRequest
+  data: GenerateCustomTimeSlotsRequest,
 ): Promise<TimeSlotResponse[]> => {
   const response = await axios.post<TimeSlotResponse[]>(
     `${TIME_SLOTS_BASE_URL}/generate-custom`,
-    data
+    data,
   );
   return response.data;
 };
@@ -41,10 +41,10 @@ export const generateCustomTimeSlots = async (
  * Generate booking token for an interview
  */
 export const generateBookingToken = async (
-  interviewUid: string
+  interviewUid: string,
 ): Promise<BookingTokenResponse> => {
   const response = await axios.post<BookingTokenResponse>(
-    `${TIME_SLOTS_BASE_URL}/booking-token/${interviewUid}`
+    `${TIME_SLOTS_BASE_URL}/booking-token/${interviewUid}`,
   );
   return response.data;
 };
@@ -53,10 +53,10 @@ export const generateBookingToken = async (
  * Get all time slots for an interview (HR view)
  */
 export const getTimeSlotsByInterview = async (
-  interviewUid: string
+  interviewUid: string,
 ): Promise<TimeSlotResponse[]> => {
   const response = await axios.get<TimeSlotResponse[]>(
-    `${TIME_SLOTS_BASE_URL}/interview/${interviewUid}`
+    `${TIME_SLOTS_BASE_URL}/interview/${interviewUid}`,
   );
   return response.data;
 };
@@ -65,7 +65,7 @@ export const getTimeSlotsByInterview = async (
  * Cancel selected time slot and re-open all slots
  */
 export const cancelSlotSelection = async (
-  interviewUid: string
+  interviewUid: string,
 ): Promise<void> => {
   await axios.delete(`${TIME_SLOTS_BASE_URL}/cancel/${interviewUid}`);
 };
@@ -76,10 +76,10 @@ export const cancelSlotSelection = async (
  * Get available time slots using booking token (PUBLIC - no auth required)
  */
 export const getAvailableSlots = async (
-  token: string
+  token: string,
 ): Promise<TimeSlotResponse[]> => {
   const response = await axios.get<TimeSlotResponse[]>(
-    `${TIME_SLOTS_BASE_URL}/available/${token}`
+    `${TIME_SLOTS_BASE_URL}/available/${token}`,
   );
   return response.data;
 };
@@ -89,11 +89,11 @@ export const getAvailableSlots = async (
  */
 export const selectTimeSlot = async (
   token: string,
-  data: SelectTimeSlotRequest
+  data: SelectTimeSlotRequest,
 ): Promise<TimeSlotResponse> => {
   const response = await axios.post<TimeSlotResponse>(
     `${TIME_SLOTS_BASE_URL}/select/${token}`,
-    data
+    data,
   );
   return response.data;
 };

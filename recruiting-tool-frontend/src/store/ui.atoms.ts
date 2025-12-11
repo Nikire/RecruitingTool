@@ -10,7 +10,7 @@
  * const setLoading = useSetAtom(globalLoadingAtom);
  * ```
  */
-import {atom, useAtomValue, useSetAtom} from 'jotai';
+import { atom, useAtomValue, useSetAtom } from "jotai";
 
 // ============================================================================
 // Global UI State
@@ -69,16 +69,16 @@ export const activeTabsAtom = atom<Record<string, number>>({});
  * ```
  */
 export function useActiveTab(pageKey: string): [number, (tab: number) => void] {
-	const tabs = useAtomValue(activeTabsAtom);
-	const setTabs = useSetAtom(activeTabsAtom);
+  const tabs = useAtomValue(activeTabsAtom);
+  const setTabs = useSetAtom(activeTabsAtom);
 
-	const activeTab = tabs[pageKey] ?? 0;
+  const activeTab = tabs[pageKey] ?? 0;
 
-	const setActiveTab = (tab: number) => {
-		setTabs((prev) => ({...prev, [pageKey]: tab}));
-	};
+  const setActiveTab = (tab: number) => {
+    setTabs((prev) => ({ ...prev, [pageKey]: tab }));
+  };
 
-	return [activeTab, setActiveTab];
+  return [activeTab, setActiveTab];
 }
 
 // ============================================================================
@@ -87,20 +87,20 @@ export function useActiveTab(pageKey: string): [number, (tab: number) => void] {
 // ============================================================================
 
 export interface ConfirmDialogState {
-	open: boolean;
-	title: string;
-	message: string;
-	confirmLabel?: string;
-	cancelLabel?: string;
-	onConfirm?: () => void | Promise<void>;
-	onCancel?: () => void;
-	isDestructive?: boolean;
+  open: boolean;
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  onConfirm?: () => void | Promise<void>;
+  onCancel?: () => void;
+  isDestructive?: boolean;
 }
 
 const defaultConfirmState: ConfirmDialogState = {
-	open: false,
-	title: '',
-	message: '',
+  open: false,
+  title: "",
+  message: "",
 };
 
 export const confirmDialogAtom = atom<ConfirmDialogState>(defaultConfirmState);
@@ -126,23 +126,23 @@ export const confirmDialogAtom = atom<ConfirmDialogState>(defaultConfirmState);
  * ```
  */
 export function useConfirmDialog() {
-	const state = useAtomValue(confirmDialogAtom);
-	const setState = useSetAtom(confirmDialogAtom);
+  const state = useAtomValue(confirmDialogAtom);
+  const setState = useSetAtom(confirmDialogAtom);
 
-	const confirm = (options: Omit<ConfirmDialogState, 'open'>) => {
-		setState({
-			...options,
-			open: true,
-		});
-	};
+  const confirm = (options: Omit<ConfirmDialogState, "open">) => {
+    setState({
+      ...options,
+      open: true,
+    });
+  };
 
-	const close = () => {
-		setState(defaultConfirmState);
-	};
+  const close = () => {
+    setState(defaultConfirmState);
+  };
 
-	return {
-		...state,
-		confirm,
-		close,
-	};
+  return {
+    ...state,
+    confirm,
+    close,
+  };
 }

@@ -1,6 +1,6 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { toast } from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import {
   createInterview,
   getInterview,
@@ -8,8 +8,11 @@ import {
   updateInterview,
   cancelInterview,
   deleteInterview,
-} from '../../api/interview';
-import { CreateInterviewDto, UpdateInterviewDto } from '../../types/interview.types';
+} from "../../api/interview";
+import {
+  CreateInterviewDto,
+  UpdateInterviewDto,
+} from "../../types/interview.types";
 
 export const useCreateInterview = () => {
   const queryClient = useQueryClient();
@@ -18,19 +21,23 @@ export const useCreateInterview = () => {
   return useMutation({
     mutationFn: (data: CreateInterviewDto) => createInterview(data),
     onSuccess: (data) => {
-      toast.success(t('success.interview_scheduled'));
+      toast.success(t("success.interview_scheduled"));
       // Invalidate interviews for this stage
-      queryClient.invalidateQueries({ queryKey: ['interviews', 'stage', data.stageUid] });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", "stage", data.stageUid],
+      });
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t('errors.interview_schedule_failed'));
+      toast.error(
+        error?.response?.data?.message || t("errors.interview_schedule_failed"),
+      );
     },
   });
 };
 
 export const useInterview = (uid: string) => {
   return useQuery({
-    queryKey: ['interview', uid],
+    queryKey: ["interview", uid],
     queryFn: () => getInterview(uid),
     enabled: !!uid,
   });
@@ -38,7 +45,7 @@ export const useInterview = (uid: string) => {
 
 export const useInterviewsByStage = (stageUid: string) => {
   return useQuery({
-    queryKey: ['interviews', 'stage', stageUid],
+    queryKey: ["interviews", "stage", stageUid],
     queryFn: () => getInterviewsByStage(stageUid),
     enabled: !!stageUid,
   });
@@ -52,13 +59,17 @@ export const useUpdateInterview = () => {
     mutationFn: ({ uid, data }: { uid: string; data: UpdateInterviewDto }) =>
       updateInterview(uid, data),
     onSuccess: (data) => {
-      toast.success(t('success.interview_updated'));
+      toast.success(t("success.interview_updated"));
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: ['interview', data.uid] });
-      queryClient.invalidateQueries({ queryKey: ['interviews', 'stage', data.stageUid] });
+      queryClient.invalidateQueries({ queryKey: ["interview", data.uid] });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", "stage", data.stageUid],
+      });
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t('errors.interview_update_failed'));
+      toast.error(
+        error?.response?.data?.message || t("errors.interview_update_failed"),
+      );
     },
   });
 };
@@ -70,13 +81,17 @@ export const useCancelInterview = () => {
   return useMutation({
     mutationFn: (uid: string) => cancelInterview(uid),
     onSuccess: (data) => {
-      toast.success(t('success.interview_cancelled'));
+      toast.success(t("success.interview_cancelled"));
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: ['interview', data.uid] });
-      queryClient.invalidateQueries({ queryKey: ['interviews', 'stage', data.stageUid] });
+      queryClient.invalidateQueries({ queryKey: ["interview", data.uid] });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", "stage", data.stageUid],
+      });
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t('errors.interview_cancel_failed'));
+      toast.error(
+        error?.response?.data?.message || t("errors.interview_cancel_failed"),
+      );
     },
   });
 };
@@ -86,14 +101,19 @@ export const useDeleteInterview = () => {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: ({ uid, stageUid }: { uid: string; stageUid: string }) => deleteInterview(uid),
+    mutationFn: ({ uid, stageUid }: { uid: string; stageUid: string }) =>
+      deleteInterview(uid),
     onSuccess: (_, variables) => {
-      toast.success(t('success.interview_deleted'));
+      toast.success(t("success.interview_deleted"));
       // Invalidate queries
-      queryClient.invalidateQueries({ queryKey: ['interviews', 'stage', variables.stageUid] });
+      queryClient.invalidateQueries({
+        queryKey: ["interviews", "stage", variables.stageUid],
+      });
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || t('errors.interview_delete_failed'));
+      toast.error(
+        error?.response?.data?.message || t("errors.interview_delete_failed"),
+      );
     },
   });
 };

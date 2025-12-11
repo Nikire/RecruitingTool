@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Box,
   Container,
@@ -13,21 +13,21 @@ import {
   Stack,
   IconButton,
   Tooltip,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import EventIcon from '@mui/icons-material/Event';
-import LinkIcon from '@mui/icons-material/Link';
-import LinkOffIcon from '@mui/icons-material/LinkOff';
-import InfoIcon from '@mui/icons-material/Info';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import toast from 'react-hot-toast';
-import SettingsCard from '../../components/settings/SettingsCard';
-import StatusIndicator from '../../components/settings/StatusIndicator';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import EventIcon from "@mui/icons-material/Event";
+import LinkIcon from "@mui/icons-material/Link";
+import LinkOffIcon from "@mui/icons-material/LinkOff";
+import InfoIcon from "@mui/icons-material/Info";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import toast from "react-hot-toast";
+import SettingsCard from "../../components/settings/SettingsCard";
+import StatusIndicator from "../../components/settings/StatusIndicator";
 import {
   useCalendarConnectionStatus,
   useGetAuthUrl,
   useDisconnectCalendar,
-} from '../../hooks/api/useGoogleCalendar';
+} from "../../hooks/api/useGoogleCalendar";
 
 /**
  * CalendarSettingsPage - Google Calendar integration settings
@@ -62,8 +62,8 @@ interface CalendarSettings {
 
 const DEFAULT_WORKING_HOURS: WorkingHours = {
   enabled: true,
-  startTime: '09:00',
-  endTime: '17:00',
+  startTime: "09:00",
+  endTime: "17:00",
 };
 
 const DEFAULT_SETTINGS: CalendarSettings = {
@@ -73,8 +73,8 @@ const DEFAULT_SETTINGS: CalendarSettings = {
     wednesday: DEFAULT_WORKING_HOURS,
     thursday: DEFAULT_WORKING_HOURS,
     friday: DEFAULT_WORKING_HOURS,
-    saturday: { enabled: false, startTime: '09:00', endTime: '17:00' },
-    sunday: { enabled: false, startTime: '09:00', endTime: '17:00' },
+    saturday: { enabled: false, startTime: "09:00", endTime: "17:00" },
+    sunday: { enabled: false, startTime: "09:00", endTime: "17:00" },
   },
   bufferTime: 15,
   defaultDuration: 60,
@@ -85,9 +85,14 @@ const CalendarSettingsPage = () => {
   const [settings, setSettings] = useState<CalendarSettings>(DEFAULT_SETTINGS);
 
   // API hooks
-  const { data: connectionStatus, isLoading, refetch } = useCalendarConnectionStatus();
+  const {
+    data: connectionStatus,
+    isLoading,
+    refetch,
+  } = useCalendarConnectionStatus();
   const { mutate: getAuthUrl, isPending: isGettingAuthUrl } = useGetAuthUrl();
-  const { mutate: disconnectCalendar, isPending: isDisconnecting } = useDisconnectCalendar();
+  const { mutate: disconnectCalendar, isPending: isDisconnecting } =
+    useDisconnectCalendar();
 
   const isConnected = connectionStatus?.connected ?? false;
 
@@ -102,7 +107,7 @@ const CalendarSettingsPage = () => {
 
         const popup = window.open(
           data.authUrl,
-          'Google Calendar Authorization',
+          "Google Calendar Authorization",
           `width=${width},height=${height},left=${left},top=${top}`,
         );
 
@@ -112,12 +117,12 @@ const CalendarSettingsPage = () => {
             clearInterval(checkClosed);
             // Refetch connection status
             refetch();
-            toast.success(t('calendar_settings.connection_check'));
+            toast.success(t("calendar_settings.connection_check"));
           }
         }, 1000);
       },
       onError: () => {
-        toast.error(t('calendar_settings.connect_error'));
+        toast.error(t("calendar_settings.connect_error"));
       },
     });
   };
@@ -125,16 +130,16 @@ const CalendarSettingsPage = () => {
   const handleDisconnect = () => {
     disconnectCalendar(undefined, {
       onSuccess: () => {
-        toast.success(t('calendar_settings.disconnected_success'));
+        toast.success(t("calendar_settings.disconnected_success"));
       },
       onError: () => {
-        toast.error(t('calendar_settings.disconnect_error'));
+        toast.error(t("calendar_settings.disconnect_error"));
       },
     });
   };
 
   const handleWorkingHoursChange = (
-    day: keyof CalendarSettings['workingHours'],
+    day: keyof CalendarSettings["workingHours"],
     field: keyof WorkingHours,
     value: boolean | string,
   ) => {
@@ -153,23 +158,23 @@ const CalendarSettingsPage = () => {
   const handleSaveSettings = () => {
     // TODO: Call backend API to save settings
     // For now, just show success message
-    toast.success(t('calendar_settings.settings_saved'));
+    toast.success(t("calendar_settings.settings_saved"));
   };
 
-  const daysOfWeek: Array<keyof CalendarSettings['workingHours']> = [
-    'monday',
-    'tuesday',
-    'wednesday',
-    'thursday',
-    'friday',
-    'saturday',
-    'sunday',
+  const daysOfWeek: Array<keyof CalendarSettings["workingHours"]> = [
+    "monday",
+    "tuesday",
+    "wednesday",
+    "thursday",
+    "friday",
+    "saturday",
+    "sunday",
   ];
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        {t('calendar_settings.title')}
+        {t("calendar_settings.title")}
       </Typography>
 
       <Grid container spacing={3}>
@@ -177,11 +182,15 @@ const CalendarSettingsPage = () => {
         <Grid item xs={12}>
           <SettingsCard
             icon={<EventIcon />}
-            title={t('calendar_settings.google_calendar')}
+            title={t("calendar_settings.google_calendar")}
             iconColor="primary.main"
             action={
-              <Tooltip title={t('calendar_settings.refresh_status')}>
-                <IconButton onClick={() => refetch()} disabled={isLoading} size="small">
+              <Tooltip title={t("calendar_settings.refresh_status")}>
+                <IconButton
+                  onClick={() => refetch()}
+                  disabled={isLoading}
+                  size="small"
+                >
                   <RefreshIcon />
                 </IconButton>
               </Tooltip>
@@ -196,14 +205,14 @@ const CalendarSettingsPage = () => {
                 {/* Connection Status */}
                 <Box>
                   <Typography variant="subtitle2" gutterBottom>
-                    {t('calendar_settings.connection_status')}
+                    {t("calendar_settings.connection_status")}
                   </Typography>
                   <StatusIndicator
-                    status={isConnected ? 'ok' : 'warning'}
+                    status={isConnected ? "ok" : "warning"}
                     label={
                       isConnected
-                        ? 'calendar_settings.connected'
-                        : 'calendar_settings.not_connected'
+                        ? "calendar_settings.connected"
+                        : "calendar_settings.not_connected"
                     }
                     translate
                   />
@@ -214,7 +223,7 @@ const CalendarSettingsPage = () => {
                   {isConnected ? (
                     <Stack spacing={2}>
                       <Alert severity="success" icon={<LinkIcon />}>
-                        {t('calendar_settings.connected_message')}
+                        {t("calendar_settings.connected_message")}
                       </Alert>
                       <Button
                         variant="outlined"
@@ -224,14 +233,14 @@ const CalendarSettingsPage = () => {
                         disabled={isDisconnecting}
                       >
                         {isDisconnecting
-                          ? t('calendar_settings.disconnecting')
-                          : t('calendar_settings.disconnect')}
+                          ? t("calendar_settings.disconnecting")
+                          : t("calendar_settings.disconnect")}
                       </Button>
                     </Stack>
                   ) : (
                     <Stack spacing={2}>
                       <Alert severity="info" icon={<InfoIcon />}>
-                        {t('calendar_settings.not_connected_message')}
+                        {t("calendar_settings.not_connected_message")}
                       </Alert>
                       <Button
                         variant="contained"
@@ -241,8 +250,8 @@ const CalendarSettingsPage = () => {
                         disabled={isGettingAuthUrl}
                       >
                         {isGettingAuthUrl
-                          ? t('calendar_settings.connecting')
-                          : t('calendar_settings.connect')}
+                          ? t("calendar_settings.connecting")
+                          : t("calendar_settings.connect")}
                       </Button>
                     </Stack>
                   )}
@@ -250,7 +259,7 @@ const CalendarSettingsPage = () => {
 
                 {/* Information */}
                 <Alert severity="info" icon={<InfoIcon />}>
-                  {t('calendar_settings.oauth_info')}
+                  {t("calendar_settings.oauth_info")}
                 </Alert>
               </Stack>
             )}
@@ -261,12 +270,12 @@ const CalendarSettingsPage = () => {
         <Grid item xs={12}>
           <SettingsCard
             icon={<EventIcon />}
-            title={t('calendar_settings.working_hours')}
+            title={t("calendar_settings.working_hours")}
             iconColor="success.main"
           >
             <Stack spacing={2}>
               <Typography variant="body2" color="text.secondary">
-                {t('calendar_settings.working_hours_description')}
+                {t("calendar_settings.working_hours_description")}
               </Typography>
 
               <Divider />
@@ -276,7 +285,10 @@ const CalendarSettingsPage = () => {
                 return (
                   <Grid container spacing={2} key={day} alignItems="center">
                     <Grid item xs={12} sm={3}>
-                      <Typography variant="body1" sx={{ textTransform: 'capitalize' }}>
+                      <Typography
+                        variant="body1"
+                        sx={{ textTransform: "capitalize" }}
+                      >
                         {t(`calendar_settings.days.${day}`)}
                       </Typography>
                     </Grid>
@@ -285,13 +297,21 @@ const CalendarSettingsPage = () => {
                         select
                         size="small"
                         fullWidth
-                        value={hours.enabled ? 'enabled' : 'disabled'}
+                        value={hours.enabled ? "enabled" : "disabled"}
                         onChange={(e) =>
-                          handleWorkingHoursChange(day, 'enabled', e.target.value === 'enabled')
+                          handleWorkingHoursChange(
+                            day,
+                            "enabled",
+                            e.target.value === "enabled",
+                          )
                         }
                       >
-                        <MenuItem value="enabled">{t('calendar_settings.enabled')}</MenuItem>
-                        <MenuItem value="disabled">{t('calendar_settings.disabled')}</MenuItem>
+                        <MenuItem value="enabled">
+                          {t("calendar_settings.enabled")}
+                        </MenuItem>
+                        <MenuItem value="disabled">
+                          {t("calendar_settings.disabled")}
+                        </MenuItem>
                       </TextField>
                     </Grid>
                     {hours.enabled && (
@@ -301,10 +321,14 @@ const CalendarSettingsPage = () => {
                             type="time"
                             size="small"
                             fullWidth
-                            label={t('calendar_settings.start_time')}
+                            label={t("calendar_settings.start_time")}
                             value={hours.startTime}
                             onChange={(e) =>
-                              handleWorkingHoursChange(day, 'startTime', e.target.value)
+                              handleWorkingHoursChange(
+                                day,
+                                "startTime",
+                                e.target.value,
+                              )
                             }
                             InputLabelProps={{ shrink: true }}
                           />
@@ -314,10 +338,14 @@ const CalendarSettingsPage = () => {
                             type="time"
                             size="small"
                             fullWidth
-                            label={t('calendar_settings.end_time')}
+                            label={t("calendar_settings.end_time")}
                             value={hours.endTime}
                             onChange={(e) =>
-                              handleWorkingHoursChange(day, 'endTime', e.target.value)
+                              handleWorkingHoursChange(
+                                day,
+                                "endTime",
+                                e.target.value,
+                              )
                             }
                             InputLabelProps={{ shrink: true }}
                           />
@@ -335,47 +363,79 @@ const CalendarSettingsPage = () => {
         <Grid item xs={12} md={6}>
           <SettingsCard
             icon={<EventIcon />}
-            title={t('calendar_settings.meeting_settings')}
+            title={t("calendar_settings.meeting_settings")}
             iconColor="warning.main"
           >
             <Stack spacing={3}>
               <TextField
                 select
-                label={t('calendar_settings.buffer_time')}
+                label={t("calendar_settings.buffer_time")}
                 value={settings.bufferTime}
                 onChange={(e) =>
-                  setSettings((prev) => ({ ...prev, bufferTime: Number(e.target.value) }))
+                  setSettings((prev) => ({
+                    ...prev,
+                    bufferTime: Number(e.target.value),
+                  }))
                 }
                 fullWidth
-                helperText={t('calendar_settings.buffer_time_helper')}
+                helperText={t("calendar_settings.buffer_time_helper")}
               >
-                <MenuItem value={0}>{t('calendar_settings.no_buffer')}</MenuItem>
-                <MenuItem value={5}>5 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={10}>10 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={15}>15 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={30}>30 {t('calendar_settings.minutes')}</MenuItem>
+                <MenuItem value={0}>
+                  {t("calendar_settings.no_buffer")}
+                </MenuItem>
+                <MenuItem value={5}>
+                  5 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={10}>
+                  10 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={15}>
+                  15 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={30}>
+                  30 {t("calendar_settings.minutes")}
+                </MenuItem>
               </TextField>
 
               <TextField
                 select
-                label={t('calendar_settings.default_duration')}
+                label={t("calendar_settings.default_duration")}
                 value={settings.defaultDuration}
                 onChange={(e) =>
-                  setSettings((prev) => ({ ...prev, defaultDuration: Number(e.target.value) }))
+                  setSettings((prev) => ({
+                    ...prev,
+                    defaultDuration: Number(e.target.value),
+                  }))
                 }
                 fullWidth
-                helperText={t('calendar_settings.default_duration_helper')}
+                helperText={t("calendar_settings.default_duration_helper")}
               >
-                <MenuItem value={15}>15 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={30}>30 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={45}>45 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={60}>60 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={90}>90 {t('calendar_settings.minutes')}</MenuItem>
-                <MenuItem value={120}>120 {t('calendar_settings.minutes')}</MenuItem>
+                <MenuItem value={15}>
+                  15 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={30}>
+                  30 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={45}>
+                  45 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={60}>
+                  60 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={90}>
+                  90 {t("calendar_settings.minutes")}
+                </MenuItem>
+                <MenuItem value={120}>
+                  120 {t("calendar_settings.minutes")}
+                </MenuItem>
               </TextField>
 
-              <Button variant="contained" onClick={handleSaveSettings} fullWidth>
-                {t('common.save')}
+              <Button
+                variant="contained"
+                onClick={handleSaveSettings}
+                fullWidth
+              >
+                {t("common.save")}
               </Button>
             </Stack>
           </SettingsCard>

@@ -1,13 +1,13 @@
-import axios from 'axios';
+import axios from "axios";
 import {
   ConnectionRequest,
   CreateConnectionRequestDto,
   ApproveConnectionRequestDto,
   DenyConnectionRequestDto,
   GetConnectionRequestsQuery,
-} from '../../../types/connection-requests';
+} from "../../../types/connection-requests";
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /**
  * Submit a request to join a company
@@ -15,7 +15,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 export const createConnectionRequest = async (
   dto: CreateConnectionRequestDto,
 ): Promise<ConnectionRequest> => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   const response = await axios.post(
     `${API_BASE_URL}/connection-requests`,
     dto,
@@ -32,7 +32,7 @@ export const createConnectionRequest = async (
 export const getMyConnectionRequests = async (
   query?: GetConnectionRequestsQuery,
 ): Promise<ConnectionRequest[]> => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   const response = await axios.get(
     `${API_BASE_URL}/connection-requests/my-requests`,
     {
@@ -50,7 +50,7 @@ export const getCompanyConnectionRequests = async (
   companyUid: string,
   query?: GetConnectionRequestsQuery,
 ): Promise<ConnectionRequest[]> => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   const response = await axios.get(
     `${API_BASE_URL}/connection-requests/companies/${companyUid}`,
     {
@@ -68,7 +68,7 @@ export const approveConnectionRequest = async (
   requestUid: string,
   dto: ApproveConnectionRequestDto,
 ): Promise<ConnectionRequest> => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   const response = await axios.patch(
     `${API_BASE_URL}/connection-requests/${requestUid}/approve`,
     dto,
@@ -86,7 +86,7 @@ export const denyConnectionRequest = async (
   requestUid: string,
   dto: DenyConnectionRequestDto,
 ): Promise<ConnectionRequest> => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   const response = await axios.patch(
     `${API_BASE_URL}/connection-requests/${requestUid}/deny`,
     dto,
@@ -103,7 +103,7 @@ export const denyConnectionRequest = async (
 export const cancelConnectionRequest = async (
   requestUid: string,
 ): Promise<{ message: string }> => {
-  const token = localStorage.getItem('authToken');
+  const token = localStorage.getItem("authToken");
   const response = await axios.delete(
     `${API_BASE_URL}/connection-requests/${requestUid}`,
     {

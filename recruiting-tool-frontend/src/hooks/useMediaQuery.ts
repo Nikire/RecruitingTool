@@ -1,4 +1,4 @@
-import {useMediaQuery as useMuiMediaQuery, useTheme} from '@mui/material';
+import { useMediaQuery as useMuiMediaQuery, useTheme } from "@mui/material";
 
 /**
  * Custom hook to check if the current viewport is mobile
@@ -13,8 +13,8 @@ import {useMediaQuery as useMuiMediaQuery, useTheme} from '@mui/material';
  * ```
  */
 export const useIsMobile = (): boolean => {
-	const theme = useTheme();
-	return useMuiMediaQuery(theme.breakpoints.down('sm'));
+  const theme = useTheme();
+  return useMuiMediaQuery(theme.breakpoints.down("sm"));
 };
 
 /**
@@ -24,8 +24,8 @@ export const useIsMobile = (): boolean => {
  * @returns {boolean} true if tablet or mobile viewport, false otherwise
  */
 export const useIsTablet = (): boolean => {
-	const theme = useTheme();
-	return useMuiMediaQuery(theme.breakpoints.down('md'));
+  const theme = useTheme();
+  return useMuiMediaQuery(theme.breakpoints.down("md"));
 };
 
 /**
@@ -35,6 +35,6 @@ export const useIsTablet = (): boolean => {
  * @returns {boolean} true if desktop viewport, false otherwise
  */
 export const useIsDesktop = (): boolean => {
-	const theme = useTheme();
-	return useMuiMediaQuery(theme.breakpoints.up('md'));
+  const theme = useTheme();
+  return useMuiMediaQuery(theme.breakpoints.up("md"));
 };

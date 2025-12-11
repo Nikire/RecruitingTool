@@ -199,7 +199,7 @@ export interface DateRangeFilter {
   endDate: Date | null;
 }
 
-export type MetricTrend = 'up' | 'down' | 'neutral';
+export type MetricTrend = "up" | "down" | "neutral";
 
 export interface MetricCardData {
   title: string;

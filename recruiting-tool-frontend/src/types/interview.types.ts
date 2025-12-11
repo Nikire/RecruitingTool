@@ -14,10 +14,10 @@ export interface Interview {
 }
 
 export enum InterviewStatus {
-  PENDING = 'PENDING',
-  SCHEDULED = 'SCHEDULED',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
+  PENDING = "PENDING",
+  SCHEDULED = "SCHEDULED",
+  COMPLETED = "COMPLETED",
+  CANCELLED = "CANCELLED",
 }
 
 export interface CreateInterviewDto {

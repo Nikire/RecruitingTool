@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Accordion,
@@ -13,10 +13,10 @@ import {
   Slider,
   Button,
   Autocomplete,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { SearchFilters, FilterOption } from '../../types/search';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { SearchFilters, FilterOption } from "../../types/search";
 
 export interface FilterPanelProps {
   filters: SearchFilters;
@@ -87,11 +87,17 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       ? currentStatus.filter((s) => s !== value)
       : [...currentStatus, value];
 
-    onFiltersChange({ ...filters, status: newStatus.length > 0 ? newStatus : undefined });
+    onFiltersChange({
+      ...filters,
+      status: newStatus.length > 0 ? newStatus : undefined,
+    });
   };
 
   const handleSkillsChange = (_event: any, newValue: string[]) => {
-    onFiltersChange({ ...filters, skills: newValue.length > 0 ? newValue : undefined });
+    onFiltersChange({
+      ...filters,
+      skills: newValue.length > 0 ? newValue : undefined,
+    });
   };
 
   const handleLocationChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,7 +105,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     onFiltersChange({ ...filters, location: value || undefined });
   };
 
-  const handleExperienceChange = (_event: Event, newValue: number | number[]) => {
+  const handleExperienceChange = (
+    _event: Event,
+    newValue: number | number[],
+  ) => {
     const range = newValue as number[];
     setExperienceRange(range);
   };
@@ -123,8 +132,8 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     });
   };
 
-  const handleDateRangeChange = (field: 'start' | 'end', value: string) => {
-    const currentRange = filters.dateRange || { start: '', end: '' };
+  const handleDateRangeChange = (field: "start" | "end", value: string) => {
+    const currentRange = filters.dateRange || { start: "", end: "" };
     const newRange = { ...currentRange, [field]: value };
 
     if (!newRange.start && !newRange.end) {
@@ -137,10 +146,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   return (
     <Box
       sx={{
-        bgcolor: 'background.paper',
+        bgcolor: "background.paper",
         borderRadius: 1,
-        border: '1px solid',
-        borderColor: 'divider',
+        border: "1px solid",
+        borderColor: "divider",
         mb: 2,
       }}
     >
@@ -148,13 +157,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {statusOptions.length > 0 && (
         <Accordion defaultExpanded>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="medium">{t('search.status')}</Typography>
+            <Typography fontWeight="medium">{t("search.status")}</Typography>
             {filters.status && filters.status.length > 0 && (
               <Chip
                 label={filters.status.length}
                 size="small"
                 color="primary"
-                sx={{ ml: 1, height: 20, fontSize: '0.75rem' }}
+                sx={{ ml: 1, height: 20, fontSize: "0.75rem" }}
               />
             )}
           </AccordionSummary>
@@ -171,7 +180,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                     />
                   }
                   label={
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                       <Typography variant="body2">{option.label}</Typography>
                       {option.count !== undefined && (
                         <Typography variant="caption" color="text.secondary">
@@ -191,29 +200,36 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {showDateRange && (
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="medium">{t('search.date_range')}</Typography>
+            <Typography fontWeight="medium">
+              {t("search.date_range")}
+            </Typography>
             {filters.dateRange && (
-              <Chip label="•" size="small" color="primary" sx={{ ml: 1, height: 20 }} />
+              <Chip
+                label="•"
+                size="small"
+                color="primary"
+                sx={{ ml: 1, height: 20 }}
+              />
             )}
           </AccordionSummary>
           <AccordionDetails>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
               <TextField
-                label={t('search.start_date')}
+                label={t("search.start_date")}
                 type="date"
                 size="small"
                 fullWidth
-                value={filters.dateRange?.start || ''}
-                onChange={(e) => handleDateRangeChange('start', e.target.value)}
+                value={filters.dateRange?.start || ""}
+                onChange={(e) => handleDateRangeChange("start", e.target.value)}
                 InputLabelProps={{ shrink: true }}
               />
               <TextField
-                label={t('search.end_date')}
+                label={t("search.end_date")}
                 type="date"
                 size="small"
                 fullWidth
-                value={filters.dateRange?.end || ''}
-                onChange={(e) => handleDateRangeChange('end', e.target.value)}
+                value={filters.dateRange?.end || ""}
+                onChange={(e) => handleDateRangeChange("end", e.target.value)}
                 InputLabelProps={{ shrink: true }}
               />
             </Box>
@@ -225,13 +241,13 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {showSkills && (
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="medium">{t('search.skills')}</Typography>
+            <Typography fontWeight="medium">{t("search.skills")}</Typography>
             {filters.skills && filters.skills.length > 0 && (
               <Chip
                 label={filters.skills.length}
                 size="small"
                 color="primary"
-                sx={{ ml: 1, height: 20, fontSize: '0.75rem' }}
+                sx={{ ml: 1, height: 20, fontSize: "0.75rem" }}
               />
             )}
           </AccordionSummary>
@@ -244,15 +260,20 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               onChange={handleSkillsChange}
               renderTags={(value, getTagProps) =>
                 value.map((option, index) => (
-                  <Chip {...getTagProps({ index })} key={option} label={option} size="small" />
+                  <Chip
+                    {...getTagProps({ index })}
+                    key={option}
+                    label={option}
+                    size="small"
+                  />
                 ))
               }
               renderInput={(params) => (
                 <TextField
                   {...params}
                   size="small"
-                  placeholder={t('search.skills_placeholder')}
-                  helperText={t('search.skills_helper')}
+                  placeholder={t("search.skills_placeholder")}
+                  helperText={t("search.skills_helper")}
                 />
               )}
             />
@@ -264,17 +285,22 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {showLocation && (
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="medium">{t('search.location')}</Typography>
+            <Typography fontWeight="medium">{t("search.location")}</Typography>
             {filters.location && (
-              <Chip label="•" size="small" color="primary" sx={{ ml: 1, height: 20 }} />
+              <Chip
+                label="•"
+                size="small"
+                color="primary"
+                sx={{ ml: 1, height: 20 }}
+              />
             )}
           </AccordionSummary>
           <AccordionDetails>
             <TextField
               size="small"
               fullWidth
-              placeholder={t('search.location_placeholder')}
-              value={filters.location || ''}
+              placeholder={t("search.location_placeholder")}
+              value={filters.location || ""}
               onChange={handleLocationChange}
             />
           </AccordionDetails>
@@ -285,15 +311,25 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {showExperience && (
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="medium">{t('search.experience')}</Typography>
+            <Typography fontWeight="medium">
+              {t("search.experience")}
+            </Typography>
             {filters.experience && (
-              <Chip label="•" size="small" color="primary" sx={{ ml: 1, height: 20 }} />
+              <Chip
+                label="•"
+                size="small"
+                color="primary"
+                sx={{ ml: 1, height: 20 }}
+              />
             )}
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ px: 1 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t('search.experience_years', { min: experienceRange[0], max: experienceRange[1] })}
+                {t("search.experience_years", {
+                  min: experienceRange[0],
+                  max: experienceRange[1],
+                })}
               </Typography>
               <Slider
                 value={experienceRange}
@@ -303,11 +339,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 min={0}
                 max={20}
                 marks={[
-                  { value: 0, label: '0' },
-                  { value: 5, label: '5' },
-                  { value: 10, label: '10' },
-                  { value: 15, label: '15' },
-                  { value: 20, label: '20+' },
+                  { value: 0, label: "0" },
+                  { value: 5, label: "5" },
+                  { value: 10, label: "10" },
+                  { value: 15, label: "15" },
+                  { value: 20, label: "20+" },
                 ]}
                 sx={{ mt: 2 }}
               />
@@ -320,15 +356,23 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {showSalary && (
         <Accordion>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography fontWeight="medium">{t('search.salary')}</Typography>
+            <Typography fontWeight="medium">{t("search.salary")}</Typography>
             {filters.salary && (
-              <Chip label="•" size="small" color="primary" sx={{ ml: 1, height: 20 }} />
+              <Chip
+                label="•"
+                size="small"
+                color="primary"
+                sx={{ ml: 1, height: 20 }}
+              />
             )}
           </AccordionSummary>
           <AccordionDetails>
             <Box sx={{ px: 1 }}>
               <Typography variant="body2" color="text.secondary" gutterBottom>
-                {t('search.salary_range', { min: salaryRange[0], max: salaryRange[1] })}
+                {t("search.salary_range", {
+                  min: salaryRange[0],
+                  max: salaryRange[1],
+                })}
               </Typography>
               <Slider
                 value={salaryRange}
@@ -339,11 +383,11 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
                 max={200000}
                 step={5000}
                 marks={[
-                  { value: 0, label: '$0' },
-                  { value: 50000, label: '$50K' },
-                  { value: 100000, label: '$100K' },
-                  { value: 150000, label: '$150K' },
-                  { value: 200000, label: '$200K+' },
+                  { value: 0, label: "$0" },
+                  { value: 50000, label: "$50K" },
+                  { value: 100000, label: "$100K" },
+                  { value: 150000, label: "$150K" },
+                  { value: 200000, label: "$200K+" },
                 ]}
                 sx={{ mt: 2 }}
               />
@@ -355,18 +399,18 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
       {/* Action Buttons */}
       <Box
         sx={{
-          display: 'flex',
+          display: "flex",
           gap: 1,
           p: 2,
-          borderTop: '1px solid',
-          borderColor: 'divider',
+          borderTop: "1px solid",
+          borderColor: "divider",
         }}
       >
         <Button variant="outlined" onClick={onReset} fullWidth>
-          {t('search.reset_filters')}
+          {t("search.reset_filters")}
         </Button>
         <Button variant="contained" onClick={onApply} fullWidth>
-          {t('search.apply_filters')}
+          {t("search.apply_filters")}
         </Button>
       </Box>
     </Box>

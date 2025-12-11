@@ -1,4 +1,11 @@
-import { Card, CardContent, Typography, Box, alpha, useTheme } from '@mui/material';
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  alpha,
+  useTheme,
+} from "@mui/material";
 
 /**
  * TestimonialCard Component
@@ -44,30 +51,32 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
   const defaultAvatarColor = avatarColor || theme.palette.primary.main;
 
   return (
-    <Card sx={{ height: '100%', p: 3 }}>
+    <Card sx={{ height: "100%", p: 3 }}>
       <CardContent>
         {/* Quote */}
-        <Typography variant="body1" sx={{ mb: 3, fontStyle: 'italic' }}>
+        <Typography variant="body1" sx={{ mb: 3, fontStyle: "italic" }}>
           "{quote}"
         </Typography>
 
         {/* Author Info */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
           {/* Avatar */}
           <Box
             sx={{
               width: 48,
               height: 48,
-              borderRadius: '50%',
-              bgcolor: avatarUrl ? 'transparent' : alpha(defaultAvatarColor, 0.1),
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              borderRadius: "50%",
+              bgcolor: avatarUrl
+                ? "transparent"
+                : alpha(defaultAvatarColor, 0.1),
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               fontWeight: 600,
-              color: avatarUrl ? 'transparent' : defaultAvatarColor,
-              backgroundImage: avatarUrl ? `url(${avatarUrl})` : 'none',
-              backgroundSize: 'cover',
-              backgroundPosition: 'center',
+              color: avatarUrl ? "transparent" : defaultAvatarColor,
+              backgroundImage: avatarUrl ? `url(${avatarUrl})` : "none",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
             }}
           >
             {!avatarUrl && author.charAt(0)}

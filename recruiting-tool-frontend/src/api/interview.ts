@@ -1,8 +1,14 @@
-import axiosInstance from './axios';
-import { Interview, CreateInterviewDto, UpdateInterviewDto } from '../types/interview.types';
+import axiosInstance from "./axios";
+import {
+  Interview,
+  CreateInterviewDto,
+  UpdateInterviewDto,
+} from "../types/interview.types";
 
-export const createInterview = async (data: CreateInterviewDto): Promise<Interview> => {
-  const response = await axiosInstance.post('/interview', data);
+export const createInterview = async (
+  data: CreateInterviewDto,
+): Promise<Interview> => {
+  const response = await axiosInstance.post("/interview", data);
   return response.data;
 };
 
@@ -11,12 +17,17 @@ export const getInterview = async (uid: string): Promise<Interview> => {
   return response.data;
 };
 
-export const getInterviewsByStage = async (stageUid: string): Promise<Interview[]> => {
+export const getInterviewsByStage = async (
+  stageUid: string,
+): Promise<Interview[]> => {
   const response = await axiosInstance.get(`/interview/stage/${stageUid}`);
   return response.data;
 };
 
-export const updateInterview = async (uid: string, data: UpdateInterviewDto): Promise<Interview> => {
+export const updateInterview = async (
+  uid: string,
+  data: UpdateInterviewDto,
+): Promise<Interview> => {
   const response = await axiosInstance.put(`/interview/${uid}`, data);
   return response.data;
 };
@@ -26,7 +37,9 @@ export const cancelInterview = async (uid: string): Promise<Interview> => {
   return response.data;
 };
 
-export const deleteInterview = async (uid: string): Promise<{ message: string }> => {
+export const deleteInterview = async (
+  uid: string,
+): Promise<{ message: string }> => {
   const response = await axiosInstance.delete(`/interview/${uid}`);
   return response.data;
 };

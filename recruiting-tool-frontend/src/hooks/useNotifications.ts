@@ -1,11 +1,15 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { notificationService } from '../services/notificationService';
-import { Notification, GetNotificationsQuery, CreateNotificationDto } from '../types/notification';
-import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { notificationService } from "../services/notificationService";
+import {
+  Notification,
+  GetNotificationsQuery,
+  CreateNotificationDto,
+} from "../types/notification";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
-export const NOTIFICATIONS_QUERY_KEY = 'notifications';
-export const UNREAD_COUNT_QUERY_KEY = 'notifications-unread-count';
+export const NOTIFICATIONS_QUERY_KEY = "notifications";
+export const UNREAD_COUNT_QUERY_KEY = "notifications-unread-count";
 
 /**
  * Hook to fetch notifications with pagination and filters
@@ -46,8 +50,8 @@ export function useMarkAsRead() {
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
     },
     onError: (error: any) => {
-      console.error('Failed to mark notification as read:', error);
-      toast.error(t('notifications.errors.mark_read_failed'));
+      console.error("Failed to mark notification as read:", error);
+      toast.error(t("notifications.errors.mark_read_failed"));
     },
   });
 }
@@ -64,11 +68,13 @@ export function useMarkAllAsRead() {
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
-      toast.success(t('notifications.messages.all_marked_read', { count: data.count }));
+      toast.success(
+        t("notifications.messages.all_marked_read", { count: data.count }),
+      );
     },
     onError: (error: any) => {
-      console.error('Failed to mark all as read:', error);
-      toast.error(t('notifications.errors.mark_all_read_failed'));
+      console.error("Failed to mark all as read:", error);
+      toast.error(t("notifications.errors.mark_all_read_failed"));
     },
   });
 }
@@ -85,11 +91,11 @@ export function useDeleteNotification() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
-      toast.success(t('notifications.messages.deleted'));
+      toast.success(t("notifications.messages.deleted"));
     },
     onError: (error: any) => {
-      console.error('Failed to delete notification:', error);
-      toast.error(t('notifications.errors.delete_failed'));
+      console.error("Failed to delete notification:", error);
+      toast.error(t("notifications.errors.delete_failed"));
     },
   });
 }
@@ -102,15 +108,16 @@ export function useCreateNotification() {
   const { t } = useTranslation();
 
   return useMutation({
-    mutationFn: (dto: CreateNotificationDto) => notificationService.createNotification(dto),
+    mutationFn: (dto: CreateNotificationDto) =>
+      notificationService.createNotification(dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [NOTIFICATIONS_QUERY_KEY] });
       queryClient.invalidateQueries({ queryKey: [UNREAD_COUNT_QUERY_KEY] });
-      toast.success(t('notifications.messages.created'));
+      toast.success(t("notifications.messages.created"));
     },
     onError: (error: any) => {
-      console.error('Failed to create notification:', error);
-      toast.error(t('notifications.errors.create_failed'));
+      console.error("Failed to create notification:", error);
+      toast.error(t("notifications.errors.create_failed"));
     },
   });
 }

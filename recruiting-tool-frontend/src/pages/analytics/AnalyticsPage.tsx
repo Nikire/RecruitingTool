@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Container,
@@ -6,15 +6,15 @@ import {
   Paper,
   Button,
   CircularProgress,
-} from '@mui/material';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useTranslation } from 'react-i18next';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import AnalyticsDashboard from '../../components/analytics/AnalyticsDashboard';
-import { useAnalyticsOverview } from '../../hooks/api/useAnalytics';
-import toast from 'react-hot-toast';
+} from "@mui/material";
+import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { useTranslation } from "react-i18next";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import AnalyticsDashboard from "../../components/analytics/AnalyticsDashboard";
+import { useAnalyticsOverview } from "../../hooks/api/useAnalytics";
+import toast from "react-hot-toast";
 
 /**
  * AnalyticsPage
@@ -45,7 +45,11 @@ const AnalyticsPage: React.FC = () => {
   }, [dateRange]);
 
   // Fetch analytics data using React Query
-  const { data: overviewData, isLoading, refetch } = useAnalyticsOverview(apiDateRange);
+  const {
+    data: overviewData,
+    isLoading,
+    refetch,
+  } = useAnalyticsOverview(apiDateRange);
 
   // Handle date range apply
   const handleApplyDateRange = () => {
@@ -55,7 +59,7 @@ const AnalyticsPage: React.FC = () => {
   // Handle refresh
   const handleRefresh = () => {
     refetch();
-    toast.success(t('analytics.data_refreshed'));
+    toast.success(t("analytics.data_refreshed"));
   };
 
   // Handle clear filters
@@ -72,10 +76,10 @@ const AnalyticsPage: React.FC = () => {
         {/* Header */}
         <Box mb={4}>
           <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
-            {t('analytics.title')}
+            {t("analytics.title")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            {t('analytics.subtitle')}
+            {t("analytics.subtitle")}
           </Typography>
         </Box>
 
@@ -90,28 +94,28 @@ const AnalyticsPage: React.FC = () => {
         >
           <Box
             display="flex"
-            flexDirection={{ xs: 'column', md: 'row' }}
+            flexDirection={{ xs: "column", md: "row" }}
             gap={2}
-            alignItems={{ xs: 'stretch', md: 'center' }}
+            alignItems={{ xs: "stretch", md: "center" }}
             flexWrap="wrap"
           >
             {/* Date Range Filter */}
             <Box display="flex" gap={2} flexGrow={1} flexWrap="wrap">
               <DatePicker
-                label={t('analytics.start_date')}
+                label={t("analytics.start_date")}
                 value={dateRange.startDate}
                 onChange={(date) =>
                   setDateRange((prev) => ({ ...prev, startDate: date }))
                 }
                 slotProps={{
                   textField: {
-                    size: 'small',
+                    size: "small",
                     sx: { minWidth: 200 },
                   },
                 }}
               />
               <DatePicker
-                label={t('analytics.end_date')}
+                label={t("analytics.end_date")}
                 value={dateRange.endDate}
                 onChange={(date) =>
                   setDateRange((prev) => ({ ...prev, endDate: date }))
@@ -119,7 +123,7 @@ const AnalyticsPage: React.FC = () => {
                 minDate={dateRange.startDate || undefined}
                 slotProps={{
                   textField: {
-                    size: 'small',
+                    size: "small",
                     sx: { minWidth: 200 },
                   },
                 }}
@@ -133,35 +137,35 @@ const AnalyticsPage: React.FC = () => {
                 onClick={handleApplyDateRange}
                 disabled={isLoading}
               >
-                {t('common.apply')}
+                {t("common.apply")}
               </Button>
               <Button
                 variant="outlined"
                 onClick={handleClearFilters}
                 disabled={isLoading}
               >
-                {t('common.clear')}
+                {t("common.clear")}
               </Button>
               <Button
                 variant="outlined"
                 onClick={handleRefresh}
                 disabled={isLoading}
                 startIcon={
-                  isLoading ? (
-                    <CircularProgress size={16} />
-                  ) : (
-                    <RefreshIcon />
-                  )
+                  isLoading ? <CircularProgress size={16} /> : <RefreshIcon />
                 }
               >
-                {t('common.refresh')}
+                {t("common.refresh")}
               </Button>
             </Box>
           </Box>
         </Paper>
 
         {/* Analytics Dashboard */}
-        <AnalyticsDashboard data={overviewData} isLoading={isLoading} dateRange={apiDateRange} />
+        <AnalyticsDashboard
+          data={overviewData}
+          isLoading={isLoading}
+          dateRange={apiDateRange}
+        />
       </Container>
     </LocalizationProvider>
   );

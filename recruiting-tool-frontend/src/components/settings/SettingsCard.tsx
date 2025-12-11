@@ -1,5 +1,5 @@
-import { Card, CardContent, Typography, Box, Divider } from '@mui/material';
-import { ReactNode } from 'react';
+import { Card, CardContent, Typography, Box, Divider } from "@mui/material";
+import { ReactNode } from "react";
 
 /**
  * SettingsCard - Reusable card component for settings sections
@@ -24,30 +24,30 @@ export interface SettingsCardProps {
 const SettingsCard: React.FC<SettingsCardProps> = ({
   icon,
   title,
-  iconColor = 'primary.main',
+  iconColor = "primary.main",
   children,
   action,
 }) => {
   return (
-    <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <Card sx={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <CardContent sx={{ flexGrow: 1 }}>
         {/* Card Header */}
         <Box
           sx={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
             mb: 2,
           }}
         >
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ display: "flex", alignItems: "center" }}>
             <Box
               sx={{
                 bgcolor: iconColor,
-                color: 'white',
+                color: "white",
                 p: 1.5,
                 borderRadius: 2,
-                display: 'flex',
+                display: "flex",
                 mr: 2,
               }}
             >

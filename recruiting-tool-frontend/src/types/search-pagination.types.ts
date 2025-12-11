@@ -7,25 +7,25 @@
  * Pagination state for list components
  */
 export interface PaginationState {
-	page: number;
-	pageSize: number;
-	total: number;
+  page: number;
+  pageSize: number;
+  total: number;
 }
 
 /**
  * Search state for list components
  */
 export interface SearchState {
-	query: string;
-	filters?: Record<string, unknown>;
+  query: string;
+  filters?: Record<string, unknown>;
 }
 
 /**
  * Sort state for list components
  */
 export interface SortState {
-	field: string;
-	direction: 'asc' | 'desc';
+  field: string;
+  direction: "asc" | "desc";
 }
 
 /**
@@ -33,18 +33,18 @@ export interface SortState {
  * Used to reduce duplicate prop definitions across similar list components
  */
 export interface SearchPaginationProps {
-	// Pagination
-	pagination: PaginationState;
-	onPageChange: (page: number) => void;
-	onPageSizeChange: (pageSize: number) => void;
+  // Pagination
+  pagination: PaginationState;
+  onPageChange: (page: number) => void;
+  onPageSizeChange: (pageSize: number) => void;
 
-	// Search (optional)
-	search?: SearchState;
-	onSearchChange?: (query: string) => void;
+  // Search (optional)
+  search?: SearchState;
+  onSearchChange?: (query: string) => void;
 
-	// Sort (optional)
-	sort?: SortState;
-	onSortChange?: (field: string, direction: 'asc' | 'desc') => void;
+  // Sort (optional)
+  sort?: SortState;
+  onSortChange?: (field: string, direction: "asc" | "desc") => void;
 }
 
 /**
@@ -52,10 +52,10 @@ export interface SearchPaginationProps {
  * Example: Simple lists without search or filtering
  */
 export interface BasicListProps {
-	page: number;
-	limit: number;
-	onPageChange: (page: number) => void;
-	onLimitChange: (limit: number) => void;
+  page: number;
+  limit: number;
+  onPageChange: (page: number) => void;
+  onLimitChange: (limit: number) => void;
 }
 
 /**
@@ -63,5 +63,5 @@ export interface BasicListProps {
  * Example: CandidatesList, JobPositionsList
  */
 export interface SearchableListProps extends BasicListProps {
-	search: string;
+  search: string;
 }

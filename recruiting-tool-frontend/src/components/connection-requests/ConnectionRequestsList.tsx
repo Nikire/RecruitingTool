@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Card,
@@ -14,7 +14,7 @@ import {
   TextField,
   CircularProgress,
   Alert,
-} from '@mui/material';
+} from "@mui/material";
 import {
   CheckCircle as ApproveIcon,
   Cancel as DenyIcon,
@@ -22,24 +22,24 @@ import {
   Email as EmailIcon,
   Work as WorkIcon,
   Message as MessageIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { useForm } from 'react-hook-form';
+} from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import { useForm } from "react-hook-form";
 import {
   useCompanyConnectionRequests,
   useApproveConnectionRequest,
   useDenyConnectionRequest,
-} from '../../hooks/connection-requests';
+} from "../../hooks/connection-requests";
 import {
   ConnectionRequest,
   ConnectionRequestStatus,
   ApproveConnectionRequestDto,
   DenyConnectionRequestDto,
   RolesType,
-} from '../../types/connection-requests';
-import { useValidationRules } from '../../utils/validation';
-import FormErrorSummary from '../common/FormErrorSummary';
-import { formatDate } from '../../utils/dateUtils';
+} from "../../types/connection-requests";
+import { useValidationRules } from "../../utils/validation";
+import FormErrorSummary from "../common/FormErrorSummary";
+import { formatDate } from "../../utils/dateUtils";
 
 interface ConnectionRequestsListProps {
   companyUid: string;
@@ -50,14 +50,16 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
 }) => {
   const { t } = useTranslation();
   const validationRules = useValidationRules();
-  const [selectedRequest, setSelectedRequest] = useState<ConnectionRequest | null>(
-    null,
-  );
-  const [actionType, setActionType] = useState<'approve' | 'deny' | null>(null);
+  const [selectedRequest, setSelectedRequest] =
+    useState<ConnectionRequest | null>(null);
+  const [actionType, setActionType] = useState<"approve" | "deny" | null>(null);
 
-  const { data: requests, isLoading } = useCompanyConnectionRequests(companyUid, {
-    status: ConnectionRequestStatus.PENDING,
-  });
+  const { data: requests, isLoading } = useCompanyConnectionRequests(
+    companyUid,
+    {
+      status: ConnectionRequestStatus.PENDING,
+    },
+  );
 
   const { mutate: approve, isPending: isApproving } =
     useApproveConnectionRequest();
@@ -79,17 +81,17 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
 
   const handleApproveClick = (request: ConnectionRequest) => {
     setSelectedRequest(request);
-    setActionType('approve');
+    setActionType("approve");
     resetApprove({
       assignedRole: request.requestedRole,
-      reviewNote: '',
+      reviewNote: "",
     });
   };
 
   const handleDenyClick = (request: ConnectionRequest) => {
     setSelectedRequest(request);
-    setActionType('deny');
-    resetDeny({ reviewNote: '' });
+    setActionType("deny");
+    resetDeny({ reviewNote: "" });
   };
 
   const handleCloseDialog = () => {
@@ -126,15 +128,15 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
   const getStatusColor = (status: ConnectionRequestStatus) => {
     switch (status) {
       case ConnectionRequestStatus.PENDING:
-        return 'warning';
+        return "warning";
       case ConnectionRequestStatus.APPROVED:
-        return 'success';
+        return "success";
       case ConnectionRequestStatus.DENIED:
-        return 'error';
+        return "error";
       case ConnectionRequestStatus.CANCELLED:
-        return 'default';
+        return "default";
       default:
-        return 'default';
+        return "default";
     }
   };
 
@@ -149,7 +151,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
   if (!requests || requests.length === 0) {
     return (
       <Alert severity="info">
-        {t('connection_requests.no_pending_requests')}
+        {t("connection_requests.no_pending_requests")}
       </Alert>
     );
   }
@@ -161,13 +163,20 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
           <Grid item xs={12} key={request.uid}>
             <Card>
               <CardContent>
-                <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  alignItems="flex-start"
+                  mb={2}
+                >
                   <Box>
                     <Box display="flex" alignItems="center" gap={1} mb={1}>
                       <PersonIcon color="primary" />
                       <Typography variant="h6">{request.userName}</Typography>
                       <Chip
-                        label={t(`connection_requests.status.${request.status.toLowerCase()}`)}
+                        label={t(
+                          `connection_requests.status.${request.status.toLowerCase()}`,
+                        )}
                         color={getStatusColor(request.status)}
                         size="small"
                       />
@@ -181,12 +190,17 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
                     <Box display="flex" alignItems="center" gap={1} mb={1}>
                       <WorkIcon fontSize="small" color="action" />
                       <Typography variant="body2" color="textSecondary">
-                        {t('connection_requests.requested_role')}:{' '}
+                        {t("connection_requests.requested_role")}:{" "}
                         {t(`roles.${request.requestedRole.toLowerCase()}`)}
                       </Typography>
                     </Box>
                     {request.message && (
-                      <Box display="flex" alignItems="flex-start" gap={1} mt={2}>
+                      <Box
+                        display="flex"
+                        alignItems="flex-start"
+                        gap={1}
+                        mt={2}
+                      >
                         <MessageIcon fontSize="small" color="action" />
                         <Typography variant="body2" color="textSecondary">
                           {request.message}
@@ -207,7 +221,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
                       startIcon={<ApproveIcon />}
                       onClick={() => handleApproveClick(request)}
                     >
-                      {t('common.approve')}
+                      {t("common.approve")}
                     </Button>
                     <Button
                       variant="outlined"
@@ -215,7 +229,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
                       startIcon={<DenyIcon />}
                       onClick={() => handleDenyClick(request)}
                     >
-                      {t('common.deny')}
+                      {t("common.deny")}
                     </Button>
                   </Box>
                 )}
@@ -227,54 +241,58 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
 
       {/* Approve Dialog */}
       <Dialog
-        open={actionType === 'approve' && selectedRequest !== null}
+        open={actionType === "approve" && selectedRequest !== null}
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>{t('connection_requests.approve_dialog_title')}</DialogTitle>
+        <DialogTitle>
+          {t("connection_requests.approve_dialog_title")}
+        </DialogTitle>
         <form onSubmit={handleSubmitApprove(onApproveSubmit)}>
           <DialogContent>
             <FormErrorSummary errors={errorsApprove} />
 
             <Typography variant="body2" sx={{ mb: 2 }}>
-              {t('connection_requests.approve_dialog_description', {
+              {t("connection_requests.approve_dialog_description", {
                 userName: selectedRequest?.userName,
               })}
             </Typography>
 
             <TextField
-              label={t('connection_requests.fields.assigned_role')}
+              label={t("connection_requests.fields.assigned_role")}
               select
               fullWidth
               margin="normal"
               defaultValue={selectedRequest?.requestedRole}
-              {...registerApprove('assignedRole')}
+              {...registerApprove("assignedRole")}
             >
-              <MenuItem value={RolesType.HR}>{t('roles.hr')}</MenuItem>
+              <MenuItem value={RolesType.HR}>{t("roles.hr")}</MenuItem>
               <MenuItem value={RolesType.HR_MANAGER}>
-                {t('roles.hr_manager')}
+                {t("roles.hr_manager")}
               </MenuItem>
               <MenuItem value={RolesType.RECRUITER}>
-                {t('roles.recruiter')}
+                {t("roles.recruiter")}
               </MenuItem>
             </TextField>
 
             <TextField
-              label={t('connection_requests.fields.review_note')}
+              label={t("connection_requests.fields.review_note")}
               fullWidth
               multiline
               rows={3}
               margin="normal"
-              {...registerApprove('reviewNote', validationRules.maxLength(500))}
+              {...registerApprove("reviewNote", validationRules.maxLength(500))}
               error={!!errorsApprove.reviewNote}
               helperText={errorsApprove.reviewNote?.message}
-              placeholder={t('connection_requests.fields.review_note_placeholder')}
+              placeholder={t(
+                "connection_requests.fields.review_note_placeholder",
+              )}
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} disabled={isApproving}>
-              {t('common.cancel')}
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -282,7 +300,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
               color="success"
               disabled={isApproving}
             >
-              {isApproving ? t('common.approving') : t('common.approve')}
+              {isApproving ? t("common.approving") : t("common.approve")}
             </Button>
           </DialogActions>
         </form>
@@ -290,45 +308,47 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
 
       {/* Deny Dialog */}
       <Dialog
-        open={actionType === 'deny' && selectedRequest !== null}
+        open={actionType === "deny" && selectedRequest !== null}
         onClose={handleCloseDialog}
         maxWidth="sm"
         fullWidth
       >
-        <DialogTitle>{t('connection_requests.deny_dialog_title')}</DialogTitle>
+        <DialogTitle>{t("connection_requests.deny_dialog_title")}</DialogTitle>
         <form onSubmit={handleSubmitDeny(onDenySubmit)}>
           <DialogContent>
             <FormErrorSummary errors={errorsDeny} />
 
             <Typography variant="body2" sx={{ mb: 2 }}>
-              {t('connection_requests.deny_dialog_description', {
+              {t("connection_requests.deny_dialog_description", {
                 userName: selectedRequest?.userName,
               })}
             </Typography>
 
             <TextField
-              label={t('connection_requests.fields.denial_reason')}
+              label={t("connection_requests.fields.denial_reason")}
               fullWidth
               multiline
               rows={4}
               margin="normal"
               {...registerDeny(
-                'reviewNote',
+                "reviewNote",
                 validationRules.combine(
                   validationRules.required(
-                    t('connection_requests.fields.denial_reason'),
+                    t("connection_requests.fields.denial_reason"),
                   ),
                   validationRules.maxLength(500),
                 ),
               )}
               error={!!errorsDeny.reviewNote}
               helperText={errorsDeny.reviewNote?.message}
-              placeholder={t('connection_requests.fields.denial_reason_placeholder')}
+              placeholder={t(
+                "connection_requests.fields.denial_reason_placeholder",
+              )}
             />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleCloseDialog} disabled={isDenying}>
-              {t('common.cancel')}
+              {t("common.cancel")}
             </Button>
             <Button
               type="submit"
@@ -336,7 +356,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
               color="error"
               disabled={isDenying}
             >
-              {isDenying ? t('common.denying') : t('common.deny')}
+              {isDenying ? t("common.denying") : t("common.deny")}
             </Button>
           </DialogActions>
         </form>

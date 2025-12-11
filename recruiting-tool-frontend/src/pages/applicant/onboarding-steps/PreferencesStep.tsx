@@ -1,9 +1,16 @@
-import React from 'react';
-import { Box, TextField, Button, Typography, Chip, MenuItem } from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import FormErrorSummary from '../../../components/common/FormErrorSummary';
-import { OnboardingData } from '../ApplicantOnboarding';
+import React from "react";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Chip,
+  MenuItem,
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import FormErrorSummary from "../../../components/common/FormErrorSummary";
+import { OnboardingData } from "../ApplicantOnboarding";
 
 interface PreferencesStepProps {
   data: OnboardingData;
@@ -17,10 +24,20 @@ interface PreferencesFormData {
   salaryExpectation?: string;
 }
 
-const jobTypeOptions = ['FULL_TIME', 'PART_TIME', 'CONTRACT', 'INTERNSHIP', 'TEMPORARY'];
-const locationOptions = ['REMOTE', 'HYBRID', 'ON_SITE'];
+const jobTypeOptions = [
+  "FULL_TIME",
+  "PART_TIME",
+  "CONTRACT",
+  "INTERNSHIP",
+  "TEMPORARY",
+];
+const locationOptions = ["REMOTE", "HYBRID", "ON_SITE"];
 
-const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack }) => {
+const PreferencesStep: React.FC<PreferencesStepProps> = ({
+  data,
+  onNext,
+  onBack,
+}) => {
   const { t } = useTranslation();
 
   const {
@@ -33,12 +50,12 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
     defaultValues: {
       desiredJobTypes: data.desiredJobTypes || [],
       preferredLocations: data.preferredLocations || [],
-      salaryExpectation: data.salaryExpectation || '',
+      salaryExpectation: data.salaryExpectation || "",
     },
   });
 
-  const selectedJobTypes = watch('desiredJobTypes');
-  const selectedLocations = watch('preferredLocations');
+  const selectedJobTypes = watch("desiredJobTypes");
+  const selectedLocations = watch("preferredLocations");
 
   const onSubmit = (formData: PreferencesFormData) => {
     onNext(formData);
@@ -47,10 +64,10 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Typography variant="h5" gutterBottom>
-        {t('applicant_onboarding.preferences.title')}
+        {t("applicant_onboarding.preferences.title")}
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-        {t('applicant_onboarding.preferences.subtitle')}
+        {t("applicant_onboarding.preferences.subtitle")}
       </Typography>
 
       <FormErrorSummary errors={errors} />
@@ -58,7 +75,7 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
       {/* Desired Job Types */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="body1" gutterBottom fontWeight="medium">
-          {t('applicant_onboarding.preferences.desired_job_types')}
+          {t("applicant_onboarding.preferences.desired_job_types")}
         </Typography>
         <Controller
           name="desiredJobTypes"
@@ -70,7 +87,7 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
               fullWidth
               value={field.value}
               onChange={field.onChange}
-              helperText={t('applicant_onboarding.preferences.select_multiple')}
+              helperText={t("applicant_onboarding.preferences.select_multiple")}
             >
               {jobTypeOptions.map((type) => (
                 <MenuItem key={type} value={type}>
@@ -81,9 +98,13 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
           )}
         />
         {selectedJobTypes.length > 0 && (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
             {selectedJobTypes.map((type) => (
-              <Chip key={type} label={t(`job_type.${type.toLowerCase()}`)} size="small" />
+              <Chip
+                key={type}
+                label={t(`job_type.${type.toLowerCase()}`)}
+                size="small"
+              />
             ))}
           </Box>
         )}
@@ -92,7 +113,7 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
       {/* Preferred Locations */}
       <Box sx={{ mb: 3 }}>
         <Typography variant="body1" gutterBottom fontWeight="medium">
-          {t('applicant_onboarding.preferences.preferred_locations')}
+          {t("applicant_onboarding.preferences.preferred_locations")}
         </Typography>
         <Controller
           name="preferredLocations"
@@ -104,7 +125,7 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
               fullWidth
               value={field.value}
               onChange={field.onChange}
-              helperText={t('applicant_onboarding.preferences.select_multiple')}
+              helperText={t("applicant_onboarding.preferences.select_multiple")}
             >
               {locationOptions.map((location) => (
                 <MenuItem key={location} value={location}>
@@ -115,9 +136,13 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
           )}
         />
         {selectedLocations.length > 0 && (
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+          <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mt: 1 }}>
             {selectedLocations.map((location) => (
-              <Chip key={location} label={t(`work_location.${location.toLowerCase()}`)} size="small" />
+              <Chip
+                key={location}
+                label={t(`work_location.${location.toLowerCase()}`)}
+                size="small"
+              />
             ))}
           </Box>
         )}
@@ -125,19 +150,22 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({ data, onNext, onBack 
 
       {/* Salary Expectation */}
       <TextField
-        label={t('applicant_onboarding.preferences.salary_expectation')}
+        label={t("applicant_onboarding.preferences.salary_expectation")}
         fullWidth
         margin="normal"
-        {...register('salaryExpectation')}
+        {...register("salaryExpectation")}
         error={!!errors.salaryExpectation}
-        helperText={errors.salaryExpectation?.message || t('applicant_onboarding.preferences.salary_optional')}
+        helperText={
+          errors.salaryExpectation?.message ||
+          t("applicant_onboarding.preferences.salary_optional")
+        }
         placeholder="$50,000 - $70,000"
       />
 
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 4 }}>
-        <Button onClick={onBack}>{t('common.back')}</Button>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
+        <Button onClick={onBack}>{t("common.back")}</Button>
         <Button type="submit" variant="contained">
-          {t('common.next')}
+          {t("common.next")}
         </Button>
       </Box>
     </form>

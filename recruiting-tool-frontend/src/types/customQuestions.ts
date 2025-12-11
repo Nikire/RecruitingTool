@@ -1,8 +1,8 @@
 export enum QuestionType {
-  TEXT = 'TEXT',
-  TEXTAREA = 'TEXTAREA',
-  MULTIPLE_CHOICE = 'MULTIPLE_CHOICE',
-  CHECKBOX = 'CHECKBOX',
+  TEXT = "TEXT",
+  TEXTAREA = "TEXTAREA",
+  MULTIPLE_CHOICE = "MULTIPLE_CHOICE",
+  CHECKBOX = "CHECKBOX",
 }
 
 export interface CustomQuestion {

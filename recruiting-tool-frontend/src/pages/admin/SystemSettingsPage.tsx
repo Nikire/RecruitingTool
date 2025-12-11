@@ -1,7 +1,7 @@
-import { Box, Typography, Grid, Stack, Chip } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
+import { Box, Typography, Grid, Stack, Chip } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { useState } from "react";
+import toast from "react-hot-toast";
 import {
   Settings as SettingsIcon,
   Email as EmailIcon,
@@ -12,13 +12,17 @@ import {
   AccessTime as AccessTimeIcon,
   Language as LanguageIcon,
   CalendarMonth as CalendarIcon,
-} from '@mui/icons-material';
-import { SettingsCard, StatusIndicator, TestConnectionButton } from '../../components/settings';
-import { useUserAtom } from '../../hooks/api/state/useUserAtom';
-import { Navigate } from 'react-router-dom';
-import PageHeader from '../../components/common/PageHeader';
-import LoadingSpinner from '../../components/common/LoadingSpinner';
-import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
+} from "@mui/icons-material";
+import {
+  SettingsCard,
+  StatusIndicator,
+  TestConnectionButton,
+} from "../../components/settings";
+import { useUserAtom } from "../../hooks/api/state/useUserAtom";
+import { Navigate } from "react-router-dom";
+import PageHeader from "../../components/common/PageHeader";
+import LoadingSpinner from "../../components/common/LoadingSpinner";
+import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
 
 /**
  * SystemSettingsPage - System configuration and health monitoring (SUPER_ADMIN only)
@@ -53,14 +57,14 @@ interface SystemSettings {
     model: string;
   };
   integrations: {
-    googleCalendar: 'connected' | 'error' | 'not_configured';
-    n8nWebhook: 'connected' | 'error' | 'not_configured';
-    minioStorage: 'connected' | 'error' | 'not_configured';
+    googleCalendar: "connected" | "error" | "not_configured";
+    n8nWebhook: "connected" | "error" | "not_configured";
+    minioStorage: "connected" | "error" | "not_configured";
   };
   health: {
-    database: 'ok' | 'error' | 'warning';
-    backend: 'ok' | 'error' | 'warning';
-    storage: 'ok' | 'error' | 'warning';
+    database: "ok" | "error" | "warning";
+    backend: "ok" | "error" | "warning";
+    storage: "ok" | "error" | "warning";
   };
 }
 
@@ -71,43 +75,43 @@ const SystemSettingsPage: React.FC = () => {
   const [testingEmail, setTestingEmail] = useState(false);
 
   // Permission check - SUPER_ADMIN only
-  const isSuperAdmin = user?.roles?.includes('SUPER_ADMIN');
+  const isSuperAdmin = user?.roles?.includes("SUPER_ADMIN");
 
   if (!user) {
     return <Navigate to="/login" />;
   }
 
   if (!isSuperAdmin) {
-    return <AccessDeniedMessage requiredRoles={['SUPER_ADMIN']} />;
+    return <AccessDeniedMessage requiredRoles={["SUPER_ADMIN"]} />;
   }
 
   // Mock settings data - TODO: Replace with API call
   const settings: SystemSettings = {
     general: {
-      applicationName: 'Recruiting Tool',
-      defaultTimezone: 'America/New_York',
-      defaultLanguage: 'en',
-      dateFormat: 'MM/DD/YYYY',
+      applicationName: "Recruiting Tool",
+      defaultTimezone: "America/New_York",
+      defaultLanguage: "en",
+      dateFormat: "MM/DD/YYYY",
     },
     email: {
       configured: true,
-      smtpHost: 'smtp.gmail.com',
+      smtpHost: "smtp.gmail.com",
       smtpPort: 587,
     },
     ai: {
       enabled: true,
       defaultQuota: 100,
-      model: 'gpt-4',
+      model: "gpt-4",
     },
     integrations: {
-      googleCalendar: 'connected',
-      n8nWebhook: 'connected',
-      minioStorage: 'connected',
+      googleCalendar: "connected",
+      n8nWebhook: "connected",
+      minioStorage: "connected",
     },
     health: {
-      database: 'ok',
-      backend: 'ok',
-      storage: 'ok',
+      database: "ok",
+      backend: "ok",
+      storage: "ok",
     },
   };
 
@@ -118,9 +122,9 @@ const SystemSettingsPage: React.FC = () => {
       // TODO: Implement actual email test API call
       // await testEmailConnection();
       await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-      toast.success(t('settings.email_test_success'));
+      toast.success(t("settings.email_test_success"));
     } catch (error) {
-      toast.error(t('settings.email_test_failed'));
+      toast.error(t("settings.email_test_failed"));
     } finally {
       setTestingEmail(false);
     }
@@ -128,23 +132,23 @@ const SystemSettingsPage: React.FC = () => {
 
   // Helper function to map integration status to StatusType
   const getStatusType = (
-    status: 'connected' | 'error' | 'not_configured'
-  ): 'ok' | 'error' | 'warning' => {
-    if (status === 'connected') return 'ok';
-    if (status === 'error') return 'error';
-    return 'warning';
+    status: "connected" | "error" | "not_configured",
+  ): "ok" | "error" | "warning" => {
+    if (status === "connected") return "ok";
+    if (status === "error") return "error";
+    return "warning";
   };
 
   if (isLoading) {
-    return <LoadingSpinner message={t('settings.loading_settings')} />;
+    return <LoadingSpinner message={t("settings.loading_settings")} />;
   }
 
   return (
     <Box>
       {/* Page Header */}
       <PageHeader
-        title={t('settings.system_settings_title')}
-        subtitle={t('settings.system_settings_subtitle')}
+        title={t("settings.system_settings_title")}
+        subtitle={t("settings.system_settings_subtitle")}
       />
 
       <Grid container spacing={3}>
@@ -152,24 +156,24 @@ const SystemSettingsPage: React.FC = () => {
         <Grid item xs={12} md={6}>
           <SettingsCard
             icon={<SettingsIcon />}
-            title={t('settings.general_settings')}
+            title={t("settings.general_settings")}
             iconColor="primary.main"
           >
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t('settings.application_name')}
+                  {t("settings.application_name")}
                 </Typography>
                 <Typography variant="body1" fontWeight={500}>
                   {settings.general.applicationName}
                 </Typography>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <PublicIcon fontSize="small" color="action" />
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('settings.default_timezone')}
+                    {t("settings.default_timezone")}
                   </Typography>
                   <Typography variant="body1">
                     {settings.general.defaultTimezone}
@@ -177,11 +181,11 @@ const SystemSettingsPage: React.FC = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <LanguageIcon fontSize="small" color="action" />
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('settings.default_language')}
+                    {t("settings.default_language")}
                   </Typography>
                   <Chip
                     label={t(`language.${settings.general.defaultLanguage}`)}
@@ -192,11 +196,11 @@ const SystemSettingsPage: React.FC = () => {
                 </Box>
               </Box>
 
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 <CalendarIcon fontSize="small" color="action" />
                 <Box sx={{ flex: 1 }}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('settings.date_format')}
+                    {t("settings.date_format")}
                   </Typography>
                   <Typography variant="body1" fontFamily="monospace">
                     {settings.general.dateFormat}
@@ -211,7 +215,7 @@ const SystemSettingsPage: React.FC = () => {
         <Grid item xs={12} md={6}>
           <SettingsCard
             icon={<EmailIcon />}
-            title={t('settings.email_configuration')}
+            title={t("settings.email_configuration")}
             iconColor="info.main"
             action={
               <TestConnectionButton
@@ -224,14 +228,14 @@ const SystemSettingsPage: React.FC = () => {
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t('settings.smtp_status')}
+                  {t("settings.smtp_status")}
                 </Typography>
                 <StatusIndicator
-                  status={settings.email.configured ? 'ok' : 'error'}
+                  status={settings.email.configured ? "ok" : "error"}
                   label={
                     settings.email.configured
-                      ? 'settings.status_configured'
-                      : 'settings.status_not_configured'
+                      ? "settings.status_configured"
+                      : "settings.status_not_configured"
                   }
                 />
               </Box>
@@ -240,7 +244,7 @@ const SystemSettingsPage: React.FC = () => {
                 <>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      {t('settings.smtp_host')}
+                      {t("settings.smtp_host")}
                     </Typography>
                     <Typography variant="body1" fontFamily="monospace">
                       {settings.email.smtpHost}
@@ -249,7 +253,7 @@ const SystemSettingsPage: React.FC = () => {
 
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      {t('settings.smtp_port')}
+                      {t("settings.smtp_port")}
                     </Typography>
                     <Typography variant="body1" fontFamily="monospace">
                       {settings.email.smtpPort}
@@ -265,20 +269,20 @@ const SystemSettingsPage: React.FC = () => {
         <Grid item xs={12} md={6}>
           <SettingsCard
             icon={<PsychologyIcon />}
-            title={t('settings.ai_configuration')}
+            title={t("settings.ai_configuration")}
             iconColor="secondary.main"
           >
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t('settings.ai_status')}
+                  {t("settings.ai_status")}
                 </Typography>
                 <StatusIndicator
-                  status={settings.ai.enabled ? 'ok' : 'warning'}
+                  status={settings.ai.enabled ? "ok" : "warning"}
                   label={
                     settings.ai.enabled
-                      ? 'settings.status_enabled'
-                      : 'settings.status_disabled'
+                      ? "settings.status_enabled"
+                      : "settings.status_disabled"
                   }
                 />
               </Box>
@@ -287,22 +291,23 @@ const SystemSettingsPage: React.FC = () => {
                 <>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      {t('settings.ai_model')}
+                      {t("settings.ai_model")}
                     </Typography>
                     <Chip
                       label={settings.ai.model}
                       size="small"
                       color="secondary"
-                      sx={{ fontFamily: 'monospace' }}
+                      sx={{ fontFamily: "monospace" }}
                     />
                   </Box>
 
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      {t('settings.default_quota')}
+                      {t("settings.default_quota")}
                     </Typography>
                     <Typography variant="body1">
-                      {settings.ai.defaultQuota} {t('settings.requests_per_month')}
+                      {settings.ai.defaultQuota}{" "}
+                      {t("settings.requests_per_month")}
                     </Typography>
                   </Box>
                 </>
@@ -315,13 +320,13 @@ const SystemSettingsPage: React.FC = () => {
         <Grid item xs={12} md={6}>
           <SettingsCard
             icon={<ExtensionIcon />}
-            title={t('settings.integrations')}
+            title={t("settings.integrations")}
             iconColor="warning.main"
           >
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t('settings.google_calendar')}
+                  {t("settings.google_calendar")}
                 </Typography>
                 <StatusIndicator
                   status={getStatusType(settings.integrations.googleCalendar)}
@@ -331,7 +336,7 @@ const SystemSettingsPage: React.FC = () => {
 
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t('settings.n8n_webhook')}
+                  {t("settings.n8n_webhook")}
                 </Typography>
                 <StatusIndicator
                   status={getStatusType(settings.integrations.n8nWebhook)}
@@ -341,7 +346,7 @@ const SystemSettingsPage: React.FC = () => {
 
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t('settings.minio_storage')}
+                  {t("settings.minio_storage")}
                 </Typography>
                 <StatusIndicator
                   status={getStatusType(settings.integrations.minioStorage)}
@@ -356,14 +361,18 @@ const SystemSettingsPage: React.FC = () => {
         <Grid item xs={12}>
           <SettingsCard
             icon={<HealthIcon />}
-            title={t('settings.system_health')}
+            title={t("settings.system_health")}
             iconColor="success.main"
           >
             <Grid container spacing={3}>
               <Grid item xs={12} sm={4}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    {t('settings.database_status')}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {t("settings.database_status")}
                   </Typography>
                   <StatusIndicator
                     status={settings.health.database}
@@ -374,8 +383,12 @@ const SystemSettingsPage: React.FC = () => {
 
               <Grid item xs={12} sm={4}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    {t('settings.backend_api_status')}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {t("settings.backend_api_status")}
                   </Typography>
                   <StatusIndicator
                     status={settings.health.backend}
@@ -386,8 +399,12 @@ const SystemSettingsPage: React.FC = () => {
 
               <Grid item xs={12} sm={4}>
                 <Box>
-                  <Typography variant="body2" color="text.secondary" gutterBottom>
-                    {t('settings.storage_service_status')}
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {t("settings.storage_service_status")}
                   </Typography>
                   <StatusIndicator
                     status={settings.health.storage}

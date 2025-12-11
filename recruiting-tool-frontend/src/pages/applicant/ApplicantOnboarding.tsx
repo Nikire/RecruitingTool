@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Stepper, Step, StepLabel, Paper, Container } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import WelcomeStep from './onboarding-steps/WelcomeStep';
-import ProfileStep from './onboarding-steps/ProfileStep';
-import ResumeStep from './onboarding-steps/ResumeStep';
-import PreferencesStep from './onboarding-steps/PreferencesStep';
-import CompletionStep from './onboarding-steps/CompletionStep';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Stepper, Step, StepLabel, Paper, Container } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import WelcomeStep from "./onboarding-steps/WelcomeStep";
+import ProfileStep from "./onboarding-steps/ProfileStep";
+import ResumeStep from "./onboarding-steps/ResumeStep";
+import PreferencesStep from "./onboarding-steps/PreferencesStep";
+import CompletionStep from "./onboarding-steps/CompletionStep";
 
 export interface OnboardingData {
   // Profile data
@@ -33,11 +33,11 @@ const ApplicantOnboarding: React.FC = () => {
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
 
   const steps = [
-    t('applicant_onboarding.steps.welcome'),
-    t('applicant_onboarding.steps.profile'),
-    t('applicant_onboarding.steps.resume'),
-    t('applicant_onboarding.steps.preferences'),
-    t('applicant_onboarding.steps.completion'),
+    t("applicant_onboarding.steps.welcome"),
+    t("applicant_onboarding.steps.profile"),
+    t("applicant_onboarding.steps.resume"),
+    t("applicant_onboarding.steps.preferences"),
+    t("applicant_onboarding.steps.completion"),
   ];
 
   const handleNext = () => {
@@ -54,7 +54,7 @@ const ApplicantOnboarding: React.FC = () => {
 
   const handleComplete = () => {
     // Navigate to careers page after onboarding completion
-    navigate('/careers');
+    navigate("/careers");
   };
 
   const renderStep = () => {
@@ -95,7 +95,13 @@ const ApplicantOnboarding: React.FC = () => {
           />
         );
       case 4:
-        return <CompletionStep data={onboardingData} onComplete={handleComplete} onBack={handleBack} />;
+        return (
+          <CompletionStep
+            data={onboardingData}
+            onComplete={handleComplete}
+            onBack={handleBack}
+          />
+        );
       default:
         return null;
     }

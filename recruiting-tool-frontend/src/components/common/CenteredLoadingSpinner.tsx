@@ -1,6 +1,6 @@
-import React from 'react';
-import { Box, CircularProgress, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 /**
  * CenteredLoadingSpinner - Reusable centered loading spinner with optional message
@@ -33,7 +33,7 @@ export interface CenteredLoadingSpinnerProps {
 }
 
 const CenteredLoadingSpinner: React.FC<CenteredLoadingSpinnerProps> = ({
-  minHeight = '50vh',
+  minHeight = "50vh",
   size = 40,
   message,
 }) => {
@@ -42,10 +42,10 @@ const CenteredLoadingSpinner: React.FC<CenteredLoadingSpinnerProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
         minHeight,
         gap: 2,
       }}
