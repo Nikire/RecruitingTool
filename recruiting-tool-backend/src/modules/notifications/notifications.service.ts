@@ -18,9 +18,10 @@ export class NotificationsService {
   async create(dto: CreateNotificationDto): Promise<NotificationResponseDto> {
     this.logger.log(`Creating notification for user ${dto.userUid}`);
 
-    // Find user by UID
+    // Find user by UID with company relation
     const user = await this.databaseService.user.findUnique({
       where: { uid: dto.userUid },
+      include: { company: { select: { uid: true } } },
     });
 
     if (!user) {
@@ -44,7 +45,15 @@ export class NotificationsService {
     });
 
     // Emit SSE event for real-time notification delivery
-    this.sseService.emitNotification(notification.uid, notification.type, notification.title, notification.message, notification.metadata, user.uid, user.company?.uid);
+    this.sseService.emitNotification(
+      notification.uid,
+      notification.type,
+      notification.title,
+      notification.message,
+      notification.metadata as Record<string, any> | null,
+      user.uid,
+      user.company?.uid,
+    );
 
     return this.mapToResponseDto(notification);
   }

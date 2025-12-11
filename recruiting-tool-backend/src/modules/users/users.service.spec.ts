@@ -77,8 +77,6 @@ describe('UsersService', () => {
 
     service = module.get<UsersService>(UsersService);
     databaseService = module.get<DatabaseService>(DatabaseService);
-    storageService = module.get<StorageService>(StorageService);
-    userActivityService = module.get<UserActivityService>(UserActivityService);
 
     jest.clearAllMocks();
   });

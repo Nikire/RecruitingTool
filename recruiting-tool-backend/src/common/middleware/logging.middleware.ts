@@ -29,9 +29,9 @@ export class LoggingMiddleware implements NestMiddleware {
     res.setHeader('X-Correlation-ID', correlationId);
 
     // Extract user information from request (if authenticated)
-    const user = req['user'];
+    const user = req['user'] as { uid?: string; roles?: string[] } | undefined;
     const userId = user?.uid || 'anonymous';
-    const userRole = user?.role || 'guest';
+    const userRole = user?.roles?.[0] || 'guest';
 
     // Log incoming request
     this.logger.log({

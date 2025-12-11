@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, ConflictException } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ConflictException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';

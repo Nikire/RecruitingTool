@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DatabaseService } from '../src/modules/shared/modules/database/database.service';
 import * as bcrypt from 'bcryptjs';
@@ -129,14 +129,14 @@ describe('Authentication E2E Tests (e2e)', () => {
       expect(response.body.user.email).toBe(ownerEmail);
 
       // Verify company was created
-      const user = await databaseService.user.findUnique({
+      const user = await databaseService.user.findFirst({
         where: { email: ownerEmail },
         include: { company: true },
       });
 
       expect(user).toBeDefined();
-      expect(user.company).toBeDefined();
-      expect(user.company.name).toBe(companyName);
+      expect(user!.company).toBeDefined();
+      expect(user!.company!.name).toBe(companyName);
     });
 
     it('should reject registration with invalid email format', async () => {
@@ -247,12 +247,12 @@ describe('Authentication E2E Tests (e2e)', () => {
         })
         .expect(201);
 
-      const user = await databaseService.user.findUnique({
+      const user = await databaseService.user.findFirst({
         where: { email: testUser.email },
       });
 
-      expect(user.lastLoginAt).toBeDefined();
-      expect(user.lastLoginAt.getTime()).toBeGreaterThanOrEqual(beforeLogin.getTime());
+      expect(user!.lastLoginAt).toBeDefined();
+      expect(user!.lastLoginAt!.getTime()).toBeGreaterThanOrEqual(beforeLogin.getTime());
     });
   });
 
@@ -326,7 +326,7 @@ describe('Authentication E2E Tests (e2e)', () => {
 
       it('should reject expired refresh token', async () => {
         // Create an expired refresh token
-        const user = await databaseService.user.findUnique({
+        const user = await databaseService.user.findFirst({
           where: { email: testUser.email },
         });
 
@@ -350,7 +350,7 @@ describe('Authentication E2E Tests (e2e)', () => {
 
       it('should reject revoked refresh token', async () => {
         // Create and immediately revoke a token
-        const user = await databaseService.user.findUnique({
+        const user = await databaseService.user.findFirst({
           where: { email: testUser.email },
         });
 
@@ -459,9 +459,12 @@ describe('Authentication E2E Tests (e2e)', () => {
       // Token should work
       await request(app.getHttpServer()).get('/profile').set('Authorization', `Bearer ${token}`).expect(200);
 
-      // Deactivate user
-      await databaseService.user.update({
+      // Deactivate user - first find the user, then update by uid
+      const userToDeactivate = await databaseService.user.findFirst({
         where: { email: tempEmail },
+      });
+      await databaseService.user.update({
+        where: { uid: userToDeactivate!.uid },
         data: {
           isActive: false,
           deactivatedAt: new Date(),

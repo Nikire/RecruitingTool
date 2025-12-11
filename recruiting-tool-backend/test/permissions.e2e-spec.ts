@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { DatabaseService } from '../src/modules/shared/modules/database/database.service';
 import * as bcrypt from 'bcryptjs';
@@ -179,8 +179,8 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       // The purge endpoint is SUPER_ADMIN only
       const candidate = await databaseService.candidate.create({
         data: {
+          name: 'Test RBAC Candidate Purge',
           email: 'test-rbac-candidate-purge@example.com',
-          companyId: companyA.id,
         },
       });
 
@@ -214,15 +214,15 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       // Create candidates in both companies
       candidateCompanyA = await databaseService.candidate.create({
         data: {
+          name: 'Test RBAC Candidate A',
           email: 'test-rbac-candidate-a@example.com',
-          companyId: companyA.id,
         },
       });
 
       candidateCompanyB = await databaseService.candidate.create({
         data: {
+          name: 'Test RBAC Candidate B',
           email: 'test-rbac-candidate-b@example.com',
-          companyId: companyB.id,
         },
       });
 
@@ -230,10 +230,6 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       jobPositionCompanyA = await databaseService.jobPosition.create({
         data: {
           title: 'Software Engineer Company A',
-          department: 'Engineering',
-          location: 'Remote',
-          employmentType: 'FULL_TIME',
-          experienceLevel: 'MID',
           companyId: companyA.id,
           createdById: users[RolesType.HR].user.id,
         },
@@ -242,10 +238,6 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       jobPositionCompanyB = await databaseService.jobPosition.create({
         data: {
           title: 'Software Engineer Company B',
-          department: 'Engineering',
-          location: 'Remote',
-          employmentType: 'FULL_TIME',
-          experienceLevel: 'MID',
           companyId: companyB.id,
           createdById: users['HR_COMPANY_B'].user.id,
         },
@@ -329,21 +321,23 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
         await request(app.getHttpServer()).delete(`/candidate/${candidateCompanyB.uid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(404);
       });
 
-      it('HR should be able to create candidates only in their own company', async () => {
+      it('HR should be able to create candidates', async () => {
         const response = await request(app.getHttpServer())
           .post('/candidate')
           .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
           .send({
+            name: 'New Candidate',
             email: 'new-candidate-companya@example.com',
           })
           .expect(201);
 
-        // Verify candidate was created in Company A
+        // Verify candidate was created
         const candidate = await databaseService.candidate.findUnique({
           where: { uid: response.body.uid },
         });
 
-        expect(candidate.companyId).toBe(companyA.id);
+        expect(candidate).toBeDefined();
+        expect(candidate!.email).toBe('new-candidate-companya@example.com');
       });
     });
   });
@@ -432,8 +426,8 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       it('SUPER_ADMIN should be able to permanently delete candidates', async () => {
         const candidate = await databaseService.candidate.create({
           data: {
+            name: 'Test RBAC Purge Candidate',
             email: 'test-rbac-purge@example.com',
-            companyId: companyA.id,
           },
         });
 
@@ -450,8 +444,8 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       it('ADMIN should NOT be able to permanently delete candidates', async () => {
         const candidate = await databaseService.candidate.create({
           data: {
+            name: 'Test RBAC Purge Candidate 2',
             email: 'test-rbac-purge-2@example.com',
-            companyId: companyA.id,
           },
         });
 
@@ -461,8 +455,8 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       it('HR should NOT be able to permanently delete candidates', async () => {
         const candidate = await databaseService.candidate.create({
           data: {
+            name: 'Test RBAC Purge Candidate 3',
             email: 'test-rbac-purge-3@example.com',
-            companyId: companyA.id,
           },
         });
 
@@ -533,8 +527,8 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
     it('Should maintain consistent permissions across HTTP methods', async () => {
       const candidate = await databaseService.candidate.create({
         data: {
+          name: 'Test RBAC Methods Candidate',
           email: 'test-rbac-methods@example.com',
-          companyId: companyA.id,
         },
       });
 

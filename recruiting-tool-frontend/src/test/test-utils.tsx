@@ -124,6 +124,7 @@ if (!i18n.isInitialized) {
 /**
  * Create a new QueryClient for each test to avoid cache pollution
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
@@ -164,6 +165,7 @@ export function AllTheProviders({
 /**
  * Custom render function that includes all necessary providers
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function renderWithProviders(
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper"> & { queryClient?: QueryClient },
@@ -179,5 +181,7 @@ export function renderWithProviders(
 }
 
 // Re-export everything from React Testing Library
+// eslint-disable-next-line react-refresh/only-export-components
 export * from "@testing-library/react";
+// eslint-disable-next-line react-refresh/only-export-components
 export { default as userEvent } from "@testing-library/user-event";

@@ -5,7 +5,7 @@ import { CandidateActivityService } from './services/candidate-activity.service'
 import { CandidateImportService } from './candidate-import.service';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';
-import { ApplicationSource, RolesType } from '@prisma/client';
+import { ApplicationSource, RolesType, User } from '@prisma/client';
 import { AuthGuard } from 'src/modules/shared/modules/auth/guards/auth.guard';
 import { RolesGuard } from 'src/modules/shared/modules/auth/guards/roles.guard';
 
@@ -26,7 +26,7 @@ describe('CandidateController', () => {
     updatedAt: new Date(),
     deletedAt: null,
     lastLogin: null,
-  };
+  } as unknown as User;
 
   const mockCandidateResponse = {
     uid: 'cand-uid-123',

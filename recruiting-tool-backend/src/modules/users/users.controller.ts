@@ -212,12 +212,7 @@ export class UsersController {
   @Auth(['USER'])
   async uploadResume(
     @Request() req,
-    @UploadedFile(
-      new FileValidationPipe({
-        maxSize: 5 * 1024 * 1024, // 5MB
-        allowedMimeTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
-      }),
-    )
+    @UploadedFile(new FileValidationPipe('document'))
     file: Express.Multer.File,
   ): Promise<UserResponseDto> {
     return this.usersService.uploadResume(req.user.id, file);

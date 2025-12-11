@@ -6,7 +6,7 @@ import { StorageService } from 'src/modules/storage/storage.service';
 import { AuditLogService } from 'src/modules/audit-log/audit-log.service';
 import { CandidateActivityService } from './services/candidate-activity.service';
 import { CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';
-import { ApplicationSource, RolesType } from '@prisma/client';
+import { ApplicationSource, RolesType, User } from '@prisma/client';
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { EntityNotFoundException } from 'src/common/exceptions';
 
@@ -44,7 +44,7 @@ describe('CandidateService', () => {
     updatedAt: new Date(),
     deletedAt: null,
     lastLogin: null,
-  };
+  } as unknown as User;
 
   const mockJobPosition = {
     id: 1,
@@ -145,9 +145,6 @@ describe('CandidateService', () => {
     service = module.get<CandidateService>(CandidateService);
     databaseService = module.get<DatabaseService>(DatabaseService);
     candidateActivityService = module.get<CandidateActivityService>(CandidateActivityService);
-    emailService = module.get<EmailService>(EmailService);
-    storageService = module.get<StorageService>(StorageService);
-    auditLogService = module.get<AuditLogService>(AuditLogService);
 
     // Reset mocks before each test
     jest.clearAllMocks();

@@ -72,8 +72,6 @@ describe('AuthService', () => {
 
     service = module.get<AuthService>(AuthService);
     usersService = module.get<UsersService>(UsersService);
-    jwtService = module.get<JwtService>(JwtService);
-    userActivityService = module.get<UserActivityService>(UserActivityService);
     databaseService = module.get<DatabaseService>(DatabaseService);
 
     jest.clearAllMocks();

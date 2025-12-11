@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Headers, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Post, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';

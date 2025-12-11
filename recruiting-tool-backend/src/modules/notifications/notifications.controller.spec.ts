@@ -3,7 +3,7 @@ import { NotificationsController } from './notifications.controller';
 import { NotificationsService } from './notifications.service';
 import { CreateNotificationDto, GetNotificationsQueryDto } from './dto';
 import { AuthGuard } from '../shared/modules/auth/guards/auth.guard';
-import { NotificationType, RolesType } from '@prisma/client';
+import { NotificationType, RolesType, User } from '@prisma/client';
 
 describe('NotificationsController', () => {
   let controller: NotificationsController;
@@ -22,7 +22,7 @@ describe('NotificationsController', () => {
     updatedAt: new Date(),
     deletedAt: null,
     lastLogin: null,
-  };
+  } as unknown as User;
 
   const mockNotificationResponse = {
     uid: 'notif-uid-123',

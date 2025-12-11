@@ -33,7 +33,6 @@ describe('RBAC Service Logic', () => {
     }).compile();
 
     guard = module.get<RolesGuard>(RolesGuard);
-    reflector = module.get<Reflector>(Reflector);
 
     jest.clearAllMocks();
   });

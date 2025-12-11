@@ -52,6 +52,7 @@ export default Auth0ProviderWithNavigate;
  * Helper hook to check if Auth0 is configured
  * Can be used to conditionally show/hide social login buttons
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth0Configured = (): boolean => {
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
