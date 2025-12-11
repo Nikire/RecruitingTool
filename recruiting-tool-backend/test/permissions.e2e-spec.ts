@@ -123,12 +123,10 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       });
 
       // Login to get tokens
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: user.email,
-          password: password,
-        });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+        email: user.email,
+        password: password,
+      });
 
       users[role] = {
         user: user,
@@ -150,12 +148,10 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
     });
 
     // Login Company B user
-    const companyBLoginResponse = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({
-        email: companyBUser.email,
-        password: password,
-      });
+    const companyBLoginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+      email: companyBUser.email,
+      password: password,
+    });
 
     // Store Company B HR user for cross-company tests
     users['HR_COMPANY_B'] = {
@@ -167,24 +163,15 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
 
   describe('Role Hierarchy Tests', () => {
     it('SUPER_ADMIN should have access to ADMIN-only routes', async () => {
-      await request(app.getHttpServer())
-        .get('/admin/users')
-        .set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`).expect(200);
     });
 
     it('SUPER_ADMIN should have access to HR routes', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`).expect(200);
     });
 
     it('ADMIN should have access to HR routes', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`).expect(200);
     });
 
     it('ADMIN should NOT have access to SUPER_ADMIN-only routes', async () => {
@@ -197,38 +184,23 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
         },
       });
 
-      await request(app.getHttpServer())
-        .delete(`/candidate/${candidate.uid}/purge`)
-        .set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`)
-        .expect(403);
+      await request(app.getHttpServer()).delete(`/candidate/${candidate.uid}/purge`).set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`).expect(403);
     });
 
     it('HR should have access to HR routes', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(200);
     });
 
     it('HR should NOT have access to ADMIN routes', async () => {
-      await request(app.getHttpServer())
-        .get('/admin/users')
-        .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-        .expect(403);
+      await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(403);
     });
 
     it('USER should NOT have access to HR routes', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.USER].token}`)
-        .expect(403);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.USER].token}`).expect(403);
     });
 
     it('COMPANY_OWNER should have access to HR routes in their company', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.COMPANY_OWNER].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.COMPANY_OWNER].token}`).expect(200);
     });
   });
 
@@ -282,45 +254,30 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
 
     describe('Candidate Access Control', () => {
       it('HR from Company A should be able to access Company A candidates', async () => {
-        const response = await request(app.getHttpServer())
-          .get(`/candidate/${candidateCompanyA.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get(`/candidate/${candidateCompanyA.uid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(200);
 
         expect(response.body.uid).toBe(candidateCompanyA.uid);
         expect(response.body.email).toBe(candidateCompanyA.email);
       });
 
       it('HR from Company A should NOT be able to access Company B candidates', async () => {
-        const response = await request(app.getHttpServer())
-          .get(`/candidate/${candidateCompanyB.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(404);
+        const response = await request(app.getHttpServer()).get(`/candidate/${candidateCompanyB.uid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(404);
 
         expect(response.body.message).toContain('Candidate not found');
       });
 
       it('HR from Company B should be able to access Company B candidates', async () => {
-        const response = await request(app.getHttpServer())
-          .get(`/candidate/${candidateCompanyB.uid}`)
-          .set('Authorization', `Bearer ${users['HR_COMPANY_B'].token}`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get(`/candidate/${candidateCompanyB.uid}`).set('Authorization', `Bearer ${users['HR_COMPANY_B'].token}`).expect(200);
 
         expect(response.body.uid).toBe(candidateCompanyB.uid);
       });
 
       it('HR from Company B should NOT be able to access Company A candidates', async () => {
-        await request(app.getHttpServer())
-          .get(`/candidate/${candidateCompanyA.uid}`)
-          .set('Authorization', `Bearer ${users['HR_COMPANY_B'].token}`)
-          .expect(404);
+        await request(app.getHttpServer()).get(`/candidate/${candidateCompanyA.uid}`).set('Authorization', `Bearer ${users['HR_COMPANY_B'].token}`).expect(404);
       });
 
       it('HR list endpoint should only return candidates from their company', async () => {
-        const response = await request(app.getHttpServer())
-          .get('/candidate')
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(200);
 
         // Should only contain Company A candidates
         const candidateEmails = response.body.map((c: any) => c.email);
@@ -330,41 +287,26 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
 
       it('SUPER_ADMIN should be able to access candidates from any company', async () => {
         // Access Company A candidate
-        await request(app.getHttpServer())
-          .get(`/candidate/${candidateCompanyA.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`)
-          .expect(200);
+        await request(app.getHttpServer()).get(`/candidate/${candidateCompanyA.uid}`).set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`).expect(200);
 
         // Access Company B candidate
-        await request(app.getHttpServer())
-          .get(`/candidate/${candidateCompanyB.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`)
-          .expect(200);
+        await request(app.getHttpServer()).get(`/candidate/${candidateCompanyB.uid}`).set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`).expect(200);
       });
     });
 
     describe('Job Position Access Control', () => {
       it('HR from Company A should be able to access Company A job positions', async () => {
-        const response = await request(app.getHttpServer())
-          .get(`/job-position/${jobPositionCompanyA.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get(`/job-position/${jobPositionCompanyA.uid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(200);
 
         expect(response.body.uid).toBe(jobPositionCompanyA.uid);
       });
 
       it('HR from Company A should NOT be able to access Company B job positions', async () => {
-        await request(app.getHttpServer())
-          .get(`/job-position/${jobPositionCompanyB.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(404);
+        await request(app.getHttpServer()).get(`/job-position/${jobPositionCompanyB.uid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(404);
       });
 
       it('Job position list should only return positions from user company', async () => {
-        const response = await request(app.getHttpServer())
-          .get('/job-position')
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(200);
+        const response = await request(app.getHttpServer()).get('/job-position').set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(200);
 
         const positionUids = response.body.map((p: any) => p.uid);
         expect(positionUids).toContain(jobPositionCompanyA.uid);
@@ -384,10 +326,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       });
 
       it('HR from Company A should NOT be able to delete Company B candidates', async () => {
-        await request(app.getHttpServer())
-          .delete(`/candidate/${candidateCompanyB.uid}`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(404);
+        await request(app.getHttpServer()).delete(`/candidate/${candidateCompanyB.uid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(404);
       });
 
       it('HR should be able to create candidates only in their own company', async () => {
@@ -412,17 +351,11 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
   describe('Endpoint-Specific Permission Tests', () => {
     describe('User Management Endpoints', () => {
       it('ADMIN should be able to list all users', async () => {
-        await request(app.getHttpServer())
-          .get('/admin/users')
-          .set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`)
-          .expect(200);
+        await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`).expect(200);
       });
 
       it('HR should NOT be able to list all users', async () => {
-        await request(app.getHttpServer())
-          .get('/admin/users')
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(403);
+        await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(403);
       });
 
       it('SUPER_ADMIN should be able to deactivate users', async () => {
@@ -437,10 +370,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
           },
         });
 
-        await request(app.getHttpServer())
-          .post(`/users/${testUser.uid}/deactivate`)
-          .set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`)
-          .expect(200);
+        await request(app.getHttpServer()).post(`/users/${testUser.uid}/deactivate`).set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`).expect(200);
 
         // Verify user was deactivated
         const deactivatedUser = await databaseService.user.findUnique({
@@ -462,10 +392,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
           },
         });
 
-        await request(app.getHttpServer())
-          .post(`/users/${testUser.uid}/deactivate`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(403);
+        await request(app.getHttpServer()).post(`/users/${testUser.uid}/deactivate`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(403);
       });
     });
 
@@ -510,10 +437,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
           },
         });
 
-        await request(app.getHttpServer())
-          .delete(`/candidate/${candidate.uid}/purge`)
-          .set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`)
-          .expect(200);
+        await request(app.getHttpServer()).delete(`/candidate/${candidate.uid}/purge`).set('Authorization', `Bearer ${users[RolesType.SUPER_ADMIN].token}`).expect(200);
 
         // Verify candidate was permanently deleted
         const deletedCandidate = await databaseService.candidate.findUnique({
@@ -531,10 +455,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
           },
         });
 
-        await request(app.getHttpServer())
-          .delete(`/candidate/${candidate.uid}/purge`)
-          .set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`)
-          .expect(403);
+        await request(app.getHttpServer()).delete(`/candidate/${candidate.uid}/purge`).set('Authorization', `Bearer ${users[RolesType.ADMIN].token}`).expect(403);
       });
 
       it('HR should NOT be able to permanently delete candidates', async () => {
@@ -545,10 +466,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
           },
         });
 
-        await request(app.getHttpServer())
-          .delete(`/candidate/${candidate.uid}/purge`)
-          .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-          .expect(403);
+        await request(app.getHttpServer()).delete(`/candidate/${candidate.uid}/purge`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(403);
       });
     });
   });
@@ -571,36 +489,25 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       });
 
       // Login to get token
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: multiRoleUser.email,
-          password: password,
-        });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+        email: multiRoleUser.email,
+        password: password,
+      });
 
       multiRoleToken = loginResponse.body.token;
     });
 
     it('User with HR and ADMIN roles should have access to HR endpoints', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${multiRoleToken}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${multiRoleToken}`).expect(200);
     });
 
     it('User with HR and ADMIN roles should have access to ADMIN endpoints', async () => {
-      await request(app.getHttpServer())
-        .get('/admin/users')
-        .set('Authorization', `Bearer ${multiRoleToken}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${multiRoleToken}`).expect(200);
     });
 
     it('Highest role should take precedence in authorization', async () => {
       // ADMIN role should allow access even if HR role would normally restrict
-      await request(app.getHttpServer())
-        .get('/admin/users')
-        .set('Authorization', `Bearer ${multiRoleToken}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${multiRoleToken}`).expect(200);
     });
   });
 
@@ -613,20 +520,14 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
     it('Should handle non-existent UIDs gracefully', async () => {
       const fakeUid = '00000000-0000-0000-0000-000000000000';
 
-      const response = await request(app.getHttpServer())
-        .get(`/candidate/${fakeUid}`)
-        .set('Authorization', `Bearer ${users[RolesType.HR].token}`)
-        .expect(404);
+      const response = await request(app.getHttpServer()).get(`/candidate/${fakeUid}`).set('Authorization', `Bearer ${users[RolesType.HR].token}`).expect(404);
 
       expect(response.body.message).toContain('not found');
     });
 
     it('Should prevent privilege escalation via request manipulation', async () => {
       // Try to access admin endpoint by manipulating path
-      await request(app.getHttpServer())
-        .get('/admin/users')
-        .set('Authorization', `Bearer ${users[RolesType.USER].token}`)
-        .expect(403);
+      await request(app.getHttpServer()).get('/admin/users').set('Authorization', `Bearer ${users[RolesType.USER].token}`).expect(403);
     });
 
     it('Should maintain consistent permissions across HTTP methods', async () => {
@@ -638,10 +539,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
       });
 
       // USER should not have GET access
-      await request(app.getHttpServer())
-        .get(`/candidate/${candidate.uid}`)
-        .set('Authorization', `Bearer ${users[RolesType.USER].token}`)
-        .expect(403);
+      await request(app.getHttpServer()).get(`/candidate/${candidate.uid}`).set('Authorization', `Bearer ${users[RolesType.USER].token}`).expect(403);
 
       // USER should not have PUT access
       await request(app.getHttpServer())
@@ -651,10 +549,7 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
         .expect(403);
 
       // USER should not have DELETE access
-      await request(app.getHttpServer())
-        .delete(`/candidate/${candidate.uid}`)
-        .set('Authorization', `Bearer ${users[RolesType.USER].token}`)
-        .expect(403);
+      await request(app.getHttpServer()).delete(`/candidate/${candidate.uid}`).set('Authorization', `Bearer ${users[RolesType.USER].token}`).expect(403);
     });
   });
 
@@ -665,27 +560,15 @@ describe('Role-Based Access Control (RBAC) E2E Tests (e2e)', () => {
     });
 
     it('RECRUITER should have access to candidate and job position endpoints', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.RECRUITER].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.RECRUITER].token}`).expect(200);
 
-      await request(app.getHttpServer())
-        .get('/job-position')
-        .set('Authorization', `Bearer ${users[RolesType.RECRUITER].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/job-position').set('Authorization', `Bearer ${users[RolesType.RECRUITER].token}`).expect(200);
     });
 
     it('COMPANY_ADMIN should have admin-like access within their company', async () => {
-      await request(app.getHttpServer())
-        .get('/candidate')
-        .set('Authorization', `Bearer ${users[RolesType.COMPANY_ADMIN].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/candidate').set('Authorization', `Bearer ${users[RolesType.COMPANY_ADMIN].token}`).expect(200);
 
-      await request(app.getHttpServer())
-        .get('/job-position')
-        .set('Authorization', `Bearer ${users[RolesType.COMPANY_ADMIN].token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/job-position').set('Authorization', `Bearer ${users[RolesType.COMPANY_ADMIN].token}`).expect(200);
     });
   });
 });

@@ -1,13 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-  ConflictException,
-  HttpException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, BadRequestException, ForbiddenException, ConflictException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RolesType, NotificationType } from '@prisma/client';
@@ -32,10 +23,7 @@ export class ConnectionRequestsService {
   /**
    * Submit a request to join a company
    */
-  async create(
-    userUid: string,
-    dto: CreateConnectionRequestDto,
-  ): Promise<ConnectionRequestResponseDto> {
+  async create(userUid: string, dto: CreateConnectionRequestDto): Promise<ConnectionRequestResponseDto> {
     try {
       // Find user
       const user = await this.databaseService.user.findUnique({
@@ -48,9 +36,7 @@ export class ConnectionRequestsService {
 
       // Check if user already belongs to a company
       if (user.companyId) {
-        throw new BadRequestException(
-          'You already belong to a company. Please leave your current company before requesting to join another.',
-        );
+        throw new BadRequestException('You already belong to a company. Please leave your current company before requesting to join another.');
       }
 
       // Find company
@@ -59,10 +45,7 @@ export class ConnectionRequestsService {
         include: {
           users: {
             where: {
-              OR: [
-                { roles: { has: RolesType.COMPANY_OWNER } },
-                { roles: { has: RolesType.COMPANY_ADMIN } },
-              ],
+              OR: [{ roles: { has: RolesType.COMPANY_OWNER } }, { roles: { has: RolesType.COMPANY_ADMIN } }],
             },
             take: 1, // Get at least one admin to notify
           },
@@ -85,13 +68,9 @@ export class ConnectionRequestsService {
 
       if (existingRequest) {
         if (existingRequest.status === 'PENDING') {
-          throw new ConflictException(
-            'You already have a pending request for this company',
-          );
+          throw new ConflictException('You already have a pending request for this company');
         } else if (existingRequest.status === 'APPROVED') {
-          throw new ConflictException(
-            'You have already been approved for this company',
-          );
+          throw new ConflictException('You have already been approved for this company');
         } else if (existingRequest.status === 'DENIED') {
           // Allow re-requesting after denial
           // Delete old denied request and create new one
@@ -137,32 +116,22 @@ export class ConnectionRequestsService {
         }
       }
 
-      this.logger.log(
-        `User ${userUid} created connection request to company ${dto.companyUid}`,
-      );
+      this.logger.log(`User ${userUid} created connection request to company ${dto.companyUid}`);
 
       return this.mapToResponseDto(connectionRequest);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      this.logger.error(
-        `Failed to create connection request: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to create connection request: ${error.message}`,
-      );
+      this.logger.error(`Failed to create connection request: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to create connection request: ${error.message}`);
     }
   }
 
   /**
    * Get connection requests for a user
    */
-  async getMyRequests(
-    userUid: string,
-    query: GetConnectionRequestsQueryDto,
-  ): Promise<ConnectionRequestResponseDto[]> {
+  async getMyRequests(userUid: string, query: GetConnectionRequestsQueryDto): Promise<ConnectionRequestResponseDto[]> {
     try {
       const user = await this.databaseService.user.findUnique({
         where: { uid: userUid },
@@ -200,33 +169,19 @@ export class ConnectionRequestsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      this.logger.error(
-        `Failed to get user requests: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to get user requests: ${error.message}`,
-      );
+      this.logger.error(`Failed to get user requests: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to get user requests: ${error.message}`);
     }
   }
 
   /**
    * Get pending requests for a company (for admins/owners)
    */
-  async getCompanyRequests(
-    companyUid: string,
-    currentUserRoles: RolesType[],
-    query: GetConnectionRequestsQueryDto,
-  ): Promise<ConnectionRequestResponseDto[]> {
+  async getCompanyRequests(companyUid: string, currentUserRoles: RolesType[], query: GetConnectionRequestsQueryDto): Promise<ConnectionRequestResponseDto[]> {
     try {
       // Check if user is company owner or admin
-      if (
-        !currentUserRoles.includes(RolesType.COMPANY_OWNER) &&
-        !currentUserRoles.includes(RolesType.COMPANY_ADMIN)
-      ) {
-        throw new ForbiddenException(
-          'You must be a company owner or admin to view connection requests',
-        );
+      if (!currentUserRoles.includes(RolesType.COMPANY_OWNER) && !currentUserRoles.includes(RolesType.COMPANY_ADMIN)) {
+        throw new ForbiddenException('You must be a company owner or admin to view connection requests');
       }
 
       const company = await this.databaseService.company.findUnique({
@@ -265,34 +220,19 @@ export class ConnectionRequestsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      this.logger.error(
-        `Failed to get company requests: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to get company requests: ${error.message}`,
-      );
+      this.logger.error(`Failed to get company requests: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to get company requests: ${error.message}`);
     }
   }
 
   /**
    * Approve a connection request
    */
-  async approve(
-    requestUid: string,
-    reviewerUid: string,
-    currentUserRoles: RolesType[],
-    dto: ApproveConnectionRequestDto,
-  ): Promise<ConnectionRequestResponseDto> {
+  async approve(requestUid: string, reviewerUid: string, currentUserRoles: RolesType[], dto: ApproveConnectionRequestDto): Promise<ConnectionRequestResponseDto> {
     try {
       // Check if user is company owner or admin
-      if (
-        !currentUserRoles.includes(RolesType.COMPANY_OWNER) &&
-        !currentUserRoles.includes(RolesType.COMPANY_ADMIN)
-      ) {
-        throw new ForbiddenException(
-          'You must be a company owner or admin to approve requests',
-        );
+      if (!currentUserRoles.includes(RolesType.COMPANY_OWNER) && !currentUserRoles.includes(RolesType.COMPANY_ADMIN)) {
+        throw new ForbiddenException('You must be a company owner or admin to approve requests');
       }
 
       const reviewer = await this.databaseService.user.findUnique({
@@ -316,16 +256,12 @@ export class ConnectionRequestsService {
       }
 
       if (request.status !== 'PENDING') {
-        throw new BadRequestException(
-          `Connection request has already been ${request.status.toLowerCase()}`,
-        );
+        throw new BadRequestException(`Connection request has already been ${request.status.toLowerCase()}`);
       }
 
       // Check if reviewer belongs to the same company
       if (reviewer.companyId !== request.companyId) {
-        throw new ForbiddenException(
-          'You can only approve requests for your own company',
-        );
+        throw new ForbiddenException('You can only approve requests for your own company');
       }
 
       // Determine which role to assign (use provided or requested)
@@ -375,43 +311,26 @@ export class ConnectionRequestsService {
         },
       });
 
-      this.logger.log(
-        `Connection request ${requestUid} approved by ${reviewerUid}`,
-      );
+      this.logger.log(`Connection request ${requestUid} approved by ${reviewerUid}`);
 
       return this.mapToResponseDto(updatedRequest);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
-      this.logger.error(
-        `Failed to approve connection request: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to approve connection request: ${error.message}`,
-      );
+      this.logger.error(`Failed to approve connection request: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to approve connection request: ${error.message}`);
     }
   }
 
   /**
    * Deny a connection request
    */
-  async deny(
-    requestUid: string,
-    reviewerUid: string,
-    currentUserRoles: RolesType[],
-    dto: DenyConnectionRequestDto,
-  ): Promise<ConnectionRequestResponseDto> {
+  async deny(requestUid: string, reviewerUid: string, currentUserRoles: RolesType[], dto: DenyConnectionRequestDto): Promise<ConnectionRequestResponseDto> {
     try {
       // Check if user is company owner or admin
-      if (
-        !currentUserRoles.includes(RolesType.COMPANY_OWNER) &&
-        !currentUserRoles.includes(RolesType.COMPANY_ADMIN)
-      ) {
-        throw new ForbiddenException(
-          'You must be a company owner or admin to deny requests',
-        );
+      if (!currentUserRoles.includes(RolesType.COMPANY_OWNER) && !currentUserRoles.includes(RolesType.COMPANY_ADMIN)) {
+        throw new ForbiddenException('You must be a company owner or admin to deny requests');
       }
 
       const reviewer = await this.databaseService.user.findUnique({
@@ -435,16 +354,12 @@ export class ConnectionRequestsService {
       }
 
       if (request.status !== 'PENDING') {
-        throw new BadRequestException(
-          `Connection request has already been ${request.status.toLowerCase()}`,
-        );
+        throw new BadRequestException(`Connection request has already been ${request.status.toLowerCase()}`);
       }
 
       // Check if reviewer belongs to the same company
       if (reviewer.companyId !== request.companyId) {
-        throw new ForbiddenException(
-          'You can only deny requests for your own company',
-        );
+        throw new ForbiddenException('You can only deny requests for your own company');
       }
 
       // Update connection request
@@ -488,23 +403,15 @@ export class ConnectionRequestsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      this.logger.error(
-        `Failed to deny connection request: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to deny connection request: ${error.message}`,
-      );
+      this.logger.error(`Failed to deny connection request: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to deny connection request: ${error.message}`);
     }
   }
 
   /**
    * Cancel a connection request (by requester)
    */
-  async cancel(
-    requestUid: string,
-    userUid: string,
-  ): Promise<{ message: string }> {
+  async cancel(requestUid: string, userUid: string): Promise<{ message: string }> {
     try {
       const user = await this.databaseService.user.findUnique({
         where: { uid: userUid },
@@ -524,15 +431,11 @@ export class ConnectionRequestsService {
 
       // Check if request belongs to user
       if (request.userId !== user.id) {
-        throw new ForbiddenException(
-          'You can only cancel your own connection requests',
-        );
+        throw new ForbiddenException('You can only cancel your own connection requests');
       }
 
       if (request.status !== 'PENDING') {
-        throw new BadRequestException(
-          `Cannot cancel a request that has already been ${request.status.toLowerCase()}`,
-        );
+        throw new BadRequestException(`Cannot cancel a request that has already been ${request.status.toLowerCase()}`);
       }
 
       // Delete the request
@@ -547,13 +450,8 @@ export class ConnectionRequestsService {
       if (error instanceof HttpException) {
         throw error;
       }
-      this.logger.error(
-        `Failed to cancel connection request: ${error.message}`,
-        error.stack,
-      );
-      throw new InternalServerErrorException(
-        `Failed to cancel connection request: ${error.message}`,
-      );
+      this.logger.error(`Failed to cancel connection request: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to cancel connection request: ${error.message}`);
     }
   }
 

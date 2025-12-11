@@ -1,5 +1,14 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
-import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, RescheduleInterviewDto, CheckAvailabilityDto, AvailabilityCheckResponseDto, ConflictDto, AlternativeSlotDto } from './dto/interview.dto';
+import {
+  CreateInterviewDto,
+  UpdateInterviewDto,
+  InterviewResponseDto,
+  RescheduleInterviewDto,
+  CheckAvailabilityDto,
+  AvailabilityCheckResponseDto,
+  ConflictDto,
+  AlternativeSlotDto,
+} from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
 import { InterviewStatus, User, NotificationType } from '@prisma/client';
@@ -913,11 +922,7 @@ export class InterviewService {
         // If interviewer is busy, add to conflicts
         if (availability.busy) {
           // Find the specific busy slots that overlap with the proposed time
-          const overlappingSlots = this.findOverlappingSlots(
-            availability.availableSlots,
-            bufferedStartTime,
-            bufferedEndTime,
-          );
+          const overlappingSlots = this.findOverlappingSlots(availability.availableSlots, bufferedStartTime, bufferedEndTime);
 
           for (const slot of overlappingSlots) {
             conflicts.push({
@@ -946,13 +951,7 @@ export class InterviewService {
     // Suggest alternative slots if requested and there are conflicts
     let alternativeSlots: AlternativeSlotDto[] = [];
     if (!available && suggestAlternatives) {
-      alternativeSlots = await this.suggestAlternativeSlots(
-        interviewers,
-        proposedStartTime,
-        duration,
-        bufferMinutes,
-        timeZone,
-      );
+      alternativeSlots = await this.suggestAlternativeSlots(interviewers, proposedStartTime, duration, bufferMinutes, timeZone);
     }
 
     const response: AvailabilityCheckResponseDto = {
@@ -973,11 +972,7 @@ export class InterviewService {
   /**
    * Find busy slots that overlap with the proposed time range
    */
-  private findOverlappingSlots(
-    availableSlots: Array<{ startTime: string; endTime: string }>,
-    proposedStart: string,
-    proposedEnd: string,
-  ): Array<{ start: string; end: string }> {
+  private findOverlappingSlots(availableSlots: Array<{ startTime: string; endTime: string }>, proposedStart: string, proposedEnd: string): Array<{ start: string; end: string }> {
     const proposedStartTime = new Date(proposedStart).getTime();
     const proposedEndTime = new Date(proposedEnd).getTime();
 

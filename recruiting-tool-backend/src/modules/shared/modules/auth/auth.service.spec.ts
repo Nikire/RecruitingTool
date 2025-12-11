@@ -107,9 +107,7 @@ describe('AuthService', () => {
       };
 
       // First call returns null (user doesn't exist), second call returns the created user (for login)
-      mockUsersService.findByEmail
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(createdUser);
+      mockUsersService.findByEmail.mockResolvedValueOnce(null).mockResolvedValueOnce(createdUser);
       mockUsersService.create.mockResolvedValue(createdUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
       mockJwtService.signAsync.mockResolvedValue('mock-access-token');
@@ -175,9 +173,7 @@ describe('AuthService', () => {
       };
 
       // First call returns null (user doesn't exist), second call returns the created user (for login)
-      mockUsersService.findByEmail
-        .mockResolvedValueOnce(null)
-        .mockResolvedValueOnce(createdUser);
+      mockUsersService.findByEmail.mockResolvedValueOnce(null).mockResolvedValueOnce(createdUser);
       mockDatabaseService.company.create.mockResolvedValue(mockCompany);
       mockUsersService.create.mockResolvedValue(createdUser);
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);

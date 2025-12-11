@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsUUID, IsOptional, IsArray, IsEnum, IsString, IsNumber, Min } from 'class-validator';
+import { IsUUID, IsOptional, IsArray, IsEnum } from 'class-validator';
 import { CandidateScoreResponseDto } from './candidate-scoring.dto';
 
 export enum BatchPriority {

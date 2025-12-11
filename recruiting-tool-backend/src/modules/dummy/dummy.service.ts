@@ -315,9 +315,9 @@ export class DummyService implements OnApplicationBootstrap {
 
     // Arrays to store created or existing entities
     let createdCompanies = [];
-    let createdUsers = [];
+    const createdUsers = [];
     let createdJobPositions = [];
-    let createdCandidates = [];
+    const createdCandidates = [];
     let createdFileUploads = [];
     let createdHiringProcessStages = [];
     let createdInterviews = [];
@@ -364,7 +364,7 @@ export class DummyService implements OnApplicationBootstrap {
     const existingUsersCount = await this.databaseService.user.count({
       where: {
         email: {
-          in: data.users.map(u => u.email),
+          in: data.users.map((u) => u.email),
         },
       },
     });
@@ -410,7 +410,7 @@ export class DummyService implements OnApplicationBootstrap {
     const existingProfilesCount = await this.databaseService.profile.count({
       where: {
         userId: {
-          in: createdUsers.map(u => u.id),
+          in: createdUsers.map((u) => u.id),
         },
       },
     });
@@ -438,7 +438,7 @@ export class DummyService implements OnApplicationBootstrap {
     const existingJobPositionsCount = await this.databaseService.jobPosition.count({
       where: {
         companyId: {
-          in: createdCompanies.map(c => c.id),
+          in: createdCompanies.map((c) => c.id),
         },
       },
     });
@@ -498,7 +498,7 @@ export class DummyService implements OnApplicationBootstrap {
       createdJobPositions = await this.databaseService.jobPosition.findMany({
         where: {
           companyId: {
-            in: createdCompanies.map(c => c.id),
+            in: createdCompanies.map((c) => c.id),
           },
         },
         orderBy: { id: 'asc' },
@@ -510,7 +510,7 @@ export class DummyService implements OnApplicationBootstrap {
     const existingCandidatesCount = await this.databaseService.candidate.count({
       where: {
         email: {
-          in: data.candidates.map(c => c.email),
+          in: data.candidates.map((c) => c.email),
         },
       },
     });
@@ -554,7 +554,7 @@ export class DummyService implements OnApplicationBootstrap {
     const existingHiringProcessesCount = await this.databaseService.hiringProcess.count({
       where: {
         candidateId: {
-          in: createdCandidates.map(c => c.id),
+          in: createdCandidates.map((c) => c.id),
         },
       },
     });
@@ -574,70 +574,66 @@ export class DummyService implements OnApplicationBootstrap {
         // Use candidate's creation date as hiring process start date
         const hiringProcessStartDate = candidate.createdAt;
 
-      const hiringProcess = await this.databaseService.hiringProcess.create({
-        data: {
-          title: `${jobPosition.title} - ${candidate.name}`,
-          candidateId: candidate.id,
-          jobPositionId: jobPosition.id,
-          companyId: company.id,
-          createdAt: hiringProcessStartDate,
-        },
-      });
-
-      // Copy stages from job position to hiring process
-      const templateStages = await this.databaseService.stage.findMany({
-        where: {
-          jobPositionId: jobPosition.id,
-          hiringProcessId: null,
-        },
-        orderBy: { position: 'asc' },
-      });
-
-      // Determine how far this candidate progresses (realistic hiring funnel)
-      let currentStageIndex = 0;
-      for (let stageIndex = 0; stageIndex < templateStages.length; stageIndex++) {
-        if (this.shouldCandidateProgressToStage(stageIndex, templateStages.length)) {
-          currentStageIndex = stageIndex;
-        } else {
-          break; // Candidate dropped off at this stage
-        }
-      }
-
-      // Create stages with realistic status progression
-      for (let stageIndex = 0; stageIndex < templateStages.length; stageIndex++) {
-        const templateStage = templateStages[stageIndex];
-
-        // Determine stage status based on progression
-        let stageStatus: StageStatus;
-        if (stageIndex < currentStageIndex) {
-          stageStatus = StageStatus.DONE; // Already completed
-        } else if (stageIndex === currentStageIndex) {
-          stageStatus = StageStatus.CURRENT; // Currently here
-        } else {
-          stageStatus = StageStatus.OPEN; // Not reached yet
-        }
-
-        // Calculate creation date with progression
-        const stageCreatedAt = this.getStageProgressionDate(
-          hiringProcessStartDate,
-          stageIndex,
-          templateStages.length,
-        );
-
-        const createdStage = await this.databaseService.stage.create({
+        const hiringProcess = await this.databaseService.hiringProcess.create({
           data: {
-            title: templateStage.title,
-            type: templateStage.type,
-            description: templateStage.description,
-            estimatedTime: templateStage.estimatedTime,
-            position: stageIndex,
-            status: stageStatus,
-            hiringProcessId: hiringProcess.id,
-            createdAt: stageCreatedAt,
+            title: `${jobPosition.title} - ${candidate.name}`,
+            candidateId: candidate.id,
+            jobPositionId: jobPosition.id,
+            companyId: company.id,
+            createdAt: hiringProcessStartDate,
           },
         });
-        createdHiringProcessStages.push(createdStage);
-      }
+
+        // Copy stages from job position to hiring process
+        const templateStages = await this.databaseService.stage.findMany({
+          where: {
+            jobPositionId: jobPosition.id,
+            hiringProcessId: null,
+          },
+          orderBy: { position: 'asc' },
+        });
+
+        // Determine how far this candidate progresses (realistic hiring funnel)
+        let currentStageIndex = 0;
+        for (let stageIndex = 0; stageIndex < templateStages.length; stageIndex++) {
+          if (this.shouldCandidateProgressToStage(stageIndex, templateStages.length)) {
+            currentStageIndex = stageIndex;
+          } else {
+            break; // Candidate dropped off at this stage
+          }
+        }
+
+        // Create stages with realistic status progression
+        for (let stageIndex = 0; stageIndex < templateStages.length; stageIndex++) {
+          const templateStage = templateStages[stageIndex];
+
+          // Determine stage status based on progression
+          let stageStatus: StageStatus;
+          if (stageIndex < currentStageIndex) {
+            stageStatus = StageStatus.DONE; // Already completed
+          } else if (stageIndex === currentStageIndex) {
+            stageStatus = StageStatus.CURRENT; // Currently here
+          } else {
+            stageStatus = StageStatus.OPEN; // Not reached yet
+          }
+
+          // Calculate creation date with progression
+          const stageCreatedAt = this.getStageProgressionDate(hiringProcessStartDate, stageIndex, templateStages.length);
+
+          const createdStage = await this.databaseService.stage.create({
+            data: {
+              title: templateStage.title,
+              type: templateStage.type,
+              description: templateStage.description,
+              estimatedTime: templateStage.estimatedTime,
+              position: stageIndex,
+              status: stageStatus,
+              hiringProcessId: hiringProcess.id,
+              createdAt: stageCreatedAt,
+            },
+          });
+          createdHiringProcessStages.push(createdStage);
+        }
 
         this.logger.log(
           `Created hiring process: ${hiringProcess.title} (current stage: ${currentStageIndex + 1}/${templateStages.length}, start date: ${hiringProcessStartDate.toISOString().split('T')[0]})`,
@@ -798,75 +794,73 @@ export class DummyService implements OnApplicationBootstrap {
           continue;
         }
 
-      // Find the hiring process for this candidate
-      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
-        where: { candidateId: candidate.id },
-      });
+        // Find the hiring process for this candidate
+        const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+          where: { candidateId: candidate.id },
+        });
 
-      if (!hiringProcess) {
-        this.logger.warn(`No hiring process found for candidate ${candidate.name}, skipping interview`);
-        continue;
-      }
-
-      // Find the stage at the specified position for this hiring process
-      const stage = await this.databaseService.stage.findFirst({
-        where: {
-          hiringProcessId: hiringProcess.id,
-          position: interview.stagePosition,
-        },
-      });
-
-      if (!stage) {
-        this.logger.warn(`No stage found at position ${interview.stagePosition} for candidate ${candidate.name}, skipping interview`);
-        continue;
-      }
-
-      // Only create interviews for DONE or CURRENT stages (not future stages)
-      if (stage.status === StageStatus.OPEN) {
-        continue; // Skip interviews for stages not yet reached
-      }
-
-      // Interview scheduled 1-3 days after stage entry
-      const stageEnteredDate = stage.createdAt;
-      const interviewDate = new Date(stageEnteredDate);
-      interviewDate.setDate(interviewDate.getDate() + 1 + Math.floor(Math.random() * 2));
-
-      // Determine interview status based on weighted distribution
-      const randomValue = Math.random();
-      let cumulativeWeight = 0;
-      let selectedStatus = 'SCHEDULED';
-
-      for (let i = 0; i < interviewStatuses.length; i++) {
-        cumulativeWeight += interviewStatusWeights[i];
-        if (randomValue < cumulativeWeight) {
-          selectedStatus = interviewStatuses[i];
-          break;
+        if (!hiringProcess) {
+          this.logger.warn(`No hiring process found for candidate ${candidate.name}, skipping interview`);
+          continue;
         }
-      }
 
-      // If stage is DONE, interview must be COMPLETED
-      if (stage.status === StageStatus.DONE) {
-        selectedStatus = 'COMPLETED';
-      }
+        // Find the stage at the specified position for this hiring process
+        const stage = await this.databaseService.stage.findFirst({
+          where: {
+            hiringProcessId: hiringProcess.id,
+            position: interview.stagePosition,
+          },
+        });
 
-      const created = await this.databaseService.interview.create({
-        data: {
-          stageId: stage.id,
-          scheduledDate: interviewDate,
-          scheduledTime: interview.scheduledTime || '10:00',
-          duration: interview.duration || 60,
-          status: selectedStatus as any,
-          meetingLink: interview.meetingLink,
-          location: interview.location,
-          notes: interview.notes,
-          scheduledById: createdUsers[interview.scheduledByUserIndex].id,
-          createdAt: stageEnteredDate,
-        },
-      });
+        if (!stage) {
+          this.logger.warn(`No stage found at position ${interview.stagePosition} for candidate ${candidate.name}, skipping interview`);
+          continue;
+        }
+
+        // Only create interviews for DONE or CURRENT stages (not future stages)
+        if (stage.status === StageStatus.OPEN) {
+          continue; // Skip interviews for stages not yet reached
+        }
+
+        // Interview scheduled 1-3 days after stage entry
+        const stageEnteredDate = stage.createdAt;
+        const interviewDate = new Date(stageEnteredDate);
+        interviewDate.setDate(interviewDate.getDate() + 1 + Math.floor(Math.random() * 2));
+
+        // Determine interview status based on weighted distribution
+        const randomValue = Math.random();
+        let cumulativeWeight = 0;
+        let selectedStatus = 'SCHEDULED';
+
+        for (let i = 0; i < interviewStatuses.length; i++) {
+          cumulativeWeight += interviewStatusWeights[i];
+          if (randomValue < cumulativeWeight) {
+            selectedStatus = interviewStatuses[i];
+            break;
+          }
+        }
+
+        // If stage is DONE, interview must be COMPLETED
+        if (stage.status === StageStatus.DONE) {
+          selectedStatus = 'COMPLETED';
+        }
+
+        const created = await this.databaseService.interview.create({
+          data: {
+            stageId: stage.id,
+            scheduledDate: interviewDate,
+            scheduledTime: interview.scheduledTime || '10:00',
+            duration: interview.duration || 60,
+            status: selectedStatus as any,
+            meetingLink: interview.meetingLink,
+            location: interview.location,
+            notes: interview.notes,
+            scheduledById: createdUsers[interview.scheduledByUserIndex].id,
+            createdAt: stageEnteredDate,
+          },
+        });
         createdInterviews.push(created);
-        this.logger.log(
-          `Created interview for ${candidate.name} at stage ${stage.title} (status: ${selectedStatus}, date: ${interviewDate.toISOString().split('T')[0]})`,
-        );
+        this.logger.log(`Created interview for ${candidate.name} at stage ${stage.title} (status: ${selectedStatus}, date: ${interviewDate.toISOString().split('T')[0]})`);
       }
     } else {
       // Interviews exist - retrieve them in order
@@ -920,9 +914,7 @@ export class DummyService implements OnApplicationBootstrap {
             createdAt: activityDate,
           },
         });
-        this.logger.log(
-          `Created activity for ${candidate.name}: ${activity.type} at ${activityDate.toISOString().split('T')[0]}`,
-        );
+        this.logger.log(`Created activity for ${candidate.name}: ${activity.type} at ${activityDate.toISOString().split('T')[0]}`);
       }
     }
 
@@ -1027,9 +1019,7 @@ export class DummyService implements OnApplicationBootstrap {
             duration: duration,
           },
         });
-        this.logger.log(
-          `Created time log for ${candidate.name} at stage ${stage.title} (duration: ${duration ? duration + ' hours' : 'ongoing'})`,
-        );
+        this.logger.log(`Created time log for ${candidate.name} at stage ${stage.title} (duration: ${duration ? duration + ' hours' : 'ongoing'})`);
       }
     }
 
@@ -1054,9 +1044,7 @@ export class DummyService implements OnApplicationBootstrap {
             createdAt: sentAt,
           },
         });
-        this.logger.log(
-          `Created email log: ${emailLog.emailType} to ${emailLog.recipientName} (sent: ${sentAt.toISOString().split('T')[0]})`,
-        );
+        this.logger.log(`Created email log: ${emailLog.emailType} to ${emailLog.recipientName} (sent: ${sentAt.toISOString().split('T')[0]})`);
       }
     }
 
@@ -1079,7 +1067,9 @@ export class DummyService implements OnApplicationBootstrap {
             isAvailable: schedule.isAvailable,
           },
         });
-        this.logger.log(`Created schedule for ${user.name}: ${schedule.isRecurring ? 'Recurring' : 'One-time'} ${schedule.isAvailable ? 'Available' : 'Unavailable'} on ${schedule.specificDate || `Day ${schedule.dayOfWeek}`} ${schedule.startTime}-${schedule.endTime}`);
+        this.logger.log(
+          `Created schedule for ${user.name}: ${schedule.isRecurring ? 'Recurring' : 'One-time'} ${schedule.isAvailable ? 'Available' : 'Unavailable'} on ${schedule.specificDate || `Day ${schedule.dayOfWeek}`} ${schedule.startTime}-${schedule.endTime}`,
+        );
       }
     }
 
@@ -1154,9 +1144,7 @@ export class DummyService implements OnApplicationBootstrap {
             createdAt: scoredAt,
           },
         });
-        this.logger.log(
-          `Created score for ${candidate.name} on ${jobPosition.title}: ${score.overallScore}/100 (scored: ${scoredAt.toISOString().split('T')[0]})`,
-        );
+        this.logger.log(`Created score for ${candidate.name} on ${jobPosition.title}: ${score.overallScore}/100 (scored: ${scoredAt.toISOString().split('T')[0]})`);
       }
     }
 
@@ -1204,9 +1192,7 @@ export class DummyService implements OnApplicationBootstrap {
             createdAt: usageDate,
           },
         });
-        this.logger.log(
-          `Created AI usage log: ${user.name} - ${log.operation} (${log.tokensUsed || 0} tokens, date: ${usageDate.toISOString().split('T')[0]})`,
-        );
+        this.logger.log(`Created AI usage log: ${user.name} - ${log.operation} (${log.tokensUsed || 0} tokens, date: ${usageDate.toISOString().split('T')[0]})`);
       }
     }
 

@@ -148,15 +148,7 @@ export class SseService {
   /**
    * Emit notification event
    */
-  emitNotification(
-    notificationUid: string,
-    type: string,
-    title: string,
-    message: string,
-    metadata: Record<string, any> | undefined,
-    userUid: string,
-    companyUid?: string,
-  ): void {
+  emitNotification(notificationUid: string, type: string, title: string, message: string, metadata: Record<string, any> | undefined, userUid: string, companyUid?: string): void {
     const event = new SSEEventDto(
       SSEEventType.NOTIFICATION,
       {

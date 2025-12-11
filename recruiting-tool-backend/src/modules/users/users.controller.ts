@@ -2,7 +2,18 @@ import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query, Request,
 import { UsersService } from './users.service';
 import { CreateUserDto, UserResponseDto, UpdateUserDto, UserActivityLogResponseDto, UpdateProfileDto } from './dto/users.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
-import { ApiBearerAuth, ApiBody, ApiConflictResponse, ApiNotFoundResponse, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiConsumes } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConflictResponse,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiConsumes,
+} from '@nestjs/swagger';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { UserActivityService } from './services/user-activity.service';
@@ -204,11 +215,7 @@ export class UsersController {
     @UploadedFile(
       new FileValidationPipe({
         maxSize: 5 * 1024 * 1024, // 5MB
-        allowedMimeTypes: [
-          'application/pdf',
-          'application/msword',
-          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        ],
+        allowedMimeTypes: ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'],
       }),
     )
     file: Express.Multer.File,

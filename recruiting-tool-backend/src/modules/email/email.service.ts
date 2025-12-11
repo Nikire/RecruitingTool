@@ -363,13 +363,7 @@ ${text}
    * Create a notification for a user if they have an account
    * This mirrors important emails as in-app notifications
    */
-  private async mirrorEmailAsNotification(
-    recipientEmail: string,
-    subject: string,
-    message: string,
-    emailType: string,
-    relatedEntityId?: string,
-  ): Promise<void> {
+  private async mirrorEmailAsNotification(recipientEmail: string, subject: string, message: string, emailType: string, relatedEntityId?: string): Promise<void> {
     try {
       // Check if the recipient email belongs to a user account
       // Use findFirst since email is not unique alone (email + companyId is unique)
@@ -456,21 +450,10 @@ ${text}
   /**
    * Send team invitation email
    */
-  async sendTeamInvitation(
-    recipientEmail: string,
-    data: TeamInvitationData,
-  ): Promise<void> {
+  async sendTeamInvitation(recipientEmail: string, data: TeamInvitationData): Promise<void> {
     const { subject, text, html } = teamInvitationTemplate(data);
-    await this.sendEmail(
-      recipientEmail,
-      subject,
-      text,
-      html,
-      'TEAM_INVITATION',
-    );
-    this.logger.log(
-      `Team invitation sent to ${recipientEmail} for ${data.companyName}`,
-    );
+    await this.sendEmail(recipientEmail, subject, text, html, 'TEAM_INVITATION');
+    this.logger.log(`Team invitation sent to ${recipientEmail} for ${data.companyName}`);
   }
 
   /**

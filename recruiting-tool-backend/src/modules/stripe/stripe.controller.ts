@@ -26,8 +26,7 @@ export class StripeController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Create Stripe Checkout session',
-    description:
-      'Creates a Stripe Checkout session for subscribing to a paid plan. Accessible by company admins and owners.',
+    description: 'Creates a Stripe Checkout session for subscribing to a paid plan. Accessible by company admins and owners.',
   })
   @ApiResponse({
     status: 200,
@@ -54,10 +53,7 @@ export class StripeController {
     status: 500,
     description: 'Internal server error',
   })
-  async createCheckoutSession(
-    @CurrentUser() user: any,
-    @Body() dto: CreateCheckoutSessionDto,
-  ): Promise<CheckoutSessionResponseDto> {
+  async createCheckoutSession(@CurrentUser() user: any, @Body() dto: CreateCheckoutSessionDto): Promise<CheckoutSessionResponseDto> {
     return this.stripeService.createCheckoutSession(user.companyId, dto);
   }
 
@@ -66,8 +62,7 @@ export class StripeController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get current subscription',
-    description:
-      'Retrieves the current subscription details for the company. Automatically syncs with Stripe if needed.',
+    description: 'Retrieves the current subscription details for the company. Automatically syncs with Stripe if needed.',
   })
   @ApiResponse({
     status: 200,
@@ -96,8 +91,7 @@ export class StripeController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Cancel subscription',
-    description:
-      'Cancels the subscription at the end of the current billing period. Accessible by company admins and owners.',
+    description: 'Cancels the subscription at the end of the current billing period. Accessible by company admins and owners.',
   })
   @ApiResponse({
     status: 200,
@@ -124,9 +118,7 @@ export class StripeController {
     status: 500,
     description: 'Internal server error',
   })
-  async cancelSubscription(
-    @CurrentUser() user: any,
-  ): Promise<CancelSubscriptionResponseDto> {
+  async cancelSubscription(@CurrentUser() user: any): Promise<CancelSubscriptionResponseDto> {
     return this.stripeService.cancelSubscription(user.companyId);
   }
 
@@ -164,10 +156,7 @@ export class StripeController {
     status: 500,
     description: 'Internal server error',
   })
-  async createBillingPortalSession(
-    @CurrentUser() user: any,
-    @Body() dto: CreateBillingPortalDto,
-  ): Promise<BillingPortalResponseDto> {
+  async createBillingPortalSession(@CurrentUser() user: any, @Body() dto: CreateBillingPortalDto): Promise<BillingPortalResponseDto> {
     return this.stripeService.createBillingPortalSession(user.companyId, dto);
   }
 
@@ -176,8 +165,7 @@ export class StripeController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Get billing invoices',
-    description:
-      'Retrieves the list of billing invoices from Stripe for the company. Accessible only by company owners.',
+    description: 'Retrieves the list of billing invoices from Stripe for the company. Accessible only by company owners.',
   })
   @ApiResponse({
     status: 200,
@@ -207,10 +195,7 @@ export class StripeController {
   @Post('webhook')
   @HttpCode(HttpStatus.OK)
   @ApiExcludeEndpoint()
-  async handleWebhook(
-    @Headers('stripe-signature') signature: string,
-    @Req() request: RawBodyRequest<Request>,
-  ): Promise<{ received: boolean }> {
+  async handleWebhook(@Headers('stripe-signature') signature: string, @Req() request: RawBodyRequest<Request>): Promise<{ received: boolean }> {
     if (!signature) {
       throw new BadRequestException('Missing stripe-signature header');
     }

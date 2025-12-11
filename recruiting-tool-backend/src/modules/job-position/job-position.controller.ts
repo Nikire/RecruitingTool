@@ -5,7 +5,14 @@ import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { JobPositionService } from './job-position.service';
 import { User } from '@prisma/client';
-import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto, JobPositionFiltersDto, PaginatedPublicJobPositionResponseDto } from './dto/job-position.dto';
+import {
+  CreateJobPositionDto,
+  JobPositionResponseDto,
+  UpdateJobPositionDto,
+  PublicJobPositionResponseDto,
+  JobPositionFiltersDto,
+  PaginatedPublicJobPositionResponseDto,
+} from './dto/job-position.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CheckQuota } from '../quota/decorators/check-quota.decorator';

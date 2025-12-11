@@ -26,7 +26,7 @@ export class CustomThrottlerGuard extends ThrottlerGuard {
   /**
    * Override error message to be more user-friendly
    */
-  protected async throwThrottlingException(context: ExecutionContext, throttlerLimitDetail: ThrottlerLimitDetail): Promise<void> {
+  protected async throwThrottlingException(_context: ExecutionContext, _throttlerLimitDetail: ThrottlerLimitDetail): Promise<void> {
     throw new ThrottlerException('Too many requests. Please try again later.');
   }
 }

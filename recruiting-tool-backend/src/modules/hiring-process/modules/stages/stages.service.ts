@@ -520,9 +520,7 @@ export class StagesService {
 
         // Send notifications for stage change
         try {
-          const notificationType = targetStage.position > (currentStage?.position || 0)
-            ? NotificationType.CANDIDATE_STAGE_ADVANCED
-            : NotificationType.HIRING_PROCESS_STAGE_CHANGED;
+          const notificationType = targetStage.position > (currentStage?.position || 0) ? NotificationType.CANDIDATE_STAGE_ADVANCED : NotificationType.HIRING_PROCESS_STAGE_CHANGED;
 
           // Notify HR users
           const hrUsers = await this.databaseService.user.findMany({

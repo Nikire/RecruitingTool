@@ -1,40 +1,15 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Patch,
-  Delete,
-  Body,
-  Param,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Post, Get, Patch, Delete, Body, Param, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { ConnectionRequestsService } from './connection-requests.service';
 import { AuthGuard } from '../shared/modules/auth/guards/auth.guard';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
-import {
-  CreateConnectionRequestDto,
-  ApproveConnectionRequestDto,
-  DenyConnectionRequestDto,
-  ConnectionRequestResponseDto,
-  GetConnectionRequestsQueryDto,
-} from './dto';
+import { CreateConnectionRequestDto, ApproveConnectionRequestDto, DenyConnectionRequestDto, ConnectionRequestResponseDto, GetConnectionRequestsQueryDto } from './dto';
 
 @ApiTags('Connection Requests')
 @Controller('connection-requests')
 export class ConnectionRequestsController {
-  constructor(
-    private readonly connectionRequestsService: ConnectionRequestsService,
-  ) {}
+  constructor(private readonly connectionRequestsService: ConnectionRequestsService) {}
 
   /**
    * Submit a request to join a company
@@ -60,10 +35,7 @@ export class ConnectionRequestsController {
     status: 409,
     description: 'Pending or approved request already exists',
   })
-  async create(
-    @CurrentUser('uid') userUid: string,
-    @Body() dto: CreateConnectionRequestDto,
-  ): Promise<ConnectionRequestResponseDto> {
+  async create(@CurrentUser('uid') userUid: string, @Body() dto: CreateConnectionRequestDto): Promise<ConnectionRequestResponseDto> {
     return this.connectionRequestsService.create(userUid, dto);
   }
 
@@ -82,10 +54,7 @@ export class ConnectionRequestsController {
   @ApiQuery({ name: 'status', required: false, description: 'Filter by status' })
   @ApiQuery({ name: 'limit', required: false, description: 'Limit results' })
   @ApiQuery({ name: 'skip', required: false, description: 'Skip records' })
-  async getMyRequests(
-    @CurrentUser('uid') userUid: string,
-    @Query() query: GetConnectionRequestsQueryDto,
-  ): Promise<ConnectionRequestResponseDto[]> {
+  async getMyRequests(@CurrentUser('uid') userUid: string, @Query() query: GetConnectionRequestsQueryDto): Promise<ConnectionRequestResponseDto[]> {
     return this.connectionRequestsService.getMyRequests(userUid, query);
   }
 
@@ -120,11 +89,7 @@ export class ConnectionRequestsController {
     @CurrentUser('roles') currentUserRoles: RolesType[],
     @Query() query: GetConnectionRequestsQueryDto,
   ): Promise<ConnectionRequestResponseDto[]> {
-    return this.connectionRequestsService.getCompanyRequests(
-      companyUid,
-      currentUserRoles,
-      query,
-    );
+    return this.connectionRequestsService.getCompanyRequests(companyUid, currentUserRoles, query);
   }
 
   /**
@@ -158,12 +123,7 @@ export class ConnectionRequestsController {
     @CurrentUser('roles') currentUserRoles: RolesType[],
     @Body() dto: ApproveConnectionRequestDto,
   ): Promise<ConnectionRequestResponseDto> {
-    return this.connectionRequestsService.approve(
-      requestUid,
-      reviewerUid,
-      currentUserRoles,
-      dto,
-    );
+    return this.connectionRequestsService.approve(requestUid, reviewerUid, currentUserRoles, dto);
   }
 
   /**
@@ -197,12 +157,7 @@ export class ConnectionRequestsController {
     @CurrentUser('roles') currentUserRoles: RolesType[],
     @Body() dto: DenyConnectionRequestDto,
   ): Promise<ConnectionRequestResponseDto> {
-    return this.connectionRequestsService.deny(
-      requestUid,
-      reviewerUid,
-      currentUserRoles,
-      dto,
-    );
+    return this.connectionRequestsService.deny(requestUid, reviewerUid, currentUserRoles, dto);
   }
 
   /**
@@ -229,10 +184,7 @@ export class ConnectionRequestsController {
     status: 404,
     description: 'Connection request not found',
   })
-  async cancel(
-    @Param('uid') requestUid: string,
-    @CurrentUser('uid') userUid: string,
-  ): Promise<{ message: string }> {
+  async cancel(@Param('uid') requestUid: string, @CurrentUser('uid') userUid: string): Promise<{ message: string }> {
     return this.connectionRequestsService.cancel(requestUid, userUid);
   }
 }

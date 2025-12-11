@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { DatabaseService } from '../../shared/modules/database/database.service';
 import { SubscriptionStatus } from '@prisma/client';
@@ -45,32 +39,20 @@ export class SubscriptionGuard implements CanActivate {
 
       // Check if subscription is EXPIRED
       if (subscription.status === SubscriptionStatus.EXPIRED) {
-        this.logger.warn(
-          `Access blocked for company ${user.companyId}: Subscription expired`,
-        );
-        throw new ForbiddenException(
-          'Your subscription has expired. Please renew your subscription to access this feature.',
-        );
+        this.logger.warn(`Access blocked for company ${user.companyId}: Subscription expired`);
+        throw new ForbiddenException('Your subscription has expired. Please renew your subscription to access this feature.');
       }
 
       // Check if grace period has expired (PAST_DUE with expired grace period)
-      if (
-        subscription.status === SubscriptionStatus.PAST_DUE &&
-        subscription.gracePeriodEndsAt &&
-        new Date() > subscription.gracePeriodEndsAt
-      ) {
+      if (subscription.status === SubscriptionStatus.PAST_DUE && subscription.gracePeriodEndsAt && new Date() > subscription.gracePeriodEndsAt) {
         // Grace period expired - update status to EXPIRED
         await this.databaseService.subscription.update({
           where: { id: subscription.id },
           data: { status: SubscriptionStatus.EXPIRED },
         });
 
-        this.logger.warn(
-          `Access blocked for company ${user.companyId}: Grace period expired`,
-        );
-        throw new ForbiddenException(
-          'Your subscription grace period has expired. Please update your payment method to restore access.',
-        );
+        this.logger.warn(`Access blocked for company ${user.companyId}: Grace period expired`);
+        throw new ForbiddenException('Your subscription grace period has expired. Please update your payment method to restore access.');
       }
 
       // Allow access for: TRIALING, ACTIVE, CANCELED (until period end), PAST_DUE (within grace period)
@@ -81,10 +63,7 @@ export class SubscriptionGuard implements CanActivate {
       }
 
       // Log error but don't block access (fail open)
-      this.logger.error(
-        `Error checking subscription for company ${user.companyId}: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Error checking subscription for company ${user.companyId}: ${error.message}`, error.stack);
       return true;
     }
   }

@@ -118,9 +118,7 @@ export class GeminiService {
         this.totalTokensUsed += tokenUsage.totalTokens;
         this.requestCount++;
 
-        this.logger.log(
-          `Gemini API success (attempt ${attempt}). Tokens: ${tokenUsage.totalTokens}, Total used: ${this.totalTokensUsed}, Total requests: ${this.requestCount}`,
-        );
+        this.logger.log(`Gemini API success (attempt ${attempt}). Tokens: ${tokenUsage.totalTokens}, Total used: ${this.totalTokensUsed}, Total requests: ${this.requestCount}`);
 
         // Record successful request timestamp
         this.recordRequest();

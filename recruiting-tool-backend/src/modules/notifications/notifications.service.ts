@@ -1,11 +1,7 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SseService } from '../sse/sse.service';
-import {
-  CreateNotificationDto,
-  NotificationResponseDto,
-  GetNotificationsQueryDto,
-} from './dto';
+import { CreateNotificationDto, NotificationResponseDto, GetNotificationsQueryDto } from './dto';
 
 @Injectable()
 export class NotificationsService {
@@ -48,15 +44,7 @@ export class NotificationsService {
     });
 
     // Emit SSE event for real-time notification delivery
-    this.sseService.emitNotification(
-      notification.uid,
-      notification.type,
-      notification.title,
-      notification.message,
-      notification.metadata,
-      user.uid,
-      user.company?.uid,
-    );
+    this.sseService.emitNotification(notification.uid, notification.type, notification.title, notification.message, notification.metadata, user.uid, user.company?.uid);
 
     return this.mapToResponseDto(notification);
   }
@@ -64,10 +52,7 @@ export class NotificationsService {
   /**
    * Get all notifications for a user with pagination
    */
-  async findAll(
-    userUid: string,
-    query: GetNotificationsQueryDto,
-  ): Promise<NotificationResponseDto[]> {
+  async findAll(userUid: string, query: GetNotificationsQueryDto): Promise<NotificationResponseDto[]> {
     this.logger.log(`Fetching notifications for user ${userUid}`);
 
     const user = await this.databaseService.user.findUnique({

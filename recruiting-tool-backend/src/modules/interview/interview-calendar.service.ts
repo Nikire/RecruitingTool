@@ -238,10 +238,7 @@ export class InterviewCalendarService {
    * Build event description with interview details
    */
   private buildEventDescription(interview: Interview, candidateName: string, stageTitle: string): string {
-    const parts = [
-      `Interview with ${candidateName}`,
-      `Stage: ${stageTitle}`,
-    ];
+    const parts = [`Interview with ${candidateName}`, `Stage: ${stageTitle}`];
 
     if (interview.notes) {
       parts.push('', `Notes: ${interview.notes}`);

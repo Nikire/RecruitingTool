@@ -18,7 +18,7 @@ export class CacheService {
    * Note: This is a simplified implementation for in-memory cache
    * For Redis, you would use SCAN/KEYS commands
    */
-  async invalidatePattern(pattern: string): Promise<void> {
+  async invalidatePattern(_pattern: string): Promise<void> {
     // For in-memory cache-manager, we cannot list keys easily
     // This is a no-op for now - cache will expire based on TTL
     // When migrating to Redis, implement proper key scanning

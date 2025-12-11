@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -51,9 +45,7 @@ export class StripeService {
    */
   private ensureEnabled(): void {
     if (!this.isEnabled || !this.stripe) {
-      throw new BadRequestException(
-        'Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.',
-      );
+      throw new BadRequestException('Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.');
     }
   }
 
@@ -116,10 +108,7 @@ export class StripeService {
   /**
    * Create a Stripe Checkout session for subscription
    */
-  async createCheckoutSession(
-    companyId: number,
-    dto: CreateCheckoutSessionDto,
-  ): Promise<CheckoutSessionResponseDto> {
+  async createCheckoutSession(companyId: number, dto: CreateCheckoutSessionDto): Promise<CheckoutSessionResponseDto> {
     this.ensureEnabled();
     try {
       const company = await this.databaseService.company.findUnique({
@@ -276,12 +265,9 @@ export class StripeService {
       }
 
       // Cancel subscription in Stripe (at period end)
-      const stripeSubscription = await this.stripe!.subscriptions.update(
-        company.subscription.stripeSubscriptionId,
-        {
-          cancel_at_period_end: true,
-        },
-      );
+      const stripeSubscription = await this.stripe!.subscriptions.update(company.subscription.stripeSubscriptionId, {
+        cancel_at_period_end: true,
+      });
 
       // Update local subscription record
       await this.databaseService.subscription.update({
@@ -316,10 +302,7 @@ export class StripeService {
       };
     } catch (error) {
       this.logger.error(`Failed to cancel subscription: ${error.message}`, error.stack);
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to cancel subscription');
@@ -329,10 +312,7 @@ export class StripeService {
   /**
    * Create a Stripe Customer Portal session
    */
-  async createBillingPortalSession(
-    companyId: number,
-    dto: CreateBillingPortalDto,
-  ): Promise<BillingPortalResponseDto> {
+  async createBillingPortalSession(companyId: number, dto: CreateBillingPortalDto): Promise<BillingPortalResponseDto> {
     this.ensureEnabled();
     try {
       const company = await this.databaseService.company.findUnique({
@@ -345,9 +325,7 @@ export class StripeService {
       }
 
       if (!company.subscription?.stripeCustomerId) {
-        throw new BadRequestException(
-          'No Stripe customer found. Please subscribe to a plan first.',
-        );
+        throw new BadRequestException('No Stripe customer found. Please subscribe to a plan first.');
       }
 
       // Create billing portal session
@@ -363,10 +341,7 @@ export class StripeService {
       };
     } catch (error) {
       this.logger.error(`Failed to create billing portal session: ${error.message}`, error.stack);
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to create billing portal session');
@@ -376,13 +351,9 @@ export class StripeService {
   /**
    * Sync subscription data from Stripe
    */
-  private async syncSubscriptionWithStripe(
-    subscriptionId: number,
-    stripeSubscriptionId: string,
-  ): Promise<void> {
+  private async syncSubscriptionWithStripe(subscriptionId: number, stripeSubscriptionId: string): Promise<void> {
     try {
-      const stripeSubscription =
-        await this.stripe!.subscriptions.retrieve(stripeSubscriptionId);
+      const stripeSubscription = await this.stripe!.subscriptions.retrieve(stripeSubscriptionId);
 
       // Get current period from the first subscription item
       const currentPeriodStart = stripeSubscription.items?.data?.[0]?.current_period_start;
@@ -392,22 +363,15 @@ export class StripeService {
         where: { id: subscriptionId },
         data: {
           status: this.mapStripeStatus(stripeSubscription.status),
-          currentPeriodStart: currentPeriodStart
-            ? new Date(currentPeriodStart * 1000)
-            : null,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
           cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
         },
       });
 
       this.logger.log(`Synced subscription ${subscriptionId} with Stripe`);
     } catch (error) {
-      this.logger.error(
-        `Failed to sync subscription with Stripe: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to sync subscription with Stripe: ${error.message}`, error.stack);
       // Don't throw - this is a background sync operation
     }
   }
@@ -438,13 +402,9 @@ export class StripeService {
     let envVar: string;
 
     if (interval === 'annual') {
-      envVar = plan === 'PROFESSIONAL'
-        ? 'STRIPE_PROFESSIONAL_ANNUAL_PRICE_ID'
-        : 'STRIPE_ENTERPRISE_ANNUAL_PRICE_ID';
+      envVar = plan === 'PROFESSIONAL' ? 'STRIPE_PROFESSIONAL_ANNUAL_PRICE_ID' : 'STRIPE_ENTERPRISE_ANNUAL_PRICE_ID';
     } else {
-      envVar = plan === 'PROFESSIONAL'
-        ? 'STRIPE_PROFESSIONAL_PRICE_ID'
-        : 'STRIPE_ENTERPRISE_PRICE_ID';
+      envVar = plan === 'PROFESSIONAL' ? 'STRIPE_PROFESSIONAL_PRICE_ID' : 'STRIPE_ENTERPRISE_PRICE_ID';
     }
 
     const priceId = this.configService.get<string>(envVar);
@@ -625,12 +585,8 @@ export class StripeService {
           stripeSubscriptionId: stripeSubscription.id,
           status: this.mapStripeStatus(stripeSubscription.status),
           plan,
-          currentPeriodStart: currentPeriodStart
-            ? new Date(currentPeriodStart * 1000)
-            : null,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
           trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
           cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
         },
@@ -643,12 +599,8 @@ export class StripeService {
           stripeSubscriptionId: stripeSubscription.id,
           status: this.mapStripeStatus(stripeSubscription.status),
           plan,
-          currentPeriodStart: currentPeriodStart
-            ? new Date(currentPeriodStart * 1000)
-            : null,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
           trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
           cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
         },
@@ -700,12 +652,8 @@ export class StripeService {
       data: {
         status: this.mapStripeStatus(stripeSubscription.status),
         plan: newPlan,
-        currentPeriodStart: currentPeriodStart
-          ? new Date(currentPeriodStart * 1000)
-          : null,
-        currentPeriodEnd: currentPeriodEnd
-          ? new Date(currentPeriodEnd * 1000)
-          : null,
+        currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+        currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
         trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
         cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
       },
@@ -719,13 +667,9 @@ export class StripeService {
 
       await this.createSubscriptionNotification(
         subscription.companyId,
-        isPlanUpgrade
-          ? NotificationType.SUBSCRIPTION_PLAN_UPGRADED
-          : NotificationType.SUBSCRIPTION_PLAN_DOWNGRADED,
+        isPlanUpgrade ? NotificationType.SUBSCRIPTION_PLAN_UPGRADED : NotificationType.SUBSCRIPTION_PLAN_DOWNGRADED,
         isPlanUpgrade ? 'Plan Upgraded' : 'Plan Downgraded',
-        isPlanUpgrade
-          ? `Your plan has been upgraded from ${oldPlan} to ${newPlan}. Enjoy your new features!`
-          : `Your plan has been changed from ${oldPlan} to ${newPlan}.`,
+        isPlanUpgrade ? `Your plan has been upgraded from ${oldPlan} to ${newPlan}. Enjoy your new features!` : `Your plan has been changed from ${oldPlan} to ${newPlan}.`,
         {
           subscriptionUid: subscription.uid,
           oldPlan,
@@ -898,13 +842,7 @@ export class StripeService {
   /**
    * Create subscription notification for Company Owners
    */
-  private async createSubscriptionNotification(
-    companyId: number,
-    type: NotificationType,
-    title: string,
-    message: string,
-    metadata?: Record<string, any>,
-  ): Promise<void> {
+  private async createSubscriptionNotification(companyId: number, type: NotificationType, title: string, message: string, metadata?: Record<string, any>): Promise<void> {
     try {
       // Find all Company Owners for this company
       const companyOwners = await this.databaseService.user.findMany({
@@ -936,10 +874,7 @@ export class StripeService {
       this.logger.log(`Created ${type} notifications for ${companyOwners.length} company owner(s)`);
     } catch (error) {
       // Don't throw - notification failures shouldn't break subscription operations
-      this.logger.error(
-        `Failed to create subscription notification: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to create subscription notification: ${error.message}`, error.stack);
     }
   }
 

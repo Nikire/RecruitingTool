@@ -262,46 +262,33 @@ describe('Authentication E2E Tests (e2e)', () => {
 
     beforeAll(async () => {
       // Login to get tokens
-      const response = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: testUser.email,
-          password: testUser.password,
-        });
+      const response = await request(app.getHttpServer()).post('/auth/login').send({
+        email: testUser.email,
+        password: testUser.password,
+      });
 
       accessToken = response.body.token;
       refreshToken = response.body.refreshToken;
     });
 
     it('should accept valid access token', async () => {
-      await request(app.getHttpServer())
-        .get('/profile')
-        .set('Authorization', `Bearer ${accessToken}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/profile').set('Authorization', `Bearer ${accessToken}`).expect(200);
     });
 
     it('should reject request without token', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/profile')
-        .expect(401);
+      const response = await request(app.getHttpServer()).get('/profile').expect(401);
 
       expect(response.body.message).toContain('No token provided');
     });
 
     it('should reject request with invalid token', async () => {
-      const response = await request(app.getHttpServer())
-        .get('/profile')
-        .set('Authorization', 'Bearer invalid-token-12345')
-        .expect(401);
+      const response = await request(app.getHttpServer()).get('/profile').set('Authorization', 'Bearer invalid-token-12345').expect(401);
 
       expect(response.body.message).toContain('Invalid token');
     });
 
     it('should reject request with malformed authorization header', async () => {
-      await request(app.getHttpServer())
-        .get('/profile')
-        .set('Authorization', 'InvalidFormat')
-        .expect(401);
+      await request(app.getHttpServer()).get('/profile').set('Authorization', 'InvalidFormat').expect(401);
     });
 
     describe('POST /auth/refresh', () => {
@@ -390,12 +377,10 @@ describe('Authentication E2E Tests (e2e)', () => {
     describe('POST /auth/logout', () => {
       it('should logout and revoke refresh token', async () => {
         // Get a fresh token for logout test
-        const loginResponse = await request(app.getHttpServer())
-          .post('/auth/login')
-          .send({
-            email: testUser.email,
-            password: testUser.password,
-          });
+        const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+          email: testUser.email,
+          password: testUser.password,
+        });
 
         const logoutRefreshToken = loginResponse.body.refreshToken;
 
@@ -464,20 +449,15 @@ describe('Authentication E2E Tests (e2e)', () => {
         });
 
       // Login to get token
-      const loginResponse = await request(app.getHttpServer())
-        .post('/auth/login')
-        .send({
-          email: tempEmail,
-          password: testUser.password,
-        });
+      const loginResponse = await request(app.getHttpServer()).post('/auth/login').send({
+        email: tempEmail,
+        password: testUser.password,
+      });
 
       const token = loginResponse.body.token;
 
       // Token should work
-      await request(app.getHttpServer())
-        .get('/profile')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(200);
+      await request(app.getHttpServer()).get('/profile').set('Authorization', `Bearer ${token}`).expect(200);
 
       // Deactivate user
       await databaseService.user.update({
@@ -489,10 +469,7 @@ describe('Authentication E2E Tests (e2e)', () => {
       });
 
       // Token should now be rejected
-      const response = await request(app.getHttpServer())
-        .get('/profile')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(401);
+      const response = await request(app.getHttpServer()).get('/profile').set('Authorization', `Bearer ${token}`).expect(401);
 
       expect(response.body.message).toContain('User account has been deactivated');
     });
@@ -500,26 +477,26 @@ describe('Authentication E2E Tests (e2e)', () => {
 
   describe('Edge Cases', () => {
     it('should handle concurrent login requests', async () => {
-      const promises = Array(5).fill(null).map(() =>
-        request(app.getHttpServer())
-          .post('/auth/login')
-          .send({
+      const promises = Array(5)
+        .fill(null)
+        .map(() =>
+          request(app.getHttpServer()).post('/auth/login').send({
             email: testUser.email,
             password: testUser.password,
-          })
-      );
+          }),
+        );
 
       const responses = await Promise.all(promises);
 
       // All requests should succeed
-      responses.forEach(response => {
+      responses.forEach((response) => {
         expect(response.status).toBe(201);
         expect(response.body).toHaveProperty('token');
         expect(response.body).toHaveProperty('refreshToken');
       });
 
       // Each should get a unique refresh token
-      const refreshTokens = responses.map(r => r.body.refreshToken);
+      const refreshTokens = responses.map((r) => r.body.refreshToken);
       const uniqueTokens = new Set(refreshTokens);
       expect(uniqueTokens.size).toBe(5);
     });

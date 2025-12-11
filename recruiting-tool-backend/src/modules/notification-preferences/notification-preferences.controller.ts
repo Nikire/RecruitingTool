@@ -1,22 +1,8 @@
-import {
-  Controller,
-  Get,
-  Patch,
-  Body,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { Controller, Get, Patch, Body, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { NotificationPreferencesService } from './notification-preferences.service';
-import {
-  NotificationPreferenceResponseDto,
-  UpdateNotificationPreferencesDto,
-} from './dto';
+import { NotificationPreferenceResponseDto, UpdateNotificationPreferencesDto } from './dto';
 import { AuthGuard } from '../shared/modules/auth/guards/auth.guard';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 
@@ -25,9 +11,7 @@ import { CurrentUser } from '../shared/modules/auth/decorators/current-user.deco
 @UseGuards(AuthGuard)
 @Controller('notification-preferences')
 export class NotificationPreferencesController {
-  constructor(
-    private readonly notificationPreferencesService: NotificationPreferencesService,
-  ) {}
+  constructor(private readonly notificationPreferencesService: NotificationPreferencesService) {}
 
   @Get()
   @ApiOperation({ summary: 'Get notification preferences for current user' })
@@ -37,12 +21,8 @@ export class NotificationPreferencesController {
     type: NotificationPreferenceResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async getPreferences(
-    @CurrentUser() currentUser: User,
-  ): Promise<NotificationPreferenceResponseDto> {
-    return this.notificationPreferencesService.getPreferences(
-      currentUser.uid,
-    );
+  async getPreferences(@CurrentUser() currentUser: User): Promise<NotificationPreferenceResponseDto> {
+    return this.notificationPreferencesService.getPreferences(currentUser.uid);
   }
 
   @Patch()
@@ -53,13 +33,7 @@ export class NotificationPreferencesController {
     type: NotificationPreferenceResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async updatePreferences(
-    @CurrentUser() currentUser: User,
-    @Body() updateDto: UpdateNotificationPreferencesDto,
-  ): Promise<NotificationPreferenceResponseDto> {
-    return this.notificationPreferencesService.updatePreferences(
-      currentUser.uid,
-      updateDto,
-    );
+  async updatePreferences(@CurrentUser() currentUser: User, @Body() updateDto: UpdateNotificationPreferencesDto): Promise<NotificationPreferenceResponseDto> {
+    return this.notificationPreferencesService.updatePreferences(currentUser.uid, updateDto);
   }
 }

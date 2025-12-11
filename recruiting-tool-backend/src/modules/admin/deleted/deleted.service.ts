@@ -1,12 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../../shared/modules/database/database.service';
-import {
-  DeletedCandidateDto,
-  DeletedJobPositionDto,
-  DeletedApplicationDto,
-  DeletedInterviewDto,
-  PurgeResponseDto,
-} from './dto/deleted.dto';
+import { DeletedCandidateDto, DeletedJobPositionDto, DeletedApplicationDto, DeletedInterviewDto, PurgeResponseDto } from './dto/deleted.dto';
 
 @Injectable()
 export class DeletedService {
@@ -15,7 +9,7 @@ export class DeletedService {
   /**
    * Get all soft-deleted candidates
    */
-  async getDeletedCandidates(companyId?: number): Promise<DeletedCandidateDto[]> {
+  async getDeletedCandidates(_companyId?: number): Promise<DeletedCandidateDto[]> {
     const candidates = await this.databaseService.candidate.findMany({
       where: {
         deletedAt: { not: null },

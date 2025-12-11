@@ -299,13 +299,7 @@ export class AuthService {
    * Handle Auth0 social login callback
    * Links or creates user account based on Auth0 profile
    */
-  async handleAuth0Callback(auth0User: {
-    auth0Id: string;
-    email: string;
-    name: string;
-    provider: string;
-    emailVerified?: boolean;
-  }): Promise<RegisteredUserDto> {
+  async handleAuth0Callback(auth0User: { auth0Id: string; email: string; name: string; provider: string; emailVerified?: boolean }): Promise<RegisteredUserDto> {
     // Check if user already exists by auth0Id
     let user = await this.databaseService.user.findUnique({
       where: { auth0Id: auth0User.auth0Id },

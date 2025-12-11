@@ -1,27 +1,8 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Delete,
-  Param,
-  Body,
-  Query,
-  UseGuards,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Patch, Delete, Param, Body, Query, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { User } from '@prisma/client';
 import { NotificationsService } from './notifications.service';
-import {
-  CreateNotificationDto,
-  NotificationResponseDto,
-  GetNotificationsQueryDto,
-} from './dto';
+import { CreateNotificationDto, NotificationResponseDto, GetNotificationsQueryDto } from './dto';
 import { AuthGuard } from '../shared/modules/auth/guards/auth.guard';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 
@@ -40,9 +21,7 @@ export class NotificationsController {
     type: NotificationResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User not found' })
-  async create(
-    @Body() createNotificationDto: CreateNotificationDto,
-  ): Promise<NotificationResponseDto> {
+  async create(@Body() createNotificationDto: CreateNotificationDto): Promise<NotificationResponseDto> {
     return this.notificationsService.create(createNotificationDto);
   }
 
@@ -53,10 +32,7 @@ export class NotificationsController {
     description: 'List of notifications',
     type: [NotificationResponseDto],
   })
-  async findAll(
-    @CurrentUser() currentUser: User,
-    @Query() query: GetNotificationsQueryDto,
-  ): Promise<NotificationResponseDto[]> {
+  async findAll(@CurrentUser() currentUser: User, @Query() query: GetNotificationsQueryDto): Promise<NotificationResponseDto[]> {
     return this.notificationsService.findAll(currentUser.uid, query);
   }
 
@@ -72,9 +48,7 @@ export class NotificationsController {
       },
     },
   })
-  async getUnreadCount(
-    @CurrentUser() currentUser: User,
-  ): Promise<{ count: number }> {
+  async getUnreadCount(@CurrentUser() currentUser: User): Promise<{ count: number }> {
     const count = await this.notificationsService.getUnreadCount(currentUser.uid);
     return { count };
   }
@@ -87,10 +61,7 @@ export class NotificationsController {
     type: NotificationResponseDto,
   })
   @ApiResponse({ status: 404, description: 'Notification not found' })
-  async markAsRead(
-    @Param('uid') uid: string,
-    @CurrentUser() currentUser: User,
-  ): Promise<NotificationResponseDto> {
+  async markAsRead(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<NotificationResponseDto> {
     return this.notificationsService.markAsRead(uid, currentUser.uid);
   }
 
@@ -106,9 +77,7 @@ export class NotificationsController {
       },
     },
   })
-  async markAllAsRead(
-    @CurrentUser() currentUser: User,
-  ): Promise<{ count: number }> {
+  async markAllAsRead(@CurrentUser() currentUser: User): Promise<{ count: number }> {
     return this.notificationsService.markAllAsRead(currentUser.uid);
   }
 
@@ -119,10 +88,7 @@ export class NotificationsController {
     description: 'Notification deleted successfully',
   })
   @ApiResponse({ status: 404, description: 'Notification not found' })
-  async remove(
-    @Param('uid') uid: string,
-    @CurrentUser() currentUser: User,
-  ): Promise<void> {
+  async remove(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<void> {
     return this.notificationsService.remove(uid, currentUser.uid);
   }
 }

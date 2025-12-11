@@ -125,25 +125,24 @@ export class BusinessMetricsService {
   async getBusinessMetricsSummary() {
     await this.updateAllMetrics();
 
-    const [applications, jobPositions, candidates, interviews, users]: [any, any, number, any, any] =
-      await Promise.all([
-        this.databaseService.application.groupBy({
-          by: ['status'],
-          _count: true,
-        }),
-        this.databaseService.jobPosition.groupBy({
-          by: ['status'],
-          _count: true,
-        }),
-        this.databaseService.candidate.count(),
-        this.databaseService.interview.groupBy({
-          by: ['status'],
-          _count: true,
-        }),
-        this.databaseService.user.count({
-          where: { isActive: true },
-        }),
-      ]);
+    const [applications, jobPositions, candidates, interviews, users]: [any, any, number, any, any] = await Promise.all([
+      this.databaseService.application.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+      this.databaseService.jobPosition.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+      this.databaseService.candidate.count(),
+      this.databaseService.interview.groupBy({
+        by: ['status'],
+        _count: true,
+      }),
+      this.databaseService.user.count({
+        where: { isActive: true },
+      }),
+    ]);
 
     return {
       timestamp: new Date().toISOString(),

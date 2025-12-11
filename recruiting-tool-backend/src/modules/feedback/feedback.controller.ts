@@ -1,15 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
+import { Controller, Get, Post, Body } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { User, RolesType } from '@prisma/client';
 import { FeedbackService } from './feedback.service';
 import { CreateFeedbackDto, FeedbackResponseDto } from './dto';
@@ -31,10 +21,7 @@ export class FeedbackController {
     type: FeedbackResponseDto,
   })
   @ApiResponse({ status: 404, description: 'User or company not found' })
-  async create(
-    @Body() createFeedbackDto: CreateFeedbackDto,
-    @CurrentUser() currentUser: User,
-  ): Promise<FeedbackResponseDto> {
+  async create(@Body() createFeedbackDto: CreateFeedbackDto, @CurrentUser() currentUser: User): Promise<FeedbackResponseDto> {
     return this.feedbackService.create(createFeedbackDto, currentUser.uid);
   }
 

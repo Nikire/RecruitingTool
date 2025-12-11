@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import * as mammoth from 'mammoth';
 import { ParseResumeResponseDto, ParsedResumeDataDto } from './dto/parse-resume.dto';
+import { GeminiService } from './gemini.service';
 
 // Lazy load pdf-parse to avoid DOMMatrix issues in Node.js
 // This defers loading until the function is actually called
@@ -23,15 +24,24 @@ const loadPdfParse = async (): Promise<PdfParseFn> => {
 export class AiService {
   private readonly logger = new Logger(AiService.name);
 
-  constructor(private configService: ConfigService) {
-    this.logger.warn('AI features are currently disabled. Gemini integration will be added in the future.');
+  constructor(
+    private configService: ConfigService,
+    private geminiService: GeminiService,
+  ) {
+    if (this.geminiService.isConfigured()) {
+      this.logger.log('AI Service initialized with Gemini AI');
+    } else {
+      this.logger.warn('Gemini API key not configured. AI resume parsing features will be disabled.');
+    }
   }
 
   /**
    * Parse a resume from a file URL and extract structured data using AI
    */
   async parseResume(fileUrl: string): Promise<ParseResumeResponseDto> {
-    throw new InternalServerErrorException('AI API is not configured. Gemini integration will be added in the future.');
+    if (!this.geminiService.isConfigured()) {
+      throw new InternalServerErrorException('AI API is not configured. Please set GEMINI_API_KEY in environment variables.');
+    }
 
     try {
       this.logger.log(`Starting resume parsing for file: ${fileUrl}`);
@@ -128,10 +138,9 @@ export class AiService {
    * Analyze resume text with AI and extract structured data
    */
   private async analyzeResumeWithAI(text: string): Promise<ParsedResumeDataDto> {
-    throw new InternalServerErrorException('AI analysis is not configured. Gemini integration will be added in the future.');
+    const systemInstruction = `You are a professional resume parser. Your task is to analyze resume text and extract structured information. Always return valid JSON that matches the requested schema exactly. Use null for missing fields and empty arrays when no items are found.`;
 
-    const prompt = `
-You are a professional resume parser. Analyze the following resume text and extract structured information.
+    const prompt = `Analyze the following resume text and extract structured information.
 Return a JSON object with the following structure (use null for missing fields):
 
 {
@@ -162,12 +171,27 @@ Return a JSON object with the following structure (use null for missing fields):
 }
 
 Resume text:
-${text}
+${text}`;
 
-IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
-`;
+    try {
+      const { data } = await this.geminiService.generateJsonContent<ParsedResumeDataDto>(prompt, systemInstruction);
 
-    // AI integration code removed - will be replaced with Gemini
+      // Ensure arrays are initialized even if null
+      return {
+        fullName: data.fullName || null,
+        email: data.email || null,
+        phone: data.phone || null,
+        skills: data.skills || [],
+        experience: data.experience || [],
+        education: data.education || [],
+        summary: data.summary || null,
+        languages: data.languages || [],
+        certifications: data.certifications || [],
+      };
+    } catch (error) {
+      this.logger.error(`Gemini AI analysis failed: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to analyze resume with AI: ${error.message}`);
+    }
   }
 
   /**

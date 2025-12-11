@@ -34,7 +34,7 @@ export class CreateEmailTemplateDto {
     description: 'Template type for automated email selection',
     enum: EmailTemplateType,
     example: EmailTemplateType.APPLICATION_RECEIVED,
-    required: false
+    required: false,
   })
   @IsEnum(EmailTemplateType)
   @IsOptional()
@@ -74,7 +74,7 @@ export class UpdateEmailTemplateDto {
     description: 'Template type for automated email selection',
     enum: EmailTemplateType,
     example: EmailTemplateType.APPLICATION_RECEIVED,
-    required: false
+    required: false,
   })
   @IsEnum(EmailTemplateType)
   @IsOptional()
@@ -109,7 +109,7 @@ export class EmailTemplateResponseDto {
     description: 'Template type for automated email selection',
     enum: EmailTemplateType,
     example: EmailTemplateType.APPLICATION_RECEIVED,
-    nullable: true
+    nullable: true,
   })
   type: EmailTemplateType | null;
 

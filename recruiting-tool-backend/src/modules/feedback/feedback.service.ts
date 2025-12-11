@@ -31,10 +31,7 @@ export class FeedbackService {
             name: true,
             users: {
               where: {
-                OR: [
-                  { roles: { has: 'SUPER_ADMIN' } },
-                  { roles: { has: 'ADMIN' } },
-                ],
+                OR: [{ roles: { has: 'SUPER_ADMIN' } }, { roles: { has: 'ADMIN' } }],
               },
               select: {
                 email: true,
@@ -178,12 +175,7 @@ export class FeedbackService {
       return;
     }
 
-    const categoryLabel =
-      feedback.category === 'FEATURE_REQUEST'
-        ? 'Feature Request'
-        : feedback.category === 'BUG_REPORT'
-        ? 'Bug Report'
-        : 'General Feedback';
+    const categoryLabel = feedback.category === 'FEATURE_REQUEST' ? 'Feature Request' : feedback.category === 'BUG_REPORT' ? 'Bug Report' : 'General Feedback';
 
     const subject = `New Feedback Received: ${categoryLabel}`;
 

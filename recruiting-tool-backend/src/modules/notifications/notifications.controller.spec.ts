@@ -48,9 +48,7 @@ describe('NotificationsController', () => {
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [NotificationsController],
-      providers: [
-        { provide: NotificationsService, useValue: mockNotificationsService },
-      ],
+      providers: [{ provide: NotificationsService, useValue: mockNotificationsService }],
     })
       .overrideGuard(AuthGuard)
       .useValue({ canActivate: () => true })
@@ -81,11 +79,7 @@ describe('NotificationsController', () => {
     });
 
     it('should create notification with different types', async () => {
-      const types = [
-        NotificationType.APPLICATION_STATUS,
-        NotificationType.INTERVIEW_REMINDER_24H,
-        NotificationType.HIRING_PROCESS_STARTED,
-      ];
+      const types = [NotificationType.APPLICATION_STATUS, NotificationType.INTERVIEW_REMINDER_24H, NotificationType.HIRING_PROCESS_STARTED];
 
       for (const type of types) {
         const createDto: CreateNotificationDto = {
@@ -265,10 +259,7 @@ describe('NotificationsController', () => {
 
       await controller.markAsRead('notif-uid-123', differentUser);
 
-      expect(notificationsService.markAsRead).toHaveBeenCalledWith(
-        'notif-uid-123',
-        'different-user-uid',
-      );
+      expect(notificationsService.markAsRead).toHaveBeenCalledWith('notif-uid-123', 'different-user-uid');
     });
   });
 
@@ -323,10 +314,7 @@ describe('NotificationsController', () => {
 
       await controller.remove('notif-uid-123', differentUser);
 
-      expect(notificationsService.remove).toHaveBeenCalledWith(
-        'notif-uid-123',
-        'different-user-uid',
-      );
+      expect(notificationsService.remove).toHaveBeenCalledWith('notif-uid-123', 'different-user-uid');
     });
 
     it('should return void on successful deletion', async () => {

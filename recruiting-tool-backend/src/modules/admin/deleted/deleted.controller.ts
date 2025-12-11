@@ -4,13 +4,7 @@ import { DeletedService } from './deleted.service';
 import { Auth } from '../../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../../shared/modules/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
-import {
-  DeletedCandidateDto,
-  DeletedJobPositionDto,
-  DeletedApplicationDto,
-  DeletedInterviewDto,
-  PurgeResponseDto,
-} from './dto/deleted.dto';
+import { DeletedCandidateDto, DeletedJobPositionDto, DeletedApplicationDto, DeletedInterviewDto, PurgeResponseDto } from './dto/deleted.dto';
 
 @ApiTags('Admin - Deleted Records')
 @ApiBearerAuth()
@@ -77,10 +71,7 @@ export class DeletedController {
     description: 'Job position restored successfully',
     type: DeletedJobPositionDto,
   })
-  async restoreJobPosition(
-    @Param('uid') uid: string,
-    @CurrentUser() user: User,
-  ): Promise<DeletedJobPositionDto> {
+  async restoreJobPosition(@Param('uid') uid: string, @CurrentUser() user: User): Promise<DeletedJobPositionDto> {
     return this.deletedService.restoreJobPosition(uid, user.companyId!);
   }
 
@@ -91,10 +82,7 @@ export class DeletedController {
     description: 'Job position permanently deleted',
     type: PurgeResponseDto,
   })
-  async purgeJobPosition(
-    @Param('uid') uid: string,
-    @CurrentUser() user: User,
-  ): Promise<PurgeResponseDto> {
+  async purgeJobPosition(@Param('uid') uid: string, @CurrentUser() user: User): Promise<PurgeResponseDto> {
     return this.deletedService.purgeJobPosition(uid, user.companyId!);
   }
 

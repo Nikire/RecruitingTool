@@ -67,9 +67,7 @@ export class SubscriptionSchedulerService {
           },
         });
 
-        this.logger.log(
-          `Updated subscription ${subscription.uid} to EXPIRED (company: ${subscription.company.name})`,
-        );
+        this.logger.log(`Updated subscription ${subscription.uid} to EXPIRED (company: ${subscription.company.name})`);
 
         // Notify Company Owners
         const owners = subscription.company.users;
@@ -94,10 +92,7 @@ export class SubscriptionSchedulerService {
 
       this.logger.log('Grace period expiration check completed');
     } catch (error) {
-      this.logger.error(
-        `Failed to check expired grace periods: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to check expired grace periods: ${error.message}`, error.stack);
     }
   }
 
@@ -174,9 +169,7 @@ export class SubscriptionSchedulerService {
       for (const subscription of threeDayWarningSubscriptions) {
         const owners = subscription.company.users;
         if (owners.length > 0) {
-          const daysRemaining = Math.ceil(
-            (subscription.gracePeriodEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-          );
+          const daysRemaining = Math.ceil((subscription.gracePeriodEndsAt.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
 
           for (const owner of owners) {
             await this.notificationsService.create({
@@ -216,14 +209,9 @@ export class SubscriptionSchedulerService {
         }
       }
 
-      this.logger.log(
-        `Sent ${threeDayWarningSubscriptions.length} 3-day warnings and ${oneDayWarningSubscriptions.length} 1-day warnings`,
-      );
+      this.logger.log(`Sent ${threeDayWarningSubscriptions.length} 3-day warnings and ${oneDayWarningSubscriptions.length} 1-day warnings`);
     } catch (error) {
-      this.logger.error(
-        `Failed to send grace period warnings: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to send grace period warnings: ${error.message}`, error.stack);
     }
   }
 }

@@ -40,11 +40,4 @@ export const PLAN_LIMITS: Record<SubscriptionPlan, PlanLimits> = {
   },
 };
 
-export type QuotaResource =
-  | 'jobPositions'
-  | 'candidates'
-  | 'users'
-  | 'storage'
-  | 'aiScoring'
-  | 'emailTemplates'
-  | 'analytics';
+export type QuotaResource = 'jobPositions' | 'candidates' | 'users' | 'storage' | 'aiScoring' | 'emailTemplates' | 'analytics';

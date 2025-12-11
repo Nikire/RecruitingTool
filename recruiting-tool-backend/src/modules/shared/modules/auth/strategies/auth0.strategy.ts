@@ -102,11 +102,11 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
 
     const providerMap: Record<string, string> = {
       'google-oauth2': 'google',
-      'github': 'github',
-      'auth0': 'auth0',
-      'twitter': 'twitter',
-      'linkedin': 'linkedin',
-      'facebook': 'facebook',
+      github: 'github',
+      auth0: 'auth0',
+      twitter: 'twitter',
+      linkedin: 'linkedin',
+      facebook: 'facebook',
     };
 
     return providerMap[parts[0]] || parts[0];

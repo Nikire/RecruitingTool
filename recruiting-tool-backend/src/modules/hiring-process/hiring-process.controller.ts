@@ -1,12 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
-import {
-  CreateHiringProcessDto,
-  UpdateHiringProcessDto,
-  HiringProcessResponseDto,
-  HiringProcessFindDto,
-  AccessCodeResponseDto,
-} from './dto/hiring-process.dto';
+import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto, AccessCodeResponseDto } from './dto/hiring-process.dto';
 import { HiringProcessFilterDto } from './dto/hiring-process-filter.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User, HiringProcessStatus } from '@prisma/client';

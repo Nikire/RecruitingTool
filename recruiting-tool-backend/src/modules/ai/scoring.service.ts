@@ -4,6 +4,7 @@ import { Prisma } from '@prisma/client';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { SseService } from '../sse/sse.service';
+import { GeminiService } from './gemini.service';
 
 @Injectable()
 export class ScoringService {
@@ -13,15 +14,22 @@ export class ScoringService {
     private configService: ConfigService,
     private databaseService: DatabaseService,
     private sseService: SseService,
+    private geminiService: GeminiService,
   ) {
-    this.logger.warn('AI scoring features are currently disabled. Gemini integration will be added in the future.');
+    if (this.geminiService.isConfigured()) {
+      this.logger.log('Scoring Service initialized with Gemini AI');
+    } else {
+      this.logger.warn('Gemini API key not configured. AI scoring features will be disabled.');
+    }
   }
 
   /**
    * Score a candidate for a specific job position using AI
    */
   async scoreCandidate(candidateUid: string, jobPositionUid: string): Promise<CandidateScoreResponseDto> {
-    throw new InternalServerErrorException('AI API is not configured. Gemini integration will be added in the future.');
+    if (!this.geminiService.isConfigured()) {
+      throw new InternalServerErrorException('AI API is not configured. Please set GEMINI_API_KEY in environment variables.');
+    }
 
     try {
       this.logger.log(`Starting candidate scoring: ${candidateUid} for job ${jobPositionUid}`);
@@ -242,7 +250,7 @@ export class ScoringService {
   }
 
   /**
-   * Generate AI-powered scoring using Gemini (future implementation)
+   * Generate AI-powered scoring using Gemini
    */
   private async generateAIScoring(
     candidate: any,
@@ -256,10 +264,9 @@ export class ScoringService {
     };
     analysis: ScoreAnalysisDto;
   }> {
-    throw new InternalServerErrorException('AI scoring is not configured. Gemini integration will be added in the future.');
+    const systemInstruction = `You are an expert HR recruiter and candidate evaluator. Your task is to analyze candidates against job position requirements and provide objective, detailed scoring and analysis. Always return valid JSON that matches the requested schema exactly. Be fair and thorough in your evaluation.`;
 
-    const prompt = `
-You are an expert HR recruiter and candidate evaluator. Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
+    const prompt = `Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
 
 **Job Position:**
 Title: ${jobPosition.title}
@@ -302,12 +309,51 @@ Return a JSON object with this exact structure:
     "strengths": ["string", "string", ...],
     "concerns": ["string", "string", ...]
   }
-}
+}`;
 
-IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
-`;
+    interface AIScoreResponse {
+      scores: {
+        skills: number;
+        experience: number;
+        education: number;
+        overall: number;
+      };
+      analysis: {
+        skillsAnalysis: string;
+        experienceAnalysis: string;
+        educationAnalysis: string;
+        recommendation: string;
+        strengths: string[];
+        concerns: string[];
+      };
+    }
 
-    // AI integration code removed - will be replaced with Gemini
+    try {
+      const { data } = await this.geminiService.generateJsonContent<AIScoreResponse>(prompt, systemInstruction);
+
+      // Validate and normalize scores (ensure they're within 0-100 range)
+      const normalizeScore = (score: number): number => Math.max(0, Math.min(100, Math.round(score)));
+
+      return {
+        scores: {
+          skills: normalizeScore(data.scores?.skills || 0),
+          experience: normalizeScore(data.scores?.experience || 0),
+          education: normalizeScore(data.scores?.education || 0),
+          overall: normalizeScore(data.scores?.overall || 0),
+        },
+        analysis: {
+          skillsAnalysis: data.analysis?.skillsAnalysis || 'No analysis available',
+          experienceAnalysis: data.analysis?.experienceAnalysis || 'No analysis available',
+          educationAnalysis: data.analysis?.educationAnalysis || 'No analysis available',
+          recommendation: data.analysis?.recommendation || 'Not Recommended',
+          strengths: data.analysis?.strengths || [],
+          concerns: data.analysis?.concerns || [],
+        },
+      };
+    } catch (error) {
+      this.logger.error(`Gemini AI scoring failed: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to generate AI scoring: ${error.message}`);
+    }
   }
 
   /**

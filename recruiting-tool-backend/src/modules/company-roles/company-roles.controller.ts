@@ -25,10 +25,7 @@ export class CompanyRolesController {
     type: [CompanyMemberResponseDto],
   })
   @ApiResponse({ status: 404, description: 'Company not found' })
-  async getCompanyMembers(
-    @Param('companyUid') companyUid: string,
-    @CurrentUser() currentUser: any,
-  ): Promise<CompanyMemberResponseDto[]> {
+  async getCompanyMembers(@Param('companyUid') companyUid: string, @CurrentUser() currentUser: any): Promise<CompanyMemberResponseDto[]> {
     return this.companyRolesService.getCompanyMembers(companyUid, currentUser.roles);
   }
 
@@ -61,11 +58,7 @@ export class CompanyRolesController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions to assign role' })
   @ApiResponse({ status: 404, description: 'Company or user not found' })
-  async assignRole(
-    @Param('companyUid') companyUid: string,
-    @Body() assignRoleDto: AssignRoleDto,
-    @CurrentUser() currentUser: any,
-  ): Promise<CompanyMemberResponseDto> {
+  async assignRole(@Param('companyUid') companyUid: string, @Body() assignRoleDto: AssignRoleDto, @CurrentUser() currentUser: any): Promise<CompanyMemberResponseDto> {
     return this.companyRolesService.assignRole(companyUid, assignRoleDto, currentUser.roles);
   }
 
@@ -106,11 +99,7 @@ export class CompanyRolesController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @ApiResponse({ status: 403, description: 'Insufficient permissions to remove user' })
   @ApiResponse({ status: 404, description: 'Company or user not found' })
-  async removeUserFromCompany(
-    @Param('companyUid') companyUid: string,
-    @Param('userUid') userUid: string,
-    @CurrentUser() currentUser: any,
-  ): Promise<MessageResponseDto> {
+  async removeUserFromCompany(@Param('companyUid') companyUid: string, @Param('userUid') userUid: string, @CurrentUser() currentUser: any): Promise<MessageResponseDto> {
     return this.companyRolesService.removeUserFromCompany(companyUid, userUid, currentUser.roles);
   }
 }

@@ -63,7 +63,8 @@ export class AiController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Score a candidate for a job position using AI',
-    description: 'Analyze a candidate against job requirements and generate scores for skills, experience, and education match. Includes detailed AI analysis. (Currently disabled - Gemini integration coming soon)',
+    description:
+      'Analyze a candidate against job requirements and generate scores for skills, experience, and education match. Includes detailed AI analysis. (Currently disabled - Gemini integration coming soon)',
   })
   @ApiResponse({
     status: 200,

@@ -52,12 +52,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
   /**
    * Build PostgreSQL connection URL with connection pool parameters
    */
-  private static buildConnectionUrlWithPooling(
-    baseUrl: string,
-    connectionLimit: number,
-    poolTimeout: number,
-    connectTimeout: number,
-  ): string {
+  private static buildConnectionUrlWithPooling(baseUrl: string, connectionLimit: number, poolTimeout: number, connectTimeout: number): string {
     try {
       const url = new URL(baseUrl);
 
@@ -85,9 +80,7 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       this.$on('query' as never, (e: any) => {
         if (e.duration > 100) {
-          this.logger.warn(
-            `Slow query detected (${e.duration}ms): ${e.query.substring(0, 200)}${e.query.length > 200 ? '...' : ''}`,
-          );
+          this.logger.warn(`Slow query detected (${e.duration}ms): ${e.query.substring(0, 200)}${e.query.length > 200 ? '...' : ''}`);
         }
 
         // In development, log all queries with duration
@@ -139,15 +132,11 @@ export class DatabaseService extends PrismaClient implements OnModuleInit, OnMod
         const poolMax = parseInt(process.env.DATABASE_POOL_MAX || '10', 10);
         const utilizationPercent = poolStats.total > 0 ? Math.round((poolStats.active / poolMax) * 100) : 0;
 
-        this.logger.debug(
-          `Connection pool stats - Total: ${poolStats.total}, Active: ${poolStats.active}, Idle: ${poolStats.idle}, Utilization: ${utilizationPercent}%`,
-        );
+        this.logger.debug(`Connection pool stats - Total: ${poolStats.total}, Active: ${poolStats.active}, Idle: ${poolStats.idle}, Utilization: ${utilizationPercent}%`);
 
         // Warn if pool utilization is high (>80%)
         if (utilizationPercent > 80) {
-          this.logger.warn(
-            `High connection pool utilization detected (${utilizationPercent}%). Consider increasing DATABASE_POOL_MAX.`,
-          );
+          this.logger.warn(`High connection pool utilization detected (${utilizationPercent}%). Consider increasing DATABASE_POOL_MAX.`);
         }
       } catch (error) {
         this.logger.error('Failed to monitor connection pool', error);

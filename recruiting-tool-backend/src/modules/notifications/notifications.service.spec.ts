@@ -2,10 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationsService } from './notifications.service';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SseService } from '../sse/sse.service';
-import {
-  CreateNotificationDto,
-  GetNotificationsQueryDto,
-} from './dto';
+import { CreateNotificationDto, GetNotificationsQueryDto } from './dto';
 import { NotFoundException } from '@nestjs/common';
 import { NotificationType } from '@prisma/client';
 
@@ -76,11 +73,7 @@ describe('NotificationsService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        NotificationsService,
-        { provide: DatabaseService, useValue: mockDatabaseService },
-        { provide: SseService, useValue: mockSseService },
-      ],
+      providers: [NotificationsService, { provide: DatabaseService, useValue: mockDatabaseService }, { provide: SseService, useValue: mockSseService }],
     }).compile();
 
     service = module.get<NotificationsService>(NotificationsService);
@@ -410,9 +403,7 @@ describe('NotificationsService', () => {
     it('should throw NotFoundException if notification not found', async () => {
       mockDatabaseService.notification.findUnique.mockResolvedValue(null);
 
-      await expect(service.markAsRead('invalid-uid', 'user-uid-123')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.markAsRead('invalid-uid', 'user-uid-123')).rejects.toThrow(NotFoundException);
       expect(databaseService.notification.update).not.toHaveBeenCalled();
     });
 
@@ -424,9 +415,7 @@ describe('NotificationsService', () => {
 
       mockDatabaseService.notification.findUnique.mockResolvedValue(otherUserNotification);
 
-      await expect(service.markAsRead('notif-uid-123', 'user-uid-123')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.markAsRead('notif-uid-123', 'user-uid-123')).rejects.toThrow(NotFoundException);
       expect(databaseService.notification.update).not.toHaveBeenCalled();
     });
   });
@@ -483,9 +472,7 @@ describe('NotificationsService', () => {
     it('should throw NotFoundException if notification not found', async () => {
       mockDatabaseService.notification.findUnique.mockResolvedValue(null);
 
-      await expect(service.remove('invalid-uid', 'user-uid-123')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.remove('invalid-uid', 'user-uid-123')).rejects.toThrow(NotFoundException);
       expect(databaseService.notification.delete).not.toHaveBeenCalled();
     });
 
@@ -497,9 +484,7 @@ describe('NotificationsService', () => {
 
       mockDatabaseService.notification.findUnique.mockResolvedValue(otherUserNotification);
 
-      await expect(service.remove('notif-uid-123', 'user-uid-123')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(service.remove('notif-uid-123', 'user-uid-123')).rejects.toThrow(NotFoundException);
       expect(databaseService.notification.delete).not.toHaveBeenCalled();
     });
   });

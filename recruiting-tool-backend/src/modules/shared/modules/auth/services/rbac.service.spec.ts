@@ -30,10 +30,7 @@ describe('RBAC Service Logic', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RolesGuard,
-        { provide: Reflector, useValue: mockReflector },
-      ],
+      providers: [RolesGuard, { provide: Reflector, useValue: mockReflector }],
     }).compile();
 
     guard = module.get<RolesGuard>(RolesGuard);
@@ -52,12 +49,7 @@ describe('RBAC Service Logic', () => {
      */
 
     it('should allow SUPER_ADMIN to access any role-protected endpoint', () => {
-      const testCases = [
-        { requiredRoles: [RolesType.USER] },
-        { requiredRoles: [RolesType.HR] },
-        { requiredRoles: [RolesType.ADMIN] },
-        { requiredRoles: [RolesType.SUPER_ADMIN] },
-      ];
+      const testCases = [{ requiredRoles: [RolesType.USER] }, { requiredRoles: [RolesType.HR] }, { requiredRoles: [RolesType.ADMIN] }, { requiredRoles: [RolesType.SUPER_ADMIN] }];
 
       testCases.forEach(({ requiredRoles }) => {
         const mockContext = createMockExecutionContext({
@@ -479,10 +471,10 @@ describe('RBAC Service Logic', () => {
 
       // Verify that roles at each level can access all lower levels
       rolesByLevel.forEach((currentLevelRoles, currentLevel) => {
-        currentLevelRoles.forEach(role => {
+        currentLevelRoles.forEach((role) => {
           // Test access to all lower levels
           for (let lowerLevel = currentLevel; lowerLevel < rolesByLevel.length; lowerLevel++) {
-            rolesByLevel[lowerLevel].forEach(requiredRole => {
+            rolesByLevel[lowerLevel].forEach((requiredRole) => {
               const mockContext = createMockExecutionContext({
                 id: 1,
                 email: 'test@example.com',

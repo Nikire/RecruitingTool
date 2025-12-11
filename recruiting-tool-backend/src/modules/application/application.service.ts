@@ -53,7 +53,7 @@ export class ApplicationService {
         resumeFileId = resumeFile.id;
       }
 
-      const { jobPositionUid, resumeFileUid, ...applicationData } = createApplicationDto;
+      const { jobPositionUid: _jobPositionUid, resumeFileUid: _resumeFileUid, ...applicationData } = createApplicationDto;
 
       const application = await this.databaseService.application.create({
         data: {
