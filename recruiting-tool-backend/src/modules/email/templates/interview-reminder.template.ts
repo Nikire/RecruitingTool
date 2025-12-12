@@ -48,7 +48,7 @@ Please make sure you are prepared and available at the scheduled time.
 We look forward to speaking with you!
 
 Best regards,
-The Recruiting Team
+The BorderLess Team - EMP Employment Solutions
   `.trim();
 
   const html = `
@@ -127,7 +127,7 @@ The Recruiting Team
         </p>
 
         <div style="${emailBaseStyles.footer}">
-          <p>Best regards,<br>The Recruiting Team</p>
+          <p>Best regards,<br>The BorderLess Team - EMP Employment Solutions</p>
         </div>
       </div>
     </div>

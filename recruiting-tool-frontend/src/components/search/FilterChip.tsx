@@ -1,11 +1,11 @@
-import React from 'react';
-import { Chip } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import React from "react";
+import { Chip } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 export interface FilterChipProps {
   label: string;
   onDelete: () => void;
-  color?: 'primary' | 'secondary' | 'default';
+  color?: "primary" | "secondary" | "default";
 }
 
 /**
@@ -18,7 +18,11 @@ export interface FilterChipProps {
  * @param onDelete - Callback when filter is removed
  * @param color - Chip color variant
  */
-const FilterChip: React.FC<FilterChipProps> = ({ label, onDelete, color = 'primary' }) => {
+const FilterChip: React.FC<FilterChipProps> = ({
+  label,
+  onDelete,
+  color = "primary",
+}) => {
   return (
     <Chip
       label={label}
@@ -28,10 +32,10 @@ const FilterChip: React.FC<FilterChipProps> = ({ label, onDelete, color = 'prima
       size="small"
       sx={{
         m: 0.5,
-        '& .MuiChip-deleteIcon': {
-          color: 'inherit',
-          '&:hover': {
-            color: 'inherit',
+        "& .MuiChip-deleteIcon": {
+          color: "inherit",
+          "&:hover": {
+            color: "inherit",
             opacity: 0.7,
           },
         },

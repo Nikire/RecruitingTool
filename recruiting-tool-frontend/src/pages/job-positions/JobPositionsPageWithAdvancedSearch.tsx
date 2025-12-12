@@ -1,13 +1,13 @@
-import React, { useState } from 'react';
-import { Typography, Box, useTheme, useMediaQuery } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { JobPosition } from '../../types/jobPosition.types';
-import ManageStagesDialog from '../../components/dialogs/ManageStagesDialog';
-import { useJobPositionsSearch } from '../../hooks/api/state/useSearchState';
-import { useSearchPaginationHandlers } from '../../hooks/useSearchPaginationHandlers';
-import JobPositionsList from '../../components/job-positions/JobPositionsList';
-import AdvancedSearchBar from '../../components/search/AdvancedSearchBar';
-import { SearchFilters, FilterOption } from '../../types/search';
+import React, { useState } from "react";
+import { Typography, Box, useTheme, useMediaQuery } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { JobPosition } from "../../types/jobPosition.types";
+import ManageStagesDialog from "../../components/dialogs/ManageStagesDialog";
+import { useJobPositionsSearch } from "../../hooks/api/state/useSearchState";
+import { useSearchPaginationHandlers } from "../../hooks/useSearchPaginationHandlers";
+import JobPositionsList from "../../components/job-positions/JobPositionsList";
+import AdvancedSearchBar from "../../components/search/AdvancedSearchBar";
+import { SearchFilters, FilterOption } from "../../types/search";
 
 /**
  * JobPositionsPageWithAdvancedSearch Component
@@ -26,8 +26,9 @@ import { SearchFilters, FilterOption } from '../../types/search';
 const JobPositionsPageWithAdvancedSearch: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
-  const [selectedJobPosition, setSelectedJobPosition] = useState<JobPosition | null>(null);
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [selectedJobPosition, setSelectedJobPosition] =
+    useState<JobPosition | null>(null);
 
   const [searchState, setSearchState] = useJobPositionsSearch();
   const { page, limit } = searchState;
@@ -37,39 +38,39 @@ const JobPositionsPageWithAdvancedSearch: React.FC = () => {
 
   // Advanced search filters state
   const [filters, setFilters] = useState<SearchFilters>({
-    query: searchState.search || '',
+    query: searchState.search || "",
   });
 
   // Status options for job positions
   const statusOptions: FilterOption[] = [
-    { value: 'OPEN', label: t('status.open'), count: 12 },
-    { value: 'CLOSED', label: t('status.closed'), count: 5 },
-    { value: 'CANCELLED', label: t('status.cancelled'), count: 3 },
+    { value: "OPEN", label: t("status.open"), count: 12 },
+    { value: "CLOSED", label: t("status.closed"), count: 5 },
+    { value: "CANCELLED", label: t("status.cancelled"), count: 3 },
   ];
 
   // Sample skills for job positions
   const skillsOptions = [
-    'JavaScript',
-    'TypeScript',
-    'React',
-    'Node.js',
-    'Python',
-    'Java',
-    'C#',
-    '.NET',
-    'SQL',
-    'MongoDB',
-    'AWS',
-    'Azure',
-    'Docker',
-    'Kubernetes',
-    'Microservices',
-    'REST APIs',
-    'GraphQL',
-    'Agile',
-    'Scrum',
-    'Leadership',
-    'Project Management',
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Node.js",
+    "Python",
+    "Java",
+    "C#",
+    ".NET",
+    "SQL",
+    "MongoDB",
+    "AWS",
+    "Azure",
+    "Docker",
+    "Kubernetes",
+    "Microservices",
+    "REST APIs",
+    "GraphQL",
+    "Agile",
+    "Scrum",
+    "Leadership",
+    "Project Management",
   ];
 
   const handleFiltersChange = (newFilters: SearchFilters) => {
@@ -82,7 +83,7 @@ const JobPositionsPageWithAdvancedSearch: React.FC = () => {
 
     // TODO: When backend supports advanced filters, pass them to the API
     // For now, we only update the text search
-    console.log('Advanced filters updated:', newFilters);
+    console.log("Advanced filters updated:", newFilters);
   };
 
   const handleSearchQueryChange = (query: string) => {
@@ -98,21 +99,21 @@ const JobPositionsPageWithAdvancedSearch: React.FC = () => {
     <Box>
       <Box sx={{ mb: { xs: 2, sm: 3 } }}>
         <Typography
-          variant={isMobile ? 'h5' : 'h4'}
+          variant={isMobile ? "h5" : "h4"}
           sx={{
-            fontSize: { xs: '1.5rem', sm: '1.75rem', md: '2rem' },
+            fontSize: { xs: "1.5rem", sm: "1.75rem", md: "2rem" },
             fontWeight: 600,
             mb: 0.5,
           }}
         >
-          {t('job_positions.title')}
+          {t("job_positions.title")}
         </Typography>
         <Typography
           variant="body2"
           color="textSecondary"
-          sx={{ fontSize: { xs: '0.875rem', sm: '1rem' } }}
+          sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}
         >
-          {t('job_positions.subtitle')}
+          {t("job_positions.subtitle")}
         </Typography>
       </Box>
 
@@ -122,7 +123,7 @@ const JobPositionsPageWithAdvancedSearch: React.FC = () => {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onSearch={handleSearchQueryChange}
-          placeholder={t('job_positions.search_placeholder')}
+          placeholder={t("job_positions.search_placeholder")}
           statusOptions={statusOptions}
           skillsOptions={skillsOptions}
           showSkills={true}
@@ -136,7 +137,7 @@ const JobPositionsPageWithAdvancedSearch: React.FC = () => {
       <JobPositionsList
         page={page}
         limit={limit}
-        search={filters.query || ''}
+        search={filters.query || ""}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />

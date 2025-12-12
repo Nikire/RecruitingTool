@@ -1,23 +1,23 @@
-import {useCallback} from 'react';
-import {UseMutationResult} from '@tanstack/react-query';
-import {useDialog} from './useDialog';
+import { useCallback } from "react";
+import { UseMutationResult } from "@tanstack/react-query";
+import { useDialog } from "./useDialog";
 
 /**
  * Return type for the useConfirmDelete hook
  */
 export interface UseConfirmDeleteReturn<T> {
-	/** Trigger delete confirmation for an item */
-	confirmDelete: (item: T) => void;
-	/** Execute the delete operation */
-	handleConfirm: () => void;
-	/** Cancel the delete operation */
-	handleCancel: () => void;
-	/** Whether the delete confirmation dialog is open */
-	isOpen: boolean;
-	/** The item being deleted */
-	selectedItem: T | null;
-	/** Whether the delete mutation is in progress */
-	isDeleting: boolean;
+  /** Trigger delete confirmation for an item */
+  confirmDelete: (item: T) => void;
+  /** Execute the delete operation */
+  handleConfirm: () => void;
+  /** Cancel the delete operation */
+  handleCancel: () => void;
+  /** Whether the delete confirmation dialog is open */
+  isOpen: boolean;
+  /** The item being deleted */
+  selectedItem: T | null;
+  /** Whether the delete mutation is in progress */
+  isDeleting: boolean;
 }
 
 /**
@@ -54,48 +54,48 @@ export interface UseConfirmDeleteReturn<T> {
  * );
  * ```
  */
-export const useConfirmDelete = <T extends {uid: string}>(
-	deleteMutation: UseMutationResult<void, Error, string, unknown>
+export const useConfirmDelete = <T extends { uid: string }>(
+  deleteMutation: UseMutationResult<void, Error, string, unknown>,
 ): UseConfirmDeleteReturn<T> => {
-	const dialog = useDialog<T>();
+  const dialog = useDialog<T>();
 
-	/**
-	 * Trigger delete confirmation for a specific item
-	 */
-	const confirmDelete = useCallback(
-		(item: T) => {
-			dialog.openWith(item);
-		},
-		[dialog]
-	);
+  /**
+   * Trigger delete confirmation for a specific item
+   */
+  const confirmDelete = useCallback(
+    (item: T) => {
+      dialog.openWith(item);
+    },
+    [dialog],
+  );
 
-	/**
-	 * Execute the delete operation
-	 * Closes the dialog on success
-	 */
-	const handleConfirm = useCallback(() => {
-		if (dialog.selectedItem) {
-			deleteMutation.mutate(dialog.selectedItem.uid, {
-				onSuccess: () => {
-					dialog.close();
-				},
-			});
-		}
-	}, [dialog, deleteMutation]);
+  /**
+   * Execute the delete operation
+   * Closes the dialog on success
+   */
+  const handleConfirm = useCallback(() => {
+    if (dialog.selectedItem) {
+      deleteMutation.mutate(dialog.selectedItem.uid, {
+        onSuccess: () => {
+          dialog.close();
+        },
+      });
+    }
+  }, [dialog, deleteMutation]);
 
-	/**
-	 * Cancel the delete operation and close the dialog
-	 */
-	const handleCancel = useCallback(() => {
-		dialog.close();
-	}, [dialog]);
+  /**
+   * Cancel the delete operation and close the dialog
+   */
+  const handleCancel = useCallback(() => {
+    dialog.close();
+  }, [dialog]);
 
-	return {
-		confirmDelete,
-		handleConfirm,
-		handleCancel,
-		isOpen: dialog.isOpen,
-		selectedItem: dialog.selectedItem,
-		isDeleting: deleteMutation.isPending,
-	};
+  return {
+    confirmDelete,
+    handleConfirm,
+    handleCancel,
+    isOpen: dialog.isOpen,
+    selectedItem: dialog.selectedItem,
+    isDeleting: deleteMutation.isPending,
+  };
 };

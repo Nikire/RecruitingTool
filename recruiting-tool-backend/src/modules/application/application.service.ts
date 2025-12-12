@@ -53,6 +53,7 @@ export class ApplicationService {
         resumeFileId = resumeFile.id;
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { jobPositionUid, resumeFileUid, ...applicationData } = createApplicationDto;
 
       const application = await this.databaseService.application.create({

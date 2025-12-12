@@ -1,10 +1,10 @@
-import {Box, CircularProgress, Typography} from '@mui/material';
-import {useTranslation} from 'react-i18next';
+import { Box, CircularProgress, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 interface LoadingSpinnerProps {
-	size?: number;
-	padding?: number;
-	message?: string; // i18n key
+  size?: number;
+  padding?: number;
+  message?: string; // i18n key
 }
 
 /**
@@ -12,30 +12,30 @@ interface LoadingSpinnerProps {
  * Used for data fetching loading states across the application
  */
 const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
-	size = 40,
-	padding = 4,
-	message,
+  size = 40,
+  padding = 4,
+  message,
 }) => {
-	const {t} = useTranslation();
+  const { t } = useTranslation();
 
-	return (
-		<Box
-			sx={{
-				display: 'flex',
-				flexDirection: 'column',
-				justifyContent: 'center',
-				alignItems: 'center',
-				p: padding,
-			}}
-		>
-			<CircularProgress size={size} />
-			{message && (
-				<Typography variant="body2" color="text.secondary" sx={{mt: 2}}>
-					{t(message)}
-				</Typography>
-			)}
-		</Box>
-	);
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        p: padding,
+      }}
+    >
+      <CircularProgress size={size} />
+      {message && (
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+          {t(message)}
+        </Typography>
+      )}
+    </Box>
+  );
 };
 
 export default LoadingSpinner;

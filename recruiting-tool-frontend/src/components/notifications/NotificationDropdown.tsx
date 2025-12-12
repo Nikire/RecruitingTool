@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Menu,
   Typography,
@@ -8,16 +8,21 @@ import {
   CircularProgress,
   Badge,
   Link,
-} from '@mui/material';
-import DoneAllIcon from '@mui/icons-material/DoneAll';
-import NotificationsIcon from '@mui/icons-material/Notifications';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { useNotifications, useMarkAsRead, useMarkAllAsRead, useDeleteNotification } from '../../hooks/useNotifications';
-import { Notification } from '../../types/notification';
-import NotificationItem from './NotificationItem';
-import { getNotificationNavigationPath } from '../../utils/notificationUtils';
+} from "@mui/material";
+import DoneAllIcon from "@mui/icons-material/DoneAll";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import {
+  useNotifications,
+  useMarkAsRead,
+  useMarkAllAsRead,
+  useDeleteNotification,
+} from "../../hooks/useNotifications";
+import { Notification } from "../../types/notification";
+import NotificationItem from "./NotificationItem";
+import { getNotificationNavigationPath } from "../../utils/notificationUtils";
 
 interface NotificationDropdownProps {
   anchorEl: null | HTMLElement;
@@ -29,10 +34,18 @@ interface NotificationDropdownProps {
  * NotificationDropdown component displays list of notifications in a dropdown menu
  * Enhanced with actionable links and better UX
  */
-const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, open, onClose }) => {
+const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
+  anchorEl,
+  open,
+  onClose,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data: notifications = [], isLoading, isError } = useNotifications({ limit: 10 });
+  const {
+    data: notifications = [],
+    isLoading,
+    isError,
+  } = useNotifications({ limit: 10 });
   const { mutate: markAsRead } = useMarkAsRead();
   const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllAsRead();
   const { mutate: deleteNotification } = useDeleteNotification();
@@ -46,12 +59,10 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
       markAsRead(notification.uid);
     }
 
-    // Navigate to the relevant page if path is available
+    // Navigate to the relevant page if path is available, otherwise go to notifications page
     const navigationPath = getNotificationNavigationPath(notification);
-    if (navigationPath) {
-      navigate(navigationPath);
-      onClose();
-    }
+    navigate(navigationPath || "/notifications");
+    onClose();
   };
 
   const handleDelete = (uid: string) => {
@@ -63,7 +74,7 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
   };
 
   const handleViewAll = () => {
-    // TODO: Navigate to full notifications page when implemented
+    navigate("/notifications");
     onClose();
   };
 
@@ -81,13 +92,21 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
           },
         },
       }}
-      transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-      anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+      transformOrigin={{ horizontal: "right", vertical: "top" }}
+      anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
     >
       {/* Header */}
-      <Box sx={{ px: 2, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Typography variant="h6">{t('notifications.title')}</Typography>
+      <Box
+        sx={{
+          px: 2,
+          py: 1.5,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Typography variant="h6">{t("notifications.title")}</Typography>
           {unreadCount > 0 && (
             <Badge badgeContent={unreadCount} color="error" max={99}>
               <Box sx={{ width: 0 }} />
@@ -97,11 +116,13 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
         {unreadCount > 0 && (
           <Button
             size="small"
-            startIcon={isMarkingAll ? <CircularProgress size={16} /> : <DoneAllIcon />}
+            startIcon={
+              isMarkingAll ? <CircularProgress size={16} /> : <DoneAllIcon />
+            }
             onClick={handleMarkAllAsRead}
             disabled={isMarkingAll}
           >
-            {t('notifications.mark_all_read')}
+            {t("notifications.mark_all_read")}
           </Button>
         )}
       </Box>
@@ -110,30 +131,36 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
 
       {/* Loading state */}
       {isLoading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+        <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
           <CircularProgress />
         </Box>
       )}
 
       {/* Error state */}
       {isError && (
-        <Box sx={{ px: 2, py: 4, textAlign: 'center' }}>
-          <Typography color="error">{t('notifications.errors.load_failed')}</Typography>
+        <Box sx={{ px: 2, py: 4, textAlign: "center" }}>
+          <Typography color="error">
+            {t("notifications.errors.load_failed")}
+          </Typography>
         </Box>
       )}
 
       {/* Empty state */}
       {!isLoading && !isError && notifications.length === 0 && (
-        <Box sx={{ px: 2, py: 4, textAlign: 'center' }}>
-          <NotificationsIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />
-          <Typography color="textSecondary">{t('notifications.empty')}</Typography>
+        <Box sx={{ px: 2, py: 4, textAlign: "center" }}>
+          <NotificationsIcon
+            sx={{ fontSize: 48, color: "text.disabled", mb: 1 }}
+          />
+          <Typography color="textSecondary">
+            {t("notifications.empty")}
+          </Typography>
         </Box>
       )}
 
       {/* Notifications list */}
       {!isLoading && !isError && notifications.length > 0 && (
         <>
-          <Box sx={{ maxHeight: 380, overflow: 'auto' }}>
+          <Box sx={{ maxHeight: 380, overflow: "auto" }}>
             {notifications.map((notification) => (
               <NotificationItem
                 key={notification.uid}
@@ -146,22 +173,24 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({ anchorEl, o
 
           {/* Footer with "View all" link */}
           <Divider />
-          <Box sx={{ px: 2, py: 1.5, display: 'flex', justifyContent: 'center' }}>
+          <Box
+            sx={{ px: 2, py: 1.5, display: "flex", justifyContent: "center" }}
+          >
             <Link
               component="button"
               variant="body2"
               onClick={handleViewAll}
               sx={{
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
                 gap: 0.5,
-                textDecoration: 'none',
-                '&:hover': {
-                  textDecoration: 'underline',
+                textDecoration: "none",
+                "&:hover": {
+                  textDecoration: "underline",
                 },
               }}
             >
-              {t('notifications.view_all')}
+              {t("notifications.view_all")}
               <OpenInNewIcon fontSize="small" />
             </Link>
           </Box>

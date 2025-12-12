@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto } from './dto/company.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CompanyMapper, includeCompany } from './entities/company.entity';

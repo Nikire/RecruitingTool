@@ -31,18 +31,18 @@ import { BackupModule } from './modules/backup/backup.module';
 import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { HealthModule } from './modules/health/health.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
-import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
-import { APP_GUARD } from '@nestjs/core';
-import { CustomThrottlerGuard } from './common/guards/throttler.guard';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { CacheModule } from './modules/cache/cache.module';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 import { StripeModule } from './modules/stripe/stripe.module';
 import { QuotaModule } from './modules/quota/quota.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
+import { NotificationPreferencesModule } from './modules/notification-preferences/notification-preferences.module';
 import { CompanyRolesModule } from './modules/company-roles/company-roles.module';
 import { ConnectionRequestsModule } from './modules/connection-requests/connection-requests.module';
 import { CompanyInvitationsModule } from './modules/company-invitations/company-invitations.module';
+import { FeedbackModule } from './modules/feedback/feedback.module';
 
 @Module({
   imports: [
@@ -92,9 +92,11 @@ import { CompanyInvitationsModule } from './modules/company-invitations/company-
     StripeModule,
     QuotaModule,
     NotificationsModule,
+    NotificationPreferencesModule,
     CompanyRolesModule,
     ConnectionRequestsModule,
     CompanyInvitationsModule,
+    FeedbackModule,
   ],
   controllers: [AppController],
   providers: [

@@ -1,9 +1,9 @@
 import { Injectable, BadRequestException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import OpenAI from 'openai';
 import axios from 'axios';
 import * as mammoth from 'mammoth';
 import { ParseResumeResponseDto, ParsedResumeDataDto } from './dto/parse-resume.dto';
+import { GeminiService } from './gemini.service';
 
 // Lazy load pdf-parse to avoid DOMMatrix issues in Node.js
 // This defers loading until the function is actually called
@@ -23,17 +23,15 @@ const loadPdfParse = async (): Promise<PdfParseFn> => {
 @Injectable()
 export class AiService {
   private readonly logger = new Logger(AiService.name);
-  private openai: OpenAI;
 
-  constructor(private configService: ConfigService) {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey) {
-      this.logger.warn('OpenAI API key not configured. AI features will be disabled.');
-      this.openai = null;
+  constructor(
+    private configService: ConfigService,
+    private geminiService: GeminiService,
+  ) {
+    if (this.geminiService.isConfigured()) {
+      this.logger.log('AI Service initialized with Gemini AI');
     } else {
-      this.openai = new OpenAI({
-        apiKey: apiKey,
-      });
+      this.logger.warn('Gemini API key not configured. AI resume parsing features will be disabled.');
     }
   }
 
@@ -41,8 +39,8 @@ export class AiService {
    * Parse a resume from a file URL and extract structured data using AI
    */
   async parseResume(fileUrl: string): Promise<ParseResumeResponseDto> {
-    if (!this.openai) {
-      throw new InternalServerErrorException('OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.');
+    if (!this.geminiService.isConfigured()) {
+      throw new InternalServerErrorException('AI API is not configured. Please set GEMINI_API_KEY in environment variables.');
     }
 
     try {
@@ -137,13 +135,12 @@ export class AiService {
   }
 
   /**
-   * Analyze resume text with OpenAI and extract structured data
+   * Analyze resume text with AI and extract structured data
    */
   private async analyzeResumeWithAI(text: string): Promise<ParsedResumeDataDto> {
-    const model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
+    const systemInstruction = `You are a professional resume parser. Your task is to analyze resume text and extract structured information. Always return valid JSON that matches the requested schema exactly. Use null for missing fields and empty arrays when no items are found.`;
 
-    const prompt = `
-You are a professional resume parser. Analyze the following resume text and extract structured information.
+    const prompt = `Analyze the following resume text and extract structured information.
 Return a JSON object with the following structure (use null for missing fields):
 
 {
@@ -174,45 +171,25 @@ Return a JSON object with the following structure (use null for missing fields):
 }
 
 Resume text:
-${text}
-
-IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
-`;
+${text}`;
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: model,
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a resume parsing assistant. You extract structured data from resumes and return it as valid JSON.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.3, // Lower temperature for more consistent parsing
-        response_format: { type: 'json_object' },
-      });
+      const { data } = await this.geminiService.generateJsonContent<ParsedResumeDataDto>(prompt, systemInstruction);
 
-      const responseContent = completion.choices[0].message.content;
-      const parsedData = JSON.parse(responseContent);
-
-      // Ensure arrays exist even if empty
+      // Ensure arrays are initialized even if null
       return {
-        fullName: parsedData.fullName || null,
-        email: parsedData.email || null,
-        phone: parsedData.phone || null,
-        skills: parsedData.skills || [],
-        experience: parsedData.experience || [],
-        education: parsedData.education || [],
-        summary: parsedData.summary || null,
-        languages: parsedData.languages || [],
-        certifications: parsedData.certifications || [],
+        fullName: data.fullName || null,
+        email: data.email || null,
+        phone: data.phone || null,
+        skills: data.skills || [],
+        experience: data.experience || [],
+        education: data.education || [],
+        summary: data.summary || null,
+        languages: data.languages || [],
+        certifications: data.certifications || [],
       };
     } catch (error) {
-      this.logger.error(`OpenAI API error: ${error.message}`, error.stack);
+      this.logger.error(`Gemini AI analysis failed: ${error.message}`, error.stack);
       throw new InternalServerErrorException(`Failed to analyze resume with AI: ${error.message}`);
     }
   }

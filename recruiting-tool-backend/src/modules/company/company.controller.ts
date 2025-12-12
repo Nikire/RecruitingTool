@@ -99,12 +99,7 @@ export class CompanyController {
   @ApiResponse({ status: 200, description: 'Logo uploaded successfully', type: CompanyResponseDto })
   async uploadLogo(
     @Param('uid') uid: string,
-    @UploadedFile(
-      new FileValidationPipe({
-        maxSize: 5 * 1024 * 1024, // 5MB
-        allowedMimeTypes: ['image/png', 'image/jpeg', 'image/jpg', 'image/svg+xml'],
-      }),
-    )
+    @UploadedFile(new FileValidationPipe('image'))
     file: Express.Multer.File,
     @Req() req: Request,
   ): Promise<CompanyResponseDto> {

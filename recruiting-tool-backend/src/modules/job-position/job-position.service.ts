@@ -1,6 +1,13 @@
-import { forwardRef, Inject, NotFoundException, ForbiddenException, HttpException, InternalServerErrorException } from '@nestjs/common';
+import { forwardRef, Inject, NotFoundException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { CreateJobPositionDto, JobPositionResponseDto, UpdateJobPositionDto, PublicJobPositionResponseDto, JobPositionFiltersDto, PaginatedPublicJobPositionResponseDto } from './dto/job-position.dto';
+import {
+  CreateJobPositionDto,
+  JobPositionResponseDto,
+  UpdateJobPositionDto,
+  PublicJobPositionResponseDto,
+  JobPositionFiltersDto,
+  PaginatedPublicJobPositionResponseDto,
+} from './dto/job-position.dto';
 import { includeJobPosition, JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { CandidateService } from '../hiring-process/modules/candidate/candidate.service';
@@ -307,10 +314,7 @@ export class JobPositionService {
 
       // Search filter (title, description)
       if (filters?.search) {
-        where.OR = [
-          { title: { contains: filters.search, mode: 'insensitive' } },
-          { description: { contains: filters.search, mode: 'insensitive' } },
-        ];
+        where.OR = [{ title: { contains: filters.search, mode: 'insensitive' } }, { description: { contains: filters.search, mode: 'insensitive' } }];
       }
 
       // Category filter

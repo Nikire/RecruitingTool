@@ -1,6 +1,6 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box, Skeleton } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
+import React from "react";
+import { Card, CardContent, Typography, Box, Skeleton } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 
 export interface KPICardProps {
   /** Title of the KPI */
@@ -18,7 +18,7 @@ export interface KPICardProps {
   /** Optional trend indicator (+5%, -3%, etc.) */
   trend?: string;
   /** Trend direction */
-  trendDirection?: 'up' | 'down' | 'neutral';
+  trendDirection?: "up" | "down" | "neutral";
 }
 
 /**
@@ -46,25 +46,25 @@ const KPICard: React.FC<KPICardProps> = ({
   title,
   value,
   icon,
-  color = 'primary.main',
+  color = "primary.main",
   subtitle,
   isLoading = false,
   trend,
-  trendDirection = 'neutral',
+  trendDirection = "neutral",
 }) => {
   const theme = useTheme();
 
   const getTrendColor = () => {
-    if (trendDirection === 'up') return theme.palette.success.main;
-    if (trendDirection === 'down') return theme.palette.error.main;
+    if (trendDirection === "up") return theme.palette.success.main;
+    if (trendDirection === "down") return theme.palette.error.main;
     return theme.palette.text.secondary;
   };
 
   if (isLoading) {
     return (
-      <Card sx={{ height: '100%' }}>
+      <Card sx={{ height: "100%" }}>
         <CardContent>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
             <Skeleton variant="circular" width={48} height={48} />
             <Skeleton variant="text" width="60%" height={32} />
           </Box>
@@ -78,25 +78,25 @@ const KPICard: React.FC<KPICardProps> = ({
   return (
     <Card
       sx={{
-        height: '100%',
-        transition: 'box-shadow 0.3s',
-        '&:hover': {
+        height: "100%",
+        transition: "box-shadow 0.3s",
+        "&:hover": {
           boxShadow: theme.shadows[4],
         },
       }}
     >
       <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
           <Box
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               width: 48,
               height: 48,
-              borderRadius: '50%',
+              borderRadius: "50%",
               bgcolor: color,
-              color: 'white',
+              color: "white",
             }}
           >
             {icon}
@@ -106,7 +106,7 @@ const KPICard: React.FC<KPICardProps> = ({
             color="text.secondary"
             sx={{
               fontWeight: 500,
-              fontSize: { xs: '0.875rem', sm: '1rem' },
+              fontSize: { xs: "0.875rem", sm: "1rem" },
             }}
           >
             {title}
@@ -117,16 +117,16 @@ const KPICard: React.FC<KPICardProps> = ({
           variant="h4"
           component="div"
           sx={{
-            fontWeight: 'bold',
+            fontWeight: "bold",
             mb: subtitle || trend ? 1 : 0,
-            fontSize: { xs: '1.75rem', sm: '2.125rem' },
+            fontSize: { xs: "1.75rem", sm: "2.125rem" },
           }}
         >
           {value}
         </Typography>
 
         {(subtitle || trend) && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             {trend && (
               <Typography
                 variant="body2"
@@ -139,10 +139,7 @@ const KPICard: React.FC<KPICardProps> = ({
               </Typography>
             )}
             {subtitle && (
-              <Typography
-                variant="body2"
-                color="text.secondary"
-              >
+              <Typography variant="body2" color="text.secondary">
                 {subtitle}
               </Typography>
             )}

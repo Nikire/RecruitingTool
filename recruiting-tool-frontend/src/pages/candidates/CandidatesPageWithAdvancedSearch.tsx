@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
-import { Typography, Button, Box } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import AddIcon from '@mui/icons-material/Add';
-import { useUserAtom } from '../../hooks/api/state/useUserAtom';
-import { useCandidatesSearch } from '../../hooks/api/state/useSearchState';
-import { useSearchPaginationHandlers } from '../../hooks/useSearchPaginationHandlers';
-import { useDialog } from '../../hooks/useDialog';
-import CreateCandidateDialog from '../../components/dialogs/CreateCandidateDialog';
-import { canManageResources } from '../../utils/permissions';
-import AdvancedSearchBar from '../../components/search/AdvancedSearchBar';
-import CandidatesList from '../../components/candidates/CandidatesList';
-import AccessDeniedMessage from '../../components/common/AccessDeniedMessage';
-import { SearchFilters, FilterOption } from '../../types/search';
+import React, { useState } from "react";
+import { Typography, Button, Box } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import AddIcon from "@mui/icons-material/Add";
+import { useUserAtom } from "../../hooks/api/state/useUserAtom";
+import { useCandidatesSearch } from "../../hooks/api/state/useSearchState";
+import { useSearchPaginationHandlers } from "../../hooks/useSearchPaginationHandlers";
+import { useDialog } from "../../hooks/useDialog";
+import CreateCandidateDialog from "../../components/dialogs/CreateCandidateDialog";
+import { canManageResources } from "../../utils/permissions";
+import AdvancedSearchBar from "../../components/search/AdvancedSearchBar";
+import CandidatesList from "../../components/candidates/CandidatesList";
+import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
+import { SearchFilters, FilterOption } from "../../types/search";
 
 /**
  * CandidatesPageWithAdvancedSearch Component
@@ -41,35 +41,35 @@ const CandidatesPageWithAdvancedSearch: React.FC = () => {
 
   // Advanced search filters state
   const [filters, setFilters] = useState<SearchFilters>({
-    query: searchState.search || '',
+    query: searchState.search || "",
   });
 
   // Status options for candidates
   const statusOptions: FilterOption[] = [
-    { value: 'ACTIVE', label: t('status.active'), count: 42 },
-    { value: 'PENDING', label: t('status.pending'), count: 18 },
-    { value: 'REVIEWED', label: t('status.reviewed'), count: 25 },
-    { value: 'ACCEPTED', label: t('status.accepted'), count: 15 },
-    { value: 'REJECTED', label: t('status.rejected'), count: 8 },
+    { value: "ACTIVE", label: t("status.active"), count: 42 },
+    { value: "PENDING", label: t("status.pending"), count: 18 },
+    { value: "REVIEWED", label: t("status.reviewed"), count: 25 },
+    { value: "ACCEPTED", label: t("status.accepted"), count: 15 },
+    { value: "REJECTED", label: t("status.rejected"), count: 8 },
   ];
 
   // Sample skills for autocomplete
   const skillsOptions = [
-    'JavaScript',
-    'TypeScript',
-    'React',
-    'Node.js',
-    'Python',
-    'Java',
-    'SQL',
-    'AWS',
-    'Docker',
-    'Kubernetes',
-    'Git',
-    'Agile',
-    'CI/CD',
-    'REST APIs',
-    'GraphQL',
+    "JavaScript",
+    "TypeScript",
+    "React",
+    "Node.js",
+    "Python",
+    "Java",
+    "SQL",
+    "AWS",
+    "Docker",
+    "Kubernetes",
+    "Git",
+    "Agile",
+    "CI/CD",
+    "REST APIs",
+    "GraphQL",
   ];
 
   const handleFiltersChange = (newFilters: SearchFilters) => {
@@ -82,7 +82,7 @@ const CandidatesPageWithAdvancedSearch: React.FC = () => {
 
     // TODO: When backend supports advanced filters, pass them to the API
     // For now, we only update the text search
-    console.log('Advanced filters updated:', newFilters);
+    console.log("Advanced filters updated:", newFilters);
   };
 
   const handleSearchQueryChange = (query: string) => {
@@ -92,23 +92,28 @@ const CandidatesPageWithAdvancedSearch: React.FC = () => {
 
   // Check if user has access (HR, ADMIN, or SUPER_ADMIN)
   if (!canManage) {
-    return <AccessDeniedMessage requiredRoles={['HR', 'ADMIN', 'SUPER_ADMIN']} />;
+    return (
+      <AccessDeniedMessage requiredRoles={["HR", "ADMIN", "SUPER_ADMIN"]} />
+    );
   }
 
   return (
     <Box>
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
+          display: "flex",
+          flexDirection: { xs: "column", sm: "row" },
+          justifyContent: "space-between",
+          alignItems: { xs: "flex-start", sm: "center" },
           mb: { xs: 2, sm: 3 },
           gap: 2,
         }}
       >
-        <Typography variant="h4" sx={{ fontSize: { xs: '1.5rem', sm: '2.125rem' } }}>
-          {t('candidates.title')}
+        <Typography
+          variant="h4"
+          sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+        >
+          {t("candidates.title")}
         </Typography>
         {canManage && (
           <Button
@@ -116,12 +121,12 @@ const CandidatesPageWithAdvancedSearch: React.FC = () => {
             startIcon={<AddIcon />}
             onClick={createDialog.open}
             sx={{
-              width: { xs: '100%', sm: 'auto' },
-              minHeight: '44px',
+              width: { xs: "100%", sm: "auto" },
+              minHeight: "44px",
             }}
-            aria-label={t('candidates.create_candidate')}
+            aria-label={t("candidates.create_candidate")}
           >
-            {t('candidates.create_candidate')}
+            {t("candidates.create_candidate")}
           </Button>
         )}
       </Box>
@@ -132,7 +137,7 @@ const CandidatesPageWithAdvancedSearch: React.FC = () => {
           filters={filters}
           onFiltersChange={handleFiltersChange}
           onSearch={handleSearchQueryChange}
-          placeholder={t('candidates.search_placeholder')}
+          placeholder={t("candidates.search_placeholder")}
           statusOptions={statusOptions}
           skillsOptions={skillsOptions}
           showSkills={true}
@@ -146,12 +151,15 @@ const CandidatesPageWithAdvancedSearch: React.FC = () => {
       <CandidatesList
         page={page}
         limit={limit}
-        search={filters.query || ''}
+        search={filters.query || ""}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
 
-      <CreateCandidateDialog open={createDialog.isOpen} onClose={createDialog.close} />
+      <CreateCandidateDialog
+        open={createDialog.isOpen}
+        onClose={createDialog.close}
+      />
     </Box>
   );
 };

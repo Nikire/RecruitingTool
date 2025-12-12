@@ -1,7 +1,7 @@
-import { render, screen } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
-import StatCard from './StatCard';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import StatCard from "./StatCard";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
 
 // Helper to render with MUI theme
 const renderWithTheme = (ui: React.ReactElement) => {
@@ -9,74 +9,74 @@ const renderWithTheme = (ui: React.ReactElement) => {
   return render(<ThemeProvider theme={theme}>{ui}</ThemeProvider>);
 };
 
-describe('StatCard', () => {
+describe("StatCard", () => {
   const mockIcon = <div data-testid="mock-icon">Icon</div>;
 
-  it('should render title correctly', () => {
+  it("should render title correctly", () => {
     renderWithTheme(
       <StatCard
         title="Total Candidates"
         icon={mockIcon}
         color="#1976d2"
         description="All candidates in the system"
-      />
+      />,
     );
 
-    expect(screen.getByText('Total Candidates')).toBeInTheDocument();
+    expect(screen.getByText("Total Candidates")).toBeInTheDocument();
   });
 
-  it('should render description correctly', () => {
+  it("should render description correctly", () => {
     renderWithTheme(
       <StatCard
         title="Active Jobs"
         icon={mockIcon}
         color="#2e7d32"
         description="Currently open positions"
-      />
+      />,
     );
 
-    expect(screen.getByText('Currently open positions')).toBeInTheDocument();
+    expect(screen.getByText("Currently open positions")).toBeInTheDocument();
   });
 
-  it('should render icon correctly', () => {
+  it("should render icon correctly", () => {
     renderWithTheme(
       <StatCard
         title="Applications"
         icon={mockIcon}
         color="#ed6c02"
         description="Total applications received"
-      />
+      />,
     );
 
-    expect(screen.getByTestId('mock-icon')).toBeInTheDocument();
+    expect(screen.getByTestId("mock-icon")).toBeInTheDocument();
   });
 
-  it('should apply correct color to icon box', () => {
-    const color = '#d32f2f';
+  it("should apply correct color to icon box", () => {
+    const color = "#d32f2f";
     const { container } = renderWithTheme(
       <StatCard
         title="Pending Reviews"
         icon={mockIcon}
         color={color}
         description="Applications awaiting review"
-      />
+      />,
     );
 
     const iconBox = container.querySelector('[class*="MuiBox"]');
     expect(iconBox).toBeInTheDocument();
   });
 
-  it('should render with different prop combinations', () => {
+  it("should render with different prop combinations", () => {
     const testCases = [
       {
-        title: 'Stat 1',
-        description: 'Description 1',
-        color: '#000000',
+        title: "Stat 1",
+        description: "Description 1",
+        color: "#000000",
       },
       {
-        title: 'Stat 2',
-        description: 'Description 2',
-        color: '#ffffff',
+        title: "Stat 2",
+        description: "Description 2",
+        color: "#ffffff",
       },
     ];
 
@@ -87,7 +87,7 @@ describe('StatCard', () => {
           icon={mockIcon}
           color={testCase.color}
           description={testCase.description}
-        />
+        />,
       );
 
       expect(screen.getByText(testCase.title)).toBeInTheDocument();
@@ -96,14 +96,14 @@ describe('StatCard', () => {
     });
   });
 
-  it('should have proper card structure', () => {
+  it("should have proper card structure", () => {
     const { container } = renderWithTheme(
       <StatCard
         title="Test Stat"
         icon={mockIcon}
         color="#1976d2"
         description="Test description"
-      />
+      />,
     );
 
     // Check for MUI Card component

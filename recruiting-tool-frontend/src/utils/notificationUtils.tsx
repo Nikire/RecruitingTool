@@ -1,12 +1,8 @@
-import React from 'react';
-import EventIcon from '@mui/icons-material/Event';
-import DescriptionIcon from '@mui/icons-material/Description';
-import InfoIcon from '@mui/icons-material/Info';
-import PersonIcon from '@mui/icons-material/Person';
-import PaymentIcon from '@mui/icons-material/Payment';
-import WorkIcon from '@mui/icons-material/Work';
-import GroupIcon from '@mui/icons-material/Group';
-import { NotificationType, Notification } from '../types/notification';
+import React from "react";
+import EventIcon from "@mui/icons-material/Event";
+import DescriptionIcon from "@mui/icons-material/Description";
+import InfoIcon from "@mui/icons-material/Info";
+import { NotificationType, Notification } from "../types/notification";
 
 /**
  * Get icon for notification type
@@ -30,29 +26,31 @@ export const getNotificationIcon = (type: NotificationType): JSX.Element => {
  * Get color for notification type
  */
 export const getNotificationColor = (
-  type: NotificationType
-): 'primary' | 'secondary' | 'error' | 'warning' | 'info' | 'success' => {
+  type: NotificationType,
+): "primary" | "secondary" | "error" | "warning" | "info" | "success" => {
   switch (type) {
     case NotificationType.INTERVIEW_SCHEDULED:
-      return 'success';
+      return "success";
     case NotificationType.INTERVIEW_UPDATED:
-      return 'info';
+      return "info";
     case NotificationType.INTERVIEW_CANCELLED:
-      return 'error';
+      return "error";
     case NotificationType.APPLICATION_RECEIVED:
-      return 'primary';
+      return "primary";
     case NotificationType.APPLICATION_STATUS:
-      return 'secondary';
+      return "secondary";
     case NotificationType.SYSTEM:
     default:
-      return 'info';
+      return "info";
   }
 };
 
 /**
  * Get navigation path for notification based on type and metadata
  */
-export const getNotificationNavigationPath = (notification: Notification): string | null => {
+export const getNotificationNavigationPath = (
+  notification: Notification,
+): string | null => {
   const { type, metadata } = notification;
 
   // If no metadata or no navigation data, return null
@@ -67,7 +65,7 @@ export const getNotificationNavigationPath = (notification: Notification): strin
       if (metadata.applicationUid) {
         return `/hr/applications?highlight=${metadata.applicationUid}`;
       }
-      return '/hr/applications';
+      return "/hr/applications";
 
     case NotificationType.INTERVIEW_SCHEDULED:
     case NotificationType.INTERVIEW_UPDATED:
@@ -76,7 +74,7 @@ export const getNotificationNavigationPath = (notification: Notification): strin
       if (metadata.interviewUid) {
         return `/hr/interviews?highlight=${metadata.interviewUid}`;
       }
-      return '/hr/interviews';
+      return "/hr/interviews";
 
     case NotificationType.SYSTEM:
     default:
@@ -91,6 +89,8 @@ export const getNotificationNavigationPath = (notification: Notification): strin
 /**
  * Check if notification is actionable (has navigation)
  */
-export const isNotificationActionable = (notification: Notification): boolean => {
+export const isNotificationActionable = (
+  notification: Notification,
+): boolean => {
   return getNotificationNavigationPath(notification) !== null;
 };

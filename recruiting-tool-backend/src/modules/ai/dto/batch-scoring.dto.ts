@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsUUID, IsOptional, IsArray, IsEnum, IsString, IsNumber, Min } from 'class-validator';
+import { IsUUID, IsOptional, IsArray, IsEnum } from 'class-validator';
 import { CandidateScoreResponseDto } from './candidate-scoring.dto';
 
 export enum BatchPriority {
@@ -91,7 +91,7 @@ export class BatchScoreStatusDto {
 
   @ApiPropertyOptional({
     description: 'Array of error messages for failed candidates',
-    example: ['Candidate UID abc123 not found', 'OpenAI API rate limit exceeded'],
+    example: ['Candidate UID abc123 not found', 'Gemini API rate limit exceeded'],
     type: [String],
   })
   errors?: string[];

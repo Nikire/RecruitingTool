@@ -1,23 +1,10 @@
-import {
-  Controller,
-  Get,
-  Delete,
-  Query,
-  Redirect,
-  BadRequestException,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Get, Delete, Query, Redirect, BadRequestException } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { CalendarService } from './calendar.service';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType, User } from '@prisma/client';
-import { CalendarConnectionResponseDto, ConnectionStatusDto } from './dto/calendar-connection.dto';
+import { ConnectionStatusDto } from './dto/calendar-connection.dto';
 
 @ApiTags('calendar')
 @Controller('calendar')

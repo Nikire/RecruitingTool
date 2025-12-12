@@ -1,13 +1,7 @@
-import {
-  Injectable,
-  Logger,
-  HttpException,
-  HttpStatus,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SubscriptionPlan } from '@prisma/client';
-import { PLAN_LIMITS, QuotaResource, PlanLimits } from './config/plan-limits.config';
+import { PLAN_LIMITS, QuotaResource } from './config/plan-limits.config';
 import { QuotaStatusDto, QuotaUsageDto, FeatureAccessDto } from './dto/quota.dto';
 
 @Injectable()
@@ -67,11 +61,7 @@ export class QuotaService {
    * Check if an action can be performed without exceeding quota
    * Throws PaymentRequiredException if quota exceeded
    */
-  async checkQuota(
-    companyId: number,
-    resource: QuotaResource,
-    amount: number = 1,
-  ): Promise<void> {
+  async checkQuota(companyId: number, resource: QuotaResource, amount: number = 1): Promise<void> {
     const company = await this.databaseService.company.findUnique({
       where: { id: companyId },
       include: { subscription: true },
@@ -114,28 +104,19 @@ export class QuotaService {
 
       case 'aiScoring':
         if (!limits.aiScoringEnabled) {
-          throw new HttpException(
-            `AI Scoring is not available on the ${plan} plan. Please upgrade to Professional or Enterprise.`,
-            HttpStatus.PAYMENT_REQUIRED,
-          );
+          throw new HttpException(`AI Scoring is not available on the ${plan} plan. Please upgrade to Professional or Enterprise.`, HttpStatus.PAYMENT_REQUIRED);
         }
         return;
 
       case 'emailTemplates':
         if (!limits.emailTemplatesEnabled) {
-          throw new HttpException(
-            `Email Templates are not available on the ${plan} plan. Please upgrade to Professional or Enterprise.`,
-            HttpStatus.PAYMENT_REQUIRED,
-          );
+          throw new HttpException(`Email Templates are not available on the ${plan} plan. Please upgrade to Professional or Enterprise.`, HttpStatus.PAYMENT_REQUIRED);
         }
         return;
 
       case 'analytics':
         if (!limits.analyticsEnabled) {
-          throw new HttpException(
-            `Analytics are not available on the ${plan} plan. Please upgrade to Professional or Enterprise.`,
-            HttpStatus.PAYMENT_REQUIRED,
-          );
+          throw new HttpException(`Analytics are not available on the ${plan} plan. Please upgrade to Professional or Enterprise.`, HttpStatus.PAYMENT_REQUIRED);
         }
         return;
     }

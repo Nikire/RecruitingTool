@@ -1,6 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { HiringProcessStatus } from '@prisma/client';
-import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString, IsDateString } from 'class-validator';
 import { PaginationDto } from 'src/dto/pagination.dto';
 

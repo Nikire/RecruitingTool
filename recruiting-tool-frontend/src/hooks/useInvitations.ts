@@ -1,8 +1,8 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { invitationsService } from '../services/invitations.service';
-import { CreateInvitationDto, InvitationStatus } from '../types/invitations';
-import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { invitationsService } from "../services/invitations.service";
+import { CreateInvitationDto, InvitationStatus } from "../types/invitations";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 /**
  * Hook to fetch company invitations
@@ -12,7 +12,7 @@ export const useCompanyInvitations = (
   status?: InvitationStatus,
 ) => {
   return useQuery({
-    queryKey: ['companyInvitations', companyUid, status],
+    queryKey: ["companyInvitations", companyUid, status],
     queryFn: () => invitationsService.getCompanyInvitations(companyUid, status),
     enabled: !!companyUid,
   });
@@ -29,11 +29,14 @@ export const useCreateInvitation = (companyUid: string) => {
     mutationFn: (data: CreateInvitationDto) =>
       invitationsService.createInvitation(companyUid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companyInvitations', companyUid] });
-      toast.success(t('team.invitation_sent'));
+      queryClient.invalidateQueries({
+        queryKey: ["companyInvitations", companyUid],
+      });
+      toast.success(t("team.invitation_sent"));
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || t('errors.create_failed');
+    onError: (error: unknown) => {
+      const message =
+        error.response?.data?.message || t("errors.create_failed");
       toast.error(message);
     },
   });
@@ -50,11 +53,14 @@ export const useCancelInvitation = (companyUid: string) => {
     mutationFn: (invitationUid: string) =>
       invitationsService.cancelInvitation(companyUid, invitationUid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['companyInvitations', companyUid] });
-      toast.success(t('team.invitation_cancelled'));
+      queryClient.invalidateQueries({
+        queryKey: ["companyInvitations", companyUid],
+      });
+      toast.success(t("team.invitation_cancelled"));
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || t('errors.operation_failed');
+    onError: (error: unknown) => {
+      const message =
+        error.response?.data?.message || t("errors.operation_failed");
       toast.error(message);
     },
   });
@@ -70,12 +76,13 @@ export const useAcceptInvitation = () => {
   return useMutation({
     mutationFn: (token: string) => invitationsService.acceptInvitation(token),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['currentUser'] });
-      queryClient.invalidateQueries({ queryKey: ['companyInvitations'] });
-      toast.success(t('team.invitation_accepted'));
+      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["companyInvitations"] });
+      toast.success(t("team.invitation_accepted"));
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || t('errors.operation_failed');
+    onError: (error: unknown) => {
+      const message =
+        error.response?.data?.message || t("errors.operation_failed");
       toast.error(message);
     },
   });

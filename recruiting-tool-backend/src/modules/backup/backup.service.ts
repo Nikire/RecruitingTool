@@ -1,10 +1,10 @@
 import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import { promises as fs } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 import * as path from 'path';
-import { BackupHistoryResponseDto, BackupStatusResponseDto, BackupType, BackupStatus, BackupHistoryItemDto } from './dto/backup.dto';
+import { BackupHistoryResponseDto, BackupStatusResponseDto, BackupType, BackupStatus } from './dto/backup.dto';
 
 const execAsync = promisify(exec);
 

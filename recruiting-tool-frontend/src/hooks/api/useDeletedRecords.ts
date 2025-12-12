@@ -1,21 +1,20 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { deletedRecordsService } from '../../services/deletedRecords.service';
-import toast from 'react-hot-toast';
-import { useTranslation } from 'react-i18next';
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { deletedRecordsService } from "../../services/deletedRecords.service";
+import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import {
   DeletedCandidate,
   DeletedJobPosition,
   DeletedApplication,
   DeletedInterview,
-  DeletedEntityType,
-} from '../../types/deleted.types';
+} from "../../types/deleted.types";
 
 /**
  * Hook to fetch deleted candidates
  */
 export const useDeletedCandidates = () => {
   return useQuery<DeletedCandidate[]>({
-    queryKey: ['deleted', 'candidates'],
+    queryKey: ["deleted", "candidates"],
     queryFn: deletedRecordsService.getDeletedCandidates,
   });
 };
@@ -30,12 +29,12 @@ export const useRestoreCandidate = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.restoreCandidate(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'candidates'] });
-      queryClient.invalidateQueries({ queryKey: ['candidates'] });
-      toast.success(t('deleted_records.restore_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "candidates"] });
+      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      toast.success(t("deleted_records.restore_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.restore_error'));
+      toast.error(t("deleted_records.restore_error"));
     },
   });
 };
@@ -50,11 +49,11 @@ export const usePurgeCandidate = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.purgeCandidate(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'candidates'] });
-      toast.success(t('deleted_records.purge_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "candidates"] });
+      toast.success(t("deleted_records.purge_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.purge_error'));
+      toast.error(t("deleted_records.purge_error"));
     },
   });
 };
@@ -64,7 +63,7 @@ export const usePurgeCandidate = () => {
  */
 export const useDeletedJobPositions = () => {
   return useQuery<DeletedJobPosition[]>({
-    queryKey: ['deleted', 'job-positions'],
+    queryKey: ["deleted", "job-positions"],
     queryFn: deletedRecordsService.getDeletedJobPositions,
   });
 };
@@ -79,12 +78,12 @@ export const useRestoreJobPosition = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.restoreJobPosition(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'job-positions'] });
-      queryClient.invalidateQueries({ queryKey: ['jobPositions'] });
-      toast.success(t('deleted_records.restore_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "job-positions"] });
+      queryClient.invalidateQueries({ queryKey: ["jobPositions"] });
+      toast.success(t("deleted_records.restore_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.restore_error'));
+      toast.error(t("deleted_records.restore_error"));
     },
   });
 };
@@ -99,11 +98,11 @@ export const usePurgeJobPosition = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.purgeJobPosition(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'job-positions'] });
-      toast.success(t('deleted_records.purge_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "job-positions"] });
+      toast.success(t("deleted_records.purge_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.purge_error'));
+      toast.error(t("deleted_records.purge_error"));
     },
   });
 };
@@ -113,7 +112,7 @@ export const usePurgeJobPosition = () => {
  */
 export const useDeletedApplications = () => {
   return useQuery<DeletedApplication[]>({
-    queryKey: ['deleted', 'applications'],
+    queryKey: ["deleted", "applications"],
     queryFn: deletedRecordsService.getDeletedApplications,
   });
 };
@@ -128,12 +127,12 @@ export const useRestoreApplication = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.restoreApplication(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'applications'] });
-      queryClient.invalidateQueries({ queryKey: ['applications'] });
-      toast.success(t('deleted_records.restore_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "applications"] });
+      queryClient.invalidateQueries({ queryKey: ["applications"] });
+      toast.success(t("deleted_records.restore_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.restore_error'));
+      toast.error(t("deleted_records.restore_error"));
     },
   });
 };
@@ -148,11 +147,11 @@ export const usePurgeApplication = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.purgeApplication(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'applications'] });
-      toast.success(t('deleted_records.purge_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "applications"] });
+      toast.success(t("deleted_records.purge_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.purge_error'));
+      toast.error(t("deleted_records.purge_error"));
     },
   });
 };
@@ -162,7 +161,7 @@ export const usePurgeApplication = () => {
  */
 export const useDeletedInterviews = () => {
   return useQuery<DeletedInterview[]>({
-    queryKey: ['deleted', 'interviews'],
+    queryKey: ["deleted", "interviews"],
     queryFn: deletedRecordsService.getDeletedInterviews,
   });
 };
@@ -177,12 +176,12 @@ export const useRestoreInterview = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.restoreInterview(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'interviews'] });
-      queryClient.invalidateQueries({ queryKey: ['interviews'] });
-      toast.success(t('deleted_records.restore_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "interviews"] });
+      queryClient.invalidateQueries({ queryKey: ["interviews"] });
+      toast.success(t("deleted_records.restore_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.restore_error'));
+      toast.error(t("deleted_records.restore_error"));
     },
   });
 };
@@ -197,11 +196,11 @@ export const usePurgeInterview = () => {
   return useMutation({
     mutationFn: (uid: string) => deletedRecordsService.purgeInterview(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['deleted', 'interviews'] });
-      toast.success(t('deleted_records.purge_success'));
+      queryClient.invalidateQueries({ queryKey: ["deleted", "interviews"] });
+      toast.success(t("deleted_records.purge_success"));
     },
     onError: () => {
-      toast.error(t('deleted_records.purge_error'));
+      toast.error(t("deleted_records.purge_error"));
     },
   });
 };

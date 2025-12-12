@@ -93,9 +93,13 @@
     "max_length": "Must be less than {{max}} characters",
     "phone_invalid": "Please enter a valid phone number",
     "url_invalid": "Please enter a valid URL",
+    "linkedin_invalid": "Please enter a valid LinkedIn URL",
     "password_required": "Password is required",
     "password_min_length": "Password must be at least {{min}} characters",
     "password_max_length": "Password must be less than {{max}} characters",
+    "password_complexity": "Password must contain uppercase, lowercase, number, and special character",
+    "confirm_password_required": "Please confirm your password",
+    "passwords_must_match": "Passwords must match",
     "title_required": "Title is required",
     "description_max_length": "Description must be less than {{max}} characters",
     "status_required": "Status is required",
@@ -947,7 +951,9 @@
     "timezone": "Timezone",
     "linkedin_profile": "LinkedIn Profile",
     "about_you": "About You",
-    "bio": "Bio"
+    "bio": "Bio",
+    "account_active": "Account Active",
+    "roles": "Roles"
   },
   "applications_page": {
     "all_applications": "All Applications",
@@ -1121,7 +1127,8 @@
     "email_templates": "Email Templates",
     "aria_label": "hr navigation",
     "analytics": "Analytics",
-    "team": "Team"
+    "team": "Team",
+    "billing": "Billing"
   },
   "admin_layout": {
     "title": "Admin Panel",
@@ -1140,6 +1147,28 @@
     "en": "English",
     "es": "Spanish",
     "current_language": "Current Language"
+  },
+  "billing": {
+    "title": "Billing & Invoices",
+    "subtitle": "View and download your billing invoices",
+    "no_invoices": "No Invoices Available",
+    "no_invoices_description": "You don't have any invoices yet. Invoices will appear here once you subscribe to a paid plan.",
+    "invoice_number": "Invoice #",
+    "date": "Date",
+    "amount": "Amount",
+    "status": "Status",
+    "actions": "Actions",
+    "download_pdf": "Download PDF",
+    "view_invoice": "View Invoice",
+    "total_invoices": "Total: {{count}} invoice(s)",
+    "error_loading": "Failed to load invoices. Please try again later.",
+    "status_paid": "Paid",
+    "status_open": "Open",
+    "status_draft": "Draft",
+    "status_void": "Void",
+    "status_uncollectible": "Uncollectible",
+    "grace_period_expires": "Grace period expires",
+    "subscription_expired": "Your subscription has expired. Please update your payment method to restore access."
   },
   "home": {
     "hero": {
@@ -1413,6 +1442,7 @@
     "dialog": "Dialog",
     "error_icon": "Error indicator",
     "warning_icon": "Warning indicator",
+    "info_icon": "Information indicator",
     "loading": "Loading",
     "file_upload": "File upload",
     "avatar": "Avatar for {{name}}",
@@ -1757,7 +1787,23 @@
       "active": "Active",
       "past_due": "Past Due",
       "canceled": "Canceled",
-      "unpaid": "Unpaid"
+      "unpaid": "Unpaid",
+      "expired": "Expired"
+    },
+    "warning_banner": {
+      "title": "Payment Failed - Grace Period Active",
+      "expires_today": "Your grace period expires today.",
+      "expires_tomorrow": "Your grace period expires tomorrow.",
+      "expires_in_days": "Your grace period expires in {{days}} days.",
+      "update_payment_prompt": "Please update your payment method to avoid service interruption.",
+      "update_payment_button": "Update Payment Method"
+    },
+    "expired_modal": {
+      "title": "Subscription Expired",
+      "access_blocked": "Your subscription has expired and access to premium features has been suspended.",
+      "feature_blocked": "Access to {{feature}} is not available with an expired subscription.",
+      "update_prompt": "Please update your payment method to restore access to all features.",
+      "go_to_billing": "Go to Billing"
     },
     "plans": {
       "free": {
@@ -1829,6 +1875,15 @@
       "checkout_failed": "Failed to create checkout session. Please try again.",
       "billing_portal_failed": "Failed to open billing portal. Please try again.",
       "cancel_failed": "Failed to cancel subscription. Please try again."
+    },
+    "billing": {
+      "toggle_label": "Billing Interval",
+      "monthly": "Monthly",
+      "annual": "Annual",
+      "save_percent": "Save {{percent}}%",
+      "annual_savings": "Save {{percent}}% with annual billing",
+      "billed_monthly": "Billed monthly",
+      "billed_annually": "Billed annually"
     }
   },
   "onboarding": {
@@ -2326,6 +2381,21 @@
     "bell": {
       "aria_label": "Notifications"
     },
+    "page": {
+      "title": "Notifications",
+      "subtitle": "Manage and view all your notifications in one place",
+      "all": "All",
+      "unread": "Unread",
+      "read": "Read",
+      "filter_aria": "Filter notifications",
+      "filter_all": "Show all notifications",
+      "filter_unread": "Show unread notifications only",
+      "filter_read": "Show read notifications only",
+      "empty_all": "No notifications",
+      "empty_unread": "No unread notifications",
+      "empty_read": "No read notifications",
+      "empty_subtitle": "You're all caught up!"
+    },
     "types": {
       "application_received": "New Application",
       "application_status": "Application Status Update",
@@ -2358,6 +2428,25 @@
       "delete_failed": "Failed to delete notification",
       "create_failed": "Failed to create notification"
     }
+  },
+  "notificationPreferences": {
+    "title": "Notification Preferences",
+    "description": "Control which notifications you receive via email and in the app",
+    "emailNotifications": "Email Notifications",
+    "emailDescription": "Receive notifications via email",
+    "inAppNotifications": "In-App Notifications",
+    "inAppDescription": "Receive notifications within the application",
+    "emailApplicationStatus": "Application status updates",
+    "emailInterviewScheduled": "Interview scheduled",
+    "emailNewCandidate": "New candidate added",
+    "emailSystemAnnouncement": "System announcements",
+    "inAppApplicationStatus": "Application status updates",
+    "inAppInterviewScheduled": "Interview scheduled",
+    "inAppNewCandidate": "New candidate added",
+    "inAppSystemAnnouncement": "System announcements",
+    "updated": "Notification preferences updated",
+    "updateFailed": "Failed to update notification preferences",
+    "loadError": "Failed to load notification preferences"
   },
   "company_roles": {
     "title": "Team Management",
@@ -2497,5 +2586,34 @@
     "status_label": "Status",
     "last_updated": "Last Updated",
     "privacy_notice": "For your privacy, only limited information is displayed"
+  },
+  "feedback": {
+    "button_label": "Feedback",
+    "modal_title": "Share Your Feedback",
+    "modal_description": "We'd love to hear your thoughts! Help us improve by sharing your feedback.",
+    "category_label": "Category",
+    "category_placeholder": "Select a category",
+    "content_label": "Your Feedback",
+    "content_placeholder": "Tell us what's on your mind...",
+    "content_helper": "Please provide detailed feedback to help us improve",
+    "rating_label": "Rating (Optional)",
+    "rating_helper": "Rate your experience from 1 (poor) to 5 (excellent)",
+    "submit_button": "Submit Feedback",
+    "submitting": "Submitting...",
+    "categories": {
+      "FEATURE_REQUEST": "Feature Request",
+      "BUG_REPORT": "Bug Report",
+      "GENERAL": "General Feedback"
+    },
+    "messages": {
+      "submitted": "Thank you for your feedback!",
+      "submit_failed": "Failed to submit feedback. Please try again."
+    },
+    "validation": {
+      "category_required": "Please select a category",
+      "content_required": "Please provide your feedback",
+      "content_min_length": "Feedback must be at least 10 characters",
+      "rating_invalid": "Rating must be between 1 and 5"
+    }
   }
 }

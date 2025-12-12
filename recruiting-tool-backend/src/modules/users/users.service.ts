@@ -32,7 +32,7 @@ export class UsersService {
           companyId = company.id;
         }
 
-        const { companyUid, roles, ...userData } = createUserDto;
+        const { roles, ...userData } = createUserDto;
         const newUser = await this.databaseService.user.create({
           data: {
             ...userData,
@@ -214,7 +214,7 @@ export class UsersService {
         companyId = company.id;
       }
 
-      const { companyUid, roles, ...userData } = updateUserDto;
+      const { roles, ...userData } = updateUserDto;
       const updatedUser = await this.databaseService.user.update({
         where: { uid },
         data: {

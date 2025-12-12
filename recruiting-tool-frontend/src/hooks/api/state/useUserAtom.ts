@@ -13,4 +13,4 @@
  * import { useUserAtom, userAtom, isAuthenticatedAtom } from '../store';
  * ```
  */
-export {useUserAtom, userAtom, isAuthenticatedAtom} from '../../../store';
+export { useUserAtom, userAtom, isAuthenticatedAtom } from "../../../store";

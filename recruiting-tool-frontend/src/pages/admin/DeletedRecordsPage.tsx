@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -20,10 +20,10 @@ import {
   DialogActions,
   Alert,
   CircularProgress,
-} from '@mui/material';
-import RestoreIcon from '@mui/icons-material/RestoreFromTrash';
-import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import RestoreIcon from "@mui/icons-material/RestoreFromTrash";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { useTranslation } from "react-i18next";
 import {
   useDeletedCandidates,
   useDeletedJobPositions,
@@ -37,8 +37,8 @@ import {
   usePurgeApplication,
   useRestoreInterview,
   usePurgeInterview,
-} from '../../hooks/api/useDeletedRecords';
-import { format } from 'date-fns';
+} from "../../hooks/api/useDeletedRecords";
+import { format } from "date-fns";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -66,17 +66,23 @@ const DeletedRecordsPage: React.FC = () => {
   const { t } = useTranslation();
   const [tabValue, setTabValue] = useState(0);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  const [confirmAction, setConfirmAction] = useState<'restore' | 'purge' | null>(null);
+  const [confirmAction, setConfirmAction] = useState<
+    "restore" | "purge" | null
+  >(null);
   const [selectedUid, setSelectedUid] = useState<string | null>(null);
   const [selectedEntityType, setSelectedEntityType] = useState<
-    'candidates' | 'job-positions' | 'applications' | 'interviews' | null
+    "candidates" | "job-positions" | "applications" | "interviews" | null
   >(null);
 
   // Fetch deleted records
-  const { data: deletedCandidates, isLoading: loadingCandidates } = useDeletedCandidates();
-  const { data: deletedJobPositions, isLoading: loadingJobPositions } = useDeletedJobPositions();
-  const { data: deletedApplications, isLoading: loadingApplications } = useDeletedApplications();
-  const { data: deletedInterviews, isLoading: loadingInterviews } = useDeletedInterviews();
+  const { data: deletedCandidates, isLoading: loadingCandidates } =
+    useDeletedCandidates();
+  const { data: deletedJobPositions, isLoading: loadingJobPositions } =
+    useDeletedJobPositions();
+  const { data: deletedApplications, isLoading: loadingApplications } =
+    useDeletedApplications();
+  const { data: deletedInterviews, isLoading: loadingInterviews } =
+    useDeletedInterviews();
 
   // Mutations
   const restoreCandidate = useRestoreCandidate();
@@ -93,9 +99,9 @@ const DeletedRecordsPage: React.FC = () => {
   };
 
   const openConfirmDialog = (
-    action: 'restore' | 'purge',
+    action: "restore" | "purge",
     uid: string,
-    entityType: 'candidates' | 'job-positions' | 'applications' | 'interviews',
+    entityType: "candidates" | "job-positions" | "applications" | "interviews",
   ) => {
     setConfirmAction(action);
     setSelectedUid(uid);
@@ -113,33 +119,33 @@ const DeletedRecordsPage: React.FC = () => {
   const handleConfirmAction = () => {
     if (!selectedUid || !selectedEntityType || !confirmAction) return;
 
-    if (confirmAction === 'restore') {
+    if (confirmAction === "restore") {
       switch (selectedEntityType) {
-        case 'candidates':
+        case "candidates":
           restoreCandidate.mutate(selectedUid);
           break;
-        case 'job-positions':
+        case "job-positions":
           restoreJobPosition.mutate(selectedUid);
           break;
-        case 'applications':
+        case "applications":
           restoreApplication.mutate(selectedUid);
           break;
-        case 'interviews':
+        case "interviews":
           restoreInterview.mutate(selectedUid);
           break;
       }
-    } else if (confirmAction === 'purge') {
+    } else if (confirmAction === "purge") {
       switch (selectedEntityType) {
-        case 'candidates':
+        case "candidates":
           purgeCandidate.mutate(selectedUid);
           break;
-        case 'job-positions':
+        case "job-positions":
           purgeJobPosition.mutate(selectedUid);
           break;
-        case 'applications':
+        case "applications":
           purgeApplication.mutate(selectedUid);
           break;
-        case 'interviews':
+        case "interviews":
           purgeInterview.mutate(selectedUid);
           break;
       }
@@ -149,31 +155,35 @@ const DeletedRecordsPage: React.FC = () => {
   };
 
   const formatDate = (date: Date | string) => {
-    return format(new Date(date), 'PPp');
+    return format(new Date(date), "PPp");
   };
 
   return (
-    <Box sx={{ width: '100%' }}>
+    <Box sx={{ width: "100%" }}>
       <Typography variant="h4" sx={{ mb: 3 }}>
-        {t('deleted_records.page_title')}
+        {t("deleted_records.page_title")}
       </Typography>
 
       <Alert severity="info" sx={{ mb: 3 }}>
-        {t('deleted_records.page_description')}
+        {t("deleted_records.page_description")}
       </Alert>
 
-      <Paper sx={{ width: '100%' }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="deleted records tabs">
-          <Tab label={t('deleted_records.tabs.candidates')} />
-          <Tab label={t('deleted_records.tabs.job_positions')} />
-          <Tab label={t('deleted_records.tabs.applications')} />
-          <Tab label={t('deleted_records.tabs.interviews')} />
+      <Paper sx={{ width: "100%" }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="deleted records tabs"
+        >
+          <Tab label={t("deleted_records.tabs.candidates")} />
+          <Tab label={t("deleted_records.tabs.job_positions")} />
+          <Tab label={t("deleted_records.tabs.applications")} />
+          <Tab label={t("deleted_records.tabs.interviews")} />
         </Tabs>
 
         {/* Candidates Tab */}
         <TabPanel value={tabValue} index={0}>
           {loadingCandidates ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
           ) : deletedCandidates && deletedCandidates.length > 0 ? (
@@ -181,11 +191,13 @@ const DeletedRecordsPage: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>{t('deleted_records.table.name')}</TableCell>
-                    <TableCell>{t('deleted_records.table.email')}</TableCell>
-                    <TableCell>{t('deleted_records.table.source')}</TableCell>
-                    <TableCell>{t('deleted_records.table.deleted_at')}</TableCell>
-                    <TableCell align="right">{t('common.actions')}</TableCell>
+                    <TableCell>{t("deleted_records.table.name")}</TableCell>
+                    <TableCell>{t("deleted_records.table.email")}</TableCell>
+                    <TableCell>{t("deleted_records.table.source")}</TableCell>
+                    <TableCell>
+                      {t("deleted_records.table.deleted_at")}
+                    </TableCell>
+                    <TableCell align="right">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -197,22 +209,34 @@ const DeletedRecordsPage: React.FC = () => {
                         {candidate.source ? (
                           <Chip label={candidate.source} size="small" />
                         ) : (
-                          t('common.n_a')
+                          t("common.n_a")
                         )}
                       </TableCell>
                       <TableCell>{formatDate(candidate.deletedAt)}</TableCell>
                       <TableCell align="right">
                         <IconButton
                           color="primary"
-                          onClick={() => openConfirmDialog('restore', candidate.uid, 'candidates')}
-                          title={t('deleted_records.actions.restore')}
+                          onClick={() =>
+                            openConfirmDialog(
+                              "restore",
+                              candidate.uid,
+                              "candidates",
+                            )
+                          }
+                          title={t("deleted_records.actions.restore")}
                         >
                           <RestoreIcon />
                         </IconButton>
                         <IconButton
                           color="error"
-                          onClick={() => openConfirmDialog('purge', candidate.uid, 'candidates')}
-                          title={t('deleted_records.actions.purge')}
+                          onClick={() =>
+                            openConfirmDialog(
+                              "purge",
+                              candidate.uid,
+                              "candidates",
+                            )
+                          }
+                          title={t("deleted_records.actions.purge")}
                         >
                           <DeleteForeverIcon />
                         </IconButton>
@@ -223,8 +247,8 @@ const DeletedRecordsPage: React.FC = () => {
               </Table>
             </TableContainer>
           ) : (
-            <Typography sx={{ p: 4, textAlign: 'center' }}>
-              {t('deleted_records.no_records')}
+            <Typography sx={{ p: 4, textAlign: "center" }}>
+              {t("deleted_records.no_records")}
             </Typography>
           )}
         </TabPanel>
@@ -232,7 +256,7 @@ const DeletedRecordsPage: React.FC = () => {
         {/* Job Positions Tab */}
         <TabPanel value={tabValue} index={1}>
           {loadingJobPositions ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
           ) : deletedJobPositions && deletedJobPositions.length > 0 ? (
@@ -240,10 +264,12 @@ const DeletedRecordsPage: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>{t('deleted_records.table.title')}</TableCell>
-                    <TableCell>{t('deleted_records.table.status')}</TableCell>
-                    <TableCell>{t('deleted_records.table.deleted_at')}</TableCell>
-                    <TableCell align="right">{t('common.actions')}</TableCell>
+                    <TableCell>{t("deleted_records.table.title")}</TableCell>
+                    <TableCell>{t("deleted_records.table.status")}</TableCell>
+                    <TableCell>
+                      {t("deleted_records.table.deleted_at")}
+                    </TableCell>
+                    <TableCell align="right">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -251,25 +277,37 @@ const DeletedRecordsPage: React.FC = () => {
                     <TableRow key={jobPosition.uid}>
                       <TableCell>{jobPosition.title}</TableCell>
                       <TableCell>
-                        <Chip label={jobPosition.status} size="small" color="default" />
+                        <Chip
+                          label={jobPosition.status}
+                          size="small"
+                          color="default"
+                        />
                       </TableCell>
                       <TableCell>{formatDate(jobPosition.deletedAt)}</TableCell>
                       <TableCell align="right">
                         <IconButton
                           color="primary"
                           onClick={() =>
-                            openConfirmDialog('restore', jobPosition.uid, 'job-positions')
+                            openConfirmDialog(
+                              "restore",
+                              jobPosition.uid,
+                              "job-positions",
+                            )
                           }
-                          title={t('deleted_records.actions.restore')}
+                          title={t("deleted_records.actions.restore")}
                         >
                           <RestoreIcon />
                         </IconButton>
                         <IconButton
                           color="error"
                           onClick={() =>
-                            openConfirmDialog('purge', jobPosition.uid, 'job-positions')
+                            openConfirmDialog(
+                              "purge",
+                              jobPosition.uid,
+                              "job-positions",
+                            )
                           }
-                          title={t('deleted_records.actions.purge')}
+                          title={t("deleted_records.actions.purge")}
                         >
                           <DeleteForeverIcon />
                         </IconButton>
@@ -280,8 +318,8 @@ const DeletedRecordsPage: React.FC = () => {
               </Table>
             </TableContainer>
           ) : (
-            <Typography sx={{ p: 4, textAlign: 'center' }}>
-              {t('deleted_records.no_records')}
+            <Typography sx={{ p: 4, textAlign: "center" }}>
+              {t("deleted_records.no_records")}
             </Typography>
           )}
         </TabPanel>
@@ -289,7 +327,7 @@ const DeletedRecordsPage: React.FC = () => {
         {/* Applications Tab */}
         <TabPanel value={tabValue} index={2}>
           {loadingApplications ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
           ) : deletedApplications && deletedApplications.length > 0 ? (
@@ -297,11 +335,15 @@ const DeletedRecordsPage: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>{t('deleted_records.table.applicant_name')}</TableCell>
-                    <TableCell>{t('deleted_records.table.email')}</TableCell>
-                    <TableCell>{t('deleted_records.table.status')}</TableCell>
-                    <TableCell>{t('deleted_records.table.deleted_at')}</TableCell>
-                    <TableCell align="right">{t('common.actions')}</TableCell>
+                    <TableCell>
+                      {t("deleted_records.table.applicant_name")}
+                    </TableCell>
+                    <TableCell>{t("deleted_records.table.email")}</TableCell>
+                    <TableCell>{t("deleted_records.table.status")}</TableCell>
+                    <TableCell>
+                      {t("deleted_records.table.deleted_at")}
+                    </TableCell>
+                    <TableCell align="right">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -317,18 +359,26 @@ const DeletedRecordsPage: React.FC = () => {
                         <IconButton
                           color="primary"
                           onClick={() =>
-                            openConfirmDialog('restore', application.uid, 'applications')
+                            openConfirmDialog(
+                              "restore",
+                              application.uid,
+                              "applications",
+                            )
                           }
-                          title={t('deleted_records.actions.restore')}
+                          title={t("deleted_records.actions.restore")}
                         >
                           <RestoreIcon />
                         </IconButton>
                         <IconButton
                           color="error"
                           onClick={() =>
-                            openConfirmDialog('purge', application.uid, 'applications')
+                            openConfirmDialog(
+                              "purge",
+                              application.uid,
+                              "applications",
+                            )
                           }
-                          title={t('deleted_records.actions.purge')}
+                          title={t("deleted_records.actions.purge")}
                         >
                           <DeleteForeverIcon />
                         </IconButton>
@@ -339,8 +389,8 @@ const DeletedRecordsPage: React.FC = () => {
               </Table>
             </TableContainer>
           ) : (
-            <Typography sx={{ p: 4, textAlign: 'center' }}>
-              {t('deleted_records.no_records')}
+            <Typography sx={{ p: 4, textAlign: "center" }}>
+              {t("deleted_records.no_records")}
             </Typography>
           )}
         </TabPanel>
@@ -348,7 +398,7 @@ const DeletedRecordsPage: React.FC = () => {
         {/* Interviews Tab */}
         <TabPanel value={tabValue} index={3}>
           {loadingInterviews ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}>
+            <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
           ) : deletedInterviews && deletedInterviews.length > 0 ? (
@@ -356,10 +406,14 @@ const DeletedRecordsPage: React.FC = () => {
               <Table>
                 <TableHead>
                   <TableRow>
-                    <TableCell>{t('deleted_records.table.scheduled_date')}</TableCell>
-                    <TableCell>{t('deleted_records.table.status')}</TableCell>
-                    <TableCell>{t('deleted_records.table.deleted_at')}</TableCell>
-                    <TableCell align="right">{t('common.actions')}</TableCell>
+                    <TableCell>
+                      {t("deleted_records.table.scheduled_date")}
+                    </TableCell>
+                    <TableCell>{t("deleted_records.table.status")}</TableCell>
+                    <TableCell>
+                      {t("deleted_records.table.deleted_at")}
+                    </TableCell>
+                    <TableCell align="right">{t("common.actions")}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -368,7 +422,7 @@ const DeletedRecordsPage: React.FC = () => {
                       <TableCell>
                         {interview.scheduledDate
                           ? formatDate(interview.scheduledDate)
-                          : t('common.n_a')}
+                          : t("common.n_a")}
                       </TableCell>
                       <TableCell>
                         <Chip label={interview.status} size="small" />
@@ -378,16 +432,26 @@ const DeletedRecordsPage: React.FC = () => {
                         <IconButton
                           color="primary"
                           onClick={() =>
-                            openConfirmDialog('restore', interview.uid, 'interviews')
+                            openConfirmDialog(
+                              "restore",
+                              interview.uid,
+                              "interviews",
+                            )
                           }
-                          title={t('deleted_records.actions.restore')}
+                          title={t("deleted_records.actions.restore")}
                         >
                           <RestoreIcon />
                         </IconButton>
                         <IconButton
                           color="error"
-                          onClick={() => openConfirmDialog('purge', interview.uid, 'interviews')}
-                          title={t('deleted_records.actions.purge')}
+                          onClick={() =>
+                            openConfirmDialog(
+                              "purge",
+                              interview.uid,
+                              "interviews",
+                            )
+                          }
+                          title={t("deleted_records.actions.purge")}
                         >
                           <DeleteForeverIcon />
                         </IconButton>
@@ -398,8 +462,8 @@ const DeletedRecordsPage: React.FC = () => {
               </Table>
             </TableContainer>
           ) : (
-            <Typography sx={{ p: 4, textAlign: 'center' }}>
-              {t('deleted_records.no_records')}
+            <Typography sx={{ p: 4, textAlign: "center" }}>
+              {t("deleted_records.no_records")}
             </Typography>
           )}
         </TabPanel>
@@ -408,30 +472,36 @@ const DeletedRecordsPage: React.FC = () => {
       {/* Confirmation Dialog */}
       <Dialog open={confirmDialogOpen} onClose={closeConfirmDialog}>
         <DialogTitle>
-          {confirmAction === 'restore'
-            ? t('deleted_records.confirm_restore_title')
-            : t('deleted_records.confirm_purge_title')}
+          {confirmAction === "restore"
+            ? t("deleted_records.confirm_restore_title")
+            : t("deleted_records.confirm_purge_title")}
         </DialogTitle>
         <DialogContent>
-          {confirmAction === 'restore' ? (
-            <Typography>{t('deleted_records.confirm_restore_message')}</Typography>
+          {confirmAction === "restore" ? (
+            <Typography>
+              {t("deleted_records.confirm_restore_message")}
+            </Typography>
           ) : (
             <>
               <Alert severity="error" sx={{ mb: 2 }}>
-                {t('deleted_records.confirm_purge_warning')}
+                {t("deleted_records.confirm_purge_warning")}
               </Alert>
-              <Typography>{t('deleted_records.confirm_purge_message')}</Typography>
+              <Typography>
+                {t("deleted_records.confirm_purge_message")}
+              </Typography>
             </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={closeConfirmDialog}>{t('common.cancel')}</Button>
+          <Button onClick={closeConfirmDialog}>{t("common.cancel")}</Button>
           <Button
             onClick={handleConfirmAction}
             variant="contained"
-            color={confirmAction === 'purge' ? 'error' : 'primary'}
+            color={confirmAction === "purge" ? "error" : "primary"}
           >
-            {confirmAction === 'restore' ? t('common.confirm') : t('deleted_records.actions.purge')}
+            {confirmAction === "restore"
+              ? t("common.confirm")
+              : t("deleted_records.actions.purge")}
           </Button>
         </DialogActions>
       </Dialog>

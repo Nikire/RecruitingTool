@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Paper,
@@ -8,15 +8,14 @@ import {
   CircularProgress,
   Alert,
   Divider,
-  Chip,
-} from '@mui/material';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
-import BusinessIcon from '@mui/icons-material/Business';
-import PersonIcon from '@mui/icons-material/Person';
-import { useTranslation } from 'react-i18next';
-import { useAcceptInvitation } from '../../hooks/useInvitations';
-import { useUserAtom } from '../../hooks/api/state/useUserAtom';
+} from "@mui/material";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import BusinessIcon from "@mui/icons-material/Business";
+import PersonIcon from "@mui/icons-material/Person";
+import { useTranslation } from "react-i18next";
+import { useAcceptInvitation } from "../../hooks/useInvitations";
+import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 
 const AcceptInvitationPage: React.FC = () => {
   const { t } = useTranslation();
@@ -27,7 +26,12 @@ const AcceptInvitationPage: React.FC = () => {
   const [hasAccepted, setHasAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { mutate: acceptInvitation, isPending, isSuccess, data } = useAcceptInvitation();
+  const {
+    mutate: acceptInvitation,
+    isPending,
+    isSuccess,
+    data,
+  } = useAcceptInvitation();
 
   useEffect(() => {
     // If user is not logged in, redirect to login with return URL
@@ -39,7 +43,7 @@ const AcceptInvitationPage: React.FC = () => {
 
   const handleAcceptInvitation = () => {
     if (!token) {
-      setError(t('team.invalid_invitation_token'));
+      setError(t("team.invalid_invitation_token"));
       return;
     }
 
@@ -48,11 +52,12 @@ const AcceptInvitationPage: React.FC = () => {
         setHasAccepted(true);
         // Redirect to HR dashboard after 3 seconds
         setTimeout(() => {
-          navigate('/hr/dashboard');
+          navigate("/hr/dashboard");
         }, 3000);
       },
-      onError: (err: any) => {
-        setError(err.response?.data?.message || t('errors.operation_failed'));
+      onError: (err: unknown) => {
+        const error = err as { response?: { data?: { message?: string } } };
+        setError(error.response?.data?.message || t("errors.operation_failed"));
       },
     });
   };
@@ -61,14 +66,14 @@ const AcceptInvitationPage: React.FC = () => {
     return (
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         }}
       >
-        <CircularProgress sx={{ color: 'white' }} />
+        <CircularProgress sx={{ color: "white" }} />
       </Box>
     );
   }
@@ -77,11 +82,11 @@ const AcceptInvitationPage: React.FC = () => {
     return (
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         }}
       >
         <Paper
@@ -89,11 +94,11 @@ const AcceptInvitationPage: React.FC = () => {
           sx={{
             p: 4,
             maxWidth: 500,
-            textAlign: 'center',
+            textAlign: "center",
           }}
         >
           <CircularProgress sx={{ mb: 2 }} />
-          <Typography variant="h6">{t('team.accepting_invitation')}</Typography>
+          <Typography variant="h6">{t("team.accepting_invitation")}</Typography>
         </Paper>
       </Box>
     );
@@ -103,11 +108,11 @@ const AcceptInvitationPage: React.FC = () => {
     return (
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         }}
       >
         <Paper
@@ -115,23 +120,23 @@ const AcceptInvitationPage: React.FC = () => {
           sx={{
             p: 4,
             maxWidth: 500,
-            textAlign: 'center',
+            textAlign: "center",
           }}
         >
           <CheckCircleIcon
-            sx={{ fontSize: 80, color: 'success.main', mb: 2 }}
+            sx={{ fontSize: 80, color: "success.main", mb: 2 }}
           />
           <Typography variant="h4" gutterBottom>
-            {t('team.invitation_accepted_title')}
+            {t("team.invitation_accepted_title")}
           </Typography>
           <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-            {t('team.invitation_accepted_message', {
+            {t("team.invitation_accepted_message", {
               company: data.companyName,
               role: t(`roles.${data.role.toLowerCase()}`),
             })}
           </Typography>
           <Alert severity="success" sx={{ mb: 2 }}>
-            {t('team.redirecting_to_dashboard')}
+            {t("team.redirecting_to_dashboard")}
           </Alert>
         </Paper>
       </Box>
@@ -142,11 +147,11 @@ const AcceptInvitationPage: React.FC = () => {
     return (
       <Box
         sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
         }}
       >
         <Paper
@@ -154,21 +159,18 @@ const AcceptInvitationPage: React.FC = () => {
           sx={{
             p: 4,
             maxWidth: 500,
-            textAlign: 'center',
+            textAlign: "center",
           }}
         >
-          <ErrorIcon sx={{ fontSize: 80, color: 'error.main', mb: 2 }} />
+          <ErrorIcon sx={{ fontSize: 80, color: "error.main", mb: 2 }} />
           <Typography variant="h4" gutterBottom>
-            {t('team.invitation_error_title')}
+            {t("team.invitation_error_title")}
           </Typography>
           <Alert severity="error" sx={{ mb: 3 }}>
             {error}
           </Alert>
-          <Button
-            variant="contained"
-            onClick={() => navigate('/hr/dashboard')}
-          >
-            {t('common.go_to_dashboard')}
+          <Button variant="contained" onClick={() => navigate("/hr/dashboard")}>
+            {t("common.go_to_dashboard")}
           </Button>
         </Paper>
       </Box>
@@ -180,11 +182,11 @@ const AcceptInvitationPage: React.FC = () => {
   return (
     <Box
       sx={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
       }}
     >
       <Paper
@@ -192,27 +194,27 @@ const AcceptInvitationPage: React.FC = () => {
         sx={{
           p: 4,
           maxWidth: 500,
-          width: '100%',
+          width: "100%",
           mx: 2,
         }}
       >
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <BusinessIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
+        <Box sx={{ textAlign: "center", mb: 3 }}>
+          <BusinessIcon sx={{ fontSize: 60, color: "primary.main", mb: 2 }} />
           <Typography variant="h4" gutterBottom>
-            {t('team.join_team_title')}
+            {t("team.join_team_title")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            {t('team.join_team_description')}
+            {t("team.join_team_description")}
           </Typography>
         </Box>
 
         <Divider sx={{ my: 3 }} />
 
         <Box sx={{ mb: 3 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <PersonIcon sx={{ mr: 1, color: 'text.secondary' }} />
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <PersonIcon sx={{ mr: 1, color: "text.secondary" }} />
             <Typography variant="body2" color="text.secondary">
-              {t('team.logged_in_as')}
+              {t("team.logged_in_as")}
             </Typography>
           </Box>
           <Typography variant="body1" fontWeight="bold">
@@ -224,7 +226,7 @@ const AcceptInvitationPage: React.FC = () => {
         </Box>
 
         <Alert severity="info" sx={{ mb: 3 }}>
-          {t('team.invitation_acceptance_info')}
+          {t("team.invitation_acceptance_info")}
         </Alert>
 
         <Button
@@ -234,16 +236,16 @@ const AcceptInvitationPage: React.FC = () => {
           onClick={handleAcceptInvitation}
           disabled={isPending}
         >
-          {t('team.accept_invitation_button')}
+          {t("team.accept_invitation_button")}
         </Button>
 
         <Button
           variant="text"
           fullWidth
           sx={{ mt: 2 }}
-          onClick={() => navigate('/')}
+          onClick={() => navigate("/")}
         >
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
       </Paper>
     </Box>

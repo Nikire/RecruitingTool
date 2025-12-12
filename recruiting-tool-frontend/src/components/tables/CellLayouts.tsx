@@ -1,21 +1,21 @@
-import {Box, BoxProps} from '@mui/material';
+import { Box, BoxProps } from "@mui/material";
 
-interface CellLayoutProps extends Omit<BoxProps, 'display' | 'flexDirection'> {
-	/**
-	 * Gap between items (MUI spacing units or CSS value)
-	 * @default 1
-	 */
-	gap?: number | string;
-	children: React.ReactNode;
+interface CellLayoutProps extends Omit<BoxProps, "display" | "flexDirection"> {
+  /**
+   * Gap between items (MUI spacing units or CSS value)
+   * @default 1
+   */
+  gap?: number | string;
+  children: React.ReactNode;
 }
 
 interface CellRowProps extends CellLayoutProps {
-	/**
-	 * Center content horizontally within the cell
-	 * Use for chip columns (status, tags, etc.)
-	 * @default false
-	 */
-	centered?: boolean;
+  /**
+   * Center content horizontally within the cell
+   * Use for chip columns (status, tags, etc.)
+   * @default false
+   */
+  centered?: boolean;
 }
 
 /**
@@ -42,18 +42,23 @@ interface CellRowProps extends CellLayoutProps {
  *   </CellRow>
  * )
  */
-export const CellRow: React.FC<CellRowProps> = ({gap = 1, centered = false, children, ...boxProps}) => (
-	<Box
-		display="flex"
-		flexDirection="row"
-		alignItems="center"
-		justifyContent={centered ? 'center' : undefined}
-		height="100%"
-		gap={gap}
-		{...boxProps}
-	>
-		{children}
-	</Box>
+export const CellRow: React.FC<CellRowProps> = ({
+  gap = 1,
+  centered = false,
+  children,
+  ...boxProps
+}) => (
+  <Box
+    display="flex"
+    flexDirection="row"
+    alignItems="center"
+    justifyContent={centered ? "center" : undefined}
+    height="100%"
+    gap={gap}
+    {...boxProps}
+  >
+    {children}
+  </Box>
 );
 
 /**
@@ -71,16 +76,20 @@ export const CellRow: React.FC<CellRowProps> = ({gap = 1, centered = false, chil
  *   </CellColumn>
  * )
  */
-export const CellColumn: React.FC<CellLayoutProps> = ({gap = 0.5, children, ...boxProps}) => (
-	<Box
-		display="flex"
-		flexDirection="column"
-		justifyContent="center"
-		alignItems="flex-start"
-		height="100%"
-		gap={gap}
-		{...boxProps}
-	>
-		{children}
-	</Box>
+export const CellColumn: React.FC<CellLayoutProps> = ({
+  gap = 0.5,
+  children,
+  ...boxProps
+}) => (
+  <Box
+    display="flex"
+    flexDirection="column"
+    justifyContent="center"
+    alignItems="flex-start"
+    height="100%"
+    gap={gap}
+    {...boxProps}
+  >
+    {children}
+  </Box>
 );

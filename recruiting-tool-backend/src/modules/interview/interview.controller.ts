@@ -1,7 +1,16 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { InterviewService } from './interview.service';
-import { CreateInterviewDto, UpdateInterviewDto, InterviewResponseDto, AddInterviewerDto, RescheduleInterviewDto, InterviewRescheduleHistoryDto, CheckAvailabilityDto, AvailabilityCheckResponseDto } from './dto/interview.dto';
+import {
+  CreateInterviewDto,
+  UpdateInterviewDto,
+  InterviewResponseDto,
+  AddInterviewerDto,
+  RescheduleInterviewDto,
+  InterviewRescheduleHistoryDto,
+  CheckAvailabilityDto,
+  AvailabilityCheckResponseDto,
+} from './dto/interview.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType, User } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';

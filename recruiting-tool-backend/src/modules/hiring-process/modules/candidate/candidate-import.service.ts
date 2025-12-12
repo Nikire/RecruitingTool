@@ -42,7 +42,7 @@ export class CandidateImportService {
   /**
    * Validate a single row and return validation errors
    */
-  private async validateRow(row: any, index: number): Promise<{ valid: boolean; errors: string[]; data?: CandidateImportRowDto }> {
+  private async validateRow(row: any): Promise<{ valid: boolean; errors: string[]; data?: CandidateImportRowDto }> {
     const errors: string[] = [];
 
     // Map CSV columns to DTO properties
@@ -115,7 +115,7 @@ export class CandidateImportService {
       // Validate each row
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const validation = await this.validateRow(row, i);
+        const validation = await this.validateRow(row);
 
         if (validation.valid && validation.data) {
           validRows.push(validation.data);
@@ -162,7 +162,7 @@ export class CandidateImportService {
       // Process each row
       for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
-        const validation = await this.validateRow(row, i);
+        const validation = await this.validateRow(row);
 
         if (!validation.valid || !validation.data) {
           errors.push({

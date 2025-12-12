@@ -93,9 +93,13 @@
     "max_length": "Debe tener menos de {{max}} caracteres",
     "phone_invalid": "Por favor ingrese un número de teléfono válido",
     "url_invalid": "Por favor ingrese una URL válida",
+    "linkedin_invalid": "Por favor ingrese una URL de LinkedIn válida",
     "password_required": "La contraseña es obligatoria",
     "password_min_length": "La contraseña debe tener al menos {{min}} caracteres",
     "password_max_length": "La contraseña debe tener menos de {{max}} caracteres",
+    "password_complexity": "La contraseña debe contener mayúscula, minúscula, número y carácter especial",
+    "confirm_password_required": "Por favor confirme su contraseña",
+    "passwords_must_match": "Las contraseñas deben coincidir",
     "title_required": "El título es obligatorio",
     "description_max_length": "La descripción debe tener menos de {{max}} caracteres",
     "status_required": "El estado es obligatorio",
@@ -953,7 +957,9 @@
     "timezone": "Zona Horaria",
     "linkedin_profile": "Perfil de LinkedIn",
     "about_you": "Sobre Ti",
-    "bio": "Biografía"
+    "bio": "Biografía",
+    "account_active": "Cuenta Activa",
+    "roles": "Roles"
   },
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",
@@ -1127,7 +1133,8 @@
     "email_templates": "Plantillas de Correo",
     "aria_label": "navegación de rrhh",
     "analytics": "Análisis",
-    "team": "Equipo"
+    "team": "Equipo",
+    "billing": "Facturación"
   },
   "admin_layout": {
     "title": "Panel de Administración",
@@ -1146,6 +1153,28 @@
     "en": "Inglés",
     "es": "Español",
     "current_language": "Idioma Actual"
+  },
+  "billing": {
+    "title": "Facturación y Facturas",
+    "subtitle": "Vea y descargue sus facturas de facturación",
+    "no_invoices": "No Hay Facturas Disponibles",
+    "no_invoices_description": "Aún no tiene ninguna factura. Las facturas aparecerán aquí una vez que se suscriba a un plan de pago.",
+    "invoice_number": "Factura #",
+    "date": "Fecha",
+    "amount": "Monto",
+    "status": "Estado",
+    "actions": "Acciones",
+    "download_pdf": "Descargar PDF",
+    "view_invoice": "Ver Factura",
+    "total_invoices": "Total: {{count}} factura(s)",
+    "error_loading": "Error al cargar las facturas. Por favor, inténtelo de nuevo más tarde.",
+    "status_paid": "Pagada",
+    "status_open": "Abierta",
+    "status_draft": "Borrador",
+    "status_void": "Anulada",
+    "status_uncollectible": "Incobrable",
+    "grace_period_expires": "El período de gracia expira",
+    "subscription_expired": "Tu suscripción ha expirado. Por favor actualiza tu método de pago para restaurar el acceso."
   },
   "home": {
     "hero": {
@@ -1419,6 +1448,7 @@
     "dialog": "Diálogo",
     "error_icon": "Indicador de error",
     "warning_icon": "Indicador de advertencia",
+    "info_icon": "Indicador de información",
     "loading": "Cargando",
     "file_upload": "Subir archivo",
     "avatar": "Avatar para {{name}}",
@@ -1763,7 +1793,23 @@
       "active": "Activo",
       "past_due": "Vencido",
       "canceled": "Cancelado",
-      "unpaid": "Sin Pagar"
+      "unpaid": "Sin Pagar",
+      "expired": "Expirado"
+    },
+    "warning_banner": {
+      "title": "Pago Fallido - Período de Gracia Activo",
+      "expires_today": "Tu período de gracia expira hoy.",
+      "expires_tomorrow": "Tu período de gracia expira mañana.",
+      "expires_in_days": "Tu período de gracia expira en {{days}} días.",
+      "update_payment_prompt": "Por favor actualiza tu método de pago para evitar la interrupción del servicio.",
+      "update_payment_button": "Actualizar Método de Pago"
+    },
+    "expired_modal": {
+      "title": "Suscripción Expirada",
+      "access_blocked": "Tu suscripción ha expirado y el acceso a funciones premium ha sido suspendido.",
+      "feature_blocked": "El acceso a {{feature}} no está disponible con una suscripción expirada.",
+      "update_prompt": "Por favor actualiza tu método de pago para restaurar el acceso a todas las funciones.",
+      "go_to_billing": "Ir a Facturación"
     },
     "plans": {
       "free": {
@@ -1835,6 +1881,15 @@
       "checkout_failed": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
       "billing_portal_failed": "Error al abrir el portal de facturación. Por favor, inténtalo de nuevo.",
       "cancel_failed": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
+    },
+    "billing": {
+      "toggle_label": "Intervalo de Facturación",
+      "monthly": "Mensual",
+      "annual": "Anual",
+      "save_percent": "Ahorra {{percent}}%",
+      "annual_savings": "Ahorra {{percent}}% con facturación anual",
+      "billed_monthly": "Facturado mensualmente",
+      "billed_annually": "Facturado anualmente"
     }
   },
   "onboarding": {
@@ -2332,6 +2387,21 @@
     "bell": {
       "aria_label": "Notificaciones"
     },
+    "page": {
+      "title": "Notificaciones",
+      "subtitle": "Gestiona y visualiza todas tus notificaciones en un solo lugar",
+      "all": "Todas",
+      "unread": "Sin leer",
+      "read": "Leídas",
+      "filter_aria": "Filtrar notificaciones",
+      "filter_all": "Mostrar todas las notificaciones",
+      "filter_unread": "Mostrar solo notificaciones sin leer",
+      "filter_read": "Mostrar solo notificaciones leídas",
+      "empty_all": "Sin notificaciones",
+      "empty_unread": "Sin notificaciones sin leer",
+      "empty_read": "Sin notificaciones leídas",
+      "empty_subtitle": "¡Estás al día!"
+    },
     "types": {
       "application_received": "Nueva Aplicación",
       "application_status": "Actualización de Estado de Aplicación",
@@ -2364,6 +2434,25 @@
       "delete_failed": "Error al eliminar notificación",
       "create_failed": "Error al crear notificación"
     }
+  },
+  "notificationPreferences": {
+    "title": "Preferencias de Notificación",
+    "description": "Controla qué notificaciones recibes por correo electrónico y en la aplicación",
+    "emailNotifications": "Notificaciones por Correo",
+    "emailDescription": "Recibir notificaciones por correo electrónico",
+    "inAppNotifications": "Notificaciones en la Aplicación",
+    "inAppDescription": "Recibir notificaciones dentro de la aplicación",
+    "emailApplicationStatus": "Actualizaciones de estado de solicitudes",
+    "emailInterviewScheduled": "Entrevista programada",
+    "emailNewCandidate": "Nuevo candidato agregado",
+    "emailSystemAnnouncement": "Anuncios del sistema",
+    "inAppApplicationStatus": "Actualizaciones de estado de solicitudes",
+    "inAppInterviewScheduled": "Entrevista programada",
+    "inAppNewCandidate": "Nuevo candidato agregado",
+    "inAppSystemAnnouncement": "Anuncios del sistema",
+    "updated": "Preferencias de notificación actualizadas",
+    "updateFailed": "Error al actualizar preferencias de notificación",
+    "loadError": "Error al cargar preferencias de notificación"
   },
   "company_roles": {
     "title": "Gestión de Equipo",
@@ -2503,5 +2592,34 @@
     "status_label": "Estado",
     "last_updated": "Última Actualización",
     "privacy_notice": "Para tu privacidad, solo se muestra información limitada"
+  },
+  "feedback": {
+    "button_label": "Comentarios",
+    "modal_title": "Comparte tus Comentarios",
+    "modal_description": "¡Nos encantaría conocer tu opinión! Ayúdanos a mejorar compartiendo tus comentarios.",
+    "category_label": "Categoría",
+    "category_placeholder": "Selecciona una categoría",
+    "content_label": "Tus Comentarios",
+    "content_placeholder": "Cuéntanos qué piensas...",
+    "content_helper": "Por favor proporciona comentarios detallados para ayudarnos a mejorar",
+    "rating_label": "Calificación (Opcional)",
+    "rating_helper": "Califica tu experiencia del 1 (pobre) al 5 (excelente)",
+    "submit_button": "Enviar Comentarios",
+    "submitting": "Enviando...",
+    "categories": {
+      "FEATURE_REQUEST": "Solicitud de Función",
+      "BUG_REPORT": "Reporte de Error",
+      "GENERAL": "Comentarios Generales"
+    },
+    "messages": {
+      "submitted": "¡Gracias por tus comentarios!",
+      "submit_failed": "Error al enviar comentarios. Por favor, intenta nuevamente."
+    },
+    "validation": {
+      "category_required": "Por favor selecciona una categoría",
+      "content_required": "Por favor proporciona tus comentarios",
+      "content_min_length": "Los comentarios deben tener al menos 10 caracteres",
+      "rating_invalid": "La calificación debe estar entre 1 y 5"
+    }
   }
 }

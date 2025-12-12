@@ -1,24 +1,24 @@
 export interface Candidate {
-	uid: string;
-	name: string;
-	email: string;
+  uid: string;
+  name: string;
+  email: string;
 }
 
 export interface CandidateNote {
-	uid: string;
-	content: string;
-	candidateUid: string;
-	authorUid: string;
-	authorName: string;
-	createdAt: string;
-	updatedAt: string;
+  uid: string;
+  content: string;
+  candidateUid: string;
+  authorUid: string;
+  authorName: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreateCandidateNoteDto {
-	content: string;
-	candidateUid: string;
+  content: string;
+  candidateUid: string;
 }
 
 export interface UpdateCandidateNoteDto {
-	content: string;
+  content: string;
 }

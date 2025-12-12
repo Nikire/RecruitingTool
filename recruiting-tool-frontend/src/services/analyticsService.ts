@@ -1,4 +1,4 @@
-import api from '../api/axios';
+import api from "../api/axios";
 import {
   OverviewMetricsDto,
   TimeMetricsDto,
@@ -9,7 +9,7 @@ import {
   TimeToHireDto,
   SourceEffectivenessDto,
   StageDurationDto,
-} from '../types/analytics';
+} from "../types/analytics";
 
 /**
  * Analytics Service
@@ -20,7 +20,7 @@ import {
 
 export interface DateRangeParams {
   startDate?: string; // ISO 8601 date string
-  endDate?: string;   // ISO 8601 date string
+  endDate?: string; // ISO 8601 date string
   companyUid?: string; // For SUPER_ADMIN filtering
 }
 
@@ -28,25 +28,25 @@ export interface DateRangeParams {
  * Helper to build query params
  */
 const buildQueryParams = (params?: DateRangeParams): string => {
-  if (!params) return '';
+  if (!params) return "";
 
   const urlParams = new URLSearchParams();
-  if (params.startDate) urlParams.append('startDate', params.startDate);
-  if (params.endDate) urlParams.append('endDate', params.endDate);
-  if (params.companyUid) urlParams.append('companyUid', params.companyUid);
+  if (params.startDate) urlParams.append("startDate", params.startDate);
+  if (params.endDate) urlParams.append("endDate", params.endDate);
+  if (params.companyUid) urlParams.append("companyUid", params.companyUid);
 
   const queryString = urlParams.toString();
-  return queryString ? `?${queryString}` : '';
+  return queryString ? `?${queryString}` : "";
 };
 
 /**
  * Fetch overview metrics
  */
 export const getAnalyticsOverview = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<OverviewMetricsDto> => {
   const { data } = await api.get<OverviewMetricsDto>(
-    `/analytics/overview${buildQueryParams(params)}`
+    `/analytics/overview${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -55,10 +55,10 @@ export const getAnalyticsOverview = async (
  * Fetch time metrics
  */
 export const getAnalyticsTimeMetrics = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<TimeMetricsDto> => {
   const { data } = await api.get<TimeMetricsDto>(
-    `/analytics/time-metrics${buildQueryParams(params)}`
+    `/analytics/time-metrics${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -67,10 +67,10 @@ export const getAnalyticsTimeMetrics = async (
  * Fetch conversion metrics
  */
 export const getAnalyticsConversion = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<ConversionMetricsDto> => {
   const { data } = await api.get<ConversionMetricsDto>(
-    `/analytics/conversion${buildQueryParams(params)}`
+    `/analytics/conversion${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -79,10 +79,10 @@ export const getAnalyticsConversion = async (
  * Fetch volume metrics
  */
 export const getAnalyticsVolume = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<VolumeMetricsDto> => {
   const { data } = await api.get<VolumeMetricsDto>(
-    `/analytics/volume${buildQueryParams(params)}`
+    `/analytics/volume${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -91,10 +91,10 @@ export const getAnalyticsVolume = async (
  * Fetch source analytics
  */
 export const getAnalyticsSources = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<SourceAnalyticsDto[]> => {
   const { data } = await api.get<SourceAnalyticsDto[]>(
-    `/analytics/sources${buildQueryParams(params)}`
+    `/analytics/sources${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -103,10 +103,10 @@ export const getAnalyticsSources = async (
  * Fetch pipeline funnel
  */
 export const getAnalyticsPipeline = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<PipelineFunnelDto> => {
   const { data } = await api.get<PipelineFunnelDto>(
-    `/analytics/pipeline${buildQueryParams(params)}`
+    `/analytics/pipeline${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -115,10 +115,10 @@ export const getAnalyticsPipeline = async (
  * Fetch time-to-hire analytics
  */
 export const getAnalyticsTimeToHire = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<TimeToHireDto> => {
   const { data } = await api.get<TimeToHireDto>(
-    `/analytics/time-to-hire${buildQueryParams(params)}`
+    `/analytics/time-to-hire${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -127,10 +127,10 @@ export const getAnalyticsTimeToHire = async (
  * Fetch source effectiveness
  */
 export const getAnalyticsSourceEffectiveness = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<SourceEffectivenessDto[]> => {
   const { data } = await api.get<SourceEffectivenessDto[]>(
-    `/analytics/source-effectiveness${buildQueryParams(params)}`
+    `/analytics/source-effectiveness${buildQueryParams(params)}`,
   );
   return data;
 };
@@ -139,10 +139,10 @@ export const getAnalyticsSourceEffectiveness = async (
  * Fetch stage duration analysis
  */
 export const getAnalyticsStageDuration = async (
-  params?: DateRangeParams
+  params?: DateRangeParams,
 ): Promise<StageDurationDto[]> => {
   const { data } = await api.get<StageDurationDto[]>(
-    `/analytics/stage-duration${buildQueryParams(params)}`
+    `/analytics/stage-duration${buildQueryParams(params)}`,
   );
   return data;
 };

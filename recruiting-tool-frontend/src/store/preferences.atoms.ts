@@ -13,17 +13,17 @@
  * const [sidebarCollapsed, setSidebarCollapsed] = useAtom(sidebarCollapsedAtom);
  * ```
  */
-import {atomWithStorage} from 'jotai/utils';
+import { atomWithStorage } from "jotai/utils";
 
 /**
  * Table display preferences
  * Persisted to localStorage under 'recruiting_table_prefs'
  */
 export interface TablePreferences {
-	/** Number of rows per page (default: 25) */
-	rowsPerPage: number;
-	/** Table density: 'compact' | 'standard' | 'comfortable' */
-	density: 'compact' | 'standard' | 'comfortable';
+  /** Number of rows per page (default: 25) */
+  rowsPerPage: number;
+  /** Table density: 'compact' | 'standard' | 'comfortable' */
+  density: "compact" | "standard" | "comfortable";
 }
 
 /**
@@ -35,17 +35,17 @@ export interface TablePreferences {
  * { candidates: { email: false, phone: false } }
  */
 export interface ColumnVisibilityPreferences {
-	[tableKey: string]: {
-		[columnField: string]: boolean;
-	};
+  [tableKey: string]: {
+    [columnField: string]: boolean;
+  };
 }
 
 /**
  * Default table preferences
  */
 const defaultTablePreferences: TablePreferences = {
-	rowsPerPage: 25,
-	density: 'standard',
+  rowsPerPage: 25,
+  density: "standard",
 };
 
 /**
@@ -58,37 +58,38 @@ const defaultColumnVisibility: ColumnVisibilityPreferences = {};
  * Affects all tables in the application
  */
 export const tablePreferencesAtom = atomWithStorage<TablePreferences>(
-	'recruiting_table_prefs',
-	defaultTablePreferences
+  "recruiting_table_prefs",
+  defaultTablePreferences,
 );
 
 /**
  * Column visibility preferences atom
  * Per-table column visibility settings
  */
-export const columnVisibilityAtom = atomWithStorage<ColumnVisibilityPreferences>(
-	'recruiting_column_visibility',
-	defaultColumnVisibility
-);
+export const columnVisibilityAtom =
+  atomWithStorage<ColumnVisibilityPreferences>(
+    "recruiting_column_visibility",
+    defaultColumnVisibility,
+  );
 
 /**
  * Sidebar collapsed state atom
  * Remembers if user collapsed the sidebar
  */
 export const sidebarCollapsedAtom = atomWithStorage<boolean>(
-	'recruiting_sidebar_collapsed',
-	false
+  "recruiting_sidebar_collapsed",
+  false,
 );
 
 /**
  * Theme preference atom (for future dark mode support)
  * Currently defaults to 'light', ready for dark mode implementation
  */
-export type ThemeMode = 'light' | 'dark' | 'system';
+export type ThemeMode = "light" | "dark" | "system";
 
 export const themeModeAtom = atomWithStorage<ThemeMode>(
-	'recruiting_theme_mode',
-	'light'
+  "recruiting_theme_mode",
+  "light",
 );
 
 /**
@@ -97,16 +98,16 @@ export const themeModeAtom = atomWithStorage<ThemeMode>(
  * This consolidates the scattered localStorage keys into one atom
  */
 export interface OnboardingPreferences {
-	/** Global dismissal - if true, no onboarding shows anywhere */
-	globalDismissed: boolean;
-	/** Per-table dismissal tracking */
-	dismissedTables: string[];
+  /** Global dismissal - if true, no onboarding shows anywhere */
+  globalDismissed: boolean;
+  /** Per-table dismissal tracking */
+  dismissedTables: string[];
 }
 
 export const onboardingPreferencesAtom = atomWithStorage<OnboardingPreferences>(
-	'recruiting_onboarding_prefs',
-	{
-		globalDismissed: false,
-		dismissedTables: [],
-	}
+  "recruiting_onboarding_prefs",
+  {
+    globalDismissed: false,
+    dismissedTables: [],
+  },
 );

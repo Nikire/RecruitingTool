@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { CreateStageDto, UpdateStageDto, StageResponseDto } from './dto/stages.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { StageMapper } from './entities/stage.entity';
@@ -520,9 +520,7 @@ export class StagesService {
 
         // Send notifications for stage change
         try {
-          const notificationType = targetStage.position > (currentStage?.position || 0)
-            ? NotificationType.CANDIDATE_STAGE_ADVANCED
-            : NotificationType.HIRING_PROCESS_STAGE_CHANGED;
+          const notificationType = targetStage.position > (currentStage?.position || 0) ? NotificationType.CANDIDATE_STAGE_ADVANCED : NotificationType.HIRING_PROCESS_STAGE_CHANGED;
 
           // Notify HR users
           const hrUsers = await this.databaseService.user.findMany({

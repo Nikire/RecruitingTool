@@ -5,7 +5,7 @@
  * Includes filtering by score range and expandable details.
  */
 
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Paper,
@@ -26,15 +26,19 @@ import {
   Slider,
   Avatar,
   Button,
-} from '@mui/material';
+} from "@mui/material";
 import {
   KeyboardArrowDown as ExpandMoreIcon,
   KeyboardArrowUp as ExpandLessIcon,
   PersonOutline as PersonIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { CandidateScore, getScoreTierColor, ScoreTier } from '../../types/ai-ranking';
-import ScoreBreakdown from './ScoreBreakdown';
+} from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import {
+  CandidateScore,
+  getScoreTierColor,
+  ScoreTier,
+} from "../../types/ai-ranking";
+import ScoreBreakdown from "./ScoreBreakdown";
 
 interface RankedCandidatesListProps {
   candidates: CandidateScore[];
@@ -42,17 +46,17 @@ interface RankedCandidatesListProps {
   isLoading?: boolean;
 }
 
-type SortField = 'rank' | 'name' | 'score';
-type SortDirection = 'asc' | 'desc';
+type SortField = "rank" | "name" | "score";
+type SortDirection = "asc" | "desc";
 
 /**
  * Get initials from candidate name
  */
 function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .map((part) => part[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 }
@@ -65,32 +69,35 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
   const { t } = useTranslation();
 
   // State
-  const [sortField, setSortField] = useState<SortField>('score');
-  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+  const [sortField, setSortField] = useState<SortField>("score");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [tierFilter, setTierFilter] = useState<ScoreTier | 'all'>('all');
+  const [tierFilter, setTierFilter] = useState<ScoreTier | "all">("all");
   const [scoreRange, setScoreRange] = useState<number[]>([0, 100]);
 
   // Sorting
   const handleSort = (field: SortField) => {
     if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
     } else {
       setSortField(field);
-      setSortDirection('desc');
+      setSortDirection("desc");
     }
   };
 
   // Filter and sort candidates
   const filteredAndSortedCandidates = React.useMemo(() => {
-    let filtered = candidates.filter((candidate) => {
+    const filtered = candidates.filter((candidate) => {
       // Tier filter
-      if (tierFilter !== 'all' && candidate.scoreTier !== tierFilter) {
+      if (tierFilter !== "all" && candidate.scoreTier !== tierFilter) {
         return false;
       }
 
       // Score range filter
-      if (candidate.overallScore < scoreRange[0] || candidate.overallScore > scoreRange[1]) {
+      if (
+        candidate.overallScore < scoreRange[0] ||
+        candidate.overallScore > scoreRange[1]
+      ) {
         return false;
       }
 
@@ -102,19 +109,19 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
       let comparison = 0;
 
       switch (sortField) {
-        case 'name':
+        case "name":
           comparison = a.candidateName.localeCompare(b.candidateName);
           break;
-        case 'score':
+        case "score":
           comparison = a.overallScore - b.overallScore;
           break;
-        case 'rank':
+        case "rank":
         default:
           comparison = b.overallScore - a.overallScore; // Rank by score
           break;
       }
 
-      return sortDirection === 'asc' ? comparison : -comparison;
+      return sortDirection === "asc" ? comparison : -comparison;
     });
 
     return filtered;
@@ -129,8 +136,12 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
     return (
       <Box sx={{ p: 3 }}>
         <LinearProgress />
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 2, textAlign: 'center' }}>
-          {t('common.loading')}
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ mt: 2, textAlign: "center" }}
+        >
+          {t("common.loading")}
         </Typography>
       </Box>
     );
@@ -141,30 +152,37 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
       {/* Filters */}
       <Paper sx={{ p: 2, mb: 2 }}>
         <Typography variant="subtitle2" sx={{ mb: 2 }}>
-          {t('common.filter')}
+          {t("common.filter")}
         </Typography>
 
-        <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', alignItems: 'center' }}>
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexWrap: "wrap",
+            alignItems: "center",
+          }}
+        >
           {/* Tier Filter */}
           <TextField
             select
-            label={t('ai_ranking.filter_by_tier')}
+            label={t("ai_ranking.filter_by_tier")}
             value={tierFilter}
-            onChange={(e) => setTierFilter(e.target.value as ScoreTier | 'all')}
+            onChange={(e) => setTierFilter(e.target.value as ScoreTier | "all")}
             size="small"
             sx={{ minWidth: 180 }}
           >
-            <MenuItem value="all">{t('ai_ranking.all_tiers')}</MenuItem>
-            <MenuItem value="excellent">{t('ai_ranking.excellent')}</MenuItem>
-            <MenuItem value="good">{t('ai_ranking.good')}</MenuItem>
-            <MenuItem value="fair">{t('ai_ranking.fair')}</MenuItem>
-            <MenuItem value="poor">{t('ai_ranking.poor')}</MenuItem>
+            <MenuItem value="all">{t("ai_ranking.all_tiers")}</MenuItem>
+            <MenuItem value="excellent">{t("ai_ranking.excellent")}</MenuItem>
+            <MenuItem value="good">{t("ai_ranking.good")}</MenuItem>
+            <MenuItem value="fair">{t("ai_ranking.fair")}</MenuItem>
+            <MenuItem value="poor">{t("ai_ranking.poor")}</MenuItem>
           </TextField>
 
           {/* Score Range Filter */}
           <Box sx={{ minWidth: 250 }}>
             <Typography variant="caption" color="text.secondary" gutterBottom>
-              {t('ai_ranking.score_range')}: {scoreRange[0]} - {scoreRange[1]}
+              {t("ai_ranking.score_range")}: {scoreRange[0]} - {scoreRange[1]}
             </Typography>
             <Slider
               value={scoreRange}
@@ -177,8 +195,14 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
           </Box>
 
           {/* Results Count */}
-          <Typography variant="body2" color="text.secondary" sx={{ ml: 'auto' }}>
-            {t('ai_ranking.showing_candidates', { count: filteredAndSortedCandidates.length })}
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ ml: "auto" }}
+          >
+            {t("ai_ranking.showing_candidates", {
+              count: filteredAndSortedCandidates.length,
+            })}
           </Typography>
         </Box>
       </Paper>
@@ -191,33 +215,33 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
               <TableCell sx={{ width: 50 }} />
               <TableCell>
                 <TableSortLabel
-                  active={sortField === 'rank'}
-                  direction={sortField === 'rank' ? sortDirection : 'desc'}
-                  onClick={() => handleSort('rank')}
+                  active={sortField === "rank"}
+                  direction={sortField === "rank" ? sortDirection : "desc"}
+                  onClick={() => handleSort("rank")}
                 >
-                  {t('ai_ranking.rank')}
+                  {t("ai_ranking.rank")}
                 </TableSortLabel>
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={sortField === 'name'}
-                  direction={sortField === 'name' ? sortDirection : 'asc'}
-                  onClick={() => handleSort('name')}
+                  active={sortField === "name"}
+                  direction={sortField === "name" ? sortDirection : "asc"}
+                  onClick={() => handleSort("name")}
                 >
-                  {t('candidates.name_label')}
+                  {t("candidates.name_label")}
                 </TableSortLabel>
               </TableCell>
               <TableCell>
                 <TableSortLabel
-                  active={sortField === 'score'}
-                  direction={sortField === 'score' ? sortDirection : 'desc'}
-                  onClick={() => handleSort('score')}
+                  active={sortField === "score"}
+                  direction={sortField === "score" ? sortDirection : "desc"}
+                  onClick={() => handleSort("score")}
                 >
-                  {t('ai_ranking.overall_score')}
+                  {t("ai_ranking.overall_score")}
                 </TableSortLabel>
               </TableCell>
-              <TableCell>{t('ai_ranking.tier')}</TableCell>
-              <TableCell align="right">{t('common.actions')}</TableCell>
+              <TableCell>{t("ai_ranking.tier")}</TableCell>
+              <TableCell align="right">{t("common.actions")}</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -225,7 +249,7 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
               <TableRow>
                 <TableCell colSpan={6} align="center" sx={{ py: 4 }}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('ai_ranking.no_scores')}
+                    {t("ai_ranking.no_scores")}
                   </Typography>
                 </TableCell>
               </TableRow>
@@ -241,8 +265,12 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                       <TableCell>
                         <IconButton
                           size="small"
-                          onClick={() => handleToggleExpand(candidate.candidateUid)}
-                          aria-label={isExpanded ? t('aria.close') : t('aria.view')}
+                          onClick={() =>
+                            handleToggleExpand(candidate.candidateUid)
+                          }
+                          aria-label={
+                            isExpanded ? t("aria.close") : t("aria.view")
+                          }
                         >
                           {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
                         </IconButton>
@@ -253,7 +281,13 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1.5,
+                          }}
+                        >
                           <Avatar
                             sx={{
                               width: 40,
@@ -268,7 +302,10 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                             <Typography variant="body2" fontWeight={500}>
                               {candidate.candidateName}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary">
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
                               {candidate.candidateEmail}
                             </Typography>
                           </Box>
@@ -276,7 +313,11 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                       </TableCell>
                       <TableCell>
                         <Box sx={{ minWidth: 120 }}>
-                          <Typography variant="body2" fontWeight="bold" sx={{ mb: 0.5 }}>
+                          <Typography
+                            variant="body2"
+                            fontWeight="bold"
+                            sx={{ mb: 0.5 }}
+                          >
                             {candidate.overallScore}
                           </Typography>
                           <LinearProgress
@@ -285,8 +326,8 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                             sx={{
                               height: 6,
                               borderRadius: 1,
-                              bgcolor: 'grey.200',
-                              '& .MuiLinearProgress-bar': {
+                              bgcolor: "grey.200",
+                              "& .MuiLinearProgress-bar": {
                                 bgcolor: `${tierColor}.main`,
                               },
                             }}
@@ -306,16 +347,21 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                           size="small"
                           variant="outlined"
                           startIcon={<PersonIcon />}
-                          onClick={() => onViewProfile?.(candidate.candidateUid)}
+                          onClick={() =>
+                            onViewProfile?.(candidate.candidateUid)
+                          }
                         >
-                          {t('ai_ranking.view_profile')}
+                          {t("ai_ranking.view_profile")}
                         </Button>
                       </TableCell>
                     </TableRow>
 
                     {/* Expanded Row - Score Breakdown */}
                     <TableRow>
-                      <TableCell colSpan={6} sx={{ py: 0, borderBottom: isExpanded ? 1 : 0 }}>
+                      <TableCell
+                        colSpan={6}
+                        sx={{ py: 0, borderBottom: isExpanded ? 1 : 0 }}
+                      >
                         <Collapse in={isExpanded} timeout="auto" unmountOnExit>
                           <Box sx={{ py: 3, px: 2 }}>
                             <ScoreBreakdown

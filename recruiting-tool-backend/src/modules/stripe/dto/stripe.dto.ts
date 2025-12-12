@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsEnum, IsUrl } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsUrl, IsOptional } from 'class-validator';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 
 export class CreateCheckoutSessionDto {
@@ -11,6 +11,16 @@ export class CreateCheckoutSessionDto {
   @IsEnum(['PROFESSIONAL', 'ENTERPRISE'])
   @IsNotEmpty()
   plan: 'PROFESSIONAL' | 'ENTERPRISE';
+
+  @ApiProperty({
+    description: 'Billing interval (monthly or annual)',
+    enum: ['monthly', 'annual'],
+    example: 'monthly',
+    required: false,
+  })
+  @IsEnum(['monthly', 'annual'])
+  @IsOptional()
+  interval?: 'monthly' | 'annual';
 
   @ApiProperty({
     description: 'URL to redirect to after successful payment',
@@ -82,6 +92,20 @@ export class SubscriptionResponseDto {
     example: false,
   })
   cancelAtPeriodEnd: boolean;
+
+  @ApiProperty({
+    description: 'Grace period end date (for PAST_DUE subscriptions)',
+    example: '2025-01-22T00:00:00Z',
+    required: false,
+  })
+  gracePeriodEndsAt?: Date;
+
+  @ApiProperty({
+    description: 'Subscription end date (when subscription actually ends)',
+    example: '2025-02-01T00:00:00Z',
+    required: false,
+  })
+  subscriptionEndsAt?: Date;
 }
 
 export class CheckoutSessionResponseDto {
@@ -128,4 +152,81 @@ export class BillingPortalResponseDto {
     example: 'https://billing.stripe.com/p/session/test_abc123...',
   })
   url: string;
+}
+
+export class InvoiceResponseDto {
+  @ApiProperty({
+    description: 'Stripe Invoice ID',
+    example: 'in_1ABC234...',
+  })
+  id: string;
+
+  @ApiProperty({
+    description: 'Invoice number',
+    example: 'INV-12345',
+  })
+  invoiceNumber: string;
+
+  @ApiProperty({
+    description: 'Invoice amount in cents',
+    example: 2999,
+  })
+  amountDue: number;
+
+  @ApiProperty({
+    description: 'Amount paid in cents',
+    example: 2999,
+  })
+  amountPaid: number;
+
+  @ApiProperty({
+    description: 'Currency code',
+    example: 'usd',
+  })
+  currency: string;
+
+  @ApiProperty({
+    description: 'Invoice status',
+    example: 'paid',
+  })
+  status: string;
+
+  @ApiProperty({
+    description: 'Invoice creation date',
+    example: '2025-01-15T10:30:00Z',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Invoice due date',
+    example: '2025-02-15T10:30:00Z',
+    required: false,
+  })
+  dueDate?: Date;
+
+  @ApiProperty({
+    description: 'PDF download URL for invoice',
+    example: 'https://pay.stripe.com/invoice/acct_123/invst_abc...',
+  })
+  pdfUrl: string;
+
+  @ApiProperty({
+    description: 'Hosted invoice page URL',
+    example: 'https://invoice.stripe.com/i/acct_123/invst_abc...',
+  })
+  hostedInvoiceUrl: string;
+}
+
+export class InvoicesResponseDto {
+  @ApiProperty({
+    description: 'List of invoices',
+    type: [InvoiceResponseDto],
+  })
+  invoices: InvoiceResponseDto[];
+
+  @ApiProperty({
+    description: 'Total number of invoices',
+    example: 12,
+  })
+  total: number;
 }

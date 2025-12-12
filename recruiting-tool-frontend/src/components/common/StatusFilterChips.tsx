@@ -1,5 +1,5 @@
-import {Box, Chip} from '@mui/material';
-import {useTranslation} from 'react-i18next';
+import { Box, Chip } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 /**
  * StatusFilterChips - Reusable component for displaying status filter chips with counts
@@ -31,23 +31,23 @@ import {useTranslation} from 'react-i18next';
  */
 
 export interface StatusFilterChipsProps<T extends string> {
-	/** Array of status options to display (e.g., ['OPEN', 'CLOSED', 'ARCHIVED']) */
-	options: T[];
+  /** Array of status options to display (e.g., ['OPEN', 'CLOSED', 'ARCHIVED']) */
+  options: T[];
 
-	/** Currently selected filter status (can be one of the options or 'ALL') */
-	currentFilter: T | 'ALL';
+  /** Currently selected filter status (can be one of the options or 'ALL') */
+  currentFilter: T | "ALL";
 
-	/** Callback when a filter chip is clicked */
-	onFilterChange: (status: T | 'ALL') => void;
+  /** Callback when a filter chip is clicked */
+  onFilterChange: (status: T | "ALL") => void;
 
-	/** Function to get the count for each status (including 'ALL') */
-	getCount: (status: T | 'ALL') => number;
+  /** Function to get the count for each status (including 'ALL') */
+  getCount: (status: T | "ALL") => number;
 
-	/** If true, translates status labels using i18n. If false, displays status as-is with formatting */
-	translateStatus?: boolean;
+  /** If true, translates status labels using i18n. If false, displays status as-is with formatting */
+  translateStatus?: boolean;
 
-	/** Translation prefix for status labels (e.g., 'hiring_process_status.') */
-	translationPrefix?: string;
+  /** Translation prefix for status labels (e.g., 'hiring_process_status.') */
+  translationPrefix?: string;
 }
 
 /**
@@ -64,56 +64,56 @@ export interface StatusFilterChipsProps<T extends string> {
  * - Consistent spacing and styling
  */
 const StatusFilterChips = <T extends string>({
-	options,
-	currentFilter,
-	onFilterChange,
-	getCount,
-	translateStatus = false,
-	translationPrefix = '',
+  options,
+  currentFilter,
+  onFilterChange,
+  getCount,
+  translateStatus = false,
+  translationPrefix = "",
 }: StatusFilterChipsProps<T>) => {
-	const {t} = useTranslation();
+  const { t } = useTranslation();
 
-	// Always include 'ALL' as the first option
-	const allOptions: Array<T | 'ALL'> = ['ALL', ...options];
+  // Always include 'ALL' as the first option
+  const allOptions: Array<T | "ALL"> = ["ALL", ...options];
 
-	/**
-	 * Formats a status label for display
-	 * - If translateStatus=true: Uses i18n translation
-	 * - If translateStatus=false: Formats the raw status (e.g., 'IN_PROGRESS' → 'IN PROGRESS')
-	 */
-	const formatStatusLabel = (status: T | 'ALL'): string => {
-		if (translateStatus && translationPrefix) {
-			return t(`${translationPrefix}${status.toLowerCase()}`);
-		}
-		return status.replace(/_/g, ' ');
-	};
+  /**
+   * Formats a status label for display
+   * - If translateStatus=true: Uses i18n translation
+   * - If translateStatus=false: Formats the raw status (e.g., 'IN_PROGRESS' → 'IN PROGRESS')
+   */
+  const formatStatusLabel = (status: T | "ALL"): string => {
+    if (translateStatus && translationPrefix) {
+      return t(`${translationPrefix}${status.toLowerCase()}`);
+    }
+    return status.replace(/_/g, " ");
+  };
 
-	return (
-		<Box
-			sx={{
-				mb: {xs: 2, sm: 3},
-				display: 'flex',
-				gap: 1,
-				flexWrap: 'wrap',
-			}}
-		>
-			{allOptions.map((status) => {
-				const count = getCount(status);
-				const isActive = currentFilter === status;
+  return (
+    <Box
+      sx={{
+        mb: { xs: 2, sm: 3 },
+        display: "flex",
+        gap: 1,
+        flexWrap: "wrap",
+      }}
+    >
+      {allOptions.map((status) => {
+        const count = getCount(status);
+        const isActive = currentFilter === status;
 
-				return (
-					<Chip
-						key={status}
-						label={`${formatStatusLabel(status)} (${count})`}
-						onClick={() => onFilterChange(status)}
-						color={isActive ? 'primary' : 'default'}
-						variant={isActive ? 'filled' : 'outlined'}
-						clickable
-					/>
-				);
-			})}
-		</Box>
-	);
+        return (
+          <Chip
+            key={status}
+            label={`${formatStatusLabel(status)} (${count})`}
+            onClick={() => onFilterChange(status)}
+            color={isActive ? "primary" : "default"}
+            variant={isActive ? "filled" : "outlined"}
+            clickable
+          />
+        );
+      })}
+    </Box>
+  );
 };
 
 export default StatusFilterChips;

@@ -1,4 +1,4 @@
-import { HiringProcess, Prisma } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { StageMapper } from '../modules/stages/entities/stage.entity';
 import { CandidateMapper } from '../modules/candidate/entities/candidate.entity';
 

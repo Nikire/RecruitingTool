@@ -1,8 +1,8 @@
-import React from 'react';
-import { Box, Paper, Typography, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { StageConversionRate } from '../../types/analytics';
-import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import React from "react";
+import { Box, Paper, Typography, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { StageConversionRate } from "../../types/analytics";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 
 interface ConversionFunnelProps {
   data: StageConversionRate[];
@@ -20,9 +20,9 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
 
   if (!data || data.length === 0) {
     return (
-      <Paper sx={{ p: 3, textAlign: 'center' }}>
+      <Paper sx={{ p: 3, textAlign: "center" }}>
         <Typography variant="body2" color="text.secondary">
-          {t('analytics.no_data')}
+          {t("analytics.no_data")}
         </Typography>
       </Paper>
     );
@@ -44,9 +44,12 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}
+    >
       <Typography variant="h6" gutterBottom fontWeight={600}>
-        {t('analytics.conversion_funnel')}
+        {t("analytics.conversion_funnel")}
       </Typography>
 
       <Box sx={{ mt: 3 }}>
@@ -59,22 +62,22 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
               <Box
                 sx={{
                   mb: 1,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
                 }}
               >
                 {/* From Stage */}
                 <Box
                   sx={{
                     width: `${widthPercentage}%`,
-                    minWidth: '40%',
+                    minWidth: "40%",
                     backgroundColor: getFunnelColor(index),
                     borderRadius: 1,
                     p: 2,
-                    transition: 'all 0.3s ease',
-                    '&:hover': {
-                      transform: 'scale(1.02)',
+                    transition: "all 0.3s ease",
+                    "&:hover": {
+                      transform: "scale(1.02)",
                       boxShadow: theme.shadows[4],
                     },
                   }}
@@ -101,8 +104,8 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
                 {index < data.length && (
                   <Box
                     sx={{
-                      display: 'flex',
-                      alignItems: 'center',
+                      display: "flex",
+                      alignItems: "center",
                       gap: 1,
                       my: 1,
                     }}
@@ -131,21 +134,21 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
               {index === data.length - 1 && (
                 <Box
                   sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
                   }}
                 >
                   <Box
                     sx={{
                       width: `${(Math.floor((stage.count * stage.rate) / 100) / maxCount) * 100}%`,
-                      minWidth: '30%',
+                      minWidth: "30%",
                       backgroundColor: getFunnelColor(index + 1),
                       borderRadius: 1,
                       p: 2,
-                      transition: 'all 0.3s ease',
-                      '&:hover': {
-                        transform: 'scale(1.02)',
+                      transition: "all 0.3s ease",
+                      "&:hover": {
+                        transform: "scale(1.02)",
                         boxShadow: theme.shadows[4],
                       },
                     }}
@@ -183,7 +186,7 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
         }}
       >
         <Typography variant="caption" color="text.secondary">
-          {t('analytics.funnel_summary')}
+          {t("analytics.funnel_summary")}
         </Typography>
       </Box>
     </Paper>

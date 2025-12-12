@@ -17,8 +17,10 @@ export class CacheService {
    * Invalidate all cache keys matching a pattern
    * Note: This is a simplified implementation for in-memory cache
    * For Redis, you would use SCAN/KEYS commands
+   * @param _pattern - Pattern to match cache keys against (unused in in-memory implementation)
    */
-  async invalidatePattern(pattern: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  async invalidatePattern(_pattern?: string): Promise<void> {
     // For in-memory cache-manager, we cannot list keys easily
     // This is a no-op for now - cache will expire based on TTL
     // When migrating to Redis, implement proper key scanning

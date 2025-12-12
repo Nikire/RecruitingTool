@@ -1,4 +1,4 @@
-import { Injectable, Logger, NotFoundException, HttpException, InternalServerErrorException, ConflictException, forwardRef, Inject } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ConflictException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { CandidateResponseDto, CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';
@@ -6,7 +6,7 @@ import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 import { User, ApplicationSource, StageStatus, NotificationType, RolesType } from '@prisma/client';
-import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
+import { getUserCompanyId } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CandidateJourneyResponseDto, CandidateJourneyStepDto } from '../stages/dto/stage-time-tracking.dto';
 import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
@@ -77,7 +77,7 @@ export class CandidateService {
    */
   async createManual(createManualCandidateDto: CreateManualCandidateDto, user: User): Promise<HiringProcessResponseDto> {
     try {
-      const { name, email, phoneNumber, jobPositionUid, sourceDetails } = createManualCandidateDto;
+      const { name, email, jobPositionUid, sourceDetails } = createManualCandidateDto;
 
       // Get job position and verify it exists
       const jobPosition = await this.databaseService.jobPosition.findUnique({

@@ -1,10 +1,10 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { companiesApi } from '../../api/companies';
-import { CreateCompanyDto, UpdateCompanyDto } from '../../types/company.types';
-import { PaginationParams } from '../../types/pagination.types';
-import {showSuccessToast, showErrorToast} from '../../utils/toast';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { companiesApi } from "../../api/companies";
+import { CreateCompanyDto, UpdateCompanyDto } from "../../types/company.types";
+import { PaginationParams } from "../../types/pagination.types";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const COMPANIES_KEY = 'companies';
+const COMPANIES_KEY = "companies";
 
 export const useCompanies = (uid?: string) => {
   return useQuery({
@@ -16,7 +16,7 @@ export const useCompanies = (uid?: string) => {
 
 export const usePublicCompaniesWithJobs = () => {
   return useQuery({
-    queryKey: [COMPANIES_KEY, 'public', 'with-jobs'],
+    queryKey: [COMPANIES_KEY, "public", "with-jobs"],
     queryFn: () => companiesApi.getPublicWithJobs(),
     staleTime: 10 * 60 * 1000, // 10 minutes (matches backend cache)
   });
@@ -24,7 +24,7 @@ export const usePublicCompaniesWithJobs = () => {
 
 export const useListCompanies = (params: PaginationParams) => {
   return useQuery({
-    queryKey: [COMPANIES_KEY, 'list', params],
+    queryKey: [COMPANIES_KEY, "list", params],
     queryFn: () => companiesApi.list(params),
   });
 };
@@ -44,10 +44,10 @@ export const useCreateCompany = () => {
     mutationFn: (data: CreateCompanyDto) => companiesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
-      showSuccessToast('Company created successfully!');
+      showSuccessToast("Company created successfully!");
     },
     onError: (error) => {
-      showErrorToast(error, 'Failed to create company');
+      showErrorToast(error, "Failed to create company");
     },
   });
 };
@@ -56,13 +56,14 @@ export const useUpdateCompany = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ uid, data }: { uid: string; data: UpdateCompanyDto }) => companiesApi.update(uid, data),
+    mutationFn: ({ uid, data }: { uid: string; data: UpdateCompanyDto }) =>
+      companiesApi.update(uid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
-      showSuccessToast('Company updated successfully!');
+      showSuccessToast("Company updated successfully!");
     },
     onError: (error) => {
-      showErrorToast(error, 'Failed to update company');
+      showErrorToast(error, "Failed to update company");
     },
   });
 };
@@ -74,10 +75,10 @@ export const useDeleteCompany = () => {
     mutationFn: (uid: string) => companiesApi.delete(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
-      showSuccessToast('Company deleted successfully!');
+      showSuccessToast("Company deleted successfully!");
     },
     onError: (error) => {
-      showErrorToast(error, 'Failed to delete company');
+      showErrorToast(error, "Failed to delete company");
     },
   });
 };

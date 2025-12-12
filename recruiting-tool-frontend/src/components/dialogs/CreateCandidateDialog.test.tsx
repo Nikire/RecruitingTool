@@ -1,15 +1,19 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderWithProviders, screen, userEvent, waitFor } from '../../test/test-utils';
-import CreateCandidateDialog from './CreateCandidateDialog';
-import { QueryClient } from '@tanstack/react-query';
-import * as useCandidatesHook from '../../hooks/api/useCandidates';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import {
+  renderWithProviders,
+  screen,
+  userEvent,
+  waitFor,
+} from "../../test/test-utils";
+import CreateCandidateDialog from "./CreateCandidateDialog";
+import * as useCandidatesHook from "../../hooks/api/useCandidates";
 
 // Mock the useCandidates hook
-vi.mock('../../hooks/api/useCandidates', () => ({
+vi.mock("../../hooks/api/useCandidates", () => ({
   useCreateCandidate: vi.fn(),
 }));
 
-describe('CreateCandidateDialog', () => {
+describe("CreateCandidateDialog", () => {
   const mockOnClose = vi.fn();
   const mockOnSuccess = vi.fn();
   const mockMutate = vi.fn();
@@ -21,70 +25,70 @@ describe('CreateCandidateDialog', () => {
       mutate: mockMutate,
       isPending: false,
       isError: false,
-    } as any);
+    } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
   });
 
-  describe('Rendering', () => {
-    it('should render dialog when open', () => {
+  describe("Rendering", () => {
+    it("should render dialog when open", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.getByRole('dialog')).toBeInTheDocument();
+      expect(screen.getByRole("dialog")).toBeInTheDocument();
       // Check for form element instead
-      expect(screen.getByRole('form')).toBeInTheDocument();
+      expect(screen.getByRole("form")).toBeInTheDocument();
     });
 
-    it('should not render dialog when closed', () => {
+    it("should not render dialog when closed", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={false} onClose={mockOnClose} />
+        <CreateCandidateDialog open={false} onClose={mockOnClose} />,
       );
 
-      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
     });
 
-    it('should render all form fields', () => {
+    it("should render all form fields", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       // Use getAllByRole to find inputs
-      const inputs = screen.getAllByRole('textbox');
+      const inputs = screen.getAllByRole("textbox");
       expect(inputs.length).toBeGreaterThanOrEqual(2); // At least name and source details
 
       // Check for combobox (Select field)
-      const selects = screen.getAllByRole('combobox');
+      const selects = screen.getAllByRole("combobox");
       expect(selects.length).toBeGreaterThanOrEqual(1); // At least source select
     });
 
-    it('should render submit and cancel buttons', () => {
+    it("should render submit and cancel buttons", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       // Check for buttons
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThanOrEqual(2); // At least cancel and submit
     });
 
-    it('should have form with aria-label', () => {
+    it("should have form with aria-label", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const form = screen.getByRole('form');
-      expect(form).toHaveAttribute('aria-label');
+      const form = screen.getByRole("form");
+      expect(form).toHaveAttribute("aria-label");
     });
   });
 
-  describe('Form Validation', () => {
-    it('should show validation error for empty name', async () => {
+  describe("Form Validation", () => {
+    it("should show validation error for empty name", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       const submitButton = buttons[buttons.length - 1]; // Last button is submit
       await user.click(submitButton);
 
@@ -96,16 +100,16 @@ describe('CreateCandidateDialog', () => {
       expect(mockMutate).not.toHaveBeenCalled();
     });
 
-    it('should show validation error for name too short', async () => {
+    it("should show validation error for name too short", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       const nameInput = screen.getByLabelText(/name/i);
-      await user.type(nameInput, 'AB'); // Less than 3 characters
+      await user.type(nameInput, "AB"); // Less than 3 characters
 
-      const submitButton = screen.getByRole('button', { name: /create/i });
+      const submitButton = screen.getByRole("button", { name: /create/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -116,19 +120,19 @@ describe('CreateCandidateDialog', () => {
       });
     });
 
-    it('should show validation error for invalid email', async () => {
+    it("should show validation error for invalid email", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       const nameInput = screen.getByLabelText(/name/i);
       const emailInput = screen.getByLabelText(/email/i);
 
-      await user.type(nameInput, 'John Doe');
-      await user.type(emailInput, 'invalid-email');
+      await user.type(nameInput, "John Doe");
+      await user.type(emailInput, "invalid-email");
 
-      const submitButton = screen.getByRole('button', { name: /create/i });
+      const submitButton = screen.getByRole("button", { name: /create/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -141,13 +145,13 @@ describe('CreateCandidateDialog', () => {
       expect(mockMutate).not.toHaveBeenCalled();
     });
 
-    it('should display error icons for invalid fields', async () => {
+    it("should display error icons for invalid fields", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const submitButton = screen.getByRole('button', { name: /create/i });
+      const submitButton = screen.getByRole("button", { name: /create/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -157,142 +161,152 @@ describe('CreateCandidateDialog', () => {
     });
   });
 
-  describe('User Interactions', () => {
-    it('should call onClose when cancel button is clicked', async () => {
+  describe("User Interactions", () => {
+    it("should call onClose when cancel button is clicked", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       const cancelButton = buttons[0]; // First button should be cancel
       await user.click(cancelButton);
 
       expect(mockOnClose).toHaveBeenCalledTimes(1);
     });
 
-    it('should allow typing in name field', async () => {
+    it("should allow typing in name field", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const inputs = screen.getAllByRole('textbox');
+      const inputs = screen.getAllByRole("textbox");
       const nameInput = inputs[0]; // First textbox is name
-      await user.type(nameInput, 'John Doe');
+      await user.type(nameInput, "John Doe");
 
-      expect(nameInput).toHaveValue('John Doe');
+      expect(nameInput).toHaveValue("John Doe");
     });
 
-    it('should allow typing in email field', async () => {
+    it("should allow typing in email field", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       // Email input has type="email", so use querySelector
-      const emailInput = screen.getByRole('form').querySelector('input[type="email"]');
+      const emailInput = screen
+        .getByRole("form")
+        .querySelector('input[type="email"]');
       expect(emailInput).toBeInTheDocument();
 
       if (emailInput) {
-        await user.type(emailInput as HTMLInputElement, 'john@example.com');
-        expect(emailInput).toHaveValue('john@example.com');
+        await user.type(emailInput as HTMLInputElement, "john@example.com");
+        expect(emailInput).toHaveValue("john@example.com");
       }
     });
 
-    it('should allow selecting source from dropdown', async () => {
+    it("should allow selecting source from dropdown", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const sourceSelect = screen.getAllByRole('combobox')[0];
+      const sourceSelect = screen.getAllByRole("combobox")[0];
       await user.click(sourceSelect);
 
       // Wait for dropdown options to appear
       await waitFor(() => {
-        expect(screen.getByRole('listbox')).toBeInTheDocument();
+        expect(screen.getByRole("listbox")).toBeInTheDocument();
       });
 
       // Get all options and click the second one
-      const options = screen.getAllByRole('option');
+      const options = screen.getAllByRole("option");
       if (options.length > 1) {
         await user.click(options[1]);
       }
 
       // Verify dropdown closed
       await waitFor(() => {
-        expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
+        expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
       });
     });
 
-    it('should allow typing in source details field', async () => {
+    it("should allow typing in source details field", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const textboxes = screen.getAllByRole('textbox');
+      const textboxes = screen.getAllByRole("textbox");
       // Source details is a multiline textbox (last one)
       const sourceDetailsInput = textboxes[textboxes.length - 1];
-      await user.type(sourceDetailsInput, 'Referred by HR manager');
+      await user.type(sourceDetailsInput, "Referred by HR manager");
 
-      expect(sourceDetailsInput).toHaveValue('Referred by HR manager');
+      expect(sourceDetailsInput).toHaveValue("Referred by HR manager");
     });
   });
 
-  describe('Form Submission', () => {
-    it('should submit form with valid data', async () => {
+  describe("Form Submission", () => {
+    it("should submit form with valid data", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />
+        <CreateCandidateDialog
+          open={true}
+          onClose={mockOnClose}
+          onSuccess={mockOnSuccess}
+        />,
       );
 
       const nameInput = screen.getByLabelText(/name/i);
       const emailInput = screen.getByLabelText(/email/i);
 
-      await user.type(nameInput, 'John Doe');
-      await user.type(emailInput, 'john@example.com');
+      await user.type(nameInput, "John Doe");
+      await user.type(emailInput, "john@example.com");
 
-      const submitButton = screen.getByRole('button', { name: /create/i });
+      const submitButton = screen.getByRole("button", { name: /create/i });
       await user.click(submitButton);
 
       await waitFor(() => {
         expect(mockMutate).toHaveBeenCalledWith(
           expect.objectContaining({
-            name: 'John Doe',
-            email: 'john@example.com',
-            source: 'DIRECT_APPLY', // default value
+            name: "John Doe",
+            email: "john@example.com",
+            source: "DIRECT_APPLY", // default value
           }),
-          expect.any(Object)
+          expect.any(Object),
         );
       });
     });
 
-    it('should call onSuccess and onClose after successful submission', async () => {
+    it("should call onSuccess and onClose after successful submission", async () => {
       const user = userEvent.setup();
 
       // Mock successful mutation
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
-        mutate: (data: any, options: any) => {
+        mutate: (data: unknown, options: { onSuccess: () => void }) => {
           // Immediately call onSuccess callback
           options.onSuccess();
         },
         isPending: false,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} onSuccess={mockOnSuccess} />
+        <CreateCandidateDialog
+          open={true}
+          onClose={mockOnClose}
+          onSuccess={mockOnSuccess}
+        />,
       );
 
       const nameInput = screen.getByLabelText(/name/i);
       const emailInput = screen.getByLabelText(/email/i);
 
-      await user.type(nameInput, 'John Doe');
-      await user.type(emailInput, 'john@example.com');
+      await user.type(nameInput, "John Doe");
+      await user.type(emailInput, "john@example.com");
 
-      const submitButton = screen.getByRole('button', { name: /create/i });
+      const submitButton = screen.getByRole("button", { name: /create/i });
       await user.click(submitButton);
 
       await waitFor(() => {
@@ -301,32 +315,34 @@ describe('CreateCandidateDialog', () => {
       });
     });
 
-    it('should reset form after successful submission', async () => {
+    it("should reset form after successful submission", async () => {
       const user = userEvent.setup();
 
       // Mock successful mutation
-      let capturedCallback: any;
+      let capturedCallback: unknown;
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
-        mutate: (data: any, options: any) => {
+        mutate: (data: unknown, options: { onSuccess: () => void }) => {
           capturedCallback = options.onSuccess;
         },
         isPending: false,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       const { rerender } = renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const textboxes = screen.getAllByRole('textbox');
-      const emailInput = screen.getByRole('form').querySelector('input[type="email"]');
+      const textboxes = screen.getAllByRole("textbox");
+      const emailInput = screen
+        .getByRole("form")
+        .querySelector('input[type="email"]');
 
-      await user.type(textboxes[0], 'John Doe');
+      await user.type(textboxes[0], "John Doe");
       if (emailInput) {
-        await user.type(emailInput as HTMLInputElement, 'john@example.com');
+        await user.type(emailInput as HTMLInputElement, "john@example.com");
       }
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       const submitButton = buttons[buttons.length - 1];
       await user.click(submitButton);
 
@@ -340,162 +356,170 @@ describe('CreateCandidateDialog', () => {
       rerender(<CreateCandidateDialog open={true} onClose={mockOnClose} />);
 
       await waitFor(() => {
-        const textboxesAfterReset = screen.getAllByRole('textbox');
-        const emailInputAfterReset = screen.getByRole('form').querySelector('input[type="email"]');
+        const textboxesAfterReset = screen.getAllByRole("textbox");
+        const emailInputAfterReset = screen
+          .getByRole("form")
+          .querySelector('input[type="email"]');
 
-        expect(textboxesAfterReset[0]).toHaveValue('');
-        expect(emailInputAfterReset).toHaveValue('');
+        expect(textboxesAfterReset[0]).toHaveValue("");
+        expect(emailInputAfterReset).toHaveValue("");
       });
     });
   });
 
-  describe('Loading State', () => {
-    it('should disable buttons when submitting', () => {
+  describe("Loading State", () => {
+    it("should disable buttons when submitting", () => {
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      const buttons = screen.getAllByRole("button");
+      buttons.forEach((button) => {
         expect(button).toBeDisabled();
       });
     });
 
-    it('should show loading indicator when submitting', () => {
+    it("should show loading indicator when submitting", () => {
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       // Check for loading spinner
-      const loadingSpinner = screen.getByRole('progressbar');
+      const loadingSpinner = screen.getByRole("progressbar");
       expect(loadingSpinner).toBeInTheDocument();
     });
 
-    it('should change button text when loading', () => {
+    it("should change button text when loading", () => {
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       // Verify buttons are disabled during loading
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThanOrEqual(2);
-      buttons.forEach(button => {
+      buttons.forEach((button) => {
         expect(button).toBeDisabled();
       });
     });
   });
 
-  describe('Error Handling', () => {
-    it('should display error message when submission fails', () => {
+  describe("Error Handling", () => {
+    it("should display error message when submission fails", () => {
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
         mutate: mockMutate,
         isPending: false,
         isError: true,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const errorMessage = screen.getByRole('alert');
+      const errorMessage = screen.getByRole("alert");
       expect(errorMessage).toBeInTheDocument();
-      expect(errorMessage).toHaveAttribute('aria-live', 'polite');
+      expect(errorMessage).toHaveAttribute("aria-live", "polite");
     });
 
-    it('should not show error message when no error', () => {
+    it("should not show error message when no error", () => {
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
         mutate: mockMutate,
         isPending: false,
         isError: false,
-      } as any);
+      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+      expect(screen.queryByRole("alert")).not.toBeInTheDocument();
     });
   });
 
-  describe('Accessibility', () => {
-    it('should have proper ARIA attributes on dialog', () => {
+  describe("Accessibility", () => {
+    it("should have proper ARIA attributes on dialog", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const dialog = screen.getByRole('dialog');
-      expect(dialog).toHaveAttribute('aria-labelledby', 'create-candidate-dialog-title');
-      expect(dialog).toHaveAttribute('aria-describedby', 'create-candidate-dialog-description');
+      const dialog = screen.getByRole("dialog");
+      expect(dialog).toHaveAttribute(
+        "aria-labelledby",
+        "create-candidate-dialog-title",
+      );
+      expect(dialog).toHaveAttribute(
+        "aria-describedby",
+        "create-candidate-dialog-description",
+      );
     });
 
-    it('should mark required fields with aria-required', () => {
+    it("should mark required fields with aria-required", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
       const nameInput = screen.getByLabelText(/name/i);
       const emailInput = screen.getByLabelText(/email/i);
 
-      expect(nameInput).toHaveAttribute('aria-required', 'true');
-      expect(emailInput).toHaveAttribute('aria-required', 'true');
+      expect(nameInput).toHaveAttribute("aria-required", "true");
+      expect(emailInput).toHaveAttribute("aria-required", "true");
     });
 
-    it('should mark invalid fields with aria-invalid', async () => {
+    it("should mark invalid fields with aria-invalid", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const submitButton = screen.getByRole('button', { name: /create/i });
+      const submitButton = screen.getByRole("button", { name: /create/i });
       await user.click(submitButton);
 
       await waitFor(() => {
         const nameInput = screen.getByLabelText(/name/i);
-        expect(nameInput).toHaveAttribute('aria-invalid', 'true');
+        expect(nameInput).toHaveAttribute("aria-invalid", "true");
       });
     });
 
-    it('should have accessible button labels', () => {
+    it("should have accessible button labels", () => {
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const buttons = screen.getAllByRole('button');
-      buttons.forEach(button => {
+      const buttons = screen.getAllByRole("button");
+      buttons.forEach((button) => {
         expect(button).toHaveAccessibleName();
       });
     });
   });
 
-  describe('Dialog Close Behavior', () => {
-    it('should reset form when dialog is closed via cancel button', async () => {
+  describe("Dialog Close Behavior", () => {
+    it("should reset form when dialog is closed via cancel button", async () => {
       const user = userEvent.setup();
       const { rerender } = renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const textboxes = screen.getAllByRole('textbox');
-      await user.type(textboxes[0], 'John Doe');
+      const textboxes = screen.getAllByRole("textbox");
+      await user.type(textboxes[0], "John Doe");
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       const cancelButton = buttons[0]; // First button is cancel
       await user.click(cancelButton);
 
@@ -504,26 +528,28 @@ describe('CreateCandidateDialog', () => {
       rerender(<CreateCandidateDialog open={true} onClose={mockOnClose} />);
 
       await waitFor(() => {
-        const textboxesAfterReset = screen.getAllByRole('textbox');
-        expect(textboxesAfterReset[0]).toHaveValue('');
+        const textboxesAfterReset = screen.getAllByRole("textbox");
+        expect(textboxesAfterReset[0]).toHaveValue("");
       });
     });
 
-    it('should not submit form when cancelled', async () => {
+    it("should not submit form when cancelled", async () => {
       const user = userEvent.setup();
       renderWithProviders(
-        <CreateCandidateDialog open={true} onClose={mockOnClose} />
+        <CreateCandidateDialog open={true} onClose={mockOnClose} />,
       );
 
-      const textboxes = screen.getAllByRole('textbox');
-      const emailInput = screen.getByRole('form').querySelector('input[type="email"]');
+      const textboxes = screen.getAllByRole("textbox");
+      const emailInput = screen
+        .getByRole("form")
+        .querySelector('input[type="email"]');
 
-      await user.type(textboxes[0], 'John Doe');
+      await user.type(textboxes[0], "John Doe");
       if (emailInput) {
-        await user.type(emailInput as HTMLInputElement, 'john@example.com');
+        await user.type(emailInput as HTMLInputElement, "john@example.com");
       }
 
-      const buttons = screen.getAllByRole('button');
+      const buttons = screen.getAllByRole("button");
       const cancelButton = buttons[0]; // First button is cancel
       await user.click(cancelButton);
 

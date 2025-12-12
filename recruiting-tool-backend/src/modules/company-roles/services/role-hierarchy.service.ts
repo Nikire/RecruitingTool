@@ -57,8 +57,6 @@ export class RoleHierarchyService {
    * - HR_MANAGER can delegate HR and RECRUITER
    */
   canDelegateRole(delegatorRoles: RolesType[], targetRole: RolesType): boolean {
-    const highestRole = this.getHighestRole(delegatorRoles);
-    const delegatorLevel = this.getRoleLevel(highestRole);
     const targetLevel = this.getRoleLevel(targetRole);
 
     // SUPER_ADMIN can delegate any role

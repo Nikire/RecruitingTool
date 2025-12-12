@@ -1,5 +1,5 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import api from '../../api/axios';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "../../api/axios";
 
 export interface CalendarConnectionStatus {
   connected: boolean;
@@ -57,9 +57,11 @@ export interface AvailabilityResponse {
  */
 export const useCalendarConnectionStatus = () => {
   return useQuery<CalendarConnectionStatus>({
-    queryKey: ['google-calendar', 'status'],
+    queryKey: ["google-calendar", "status"],
     queryFn: async () => {
-      const response = await api.get<CalendarConnectionStatus>('/google-calendar/status');
+      const response = await api.get<CalendarConnectionStatus>(
+        "/google-calendar/status",
+      );
       return response.data;
     },
   });
@@ -71,7 +73,9 @@ export const useCalendarConnectionStatus = () => {
 export const useGetAuthUrl = () => {
   return useMutation<AuthUrlResponse>({
     mutationFn: async () => {
-      const response = await api.get<AuthUrlResponse>('/google-calendar/auth-url');
+      const response = await api.get<AuthUrlResponse>(
+        "/google-calendar/auth-url",
+      );
       return response.data;
     },
   });
@@ -85,12 +89,16 @@ export const useDisconnectCalendar = () => {
 
   return useMutation<{ message: string }>({
     mutationFn: async () => {
-      const response = await api.delete<{ message: string }>('/google-calendar/disconnect');
+      const response = await api.delete<{ message: string }>(
+        "/google-calendar/disconnect",
+      );
       return response.data;
     },
     onSuccess: () => {
       // Invalidate calendar status query
-      queryClient.invalidateQueries({ queryKey: ['google-calendar', 'status'] });
+      queryClient.invalidateQueries({
+        queryKey: ["google-calendar", "status"],
+      });
     },
   });
 };
@@ -101,7 +109,10 @@ export const useDisconnectCalendar = () => {
 export const useCreateCalendarEvent = () => {
   return useMutation<CalendarEventResponse, Error, CreateCalendarEventDto>({
     mutationFn: async (dto: CreateCalendarEventDto) => {
-      const response = await api.post<CalendarEventResponse>('/google-calendar/events', dto);
+      const response = await api.post<CalendarEventResponse>(
+        "/google-calendar/events",
+        dto,
+      );
       return response.data;
     },
   });
@@ -149,11 +160,14 @@ export const useGetAvailability = (params: {
   timeZone?: string;
 }) => {
   return useQuery<AvailabilityResponse>({
-    queryKey: ['google-calendar', 'availability', params],
+    queryKey: ["google-calendar", "availability", params],
     queryFn: async () => {
-      const response = await api.get<AvailabilityResponse>('/google-calendar/availability', {
-        params,
-      });
+      const response = await api.get<AvailabilityResponse>(
+        "/google-calendar/availability",
+        {
+          params,
+        },
+      );
       return response.data;
     },
     enabled: !!params.startDate && !!params.endDate,

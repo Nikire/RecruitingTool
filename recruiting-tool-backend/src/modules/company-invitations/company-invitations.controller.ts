@@ -1,52 +1,26 @@
-import {
-  Controller,
-  Post,
-  Get,
-  Delete,
-  Param,
-  Body,
-  Query,
-} from '@nestjs/common';
-import {
-  ApiTags,
-  ApiOperation,
-  ApiResponse,
-  ApiBearerAuth,
-  ApiParam,
-  ApiQuery,
-} from '@nestjs/swagger';
+import { Controller, Post, Get, Delete, Param, Body, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiQuery } from '@nestjs/swagger';
 import { CompanyInvitationsService } from './company-invitations.service';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
-import {
-  CreateInvitationDto,
-  CompanyInvitationResponseDto,
-  GetInvitationsQueryDto,
-} from './dto';
+import { CreateInvitationDto, CompanyInvitationResponseDto, GetInvitationsQueryDto } from './dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @ApiTags('Company Invitations')
 @ApiBearerAuth()
 @Controller()
 export class CompanyInvitationsController {
-  constructor(
-    private readonly companyInvitationsService: CompanyInvitationsService,
-  ) {}
+  constructor(private readonly companyInvitationsService: CompanyInvitationsService) {}
 
   /**
    * Invite user by email to join company
    */
   @Post('companies/:companyUid/invitations')
-  @Auth([
-    RolesType.COMPANY_OWNER,
-    RolesType.COMPANY_ADMIN,
-    RolesType.ADMIN,
-  ])
+  @Auth([RolesType.COMPANY_OWNER, RolesType.COMPANY_ADMIN, RolesType.ADMIN])
   @ApiOperation({
     summary: 'Invite user to join company',
-    description:
-      'Send an invitation to a user by email to join the company. Only Company Owners and Admins can send invitations.',
+    description: 'Send an invitation to a user by email to join the company. Only Company Owners and Admins can send invitations.',
   })
   @ApiParam({ name: 'companyUid', description: 'Company UID' })
   @ApiResponse({
@@ -72,27 +46,17 @@ export class CompanyInvitationsController {
     @CurrentUser('uid') inviterUid: string,
     @CurrentUser('roles') inviterRoles: RolesType[],
   ): Promise<CompanyInvitationResponseDto> {
-    return this.companyInvitationsService.createInvitation(
-      companyUid,
-      dto,
-      inviterUid,
-      inviterRoles,
-    );
+    return this.companyInvitationsService.createInvitation(companyUid, dto, inviterUid, inviterRoles);
   }
 
   /**
    * Get all invitations for a company
    */
   @Get('companies/:companyUid/invitations')
-  @Auth([
-    RolesType.COMPANY_OWNER,
-    RolesType.COMPANY_ADMIN,
-    RolesType.ADMIN,
-  ])
+  @Auth([RolesType.COMPANY_OWNER, RolesType.COMPANY_ADMIN, RolesType.ADMIN])
   @ApiOperation({
     summary: 'Get company invitations',
-    description:
-      'Get all invitations for a company. Only Company Owners and Admins can view invitations.',
+    description: 'Get all invitations for a company. Only Company Owners and Admins can view invitations.',
   })
   @ApiParam({ name: 'companyUid', description: 'Company UID' })
   @ApiQuery({
@@ -128,26 +92,17 @@ export class CompanyInvitationsController {
     @CurrentUser('roles') currentUserRoles: RolesType[],
     @Query() query: GetInvitationsQueryDto,
   ): Promise<CompanyInvitationResponseDto[]> {
-    return this.companyInvitationsService.getCompanyInvitations(
-      companyUid,
-      currentUserRoles,
-      query,
-    );
+    return this.companyInvitationsService.getCompanyInvitations(companyUid, currentUserRoles, query);
   }
 
   /**
    * Cancel an invitation
    */
   @Delete('companies/:companyUid/invitations/:invitationUid')
-  @Auth([
-    RolesType.COMPANY_OWNER,
-    RolesType.COMPANY_ADMIN,
-    RolesType.ADMIN,
-  ])
+  @Auth([RolesType.COMPANY_OWNER, RolesType.COMPANY_ADMIN, RolesType.ADMIN])
   @ApiOperation({
     summary: 'Cancel invitation',
-    description:
-      'Cancel a pending invitation. Only Company Owners and Admins can cancel invitations.',
+    description: 'Cancel a pending invitation. Only Company Owners and Admins can cancel invitations.',
   })
   @ApiParam({ name: 'companyUid', description: 'Company UID' })
   @ApiParam({ name: 'invitationUid', description: 'Invitation UID' })
@@ -173,11 +128,7 @@ export class CompanyInvitationsController {
     @Param('invitationUid') invitationUid: string,
     @CurrentUser('roles') currentUserRoles: RolesType[],
   ): Promise<MessageResponseDto> {
-    return this.companyInvitationsService.cancelInvitation(
-      companyUid,
-      invitationUid,
-      currentUserRoles,
-    );
+    return this.companyInvitationsService.cancelInvitation(companyUid, invitationUid, currentUserRoles);
   }
 
   /**
@@ -187,8 +138,7 @@ export class CompanyInvitationsController {
   @Auth() // Any authenticated user can accept their invitation
   @ApiOperation({
     summary: 'Accept invitation',
-    description:
-      'Accept an invitation to join a company using the invitation token. User email must match the invited email.',
+    description: 'Accept an invitation to join a company using the invitation token. User email must match the invited email.',
   })
   @ApiParam({ name: 'token', description: 'Invitation token' })
   @ApiResponse({
@@ -208,10 +158,7 @@ export class CompanyInvitationsController {
     status: 404,
     description: 'Invitation not found',
   })
-  async acceptInvitation(
-    @Param('token') token: string,
-    @CurrentUser('uid') userUid: string,
-  ): Promise<CompanyInvitationResponseDto> {
+  async acceptInvitation(@Param('token') token: string, @CurrentUser('uid') userUid: string): Promise<CompanyInvitationResponseDto> {
     return this.companyInvitationsService.acceptInvitation(token, userUid);
   }
 }

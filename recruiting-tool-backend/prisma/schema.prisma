@@ -46,6 +46,7 @@ model Company {
   subscription       Subscription?
   connectionRequests ConnectionRequest[]
   invitations        CompanyInvitation[] @relation("CompanyInvitations")
+  feedback           Feedback[]          @relation("CompanyFeedback")
 
   @@index([uid])
   @@index([name])
@@ -100,10 +101,12 @@ model User {
   refreshTokens              RefreshToken[]         @relation("UserRefreshTokens")
   auditLogs                  AuditLog[]             @relation("UserAuditLogs")
   calendarConnections        CalendarConnection[]   @relation("UserCalendarConnections")
-  notifications              Notification[]         @relation("UserNotifications")
-  connectionRequests         ConnectionRequest[]    @relation("UserConnectionRequests")
-  reviewedConnectionRequests ConnectionRequest[]    @relation("ReviewedConnectionRequests")
-  sentInvitations            CompanyInvitation[]    @relation("UserInvitations")
+  notifications              Notification[]             @relation("UserNotifications")
+  notificationPreferences    NotificationPreference?    @relation("UserNotificationPreferences")
+  connectionRequests         ConnectionRequest[]        @relation("UserConnectionRequests")
+  reviewedConnectionRequests ConnectionRequest[]        @relation("ReviewedConnectionRequests")
+  sentInvitations            CompanyInvitation[]        @relation("UserInvitations")
+  feedback                   Feedback[]                 @relation("UserFeedback")
 
   @@unique([email, companyId])
   @@index([email])
@@ -139,6 +142,32 @@ model Notification {
   @@index([userId, isRead])
   @@index([userId, createdAt])
   @@map("Notification")
+}
+
+model NotificationPreference {
+  id        Int      @id @default(autoincrement())
+  uid       String   @unique @default(uuid()) @db.Uuid
+  userId    Int      @unique
+  user      User     @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Cascade)
+
+  // Email preferences
+  emailApplicationStatus    Boolean @default(true)
+  emailInterviewScheduled   Boolean @default(true)
+  emailNewCandidate         Boolean @default(true)
+  emailSystemAnnouncement   Boolean @default(true)
+
+  // In-app preferences
+  inAppApplicationStatus    Boolean @default(true)
+  inAppInterviewScheduled   Boolean @default(true)
+  inAppNewCandidate         Boolean @default(true)
+  inAppSystemAnnouncement   Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([uid])
+  @@map("NotificationPreference")
 }
 
 model Candidate {
@@ -890,6 +919,32 @@ enum BatchStatus {
   CANCELLED
 }
 
+model Feedback {
+  id        Int              @id @default(autoincrement())
+  uid       String           @unique @default(uuid()) @db.Uuid
+  content   String
+  category  FeedbackCategory
+  rating    Int?
+  userId    Int
+  user      User             @relation("UserFeedback", fields: [userId], references: [id], onDelete: Cascade)
+  companyId Int
+  company   Company          @relation("CompanyFeedback", fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([companyId])
+  @@index([category])
+  @@index([createdAt])
+  @@index([uid])
+}
+
+enum FeedbackCategory {
+  FEATURE_REQUEST
+  BUG_REPORT
+  GENERAL
+}
+
 enum CandidateActivityType {
   CREATED
   STAGE_CHANGED
@@ -994,6 +1049,7 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELED
   UNPAID
+  EXPIRED
 }
 
 enum SubscriptionPlan {
@@ -1125,6 +1181,8 @@ model Subscription {
   currentPeriodEnd     DateTime?
   trialEnd             DateTime?
   cancelAtPeriodEnd    Boolean            @default(false)
+  gracePeriodEndsAt    DateTime?
+  subscriptionEndsAt   DateTime?
   createdAt            DateTime           @default(now())
   updatedAt            DateTime           @updatedAt
 
@@ -1135,6 +1193,8 @@ model Subscription {
   @@index([plan])
   @@index([uid])
   @@index([currentPeriodEnd])
+  @@index([gracePeriodEndsAt])
+  @@index([subscriptionEndsAt])
 }
 
 model ConnectionRequest {

@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsUUID, IsOptional, IsNumber, Min, Max } from 'class-validator';
+import { IsUUID } from 'class-validator';
 
 export class ScoreCandidateDto {
   @ApiProperty({

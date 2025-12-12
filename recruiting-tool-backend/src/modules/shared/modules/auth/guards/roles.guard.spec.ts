@@ -6,7 +6,6 @@ import { RolesType } from '@prisma/client';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
-  let reflector: Reflector;
 
   const mockReflector = {
     getAllAndOverride: jest.fn(),
@@ -22,14 +21,10 @@ describe('RolesGuard', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        RolesGuard,
-        { provide: Reflector, useValue: mockReflector },
-      ],
+      providers: [RolesGuard, { provide: Reflector, useValue: mockReflector }],
     }).compile();
 
     guard = module.get<RolesGuard>(RolesGuard);
-    reflector = module.get<Reflector>(Reflector);
 
     jest.clearAllMocks();
   });

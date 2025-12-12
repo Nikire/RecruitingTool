@@ -1,24 +1,25 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
   Container,
   Typography,
-  Card,
-  CardContent,
   Button,
   Grid,
   Paper,
   CircularProgress,
   Alert,
   Chip,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { format, parseISO } from 'date-fns';
-import { useAvailableSlots, useSelectTimeSlot } from '../../hooks/api/useTimeSlots';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { format, parseISO } from "date-fns";
+import {
+  useAvailableSlots,
+  useSelectTimeSlot,
+} from "../../hooks/api/useTimeSlots";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 
 const BookInterviewPage: React.FC = () => {
   const { token } = useParams<{ token: string }>();
@@ -45,13 +46,13 @@ const BookInterviewPage: React.FC = () => {
           // Redirect to success page or show success message
           navigate(`/booking-confirmed/${token}`);
         },
-      }
+      },
     );
   };
 
   const formatSlotDate = (dateStr: string) => {
     try {
-      return format(parseISO(dateStr), 'EEEE, MMMM d, yyyy');
+      return format(parseISO(dateStr), "EEEE, MMMM d, yyyy");
     } catch {
       return dateStr;
     }
@@ -59,8 +60,8 @@ const BookInterviewPage: React.FC = () => {
 
   const formatSlotTime = (startStr: string, endStr: string) => {
     try {
-      const start = format(parseISO(startStr), 'h:mm a');
-      const end = format(parseISO(endStr), 'h:mm a');
+      const start = format(parseISO(startStr), "h:mm a");
+      const end = format(parseISO(endStr), "h:mm a");
       return `${start} - ${end}`;
     } catch {
       return `${startStr} - ${endStr}`;
@@ -69,10 +70,10 @@ const BookInterviewPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="md" sx={{ mt: 8, textAlign: 'center' }}>
+      <Container maxWidth="md" sx={{ mt: 8, textAlign: "center" }}>
         <CircularProgress size={60} />
         <Typography variant="h6" sx={{ mt: 2 }}>
-          {t('booking.loading_slots')}
+          {t("booking.loading_slots")}
         </Typography>
       </Container>
     );
@@ -82,9 +83,9 @@ const BookInterviewPage: React.FC = () => {
     return (
       <Container maxWidth="md" sx={{ mt: 8 }}>
         <Alert severity="error">
-          <Typography variant="h6">{t('booking.error_title')}</Typography>
+          <Typography variant="h6">{t("booking.error_title")}</Typography>
           <Typography>
-            {error?.message || t('booking.error_invalid_token')}
+            {error?.message || t("booking.error_invalid_token")}
           </Typography>
         </Alert>
       </Container>
@@ -95,8 +96,8 @@ const BookInterviewPage: React.FC = () => {
     return (
       <Container maxWidth="md" sx={{ mt: 8 }}>
         <Alert severity="info">
-          <Typography variant="h6">{t('booking.no_slots_title')}</Typography>
-          <Typography>{t('booking.no_slots_message')}</Typography>
+          <Typography variant="h6">{t("booking.no_slots_title")}</Typography>
+          <Typography>{t("booking.no_slots_message")}</Typography>
         </Alert>
       </Container>
     );
@@ -104,13 +105,15 @@ const BookInterviewPage: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
-      <Box sx={{ textAlign: 'center', mb: 6 }}>
-        <EventAvailableIcon sx={{ fontSize: 60, color: 'primary.main', mb: 2 }} />
+      <Box sx={{ textAlign: "center", mb: 6 }}>
+        <EventAvailableIcon
+          sx={{ fontSize: 60, color: "primary.main", mb: 2 }}
+        />
         <Typography variant="h3" component="h1" gutterBottom>
-          {t('booking.title')}
+          {t("booking.title")}
         </Typography>
         <Typography variant="h6" color="text.secondary">
-          {t('booking.subtitle')}
+          {t("booking.subtitle")}
         </Typography>
       </Box>
 
@@ -121,27 +124,30 @@ const BookInterviewPage: React.FC = () => {
               elevation={selectedSlotUid === slot.uid ? 8 : 2}
               sx={{
                 p: 3,
-                cursor: 'pointer',
+                cursor: "pointer",
                 border: selectedSlotUid === slot.uid ? 2 : 0,
-                borderColor: 'primary.main',
-                transition: 'all 0.3s',
-                '&:hover': {
+                borderColor: "primary.main",
+                transition: "all 0.3s",
+                "&:hover": {
                   elevation: 6,
-                  transform: 'translateY(-4px)',
+                  transform: "translateY(-4px)",
                 },
               }}
               onClick={() => setSelectedSlotUid(slot.uid)}
             >
-              <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ textAlign: "center" }}>
                 {selectedSlotUid === slot.uid && (
                   <CheckCircleIcon
-                    sx={{ fontSize: 40, color: 'primary.main', mb: 1 }}
+                    sx={{ fontSize: 40, color: "primary.main", mb: 1 }}
                   />
                 )}
                 <AccessTimeIcon
                   sx={{
                     fontSize: 40,
-                    color: selectedSlotUid === slot.uid ? 'primary.main' : 'text.secondary',
+                    color:
+                      selectedSlotUid === slot.uid
+                        ? "primary.main"
+                        : "text.secondary",
                     mb: 1,
                   }}
                 />
@@ -150,7 +156,7 @@ const BookInterviewPage: React.FC = () => {
                 </Typography>
                 <Chip
                   label={formatSlotTime(slot.startTime, slot.endTime)}
-                  color={selectedSlotUid === slot.uid ? 'primary' : 'default'}
+                  color={selectedSlotUid === slot.uid ? "primary" : "default"}
                   sx={{ mt: 1 }}
                 />
               </Box>
@@ -159,7 +165,7 @@ const BookInterviewPage: React.FC = () => {
         ))}
       </Grid>
 
-      <Box sx={{ textAlign: 'center', mt: 6 }}>
+      <Box sx={{ textAlign: "center", mt: 6 }}>
         <Button
           variant="contained"
           size="large"
@@ -170,10 +176,10 @@ const BookInterviewPage: React.FC = () => {
           {isSelecting ? (
             <>
               <CircularProgress size={20} sx={{ mr: 1 }} />
-              {t('booking.confirming')}
+              {t("booking.confirming")}
             </>
           ) : (
-            t('booking.confirm_selection')
+            t("booking.confirm_selection")
           )}
         </Button>
       </Box>

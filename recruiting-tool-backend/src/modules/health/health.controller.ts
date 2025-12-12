@@ -23,11 +23,7 @@ export class HealthController {
   @ApiResponse({ status: 200, description: 'Service is healthy' })
   @ApiResponse({ status: 503, description: 'Service is unhealthy' })
   check() {
-    return this.health.check([
-      () => this.db.isHealthy('database'),
-      () => this.storage.isHealthy('storage'),
-      () => this.email.isHealthy('email'),
-    ]);
+    return this.health.check([() => this.db.isHealthy('database'), () => this.storage.isHealthy('storage'), () => this.email.isHealthy('email')]);
   }
 
   @Get('database')
@@ -82,11 +78,7 @@ export class HealthController {
   @ApiResponse({ status: 200, description: 'Detailed system health information' })
   @ApiResponse({ status: 503, description: 'One or more services are unhealthy' })
   async getDetailedHealth() {
-    const healthCheckResult = await this.health.check([
-      () => this.db.isHealthy('database'),
-      () => this.storage.isHealthy('storage'),
-      () => this.email.isHealthy('email'),
-    ]);
+    const healthCheckResult = await this.health.check([() => this.db.isHealthy('database'), () => this.storage.isHealthy('storage'), () => this.email.isHealthy('email')]);
 
     return {
       ...healthCheckResult,
@@ -127,11 +119,7 @@ export class HealthController {
       warning: stats.utilizationPercent >= 80 && stats.utilizationPercent < 90,
       recommendations:
         stats.utilizationPercent > 80
-          ? [
-              'Connection pool utilization is high',
-              `Consider increasing DATABASE_POOL_MAX (current: ${stats.poolMax})`,
-              'Monitor slow queries and optimize if necessary',
-            ]
+          ? ['Connection pool utilization is high', `Consider increasing DATABASE_POOL_MAX (current: ${stats.poolMax})`, 'Monitor slow queries and optimize if necessary']
           : [],
     };
   }

@@ -3,8 +3,8 @@
  * Create/edit scorecard templates with categories and criteria
  */
 
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Dialog,
   DialogTitle,
@@ -21,13 +21,17 @@ import {
   Alert,
   Chip,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   ExpandMore as ExpandMoreIcon,
   Add as AddIcon,
   Delete as DeleteIcon,
-} from '@mui/icons-material';
-import { ScorecardTemplate, CreateCategoryDto, CreateCriterionDto } from '../../types/scorecard';
+} from "@mui/icons-material";
+import {
+  ScorecardTemplate,
+  CreateCategoryDto,
+  CreateCriterionDto,
+} from "../../types/scorecard";
 
 interface ScorecardTemplateEditorProps {
   open: boolean;
@@ -57,8 +61,8 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
   isSaving,
 }) => {
   const { t } = useTranslation();
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const [categories, setCategories] = useState<CategoryForm[]>([]);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -66,7 +70,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
   useEffect(() => {
     if (template) {
       setName(template.name);
-      setDescription(template.description || '');
+      setDescription(template.description || "");
       setCategories(
         template.categories.map((cat) => ({
           ...cat,
@@ -75,7 +79,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
             ...crit,
             tempId: crit.uid,
           })),
-        }))
+        })),
       );
     } else {
       resetForm();
@@ -83,8 +87,8 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
   }, [template, open]);
 
   const resetForm = () => {
-    setName('');
-    setDescription('');
+    setName("");
+    setDescription("");
     setCategories([]);
     setErrors({});
   };
@@ -97,7 +101,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
   const addCategory = () => {
     const newCategory: CategoryForm = {
       tempId: `temp-cat-${Date.now()}`,
-      name: '',
+      name: "",
       weight: 0,
       criteria: [],
     };
@@ -108,17 +112,23 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
     setCategories(categories.filter((cat) => cat.tempId !== tempId));
   };
 
-  const updateCategory = (tempId: string, field: keyof CategoryForm, value: string | number) => {
+  const updateCategory = (
+    tempId: string,
+    field: keyof CategoryForm,
+    value: string | number,
+  ) => {
     setCategories(
-      categories.map((cat) => (cat.tempId === tempId ? { ...cat, [field]: value } : cat))
+      categories.map((cat) =>
+        cat.tempId === tempId ? { ...cat, [field]: value } : cat,
+      ),
     );
   };
 
   const addCriterion = (categoryTempId: string) => {
     const newCriterion: CriterionForm = {
       tempId: `temp-crit-${Date.now()}`,
-      name: '',
-      description: '',
+      name: "",
+      description: "",
       maxScore: 5,
     };
 
@@ -126,8 +136,8 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
       categories.map((cat) =>
         cat.tempId === categoryTempId
           ? { ...cat, criteria: [...cat.criteria, newCriterion] }
-          : cat
-      )
+          : cat,
+      ),
     );
   };
 
@@ -137,10 +147,12 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
         cat.tempId === categoryTempId
           ? {
               ...cat,
-              criteria: cat.criteria.filter((crit) => crit.tempId !== criterionTempId),
+              criteria: cat.criteria.filter(
+                (crit) => crit.tempId !== criterionTempId,
+              ),
             }
-          : cat
-      )
+          : cat,
+      ),
     );
   };
 
@@ -148,7 +160,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
     categoryTempId: string,
     criterionTempId: string,
     field: keyof CriterionForm,
-    value: string | number
+    value: string | number,
   ) => {
     setCategories(
       categories.map((cat) =>
@@ -156,11 +168,13 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
           ? {
               ...cat,
               criteria: cat.criteria.map((crit) =>
-                crit.tempId === criterionTempId ? { ...crit, [field]: value } : crit
+                crit.tempId === criterionTempId
+                  ? { ...crit, [field]: value }
+                  : crit,
               ),
             }
-          : cat
-      )
+          : cat,
+      ),
     );
   };
 
@@ -168,41 +182,48 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
     const newErrors: Record<string, string> = {};
 
     if (!name.trim()) {
-      newErrors.name = t('validation.required');
+      newErrors.name = t("validation.required");
     }
 
     if (categories.length === 0) {
-      newErrors.categories = t('scorecard.validation.at_least_one_category');
+      newErrors.categories = t("scorecard.validation.at_least_one_category");
     }
 
     // Validate weight totals to 100
-    const totalWeight = categories.reduce((sum, cat) => sum + Number(cat.weight), 0);
+    const totalWeight = categories.reduce(
+      (sum, cat) => sum + Number(cat.weight),
+      0,
+    );
     if (totalWeight !== 100) {
-      newErrors.weight = t('scorecard.weight_error');
+      newErrors.weight = t("scorecard.weight_error");
     }
 
     // Validate each category
     categories.forEach((cat, catIndex) => {
       if (!cat.name.trim()) {
-        newErrors[`category_${catIndex}_name`] = t('validation.required');
+        newErrors[`category_${catIndex}_name`] = t("validation.required");
       }
       if (cat.weight <= 0 || cat.weight > 100) {
-        newErrors[`category_${catIndex}_weight`] = t('scorecard.validation.weight_range');
+        newErrors[`category_${catIndex}_weight`] = t(
+          "scorecard.validation.weight_range",
+        );
       }
       if (cat.criteria.length === 0) {
         newErrors[`category_${catIndex}_criteria`] = t(
-          'scorecard.validation.at_least_one_criterion'
+          "scorecard.validation.at_least_one_criterion",
         );
       }
 
       // Validate each criterion
       cat.criteria.forEach((crit, critIndex) => {
         if (!crit.name.trim()) {
-          newErrors[`criterion_${catIndex}_${critIndex}_name`] = t('validation.required');
+          newErrors[`criterion_${catIndex}_${critIndex}_name`] = t(
+            "validation.required",
+          );
         }
         if (crit.maxScore <= 0) {
           newErrors[`criterion_${catIndex}_${critIndex}_maxScore`] = t(
-            'validation.positive_number'
+            "validation.positive_number",
           );
         }
       });
@@ -239,13 +260,15 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>
-        {template ? t('scorecard.edit_template') : t('scorecard.create_template')}
+        {template
+          ? t("scorecard.edit_template")
+          : t("scorecard.create_template")}
       </DialogTitle>
 
       <DialogContent>
         {/* Template Name */}
         <TextField
-          label={t('scorecard.template_name')}
+          label={t("scorecard.template_name")}
           value={name}
           onChange={(e) => setName(e.target.value)}
           fullWidth
@@ -257,7 +280,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
 
         {/* Description */}
         <TextField
-          label={t('scorecard.description')}
+          label={t("scorecard.description")}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           fullWidth
@@ -269,11 +292,20 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
         <Divider sx={{ my: 3 }} />
 
         {/* Weight Summary */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-          <Typography variant="subtitle1">{t('scorecard.categories')}</Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 2,
+          }}
+        >
+          <Typography variant="subtitle1">
+            {t("scorecard.categories")}
+          </Typography>
           <Chip
-            label={t('scorecard.total_weight', { weight: getTotalWeight() })}
-            color={getTotalWeight() === 100 ? 'success' : 'error'}
+            label={t("scorecard.total_weight", { weight: getTotalWeight() })}
+            color={getTotalWeight() === 100 ? "success" : "error"}
             size="small"
           />
         </Box>
@@ -297,27 +329,32 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Box
                   sx={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    width: '100%',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    width: "100%",
                     mr: 1,
                   }}
                 >
                   <Typography>
-                    {category.name || t('scorecard.category_placeholder', { index: catIndex + 1 })}
+                    {category.name ||
+                      t("scorecard.category_placeholder", {
+                        index: catIndex + 1,
+                      })}
                   </Typography>
                   <Chip label={`${category.weight}%`} size="small" />
                 </Box>
               </AccordionSummary>
 
               <AccordionDetails>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
                   {/* Category Name */}
                   <TextField
-                    label={t('scorecard.category_name')}
+                    label={t("scorecard.category_name")}
                     value={category.name}
-                    onChange={(e) => updateCategory(category.tempId, 'name', e.target.value)}
+                    onChange={(e) =>
+                      updateCategory(category.tempId, "name", e.target.value)
+                    }
                     fullWidth
                     size="small"
                     required
@@ -327,37 +364,46 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
 
                   {/* Category Weight */}
                   <TextField
-                    label={t('scorecard.weight')}
+                    label={t("scorecard.weight")}
                     type="number"
                     value={category.weight}
                     onChange={(e) =>
-                      updateCategory(category.tempId, 'weight', Number(e.target.value))
+                      updateCategory(
+                        category.tempId,
+                        "weight",
+                        Number(e.target.value),
+                      )
                     }
                     fullWidth
                     size="small"
                     required
                     inputProps={{ min: 0, max: 100 }}
                     error={!!errors[`category_${catIndex}_weight`]}
-                    helperText={errors[`category_${catIndex}_weight`] || t('scorecard.weight_help')}
+                    helperText={
+                      errors[`category_${catIndex}_weight`] ||
+                      t("scorecard.weight_help")
+                    }
                   />
 
                   {/* Criteria */}
                   <Box>
                     <Box
                       sx={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
                         mb: 1,
                       }}
                     >
-                      <Typography variant="subtitle2">{t('scorecard.criteria')}</Typography>
+                      <Typography variant="subtitle2">
+                        {t("scorecard.criteria")}
+                      </Typography>
                       <Button
                         size="small"
                         startIcon={<AddIcon />}
                         onClick={() => addCriterion(category.tempId)}
                       >
-                        {t('scorecard.add_criterion')}
+                        {t("scorecard.add_criterion")}
                       </Button>
                     </Box>
 
@@ -373,69 +419,85 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
                         sx={{
                           p: 2,
                           mb: 1,
-                          border: '1px solid',
-                          borderColor: 'divider',
+                          border: "1px solid",
+                          borderColor: "divider",
                           borderRadius: 1,
                         }}
                       >
-                        <Box sx={{ display: 'flex', gap: 1, mb: 1 }}>
+                        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
                           <TextField
-                            label={t('scorecard.criterion_name')}
+                            label={t("scorecard.criterion_name")}
                             value={criterion.name}
                             onChange={(e) =>
                               updateCriterion(
                                 category.tempId,
                                 criterion.tempId,
-                                'name',
-                                e.target.value
+                                "name",
+                                e.target.value,
                               )
                             }
                             size="small"
                             required
                             sx={{ flex: 2 }}
-                            error={!!errors[`criterion_${catIndex}_${critIndex}_name`]}
-                            helperText={errors[`criterion_${catIndex}_${critIndex}_name`]}
+                            error={
+                              !!errors[
+                                `criterion_${catIndex}_${critIndex}_name`
+                              ]
+                            }
+                            helperText={
+                              errors[`criterion_${catIndex}_${critIndex}_name`]
+                            }
                           />
 
                           <TextField
-                            label={t('scorecard.max_score')}
+                            label={t("scorecard.max_score")}
                             type="number"
                             value={criterion.maxScore}
                             onChange={(e) =>
                               updateCriterion(
                                 category.tempId,
                                 criterion.tempId,
-                                'maxScore',
-                                Number(e.target.value)
+                                "maxScore",
+                                Number(e.target.value),
                               )
                             }
                             size="small"
                             required
                             inputProps={{ min: 1, max: 10 }}
                             sx={{ flex: 1 }}
-                            error={!!errors[`criterion_${catIndex}_${critIndex}_maxScore`]}
-                            helperText={errors[`criterion_${catIndex}_${critIndex}_maxScore`]}
+                            error={
+                              !!errors[
+                                `criterion_${catIndex}_${critIndex}_maxScore`
+                              ]
+                            }
+                            helperText={
+                              errors[
+                                `criterion_${catIndex}_${critIndex}_maxScore`
+                              ]
+                            }
                           />
 
                           <IconButton
                             size="small"
                             color="error"
-                            onClick={() => removeCriterion(category.tempId, criterion.tempId)}
-                            aria-label={t('scorecard.remove_criterion')}
+                            onClick={() =>
+                              removeCriterion(category.tempId, criterion.tempId)
+                            }
+                            aria-label={t("scorecard.remove_criterion")}
                           >
                             <DeleteIcon />
                           </IconButton>
                         </Box>
 
                         <TextField
-                          label={t('scorecard.criterion_description')}
+                          label={t("scorecard.criterion_description")}
                           value={criterion.description}
                           onChange={(e) =>
                             updateCriterion(
                               category.tempId,
                               criterion.tempId,
-                              'description',
-                              e.target.value
+                              "description",
+                              e.target.value,
                             )
                           }
                           fullWidth
@@ -453,7 +515,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
                     startIcon={<DeleteIcon />}
                     onClick={() => removeCategory(category.tempId)}
                   >
-                    {t('scorecard.remove_category')}
+                    {t("scorecard.remove_category")}
                   </Button>
                 </Box>
               </AccordionDetails>
@@ -468,17 +530,17 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
             fullWidth
             sx={{ mt: 2 }}
           >
-            {t('scorecard.add_category')}
+            {t("scorecard.add_category")}
           </Button>
         </Box>
       </DialogContent>
 
       <DialogActions>
         <Button onClick={handleClose} disabled={isSaving}>
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
         <Button onClick={handleSubmit} variant="contained" disabled={isSaving}>
-          {isSaving ? t('common.saving') : t('common.save')}
+          {isSaving ? t("common.saving") : t("common.save")}
         </Button>
       </DialogActions>
     </Dialog>

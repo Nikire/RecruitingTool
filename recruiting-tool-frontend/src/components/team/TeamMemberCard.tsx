@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,10 +9,10 @@ import {
   MenuItem,
   Box,
   Avatar,
-} from '@mui/material';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import EmailIcon from '@mui/icons-material/Email';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import EmailIcon from "@mui/icons-material/Email";
+import { useTranslation } from "react-i18next";
 
 interface TeamMemberCardProps {
   uid: string;
@@ -57,9 +57,9 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   };
 
   return (
-    <Card sx={{ height: '100%', width: 360, maxWidth: '100%', mx: 'auto' }}>
+    <Card sx={{ height: "100%", width: 360, maxWidth: "100%", mx: "auto" }}>
       <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "flex-start", mb: 2 }}>
           <Avatar
             src={profilePicture}
             alt={name}
@@ -71,8 +71,10 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
             <Typography variant="h6" component="div">
               {name}
             </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
-              <EmailIcon sx={{ fontSize: 16, color: 'text.secondary' }} />
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}
+            >
+              <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
               <Typography variant="body2" color="text.secondary">
                 {email}
               </Typography>
@@ -85,7 +87,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           )}
         </Box>
 
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
           {roles?.map((role) => (
             <Chip
               key={role}
@@ -104,11 +106,11 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
         onClose={handleMenuClose}
       >
         {onEditRole && (
-          <MenuItem onClick={handleEditRole}>{t('team.edit_role')}</MenuItem>
+          <MenuItem onClick={handleEditRole}>{t("team.edit_role")}</MenuItem>
         )}
         {onRemove && (
-          <MenuItem onClick={handleRemove} sx={{ color: 'error.main' }}>
-            {t('team.remove_member')}
+          <MenuItem onClick={handleRemove} sx={{ color: "error.main" }}>
+            {t("team.remove_member")}
           </MenuItem>
         )}
       </Menu>

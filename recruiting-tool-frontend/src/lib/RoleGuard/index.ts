@@ -1,1 +1,1 @@
-export {RoleGuard} from './RoleGuard';
+export { RoleGuard } from "./RoleGuard";

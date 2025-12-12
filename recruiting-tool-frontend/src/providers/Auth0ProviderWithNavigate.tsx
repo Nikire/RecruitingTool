@@ -1,6 +1,6 @@
-import { Auth0Provider, Auth0ProviderOptions } from '@auth0/auth0-react';
-import { useNavigate } from 'react-router-dom';
-import { PropsWithChildren } from 'react';
+import { Auth0Provider, Auth0ProviderOptions } from "@auth0/auth0-react";
+import { useNavigate } from "react-router-dom";
+import { PropsWithChildren } from "react";
 
 /**
  * Auth0 Provider Wrapper
@@ -16,34 +16,34 @@ import { PropsWithChildren } from 'react';
  * - VITE_AUTH0_AUDIENCE: Your API audience identifier (optional)
  */
 const Auth0ProviderWithNavigate = ({ children }: PropsWithChildren) => {
-	const navigate = useNavigate();
+  const navigate = useNavigate();
 
-	const domain = import.meta.env.VITE_AUTH0_DOMAIN;
-	const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-	const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
+  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
-	// If Auth0 is not configured, render children without Auth0Provider
-	if (!domain || !clientId) {
-		return <>{children}</>;
-	}
+  // If Auth0 is not configured, render children without Auth0Provider
+  if (!domain || !clientId) {
+    return <>{children}</>;
+  }
 
-	const onRedirectCallback = (appState?: { returnTo?: string }) => {
-		navigate(appState?.returnTo || window.location.pathname);
-	};
+  const onRedirectCallback = (appState?: { returnTo?: string }) => {
+    navigate(appState?.returnTo || window.location.pathname);
+  };
 
-	const providerConfig: Auth0ProviderOptions = {
-		domain,
-		clientId,
-		authorizationParams: {
-			redirect_uri: window.location.origin,
-			...(audience && { audience }), // Only include audience if provided
-		},
-		onRedirectCallback,
-		useRefreshTokens: true,
-		cacheLocation: 'localstorage',
-	};
+  const providerConfig: Auth0ProviderOptions = {
+    domain,
+    clientId,
+    authorizationParams: {
+      redirect_uri: window.location.origin,
+      ...(audience && { audience }), // Only include audience if provided
+    },
+    onRedirectCallback,
+    useRefreshTokens: true,
+    cacheLocation: "localstorage",
+  };
 
-	return <Auth0Provider {...providerConfig}>{children}</Auth0Provider>;
+  return <Auth0Provider {...providerConfig}>{children}</Auth0Provider>;
 };
 
 export default Auth0ProviderWithNavigate;
@@ -52,8 +52,9 @@ export default Auth0ProviderWithNavigate;
  * Helper hook to check if Auth0 is configured
  * Can be used to conditionally show/hide social login buttons
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth0Configured = (): boolean => {
-	const domain = import.meta.env.VITE_AUTH0_DOMAIN;
-	const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-	return !!(domain && clientId);
+  const domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  return !!(domain && clientId);
 };

@@ -1,7 +1,11 @@
-import { Page, Browser, chromium } from '@playwright/test';
-import { login, TEST_USERS, waitForLoadingComplete } from '../fixtures/test-utils';
-import * as path from 'path';
-import * as fs from 'fs';
+import { Page, Browser, chromium } from "@playwright/test";
+import {
+  login,
+  TEST_USERS,
+  waitForLoadingComplete,
+} from "../fixtures/test-utils";
+import * as path from "path";
+import * as fs from "fs";
 
 /**
  * Screenshot Capture Utility
@@ -16,7 +20,7 @@ export interface ScreenshotOptions {
   /** Whether page requires authentication */
   requiresAuth?: boolean;
   /** User credentials to use for login */
-  userType?: 'HR_ADMIN' | 'HR_SPECIALIST' | 'HR_MANAGER';
+  userType?: "HR_ADMIN" | "HR_SPECIALIST" | "HR_MANAGER";
   /** Output filename (without extension) */
   filename?: string;
   /** Wait for specific selector before capturing */
@@ -30,7 +34,7 @@ export interface ScreenshotOptions {
 /**
  * Default screenshot directory
  */
-const SCREENSHOT_DIR = path.join(process.cwd(), 'screenshots');
+const SCREENSHOT_DIR = path.join(process.cwd(), "screenshots");
 
 /**
  * Ensure screenshot directory exists
@@ -44,8 +48,11 @@ export function ensureScreenshotDir(): void {
 /**
  * Generate screenshot filename with timestamp
  */
-export function generateFilename(pagePath: string, customFilename?: string): string {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+export function generateFilename(
+  pagePath: string,
+  customFilename?: string,
+): string {
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, -5);
 
   if (customFilename) {
     return `${customFilename}-${timestamp}.png`;
@@ -53,9 +60,9 @@ export function generateFilename(pagePath: string, customFilename?: string): str
 
   // Convert path to filename: /hr/dashboard -> hr-dashboard
   const pathSegment = pagePath
-    .replace(/^\//, '') // Remove leading slash
-    .replace(/\//g, '-') // Replace slashes with dashes
-    .replace(/[^a-zA-Z0-9-]/g, '_'); // Replace special chars with underscore
+    .replace(/^\//, "") // Remove leading slash
+    .replace(/\//g, "-") // Replace slashes with dashes
+    .replace(/[^a-zA-Z0-9-]/g, "_"); // Replace special chars with underscore
 
   return `${pathSegment}-${timestamp}.png`;
 }
@@ -66,11 +73,13 @@ export function generateFilename(pagePath: string, customFilename?: string): str
  * @param options Screenshot options
  * @returns Path to saved screenshot
  */
-export async function captureScreenshot(options: ScreenshotOptions): Promise<string> {
+export async function captureScreenshot(
+  options: ScreenshotOptions,
+): Promise<string> {
   const {
     pagePath,
     requiresAuth = true,
-    userType = 'HR_ADMIN',
+    userType = "HR_ADMIN",
     filename,
     waitForSelector,
     viewport = { width: 1920, height: 1080 },
@@ -90,7 +99,7 @@ export async function captureScreenshot(options: ScreenshotOptions): Promise<str
     });
 
     // Set base URL
-    const baseURL = process.env.BASE_URL || 'http://localhost:3000';
+    const baseURL = process.env.BASE_URL || "http://localhost:3000";
 
     // Create page with viewport and baseURL
     page = await browser.newPage({
@@ -103,7 +112,7 @@ export async function captureScreenshot(options: ScreenshotOptions): Promise<str
       const credentials = TEST_USERS[userType];
 
       // Navigate to login page
-      await page.goto('/login');
+      await page.goto("/login");
 
       // Perform login
       await login(page, credentials);
@@ -121,7 +130,10 @@ export async function captureScreenshot(options: ScreenshotOptions): Promise<str
     // Wait for specific selector if provided
     if (waitForSelector) {
       console.log(`Waiting for selector: ${waitForSelector}`);
-      await page.waitForSelector(waitForSelector, { state: 'visible', timeout: 10000 });
+      await page.waitForSelector(waitForSelector, {
+        state: "visible",
+        timeout: 10000,
+      });
     }
 
     // Give UI a moment to settle
@@ -140,9 +152,8 @@ export async function captureScreenshot(options: ScreenshotOptions): Promise<str
 
     console.log(`Screenshot saved: ${screenshotPath}`);
     return screenshotPath;
-
   } catch (error) {
-    console.error('Failed to capture screenshot:', error);
+    console.error("Failed to capture screenshot:", error);
     throw error;
   } finally {
     // Cleanup
@@ -164,7 +175,7 @@ export async function captureScreenshot(options: ScreenshotOptions): Promise<str
  */
 export async function captureMultipleScreenshots(
   pages: string[],
-  options: Omit<ScreenshotOptions, 'pagePath'> = {}
+  options: Omit<ScreenshotOptions, "pagePath"> = {},
 ): Promise<string[]> {
   const results: string[] = [];
 
@@ -188,30 +199,23 @@ export async function captureMultipleScreenshots(
  */
 export const PAGE_SETS = {
   HR_PAGES: [
-    '/hr/dashboard',
-    '/hr/applications',
-    '/hr/candidates',
-    '/hr/job-positions',
-    '/hr/analytics',
+    "/hr/dashboard",
+    "/hr/applications",
+    "/hr/candidates",
+    "/hr/job-positions",
+    "/hr/analytics",
   ],
-  PUBLIC_PAGES: [
-    '/careers',
-    '/login',
-  ],
-  ADMIN_PAGES: [
-    '/admin/dashboard',
-    '/admin/users',
-    '/admin/companies',
-  ],
+  PUBLIC_PAGES: ["/careers", "/login"],
+  ADMIN_PAGES: ["/admin/dashboard", "/admin/users", "/admin/companies"],
 };
 
 /**
  * Capture all HR pages
  */
 export async function captureAllHRPages(
-  userType: 'HR_ADMIN' | 'HR_SPECIALIST' | 'HR_MANAGER' = 'HR_ADMIN'
+  userType: "HR_ADMIN" | "HR_SPECIALIST" | "HR_MANAGER" = "HR_ADMIN",
 ): Promise<string[]> {
-  console.log('Capturing all HR pages...');
+  console.log("Capturing all HR pages...");
   return captureMultipleScreenshots(PAGE_SETS.HR_PAGES, {
     requiresAuth: true,
     userType,
@@ -222,7 +226,7 @@ export async function captureAllHRPages(
  * Capture all public pages
  */
 export async function captureAllPublicPages(): Promise<string[]> {
-  console.log('Capturing all public pages...');
+  console.log("Capturing all public pages...");
   return captureMultipleScreenshots(PAGE_SETS.PUBLIC_PAGES, {
     requiresAuth: false,
   });

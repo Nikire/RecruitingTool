@@ -1,11 +1,11 @@
-import React from 'react';
-import { Card, CardContent, Typography, Box, Chip } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-import { useTranslation } from 'react-i18next';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import { MetricCardData } from '../../types/analytics';
+import React from "react";
+import { Card, CardContent, Typography, Box, Chip } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
+import { useTranslation } from "react-i18next";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
+import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
+import { MetricCardData } from "../../types/analytics";
 
 interface MetricCardProps {
   data: MetricCardData;
@@ -25,12 +25,18 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
     if (!data.trend) return null;
 
     switch (data.trend) {
-      case 'up':
-        return <TrendingUpIcon fontSize="small" sx={{ color: 'success.main' }} />;
-      case 'down':
-        return <TrendingDownIcon fontSize="small" sx={{ color: 'error.main' }} />;
-      case 'neutral':
-        return <TrendingFlatIcon fontSize="small" sx={{ color: 'text.secondary' }} />;
+      case "up":
+        return (
+          <TrendingUpIcon fontSize="small" sx={{ color: "success.main" }} />
+        );
+      case "down":
+        return (
+          <TrendingDownIcon fontSize="small" sx={{ color: "error.main" }} />
+        );
+      case "neutral":
+        return (
+          <TrendingFlatIcon fontSize="small" sx={{ color: "text.secondary" }} />
+        );
     }
   };
 
@@ -38,19 +44,19 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
     if (!data.trend) return undefined;
 
     switch (data.trend) {
-      case 'up':
-        return 'success';
-      case 'down':
-        return 'error';
-      case 'neutral':
-        return 'default';
+      case "up":
+        return "success";
+      case "down":
+        return "error";
+      case "neutral":
+        return "default";
     }
   };
 
   const formatTrendValue = () => {
     if (data.trendValue === undefined) return null;
 
-    const sign = data.trendValue >= 0 ? '+' : '';
+    const sign = data.trendValue >= 0 ? "+" : "";
     return `${sign}${data.trendValue}%`;
   };
 
@@ -58,23 +64,28 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
     <Card
       elevation={0}
       sx={{
-        height: '100%',
+        height: "100%",
         border: `1px solid ${theme.palette.divider}`,
         borderRadius: 2,
-        transition: 'all 0.2s ease-in-out',
-        '&:hover': {
+        transition: "all 0.2s ease-in-out",
+        "&:hover": {
           boxShadow: theme.shadows[4],
-          transform: 'translateY(-2px)',
+          transform: "translateY(-2px)",
         },
       }}
     >
       <CardContent>
-        <Box display="flex" justifyContent="space-between" alignItems="flex-start" mb={2}>
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="flex-start"
+          mb={2}
+        >
           <Typography
             variant="body2"
             color="text.secondary"
             fontWeight={500}
-            sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}
+            sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
           >
             {data.title}
           </Typography>
@@ -82,8 +93,8 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
             <Box
               sx={{
                 color: data.color || theme.palette.primary.main,
-                display: 'flex',
-                alignItems: 'center',
+                display: "flex",
+                alignItems: "center",
               }}
             >
               {data.icon}
@@ -112,12 +123,12 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
               variant="outlined"
               sx={{
                 height: 24,
-                fontSize: '0.75rem',
+                fontSize: "0.75rem",
                 fontWeight: 600,
               }}
             />
             <Typography variant="caption" color="text.secondary">
-              {t('analytics.vs_last_period')}
+              {t("analytics.vs_last_period")}
             </Typography>
           </Box>
         )}

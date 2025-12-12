@@ -1,17 +1,18 @@
 // Subscription Plans
 export enum SubscriptionPlan {
-  FREE = 'FREE',
-  PROFESSIONAL = 'PROFESSIONAL',
-  ENTERPRISE = 'ENTERPRISE',
+  FREE = "FREE",
+  PROFESSIONAL = "PROFESSIONAL",
+  ENTERPRISE = "ENTERPRISE",
 }
 
 // Subscription Status
 export enum SubscriptionStatus {
-  TRIALING = 'TRIALING',
-  ACTIVE = 'ACTIVE',
-  PAST_DUE = 'PAST_DUE',
-  CANCELED = 'CANCELED',
-  UNPAID = 'UNPAID',
+  TRIALING = "TRIALING",
+  ACTIVE = "ACTIVE",
+  PAST_DUE = "PAST_DUE",
+  CANCELED = "CANCELED",
+  UNPAID = "UNPAID",
+  EXPIRED = "EXPIRED",
 }
 
 // Subscription Response DTO
@@ -24,6 +25,8 @@ export interface Subscription {
   currentPeriodEnd: string | null;
   trialEnd: string | null;
   cancelAtPeriodEnd: boolean;
+  gracePeriodEndsAt: string | null;
+  subscriptionEndsAt: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -54,7 +57,7 @@ export interface QuotaStatus {
 // Helper to get quota by resource name
 export const getQuotaByResource = (
   quotas: QuotaUsageItem[],
-  resource: string
+  resource: string,
 ): QuotaUsageItem | undefined => {
   return quotas.find((q) => q.resource === resource);
 };
@@ -62,7 +65,7 @@ export const getQuotaByResource = (
 // Helper to check if feature is enabled
 export const isFeatureEnabled = (
   features: FeatureAccessItem[],
-  featureName: string
+  featureName: string,
 ): boolean => {
   const feature = features.find((f) => f.feature === featureName);
   return feature?.enabled ?? false;
@@ -71,6 +74,7 @@ export const isFeatureEnabled = (
 // Create Checkout Session DTO
 export interface CreateCheckoutSessionDto {
   plan: SubscriptionPlan;
+  interval?: "monthly" | "annual";
   successUrl: string;
   cancelUrl: string;
 }
@@ -90,4 +94,24 @@ export interface BillingPortalResponse {
 export interface CancelSubscriptionResponse {
   message: string;
   cancelAt: string;
+}
+
+// Invoice Response DTO
+export interface Invoice {
+  id: string;
+  invoiceNumber: string;
+  amountDue: number;
+  amountPaid: number;
+  currency: string;
+  status: string;
+  createdAt: string;
+  dueDate?: string;
+  pdfUrl: string;
+  hostedInvoiceUrl: string;
+}
+
+// Invoices Response
+export interface InvoicesResponse {
+  invoices: Invoice[];
+  total: number;
 }

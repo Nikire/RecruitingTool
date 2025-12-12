@@ -56,4 +56,8 @@ export interface PurgeResponse {
 /**
  * Entity type for deleted records
  */
-export type DeletedEntityType = 'candidates' | 'job-positions' | 'applications' | 'interviews';
+export type DeletedEntityType =
+  | "candidates"
+  | "job-positions"
+  | "applications"
+  | "interviews";

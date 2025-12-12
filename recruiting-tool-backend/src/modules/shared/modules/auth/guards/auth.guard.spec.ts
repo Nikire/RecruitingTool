@@ -19,10 +19,7 @@ describe('AuthGuard', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [
-        AuthGuard,
-        { provide: AuthService, useValue: mockAuthService },
-      ],
+      providers: [AuthGuard, { provide: AuthService, useValue: mockAuthService }],
     }).compile();
 
     guard = module.get<AuthGuard>(AuthGuard);

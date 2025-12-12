@@ -1,29 +1,25 @@
 import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
-import OpenAI from 'openai';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { SseService } from '../sse/sse.service';
+import { GeminiService } from './gemini.service';
 
 @Injectable()
 export class ScoringService {
   private readonly logger = new Logger(ScoringService.name);
-  private openai: OpenAI;
 
   constructor(
     private configService: ConfigService,
     private databaseService: DatabaseService,
     private sseService: SseService,
+    private geminiService: GeminiService,
   ) {
-    const apiKey = this.configService.get<string>('OPENAI_API_KEY');
-    if (!apiKey) {
-      this.logger.warn('OpenAI API key not configured. AI scoring features will be disabled.');
-      this.openai = null;
+    if (this.geminiService.isConfigured()) {
+      this.logger.log('Scoring Service initialized with Gemini AI');
     } else {
-      this.openai = new OpenAI({
-        apiKey: apiKey,
-      });
+      this.logger.warn('Gemini API key not configured. AI scoring features will be disabled.');
     }
   }
 
@@ -31,8 +27,8 @@ export class ScoringService {
    * Score a candidate for a specific job position using AI
    */
   async scoreCandidate(candidateUid: string, jobPositionUid: string): Promise<CandidateScoreResponseDto> {
-    if (!this.openai) {
-      throw new InternalServerErrorException('OpenAI API is not configured. Please set OPENAI_API_KEY in environment variables.');
+    if (!this.geminiService.isConfigured()) {
+      throw new InternalServerErrorException('AI API is not configured. Please set GEMINI_API_KEY in environment variables.');
     }
 
     try {
@@ -254,7 +250,7 @@ export class ScoringService {
   }
 
   /**
-   * Generate AI-powered scoring using OpenAI
+   * Generate AI-powered scoring using Gemini
    */
   private async generateAIScoring(
     candidate: any,
@@ -268,10 +264,9 @@ export class ScoringService {
     };
     analysis: ScoreAnalysisDto;
   }> {
-    const model = this.configService.get<string>('OPENAI_MODEL') || 'gpt-4-turbo-preview';
+    const systemInstruction = `You are an expert HR recruiter and candidate evaluator. Your task is to analyze candidates against job position requirements and provide objective, detailed scoring and analysis. Always return valid JSON that matches the requested schema exactly. Be fair and thorough in your evaluation.`;
 
-    const prompt = `
-You are an expert HR recruiter and candidate evaluator. Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
+    const prompt = `Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
 
 **Job Position:**
 Title: ${jobPosition.title}
@@ -314,48 +309,49 @@ Return a JSON object with this exact structure:
     "strengths": ["string", "string", ...],
     "concerns": ["string", "string", ...]
   }
-}
+}`;
 
-IMPORTANT: Return ONLY valid JSON, no additional text or explanation.
-`;
+    interface AIScoreResponse {
+      scores: {
+        skills: number;
+        experience: number;
+        education: number;
+        overall: number;
+      };
+      analysis: {
+        skillsAnalysis: string;
+        experienceAnalysis: string;
+        educationAnalysis: string;
+        recommendation: string;
+        strengths: string[];
+        concerns: string[];
+      };
+    }
 
     try {
-      const completion = await this.openai.chat.completions.create({
-        model: model,
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are an expert HR recruiter. You evaluate candidates objectively and provide detailed, constructive feedback. You return your analysis as valid JSON only.',
-          },
-          {
-            role: 'user',
-            content: prompt,
-          },
-        ],
-        temperature: 0.4, // Balanced temperature for consistent but nuanced scoring
-        response_format: { type: 'json_object' },
-      });
+      const { data } = await this.geminiService.generateJsonContent<AIScoreResponse>(prompt, systemInstruction);
 
-      const responseContent = completion.choices[0].message.content;
-      const result = JSON.parse(responseContent);
-
-      // Validate scores are within range
-      const validateScore = (score: number): number => {
-        return Math.min(100, Math.max(0, score));
-      };
+      // Validate and normalize scores (ensure they're within 0-100 range)
+      const normalizeScore = (score: number): number => Math.max(0, Math.min(100, Math.round(score)));
 
       return {
         scores: {
-          skills: validateScore(result.scores.skills),
-          experience: validateScore(result.scores.experience),
-          education: validateScore(result.scores.education),
-          overall: validateScore(result.scores.overall),
+          skills: normalizeScore(data.scores?.skills || 0),
+          experience: normalizeScore(data.scores?.experience || 0),
+          education: normalizeScore(data.scores?.education || 0),
+          overall: normalizeScore(data.scores?.overall || 0),
         },
-        analysis: result.analysis,
+        analysis: {
+          skillsAnalysis: data.analysis?.skillsAnalysis || 'No analysis available',
+          experienceAnalysis: data.analysis?.experienceAnalysis || 'No analysis available',
+          educationAnalysis: data.analysis?.educationAnalysis || 'No analysis available',
+          recommendation: data.analysis?.recommendation || 'Not Recommended',
+          strengths: data.analysis?.strengths || [],
+          concerns: data.analysis?.concerns || [],
+        },
       };
     } catch (error) {
-      this.logger.error(`OpenAI API error during scoring: ${error.message}`, error.stack);
+      this.logger.error(`Gemini AI scoring failed: ${error.message}`, error.stack);
       throw new InternalServerErrorException(`Failed to generate AI scoring: ${error.message}`);
     }
   }

@@ -1,10 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  NotFoundException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, NotFoundException, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import Stripe from 'stripe';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -16,6 +10,8 @@ import {
   CancelSubscriptionResponseDto,
   CreateBillingPortalDto,
   BillingPortalResponseDto,
+  InvoicesResponseDto,
+  InvoiceResponseDto,
 } from './dto/stripe.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -49,9 +45,7 @@ export class StripeService {
    */
   private ensureEnabled(): void {
     if (!this.isEnabled || !this.stripe) {
-      throw new BadRequestException(
-        'Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.',
-      );
+      throw new BadRequestException('Stripe is not configured. Please set STRIPE_SECRET_KEY in environment variables.');
     }
   }
 
@@ -114,10 +108,7 @@ export class StripeService {
   /**
    * Create a Stripe Checkout session for subscription
    */
-  async createCheckoutSession(
-    companyId: number,
-    dto: CreateCheckoutSessionDto,
-  ): Promise<CheckoutSessionResponseDto> {
+  async createCheckoutSession(companyId: number, dto: CreateCheckoutSessionDto): Promise<CheckoutSessionResponseDto> {
     this.ensureEnabled();
     try {
       const company = await this.databaseService.company.findUnique({
@@ -144,8 +135,11 @@ export class StripeService {
         customerId = await this.createCustomer(companyId, user.email, company.name);
       }
 
-      // Get price ID based on plan
-      const priceId = this.getPriceId(dto.plan);
+      // Get billing interval (default to monthly if not specified)
+      const interval = dto.interval || 'monthly';
+
+      // Get price ID based on plan and interval
+      const priceId = this.getPriceId(dto.plan, interval);
 
       // Create Checkout session
       const session = await this.stripe!.checkout.sessions.create({
@@ -164,11 +158,13 @@ export class StripeService {
           companyId: companyId.toString(),
           companyUid: company.uid,
           plan: dto.plan,
+          interval,
         },
         subscription_data: {
           metadata: {
             companyId: companyId.toString(),
             companyUid: company.uid,
+            interval,
           },
         },
       });
@@ -233,6 +229,8 @@ export class StripeService {
         currentPeriodEnd: subscription.currentPeriodEnd,
         trialEnd: subscription.trialEnd,
         cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        gracePeriodEndsAt: subscription.gracePeriodEndsAt,
+        subscriptionEndsAt: subscription.subscriptionEndsAt,
       };
     } catch (error) {
       this.logger.error(`Failed to get subscription: ${error.message}`, error.stack);
@@ -267,12 +265,9 @@ export class StripeService {
       }
 
       // Cancel subscription in Stripe (at period end)
-      const stripeSubscription = await this.stripe!.subscriptions.update(
-        company.subscription.stripeSubscriptionId,
-        {
-          cancel_at_period_end: true,
-        },
-      );
+      const stripeSubscription = await this.stripe!.subscriptions.update(company.subscription.stripeSubscriptionId, {
+        cancel_at_period_end: true,
+      });
 
       // Update local subscription record
       await this.databaseService.subscription.update({
@@ -307,10 +302,7 @@ export class StripeService {
       };
     } catch (error) {
       this.logger.error(`Failed to cancel subscription: ${error.message}`, error.stack);
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to cancel subscription');
@@ -320,10 +312,7 @@ export class StripeService {
   /**
    * Create a Stripe Customer Portal session
    */
-  async createBillingPortalSession(
-    companyId: number,
-    dto: CreateBillingPortalDto,
-  ): Promise<BillingPortalResponseDto> {
+  async createBillingPortalSession(companyId: number, dto: CreateBillingPortalDto): Promise<BillingPortalResponseDto> {
     this.ensureEnabled();
     try {
       const company = await this.databaseService.company.findUnique({
@@ -336,9 +325,7 @@ export class StripeService {
       }
 
       if (!company.subscription?.stripeCustomerId) {
-        throw new BadRequestException(
-          'No Stripe customer found. Please subscribe to a plan first.',
-        );
+        throw new BadRequestException('No Stripe customer found. Please subscribe to a plan first.');
       }
 
       // Create billing portal session
@@ -354,10 +341,7 @@ export class StripeService {
       };
     } catch (error) {
       this.logger.error(`Failed to create billing portal session: ${error.message}`, error.stack);
-      if (
-        error instanceof NotFoundException ||
-        error instanceof BadRequestException
-      ) {
+      if (error instanceof NotFoundException || error instanceof BadRequestException) {
         throw error;
       }
       throw new InternalServerErrorException('Failed to create billing portal session');
@@ -367,13 +351,9 @@ export class StripeService {
   /**
    * Sync subscription data from Stripe
    */
-  private async syncSubscriptionWithStripe(
-    subscriptionId: number,
-    stripeSubscriptionId: string,
-  ): Promise<void> {
+  private async syncSubscriptionWithStripe(subscriptionId: number, stripeSubscriptionId: string): Promise<void> {
     try {
-      const stripeSubscription =
-        await this.stripe!.subscriptions.retrieve(stripeSubscriptionId);
+      const stripeSubscription = await this.stripe!.subscriptions.retrieve(stripeSubscriptionId);
 
       // Get current period from the first subscription item
       const currentPeriodStart = stripeSubscription.items?.data?.[0]?.current_period_start;
@@ -383,22 +363,15 @@ export class StripeService {
         where: { id: subscriptionId },
         data: {
           status: this.mapStripeStatus(stripeSubscription.status),
-          currentPeriodStart: currentPeriodStart
-            ? new Date(currentPeriodStart * 1000)
-            : null,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
           cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
         },
       });
 
       this.logger.log(`Synced subscription ${subscriptionId} with Stripe`);
     } catch (error) {
-      this.logger.error(
-        `Failed to sync subscription with Stripe: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to sync subscription with Stripe: ${error.message}`, error.stack);
       // Don't throw - this is a background sync operation
     }
   }
@@ -423,20 +396,82 @@ export class StripeService {
   }
 
   /**
-   * Get Stripe Price ID based on plan
+   * Get Stripe Price ID based on plan and interval
    */
-  private getPriceId(plan: 'PROFESSIONAL' | 'ENTERPRISE'): string {
-    const priceId = this.configService.get<string>(
-      plan === 'PROFESSIONAL'
-        ? 'STRIPE_PROFESSIONAL_PRICE_ID'
-        : 'STRIPE_ENTERPRISE_PRICE_ID',
-    );
+  private getPriceId(plan: 'PROFESSIONAL' | 'ENTERPRISE', interval: 'monthly' | 'annual' = 'monthly'): string {
+    let envVar: string;
+
+    if (interval === 'annual') {
+      envVar = plan === 'PROFESSIONAL' ? 'STRIPE_PROFESSIONAL_ANNUAL_PRICE_ID' : 'STRIPE_ENTERPRISE_ANNUAL_PRICE_ID';
+    } else {
+      envVar = plan === 'PROFESSIONAL' ? 'STRIPE_PROFESSIONAL_PRICE_ID' : 'STRIPE_ENTERPRISE_PRICE_ID';
+    }
+
+    const priceId = this.configService.get<string>(envVar);
 
     if (!priceId) {
-      throw new BadRequestException(`Price ID for ${plan} plan is not configured`);
+      throw new BadRequestException(`Price ID for ${plan} ${interval} plan is not configured`);
     }
 
     return priceId;
+  }
+
+  /**
+   * Get invoices for a company
+   */
+  async getInvoices(companyId: number): Promise<InvoicesResponseDto> {
+    this.ensureEnabled();
+    try {
+      const company = await this.databaseService.company.findUnique({
+        where: { id: companyId },
+        include: { subscription: true },
+      });
+
+      if (!company) {
+        throw new NotFoundException('Company not found');
+      }
+
+      // Return empty list if no Stripe customer
+      if (!company.subscription?.stripeCustomerId) {
+        return {
+          invoices: [],
+          total: 0,
+        };
+      }
+
+      // Fetch invoices from Stripe
+      const stripeInvoices = await this.stripe!.invoices.list({
+        customer: company.subscription.stripeCustomerId,
+        limit: 100, // Fetch up to 100 invoices
+      });
+
+      // Map Stripe invoices to our DTO
+      const invoices: InvoiceResponseDto[] = stripeInvoices.data.map((invoice) => ({
+        id: invoice.id,
+        invoiceNumber: invoice.number || invoice.id,
+        amountDue: invoice.amount_due,
+        amountPaid: invoice.amount_paid,
+        currency: invoice.currency,
+        status: invoice.status || 'draft',
+        createdAt: new Date(invoice.created * 1000),
+        dueDate: invoice.due_date ? new Date(invoice.due_date * 1000) : undefined,
+        pdfUrl: invoice.invoice_pdf || '',
+        hostedInvoiceUrl: invoice.hosted_invoice_url || '',
+      }));
+
+      this.logger.log(`Retrieved ${invoices.length} invoices for company ${company.uid}`);
+
+      return {
+        invoices,
+        total: stripeInvoices.data.length,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to get invoices: ${error.message}`, error.stack);
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      throw new InternalServerErrorException('Failed to get invoices');
+    }
   }
 
   /**
@@ -550,12 +585,8 @@ export class StripeService {
           stripeSubscriptionId: stripeSubscription.id,
           status: this.mapStripeStatus(stripeSubscription.status),
           plan,
-          currentPeriodStart: currentPeriodStart
-            ? new Date(currentPeriodStart * 1000)
-            : null,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
           trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
           cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
         },
@@ -568,12 +599,8 @@ export class StripeService {
           stripeSubscriptionId: stripeSubscription.id,
           status: this.mapStripeStatus(stripeSubscription.status),
           plan,
-          currentPeriodStart: currentPeriodStart
-            ? new Date(currentPeriodStart * 1000)
-            : null,
-          currentPeriodEnd: currentPeriodEnd
-            ? new Date(currentPeriodEnd * 1000)
-            : null,
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
           trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
           cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
         },
@@ -625,12 +652,8 @@ export class StripeService {
       data: {
         status: this.mapStripeStatus(stripeSubscription.status),
         plan: newPlan,
-        currentPeriodStart: currentPeriodStart
-          ? new Date(currentPeriodStart * 1000)
-          : null,
-        currentPeriodEnd: currentPeriodEnd
-          ? new Date(currentPeriodEnd * 1000)
-          : null,
+        currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+        currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
         trialEnd: stripeSubscription.trial_end ? new Date(stripeSubscription.trial_end * 1000) : null,
         cancelAtPeriodEnd: stripeSubscription.cancel_at_period_end,
       },
@@ -644,13 +667,9 @@ export class StripeService {
 
       await this.createSubscriptionNotification(
         subscription.companyId,
-        isPlanUpgrade
-          ? NotificationType.SUBSCRIPTION_PLAN_UPGRADED
-          : NotificationType.SUBSCRIPTION_PLAN_DOWNGRADED,
+        isPlanUpgrade ? NotificationType.SUBSCRIPTION_PLAN_UPGRADED : NotificationType.SUBSCRIPTION_PLAN_DOWNGRADED,
         isPlanUpgrade ? 'Plan Upgraded' : 'Plan Downgraded',
-        isPlanUpgrade
-          ? `Your plan has been upgraded from ${oldPlan} to ${newPlan}. Enjoy your new features!`
-          : `Your plan has been changed from ${oldPlan} to ${newPlan}.`,
+        isPlanUpgrade ? `Your plan has been upgraded from ${oldPlan} to ${newPlan}. Enjoy your new features!` : `Your plan has been changed from ${oldPlan} to ${newPlan}.`,
         {
           subscriptionUid: subscription.uid,
           oldPlan,
@@ -697,6 +716,7 @@ export class StripeService {
         status: SubscriptionStatus.CANCELED,
         plan: SubscriptionPlan.FREE,
         cancelAtPeriodEnd: false,
+        subscriptionEndsAt: new Date(), // Mark when subscription ended
       },
     });
 
@@ -735,11 +755,12 @@ export class StripeService {
       return;
     }
 
-    // Update subscription to ACTIVE after successful payment
+    // Update subscription to ACTIVE after successful payment and clear grace period
     await this.databaseService.subscription.update({
       where: { id: subscription.id },
       data: {
         status: SubscriptionStatus.ACTIVE,
+        gracePeriodEndsAt: null,
       },
     });
 
@@ -783,15 +804,20 @@ export class StripeService {
       return;
     }
 
+    // Set grace period to 7 days from now
+    const gracePeriodEndsAt = new Date();
+    gracePeriodEndsAt.setDate(gracePeriodEndsAt.getDate() + 7);
+
     // Update subscription to PAST_DUE after failed payment
     await this.databaseService.subscription.update({
       where: { id: subscription.id },
       data: {
         status: SubscriptionStatus.PAST_DUE,
+        gracePeriodEndsAt,
       },
     });
 
-    this.logger.log(`Payment failed for subscription: ${subscriptionId}`);
+    this.logger.log(`Payment failed for subscription: ${subscriptionId}. Grace period set until ${gracePeriodEndsAt.toISOString()}`);
 
     // Create notification for failed payment
     const amount = invoice.amount_due ? (invoice.amount_due / 100).toFixed(2) : '0.00';
@@ -800,14 +826,15 @@ export class StripeService {
     await this.createSubscriptionNotification(
       subscription.companyId,
       NotificationType.SUBSCRIPTION_PAYMENT_FAILED,
-      'Payment Failed',
-      `Payment of ${currency} $${amount} for your ${subscription.plan} plan failed. Please update your payment method to avoid service interruption.`,
+      'Payment Failed - Grace Period Active',
+      `Payment of ${currency} $${amount} for your ${subscription.plan} plan failed. You have until ${gracePeriodEndsAt.toLocaleDateString()} to update your payment method to avoid service interruption.`,
       {
         subscriptionUid: subscription.uid,
         planName: subscription.plan,
         amount,
         currency,
         invoiceId: invoice.id,
+        gracePeriodEndsAt: gracePeriodEndsAt.toISOString(),
       },
     );
   }
@@ -815,13 +842,7 @@ export class StripeService {
   /**
    * Create subscription notification for Company Owners
    */
-  private async createSubscriptionNotification(
-    companyId: number,
-    type: NotificationType,
-    title: string,
-    message: string,
-    metadata?: Record<string, any>,
-  ): Promise<void> {
+  private async createSubscriptionNotification(companyId: number, type: NotificationType, title: string, message: string, metadata?: Record<string, any>): Promise<void> {
     try {
       // Find all Company Owners for this company
       const companyOwners = await this.databaseService.user.findMany({
@@ -853,10 +874,7 @@ export class StripeService {
       this.logger.log(`Created ${type} notifications for ${companyOwners.length} company owner(s)`);
     } catch (error) {
       // Don't throw - notification failures shouldn't break subscription operations
-      this.logger.error(
-        `Failed to create subscription notification: ${error.message}`,
-        error.stack,
-      );
+      this.logger.error(`Failed to create subscription notification: ${error.message}`, error.stack);
     }
   }
 

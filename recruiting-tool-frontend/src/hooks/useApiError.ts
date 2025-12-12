@@ -1,6 +1,6 @@
-import { useCallback } from 'react';
-import { NormalizedError } from '../types/api.types';
-import { showErrorToast } from '../utils/toast';
+import { useCallback } from "react";
+import { NormalizedError } from "../types/api.types";
+import { showErrorToast } from "../utils/toast";
 
 /**
  * Hook for consistent API error handling across the application
@@ -18,117 +18,156 @@ import { showErrorToast } from '../utils/toast';
  * ```
  */
 export const useApiError = () => {
-	/**
-	 * Normalizes and handles API errors
-	 * - Displays error toast notifications
-	 * - Logs errors in development mode
-	 * - Returns normalized error structure
-	 */
-	const handleError = useCallback((error: any, defaultMessage?: string): NormalizedError => {
-		// Extract normalized error from interceptor
-		const normalized: NormalizedError = normalizeErrorObject(error, defaultMessage);
+  /**
+   * Normalizes and handles API errors
+   * - Displays error toast notifications
+   * - Logs errors in development mode
+   * - Returns normalized error structure
+   */
+  const handleError = useCallback(
+    (error: unknown, defaultMessage?: string): NormalizedError => {
+      // Extract normalized error from interceptor
+      const normalized: NormalizedError = normalizeErrorObject(
+        error,
+        defaultMessage,
+      );
 
-		// Display error toast
-		showErrorToast(error, normalized.message);
+      // Display error toast
+      showErrorToast(error, normalized.message);
 
-		// Log to console in development
-		if (import.meta.env.DEV) {
-			console.error('[API Error]', {
-				message: normalized.message,
-				statusCode: normalized.statusCode,
-				validationErrors: normalized.errors,
-				originalError: normalized.originalError,
-			});
-		}
+      // Log to console in development
+      if (import.meta.env.DEV) {
+        console.error("[API Error]", {
+          message: normalized.message,
+          statusCode: normalized.statusCode,
+          validationErrors: normalized.errors,
+          originalError: normalized.originalError,
+        });
+      }
 
-		return normalized;
-	}, []);
+      return normalized;
+    },
+    [],
+  );
 
-	/**
-	 * Silent error handler that doesn't show toast notifications
-	 * Useful for background operations or when you want to handle errors manually
-	 */
-	const handleErrorSilently = useCallback((error: any, defaultMessage?: string): NormalizedError => {
-		const normalized: NormalizedError = normalizeErrorObject(error, defaultMessage);
+  /**
+   * Silent error handler that doesn't show toast notifications
+   * Useful for background operations or when you want to handle errors manually
+   */
+  const handleErrorSilently = useCallback(
+    (error: unknown, defaultMessage?: string): NormalizedError => {
+      const normalized: NormalizedError = normalizeErrorObject(
+        error,
+        defaultMessage,
+      );
 
-		// Log to console in development
-		if (import.meta.env.DEV) {
-			console.error('[API Error - Silent]', {
-				message: normalized.message,
-				statusCode: normalized.statusCode,
-				validationErrors: normalized.errors,
-			});
-		}
+      // Log to console in development
+      if (import.meta.env.DEV) {
+        console.error("[API Error - Silent]", {
+          message: normalized.message,
+          statusCode: normalized.statusCode,
+          validationErrors: normalized.errors,
+        });
+      }
 
-		return normalized;
-	}, []);
+      return normalized;
+    },
+    [],
+  );
 
-	return { handleError, handleErrorSilently };
+  return { handleError, handleErrorSilently };
 };
 
 /**
  * Normalizes error objects from various sources into a consistent structure
  */
-function normalizeErrorObject(error: any, defaultMessage?: string): NormalizedError {
-	// Default normalized error
-	const normalized: NormalizedError = {
-		message: defaultMessage || 'An unexpected error occurred',
-		statusCode: -1,
-		originalError: error,
-	};
+function normalizeErrorObject(
+  error: unknown,
+  defaultMessage?: string,
+): NormalizedError {
+  // Default normalized error
+  const normalized: NormalizedError = {
+    message: defaultMessage || "An unexpected error occurred",
+    statusCode: -1,
+    originalError: error,
+  };
 
-	if (!error) {
-		return normalized;
-	}
+  if (!error) {
+    return normalized;
+  }
 
-	// If error has response (Axios error)
-	if (error.response) {
-		const { data, status } = error.response;
+  // If error has response (Axios error)
+  const errorWithResponse = error as {
+    response?: { data?: unknown; status?: number };
+  };
+  if (errorWithResponse.response) {
+    const { data, status } = errorWithResponse.response;
 
-		normalized.statusCode = status;
+    normalized.statusCode = status || -1;
 
-		// Extract message
-		if (data) {
-			if (typeof data === 'string') {
-				normalized.message = data;
-			} else if (data.message) {
-				// Handle array of messages or single message
-				if (Array.isArray(data.message)) {
-					normalized.message = data.message.join(', ');
-				} else {
-					normalized.message = data.message;
-				}
-			} else if (data.error) {
-				normalized.message = data.error;
-			}
+    // Extract message
+    if (data) {
+      if (typeof data === "string") {
+        normalized.message = data;
+      } else if (
+        typeof data === "object" &&
+        data !== null &&
+        "message" in data
+      ) {
+        const dataObj = data as { message?: unknown };
+        if (dataObj.message) {
+          // Handle array of messages or single message
+          if (Array.isArray(dataObj.message)) {
+            normalized.message = (dataObj.message as string[]).join(", ");
+          } else if (typeof dataObj.message === "string") {
+            normalized.message = dataObj.message;
+          }
+        }
+      } else if (typeof data === "object" && data !== null && "error" in data) {
+        const dataWithError = data as { error?: string };
+        if (dataWithError.error) {
+          normalized.message = dataWithError.error;
+        }
+      }
 
-			// Extract validation errors
-			if (data.errors && typeof data.errors === 'object') {
-				normalized.errors = data.errors;
-			}
-		}
+      // Extract validation errors
+      if (typeof data === "object" && data !== null && "errors" in data) {
+        const dataWithErrors = data as { errors?: unknown };
+        if (
+          dataWithErrors.errors &&
+          typeof dataWithErrors.errors === "object"
+        ) {
+          normalized.errors = dataWithErrors.errors;
+        }
+      }
+    }
 
-		return normalized;
-	}
+    return normalized;
+  }
 
-	// If error has request but no response (network error)
-	if (error.request) {
-		normalized.message = 'Network error - unable to reach server';
-		normalized.statusCode = 0;
-		return normalized;
-	}
+  // If error has request but no response (network error)
+  const errorWithRequest = error as { request?: unknown };
+  if (errorWithRequest.request) {
+    normalized.message = "Network error - unable to reach server";
+    normalized.statusCode = 0;
+    return normalized;
+  }
 
-	// If error is a string
-	if (typeof error === 'string') {
-		normalized.message = error;
-		return normalized;
-	}
+  // If error is a string
+  if (typeof error === "string") {
+    normalized.message = error;
+    return normalized;
+  }
 
-	// If error has message property
-	if (error.message && typeof error.message === 'string') {
-		normalized.message = error.message;
-		return normalized;
-	}
+  // If error has message property
+  const errorWithMessage = error as { message?: unknown };
+  if (
+    errorWithMessage.message &&
+    typeof errorWithMessage.message === "string"
+  ) {
+    normalized.message = errorWithMessage.message;
+    return normalized;
+  }
 
-	return normalized;
+  return normalized;
 }

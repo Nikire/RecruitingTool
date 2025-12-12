@@ -1,19 +1,19 @@
-import { Component, ErrorInfo, ReactNode } from 'react';
+import { Component, ErrorInfo, ReactNode } from "react";
 import {
-	Box,
-	Button,
-	Typography,
-	Paper,
-	Container,
-	Accordion,
-	AccordionSummary,
-	AccordionDetails,
-} from '@mui/material';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import HomeIcon from '@mui/icons-material/Home';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { useTranslation } from 'react-i18next';
+  Box,
+  Button,
+  Typography,
+  Paper,
+  Container,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/material";
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import HomeIcon from "@mui/icons-material/Home";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   children: ReactNode;
@@ -44,9 +44,9 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // Log error details to console in development
-    if (import.meta.env.MODE === 'development') {
-      console.error('ErrorBoundary caught error:', error);
-      console.error('Error info:', errorInfo);
+    if (import.meta.env.MODE === "development") {
+      console.error("ErrorBoundary caught error:", error);
+      console.error("Error info:", errorInfo);
     }
 
     // Update state with error information
@@ -64,17 +64,19 @@ class ErrorBoundary extends Component<Props, State> {
   };
 
   handleGoHome = () => {
-    window.location.href = '/';
+    window.location.href = "/";
   };
 
   render() {
     if (this.state.hasError) {
-      return <ErrorBoundaryUI
-        error={this.state.error}
-        errorInfo={this.state.errorInfo}
-        onReload={this.handleReload}
-        onGoHome={this.handleGoHome}
-      />;
+      return (
+        <ErrorBoundaryUI
+          error={this.state.error}
+          errorInfo={this.state.errorInfo}
+          onReload={this.handleReload}
+          onGoHome={this.handleGoHome}
+        />
+      );
     }
 
     return this.props.children;
@@ -94,20 +96,25 @@ interface ErrorBoundaryUIProps {
   onGoHome: () => void;
 }
 
-const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundaryUIProps) => {
+const ErrorBoundaryUI = ({
+  error,
+  errorInfo,
+  onReload,
+  onGoHome,
+}: ErrorBoundaryUIProps) => {
   const { t } = useTranslation();
-  const isDevelopment = import.meta.env.MODE === 'development';
+  const isDevelopment = import.meta.env.MODE === "development";
 
   return (
     <Container maxWidth="md">
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          minHeight: '100vh',
-          textAlign: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          minHeight: "100vh",
+          textAlign: "center",
           py: 4,
         }}
       >
@@ -116,45 +123,50 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
           sx={{
             p: 4,
             borderRadius: 2,
-            maxWidth: '700px',
-            width: '100%',
+            maxWidth: "700px",
+            width: "100%",
             borderTop: 4,
-            borderColor: 'error.main',
+            borderColor: "error.main",
           }}
         >
           {/* Error Icon */}
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'center',
+              display: "flex",
+              justifyContent: "center",
               mb: 3,
             }}
           >
             <ErrorOutlineIcon
               sx={{
                 fontSize: 80,
-                color: 'error.main',
+                color: "error.main",
               }}
             />
           </Box>
 
           {/* Error Title */}
           <Typography variant="h4" gutterBottom color="error">
-            {t('errors.boundary.title')}
+            {t("errors.boundary.title")}
           </Typography>
 
           {/* Error Message */}
-          <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 4 }}>
-            {t('errors.boundary.message')}
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            paragraph
+            sx={{ mb: 4 }}
+          >
+            {t("errors.boundary.message")}
           </Typography>
 
           {/* Recovery Actions */}
           <Box
             sx={{
-              display: 'flex',
+              display: "flex",
               gap: 2,
-              justifyContent: 'center',
-              flexWrap: 'wrap',
+              justifyContent: "center",
+              flexWrap: "wrap",
               mb: 4,
             }}
           >
@@ -165,7 +177,7 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
               onClick={onReload}
               size="large"
             >
-              {t('errors.boundary.reload')}
+              {t("errors.boundary.reload")}
             </Button>
             <Button
               variant="outlined"
@@ -174,13 +186,13 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
               onClick={onGoHome}
               size="large"
             >
-              {t('errors.boundary.home')}
+              {t("errors.boundary.home")}
             </Button>
           </Box>
 
           {/* Error Details (Development Only) - Collapsible Accordion */}
           {isDevelopment && error && (
-            <Box sx={{ mt: 4, textAlign: 'left' }}>
+            <Box sx={{ mt: 4, textAlign: "left" }}>
               <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -188,22 +200,26 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
                   id="error-details-header"
                 >
                   <Typography color="error" variant="subtitle1">
-                    {t('errors.boundary.details')}
+                    {t("errors.boundary.details")}
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
                   {/* Error Message */}
                   <Box sx={{ mb: 2 }}>
-                    <Typography variant="subtitle2" color="text.secondary" gutterBottom>
+                    <Typography
+                      variant="subtitle2"
+                      color="text.secondary"
+                      gutterBottom
+                    >
                       Error:
                     </Typography>
                     <Paper
                       sx={{
                         p: 2,
-                        bgcolor: 'grey.100',
-                        fontFamily: 'monospace',
-                        fontSize: '0.875rem',
-                        overflow: 'auto',
+                        bgcolor: "grey.100",
+                        fontFamily: "monospace",
+                        fontSize: "0.875rem",
+                        overflow: "auto",
                       }}
                     >
                       <Typography variant="body2" component="pre">
@@ -215,16 +231,20 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
                   {/* Component Stack */}
                   {errorInfo?.componentStack && (
                     <Box>
-                      <Typography variant="subtitle2" color="text.secondary" gutterBottom>
-                        {t('errors.boundary.component_stack')}:
+                      <Typography
+                        variant="subtitle2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {t("errors.boundary.component_stack")}:
                       </Typography>
                       <Paper
                         sx={{
                           p: 2,
-                          bgcolor: 'grey.100',
-                          fontFamily: 'monospace',
-                          fontSize: '0.75rem',
-                          overflow: 'auto',
+                          bgcolor: "grey.100",
+                          fontFamily: "monospace",
+                          fontSize: "0.75rem",
+                          overflow: "auto",
                           maxHeight: 300,
                         }}
                       >
@@ -241,7 +261,7 @@ const ErrorBoundaryUI = ({ error, errorInfo, onReload, onGoHome }: ErrorBoundary
 
           {/* Support Message */}
           <Typography variant="body2" color="text.secondary" sx={{ mt: 4 }}>
-            {t('errors.boundary.support_message')}
+            {t("errors.boundary.support_message")}
           </Typography>
         </Paper>
       </Box>

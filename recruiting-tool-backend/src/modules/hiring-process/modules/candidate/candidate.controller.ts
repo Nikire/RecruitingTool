@@ -11,7 +11,7 @@ import { ApiTags, ApiBearerAuth, ApiUnauthorizedResponse, ApiNotFoundResponse, A
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from 'src/modules/shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from 'src/modules/shared/modules/auth/decorators/current-user.decorator';
-import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 import { CandidateFilterDto } from './dto/candidate-filter.dto';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';

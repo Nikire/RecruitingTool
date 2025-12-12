@@ -9,9 +9,9 @@
  * const { user, isAuthenticated, setUser } = useUserAtom();
  * ```
  */
-import {useCallback} from 'react';
-import {atom, useAtom, useAtomValue} from 'jotai';
-import type {User} from '../types/user.types';
+import { useCallback } from "react";
+import { atom, useAtom, useAtomValue } from "jotai";
+import type { User } from "../types/user.types";
 
 /**
  * Core user atom - stores the authenticated user
@@ -49,20 +49,20 @@ export const isAuthenticatedAtom = atom((get) => get(userAtom) !== null);
  * ```
  */
 export function useUserAtom() {
-	const [user, setUser] = useAtom(userAtom);
-	const isAuthenticated = useAtomValue(isAuthenticatedAtom);
+  const [user, setUser] = useAtom(userAtom);
+  const isAuthenticated = useAtomValue(isAuthenticatedAtom);
 
-	const updateUser = useCallback(
-		(patch: Partial<User>) => {
-			setUser((prev) => (prev ? {...prev, ...patch} : prev));
-		},
-		[setUser]
-	);
+  const updateUser = useCallback(
+    (patch: Partial<User>) => {
+      setUser((prev) => (prev ? { ...prev, ...patch } : prev));
+    },
+    [setUser],
+  );
 
-	return {
-		user,
-		isAuthenticated,
-		setUser,
-		updateUser,
-	};
+  return {
+    user,
+    isAuthenticated,
+    setUser,
+    updateUser,
+  };
 }

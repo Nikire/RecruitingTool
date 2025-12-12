@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../../api/axios';
+import { useQuery } from "@tanstack/react-query";
+import api from "../../api/axios";
 
 // =====================
 // Types matching backend DTOs
@@ -7,7 +7,7 @@ import api from '../../api/axios';
 
 export interface DateRange {
   startDate?: string; // ISO 8601 date string
-  endDate?: string;   // ISO 8601 date string
+  endDate?: string; // ISO 8601 date string
   companyUid?: string; // For SUPER_ADMIN filtering
 }
 
@@ -112,22 +112,22 @@ export interface StageDurationDto {
 // =====================
 
 const buildQueryParams = (dateRange?: DateRange): string => {
-  if (!dateRange) return '';
+  if (!dateRange) return "";
 
   const params = new URLSearchParams();
-  if (dateRange.startDate) params.append('startDate', dateRange.startDate);
-  if (dateRange.endDate) params.append('endDate', dateRange.endDate);
-  if (dateRange.companyUid) params.append('companyUid', dateRange.companyUid);
+  if (dateRange.startDate) params.append("startDate", dateRange.startDate);
+  if (dateRange.endDate) params.append("endDate", dateRange.endDate);
+  if (dateRange.companyUid) params.append("companyUid", dateRange.companyUid);
 
   const queryString = params.toString();
-  return queryString ? `?${queryString}` : '';
+  return queryString ? `?${queryString}` : "";
 };
 
 // =====================
 // React Query Hooks
 // =====================
 
-const ANALYTICS_KEY = 'analytics';
+const ANALYTICS_KEY = "analytics";
 const STALE_TIME = 10 * 60 * 1000; // 10 minutes (match backend cache)
 const GC_TIME = 15 * 60 * 1000; // 15 minutes
 
@@ -137,10 +137,10 @@ const GC_TIME = 15 * 60 * 1000; // 15 minutes
  */
 export function useAnalyticsOverview(dateRange?: DateRange) {
   return useQuery<OverviewMetricsDto>({
-    queryKey: [ANALYTICS_KEY, 'overview', dateRange],
+    queryKey: [ANALYTICS_KEY, "overview", dateRange],
     queryFn: async () => {
       const { data } = await api.get<OverviewMetricsDto>(
-        `/analytics/overview${buildQueryParams(dateRange)}`
+        `/analytics/overview${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -155,10 +155,10 @@ export function useAnalyticsOverview(dateRange?: DateRange) {
  */
 export function useAnalyticsTimeMetrics(dateRange?: DateRange) {
   return useQuery<TimeMetricsDto>({
-    queryKey: [ANALYTICS_KEY, 'time-metrics', dateRange],
+    queryKey: [ANALYTICS_KEY, "time-metrics", dateRange],
     queryFn: async () => {
       const { data } = await api.get<TimeMetricsDto>(
-        `/analytics/time-metrics${buildQueryParams(dateRange)}`
+        `/analytics/time-metrics${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -173,10 +173,10 @@ export function useAnalyticsTimeMetrics(dateRange?: DateRange) {
  */
 export function useAnalyticsConversion(dateRange?: DateRange) {
   return useQuery<ConversionMetricsDto>({
-    queryKey: [ANALYTICS_KEY, 'conversion', dateRange],
+    queryKey: [ANALYTICS_KEY, "conversion", dateRange],
     queryFn: async () => {
       const { data } = await api.get<ConversionMetricsDto>(
-        `/analytics/conversion${buildQueryParams(dateRange)}`
+        `/analytics/conversion${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -191,10 +191,10 @@ export function useAnalyticsConversion(dateRange?: DateRange) {
  */
 export function useAnalyticsVolume(dateRange?: DateRange) {
   return useQuery<VolumeMetricsDto>({
-    queryKey: [ANALYTICS_KEY, 'volume', dateRange],
+    queryKey: [ANALYTICS_KEY, "volume", dateRange],
     queryFn: async () => {
       const { data } = await api.get<VolumeMetricsDto>(
-        `/analytics/volume${buildQueryParams(dateRange)}`
+        `/analytics/volume${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -209,10 +209,10 @@ export function useAnalyticsVolume(dateRange?: DateRange) {
  */
 export function useAnalyticsSources(dateRange?: DateRange) {
   return useQuery<SourceAnalyticsDto[]>({
-    queryKey: [ANALYTICS_KEY, 'sources', dateRange],
+    queryKey: [ANALYTICS_KEY, "sources", dateRange],
     queryFn: async () => {
       const { data } = await api.get<SourceAnalyticsDto[]>(
-        `/analytics/sources${buildQueryParams(dateRange)}`
+        `/analytics/sources${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -227,10 +227,10 @@ export function useAnalyticsSources(dateRange?: DateRange) {
  */
 export function useAnalyticsPipeline(dateRange?: DateRange) {
   return useQuery<PipelineFunnelDto>({
-    queryKey: [ANALYTICS_KEY, 'pipeline', dateRange],
+    queryKey: [ANALYTICS_KEY, "pipeline", dateRange],
     queryFn: async () => {
       const { data } = await api.get<PipelineFunnelDto>(
-        `/analytics/pipeline${buildQueryParams(dateRange)}`
+        `/analytics/pipeline${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -245,10 +245,10 @@ export function useAnalyticsPipeline(dateRange?: DateRange) {
  */
 export function useAnalyticsTimeToHire(dateRange?: DateRange) {
   return useQuery<TimeToHireDto>({
-    queryKey: [ANALYTICS_KEY, 'time-to-hire', dateRange],
+    queryKey: [ANALYTICS_KEY, "time-to-hire", dateRange],
     queryFn: async () => {
       const { data } = await api.get<TimeToHireDto>(
-        `/analytics/time-to-hire${buildQueryParams(dateRange)}`
+        `/analytics/time-to-hire${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -263,10 +263,10 @@ export function useAnalyticsTimeToHire(dateRange?: DateRange) {
  */
 export function useAnalyticsSourceEffectiveness(dateRange?: DateRange) {
   return useQuery<SourceEffectivenessDto[]>({
-    queryKey: [ANALYTICS_KEY, 'source-effectiveness', dateRange],
+    queryKey: [ANALYTICS_KEY, "source-effectiveness", dateRange],
     queryFn: async () => {
       const { data } = await api.get<SourceEffectivenessDto[]>(
-        `/analytics/source-effectiveness${buildQueryParams(dateRange)}`
+        `/analytics/source-effectiveness${buildQueryParams(dateRange)}`,
       );
       return data;
     },
@@ -281,10 +281,10 @@ export function useAnalyticsSourceEffectiveness(dateRange?: DateRange) {
  */
 export function useAnalyticsStageDuration(dateRange?: DateRange) {
   return useQuery<StageDurationDto[]>({
-    queryKey: [ANALYTICS_KEY, 'stage-duration', dateRange],
+    queryKey: [ANALYTICS_KEY, "stage-duration", dateRange],
     queryFn: async () => {
       const { data } = await api.get<StageDurationDto[]>(
-        `/analytics/stage-duration${buildQueryParams(dateRange)}`
+        `/analytics/stage-duration${buildQueryParams(dateRange)}`,
       );
       return data;
     },

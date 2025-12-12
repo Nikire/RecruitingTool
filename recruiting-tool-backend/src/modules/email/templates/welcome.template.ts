@@ -10,12 +10,12 @@ export interface WelcomeData {
 }
 
 export function welcomeTemplate(data: WelcomeData): EmailTemplate {
-  const subject = `Welcome to the Recruiting Tool${data.companyName ? ` - ${data.companyName}` : ''}`;
+  const subject = `Welcome to BorderLess${data.companyName ? ` - ${data.companyName}` : ''}`;
 
   const text = `
 Dear ${data.userName},
 
-Welcome to the Recruiting Tool! We're excited to have you on board.
+Welcome to BorderLess by EMP Employment Solutions! We're excited to have you on board.
 
 Your account has been successfully created with the following details:
 
@@ -35,13 +35,13 @@ If you have any questions or need assistance, please don't hesitate to reach out
 We're here to help you streamline your hiring process!
 
 Best regards,
-The Recruiting Team
+The BorderLess Team - EMP Employment Solutions
   `.trim();
 
   const html = `
     <div style="${emailBaseStyles.container}">
       <div style="${emailBaseStyles.card}">
-        <h1 style="${emailBaseStyles.header}">Welcome to the Recruiting Tool! 🎉</h1>
+        <h1 style="${emailBaseStyles.header}">Welcome to BorderLess! 🎉</h1>
 
         <p style="${emailBaseStyles.text}">Dear <strong>${data.userName}</strong>,</p>
 
@@ -103,7 +103,7 @@ The Recruiting Team
         </p>
 
         <div style="${emailBaseStyles.footer}">
-          <p>Best regards,<br>The Recruiting Team</p>
+          <p>Best regards,<br>The BorderLess Team - EMP Employment Solutions</p>
         </div>
       </div>
     </div>

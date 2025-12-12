@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   Box,
   Container,
@@ -16,32 +16,49 @@ import {
   DialogContentText,
   DialogActions,
   Skeleton,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import { format } from 'date-fns';
-import toast from 'react-hot-toast';
-import PricingCard from '../../components/subscription/PricingCard';
-import QuotaDisplay from '../../components/subscription/QuotaDisplay';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { format } from "date-fns";
+import toast from "react-hot-toast";
+import PricingCard, {
+  BillingInterval,
+} from "../../components/subscription/PricingCard";
+import BillingToggle from "../../components/subscription/BillingToggle";
+import QuotaDisplay from "../../components/subscription/QuotaDisplay";
 import {
   useSubscription,
   useQuota,
   useCheckout,
   useBillingPortal,
   useCancelSubscription,
-} from '../../api/subscription';
-import { SubscriptionPlan, SubscriptionStatus } from '../../types/subscription.types';
+} from "../../api/subscription";
+import {
+  SubscriptionPlan,
+  SubscriptionStatus,
+} from "../../types/subscription.types";
 
 const SubscriptionPage: React.FC = () => {
   const { t } = useTranslation();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
+    null,
+  );
+  const [billingInterval, setBillingInterval] =
+    useState<BillingInterval>("monthly");
 
-  const { data: subscription, isLoading: isLoadingSubscription, isError: isErrorSubscription } = useSubscription();
+  const {
+    data: subscription,
+    isLoading: isLoadingSubscription,
+    isError: isErrorSubscription,
+  } = useSubscription();
   const { data: quota, isLoading: isLoadingQuota } = useQuota();
-  const { mutate: createCheckout, isPending: isCreatingCheckout } = useCheckout();
-  const { mutate: openBillingPortal, isPending: isOpeningPortal } = useBillingPortal();
-  const { mutate: cancelSubscription, isPending: isCanceling } = useCancelSubscription();
+  const { mutate: createCheckout, isPending: isCreatingCheckout } =
+    useCheckout();
+  const { mutate: openBillingPortal, isPending: isOpeningPortal } =
+    useBillingPortal();
+  const { mutate: cancelSubscription, isPending: isCanceling } =
+    useCancelSubscription();
 
   const handleUpgrade = (plan: SubscriptionPlan) => {
     if (plan === SubscriptionPlan.FREE) return;
@@ -52,21 +69,26 @@ const SubscriptionPage: React.FC = () => {
     createCheckout(
       {
         plan,
+        interval: billingInterval,
         successUrl,
         cancelUrl,
       },
       {
-        onError: (error: any) => {
-          toast.error(error?.message || t('subscription.errors.checkout_failed'));
+        onError: (error: Error) => {
+          toast.error(
+            error?.message || t("subscription.errors.checkout_failed"),
+          );
         },
-      }
+      },
     );
   };
 
   const handleManageBilling = () => {
     openBillingPortal(undefined, {
-      onError: (error: any) => {
-        toast.error(error?.message || t('subscription.errors.billing_portal_failed'));
+      onError: (error: Error) => {
+        toast.error(
+          error?.message || t("subscription.errors.billing_portal_failed"),
+        );
       },
     });
   };
@@ -75,38 +97,38 @@ const SubscriptionPage: React.FC = () => {
     cancelSubscription(undefined, {
       onSuccess: (data) => {
         toast.success(
-          t('subscription.messages.cancel_success', {
-            date: format(new Date(data.cancelAt), 'PPP'),
-          })
+          t("subscription.messages.cancel_success", {
+            date: format(new Date(data.cancelAt), "PPP"),
+          }),
         );
         setCancelDialogOpen(false);
       },
-      onError: (error: any) => {
-        toast.error(error?.message || t('subscription.errors.cancel_failed'));
+      onError: (error: Error) => {
+        toast.error(error?.message || t("subscription.errors.cancel_failed"));
       },
     });
   };
 
   const getPlanFeatures = (plan: SubscriptionPlan): string[] => {
     const baseFeatures = [
-      t('subscription.plans.free.features.basic_recruiting'),
-      t('subscription.plans.free.features.unlimited_candidates'),
+      t("subscription.plans.free.features.basic_recruiting"),
+      t("subscription.plans.free.features.unlimited_candidates"),
     ];
 
     const proFeatures = [
       ...baseFeatures,
-      t('subscription.plans.professional.features.ai_parsing'),
-      t('subscription.plans.professional.features.advanced_analytics'),
-      t('subscription.plans.professional.features.custom_branding'),
-      t('subscription.plans.professional.features.priority_support'),
+      t("subscription.plans.professional.features.ai_parsing"),
+      t("subscription.plans.professional.features.advanced_analytics"),
+      t("subscription.plans.professional.features.custom_branding"),
+      t("subscription.plans.professional.features.priority_support"),
     ];
 
     const enterpriseFeatures = [
       ...proFeatures,
-      t('subscription.plans.enterprise.features.api_access'),
-      t('subscription.plans.enterprise.features.custom_integrations'),
-      t('subscription.plans.enterprise.features.unlimited_everything'),
-      t('subscription.plans.enterprise.features.dedicated_support'),
+      t("subscription.plans.enterprise.features.api_access"),
+      t("subscription.plans.enterprise.features.custom_integrations"),
+      t("subscription.plans.enterprise.features.unlimited_everything"),
+      t("subscription.plans.enterprise.features.dedicated_support"),
     ];
 
     switch (plan) {
@@ -122,27 +144,27 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const getStatusColor = (
-    status: SubscriptionStatus
-  ): 'success' | 'warning' | 'error' | 'default' | 'info' => {
+    status: SubscriptionStatus,
+  ): "success" | "warning" | "error" | "default" | "info" => {
     switch (status) {
       case SubscriptionStatus.ACTIVE:
-        return 'success';
+        return "success";
       case SubscriptionStatus.TRIALING:
-        return 'info';
+        return "info";
       case SubscriptionStatus.PAST_DUE:
-        return 'warning';
+        return "warning";
       case SubscriptionStatus.CANCELED:
       case SubscriptionStatus.UNPAID:
-        return 'error';
+        return "error";
       default:
-        return 'default';
+        return "default";
     }
   };
 
   if (isErrorSubscription) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error">{t('subscription.errors.load_failed')}</Alert>
+        <Alert severity="error">{t("subscription.errors.load_failed")}</Alert>
       </Container>
     );
   }
@@ -169,20 +191,31 @@ const SubscriptionPage: React.FC = () => {
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography variant="h4" gutterBottom fontWeight="bold">
-        {t('subscription.title')}
+        {t("subscription.title")}
       </Typography>
       <Typography variant="body1" color="text.secondary" paragraph>
-        {t('subscription.description')}
+        {t("subscription.description")}
       </Typography>
 
       {/* Current Subscription Info */}
       {subscription && (
         <Card sx={{ mb: 4 }}>
           <CardContent>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6">{t('subscription.current_subscription')}</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                mb: 2,
+              }}
+            >
+              <Typography variant="h6">
+                {t("subscription.current_subscription")}
+              </Typography>
               <Chip
-                label={t(`subscription.status.${subscription.status.toLowerCase()}`)}
+                label={t(
+                  `subscription.status.${subscription.status.toLowerCase()}`,
+                )}
                 color={getStatusColor(subscription.status)}
                 size="small"
               />
@@ -191,20 +224,22 @@ const SubscriptionPage: React.FC = () => {
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <Typography variant="body2" color="text.secondary">
-                  {t('subscription.plan_label')}
+                  {t("subscription.plan_label")}
                 </Typography>
                 <Typography variant="body1" fontWeight="medium">
-                  {t(`subscription.plans.${subscription.plan.toLowerCase()}.name`)}
+                  {t(
+                    `subscription.plans.${subscription.plan.toLowerCase()}.name`,
+                  )}
                 </Typography>
               </Grid>
 
               {subscription.trialEnd && (
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('subscription.trial_ends')}
+                    {t("subscription.trial_ends")}
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {format(new Date(subscription.trialEnd), 'PPP')}
+                    {format(new Date(subscription.trialEnd), "PPP")}
                   </Typography>
                 </Grid>
               )}
@@ -212,22 +247,24 @@ const SubscriptionPage: React.FC = () => {
               {subscription.currentPeriodEnd && (
                 <Grid item xs={12} sm={6}>
                   <Typography variant="body2" color="text.secondary">
-                    {t('subscription.billing_period_ends')}
+                    {t("subscription.billing_period_ends")}
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {format(new Date(subscription.currentPeriodEnd), 'PPP')}
+                    {format(new Date(subscription.currentPeriodEnd), "PPP")}
                   </Typography>
                 </Grid>
               )}
 
               {subscription.cancelAtPeriodEnd && (
                 <Grid item xs={12}>
-                  <Alert severity="warning">{t('subscription.messages.will_cancel')}</Alert>
+                  <Alert severity="warning">
+                    {t("subscription.messages.will_cancel")}
+                  </Alert>
                 </Grid>
               )}
             </Grid>
 
-            <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
               {subscription.plan !== SubscriptionPlan.FREE &&
                 subscription.status === SubscriptionStatus.ACTIVE && (
                   <>
@@ -235,9 +272,11 @@ const SubscriptionPage: React.FC = () => {
                       variant="outlined"
                       onClick={handleManageBilling}
                       disabled={isOpeningPortal}
-                      startIcon={isOpeningPortal && <CircularProgress size={20} />}
+                      startIcon={
+                        isOpeningPortal && <CircularProgress size={20} />
+                      }
                     >
-                      {t('subscription.manage_billing')}
+                      {t("subscription.manage_billing")}
                     </Button>
 
                     {!subscription.cancelAtPeriodEnd && (
@@ -247,7 +286,7 @@ const SubscriptionPage: React.FC = () => {
                         onClick={() => setCancelDialogOpen(true)}
                         disabled={isCanceling}
                       >
-                        {t('subscription.cancel_subscription')}
+                        {t("subscription.cancel_subscription")}
                       </Button>
                     )}
                   </>
@@ -276,24 +315,35 @@ const SubscriptionPage: React.FC = () => {
 
       {/* Pricing Cards */}
       <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
-        {t('subscription.available_plans')}
+        {t("subscription.available_plans")}
       </Typography>
 
-      <Grid container spacing={3}>
-        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
+      {/* Billing Toggle */}
+      <BillingToggle
+        value={billingInterval}
+        onChange={setBillingInterval}
+        discount={20}
+      />
+
+      <Grid container spacing={3} justifyContent="center">
+        <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
           <PricingCard
             plan={SubscriptionPlan.FREE}
-            price={t('subscription.plans.free.price')}
+            monthlyPrice={0}
+            annualPrice={0}
+            interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.FREE)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.FREE}
             upgradeDisabled
           />
         </Grid>
 
-        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
+        <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
           <PricingCard
             plan={SubscriptionPlan.PROFESSIONAL}
-            price={t('subscription.plans.professional.price')}
+            monthlyPrice={79}
+            annualPrice={758}
+            interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.PROFESSIONAL}
             onUpgrade={() => handleUpgrade(SubscriptionPlan.PROFESSIONAL)}
@@ -306,27 +356,42 @@ const SubscriptionPage: React.FC = () => {
           />
         </Grid>
 
-        <Grid item xs={12} md={4} sx={{ overflow: 'visible' }}>
+        <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
           <PricingCard
             plan={SubscriptionPlan.ENTERPRISE}
-            price={t('subscription.plans.enterprise.price')}
+            monthlyPrice={299}
+            annualPrice={2870}
+            interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}
             onUpgrade={() => handleUpgrade(SubscriptionPlan.ENTERPRISE)}
-            upgradeDisabled={isCreatingCheckout || subscription?.plan === SubscriptionPlan.ENTERPRISE}
+            upgradeDisabled={
+              isCreatingCheckout ||
+              subscription?.plan === SubscriptionPlan.ENTERPRISE
+            }
           />
         </Grid>
       </Grid>
 
       {/* Cancel Confirmation Dialog */}
-      <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>{t('subscription.dialogs.cancel.title')}</DialogTitle>
+      <Dialog
+        open={cancelDialogOpen}
+        onClose={() => setCancelDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>{t("subscription.dialogs.cancel.title")}</DialogTitle>
         <DialogContent>
-          <DialogContentText>{t('subscription.dialogs.cancel.message')}</DialogContentText>
+          <DialogContentText>
+            {t("subscription.dialogs.cancel.message")}
+          </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setCancelDialogOpen(false)} disabled={isCanceling}>
-            {t('common.cancel')}
+          <Button
+            onClick={() => setCancelDialogOpen(false)}
+            disabled={isCanceling}
+          >
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={handleCancelSubscription}
@@ -335,7 +400,9 @@ const SubscriptionPage: React.FC = () => {
             disabled={isCanceling}
             startIcon={isCanceling && <CircularProgress size={20} />}
           >
-            {isCanceling ? t('common.deleting') : t('subscription.dialogs.cancel.confirm')}
+            {isCanceling
+              ? t("common.deleting")
+              : t("subscription.dialogs.cancel.confirm")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -352,29 +419,45 @@ const SubscriptionPage: React.FC = () => {
       >
         <DialogTitle>
           {selectedPlan
-            ? t('subscription.upgrade_to_plan')
-            : t('subscription.available_plans')}
+            ? t("subscription.upgrade_to_plan")
+            : t("subscription.available_plans")}
         </DialogTitle>
         <DialogContent>
           {selectedPlan && (
             <>
               <DialogContentText sx={{ mb: 2 }}>
-                {t(`subscription.plans.${selectedPlan.toLowerCase()}.description`)}
+                {t(
+                  `subscription.plans.${selectedPlan.toLowerCase()}.description`,
+                )}
               </DialogContentText>
               <Box sx={{ mb: 2 }}>
-                <Typography variant="h4" fontWeight="bold" color="primary" gutterBottom>
+                <Typography
+                  variant="h4"
+                  fontWeight="bold"
+                  color="primary"
+                  gutterBottom
+                >
                   {t(`subscription.plans.${selectedPlan.toLowerCase()}.price`)}
-                  <Typography component="span" variant="body1" color="text.secondary">
-                    /{t('subscription.per_month')}
+                  <Typography
+                    component="span"
+                    variant="body1"
+                    color="text.secondary"
+                  >
+                    /{t("subscription.per_month")}
                   </Typography>
                 </Typography>
               </Box>
               <Typography variant="subtitle2" gutterBottom>
-                {t('subscription.quota.features')}:
+                {t("subscription.quota.features")}:
               </Typography>
               <Box component="ul" sx={{ pl: 2, mt: 1 }}>
                 {getPlanFeatures(selectedPlan).map((feature, index) => (
-                  <Typography component="li" variant="body2" key={index} sx={{ mb: 0.5 }}>
+                  <Typography
+                    component="li"
+                    variant="body2"
+                    key={index}
+                    sx={{ mb: 0.5 }}
+                  >
                     {feature}
                   </Typography>
                 ))}
@@ -390,7 +473,7 @@ const SubscriptionPage: React.FC = () => {
             }}
             disabled={isCreatingCheckout}
           >
-            {t('common.cancel')}
+            {t("common.cancel")}
           </Button>
           <Button
             onClick={() => {
@@ -405,7 +488,9 @@ const SubscriptionPage: React.FC = () => {
             disabled={isCreatingCheckout || !selectedPlan}
             startIcon={isCreatingCheckout && <CircularProgress size={20} />}
           >
-            {isCreatingCheckout ? t('common.loading') : t('subscription.upgrade_to_plan')}
+            {isCreatingCheckout
+              ? t("common.loading")
+              : t("subscription.upgrade_to_plan")}
           </Button>
         </DialogActions>
       </Dialog>

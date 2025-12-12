@@ -1,25 +1,16 @@
-import {
-  Injectable,
-  Logger,
-  BadRequestException,
-  InternalServerErrorException,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { google } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
 import { CalendarProvider } from '@prisma/client';
-import { CalendarConnectionResponseDto, ConnectionStatusDto } from './dto/calendar-connection.dto';
+import { ConnectionStatusDto } from './dto/calendar-connection.dto';
 
 @Injectable()
 export class CalendarService {
   private readonly logger = new Logger(CalendarService.name);
   private oauth2Client: OAuth2Client;
-  private readonly scopes = [
-    'https://www.googleapis.com/auth/calendar.events',
-    'https://www.googleapis.com/auth/calendar.readonly',
-  ];
+  private readonly scopes = ['https://www.googleapis.com/auth/calendar.events', 'https://www.googleapis.com/auth/calendar.readonly'];
 
   constructor(
     private readonly configService: ConfigService,
@@ -64,9 +55,7 @@ export class CalendarService {
       const { tokens } = await this.oauth2Client.getToken(code);
 
       if (!tokens.refresh_token) {
-        throw new BadRequestException(
-          'No refresh token received. User may have already authorized. Please revoke access and try again.',
-        );
+        throw new BadRequestException('No refresh token received. User may have already authorized. Please revoke access and try again.');
       }
 
       // Get user email from Google
@@ -129,9 +118,7 @@ export class CalendarService {
     });
 
     if (!connection) {
-      throw new BadRequestException(
-        'User has not connected Google Calendar. Please authorize first.',
-      );
+      throw new BadRequestException('User has not connected Google Calendar. Please authorize first.');
     }
 
     // Check if access token is still valid (with 5 minute buffer)
@@ -169,9 +156,7 @@ export class CalendarService {
       return credentials.access_token;
     } catch (error) {
       this.logger.error(`Failed to refresh access token for user ${userId}: ${error.message}`);
-      throw new InternalServerErrorException(
-        'Failed to authenticate with Google Calendar. Please re-authorize.',
-      );
+      throw new InternalServerErrorException('Failed to authenticate with Google Calendar. Please re-authorize.');
     }
   }
 

@@ -9,9 +9,7 @@ export interface TeamInvitationData {
   expiresAt: Date;
 }
 
-export const teamInvitationTemplate = (
-  data: TeamInvitationData,
-): EmailTemplate => {
+export const teamInvitationTemplate = (data: TeamInvitationData): EmailTemplate => {
   const expirationDate = new Date(data.expiresAt).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

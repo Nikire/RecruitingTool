@@ -1,8 +1,8 @@
-import { Box, Typography } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import ErrorIcon from '@mui/icons-material/Error';
-import WarningIcon from '@mui/icons-material/Warning';
+import { Box, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import ErrorIcon from "@mui/icons-material/Error";
+import WarningIcon from "@mui/icons-material/Warning";
 
 /**
  * StatusIndicator - Visual status indicator with icon, dot, and label
@@ -11,7 +11,7 @@ import WarningIcon from '@mui/icons-material/Warning';
  * Supports three status types: ok (green), error (red), warning (yellow)
  */
 
-export type StatusType = 'ok' | 'error' | 'warning';
+export type StatusType = "ok" | "error" | "warning";
 
 export interface StatusIndicatorProps {
   /** Current status type */
@@ -23,7 +23,7 @@ export interface StatusIndicatorProps {
   /** Show icon alongside dot (default: true) */
   showIcon?: boolean;
   /** Size variant */
-  size?: 'small' | 'medium';
+  size?: "small" | "medium";
 }
 
 const StatusIndicator: React.FC<StatusIndicatorProps> = ({
@@ -31,21 +31,21 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   label,
   translate = true,
   showIcon = true,
-  size = 'medium',
+  size = "medium",
 }) => {
   const { t } = useTranslation();
 
   const statusConfig = {
     ok: {
-      color: 'success.main',
+      color: "success.main",
       icon: <CheckCircleIcon fontSize={size} />,
     },
     error: {
-      color: 'error.main',
+      color: "error.main",
       icon: <ErrorIcon fontSize={size} />,
     },
     warning: {
-      color: 'warning.main',
+      color: "warning.main",
       icon: <WarningIcon fontSize={size} />,
     },
   };
@@ -56,26 +56,28 @@ const StatusIndicator: React.FC<StatusIndicatorProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        alignItems: 'center',
+        display: "flex",
+        alignItems: "center",
         gap: 1,
       }}
     >
       {showIcon && (
-        <Box sx={{ color: config.color, display: 'flex', alignItems: 'center' }}>
+        <Box
+          sx={{ color: config.color, display: "flex", alignItems: "center" }}
+        >
           {config.icon}
         </Box>
       )}
       <Box
         sx={{
-          width: size === 'small' ? 8 : 10,
-          height: size === 'small' ? 8 : 10,
-          borderRadius: '50%',
+          width: size === "small" ? 8 : 10,
+          height: size === "small" ? 8 : 10,
+          borderRadius: "50%",
           bgcolor: config.color,
         }}
       />
       <Typography
-        variant={size === 'small' ? 'body2' : 'body1'}
+        variant={size === "small" ? "body2" : "body1"}
         color="text.primary"
       >
         {displayLabel}

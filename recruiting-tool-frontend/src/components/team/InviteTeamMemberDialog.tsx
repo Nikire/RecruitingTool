@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Dialog,
   DialogTitle,
@@ -7,13 +7,13 @@ import {
   Button,
   TextField,
   MenuItem,
-} from '@mui/material';
-import { useForm, Controller } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
-import { useValidationRules } from '../../utils/validation';
-import FormErrorSummary from '../common/FormErrorSummary';
-import { RolesType } from '../../types/invitations';
-import { useCreateInvitation } from '../../hooks/useInvitations';
+} from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useValidationRules } from "../../utils/validation";
+import FormErrorSummary from "../common/FormErrorSummary";
+import { RolesType } from "../../types/invitations";
+import { useCreateInvitation } from "../../hooks/useInvitations";
 
 interface InviteTeamMemberDialogProps {
   open: boolean;
@@ -41,12 +41,13 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberDialogProps> = ({
     formState: { errors },
   } = useForm<InvitationFormData>({
     defaultValues: {
-      email: '',
+      email: "",
       role: RolesType.HR,
     },
   });
 
-  const { mutate: createInvitation, isPending } = useCreateInvitation(companyUid);
+  const { mutate: createInvitation, isPending } =
+    useCreateInvitation(companyUid);
 
   const onSubmit = (data: InvitationFormData) => {
     createInvitation(data, {
@@ -67,36 +68,36 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberDialogProps> = ({
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t('team.invite_member_title')}</DialogTitle>
+      <DialogTitle>{t("team.invite_member_title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
           <FormErrorSummary errors={errors} />
 
           <TextField
-            label={t('team.email_label')}
+            label={t("team.email_label")}
             type="email"
             fullWidth
             margin="normal"
-            {...register('email', validationRules.email())}
+            {...register("email", validationRules.email())}
             error={!!errors.email}
-            helperText={errors.email?.message || t('team.email_helper')}
+            helperText={errors.email?.message || t("team.email_helper")}
           />
 
           <Controller
             name="role"
             control={control}
             rules={{
-              required: t('validation.required'),
+              required: t("validation.required"),
             }}
             render={({ field }) => (
               <TextField
                 {...field}
                 select
-                label={t('team.role_label')}
+                label={t("team.role_label")}
                 fullWidth
                 margin="normal"
                 error={!!errors.role}
-                helperText={errors.role?.message || t('team.role_helper')}
+                helperText={errors.role?.message || t("team.role_helper")}
               >
                 {invitableRoles.map((role) => (
                   <MenuItem key={role} value={role}>
@@ -109,10 +110,10 @@ const InviteTeamMemberDialog: React.FC<InviteTeamMemberDialogProps> = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} disabled={isPending}>
-            {t('common.cancel')}
+            {t("common.cancel")}
           </Button>
           <Button type="submit" variant="contained" disabled={isPending}>
-            {isPending ? t('common.sending') : t('team.send_invitation')}
+            {isPending ? t("common.sending") : t("team.send_invitation")}
           </Button>
         </DialogActions>
       </form>

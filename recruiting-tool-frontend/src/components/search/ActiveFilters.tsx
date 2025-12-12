@@ -1,8 +1,8 @@
-import React from 'react';
-import { Box, Typography, Button } from '@mui/material';
-import { useTranslation } from 'react-i18next';
-import FilterChip from './FilterChip';
-import { ActiveFilter } from '../../types/search';
+import React from "react";
+import { Box, Typography, Button } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import FilterChip from "./FilterChip";
+import { ActiveFilter } from "../../types/search";
 
 export interface ActiveFiltersProps {
   filters: ActiveFilter[];
@@ -37,21 +37,29 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        alignItems: { xs: 'flex-start', sm: 'center' },
+        display: "flex",
+        flexDirection: { xs: "column", sm: "row" },
+        alignItems: { xs: "flex-start", sm: "center" },
         gap: 1,
         mb: 2,
         p: 2,
-        bgcolor: 'background.paper',
+        bgcolor: "background.paper",
         borderRadius: 1,
-        border: '1px solid',
-        borderColor: 'divider',
+        border: "1px solid",
+        borderColor: "divider",
       }}
     >
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', flex: 1 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          flexWrap: "wrap",
+          flex: 1,
+        }}
+      >
         <Typography variant="body2" fontWeight="medium" sx={{ mr: 1 }}>
-          {t('search.active_filters')}:
+          {t("search.active_filters")}:
         </Typography>
         {filters.map((filter, index) => (
           <FilterChip
@@ -64,20 +72,20 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
 
       <Box
         sx={{
-          display: 'flex',
-          alignItems: 'center',
+          display: "flex",
+          alignItems: "center",
           gap: 2,
-          width: { xs: '100%', sm: 'auto' },
-          justifyContent: { xs: 'space-between', sm: 'flex-end' },
+          width: { xs: "100%", sm: "auto" },
+          justifyContent: { xs: "space-between", sm: "flex-end" },
         }}
       >
         {resultsCount !== undefined && (
           <Typography variant="body2" color="text.secondary">
-            {t('search.results_count', { count: resultsCount })}
+            {t("search.results_count", { count: resultsCount })}
           </Typography>
         )}
         <Button size="small" onClick={onClearAll} variant="outlined">
-          {t('search.clear_all')}
+          {t("search.clear_all")}
         </Button>
       </Box>
     </Box>

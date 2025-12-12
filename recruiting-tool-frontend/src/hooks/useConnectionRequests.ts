@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
-import api from '../api/axios';
+import { useQuery } from "@tanstack/react-query";
+import api from "../api/axios";
 
 export interface ConnectionRequest {
   uid: string;
@@ -15,9 +15,12 @@ export interface ConnectionRequest {
 /**
  * Hook to fetch connection requests for a company
  */
-export const useCompanyConnectionRequests = (companyUid: string, status?: string) => {
+export const useCompanyConnectionRequests = (
+  companyUid: string,
+  status?: string,
+) => {
   return useQuery({
-    queryKey: ['connectionRequests', companyUid, status],
+    queryKey: ["connectionRequests", companyUid, status],
     queryFn: async () => {
       const params = status ? { status } : {};
       const response = await api.get<ConnectionRequest[]>(

@@ -1,15 +1,15 @@
-import { render, RenderOptions } from '@testing-library/react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { I18nextProvider } from 'react-i18next';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import i18n from 'i18next';
-import { ReactElement } from 'react';
+import { render, RenderOptions } from "@testing-library/react";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { I18nextProvider } from "react-i18next";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import i18n from "i18next";
+import { ReactElement } from "react";
 
 // Initialize i18n for tests
 if (!i18n.isInitialized) {
   i18n.init({
-    lng: 'en',
-    fallbackLng: 'en',
+    lng: "en",
+    fallbackLng: "en",
     interpolation: {
       escapeValue: false,
     },
@@ -17,103 +17,103 @@ if (!i18n.isInitialized) {
       en: {
         translation: {
           common: {
-            select: 'Select',
-            loading: 'Loading...',
-            cancel: 'Cancel',
-            delete: 'Delete',
-            deleting: 'Deleting...',
-            save: 'Save',
-            edit: 'Edit',
-            create: 'Create',
-            update: 'Update',
-            submit: 'Submit',
-            actions: 'Actions',
-            search: 'Search',
-            filter: 'Filter',
-            reset: 'Reset',
-            apply: 'Apply',
-            close: 'Close',
-            confirm: 'Confirm',
-            view: 'View',
-            yes: 'Yes',
-            no: 'No',
+            select: "Select",
+            loading: "Loading...",
+            cancel: "Cancel",
+            delete: "Delete",
+            deleting: "Deleting...",
+            save: "Save",
+            edit: "Edit",
+            create: "Create",
+            update: "Update",
+            submit: "Submit",
+            actions: "Actions",
+            search: "Search",
+            filter: "Filter",
+            reset: "Reset",
+            apply: "Apply",
+            close: "Close",
+            confirm: "Confirm",
+            view: "View",
+            yes: "Yes",
+            no: "No",
           },
           dialogs: {
-            delete_confirmation: 'Delete Confirmation',
-            delete_message: 'Are you sure you want to delete this item?',
-            action_irreversible: 'This action cannot be undone.',
+            delete_confirmation: "Delete Confirmation",
+            delete_message: "Are you sure you want to delete this item?",
+            action_irreversible: "This action cannot be undone.",
           },
           aria: {
-            search: 'Search',
-            status: 'Status',
-            warning_icon: 'Warning',
-            cancel: 'Cancel',
-            loading: 'Loading',
-            pagination_navigation: 'Pagination navigation',
-            pagination_controls: 'Pagination controls',
+            search: "Search",
+            status: "Status",
+            warning_icon: "Warning",
+            cancel: "Cancel",
+            loading: "Loading",
+            pagination_navigation: "Pagination navigation",
+            pagination_controls: "Pagination controls",
           },
           pagination: {
-            showing: 'Showing {{start}} to {{end}} of {{total}} items',
-            items_per_page: 'Items per page',
-            items: 'Items',
+            showing: "Showing {{start}} to {{end}} of {{total}} items",
+            items_per_page: "Items per page",
+            items: "Items",
           },
           search: {
-            status: 'Status',
-            skills: 'Skills',
-            location: 'Location',
-            experience: 'Experience',
-            salary: 'Salary',
-            date_range: 'Date Range',
-            start_date: 'Start Date',
-            end_date: 'End Date',
-            skills_placeholder: 'Add skills',
-            skills_helper: 'Type and press enter to add skills',
-            location_placeholder: 'Enter location',
-            experience_years: '{{min}} - {{max}} years',
-            salary_range: '${{min}} - ${{max}}',
-            reset_filters: 'Reset Filters',
-            apply_filters: 'Apply Filters',
+            status: "Status",
+            skills: "Skills",
+            location: "Location",
+            experience: "Experience",
+            salary: "Salary",
+            date_range: "Date Range",
+            start_date: "Start Date",
+            end_date: "End Date",
+            skills_placeholder: "Add skills",
+            skills_helper: "Type and press enter to add skills",
+            location_placeholder: "Enter location",
+            experience_years: "{{min}} - {{max}} years",
+            salary_range: "${{min}} - ${{max}}",
+            reset_filters: "Reset Filters",
+            apply_filters: "Apply Filters",
           },
           applications: {
-            applicant_name: 'Applicant Name',
-            email: 'Email',
-            phone: 'Phone',
-            job_position: 'Job Position',
-            status: 'Status',
-            applied_date: 'Applied Date',
+            applicant_name: "Applicant Name",
+            email: "Email",
+            phone: "Phone",
+            job_position: "Job Position",
+            status: "Status",
+            applied_date: "Applied Date",
           },
           candidates: {
-            title: 'Candidates',
-            create_candidate: 'Create Candidate',
-            no_candidates: 'No candidates found',
-            name: 'Name',
-            email: 'Email',
-            phone: 'Phone',
-            status: 'Status',
+            title: "Candidates",
+            create_candidate: "Create Candidate",
+            no_candidates: "No candidates found",
+            name: "Name",
+            email: "Email",
+            phone: "Phone",
+            status: "Status",
           },
           jobPositions: {
-            title: 'Job Positions',
-            create_position: 'Create Position',
-            no_positions: 'No job positions found',
-            job_title: 'Job Title',
-            department: 'Department',
-            status: 'Status',
+            title: "Job Positions",
+            create_position: "Create Position",
+            no_positions: "No job positions found",
+            job_title: "Job Title",
+            department: "Department",
+            status: "Status",
           },
           dashboard: {
-            title: 'Dashboard',
-            welcome: 'Welcome',
-            total_candidates: 'Total Candidates',
-            active_candidates: 'Active Candidates',
-            total_job_positions: 'Total Job Positions',
-            open_positions: 'Open Positions',
-            total_applications: 'Total Applications',
-            pending_applications: 'Pending Applications',
-            hiring_processes: 'Hiring Processes',
-            active_processes: 'Active Processes',
+            title: "Dashboard",
+            welcome: "Welcome",
+            total_candidates: "Total Candidates",
+            active_candidates: "Active Candidates",
+            total_job_positions: "Total Job Positions",
+            open_positions: "Open Positions",
+            total_applications: "Total Applications",
+            pending_applications: "Pending Applications",
+            hiring_processes: "Hiring Processes",
+            active_processes: "Active Processes",
           },
           errors: {
-            loading_failed: 'Failed to load data',
-            network_error: 'Network error occurred',
+            loading_failed: "Failed to load data",
+            network_error: "Network error occurred",
           },
         },
       },
@@ -124,6 +124,7 @@ if (!i18n.isInitialized) {
 /**
  * Create a new QueryClient for each test to avoid cache pollution
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const createTestQueryClient = () =>
   new QueryClient({
     defaultOptions: {
@@ -145,7 +146,10 @@ interface AllTheProvidersProps {
 /**
  * Wrapper component with all necessary providers for testing
  */
-export function AllTheProviders({ children, queryClient }: AllTheProvidersProps) {
+export function AllTheProviders({
+  children,
+  queryClient,
+}: AllTheProvidersProps) {
   const theme = createTheme();
   const testQueryClient = queryClient || createTestQueryClient();
 
@@ -161,9 +165,10 @@ export function AllTheProviders({ children, queryClient }: AllTheProvidersProps)
 /**
  * Custom render function that includes all necessary providers
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function renderWithProviders(
   ui: ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'> & { queryClient?: QueryClient }
+  options?: Omit<RenderOptions, "wrapper"> & { queryClient?: QueryClient },
 ) {
   const { queryClient, ...renderOptions } = options || {};
 
@@ -176,5 +181,7 @@ export function renderWithProviders(
 }
 
 // Re-export everything from React Testing Library
-export * from '@testing-library/react';
-export { default as userEvent } from '@testing-library/user-event';
+// eslint-disable-next-line react-refresh/only-export-components
+export * from "@testing-library/react";
+// eslint-disable-next-line react-refresh/only-export-components
+export { default as userEvent } from "@testing-library/user-event";

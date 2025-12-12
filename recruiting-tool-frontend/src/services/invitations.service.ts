@@ -1,5 +1,9 @@
-import api from '../api/axios';
-import { CompanyInvitation, CreateInvitationDto, InvitationStatus } from '../types/invitations';
+import api from "../api/axios";
+import {
+  CompanyInvitation,
+  CreateInvitationDto,
+  InvitationStatus,
+} from "../types/invitations";
 
 export const invitationsService = {
   /**

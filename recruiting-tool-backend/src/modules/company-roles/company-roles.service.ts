@@ -1,12 +1,4 @@
-import {
-  Injectable,
-  Logger,
-  NotFoundException,
-  ForbiddenException,
-  BadRequestException,
-  HttpException,
-  InternalServerErrorException,
-} from '@nestjs/common';
+import { Injectable, Logger, NotFoundException, ForbiddenException, BadRequestException, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RoleHierarchyService } from './services/role-hierarchy.service';
@@ -27,6 +19,7 @@ export class CompanyRolesService {
   /**
    * Get all members of a company
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async getCompanyMembers(companyUid: string, currentUserRoles: RolesType[]): Promise<CompanyMemberResponseDto[]> {
     try {
       // Find the company
@@ -59,11 +52,7 @@ export class CompanyRolesService {
   /**
    * Assign role(s) to a user in a company
    */
-  async assignRole(
-    companyUid: string,
-    assignRoleDto: AssignRoleDto,
-    currentUserRoles: RolesType[],
-  ): Promise<CompanyMemberResponseDto> {
+  async assignRole(companyUid: string, assignRoleDto: AssignRoleDto, currentUserRoles: RolesType[]): Promise<CompanyMemberResponseDto> {
     try {
       // Find the company
       const company = await this.databaseService.company.findUnique({
@@ -115,12 +104,7 @@ export class CompanyRolesService {
   /**
    * Update a user's roles in a company
    */
-  async updateUserRole(
-    companyUid: string,
-    userUid: string,
-    updateRoleDto: UpdateRoleDto,
-    currentUserRoles: RolesType[],
-  ): Promise<CompanyMemberResponseDto> {
+  async updateUserRole(companyUid: string, userUid: string, updateRoleDto: UpdateRoleDto, currentUserRoles: RolesType[]): Promise<CompanyMemberResponseDto> {
     try {
       // Find the company
       const company = await this.databaseService.company.findUnique({
@@ -183,9 +167,7 @@ export class CompanyRolesService {
           },
         });
       } catch (error) {
-        this.logger.error(
-          `Failed to create notification for role change: ${error.message}`,
-        );
+        this.logger.error(`Failed to create notification for role change: ${error.message}`);
         // Don't fail the role update if notification fails
       }
 
@@ -202,11 +184,7 @@ export class CompanyRolesService {
   /**
    * Remove a user from a company
    */
-  async removeUserFromCompany(
-    companyUid: string,
-    userUid: string,
-    currentUserRoles: RolesType[],
-  ): Promise<MessageResponseDto> {
+  async removeUserFromCompany(companyUid: string, userUid: string, currentUserRoles: RolesType[]): Promise<MessageResponseDto> {
     try {
       // Find the company
       const company = await this.databaseService.company.findUnique({
@@ -259,9 +237,7 @@ export class CompanyRolesService {
           },
         });
       } catch (error) {
-        this.logger.error(
-          `Failed to create notification for team member removal: ${error.message}`,
-        );
+        this.logger.error(`Failed to create notification for team member removal: ${error.message}`);
         // Don't fail the removal if notification fails
       }
 

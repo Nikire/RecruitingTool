@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsOptional, IsInt, Min, Max, IsArray, ValidateNested, IsNumber, IsBoolean } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsInt, Min, Max, IsArray, ValidateNested, IsBoolean } from 'class-validator';
 import { Type } from 'class-transformer';
 
 // DTOs for Scorecard Template Creation

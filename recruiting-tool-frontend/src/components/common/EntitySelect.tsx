@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import {
   Autocomplete,
   TextField,
   CircularProgress,
   Box,
   Typography,
-} from '@mui/material';
-import { useTranslation } from 'react-i18next';
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 /**
  * Props for the EntitySelect component
@@ -46,7 +46,7 @@ export interface EntitySelectProps<T> {
   /** Full width mode */
   fullWidth?: boolean;
   /** Size variant */
-  size?: 'small' | 'medium';
+  size?: "small" | "medium";
 }
 
 /**
@@ -94,7 +94,7 @@ function EntitySelect<T>({
   clearable = true,
   limitTags = 3,
   fullWidth = true,
-  size = 'medium',
+  size = "medium",
 }: EntitySelectProps<T>): React.ReactElement {
   const { t } = useTranslation();
 
@@ -121,23 +121,23 @@ function EntitySelect<T>({
         isLoading ? (
           <Box display="flex" alignItems="center" gap={1}>
             <CircularProgress size={16} />
-            <Typography variant="body2">{t('entitySelect.loading')}</Typography>
+            <Typography variant="body2">{t("entitySelect.loading")}</Typography>
           </Box>
         ) : (
-          t('entitySelect.no_options')
+          t("entitySelect.no_options")
         )
       }
       loadingText={
         <Box display="flex" alignItems="center" gap={1}>
           <CircularProgress size={16} />
-          <Typography variant="body2">{t('entitySelect.loading')}</Typography>
+          <Typography variant="body2">{t("entitySelect.loading")}</Typography>
         </Box>
       }
       renderInput={(params) => (
         <TextField
           {...params}
           label={label}
-          placeholder={placeholder || t('entitySelect.placeholder')}
+          placeholder={placeholder || t("entitySelect.placeholder")}
           required={required}
           error={!!error}
           helperText={error || helperText}

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Paper, Typography, Box, useTheme } from '@mui/material';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { Paper, Typography, Box, useTheme } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import {
   PieChart,
   Pie,
@@ -8,8 +8,8 @@ import {
   ResponsiveContainer,
   Tooltip,
   Legend,
-} from 'recharts';
-import { SourceData } from '../../types/analytics';
+} from "recharts";
+import { SourceData } from "../../types/analytics";
 
 interface SourceDistributionChartProps {
   data: SourceData[];
@@ -21,15 +21,17 @@ interface SourceDistributionChartProps {
  * Pie chart showing distribution of candidate sources.
  * Helps identify most effective recruitment channels.
  */
-const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data }) => {
+const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
+  data,
+}) => {
   const theme = useTheme();
   const { t } = useTranslation();
 
   if (!data || data.length === 0) {
     return (
-      <Paper sx={{ p: 3, textAlign: 'center' }}>
+      <Paper sx={{ p: 3, textAlign: "center" }}>
         <Typography variant="body2" color="text.secondary">
-          {t('analytics.no_data')}
+          {t("analytics.no_data")}
         </Typography>
       </Paper>
     );
@@ -56,7 +58,14 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
     innerRadius,
     outerRadius,
     percent,
-  }: any) => {
+  }: {
+    cx: number;
+    cy: number;
+    midAngle: number;
+    innerRadius: number;
+    outerRadius: number;
+    percent: number;
+  }) => {
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
     const x = cx + radius * Math.cos(-midAngle * RADIAN);
@@ -70,7 +79,7 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
         x={x}
         y={y}
         fill="white"
-        textAnchor={x > cx ? 'start' : 'end'}
+        textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
         fontSize={12}
         fontWeight={600}
@@ -81,7 +90,13 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
   };
 
   // Custom tooltip
-  const CustomTooltip = ({ active, payload }: any) => {
+  const CustomTooltip = ({
+    active,
+    payload,
+  }: {
+    active?: boolean;
+    payload?: Array<{ payload: SourceData }>;
+  }) => {
     if (active && payload && payload.length) {
       const data = payload[0].payload;
       return (
@@ -90,7 +105,7 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
             {data.source}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            {t('analytics.candidates')}: {data.count}
+            {t("analytics.candidates")}: {data.count}
           </Typography>
           <Typography variant="body2" color="text.secondary">
             {data.percentage}%
@@ -102,28 +117,34 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
   };
 
   // Custom legend
-  const renderLegend = (props: any) => {
+  interface LegendEntry {
+    color: string;
+    value: string;
+    payload: SourceData;
+  }
+  const renderLegend = (props: { payload?: LegendEntry[] }) => {
     const { payload } = props;
+    if (!payload) return null;
 
     return (
       <Box
         sx={{
-          display: 'flex',
-          flexDirection: 'column',
+          display: "flex",
+          flexDirection: "column",
           gap: 1,
           mt: 2,
         }}
       >
-        {payload.map((entry: any, index: number) => (
+        {payload.map((entry: LegendEntry, index: number) => (
           <Box
             key={`legend-${index}`}
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
               p: 1,
               borderRadius: 1,
-              '&:hover': {
+              "&:hover": {
                 backgroundColor: theme.palette.action.hover,
               },
             }}
@@ -154,14 +175,22 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
   };
 
   return (
-    <Paper elevation={0} sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+    <Paper
+      elevation={0}
+      sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}
+    >
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={2}
+      >
         <Typography variant="h6" fontWeight={600}>
-          {t('analytics.source_distribution')}
+          {t("analytics.source_distribution")}
         </Typography>
         <Box textAlign="right">
           <Typography variant="caption" color="text.secondary" display="block">
-            {t('analytics.total_candidates')}
+            {t("analytics.total_candidates")}
           </Typography>
           <Typography variant="h6" fontWeight={600} color="primary">
             {total}
@@ -186,8 +215,8 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
                 style={{
-                  filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))',
-                  transition: 'all 0.3s ease',
+                  filter: "drop-shadow(0px 2px 4px rgba(0,0,0,0.1))",
+                  transition: "all 0.3s ease",
                 }}
               />
             ))}
@@ -216,7 +245,7 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({ data 
         }}
       >
         <Typography variant="caption" color="text.secondary">
-          {t('analytics.top_source')}:
+          {t("analytics.top_source")}:
         </Typography>
         <Typography variant="body2" fontWeight={600} color="primary">
           {data[0]?.source} ({data[0]?.percentage}%)

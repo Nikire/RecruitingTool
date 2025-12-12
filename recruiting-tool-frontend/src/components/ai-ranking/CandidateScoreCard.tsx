@@ -5,7 +5,7 @@
  * Includes overall score, tier badge, quick breakdown, and link to full profile.
  */
 
-import React from 'react';
+import React from "react";
 import {
   Card,
   CardContent,
@@ -16,14 +16,14 @@ import {
   Avatar,
   Button,
   LinearProgress,
-} from '@mui/material';
+} from "@mui/material";
 import {
   EmojiEvents as TrophyIcon,
   PersonOutline as PersonIcon,
   TrendingUp as TrendingUpIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { CandidateScore, getScoreTierColor } from '../../types/ai-ranking';
+} from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import { CandidateScore, getScoreTierColor } from "../../types/ai-ranking";
 
 interface CandidateScoreCardProps {
   score: CandidateScore;
@@ -36,9 +36,9 @@ interface CandidateScoreCardProps {
  */
 function getInitials(name: string): string {
   return name
-    .split(' ')
+    .split(" ")
     .map((part) => part[0])
-    .join('')
+    .join("")
     .toUpperCase()
     .slice(0, 2);
 }
@@ -54,22 +54,28 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
 
   // Calculate average of top 3 factors for quick breakdown
   const topFactors = [
-    { label: t('ai_ranking.skills_match'), value: score.breakdown.skillsMatch },
-    { label: t('ai_ranking.experience_match'), value: score.breakdown.experienceMatch },
-    { label: t('ai_ranking.education_match'), value: score.breakdown.educationMatch },
+    { label: t("ai_ranking.skills_match"), value: score.breakdown.skillsMatch },
+    {
+      label: t("ai_ranking.experience_match"),
+      value: score.breakdown.experienceMatch,
+    },
+    {
+      label: t("ai_ranking.education_match"),
+      value: score.breakdown.educationMatch,
+    },
   ];
 
   return (
     <Card
       sx={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'relative',
-        transition: 'box-shadow 0.3s, transform 0.2s',
-        '&:hover': {
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        transition: "box-shadow 0.3s, transform 0.2s",
+        "&:hover": {
           boxShadow: 4,
-          transform: 'translateY(-4px)',
+          transform: "translateY(-4px)",
         },
       }}
     >
@@ -77,20 +83,20 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
       {rank && (
         <Box
           sx={{
-            position: 'absolute',
+            position: "absolute",
             top: 12,
             right: 12,
-            display: 'flex',
-            alignItems: 'center',
+            display: "flex",
+            alignItems: "center",
             gap: 0.5,
           }}
         >
-          {rank <= 3 && <TrophyIcon sx={{ fontSize: 18, color: 'gold' }} />}
+          {rank <= 3 && <TrophyIcon sx={{ fontSize: 18, color: "gold" }} />}
           <Typography
             variant="caption"
             sx={{
-              fontWeight: 'bold',
-              color: 'text.secondary',
+              fontWeight: "bold",
+              color: "text.secondary",
             }}
           >
             #{rank}
@@ -100,12 +106,19 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
 
       <CardContent sx={{ flexGrow: 1, pb: 1 }}>
         {/* Candidate Info */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
           <Avatar
             sx={{
               width: 56,
               height: 56,
-              bgcolor: tierColor === 'success' ? 'success.main' : tierColor === 'primary' ? 'primary.main' : tierColor === 'warning' ? 'warning.main' : 'error.main',
+              bgcolor:
+                tierColor === "success"
+                  ? "success.main"
+                  : tierColor === "primary"
+                    ? "primary.main"
+                    : tierColor === "warning"
+                      ? "warning.main"
+                      : "error.main",
             }}
           >
             {getInitials(score.candidateName)}
@@ -116,9 +129,9 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
               variant="h6"
               sx={{
                 fontWeight: 600,
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
             >
               {score.candidateName}
@@ -127,9 +140,9 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
               variant="body2"
               color="text.secondary"
               sx={{
-                overflow: 'hidden',
-                textOverflow: 'ellipsis',
-                whiteSpace: 'nowrap',
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
               }}
             >
               {score.candidateEmail}
@@ -139,11 +152,22 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
 
         {/* Overall Score */}
         <Box sx={{ mb: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+            }}
+          >
             <Typography variant="body2" color="text.secondary">
-              {t('ai_ranking.overall_score')}
+              {t("ai_ranking.overall_score")}
             </Typography>
-            <Typography variant="h5" fontWeight="bold" color={`${tierColor}.main`}>
+            <Typography
+              variant="h5"
+              fontWeight="bold"
+              color={`${tierColor}.main`}
+            >
               {score.overallScore}
             </Typography>
           </Box>
@@ -153,8 +177,8 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
             sx={{
               height: 8,
               borderRadius: 1,
-              bgcolor: 'grey.200',
-              '& .MuiLinearProgress-bar': {
+              bgcolor: "grey.200",
+              "& .MuiLinearProgress-bar": {
                 bgcolor: `${tierColor}.main`,
               },
             }}
@@ -172,13 +196,20 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
         </Box>
 
         {/* Quick Breakdown */}
-        <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-          {t('ai_ranking.key_factors')}:
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{ display: "block", mb: 1 }}
+        >
+          {t("ai_ranking.key_factors")}:
         </Typography>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
           {topFactors.map((factor, index) => (
-            <Box key={index} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <TrendingUpIcon sx={{ fontSize: 14, color: 'text.secondary' }} />
+            <Box
+              key={index}
+              sx={{ display: "flex", alignItems: "center", gap: 1 }}
+            >
+              <TrendingUpIcon sx={{ fontSize: 14, color: "text.secondary" }} />
               <Typography variant="caption" sx={{ flexGrow: 1, minWidth: 0 }}>
                 {factor.label}
               </Typography>
@@ -198,7 +229,7 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
           onClick={() => onViewProfile?.(score.candidateUid)}
           fullWidth
         >
-          {t('ai_ranking.view_profile')}
+          {t("ai_ranking.view_profile")}
         </Button>
       </CardActions>
     </Card>

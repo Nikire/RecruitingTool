@@ -1,8 +1,18 @@
-import { Body, Controller, Delete, Get, Headers, Post, Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Post, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { Auth0CallbackDto, LinkedAccountsResponseDto, LinkSocialAccountDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
+import { LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
-import { ApiBadRequestResponse, ApiBody, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiTooManyRequestsResponse, ApiBearerAuth, ApiForbiddenResponse } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+  ApiTooManyRequestsResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+} from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { SkipThrottle } from 'src/common/decorators/throttle.decorator';
 import { Auth0Guard } from './guards/auth0.guard';
@@ -167,7 +177,8 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'Link Auth0 social account to current user',
-    description: 'Allows a user to link their Google/GitHub account to their existing account. Requires Auth0 token in Authorization header and local JWT in X-Local-Token header for dual authentication.',
+    description:
+      'Allows a user to link their Google/GitHub account to their existing account. Requires Auth0 token in Authorization header and local JWT in X-Local-Token header for dual authentication.',
   })
   @ApiResponse({
     status: 200,

@@ -1,13 +1,13 @@
-import { Alert, AlertTitle, List, ListItem, ListItemText } from '@mui/material';
-import { FieldErrors } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { Alert, AlertTitle, List, ListItem, ListItemText } from "@mui/material";
+import { FieldErrors } from "react-hook-form";
+import { useTranslation } from "react-i18next";
 
 interface FormErrorSummaryProps {
   errors: FieldErrors;
   /** Optional title override */
   title?: string;
   /** Optional severity level */
-  severity?: 'error' | 'warning';
+  severity?: "error" | "warning";
 }
 
 /**
@@ -35,17 +35,17 @@ interface FormErrorSummaryProps {
 const FormErrorSummary: React.FC<FormErrorSummaryProps> = ({
   errors,
   title,
-  severity = 'error',
+  severity = "error",
 }) => {
   const { t } = useTranslation();
 
   // Get array of error messages
   const errorMessages = Object.entries(errors)
     .map(([field, error]) => {
-      if (!error || typeof error !== 'object') return null;
+      if (!error || typeof error !== "object") return null;
 
       // Handle nested field errors
-      if ('message' in error && error.message) {
+      if ("message" in error && error.message) {
         return {
           field,
           message: error.message as string,
@@ -53,7 +53,9 @@ const FormErrorSummary: React.FC<FormErrorSummaryProps> = ({
       }
       return null;
     })
-    .filter((item): item is { field: string; message: string } => item !== null);
+    .filter(
+      (item): item is { field: string; message: string } => item !== null,
+    );
 
   // Don't render if no errors
   if (errorMessages.length === 0) {
@@ -62,15 +64,15 @@ const FormErrorSummary: React.FC<FormErrorSummaryProps> = ({
 
   return (
     <Alert severity={severity} role="alert" sx={{ mb: 2 }}>
-      <AlertTitle>{title || t('validation.form_errors')}</AlertTitle>
+      <AlertTitle>{title || t("validation.form_errors")}</AlertTitle>
       <List dense disablePadding>
         {errorMessages.map(({ field, message }, index) => (
           <ListItem key={`${field}-${index}`} disableGutters sx={{ py: 0.5 }}>
             <ListItemText
               primary={message}
               primaryTypographyProps={{
-                variant: 'body2',
-                color: severity === 'error' ? 'error' : 'warning.main',
+                variant: "body2",
+                color: severity === "error" ? "error" : "warning.main",
               }}
             />
           </ListItem>

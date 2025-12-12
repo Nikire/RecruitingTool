@@ -1,20 +1,9 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-  ForbiddenException,
-  ConflictException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, ConflictException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RolesType, InvitationStatus, NotificationType } from '@prisma/client';
-import {
-  CreateInvitationDto,
-  CompanyInvitationResponseDto,
-  GetInvitationsQueryDto,
-} from './dto';
+import { CreateInvitationDto, CompanyInvitationResponseDto, GetInvitationsQueryDto } from './dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 
 @Injectable()
@@ -30,22 +19,12 @@ export class CompanyInvitationsService {
   /**
    * Invite a user to join a company by email
    */
-  async createInvitation(
-    companyUid: string,
-    dto: CreateInvitationDto,
-    inviterUid: string,
-    inviterRoles: RolesType[],
-  ): Promise<CompanyInvitationResponseDto> {
+  async createInvitation(companyUid: string, dto: CreateInvitationDto, inviterUid: string, inviterRoles: RolesType[]): Promise<CompanyInvitationResponseDto> {
     // Check permissions
-    const canInvite =
-      inviterRoles.includes(RolesType.COMPANY_OWNER) ||
-      inviterRoles.includes(RolesType.COMPANY_ADMIN) ||
-      inviterRoles.includes(RolesType.ADMIN);
+    const canInvite = inviterRoles.includes(RolesType.COMPANY_OWNER) || inviterRoles.includes(RolesType.COMPANY_ADMIN) || inviterRoles.includes(RolesType.ADMIN);
 
     if (!canInvite) {
-      throw new ForbiddenException(
-        'Only Company Owners and Admins can invite team members',
-      );
+      throw new ForbiddenException('Only Company Owners and Admins can invite team members');
     }
 
     // Find company
@@ -75,9 +54,7 @@ export class CompanyInvitationsService {
     });
 
     if (existingUser) {
-      throw new ConflictException(
-        'User with this email is already a member of the company',
-      );
+      throw new ConflictException('User with this email is already a member of the company');
     }
 
     // Check if there's already a pending invitation for this email
@@ -90,9 +67,7 @@ export class CompanyInvitationsService {
     });
 
     if (existingInvitation) {
-      throw new ConflictException(
-        'A pending invitation already exists for this email',
-      );
+      throw new ConflictException('A pending invitation already exists for this email');
     }
 
     // Create invitation (expires in 7 days)
@@ -114,13 +89,10 @@ export class CompanyInvitationsService {
     });
 
     // Send invitation email
-    this.logger.log(
-      `Invitation created for ${dto.email} to join ${company.name} as ${dto.role}`,
-    );
+    this.logger.log(`Invitation created for ${dto.email} to join ${company.name} as ${dto.role}`);
 
     // Send email with invitation link
-    const frontendUrl =
-      process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     const invitationLink = `${frontendUrl}/invitations/accept/${invitation.token}`;
 
     try {
@@ -133,9 +105,7 @@ export class CompanyInvitationsService {
         expiresAt: invitation.expiresAt,
       });
     } catch (error) {
-      this.logger.error(
-        `Failed to send invitation email to ${dto.email}: ${error.message}`,
-      );
+      this.logger.error(`Failed to send invitation email to ${dto.email}: ${error.message}`);
       // Don't fail the invitation creation if email fails
     }
 
@@ -162,9 +132,7 @@ export class CompanyInvitationsService {
         });
       }
     } catch (error) {
-      this.logger.error(
-        `Failed to create notification for invitation: ${error.message}`,
-      );
+      this.logger.error(`Failed to create notification for invitation: ${error.message}`);
       // Don't fail the invitation creation if notification fails
     }
 
@@ -174,21 +142,12 @@ export class CompanyInvitationsService {
   /**
    * Get all invitations for a company
    */
-  async getCompanyInvitations(
-    companyUid: string,
-    currentUserRoles: RolesType[],
-    query?: GetInvitationsQueryDto,
-  ): Promise<CompanyInvitationResponseDto[]> {
+  async getCompanyInvitations(companyUid: string, currentUserRoles: RolesType[], query?: GetInvitationsQueryDto): Promise<CompanyInvitationResponseDto[]> {
     // Check permissions
-    const canView =
-      currentUserRoles.includes(RolesType.COMPANY_OWNER) ||
-      currentUserRoles.includes(RolesType.COMPANY_ADMIN) ||
-      currentUserRoles.includes(RolesType.ADMIN);
+    const canView = currentUserRoles.includes(RolesType.COMPANY_OWNER) || currentUserRoles.includes(RolesType.COMPANY_ADMIN) || currentUserRoles.includes(RolesType.ADMIN);
 
     if (!canView) {
-      throw new ForbiddenException(
-        'Only Company Owners and Admins can view invitations',
-      );
+      throw new ForbiddenException('Only Company Owners and Admins can view invitations');
     }
 
     // Find company
@@ -225,21 +184,12 @@ export class CompanyInvitationsService {
   /**
    * Cancel an invitation
    */
-  async cancelInvitation(
-    companyUid: string,
-    invitationUid: string,
-    currentUserRoles: RolesType[],
-  ): Promise<MessageResponseDto> {
+  async cancelInvitation(companyUid: string, invitationUid: string, currentUserRoles: RolesType[]): Promise<MessageResponseDto> {
     // Check permissions
-    const canCancel =
-      currentUserRoles.includes(RolesType.COMPANY_OWNER) ||
-      currentUserRoles.includes(RolesType.COMPANY_ADMIN) ||
-      currentUserRoles.includes(RolesType.ADMIN);
+    const canCancel = currentUserRoles.includes(RolesType.COMPANY_OWNER) || currentUserRoles.includes(RolesType.COMPANY_ADMIN) || currentUserRoles.includes(RolesType.ADMIN);
 
     if (!canCancel) {
-      throw new ForbiddenException(
-        'Only Company Owners and Admins can cancel invitations',
-      );
+      throw new ForbiddenException('Only Company Owners and Admins can cancel invitations');
     }
 
     // Find invitation
@@ -259,9 +209,7 @@ export class CompanyInvitationsService {
 
     // Can only cancel pending invitations
     if (invitation.status !== InvitationStatus.PENDING) {
-      throw new BadRequestException(
-        `Cannot cancel invitation with status: ${invitation.status}`,
-      );
+      throw new BadRequestException(`Cannot cancel invitation with status: ${invitation.status}`);
     }
 
     // Update status to cancelled
@@ -280,10 +228,7 @@ export class CompanyInvitationsService {
   /**
    * Accept an invitation (public endpoint)
    */
-  async acceptInvitation(
-    token: string,
-    userUid: string,
-  ): Promise<CompanyInvitationResponseDto> {
+  async acceptInvitation(token: string, userUid: string): Promise<CompanyInvitationResponseDto> {
     // Find invitation by token
     const invitation = await this.database.companyInvitation.findUnique({
       where: { token },
@@ -299,9 +244,7 @@ export class CompanyInvitationsService {
 
     // Check if invitation is still valid
     if (invitation.status !== InvitationStatus.PENDING) {
-      throw new BadRequestException(
-        `Invitation has already been ${invitation.status.toLowerCase()}`,
-      );
+      throw new BadRequestException(`Invitation has already been ${invitation.status.toLowerCase()}`);
     }
 
     // Check if invitation has expired
@@ -324,16 +267,12 @@ export class CompanyInvitationsService {
 
     // Verify email matches
     if (user.email !== invitation.email) {
-      throw new ForbiddenException(
-        'Invitation email does not match your account email',
-      );
+      throw new ForbiddenException('Invitation email does not match your account email');
     }
 
     // Check if user already belongs to another company
     if (user.companyId) {
-      throw new BadRequestException(
-        'You already belong to a company. Please leave your current company first.',
-      );
+      throw new BadRequestException('You already belong to a company. Please leave your current company first.');
     }
 
     // Update user with company and role
@@ -358,9 +297,7 @@ export class CompanyInvitationsService {
       },
     });
 
-    this.logger.log(
-      `User ${user.email} accepted invitation to join ${invitation.company.name}`,
-    );
+    this.logger.log(`User ${user.email} accepted invitation to join ${invitation.company.name}`);
 
     // Notify the inviter about the accepted invitation
     try {
@@ -379,9 +316,7 @@ export class CompanyInvitationsService {
         },
       });
     } catch (error) {
-      this.logger.error(
-        `Failed to create notification for accepted invitation: ${error.message}`,
-      );
+      this.logger.error(`Failed to create notification for accepted invitation: ${error.message}`);
       // Don't fail the invitation acceptance if notification fails
     }
 
@@ -413,9 +348,7 @@ export class CompanyInvitationsService {
         });
       }
     } catch (error) {
-      this.logger.error(
-        `Failed to create notifications for new team member: ${error.message}`,
-      );
+      this.logger.error(`Failed to create notifications for new team member: ${error.message}`);
       // Don't fail the invitation acceptance if notification fails
     }
 

@@ -16,48 +16,55 @@ import { passportJwtSecret } from 'jwks-rsa';
  */
 @Injectable()
 export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
-  constructor(private configService: ConfigService) {
+  private readonly isConfigured: boolean;
+
+  constructor(configService: ConfigService) {
     const auth0Domain = configService.get<string>('AUTH0_DOMAIN');
     const auth0Audience = configService.get<string>('AUTH0_AUDIENCE');
+    const isConfigured = !!(auth0Domain && auth0Audience);
 
-    // Only initialize if Auth0 is configured
-    if (!auth0Domain || !auth0Audience) {
-      console.log('[Auth0Strategy] Auth0 not configured - social login disabled');
-      // Call parent constructor with minimal config to prevent errors
+    // Build configuration based on whether Auth0 is configured
+    if (isConfigured) {
+      super({
+        // Extract JWT from Authorization header
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+
+        // Dynamically fetch JWKS from Auth0
+        secretOrKeyProvider: passportJwtSecret({
+          cache: true,
+          rateLimit: true,
+          jwksRequestsPerMinute: 5,
+          jwksUri: `https://${auth0Domain}/.well-known/jwks.json`,
+        }),
+
+        // Verify audience (API identifier)
+        audience: auth0Audience,
+
+        // Verify issuer (Auth0 domain)
+        issuer: `https://${auth0Domain}/`,
+
+        // Ensure token hasn't expired
+        ignoreExpiration: false,
+
+        // Use RS256 algorithm (Auth0 default)
+        algorithms: ['RS256'],
+      });
+    } else {
+      // Placeholder config when Auth0 is not configured
       super({
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
         secretOrKey: 'placeholder',
         ignoreExpiration: true,
       });
-      return;
     }
 
-    super({
-      // Extract JWT from Authorization header
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+    this.isConfigured = isConfigured;
 
-      // Dynamically fetch JWKS from Auth0
-      secretOrKeyProvider: passportJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `https://${auth0Domain}/.well-known/jwks.json`,
-      }),
-
-      // Verify audience (API identifier)
-      audience: auth0Audience,
-
-      // Verify issuer (Auth0 domain)
-      issuer: `https://${auth0Domain}/`,
-
-      // Ensure token hasn't expired
-      ignoreExpiration: false,
-
-      // Use RS256 algorithm (Auth0 default)
-      algorithms: ['RS256'],
-    });
-
-    console.log('[Auth0Strategy] Initialized successfully');
+    if (isConfigured) {
+      console.log('[Auth0Strategy] Initialized successfully');
+    } else {
+      console.log('[Auth0Strategy] Auth0 not configured - social login disabled');
+    }
   }
 
   /**
@@ -67,10 +74,8 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
    * @returns User information extracted from the token
    */
   async validate(payload: any) {
-    const auth0Domain = this.configService.get<string>('AUTH0_DOMAIN');
-
     // If Auth0 not configured, reject
-    if (!auth0Domain) {
+    if (!this.isConfigured) {
       throw new UnauthorizedException('Auth0 not configured');
     }
 
@@ -102,11 +107,11 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
 
     const providerMap: Record<string, string> = {
       'google-oauth2': 'google',
-      'github': 'github',
-      'auth0': 'auth0',
-      'twitter': 'twitter',
-      'linkedin': 'linkedin',
-      'facebook': 'facebook',
+      github: 'github',
+      auth0: 'auth0',
+      twitter: 'twitter',
+      linkedin: 'linkedin',
+      facebook: 'facebook',
     };
 
     return providerMap[parts[0]] || parts[0];

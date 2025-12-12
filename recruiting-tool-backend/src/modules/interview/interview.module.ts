@@ -12,15 +12,7 @@ import { AuditLogModule } from '../audit-log/audit-log.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
-  imports: [
-    DatabaseModule,
-    EmailModule,
-    GoogleCalendarModule,
-    SseModule,
-    AuditLogModule,
-    NotificationsModule,
-    CacheModule.register(),
-  ],
+  imports: [DatabaseModule, EmailModule, GoogleCalendarModule, SseModule, AuditLogModule, NotificationsModule, CacheModule.register()],
   controllers: [InterviewController],
   providers: [InterviewService, InterviewCalendarService, InterviewReminderService],
   exports: [InterviewService],

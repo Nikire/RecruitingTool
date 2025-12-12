@@ -1,154 +1,155 @@
-import {useMutation, useQuery, useQueryClient} from '@tanstack/react-query';
-import {usersApi} from '../../api/users';
-import {CreateUserDto, UpdateUserDto} from '../../types/user.types';
-import {PaginationParams} from '../../types/pagination.types';
-import {showSuccessToast, showErrorToast} from '../../utils/toast';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { usersApi } from "../../api/users";
+import { CreateUserDto, UpdateUserDto } from "../../types/user.types";
+import { PaginationParams } from "../../types/pagination.types";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const USERS_KEY = 'users';
+const USERS_KEY = "users";
 
 export const useListUsers = (params: PaginationParams) => {
-	return useQuery({
-		queryKey: [USERS_KEY, 'list', params],
-		queryFn: () => usersApi.list(params),
-	});
+  return useQuery({
+    queryKey: [USERS_KEY, "list", params],
+    queryFn: () => usersApi.list(params),
+  });
 };
 
 export const useUsers = () => {
-	return useQuery({
-		queryKey: [USERS_KEY],
-		queryFn: () => usersApi.getAll(),
-	});
+  return useQuery({
+    queryKey: [USERS_KEY],
+    queryFn: () => usersApi.getAll(),
+  });
 };
 
 export const useUser = (uid: string) => {
-	return useQuery({
-		queryKey: [USERS_KEY, uid],
-		queryFn: () => usersApi.getOne(uid),
-		enabled: !!uid,
-	});
+  return useQuery({
+    queryKey: [USERS_KEY, uid],
+    queryFn: () => usersApi.getOne(uid),
+    enabled: !!uid,
+  });
 };
 
 export const useCreateUser = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: (data: CreateUserDto) => usersApi.create(data),
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
-			showSuccessToast('User created successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to create user');
-		},
-	});
+  return useMutation({
+    mutationFn: (data: CreateUserDto) => usersApi.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      showSuccessToast("User created successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to create user");
+    },
+  });
 };
 
 export const useUpdateUser = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: ({uid, data}: {uid: string; data: UpdateUserDto}) => usersApi.update(uid, data),
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
-			// Also invalidate the auth/me query to refresh the current user data
-			queryClient.invalidateQueries({queryKey: ['auth', 'me']});
-			showSuccessToast('User updated successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to update user');
-		},
-	});
+  return useMutation({
+    mutationFn: ({ uid, data }: { uid: string; data: UpdateUserDto }) =>
+      usersApi.update(uid, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      // Also invalidate the auth/me query to refresh the current user data
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      showSuccessToast("User updated successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to update user");
+    },
+  });
 };
 
 export const useDeleteUser = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: (uid: string) => usersApi.delete(uid),
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
-			showSuccessToast('User deleted successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to delete user');
-		},
-	});
+  return useMutation({
+    mutationFn: (uid: string) => usersApi.delete(uid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      showSuccessToast("User deleted successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to delete user");
+    },
+  });
 };
 
 export const useDeactivateUser = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: (uid: string) => usersApi.deactivate(uid),
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
-			showSuccessToast('User deactivated successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to deactivate user');
-		},
-	});
+  return useMutation({
+    mutationFn: (uid: string) => usersApi.deactivate(uid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      showSuccessToast("User deactivated successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to deactivate user");
+    },
+  });
 };
 
 export const useReactivateUser = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: (uid: string) => usersApi.reactivate(uid),
-		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: [USERS_KEY]});
-			showSuccessToast('User reactivated successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to reactivate user');
-		},
-	});
+  return useMutation({
+    mutationFn: (uid: string) => usersApi.reactivate(uid),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      showSuccessToast("User reactivated successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to reactivate user");
+    },
+  });
 };
 
 export const useUserActivity = (uid: string) => {
-	return useQuery({
-		queryKey: [USERS_KEY, uid, 'activity'],
-		queryFn: () => usersApi.getActivity(uid),
-		enabled: !!uid,
-	});
+  return useQuery({
+    queryKey: [USERS_KEY, uid, "activity"],
+    queryFn: () => usersApi.getActivity(uid),
+    enabled: !!uid,
+  });
 };
 
 export const useUploadResume = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: (file: File) => usersApi.uploadResume(file),
-		onSuccess: () => {
-			// Invalidate auth/me query to refresh user data with resume info
-			queryClient.invalidateQueries({queryKey: ['auth', 'me']});
-			showSuccessToast('Resume uploaded successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to upload resume');
-		},
-	});
+  return useMutation({
+    mutationFn: (file: File) => usersApi.uploadResume(file),
+    onSuccess: () => {
+      // Invalidate auth/me query to refresh user data with resume info
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      showSuccessToast("Resume uploaded successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to upload resume");
+    },
+  });
 };
 
 export const useGetResumeDownloadUrl = () => {
-	return useQuery({
-		queryKey: [USERS_KEY, 'resume', 'download'],
-		queryFn: () => usersApi.getResumeDownloadUrl(),
-		enabled: false, // Manual fetch
-	});
+  return useQuery({
+    queryKey: [USERS_KEY, "resume", "download"],
+    queryFn: () => usersApi.getResumeDownloadUrl(),
+    enabled: false, // Manual fetch
+  });
 };
 
 export const useDeleteResume = () => {
-	const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
 
-	return useMutation({
-		mutationFn: () => usersApi.deleteResume(),
-		onSuccess: () => {
-			// Invalidate auth/me query to refresh user data
-			queryClient.invalidateQueries({queryKey: ['auth', 'me']});
-			showSuccessToast('Resume deleted successfully!');
-		},
-		onError: (error) => {
-			showErrorToast(error, 'Failed to delete resume');
-		},
-	});
+  return useMutation({
+    mutationFn: () => usersApi.deleteResume(),
+    onSuccess: () => {
+      // Invalidate auth/me query to refresh user data
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      showSuccessToast("Resume deleted successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to delete resume");
+    },
+  });
 };

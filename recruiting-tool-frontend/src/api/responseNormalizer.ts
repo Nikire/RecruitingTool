@@ -1,5 +1,5 @@
-import { AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { ApiResponse, ApiErrorResponse } from '../types/api.types';
+import { AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { ApiResponse, ApiErrorResponse } from "../types/api.types";
 
 /**
  * Response Normalizer for Backend API
@@ -14,63 +14,68 @@ import { ApiResponse, ApiErrorResponse } from '../types/api.types';
 /**
  * Checks if a response follows the backend's normalized structure
  */
-function isNormalizedResponse(data: any): data is ApiResponse {
-	return (
-		data !== null &&
-		typeof data === 'object' &&
-		'data' in data &&
-		'success' in data &&
-		'statusCode' in data
-	);
+function isNormalizedResponse(data: unknown): data is ApiResponse {
+  return (
+    data !== null &&
+    typeof data === "object" &&
+    "data" in data &&
+    "success" in data &&
+    "statusCode" in data
+  );
 }
 
 /**
  * Response interceptor that unwraps the backend's normalized response structure
  */
 export function responseNormalizerInterceptor(
-	response: AxiosResponse
+  response: AxiosResponse,
 ): AxiosResponse {
-	// Check if the response data follows the normalized structure
-	if (isNormalizedResponse(response.data)) {
-		const apiResponse = response.data as ApiResponse;
+  // Check if the response data follows the normalized structure
+  if (isNormalizedResponse(response.data)) {
+    const apiResponse = response.data as ApiResponse;
 
-		// Validate success field
-		if (!apiResponse.success) {
-			// If success is false, treat it as an error
-			const error: any = new Error('API request failed');
-			error.response = response;
-			error.apiResponse = apiResponse;
-			throw error;
-		}
+    // Validate success field
+    if (!apiResponse.success) {
+      // If success is false, treat it as an error
+      const error = new Error("API request failed") as Error & {
+        response: AxiosResponse;
+        apiResponse: ApiResponse;
+      };
+      error.response = response;
+      error.apiResponse = apiResponse;
+      throw error;
+    }
 
-		// Unwrap: response.data.data → response.data
-		// This makes all API calls consistent: they can use .then(res => res.data)
-		response.data = apiResponse.data;
-	}
+    // Unwrap: response.data.data → response.data
+    // This makes all API calls consistent: they can use .then(res => res.data)
+    response.data = apiResponse.data;
+  }
 
-	// If not normalized structure, return as-is (for edge cases like SSE, file uploads)
-	return response;
+  // If not normalized structure, return as-is (for edge cases like SSE, file uploads)
+  return response;
 }
 
 /**
  * Error interceptor to handle API errors consistently
  */
-export function errorNormalizerInterceptor(error: any): Promise<never> {
-	// If the error has a response (HTTP error from server)
-	if (error.response) {
-		const data = error.response.data;
+export function errorNormalizerInterceptor(
+  error: Error & { response?: AxiosResponse },
+): Promise<never> {
+  // If the error has a response (HTTP error from server)
+  if (error.response) {
+    const data = error.response.data;
 
-		// Check if it's a normalized error response
-		if (isNormalizedResponse(data)) {
-			const apiResponse = data as ApiResponse<ApiErrorResponse>;
+    // Check if it's a normalized error response
+    if (isNormalizedResponse(data)) {
+      const apiResponse = data as ApiResponse<ApiErrorResponse>;
 
-			// Unwrap error data for consistent error handling
-			error.response.data = apiResponse.data;
-		}
-	}
+      // Unwrap error data for consistent error handling
+      error.response.data = apiResponse.data;
+    }
+  }
 
-	// Re-throw the error for React Query and other error handlers
-	return Promise.reject(error);
+  // Re-throw the error for React Query and other error handlers
+  return Promise.reject(error);
 }
 
 /**
@@ -78,34 +83,32 @@ export function errorNormalizerInterceptor(error: any): Promise<never> {
  * (e.g., SSE endpoints, file downloads, streaming responses)
  */
 const SKIP_NORMALIZATION_PATHS = [
-	'/sse', // Server-Sent Events endpoint
-	'/export', // Export endpoints might have different structure
-	'/download', // File downloads
+  "/sse", // Server-Sent Events endpoint
+  "/export", // Export endpoints might have different structure
+  "/download", // File downloads
 ];
 
 /**
  * Checks if the request should skip normalization
  */
 export function shouldSkipNormalization(
-	config: InternalAxiosRequestConfig
+  config: InternalAxiosRequestConfig,
 ): boolean {
-	if (!config.url) return false;
+  if (!config.url) return false;
 
-	return SKIP_NORMALIZATION_PATHS.some((path) =>
-		config.url?.includes(path)
-	);
+  return SKIP_NORMALIZATION_PATHS.some((path) => config.url?.includes(path));
 }
 
 /**
  * Enhanced response interceptor with skip logic
  */
 export function enhancedResponseNormalizer(
-	response: AxiosResponse
+  response: AxiosResponse,
 ): AxiosResponse {
-	// Skip normalization for specific endpoints
-	if (shouldSkipNormalization(response.config)) {
-		return response;
-	}
+  // Skip normalization for specific endpoints
+  if (shouldSkipNormalization(response.config)) {
+    return response;
+  }
 
-	return responseNormalizerInterceptor(response);
+  return responseNormalizerInterceptor(response);
 }
