@@ -240,7 +240,6 @@ For automatic issue detection to work, use one of these formats:
 1. Use conventional commit format: `feat:`, `fix:`, `docs:`, etc.
 2. Reference issue numbers in commit messages
 3. Keep commits focused and atomic
-4. Never include AI attribution (no `Co-Authored-By: Claude`)
 
 ## Troubleshooting
 
@@ -281,4 +280,3 @@ gh run list
 - [GitHub Issues](https://github.com/Nikire/RecruitingTool/issues)
 - [GitHub Milestones](https://github.com/Nikire/RecruitingTool/milestones)
 - [GitHub Actions Documentation](https://docs.github.com/en/actions)
-- [Project Documentation](../.claude/docs/)
