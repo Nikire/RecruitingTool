@@ -20,7 +20,10 @@ import EmailTemplatePreviewDialog from "../../components/dialogs/EmailTemplatePr
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import { canManageResources } from "../../utils/permissions";
 import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
-import { EmailTemplate } from "../../types/emailTemplate.types";
+import {
+  EmailTemplate,
+  EmailTemplateType,
+} from "../../types/emailTemplate.types";
 import SearchBar from "../../components/search/SearchBar";
 
 const EmailTemplatesPage: React.FC = () => {
@@ -31,6 +34,61 @@ const EmailTemplatesPage: React.FC = () => {
   const previewDialog = useDialog<string>();
   const deleteDialog = useDialog<EmailTemplate>();
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Helper function to get chip color based on template type
+  const getTypeChipColor = (
+    type: EmailTemplateType | null,
+  ):
+    | "default"
+    | "primary"
+    | "secondary"
+    | "error"
+    | "info"
+    | "success"
+    | "warning" => {
+    if (!type) return "default";
+    switch (type) {
+      case EmailTemplateType.APPLICATION_RECEIVED:
+        return "info";
+      case EmailTemplateType.APPLICATION_REJECTED:
+        return "error";
+      case EmailTemplateType.APPLICATION_SHORTLISTED:
+        return "success";
+      case EmailTemplateType.INTERVIEW_INVITATION:
+        return "primary";
+      case EmailTemplateType.INTERVIEW_REMINDER:
+        return "warning";
+      case EmailTemplateType.OFFER_LETTER:
+        return "success";
+      case EmailTemplateType.CUSTOM:
+        return "default";
+      default:
+        return "default";
+    }
+  };
+
+  // Helper function to get display label for template type
+  const getTypeLabel = (type: EmailTemplateType | null): string => {
+    if (!type) return t("email_template.type_none");
+    switch (type) {
+      case EmailTemplateType.APPLICATION_RECEIVED:
+        return t("email_template.type_application_received");
+      case EmailTemplateType.APPLICATION_REJECTED:
+        return t("email_template.type_application_rejected");
+      case EmailTemplateType.APPLICATION_SHORTLISTED:
+        return t("email_template.type_application_shortlisted");
+      case EmailTemplateType.INTERVIEW_INVITATION:
+        return t("email_template.type_interview_invitation");
+      case EmailTemplateType.INTERVIEW_REMINDER:
+        return t("email_template.type_interview_reminder");
+      case EmailTemplateType.OFFER_LETTER:
+        return t("email_template.type_offer_letter");
+      case EmailTemplateType.CUSTOM:
+        return t("email_template.type_custom");
+      default:
+        return t("email_template.type_none");
+    }
+  };
 
   const { data: templates, isLoading } = useEmailTemplates();
   const { mutate: deleteTemplate, isPending: isDeleting } =
@@ -76,6 +134,21 @@ const EmailTemplatesPage: React.FC = () => {
       headerName: t("email_templates.table_subject"),
       flex: 1,
       minWidth: 250,
+    },
+    {
+      field: "type",
+      headerName: t("email_templates.table_type"),
+      width: 200,
+      renderCell: (params) => (
+        <CellRow centered>
+          <Chip
+            label={getTypeLabel(params.value)}
+            size="small"
+            color={getTypeChipColor(params.value)}
+            variant="outlined"
+          />
+        </CellRow>
+      ),
     },
     {
       field: "isDefault",
