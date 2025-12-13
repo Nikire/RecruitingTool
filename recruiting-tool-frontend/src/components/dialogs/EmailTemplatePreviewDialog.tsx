@@ -80,21 +80,30 @@ const EmailTemplatePreviewDialog: React.FC<EmailTemplatePreviewDialogProps> = ({
               >
                 {t("email_templates.rendered_body")}
               </Typography>
-              <Typography
-                variant="body1"
-                component="div"
+              <Box
                 sx={{
-                  whiteSpace: "pre-wrap",
-                  fontFamily: "monospace",
-                  backgroundColor: "grey.50",
-                  p: 2,
+                  backgroundColor: "white",
+                  border: "1px solid",
+                  borderColor: "grey.300",
                   borderRadius: 1,
+                  minHeight: "200px",
                   maxHeight: "400px",
                   overflow: "auto",
                 }}
               >
-                {data.renderedBody}
-              </Typography>
+                <iframe
+                  srcDoc={data.renderedBody}
+                  title={t("email_templates.preview_title")}
+                  style={{
+                    width: "100%",
+                    minHeight: "200px",
+                    height: "400px",
+                    border: "none",
+                    backgroundColor: "white",
+                  }}
+                  sandbox="allow-same-origin"
+                />
+              </Box>
             </Paper>
           </Box>
         )}

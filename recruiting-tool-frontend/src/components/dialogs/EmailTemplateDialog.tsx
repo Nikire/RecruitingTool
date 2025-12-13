@@ -10,6 +10,7 @@ import {
   Checkbox,
   Box,
   Chip,
+  MenuItem,
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -21,6 +22,7 @@ import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../common/FormErrorSummary";
 import {
   EmailTemplate,
+  EmailTemplateType,
   CreateEmailTemplateDto,
   UpdateEmailTemplateDto,
 } from "../../types/emailTemplate.types";
@@ -36,6 +38,7 @@ interface EmailTemplateFormData {
   name: string;
   subject: string;
   body: string;
+  type: EmailTemplateType | "";
   isDefault: boolean;
 }
 
@@ -69,6 +72,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       name: "",
       subject: "",
       body: "",
+      type: "",
       isDefault: false,
     },
   });
@@ -85,6 +89,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
         name: template.name,
         subject: template.subject,
         body: template.body,
+        type: template.type || "",
         isDefault: template.isDefault,
       });
     } else {
@@ -92,6 +97,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
         name: "",
         subject: "",
         body: "",
+        type: "",
         isDefault: false,
       });
     }
@@ -103,6 +109,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
         name: data.name,
         subject: data.subject,
         body: data.body,
+        type: data.type || undefined,
         isDefault: data.isDefault,
       };
       updateTemplate(
@@ -119,6 +126,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
         name: data.name,
         subject: data.subject,
         body: data.body,
+        type: data.type || undefined,
         isDefault: data.isDefault,
       };
       createTemplate(createData, {
@@ -208,6 +216,39 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
             error={!!errors.subject}
             helperText={errors.subject?.message}
           />
+
+          <TextField
+            select
+            label={t("email_template.type_label")}
+            fullWidth
+            margin="normal"
+            {...register("type")}
+            defaultValue={template?.type || ""}
+            helperText={t("email_template.type_helper")}
+          >
+            <MenuItem value="">{t("email_template.type_none")}</MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_RECEIVED}>
+              {t("email_template.type_application_received")}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_REJECTED}>
+              {t("email_template.type_application_rejected")}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_SHORTLISTED}>
+              {t("email_template.type_application_shortlisted")}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.INTERVIEW_INVITATION}>
+              {t("email_template.type_interview_invitation")}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.INTERVIEW_REMINDER}>
+              {t("email_template.type_interview_reminder")}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.OFFER_LETTER}>
+              {t("email_template.type_offer_letter")}
+            </MenuItem>
+            <MenuItem value={EmailTemplateType.CUSTOM}>
+              {t("email_template.type_custom")}
+            </MenuItem>
+          </TextField>
 
           <Box sx={{ my: 2 }}>
             <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>

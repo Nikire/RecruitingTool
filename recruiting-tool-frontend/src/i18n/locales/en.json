@@ -595,6 +595,7 @@
     "system_wide": "System-wide",
     "table_name": "Name",
     "table_subject": "Subject",
+    "table_type": "Type",
     "table_default": "Default",
     "table_created_by": "Created By",
     "table_created_at": "Created At",

@@ -593,6 +593,7 @@
     "system_wide": "A nivel de sistema",
     "table_name": "Nombre",
     "table_subject": "Asunto",
+    "table_type": "Tipo",
     "table_default": "Predeterminada",
     "table_created_by": "Creado Por",
     "table_created_at": "Creado El",
