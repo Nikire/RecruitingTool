@@ -38,6 +38,11 @@ export class EmailTemplatesService {
       throw new NotFoundException(`User ${userId} not found`);
     }
 
+    // If setting as default and has a type, unset any existing default of same type
+    if (createDto.isDefault && createDto.type) {
+      await this.unsetExistingDefaultForType(companyId, createDto.type);
+    }
+
     const emailTemplate = await this.databaseService.emailTemplate.create({
       data: {
         name: createDto.name,
@@ -116,6 +121,14 @@ export class EmailTemplatesService {
       throw new NotFoundException(`Email template ${uid} not found`);
     }
 
+    // Determine the type (use new type if provided, otherwise keep existing)
+    const effectiveType = updateDto.type ?? existingTemplate.type;
+
+    // If setting as default and has a type, unset any existing default of same type
+    if (updateDto.isDefault && effectiveType) {
+      await this.unsetExistingDefaultForType(existingTemplate.companyId, effectiveType);
+    }
+
     const emailTemplate = await this.databaseService.emailTemplate.update({
       where: { uid },
       data: {
@@ -156,6 +169,23 @@ export class EmailTemplatesService {
     await this.cacheService.invalidate('email-templates');
 
     return { message: 'Email template deleted successfully' };
+  }
+
+  /**
+   * Unset existing default template for a specific type within a company
+   * Ensures only one template can be default per type per company
+   */
+  private async unsetExistingDefaultForType(companyId: number | null, type: string): Promise<void> {
+    await this.databaseService.emailTemplate.updateMany({
+      where: {
+        companyId: companyId,
+        type: type as any,
+        isDefault: true,
+      },
+      data: {
+        isDefault: false,
+      },
+    });
   }
 
   /**
