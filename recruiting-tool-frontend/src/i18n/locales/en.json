@@ -1440,6 +1440,12 @@
     "items": "Items",
     "items_per_page": "Items per page"
   },
+  "profile_dropdown": {
+    "aria_label": "User profile menu",
+    "my_profile": "My Profile",
+    "subscription": "Subscription",
+    "logout": "Logout"
+  },
   "aria": {
     "open_menu": "Open menu",
     "close_menu": "Close menu",
@@ -2108,7 +2114,8 @@
       "cta_start_free": "Start Free",
       "cta_start_now": "Start Now",
       "cta_view_pricing": "View Pricing",
-      "cta_learn_more": "Learn More"
+      "cta_learn_more": "Learn More",
+      "welcome_back": "Welcome back, {{name}}!"
     },
     "stats": {
       "candidates_processed": "Candidates Processed",
@@ -2643,5 +2650,9 @@
       "content_min_length": "Feedback must be at least 10 characters",
       "rating_invalid": "Rating must be between 1 and 5"
     }
+  },
+  "markdown_editor": {
+    "placeholder": "Write your content here... Supports **bold**, *italic*, and more markdown formatting.",
+    "character_count": "{{current}} / {{max}} characters"
   }
 }

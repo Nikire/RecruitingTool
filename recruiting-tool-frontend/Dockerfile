@@ -8,6 +8,8 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+ENV NODE_OPTIONS="--max-old-space-size=4096"
+
 RUN yarn build:vite -- --mode docker
 
 FROM nginx:stable-alpine

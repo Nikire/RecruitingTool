@@ -15,6 +15,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/material/styles";
+import { useAuthMe } from "../../hooks/api/useAuth";
 
 // Icons
 import PeopleIcon from "@mui/icons-material/People";
@@ -92,6 +93,7 @@ const LandingPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
+  const { user, isAuthenticated } = useAuthMe();
 
   const features = [
     {
@@ -310,58 +312,101 @@ const LandingPage = () => {
                 >
                   {t("landing.hero.new_subheadline")}
                 </Typography>
-                <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    onClick={() => scrollToSection("pricing")}
-                    endIcon={<ArrowForwardIcon />}
-                    sx={{
-                      bgcolor: "white",
-                      color: theme.palette.primary.main,
-                      px: 5,
-                      py: 2,
-                      fontSize: "1.125rem",
-                      fontWeight: 700,
-                      borderRadius: 2.5,
-                      textTransform: "none",
-                      boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
-                      "&:hover": {
-                        bgcolor: alpha(theme.palette.common.white, 0.95),
-                        transform: "translateY(-3px)",
-                        boxShadow: "0 15px 50px rgba(0,0,0,0.2)",
-                      },
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    }}
-                  >
-                    {t("landing.hero.cta_start_now")}
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => scrollToSection("features")}
-                    sx={{
-                      borderColor: alpha(theme.palette.common.white, 0.8),
-                      color: "white",
-                      px: 5,
-                      py: 2,
-                      fontSize: "1.125rem",
-                      fontWeight: 700,
-                      borderRadius: 2.5,
-                      textTransform: "none",
-                      borderWidth: 2,
-                      "&:hover": {
-                        borderColor: "white",
-                        bgcolor: alpha(theme.palette.common.white, 0.12),
+                {isAuthenticated ? (
+                  // Logged-in state: Welcome message and Dashboard button
+                  <Box>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 4,
+                        opacity: 0.95,
+                        fontWeight: 500,
+                        fontSize: { xs: "1.1rem", sm: "1.3rem" },
+                      }}
+                    >
+                      {t("landing.hero.welcome_back", { name: user?.name })}
+                    </Typography>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => navigate("/hr/dashboard")}
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{
+                        bgcolor: "white",
+                        color: theme.palette.primary.main,
+                        px: 6,
+                        py: 2.5,
+                        fontSize: "1.125rem",
+                        fontWeight: 700,
+                        borderRadius: 2.5,
+                        textTransform: "none",
+                        boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                        "&:hover": {
+                          bgcolor: alpha(theme.palette.common.white, 0.95),
+                          transform: "translateY(-3px)",
+                          boxShadow: "0 15px 50px rgba(0,0,0,0.2)",
+                        },
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                    >
+                      {t("common.go_to_dashboard")}
+                    </Button>
+                  </Box>
+                ) : (
+                  // Not logged in: Show login/register buttons
+                  <Stack direction={{ xs: "column", sm: "row" }} spacing={3}>
+                    <Button
+                      variant="contained"
+                      size="large"
+                      onClick={() => scrollToSection("pricing")}
+                      endIcon={<ArrowForwardIcon />}
+                      sx={{
+                        bgcolor: "white",
+                        color: theme.palette.primary.main,
+                        px: 5,
+                        py: 2,
+                        fontSize: "1.125rem",
+                        fontWeight: 700,
+                        borderRadius: 2.5,
+                        textTransform: "none",
+                        boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                        "&:hover": {
+                          bgcolor: alpha(theme.palette.common.white, 0.95),
+                          transform: "translateY(-3px)",
+                          boxShadow: "0 15px 50px rgba(0,0,0,0.2)",
+                        },
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                    >
+                      {t("landing.hero.cta_start_now")}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      size="large"
+                      onClick={() => scrollToSection("features")}
+                      sx={{
+                        borderColor: alpha(theme.palette.common.white, 0.8),
+                        color: "white",
+                        px: 5,
+                        py: 2,
+                        fontSize: "1.125rem",
+                        fontWeight: 700,
+                        borderRadius: 2.5,
+                        textTransform: "none",
                         borderWidth: 2,
-                        transform: "translateY(-3px)",
-                      },
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                    }}
-                  >
-                    {t("landing.hero.cta_learn_more")}
-                  </Button>
-                </Stack>
+                        "&:hover": {
+                          borderColor: "white",
+                          bgcolor: alpha(theme.palette.common.white, 0.12),
+                          borderWidth: 2,
+                          transform: "translateY(-3px)",
+                        },
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                      }}
+                    >
+                      {t("landing.hero.cta_learn_more")}
+                    </Button>
+                  </Stack>
+                )}
               </Box>
             </Grid>
             <Grid item xs={12} md={5}>

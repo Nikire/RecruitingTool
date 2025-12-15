@@ -19,6 +19,7 @@ import { JobPosition, JobPositionStatus } from "../../types/jobPosition.types";
 import StatusBadgeEditor, { StatusOption } from "../common/StatusBadgeEditor";
 import { CustomQuestionBuilder } from "../forms/CustomQuestionBuilder";
 import { CustomQuestion } from "../../types/customQuestions";
+import { MarkdownEditor } from "../common";
 
 interface UpdateJobPositionDialogProps {
   open: boolean;
@@ -51,6 +52,8 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<JobPositionFormData>({
     defaultValues: {
@@ -58,6 +61,8 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
       description: "",
     },
   });
+
+  const description = watch("description");
 
   const {
     mutate: updateJobPosition,
@@ -150,23 +155,15 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
               placeholder={t("update_job_position.job_title_placeholder")}
             />
 
-            <TextField
+            <MarkdownEditor
+              value={description || ""}
+              onChange={(val) => setValue("description", val || "")}
               label={t("update_job_position.description")}
-              fullWidth
-              margin="normal"
-              multiline
-              rows={3}
-              {...register("description", {
-                maxLength: {
-                  value: 1000,
-                  message: t("update_job_position.description_max_length", {
-                    max: 1000,
-                  }),
-                },
-              })}
+              placeholder={t("update_job_position.description_placeholder")}
+              maxLength={5000}
+              minHeight={300}
               error={!!errors.description}
               helperText={errors.description?.message}
-              placeholder={t("update_job_position.description_placeholder")}
             />
           </Box>
 

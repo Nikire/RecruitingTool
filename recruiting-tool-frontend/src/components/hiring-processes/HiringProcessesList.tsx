@@ -20,6 +20,7 @@ interface HiringProcessesListProps {
   page: number;
   limit: number;
   search: string;
+  status?: string;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
 }
@@ -28,6 +29,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
   page,
   limit,
   search,
+  status,
   onPageChange,
   onLimitChange,
 }) => {
@@ -45,6 +47,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
     page,
     limit,
     search,
+    status,
     sortBy: "createdAt",
     sortOrder: "desc",
   });

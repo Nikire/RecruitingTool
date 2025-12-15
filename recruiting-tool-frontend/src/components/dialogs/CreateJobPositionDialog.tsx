@@ -22,6 +22,7 @@ import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../common/FormErrorSummary";
 import { CustomQuestionBuilder } from "../forms/CustomQuestionBuilder";
 import { CustomQuestion } from "../../types/customQuestions";
+import { MarkdownEditor } from "../common";
 
 interface CreateJobPositionDialogProps {
   open: boolean;
@@ -47,6 +48,8 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
     formState: { errors },
   } = useForm<JobPositionFormData>({
     defaultValues: {
@@ -54,6 +57,8 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
       description: "",
     },
   });
+
+  const description = watch("description");
 
   const {
     mutate: createJobPosition,
@@ -136,23 +141,15 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
               }}
             />
 
-            <TextField
+            <MarkdownEditor
+              value={description || ""}
+              onChange={(val) => setValue("description", val || "")}
               label={t("job_positions.description_label")}
-              fullWidth
-              margin="normal"
-              multiline
-              rows={3}
-              {...register("description", validationRules.maxLength(1000))}
+              placeholder={t("job_positions.description_placeholder")}
+              maxLength={5000}
+              minHeight={300}
               error={!!errors.description}
               helperText={errors.description?.message}
-              placeholder={t("job_positions.description_placeholder")}
-              InputProps={{
-                endAdornment: errors.description ? (
-                  <InputAdornment position="end">
-                    <ErrorIcon color="error" />
-                  </InputAdornment>
-                ) : null,
-              }}
             />
           </Box>
 

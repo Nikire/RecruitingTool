@@ -316,7 +316,9 @@
     "title_format": "[Posición de Trabajo] - [Nombre del Candidato]",
     "candidate_selection": "Selección de Candidato",
     "select_existing": "Seleccionar Existente",
-    "create_new": "Crear Nuevo"
+    "create_new": "Crear Nuevo",
+    "no_candidate": "Sin candidato asignado",
+    "delete_message": "¿Estás seguro de que quieres eliminar este proceso de contratación? Esto también eliminará todas las etapas asociadas."
   },
   "companies": {
     "title": "Empresas",
@@ -1446,6 +1448,12 @@
     "items": "Elementos",
     "items_per_page": "Elementos por página"
   },
+  "profile_dropdown": {
+    "aria_label": "Menú de perfil de usuario",
+    "my_profile": "Mi Perfil",
+    "subscription": "Suscripción",
+    "logout": "Cerrar Sesión"
+  },
   "aria": {
     "open_menu": "Abrir menú",
     "close_menu": "Cerrar menú",
@@ -2114,7 +2122,8 @@
       "cta_start_free": "Comenzar Gratis",
       "cta_start_now": "Comenzar Ahora",
       "cta_view_pricing": "Ver Precios",
-      "cta_learn_more": "Saber Más"
+      "cta_learn_more": "Saber Más",
+      "welcome_back": "¡Bienvenido de nuevo, {{name}}!"
     },
     "stats": {
       "candidates_processed": "Candidatos Procesados",
@@ -2649,5 +2658,9 @@
       "content_min_length": "Los comentarios deben tener al menos 10 caracteres",
       "rating_invalid": "La calificación debe estar entre 1 y 5"
     }
+  },
+  "markdown_editor": {
+    "placeholder": "Escribe tu contenido aquí... Admite formato **negrita**, *cursiva*, y más markdown.",
+    "character_count": "{{current}} / {{max}} caracteres"
   }
 }

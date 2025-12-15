@@ -19,9 +19,9 @@ import PersonIcon from "@mui/icons-material/Person";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
-import UserAvatar from "../user/UserAvatar";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
+import { ProfileDropdown } from "../common";
 import { NotificationBell } from "../notifications";
 import { useNotificationSSE } from "../../hooks/useNotificationSSE";
 import { FeedbackButton } from "../feedback";
@@ -291,14 +291,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </Typography>
             <LanguageSelector />
             <NotificationBell />
-            <IconButton
-              component={NavLink}
-              to="/profile"
-              sx={{ p: 0.5 }}
-              aria-label={t("aria.user_profile")}
-            >
-              <UserAvatar name={user?.name} avatarUrl={user?.profilePicture} />
-            </IconButton>
+            <ProfileDropdown
+              name={user?.name}
+              avatarUrl={user?.profilePicture}
+            />
           </Toolbar>
         </AppBar>
       </Box>

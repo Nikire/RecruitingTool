@@ -24,3 +24,5 @@ export type { MetadataDisplayProps, MetadataItem } from "./MetadataDisplay";
 export { default as ConfirmationDialog } from "./ConfirmationDialog";
 export { default as TableHeaderCell } from "./TableHeaderCell";
 export type { TableHeaderCellProps } from "./TableHeaderCell";
+export { default as ProfileDropdown } from "./ProfileDropdown";
+export { default as MarkdownEditor } from "./MarkdownEditor";

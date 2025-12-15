@@ -20,7 +20,7 @@ const HiringProcessesPage: React.FC = () => {
   const createDialog = useDialog<never>();
   const { user, isLoading: userLoading } = useAuthMe();
   const [searchState, setSearchState] = useHiringProcessesSearch();
-  const { page, limit, search } = searchState;
+  const { page, limit, search, status } = searchState;
 
   const canManage = canManageResources(user);
 
@@ -45,8 +45,17 @@ const HiringProcessesPage: React.FC = () => {
     setSearchState({
       ...searchState,
       search: filters.search,
+      status: filters.status,
     });
   };
+
+  const statusOptions = [
+    { value: "OPEN", labelKey: "status.open" },
+    { value: "IN_PROGRESS", labelKey: "status.in_progress" },
+    { value: "CLOSED", labelKey: "status.closed" },
+    { value: "CANCELLED", labelKey: "status.cancelled" },
+    { value: "REJECTED", labelKey: "status.rejected" },
+  ];
 
   return (
     <Box>
@@ -71,15 +80,18 @@ const HiringProcessesPage: React.FC = () => {
       />
 
       <FilterBar
-        filters={{ search }}
+        filters={{ search, status }}
         onChange={handleFilterChange}
         searchPlaceholder={t("hiring_processes.search_placeholder")}
+        statusOptions={statusOptions}
+        showStatusFilter
       />
 
       <HiringProcessesList
         page={page}
         limit={limit}
         search={search}
+        status={status}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
       />
