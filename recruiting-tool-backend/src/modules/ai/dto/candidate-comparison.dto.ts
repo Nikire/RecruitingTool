@@ -1,14 +1,10 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsUUID, ArrayMinSize, ArrayMaxSize } from 'class-validator';
 
 export class CompareCandidatesDto {
   @ApiProperty({
     description: 'Array of candidate UIDs to compare (2-5 candidates)',
-    example: [
-      '550e8400-e29b-41d4-a716-446655440000',
-      '550e8400-e29b-41d4-a716-446655440001',
-      '550e8400-e29b-41d4-a716-446655440002',
-    ],
+    example: ['550e8400-e29b-41d4-a716-446655440000', '550e8400-e29b-41d4-a716-446655440001', '550e8400-e29b-41d4-a716-446655440002'],
     type: [String],
     minItems: 2,
     maxItems: 5,
@@ -123,15 +119,14 @@ export class ComparisonAnalysis {
     example: [
       'Technical skill depth: John Doe has advanced TypeScript expertise while others have intermediate level',
       'Leadership experience: Only John Doe has managed development teams',
-      'Education level: Jane Smith has a Master\'s degree, others have Bachelor\'s',
+      "Education level: Jane Smith has a Master's degree, others have Bachelor's",
     ],
   })
   keyDifferentiators: string[];
 
   @ApiProperty({
     description: 'Final hiring recommendation from AI',
-    example:
-      'Strong recommendation to proceed with John Doe for final interview round. Consider Jane Smith as backup candidate if John Doe declines offer.',
+    example: 'Strong recommendation to proceed with John Doe for final interview round. Consider Jane Smith as backup candidate if John Doe declines offer.',
   })
   finalRecommendation: string;
 }

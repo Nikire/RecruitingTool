@@ -47,9 +47,7 @@ const HROnboardingWizard: React.FC = () => {
   } = useForm<CompleteHROnboardingData>({
     defaultValues: {
       position:
-        user?.position ||
-        localStorage.getItem("hr_onboarding_position") ||
-        "",
+        user?.position || localStorage.getItem("hr_onboarding_position") || "",
       department: user?.department || "",
       phoneNumber: user?.phoneNumber || "",
       timezone:
@@ -181,7 +179,9 @@ const HROnboardingWizard: React.FC = () => {
                   >
                     <BusinessIcon color="primary" sx={{ fontSize: 40 }} />
                     <Box>
-                      <Typography variant="h6">{user?.company?.name}</Typography>
+                      <Typography variant="h6">
+                        {user?.company?.name}
+                      </Typography>
                       <Typography variant="body2" color="textSecondary">
                         {t("hr_onboarding.welcome.your_company")}
                       </Typography>
@@ -211,7 +211,8 @@ const HROnboardingWizard: React.FC = () => {
             {onboardingStatus?.wasInvited && (
               <Alert severity="info" sx={{ mb: 3 }}>
                 {t("hr_onboarding.welcome.invited_message", {
-                  inviterName: onboardingStatus.invitedByName || t("common.someone"),
+                  inviterName:
+                    onboardingStatus.invitedByName || t("common.someone"),
                 })}
               </Alert>
             )}

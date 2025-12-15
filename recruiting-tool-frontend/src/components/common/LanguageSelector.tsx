@@ -59,11 +59,11 @@ const LanguageSelector: React.FC = () => {
     setCurrentLang(i18n.language);
 
     // Listen to language change events
-    i18n.on('languageChanged', handleLanguageChanged);
+    i18n.on("languageChanged", handleLanguageChanged);
 
     // Cleanup listener on unmount
     return () => {
-      i18n.off('languageChanged', handleLanguageChanged);
+      i18n.off("languageChanged", handleLanguageChanged);
     };
   }, [i18n]);
 
