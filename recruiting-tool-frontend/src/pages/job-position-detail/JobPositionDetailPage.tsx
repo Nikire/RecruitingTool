@@ -209,6 +209,31 @@ const JobPositionDetailPage: React.FC = () => {
         />
       </Paper>
 
+      {/* Job Description Section - visible to everyone */}
+      {jobPosition.description && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <Typography
+            variant="h5"
+            sx={{
+              mb: { xs: 1.5, sm: 2 },
+              fontSize: { xs: "1.25rem", sm: "1.5rem" },
+            }}
+          >
+            {t("job_position_detail.job_description")}
+          </Typography>
+          <Typography
+            variant="body1"
+            sx={{
+              whiteSpace: "pre-line",
+              lineHeight: 1.8,
+              color: "text.secondary",
+            }}
+          >
+            {jobPosition.description}
+          </Typography>
+        </Paper>
+      )}
+
       {canManage && (
         <>
           <Box
