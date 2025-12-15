@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
+import { CompareCandidatesResponseDto, CandidateComparisonSummary, ComparisonAnalysis } from './dto/candidate-comparison.dto';
 import { SseService } from '../sse/sse.service';
 import { GeminiService } from './gemini.service';
 
@@ -250,6 +251,85 @@ export class ScoringService {
   }
 
   /**
+   * Compare multiple candidates for a job position using AI
+   */
+  async compareCandidates(candidateUids: string[], jobPositionUid: string): Promise<CompareCandidatesResponseDto> {
+    if (!this.geminiService.isConfigured()) {
+      throw new InternalServerErrorException('AI API is not configured. Please set GEMINI_API_KEY in environment variables.');
+    }
+
+    if (candidateUids.length < 2 || candidateUids.length > 5) {
+      throw new BadRequestException('Please select between 2 and 5 candidates for comparison');
+    }
+
+    try {
+      this.logger.log(`Starting comparison of ${candidateUids.length} candidates for job ${jobPositionUid}`);
+
+      // Fetch job position
+      const jobPosition = await this.databaseService.jobPosition.findUnique({
+        where: { uid: jobPositionUid },
+        include: {
+          stages: true,
+        },
+      });
+
+      if (!jobPosition) {
+        throw new NotFoundException(`Job Position with UID ${jobPositionUid} not found`);
+      }
+
+      // Fetch all candidates
+      const candidates = await this.databaseService.candidate.findMany({
+        where: {
+          uid: {
+            in: candidateUids,
+          },
+        },
+        include: {
+          files: true,
+          notes: true,
+        },
+      });
+
+      if (candidates.length !== candidateUids.length) {
+        throw new NotFoundException('One or more candidates not found');
+      }
+
+      // Generate AI comparison
+      const aiComparison = await this.generateAIComparison(candidates, jobPosition);
+
+      // Build response
+      const candidatesComparison: CandidateComparisonSummary[] = aiComparison.candidates.map((candidate, index) => ({
+        candidateUid: candidate.candidateUid,
+        candidateName: candidate.candidateName,
+        overallScore: candidate.overallScore,
+        skillsScore: candidate.skillsScore,
+        experienceScore: candidate.experienceScore,
+        educationScore: candidate.educationScore,
+        strengths: candidate.strengths,
+        weaknesses: candidate.weaknesses,
+        rank: index + 1,
+      }));
+
+      return {
+        jobPositionUid: jobPosition.uid,
+        jobPositionTitle: jobPosition.title,
+        totalCandidates: candidates.length,
+        candidates: candidatesComparison,
+        comparisonAnalysis: aiComparison.analysis,
+        comparedAt: new Date(),
+      };
+    } catch (error) {
+      this.logger.error(`Candidate comparison failed: ${error.message}`, error.stack);
+
+      if (error instanceof NotFoundException || error instanceof BadRequestException || error instanceof InternalServerErrorException) {
+        throw error;
+      }
+
+      throw new InternalServerErrorException(`Failed to compare candidates: ${error.message}`);
+    }
+  }
+
+  /**
    * Generate AI-powered scoring using Gemini
    */
   private async generateAIScoring(
@@ -373,5 +453,143 @@ Return a JSON object with this exact structure:
       createdAt: score.createdAt,
       updatedAt: score.updatedAt,
     };
+  }
+
+  /**
+   * Generate AI-powered candidate comparison using Gemini
+   */
+  private async generateAIComparison(
+    candidates: any[],
+    jobPosition: any,
+  ): Promise<{
+    candidates: CandidateComparisonSummary[];
+    analysis: ComparisonAnalysis;
+  }> {
+    const systemInstruction = `You are an expert HR recruiter specialized in candidate comparison and evaluation. Your task is to compare multiple candidates for a job position and provide objective, detailed analysis. Always return valid JSON that matches the requested schema exactly. Be thorough, fair, and highlight both strengths and weaknesses for each candidate.`;
+
+    // Build candidate profiles for the prompt
+    const candidateProfiles = candidates
+      .map(
+        (candidate, index) => `
+**Candidate ${index + 1}: ${candidate.name}**
+- Email: ${candidate.email}
+- Source: ${candidate.source || 'Unknown'}
+- Additional Info: ${candidate.sourceDetails || 'No additional info'}
+- Number of files: ${candidate.files?.length || 0}
+- Number of notes: ${candidate.notes?.length || 0}
+`,
+      )
+      .join('\n');
+
+    const prompt = `Compare the following candidates for the job position and provide a comprehensive comparative analysis.
+
+**Job Position:**
+Title: ${jobPosition.title}
+Description: ${jobPosition.description || 'No description provided'}
+
+**Candidates to Compare:**
+${candidateProfiles}
+
+Please provide a detailed comparison with the following structure:
+
+1. For each candidate, provide:
+   - **Skills Score (0-100)**: Rate the candidate's technical and professional skills match
+   - **Experience Score (0-100)**: Rate the candidate's relevant work experience
+   - **Education Score (0-100)**: Rate the candidate's educational qualifications
+   - **Overall Score (0-100)**: Calculate weighted overall (40% skills, 35% experience, 25% education)
+   - **Strengths**: List 3-5 key strengths specific to this candidate
+   - **Weaknesses**: List 2-4 potential gaps or concerns
+
+2. Provide comparative analysis:
+   - **Summary**: Brief overview comparing all candidates
+   - **Top Candidate**: Identify the strongest candidate and explain why
+   - **Key Differentiators**: List 3-5 factors that distinguish candidates from each other
+   - **Final Recommendation**: Detailed hiring recommendation including primary and backup candidates
+
+Return a JSON object with this exact structure (candidates MUST be sorted by overallScore descending):
+{
+  "candidates": [
+    {
+      "candidateUid": "string (use actual UID)",
+      "candidateName": "string",
+      "overallScore": number,
+      "skillsScore": number,
+      "experienceScore": number,
+      "educationScore": number,
+      "strengths": ["string", ...],
+      "weaknesses": ["string", ...]
+    },
+    ...
+  ],
+  "analysis": {
+    "summary": "string",
+    "topCandidateUid": "string (UID of highest scoring candidate)",
+    "topCandidateName": "string",
+    "recommendationReason": "string",
+    "keyDifferentiators": ["string", ...],
+    "finalRecommendation": "string"
+  }
+}`;
+
+    interface AIComparisonResponse {
+      candidates: {
+        candidateUid: string;
+        candidateName: string;
+        overallScore: number;
+        skillsScore: number;
+        experienceScore: number;
+        educationScore: number;
+        strengths: string[];
+        weaknesses: string[];
+      }[];
+      analysis: {
+        summary: string;
+        topCandidateUid: string;
+        topCandidateName: string;
+        recommendationReason: string;
+        keyDifferentiators: string[];
+        finalRecommendation: string;
+      };
+    }
+
+    try {
+      const { data } = await this.geminiService.generateJsonContent<AIComparisonResponse>(prompt, systemInstruction);
+
+      // Validate and normalize scores
+      const normalizeScore = (score: number): number => Math.max(0, Math.min(100, Math.round(score)));
+
+      // Sort candidates by overall score descending
+      const sortedCandidates = (data.candidates || [])
+        .map((candidate) => ({
+          candidateUid: candidate.candidateUid,
+          candidateName: candidate.candidateName,
+          overallScore: normalizeScore(candidate.overallScore || 0),
+          skillsScore: normalizeScore(candidate.skillsScore || 0),
+          experienceScore: normalizeScore(candidate.experienceScore || 0),
+          educationScore: normalizeScore(candidate.educationScore || 0),
+          strengths: candidate.strengths || [],
+          weaknesses: candidate.weaknesses || [],
+          rank: 0, // Will be set after sorting
+        }))
+        .sort((a, b) => b.overallScore - a.overallScore);
+
+      // Find top candidate
+      const topCandidate = sortedCandidates[0];
+
+      return {
+        candidates: sortedCandidates,
+        analysis: {
+          summary: data.analysis?.summary || 'No comparison summary available',
+          topCandidateUid: topCandidate?.candidateUid || '',
+          topCandidateName: topCandidate?.candidateName || '',
+          recommendationReason: data.analysis?.recommendationReason || 'No recommendation available',
+          keyDifferentiators: data.analysis?.keyDifferentiators || [],
+          finalRecommendation: data.analysis?.finalRecommendation || 'No final recommendation available',
+        },
+      };
+    } catch (error) {
+      this.logger.error(`Gemini AI comparison failed: ${error.message}`, error.stack);
+      throw new InternalServerErrorException(`Failed to generate AI comparison: ${error.message}`);
+    }
   }
 }

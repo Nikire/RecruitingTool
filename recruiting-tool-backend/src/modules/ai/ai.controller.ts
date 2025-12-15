@@ -6,6 +6,7 @@ import { ScoringService } from './scoring.service';
 import { BatchScoringService } from './batch-scoring.service';
 import { ParseResumeRequestDto, ParseResumeResponseDto } from './dto/parse-resume.dto';
 import { ScoreCandidateDto, CandidateScoreResponseDto, RankedCandidatesResponseDto } from './dto/candidate-scoring.dto';
+import { CompareCandidatesDto, CompareCandidatesResponseDto } from './dto/candidate-comparison.dto';
 import { BatchScoreRequestDto, BatchScoreResponseDto, BatchScoreStatusDto, BatchScoreResultDto } from './dto/batch-scoring.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -165,6 +166,47 @@ export class AiController {
   })
   async getRankedCandidates(@Param('jobPositionUid') jobPositionUid: string): Promise<RankedCandidatesResponseDto> {
     return this.scoringService.getRankedCandidates(jobPositionUid);
+  }
+
+  @Post('compare-candidates')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @Throttle({ default: { limit: 5, ttl: 3600000 } }) // 5 comparisons per hour
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Compare multiple candidates for a job position using AI',
+    description:
+      'Select 2-5 candidates and compare them side-by-side using Google Gemini AI. Provides detailed scores, strengths, weaknesses, and comparative analysis to help make hiring decisions.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Candidates compared successfully',
+    type: CompareCandidatesResponseDto,
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid input - must select 2-5 candidates',
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - Valid JWT token required',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many AI comparison requests. Maximum 5 comparisons per hour per IP.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'One or more candidates or job position not found',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error - AI API error or configuration issue',
+  })
+  async compareCandidates(@Body() compareCandidatesDto: CompareCandidatesDto): Promise<CompareCandidatesResponseDto> {
+    return this.scoringService.compareCandidates(compareCandidatesDto.candidateUids, compareCandidatesDto.jobPositionUid);
   }
 
   @Post('batch-score')

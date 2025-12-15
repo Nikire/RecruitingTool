@@ -41,6 +41,7 @@
     "n_a": "N/A",
     "refresh": "Actualizar",
     "unknown_user": "Usuario Desconocido",
+    "someone": "alguien",
     "access_denied": "Acceso Denegado",
     "yes": "Sí",
     "no": "No",
@@ -125,6 +126,7 @@
     "interview_cancel_failed": "Error al cancelar la entrevista",
     "interview_delete_failed": "Error al eliminar la entrevista",
     "interview_reschedule_failed": "Error al reprogramar la entrevista",
+    "comparison_failed": "Error al comparar candidatos. Por favor, inténtelo de nuevo.",
     "boundary": {
       "title": "Algo salió mal",
       "message": "Ocurrió un error inesperado. Por favor intente recargar la página o vuelva a la página de inicio.",
@@ -208,7 +210,28 @@
       "OTHER": "Otro",
       "CAREER_PAGE": "Página de Carreras",
       "JOB_BOARD": "Portal de Empleo"
-    }
+    },
+    "compare_selected": "Comparar Seleccionados",
+    "compare_candidates_title": "Comparación de Candidatos con IA",
+    "compare_candidates_hint": "Compara {{count}} candidatos contra una posición de trabajo usando análisis de IA",
+    "select_job_position": "Seleccionar Posición de Trabajo",
+    "comparing_candidates": "Analizando candidatos con IA...",
+    "comparing": "Comparando...",
+    "compare": "Comparar",
+    "comparison_success": "Candidatos comparados exitosamente",
+    "top_recommendation": "Recomendación Principal",
+    "rank": "Rango",
+    "overall_score": "Puntuación General",
+    "skills_score": "Habilidades",
+    "experience_score": "Experiencia",
+    "education_score": "Educación",
+    "strengths": "Fortalezas",
+    "weaknesses": "Debilidades",
+    "detailed_analysis": "Análisis Detallado",
+    "ai_analysis": "Análisis de IA",
+    "summary": "Resumen",
+    "key_differentiators": "Diferenciadores Clave",
+    "final_recommendation": "Recomendación Final"
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -288,6 +311,7 @@
     "create_title": "Crear Nuevo Proceso de Contratación",
     "update_title": "Actualizar Proceso de Contratación",
     "no_processes": "No hay procesos de contratación disponibles",
+    "search_placeholder": "Buscar procesos de contratación...",
     "title_auto_generated": "El título del proceso de contratación se generará automáticamente como:",
     "title_format": "[Posición de Trabajo] - [Nombre del Candidato]",
     "candidate_selection": "Selección de Candidato",
@@ -1132,6 +1156,7 @@
     "applications": "Aplicaciones",
     "candidates": "Candidatos",
     "job_positions": "Posiciones de Trabajo",
+    "hiring_processes": "Procesos de Contratación",
     "email_templates": "Plantillas de Correo",
     "aria_label": "navegación de rrhh",
     "analytics": "Análisis",
@@ -2053,7 +2078,8 @@
       "title": "Bienvenido a Tu Panel de RRHH",
       "subtitle": "Configuremos tu cuenta para comenzar a gestionar tu proceso de reclutamiento.",
       "your_company": "Tu Empresa",
-      "info_message": "Has sido invitado a unirte a esta empresa como miembro del equipo de RRHH. Completa tu perfil para comenzar."
+      "invited_message": "{{inviterName}} te ha invitado a unirte a esta empresa como miembro del equipo de RRHH. Completa tu perfil para comenzar.",
+      "welcome_message": "¡Bienvenido! Completa tu perfil para comenzar a gestionar tu proceso de reclutamiento."
     },
     "profile_setup": {
       "title": "Completa Tu Perfil",

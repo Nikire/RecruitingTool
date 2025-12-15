@@ -33,6 +33,27 @@ export class OnboardingService {
     // Check if user is connected to a company
     const hasCompany = !!user.companyId;
 
+    // Check if user was invited (has an accepted invitation)
+    const acceptedInvitation = await this.databaseService.companyInvitation.findFirst({
+      where: {
+        email: user.email,
+        status: 'ACCEPTED',
+      },
+      include: {
+        invitedBy: {
+          select: {
+            name: true,
+          },
+        },
+      },
+      orderBy: {
+        acceptedAt: 'desc',
+      },
+    });
+
+    const wasInvited = !!acceptedInvitation;
+    const invitedByName = acceptedInvitation?.invitedBy?.name;
+
     // Check if profile is complete (basic fields filled)
     const isProfileComplete = !!(user.position && user.department && user.phoneNumber && user.timezone);
 
@@ -51,6 +72,8 @@ export class OnboardingService {
       isOnboardingComplete,
       isProfileComplete,
       hasCompany,
+      wasInvited,
+      invitedByName,
       nextStep,
     };
   }

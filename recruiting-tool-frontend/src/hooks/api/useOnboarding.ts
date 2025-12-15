@@ -6,6 +6,8 @@ export interface HROnboardingStatus {
   isOnboardingComplete: boolean;
   isProfileComplete: boolean;
   hasCompany: boolean;
+  wasInvited: boolean;
+  invitedByName?: string;
   nextStep: "complete_profile" | "dashboard";
 }
 

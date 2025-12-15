@@ -11,6 +11,7 @@ import AddIcon from "@mui/icons-material/Add";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
+import CompareArrowsIcon from "@mui/icons-material/CompareArrows";
 import { useState } from "react";
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { useCandidatesSearch } from "../../hooks/api/state/useSearchState";
@@ -19,6 +20,7 @@ import { useDialog } from "../../hooks/useDialog";
 import CreateCandidateDialog from "../../components/dialogs/CreateCandidateDialog";
 import ManualCandidateDialog from "../../components/dialogs/ManualCandidateDialog";
 import ImportCandidatesDialog from "../../components/dialogs/ImportCandidatesDialog";
+import CompareCandidatesDialog from "../../components/dialogs/CompareCandidatesDialog";
 import { canManageResources } from "../../utils/permissions";
 import { FilterBar, FilterBarFilters } from "../../components/filters";
 import CandidatesList from "../../components/candidates/CandidatesList";
@@ -33,10 +35,12 @@ const CandidatesPage: React.FC = () => {
   const createDialog = useDialog<never>();
   const manualDialog = useDialog<never>();
   const importDialog = useDialog<never>();
+  const compareDialog = useDialog<never>();
   const { user, isLoading: userLoading } = useAuthMe();
   const [searchState, setSearchState] = useCandidatesSearch();
   const { page, limit, search } = searchState;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
 
   const canManage = canManageResources(user);
 
@@ -94,6 +98,25 @@ const CandidatesPage: React.FC = () => {
         secondaryActions={
           canManage ? (
             <>
+              {selectedCandidates.length >= 2 && (
+                <Button
+                  variant="outlined"
+                  startIcon={<CompareArrowsIcon />}
+                  onClick={compareDialog.open}
+                  disabled={
+                    selectedCandidates.length < 2 ||
+                    selectedCandidates.length > 5
+                  }
+                  sx={{
+                    width: { xs: "100%", sm: "auto" },
+                    minHeight: "44px",
+                    mr: 1,
+                  }}
+                >
+                  {t("candidates.compare_selected")} (
+                  {selectedCandidates.length})
+                </Button>
+              )}
               <Button
                 variant="contained"
                 startIcon={<AddIcon />}
@@ -163,6 +186,8 @@ const CandidatesPage: React.FC = () => {
         search={search}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
+        selectedCandidates={selectedCandidates}
+        onSelectionChange={setSelectedCandidates}
       />
 
       <CreateCandidateDialog
@@ -178,6 +203,12 @@ const CandidatesPage: React.FC = () => {
       <ImportCandidatesDialog
         open={importDialog.isOpen}
         onClose={importDialog.close}
+      />
+
+      <CompareCandidatesDialog
+        open={compareDialog.isOpen}
+        onClose={compareDialog.close}
+        candidateUids={selectedCandidates}
       />
     </Box>
   );

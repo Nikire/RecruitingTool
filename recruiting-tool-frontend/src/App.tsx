@@ -17,6 +17,7 @@ import JobPositionsPage from "./pages/job-positions/JobPositionsPage";
 import JobPositionDetailPage from "./pages/job-position-detail/JobPositionDetailPage";
 import CareersPage from "./pages/careers/CareersPage";
 import CandidatesPage from "./pages/candidates/CandidatesPage";
+import HiringProcessesPage from "./pages/hiring-processes/HiringProcessesPage";
 import { CompaniesPage } from "./pages/companies/CompaniesPage";
 import UserManagementPage from "./pages/users/UserManagementPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
@@ -134,6 +135,10 @@ function App() {
               <Route
                 path="/hr/job-positions/:uid"
                 element={<HRJobPositionDetailPage />}
+              />
+              <Route
+                path="/hr/hiring-processes"
+                element={<HiringProcessesPage />}
               />
               <Route path="/hr/analytics" element={<AnalyticsPage />} />
               <Route

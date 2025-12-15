@@ -46,7 +46,10 @@ const HROnboardingWizard: React.FC = () => {
     formState: { errors },
   } = useForm<CompleteHROnboardingData>({
     defaultValues: {
-      position: user?.position || "",
+      position:
+        user?.position ||
+        localStorage.getItem("hr_onboarding_position") ||
+        "",
       department: user?.department || "",
       phoneNumber: user?.phoneNumber || "",
       timezone:
@@ -73,6 +76,8 @@ const HROnboardingWizard: React.FC = () => {
   const onSubmit = (data: CompleteHROnboardingData) => {
     completeOnboarding(data, {
       onSuccess: (response) => {
+        // Clean up localStorage after successful onboarding
+        localStorage.removeItem("hr_onboarding_position");
         setIsCompleted(true);
         // Redirect after showing success message
         setTimeout(() => {
@@ -176,7 +181,7 @@ const HROnboardingWizard: React.FC = () => {
                   >
                     <BusinessIcon color="primary" sx={{ fontSize: 40 }} />
                     <Box>
-                      <Typography variant="h6">{user.company.name}</Typography>
+                      <Typography variant="h6">{user?.company?.name}</Typography>
                       <Typography variant="body2" color="textSecondary">
                         {t("hr_onboarding.welcome.your_company")}
                       </Typography>
@@ -203,9 +208,19 @@ const HROnboardingWizard: React.FC = () => {
               </CardContent>
             </Card>
 
-            <Alert severity="info" sx={{ mb: 3 }}>
-              {t("hr_onboarding.welcome.info_message")}
-            </Alert>
+            {onboardingStatus?.wasInvited && (
+              <Alert severity="info" sx={{ mb: 3 }}>
+                {t("hr_onboarding.welcome.invited_message", {
+                  inviterName: onboardingStatus.invitedByName || t("common.someone"),
+                })}
+              </Alert>
+            )}
+
+            {!onboardingStatus?.wasInvited && (
+              <Alert severity="success" sx={{ mb: 3 }}>
+                {t("hr_onboarding.welcome.welcome_message")}
+              </Alert>
+            )}
 
             <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
               <Button variant="contained" onClick={() => setActiveStep(1)}>

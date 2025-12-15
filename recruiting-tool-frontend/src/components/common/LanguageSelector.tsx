@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   IconButton,
   Menu,
@@ -46,11 +46,30 @@ const LANGUAGES: LanguageOption[] = [
 const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [currentLang, setCurrentLang] = useState<string>(i18n.language);
   const open = Boolean(anchorEl);
 
-  // Get current language
+  // Update current language state when i18n language changes
+  useEffect(() => {
+    const handleLanguageChanged = (lng: string) => {
+      setCurrentLang(lng);
+    };
+
+    // Set initial language
+    setCurrentLang(i18n.language);
+
+    // Listen to language change events
+    i18n.on('languageChanged', handleLanguageChanged);
+
+    // Cleanup listener on unmount
+    return () => {
+      i18n.off('languageChanged', handleLanguageChanged);
+    };
+  }, [i18n]);
+
+  // Get current language option from state
   const currentLanguage =
-    LANGUAGES.find((lang) => lang.code === i18n.language) || LANGUAGES[0];
+    LANGUAGES.find((lang) => lang.code === currentLang) || LANGUAGES[0];
 
   /**
    * Opens the language menu

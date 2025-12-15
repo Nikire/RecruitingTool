@@ -17,8 +17,10 @@ import { canManageResources } from "../../utils/permissions";
 import { ActionsCell, DateCell } from "../tables";
 import { DataTable, DataTableColumn } from "../shared/DataTable";
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-interface CandidatesListProps extends SearchableListProps {}
+interface CandidatesListProps extends SearchableListProps {
+  selectedCandidates?: string[]; // Array of selected candidate UIDs
+  onSelectionChange?: (selectedUids: string[]) => void; // Selection change handler
+}
 
 const CandidatesList: React.FC<CandidatesListProps> = ({
   page,
@@ -26,6 +28,8 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
   search,
   onPageChange,
   onLimitChange,
+  selectedCandidates,
+  onSelectionChange,
 }) => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
@@ -164,6 +168,13 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
         serverPagination={true}
+        checkboxSelection={!!onSelectionChange}
+        rowSelectionModel={selectedCandidates || []}
+        onRowSelectionModelChange={(newSelection) => {
+          if (onSelectionChange) {
+            onSelectionChange(newSelection as string[]);
+          }
+        }}
       />
 
       <UpdateCandidateDialog

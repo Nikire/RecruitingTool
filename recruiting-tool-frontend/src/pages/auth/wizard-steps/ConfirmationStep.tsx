@@ -74,6 +74,12 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
       registrationData.companyName = formData.companyName;
     }
 
+    // For HR users, store jobTitle in localStorage to pre-populate onboarding
+    // This prevents duplicate data entry during onboarding
+    if (formData.selectedRole === "HR" && formData.jobTitle) {
+      localStorage.setItem("hr_onboarding_position", formData.jobTitle);
+    }
+
     registerUser(registrationData, {
       onSuccess: () => {
         setIsRegistered(true);

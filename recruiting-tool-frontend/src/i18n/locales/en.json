@@ -41,6 +41,7 @@
     "n_a": "N/A",
     "refresh": "Refresh",
     "unknown_user": "Unknown User",
+    "someone": "someone",
     "access_denied": "Access Denied",
     "yes": "Yes",
     "no": "No",
@@ -125,6 +126,7 @@
     "interview_cancel_failed": "Failed to cancel interview",
     "interview_delete_failed": "Failed to delete interview",
     "interview_reschedule_failed": "Failed to reschedule interview",
+    "comparison_failed": "Failed to compare candidates. Please try again.",
     "boundary": {
       "title": "Something went wrong",
       "message": "An unexpected error occurred. Please try reloading the page or go back to the home page.",
@@ -208,7 +210,28 @@
       "OTHER": "Other",
       "CAREER_PAGE": "Career Page",
       "JOB_BOARD": "Job Board"
-    }
+    },
+    "compare_selected": "Compare Selected",
+    "compare_candidates_title": "AI Candidate Comparison",
+    "compare_candidates_hint": "Compare {{count}} candidates against a job position using AI analysis",
+    "select_job_position": "Select Job Position",
+    "comparing_candidates": "Analyzing candidates with AI...",
+    "comparing": "Comparing...",
+    "compare": "Compare",
+    "comparison_success": "Candidates compared successfully",
+    "top_recommendation": "Top Recommendation",
+    "rank": "Rank",
+    "overall_score": "Overall Score",
+    "skills_score": "Skills",
+    "experience_score": "Experience",
+    "education_score": "Education",
+    "strengths": "Strengths",
+    "weaknesses": "Weaknesses",
+    "detailed_analysis": "Detailed Analysis",
+    "ai_analysis": "AI Analysis",
+    "summary": "Summary",
+    "key_differentiators": "Key Differentiators",
+    "final_recommendation": "Final Recommendation"
   },
   "job_positions": {
     "title": "Job Positions",
@@ -288,6 +311,7 @@
     "create_title": "Create New Hiring Process",
     "update_title": "Update Hiring Process",
     "no_processes": "No hiring processes available",
+    "search_placeholder": "Search hiring processes...",
     "title_auto_generated": "The hiring process title will be automatically generated as:",
     "title_format": "[Job Position] - [Candidate Name]",
     "candidate_selection": "Candidate Selection",
@@ -1126,6 +1150,7 @@
     "applications": "Applications",
     "candidates": "Candidates",
     "job_positions": "Job Positions",
+    "hiring_processes": "Hiring Processes",
     "email_templates": "Email Templates",
     "aria_label": "hr navigation",
     "analytics": "Analytics",
@@ -2047,7 +2072,8 @@
       "title": "Welcome to Your HR Dashboard",
       "subtitle": "Let's get you set up to start managing your recruitment process.",
       "your_company": "Your Company",
-      "info_message": "You've been invited to join this company as an HR team member. Complete your profile to get started."
+      "invited_message": "You've been invited by {{inviterName}} to join this company as an HR team member. Complete your profile to get started.",
+      "welcome_message": "Welcome! Complete your profile to get started with managing your recruitment process."
     },
     "profile_setup": {
       "title": "Complete Your Profile",

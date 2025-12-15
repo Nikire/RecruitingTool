@@ -11,6 +11,12 @@ export class HROnboardingStatusDto {
   @ApiProperty({ description: 'Whether user is connected to a company', example: true })
   hasCompany: boolean;
 
+  @ApiProperty({ description: 'Whether user was invited by another user', example: false })
+  wasInvited: boolean;
+
+  @ApiProperty({ description: 'Name of user who invited them (if invited)', example: 'John Doe', required: false })
+  invitedByName?: string;
+
   @ApiProperty({ description: 'Next step in onboarding', example: 'complete_profile' })
   nextStep: 'complete_profile' | 'dashboard';
 }

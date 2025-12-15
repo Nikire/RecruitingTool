@@ -81,6 +81,7 @@
 		"globals": "^15.14.0",
 		"jsdom": "25.0.1",
 		"msw": "^2.12.4",
+		"playwright": "^1.57.0",
 		"prettier": "^3.7.4",
 		"tsx": "^4.21.0",
 		"typescript": "^5.8.3",

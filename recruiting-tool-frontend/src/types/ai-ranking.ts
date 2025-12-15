@@ -63,3 +63,54 @@ export function getScoreTierColor(
       return "error";
   }
 }
+
+/**
+ * Candidate Comparison Types (AI Feature #243)
+ */
+
+/**
+ * Request to compare multiple candidates
+ */
+export interface CompareCandidatesRequest {
+  candidateUids: string[]; // 2-5 candidate UIDs to compare
+  jobPositionUid: string; // Job position to compare against
+}
+
+/**
+ * Individual candidate comparison summary
+ */
+export interface CandidateComparison {
+  candidateUid: string;
+  candidateName: string;
+  overallScore: number; // 0-100
+  skillsScore: number; // 0-100
+  experienceScore: number; // 0-100
+  educationScore: number; // 0-100
+  strengths: string[]; // Key strengths identified by AI
+  weaknesses: string[]; // Gaps or concerns identified by AI
+  rank: number; // 1-based ranking (1 = best)
+}
+
+/**
+ * AI-generated comparative analysis
+ */
+export interface ComparisonAnalysis {
+  summary: string; // Overall comparison summary
+  topCandidateUid: string; // UID of top-ranked candidate
+  topCandidateName: string; // Name of top candidate
+  recommendationReason: string; // Why top candidate is recommended
+  keyDifferentiators: string[]; // Factors distinguishing candidates
+  finalRecommendation: string; // Final hiring recommendation
+}
+
+/**
+ * Complete comparison response from API
+ */
+export interface CompareCandidatesResponse {
+  jobPositionUid: string;
+  jobPositionTitle: string;
+  totalCandidates: number;
+  candidates: CandidateComparison[]; // Sorted by rank
+  comparisonAnalysis: ComparisonAnalysis;
+  comparedAt: string; // ISO timestamp
+}
