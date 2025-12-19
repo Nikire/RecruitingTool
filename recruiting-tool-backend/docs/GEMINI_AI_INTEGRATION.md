@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Recruiting Tool uses **Google Gemini AI** for advanced AI-powered features including:
+The BorderLess uses **Google Gemini AI** for advanced AI-powered features including:
 - **Resume Parsing**: Automatically extract structured data from uploaded resumes (PDF, DOCX, TXT)
 - **Candidate Scoring**: AI-powered candidate evaluation against job position requirements
 - **Batch Scoring**: Process multiple candidates at once with queue management

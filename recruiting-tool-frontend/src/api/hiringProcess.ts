@@ -17,7 +17,14 @@ export function getHiringProcesses(
 export function listHiringProcesses(
   params: PaginationParams,
 ): Promise<PaginatedResponse<HiringProcess>> {
-  return api.get("/hiring-process/list", { params }).then((res) => res.data);
+  // Filter out 'all' status value - backend only accepts valid enum values
+  const filteredParams = { ...params };
+  if (filteredParams.status === "all" || filteredParams.status === "") {
+    delete filteredParams.status;
+  }
+  return api
+    .get("/hiring-process/list", { params: filteredParams })
+    .then((res) => res.data);
 }
 
 export function createHiringProcess(

@@ -1,4 +1,4 @@
-# ProductHunt Launch Plan - Recruiting Tool
+# ProductHunt Launch Plan - BorderLess
 
 **Created:** 2025-12-06
 **Target Launch Date:** TBD (Recommended: Tuesday or Wednesday after Quick Wins Phase)
@@ -23,7 +23,7 @@
 ---
 
 ### Short Description (260 chars max)
-"Recruiting Tool is an AI-first applicant tracking system designed for small teams. Unlike enterprise ATS costing $500+/month, we offer intelligent resume screening, automated interview scheduling, and collaborative hiring - starting free with self-hosted deployment."
+"BorderLess is an AI-first applicant tracking system designed for small teams. Unlike enterprise ATS costing $500+/month, we offer intelligent resume screening, automated interview scheduling, and collaborative hiring - starting free with self-hosted deployment."
 
 (258 chars)
 
@@ -37,7 +37,7 @@
 
 ### Key Differentiators vs Competitors
 
-| Feature | Recruiting Tool | Greenhouse | Lever | BambooHR | Workable |
+| Feature | BorderLess | Greenhouse | Lever | BambooHR | Workable |
 |---------|----------------|------------|-------|----------|----------|
 | **Pricing** | Free (self-hosted) → $79/mo | $6,000+/year | $5,000+/year | $2,400+/year | $3,600+/year |
 | **AI Resume Screening** | ✓ Built-in | ✗ (coming soon) | ✗ | ✗ | ✗ |
@@ -158,7 +158,7 @@
 "Building AI-first HR tools for modern startups"
 
 **Bio:**
-"Solo developer passionate about making recruiting suck less. Previously [your background]. Building Recruiting Tool to give small teams enterprise-level hiring tools without the enterprise price tag. Always happy to chat about AI, hiring, or self-hosted software!"
+"Solo developer passionate about making recruiting suck less. Previously [your background]. Building BorderLess to give small teams enterprise-level hiring tools without the enterprise price tag. Always happy to chat about AI, hiring, or self-hosted software!"
 
 **Social Links:**
 - Twitter/X: @yourusername
@@ -177,7 +177,7 @@
 - Tools: Loom (free), Screen Studio ($89), Camtasia
 - Script structure:
   - 0:00-0:30 → Problem statement ("Hiring is broken for small teams")
-  - 0:30-1:00 → Solution overview ("Meet Recruiting Tool")
+  - 0:30-1:00 → Solution overview ("Meet BorderLess")
   - 1:00-2:30 → Feature walkthrough (AI screening → scheduling → collaboration)
   - 2:30-3:00 → Pricing and CTA ("Start free with Docker, upgrade when ready")
 - Upload to YouTube (unlisted), embed on ProductHunt
@@ -349,13 +349,13 @@ We're not trying to replace enterprise ATS for 1000+ person companies - we're fo
 ```
 Hey ProductHunt! 👋
 
-I'm [Your Name], and I built Recruiting Tool because hiring is broken for small teams.
+I'm [Your Name], and I built BorderLess because hiring is broken for small teams.
 
 **The Problem:**
 Small companies (<50 employees) can't afford enterprise ATS like Greenhouse ($6,000/year) or Lever ($5,000/year), so they're stuck with spreadsheets and email. Meanwhile, they're competing for talent against companies with sophisticated hiring tools.
 
 **The Solution:**
-Recruiting Tool is an AI-first applicant tracking system that's:
+BorderLess is an AI-first applicant tracking system that's:
 - **Free to self-host** (Docker deployment in <30 min)
 - **AI-powered** (resume screening and ranking built-in)
 - **Open source** (audit code, contribute features, no vendor lock-in)
@@ -503,7 +503,7 @@ Team scorecards, interview feedback, shared notes, and hiring process visibility
 
 ### Primary CTA (for Free/Self-Hosted Users)
 ```
-🚀 Deploy Recruiting Tool in Under 30 Minutes
+🚀 Deploy BorderLess in Under 30 Minutes
 
 git clone https://github.com/yourusername/recruiting-tool
 cd recruiting-tool
@@ -573,7 +573,7 @@ Expires: 7 days after launch
 
 **Referral Program (Optional - launch later)**
 ```
-Refer 3 friends who deploy Recruiting Tool → Get 1 month free cloud hosting
+Refer 3 friends who deploy BorderLess → Get 1 month free cloud hosting
 
 Each friend who upgrades to paid → You get 1 additional month free
 
@@ -681,7 +681,7 @@ Enter your email to download (PDF, 25 pages)
 - [ ] Host live demo/AMA session (Zoom, Twitter Spaces)
 
 ### Week 2-4: Convert Interest to Revenue
-- [ ] Email free users: "Enjoying Recruiting Tool? Upgrade to unlock [feature]"
+- [ ] Email free users: "Enjoying BorderLess? Upgrade to unlock [feature]"
 - [ ] Create case study from most engaged beta user
 - [ ] Launch referral program
 - [ ] Guest post on hiring/HR blogs
@@ -733,7 +733,7 @@ See **Section 3: First Comment Strategy** above for full template.
 ### Twitter/X Launch Thread
 
 ```
-🚀 Exciting day! I'm launching Recruiting Tool on ProductHunt!
+🚀 Exciting day! I'm launching BorderLess on ProductHunt!
 
 After 6 months of building, it's finally ready to share with the world.
 
@@ -757,7 +757,7 @@ There had to be a better way.
 
 ---
 
-I built Recruiting Tool to give small teams enterprise-level hiring tools without the enterprise price tag.
+I built BorderLess to give small teams enterprise-level hiring tools without the enterprise price tag.
 
 ✅ Free & self-hosted (Docker)
 ✅ AI resume screening (built-in)
@@ -869,12 +869,12 @@ Check it out and let me know what you think!
 
 ### Email to Friends/Beta Users
 
-**Subject:** I'm launching Recruiting Tool on ProductHunt today! 🚀
+**Subject:** I'm launching BorderLess on ProductHunt today! 🚀
 
 ```
 Hey [Name],
 
-Big day! I'm launching Recruiting Tool on ProductHunt today and would love your support.
+Big day! I'm launching BorderLess on ProductHunt today and would love your support.
 
 If you have 2 minutes, here's how you can help:
 
@@ -904,7 +904,7 @@ P.S. - If you know anyone hiring, I'd love an intro. First 50 users get 38% off 
 **Title:** "Show HN: Open-source recruiting tool with AI screening (self-hosted)"
 
 ```
-Hey HN! I built Recruiting Tool, an AI-first applicant tracking system for small teams.
+Hey HN! I built BorderLess, an AI-first applicant tracking system for small teams.
 
 **Why?**
 Enterprise ATS like Greenhouse ($6K/year) and Lever ($5K/year) are too expensive for small companies. But spreadsheets and email aren't cutting it when you're competing for talent.
@@ -1095,7 +1095,7 @@ A: Self-hosted users keep running (you own the code and data). Managed cloud use
 A: Community (free tier), email support 48h (Professional), priority 24h (Enterprise).
 
 **Q: Can I white-label this?**
-A: Enterprise tier includes white-labeling (custom branding, remove "Powered by Recruiting Tool").
+A: Enterprise tier includes white-labeling (custom branding, remove "Powered by BorderLess").
 
 **Q: What's your roadmap?**
 A: Q1 2025: Analytics dashboard. Q2: Integration marketplace. Q3: Mobile app. See full roadmap: [GitHub Projects link]

@@ -32,13 +32,17 @@ import {
   useMarkAllAsRead,
   useDeleteNotification,
 } from "../../hooks/useNotifications";
+import { useAcceptInvitation } from "../../hooks/useInvitations";
 import { Notification } from "../../types/notification";
 import {
   getNotificationIcon,
   getNotificationColor,
   getNotificationNavigationPath,
+  isInvitationNotification,
 } from "../../utils/notificationUtils";
 import { useNavigate } from "react-router-dom";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -73,6 +77,8 @@ const NotificationsPage: React.FC = () => {
   const { mutate: markAsRead } = useMarkAsRead();
   const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllAsRead();
   const { mutate: deleteNotification } = useDeleteNotification();
+  const { mutate: acceptInvitation, isPending: isAcceptingInvitation } =
+    useAcceptInvitation();
 
   // Calculate unread count
   const unreadCount = notifications.filter((n) => !n.isRead).length;
@@ -116,6 +122,34 @@ const NotificationsPage: React.FC = () => {
   ) => {
     setPage(value);
     window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleAcceptInvitation = (
+    notification: Notification,
+    event: React.MouseEvent,
+  ) => {
+    event.stopPropagation();
+
+    const invitationToken = notification.metadata?.invitationToken as string;
+    if (!invitationToken) {
+      return;
+    }
+
+    acceptInvitation(invitationToken, {
+      onSuccess: () => {
+        // Delete the notification after successful acceptance
+        deleteNotification(notification.uid);
+      },
+    });
+  };
+
+  const handleDeclineInvitation = (
+    notification: Notification,
+    event: React.MouseEvent,
+  ) => {
+    event.stopPropagation();
+    // Simply delete the notification to decline
+    deleteNotification(notification.uid);
   };
 
   // Calculate total pages (mock for now - ideally backend should return total count)
@@ -329,15 +363,44 @@ const NotificationsPage: React.FC = () => {
                       sx={{ flex: 1, pr: 2 }}
                     />
 
-                    {/* Delete Button */}
-                    <IconButton
-                      size="small"
-                      onClick={(e) => handleDelete(notification.uid, e)}
-                      aria-label={t("notifications.delete")}
-                      sx={{ mt: 1 }}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {/* Action Buttons */}
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
+                      {/* Invitation Actions */}
+                      {isInvitationNotification(notification) && (
+                        <Box sx={{ display: "flex", gap: 1 }}>
+                          <Button
+                            size="small"
+                            variant="contained"
+                            color="success"
+                            startIcon={<CheckIcon />}
+                            onClick={(e) => handleAcceptInvitation(notification, e)}
+                            disabled={isAcceptingInvitation}
+                          >
+                            {t("notifications.invitation.accept")}
+                          </Button>
+                          <Button
+                            size="small"
+                            variant="outlined"
+                            color="error"
+                            startIcon={<CloseIcon />}
+                            onClick={(e) => handleDeclineInvitation(notification, e)}
+                          >
+                            {t("notifications.invitation.decline")}
+                          </Button>
+                        </Box>
+                      )}
+
+                      {/* Delete Button */}
+                      {!isInvitationNotification(notification) && (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleDelete(notification.uid, e)}
+                          aria-label={t("notifications.delete")}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      )}
+                    </Box>
                   </ListItem>
 
                   {/* Divider between items */}

@@ -387,7 +387,7 @@ Open Swagger UI: `http://localhost:4000/api`
 
 **Solution:**
 1. Go to https://myaccount.google.com/permissions
-2. Find "Recruiting Tool" (or your app name)
+2. Find "BorderLess" (or your app name)
 3. Click "Remove access"
 4. Try authorization again
 

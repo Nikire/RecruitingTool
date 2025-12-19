@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a comprehensive guide to the role-based access control (RBAC) system implemented in the Recruiting Tool application. The system uses hierarchical roles with different permission levels to control access to features and API endpoints.
+This document provides a comprehensive guide to the role-based access control (RBAC) system implemented in the BorderLess application. The system uses hierarchical roles with different permission levels to control access to features and API endpoints.
 
 ---
 

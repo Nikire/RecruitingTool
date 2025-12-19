@@ -1,10 +1,10 @@
 # Authentication API
 
-Complete guide to authentication and authorization in Recruiting Tool API.
+Complete guide to authentication and authorization in BorderLess API.
 
 ## Overview
 
-Recruiting Tool uses **JWT (JSON Web Tokens)** for authentication with **role-based authorization**.
+BorderLess uses **JWT (JSON Web Tokens)** for authentication with **role-based authorization**.
 
 **Base URL:** `http://localhost:4000/api`
 

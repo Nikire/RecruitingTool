@@ -1,10 +1,10 @@
-# Recruiting Tool Documentation Vault
+# BorderLess Documentation Vault
 
-Welcome to the comprehensive Obsidian.md documentation vault for the Recruiting Tool project.
+Welcome to the comprehensive Obsidian.md documentation vault for the BorderLess project.
 
 ## What is This Vault?
 
-This is an interconnected knowledge base that documents the entire Recruiting Tool application - a full-stack HR management system built with modern technologies. The vault uses Obsidian.md's linking and organization features to create a navigable, searchable documentation system.
+This is an interconnected knowledge base that documents the entire BorderLess application - a full-stack HR management system built with modern technologies. The vault uses Obsidian.md's linking and organization features to create a navigable, searchable documentation system.
 
 ## Quick Navigation
 
@@ -59,7 +59,7 @@ Documents use consistent categorization:
 
 ## Project Overview
 
-**Recruiting Tool** is a comprehensive HR management application that helps companies:
+**BorderLess** is a comprehensive HR management application that helps companies:
 - Manage job positions and hiring workflows
 - Track candidates through multi-stage processes
 - Handle job applications from external applicants

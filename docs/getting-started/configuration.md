@@ -1,6 +1,6 @@
 # Configuration Guide
 
-This guide covers all configuration options for Recruiting Tool, including environment variables, database settings, and third-party integrations.
+This guide covers all configuration options for BorderLess, including environment variables, database settings, and third-party integrations.
 
 ## Environment Variables Reference
 
@@ -88,7 +88,7 @@ These variables are used by Docker Compose to configure all services.
 |----------|-------------|---------|----------|
 | `SENDGRID_API_KEY` | SendGrid API key | - | No |
 | `SENDGRID_FROM_EMAIL` | Sender email address | - | No |
-| `SENDGRID_FROM_NAME` | Sender display name | `Recruiting Tool` | No |
+| `SENDGRID_FROM_NAME` | Sender display name | `BorderLess` | No |
 
 **Email Features:**
 - Application confirmations

@@ -1,6 +1,6 @@
 # GitHub Actions Workflows
 
-This directory contains automated workflows for the Recruiting Tool project.
+This directory contains automated workflows for the BorderLess project.
 
 ## Workflows
 

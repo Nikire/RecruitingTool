@@ -1,10 +1,10 @@
 # Docker Deployment Guide
 
-Complete guide to deploying Recruiting Tool using Docker and Docker Compose.
+Complete guide to deploying BorderLess using Docker and Docker Compose.
 
 ## Overview
 
-Recruiting Tool is fully containerized and can be deployed using Docker Compose with minimal configuration.
+BorderLess is fully containerized and can be deployed using Docker Compose with minimal configuration.
 
 **Included Services:**
 - **backend** - NestJS API server

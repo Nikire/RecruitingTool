@@ -161,7 +161,7 @@ services:
 
   n8n:
     image: n8nio/n8n:latest
-    container_name: recruitingtool-n8n
+    container_name: borderless-n8n
     restart: unless-stopped
     ports:
       - '5678:5678'
@@ -189,7 +189,7 @@ services:
 
   stripe-cli:
     image: stripe/stripe-cli:latest
-    container_name: recruitingtool-stripe-cli
+    container_name: borderless-stripe-cli
     restart: unless-stopped
     command:
       - listen
@@ -206,7 +206,7 @@ services:
       backend:
         condition: service_healthy
     # Note: The webhook signing secret will be displayed in logs on startup
-    # Use: docker logs recruitingtool-stripe-cli to see it
+    # Use: docker logs borderless-stripe-cli to see it
 
 networks:
   app-network:

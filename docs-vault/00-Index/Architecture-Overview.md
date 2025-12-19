@@ -7,11 +7,11 @@ status: current
 
 # Architecture Overview
 
-High-level overview of the Recruiting Tool system architecture, design patterns, and component interactions.
+High-level overview of the BorderLess system architecture, design patterns, and component interactions.
 
 ## System Architecture
 
-The Recruiting Tool follows a modern **full-stack architecture** with clear separation of concerns:
+The BorderLess follows a modern **full-stack architecture** with clear separation of concerns:
 
 ```mermaid
 graph TB

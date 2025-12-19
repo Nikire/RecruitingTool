@@ -1,6 +1,6 @@
 # Production Deployment Guide
 
-Complete checklist and best practices for deploying Recruiting Tool to production.
+Complete checklist and best practices for deploying BorderLess to production.
 
 ## Pre-Deployment Checklist
 

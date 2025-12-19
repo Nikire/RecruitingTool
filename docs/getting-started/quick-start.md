@@ -1,6 +1,6 @@
 # Quick Start Guide
 
-Get up and running with Recruiting Tool in 5 minutes! This guide walks you through creating your first company, job position, and hiring process.
+Get up and running with BorderLess in 5 minutes! This guide walks you through creating your first company, job position, and hiring process.
 
 ## Prerequisites
 
@@ -269,7 +269,7 @@ If SendGrid is configured:
 
 ## Mobile Access
 
-Recruiting Tool is responsive and works on mobile devices:
+BorderLess is responsive and works on mobile devices:
 - Review candidates on the go
 - Approve applications from your phone
 - Check dashboard metrics

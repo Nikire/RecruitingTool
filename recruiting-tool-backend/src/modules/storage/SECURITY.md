@@ -1,6 +1,6 @@
 # File Upload Security Controls
 
-This document describes the comprehensive security controls implemented for file uploads in the Recruiting Tool backend.
+This document describes the comprehensive security controls implemented for file uploads in the BorderLess backend.
 
 ## Overview
 

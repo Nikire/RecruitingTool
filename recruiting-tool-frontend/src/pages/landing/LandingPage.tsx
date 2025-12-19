@@ -1366,6 +1366,7 @@ const LandingPage = () => {
               <Stack spacing={2}>
                 <Typography
                   variant="body2"
+                  onClick={() => navigate("/privacy")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1377,6 +1378,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={() => navigate("/terms")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1388,6 +1390,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={() => navigate("/security")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",

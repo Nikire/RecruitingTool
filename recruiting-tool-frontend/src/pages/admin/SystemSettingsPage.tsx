@@ -87,7 +87,7 @@ const SystemSettingsPage: React.FC = () => {
   // Mock settings data - TODO: Replace with API call
   const settings: SystemSettings = {
     general: {
-      applicationName: "Recruiting Tool",
+      applicationName: "BorderLess",
       defaultTimezone: "America/New_York",
       defaultLanguage: "en",
       dateFormat: "MM/DD/YYYY",

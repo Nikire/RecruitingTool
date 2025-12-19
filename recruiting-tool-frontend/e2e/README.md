@@ -1,6 +1,6 @@
 # E2E Tests with Playwright
 
-Comprehensive end-to-end testing suite for the Recruiting Tool application using Playwright.
+Comprehensive end-to-end testing suite for the BorderLess application using Playwright.
 
 ## Overview
 

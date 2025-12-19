@@ -11,7 +11,7 @@ status: critical
 
 ## Overview
 
-The Recruiting Tool enforces a strict UID-only policy for all external interfaces. This means:
+The BorderLess enforces a strict UID-only policy for all external interfaces. This means:
 - All API route parameters use `:uid` not `:id`
 - All DTOs use `uid` and `*Uid` for identifiers
 - All frontend types and components use UIDs

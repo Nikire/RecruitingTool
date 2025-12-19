@@ -5,11 +5,11 @@ category: Meta
 status: current
 ---
 
-# Recruiting Tool Documentation Vault - Summary
+# BorderLess Documentation Vault - Summary
 
 ## What Was Created
 
-This Obsidian.md vault provides comprehensive documentation for the Recruiting Tool project. The vault is organized into logical sections with rich interconnections between related topics.
+This Obsidian.md vault provides comprehensive documentation for the BorderLess project. The vault is organized into logical sections with rich interconnections between related topics.
 
 ## Vault Location
 
@@ -521,7 +521,7 @@ To add or improve documentation:
 
 ## Project Information
 
-- **Project**: Recruiting Tool
+- **Project**: BorderLess
 - **Repository**: https://github.com/Nikire/RecruitingTool
 - **Vault Created**: 2025-11-24
 - **Vault Location**: `docs-vault/` in project root

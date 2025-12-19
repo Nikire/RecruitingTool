@@ -7,7 +7,7 @@ status: current
 
 # Quick Start Guide
 
-Get up and running with the Recruiting Tool development environment in minutes.
+Get up and running with the BorderLess development environment in minutes.
 
 ## Prerequisites
 

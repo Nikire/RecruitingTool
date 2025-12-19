@@ -1,6 +1,6 @@
-# Recruiting Tool Frontend
+# BorderLess Frontend
 
-React + TypeScript + Vite frontend for the Recruiting Tool application.
+React + TypeScript + Vite frontend for the BorderLess application.
 
 ## E2E Testing
 

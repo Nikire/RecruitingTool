@@ -43,6 +43,9 @@ import AcceptInvitationPage from "./pages/invitations/AcceptInvitationPage";
 import CheckStatusPage from "./pages/status/CheckStatusPage";
 import NotificationsPage from "./pages/notifications/NotificationsPage";
 import BillingPage from "./pages/billing/BillingPage";
+import TermsOfServicePage from "./pages/legal/TermsOfServicePage";
+import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
+import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -82,6 +85,11 @@ function App() {
             element={<BookingConfirmedPage />}
           />
 
+          {/* Legal Pages */}
+          <Route path="/terms" element={<TermsOfServicePage />} />
+          <Route path="/privacy" element={<PrivacyPolicyPage />} />
+          <Route path="/security" element={<SecurityPolicyPage />} />
+
           <Route element={<DocumentContainer />}>
             <Route
               path="/hiring-process/:uid"
@@ -113,17 +121,21 @@ function App() {
           </Route>
         </Route>
 
-        {/* HR Panel Routes - accessible to HR, COMPANY_OWNER, ADMIN, and SUPER_ADMIN */}
+        {/* HR Panel Routes - accessible to HR, HR_MANAGER, RECRUITER, COMPANY_OWNER, COMPANY_ADMIN, ADMIN, and SUPER_ADMIN */}
         <Route element={<ProtectedRoute />}>
           <Route
             element={
               <RoleGuard
                 allowedRoles={[
                   UserRoles.HR,
+                  UserRoles.HR_MANAGER,
+                  UserRoles.RECRUITER,
                   UserRoles.COMPANY_OWNER,
+                  UserRoles.COMPANY_ADMIN,
                   UserRoles.ADMIN,
                   UserRoles.SUPER_ADMIN,
                 ]}
+                showUnauthorized={true}
               />
             }
           >
@@ -149,6 +161,25 @@ function App() {
                 path="/settings/calendar"
                 element={<CalendarSettingsPage />}
               />
+            </Route>
+          </Route>
+
+          {/* Team Management - Only for HR_MANAGER and above */}
+          <Route
+            element={
+              <RoleGuard
+                allowedRoles={[
+                  UserRoles.HR_MANAGER,
+                  UserRoles.COMPANY_OWNER,
+                  UserRoles.COMPANY_ADMIN,
+                  UserRoles.ADMIN,
+                  UserRoles.SUPER_ADMIN,
+                ]}
+                showUnauthorized={true}
+              />
+            }
+          >
+            <Route element={<HRLayout />}>
               <Route path="/settings/team" element={<TeamManagementPage />} />
             </Route>
           </Route>

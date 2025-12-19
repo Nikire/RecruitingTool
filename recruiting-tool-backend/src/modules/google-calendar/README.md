@@ -1,6 +1,6 @@
 # Google Calendar Module
 
-Google Calendar integration for the Recruiting Tool with OAuth2 authentication, event management, and Google Meet link generation.
+Google Calendar integration for the BorderLess with OAuth2 authentication, event management, and Google Meet link generation.
 
 ## Quick Start
 

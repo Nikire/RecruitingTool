@@ -7,7 +7,7 @@ status: current
 
 # Getting Started with the Documentation Vault
 
-This guide will help you start using the Recruiting Tool documentation vault in Obsidian.
+This guide will help you start using the BorderLess documentation vault in Obsidian.
 
 ## What is Obsidian?
 

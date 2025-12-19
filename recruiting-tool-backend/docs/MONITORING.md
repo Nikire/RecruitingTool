@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Recruiting Tool application includes comprehensive monitoring and alerting infrastructure to ensure production reliability and quick issue detection.
+The BorderLess application includes comprehensive monitoring and alerting infrastructure to ensure production reliability and quick issue detection.
 
 **Key Features:**
 - Health check endpoints for all critical services
@@ -749,7 +749,7 @@ DATABASE_POOL_MAX_LIFETIME=1800000  # Max connection lifetime (ms)
 
 ## Summary
 
-The Recruiting Tool application includes production-ready monitoring infrastructure:
+The BorderLess application includes production-ready monitoring infrastructure:
 
 ✅ **Health Checks** - Comprehensive endpoints for all services
 ✅ **Structured Logging** - Correlation IDs, request/response tracking

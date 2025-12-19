@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides comprehensive procedures for backing up and restoring the Recruiting Tool system, including database, file storage, and configurations.
+This document provides comprehensive procedures for backing up and restoring the BorderLess system, including database, file storage, and configurations.
 
 ---
 

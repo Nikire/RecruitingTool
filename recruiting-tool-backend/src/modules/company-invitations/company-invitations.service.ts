@@ -125,6 +125,7 @@ export class CompanyInvitationsService {
             companyUid: company.uid,
             companyName: company.name,
             invitationUid: invitation.uid,
+            invitationToken: invitation.token, // Add token for easy acceptance
             role: dto.role,
             inviterUid: inviter.uid,
             inviterName: inviter.name,

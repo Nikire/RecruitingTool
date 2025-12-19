@@ -1,6 +1,6 @@
 # Team Management
 
-Guide to managing users, roles, and permissions in Recruiting Tool.
+Guide to managing users, roles, and permissions in BorderLess.
 
 ## Overview
 

@@ -1,6 +1,6 @@
 # API Rate Limiting
 
-This document describes the rate limiting implementation in the Recruiting Tool API to protect against abuse and manage API costs.
+This document describes the rate limiting implementation in the BorderLess API to protect against abuse and manage API costs.
 
 ## Overview
 

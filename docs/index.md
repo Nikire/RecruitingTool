@@ -1,10 +1,10 @@
-# Recruiting Tool Documentation
+# BorderLess Documentation
 
-Welcome to the Recruiting Tool documentation. This comprehensive guide will help you get started, understand the features, and integrate with the API.
+Welcome to the BorderLess documentation. This comprehensive guide will help you get started, understand the features, and integrate with the API.
 
-## About Recruiting Tool
+## About BorderLess
 
-Recruiting Tool is a modern, full-stack recruiting and HR management application designed to streamline the entire hiring process. From posting job positions to managing candidates through multi-stage recruitment workflows, Recruiting Tool provides HR teams with powerful tools to find the best talent efficiently.
+BorderLess is a modern, full-stack recruiting and HR management application designed to streamline the entire hiring process. From posting job positions to managing candidates through multi-stage recruitment workflows, BorderLess provides HR teams with powerful tools to find the best talent efficiently.
 
 ## Key Features
 
@@ -102,6 +102,6 @@ Recruiting Tool is a modern, full-stack recruiting and HR management application
 
 ## Documentation Version
 
-This documentation is for Recruiting Tool **v1.0.0** (current development version).
+This documentation is for BorderLess **v1.0.0** (current development version).
 
 Last updated: December 6, 2025

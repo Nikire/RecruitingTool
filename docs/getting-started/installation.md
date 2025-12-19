@@ -1,6 +1,6 @@
 # Installation Guide
 
-This guide will walk you through setting up Recruiting Tool on your local machine for development or testing.
+This guide will walk you through setting up BorderLess on your local machine for development or testing.
 
 ## Prerequisites
 
@@ -117,7 +117,7 @@ S3_FORCE_PATH_STYLE=true
 # Email Configuration (SendGrid)
 SENDGRID_API_KEY=your_sendgrid_api_key_here
 SENDGRID_FROM_EMAIL=noreply@yourcompany.com
-SENDGRID_FROM_NAME=Recruiting Tool
+SENDGRID_FROM_NAME=BorderLess
 
 # Frontend URL (for CORS and emails)
 FRONTEND_URL=http://localhost:3000
@@ -140,7 +140,7 @@ VITE_PORT=3000
 
 ### 3. Start the Application with Docker
 
-The easiest way to run Recruiting Tool is using Docker Compose:
+The easiest way to run BorderLess is using Docker Compose:
 
 ```bash
 docker-compose up -d --build
@@ -366,7 +366,7 @@ npx prisma migrate reset
 
 ## Next Steps
 
-Now that you have Recruiting Tool installed, check out:
+Now that you have BorderLess installed, check out:
 
 - [Configuration Guide](./configuration.md) - Detailed configuration options
 - [Quick Start](./quick-start.md) - Create your first job and hiring process

@@ -2,7 +2,7 @@
 
 **Duration:** 3-5 minutes
 **Target Audience:** HR teams, recruiters, hiring managers at small-to-medium businesses
-**Goal:** Showcase the Recruiting Tool as a modern, AI-powered, affordable alternative to enterprise ATS systems
+**Goal:** Showcase the BorderLess as a modern, AI-powered, affordable alternative to enterprise ATS systems
 
 ---
 
@@ -43,13 +43,13 @@
 ### Scene 2: Solution Introduction (0:15-0:45)
 
 **Visual:**
-- Clean fade to Recruiting Tool logo and landing page
+- Clean fade to BorderLess logo and landing page
 - Show modern, professional dashboard UI
 - Quick glimpses of key features (candidate cards, job positions, interview scheduling)
-- Split-screen comparison: "$6,000/year Greenhouse" vs "$948/year Recruiting Tool"
+- Split-screen comparison: "$6,000/year Greenhouse" vs "$948/year BorderLess"
 
 **Voiceover:**
-> "Introducing the Recruiting Tool - an AI-powered, self-hosted applicant tracking system built for small and medium businesses. Get enterprise features at a fraction of the cost. Professional tier starts at just $79/month, or deploy it yourself for free."
+> "Introducing the BorderLess - an AI-powered, self-hosted applicant tracking system built for small and medium businesses. Get enterprise features at a fraction of the cost. Professional tier starts at just $79/month, or deploy it yourself for free."
 
 **Music:** Uplifting, modern background music begins
 
@@ -271,7 +271,7 @@
 - Show quick comparison vs competitors:
   - Greenhouse: $6,000/year
   - Lever: $5,000/year
-  - **Recruiting Tool: $948/year**
+  - **BorderLess: $948/year**
 - End with logo and website URL
 
 **Voiceover:**
@@ -300,7 +300,7 @@
 > "Hiring is broken. Enterprise recruiting tools cost thousands per year, manual processes waste hours every week, and great candidates slip through the cracks while you're drowning in resumes."
 
 ### Introduction (0:15-0:45)
-> "Introducing the Recruiting Tool - an AI-powered, self-hosted applicant tracking system built for small and medium businesses. Get enterprise features at a fraction of the cost. Professional tier starts at just $79/month, or deploy it yourself for free."
+> "Introducing the BorderLess - an AI-powered, self-hosted applicant tracking system built for small and medium businesses. Get enterprise features at a fraction of the cost. Professional tier starts at just $79/month, or deploy it yourself for free."
 
 ### Onboarding (0:45-1:15)
 > "Getting started is simple. Create your company profile in under 2 minutes. Add your logo, company details, and you're ready to start hiring. The system automatically creates your public careers page with your branding."
@@ -556,7 +556,7 @@ Layer 1: Screen recording video
 
 **Description (5000 characters, front-load keywords):**
 ```
-Recruiting Tool is an AI-powered applicant tracking system (ATS) built for small and medium businesses. Get enterprise recruiting features at 87% less cost than Greenhouse or Lever.
+BorderLess is an AI-powered applicant tracking system (ATS) built for small and medium businesses. Get enterprise recruiting features at 87% less cost than Greenhouse or Lever.
 
 ✅ AI Resume Screening & Ranking
 ✅ Automated Interview Scheduling
@@ -735,7 +735,7 @@ Once main demo video is complete, consider creating:
    - "Setup in 2 Minutes"
 3. **Customer Testimonial Video** - Once you have paying customers
 4. **Technical Setup Video** - Self-hosted deployment walkthrough (15 min)
-5. **Comparison Video** - "Recruiting Tool vs Greenhouse" (3 min)
+5. **Comparison Video** - "BorderLess vs Greenhouse" (3 min)
 
 ---
 

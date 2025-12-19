@@ -7,7 +7,7 @@ status: current
 
 # Agent System Overview
 
-The Recruiting Tool project uses specialized AI agents to automate and streamline development tasks. Each agent is configured for specific responsibilities and has global permissions to act autonomously.
+The BorderLess project uses specialized AI agents to automate and streamline development tasks. Each agent is configured for specific responsibilities and has global permissions to act autonomously.
 
 ## Agent Philosophy
 

@@ -157,7 +157,7 @@ GOOGLE_REDIRECT_URI = 'http://localhost:4000/calendar/auth/google/callback' # Mu
 3. Click "Create Credentials" > "OAuth client ID"
 4. Select "Web application"
 5. Configure:
-   - **Name**: Recruiting Tool Calendar
+   - **Name**: BorderLess Calendar
    - **Authorized redirect URIs**: `http://localhost:4000/calendar/auth/google/callback`
 6. Copy the Client ID and Client Secret
 

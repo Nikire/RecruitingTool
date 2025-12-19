@@ -6,8 +6,12 @@ import { Observable } from 'rxjs';
 const permissionRoles = {
   1: RolesType.SUPER_ADMIN,
   2: RolesType.ADMIN,
-  3: RolesType.HR,
-  4: RolesType.USER,
+  3: RolesType.COMPANY_ADMIN,
+  4: RolesType.COMPANY_OWNER,
+  5: RolesType.HR_MANAGER,
+  6: RolesType.HR,
+  7: RolesType.RECRUITER,
+  8: RolesType.USER,
 } satisfies Record<number, RolesType>;
 
 @Injectable()

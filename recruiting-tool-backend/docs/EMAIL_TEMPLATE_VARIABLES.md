@@ -2,7 +2,7 @@
 
 ## Overview
 
-Email templates in the Recruiting Tool support **Handlebars** syntax for dynamic variable substitution. This allows you to create personalized email content using placeholders that get replaced with actual data when the email is sent.
+Email templates in the BorderLess support **Handlebars** syntax for dynamic variable substitution. This allows you to create personalized email content using placeholders that get replaced with actual data when the email is sent.
 
 ## Variable Syntax
 

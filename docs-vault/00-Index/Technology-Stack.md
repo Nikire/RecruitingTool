@@ -7,7 +7,7 @@ status: current
 
 # Technology Stack
 
-Complete overview of all technologies, frameworks, and libraries used in the Recruiting Tool project.
+Complete overview of all technologies, frameworks, and libraries used in the BorderLess project.
 
 ## Architecture Pattern
 

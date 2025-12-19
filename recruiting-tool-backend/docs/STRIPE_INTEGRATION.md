@@ -1,6 +1,6 @@
 # Stripe Subscription Integration
 
-This document describes the Stripe subscription integration for the Recruiting Tool SaaS platform.
+This document describes the Stripe subscription integration for the BorderLess SaaS platform.
 
 ## Overview
 
