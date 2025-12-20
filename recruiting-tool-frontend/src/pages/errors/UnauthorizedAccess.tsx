@@ -7,18 +7,18 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Block as BlockIcon,
   Home as HomeIcon,
   ContactSupport as ContactIcon,
   CheckCircle as CheckIcon,
-} from '@mui/icons-material';
-import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
-import { UserRoles } from '../../types/user.types';
-import { useAuthMe } from '../../hooks/api/useAuth';
-import { getDefaultDashboard } from '../../utils/permissions';
+} from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { UserRoles } from "../../types/user.types";
+import { useAuthMe } from "../../hooks/api/useAuth";
+import { getDefaultDashboard } from "../../utils/permissions";
 
 interface UnauthorizedAccessProps {
   requiredRoles: UserRoles[];
@@ -28,28 +28,30 @@ interface UnauthorizedAccessProps {
  * UnauthorizedAccess component displayed when a user tries to access
  * a route they don't have permission for.
  */
-const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }) => {
+const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({
+  requiredRoles,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuthMe();
 
   const handleGoHome = () => {
-    const defaultRoute = user ? getDefaultDashboard(user) : '/';
+    const defaultRoute = user ? getDefaultDashboard(user) : "/";
     navigate(defaultRoute);
   };
 
   const handleRequestAccess = () => {
     // Navigate to profile or team management where they can request access
-    navigate('/settings/team');
+    navigate("/settings/team");
   };
 
   return (
     <Box
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        minHeight: '80vh',
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        minHeight: "80vh",
         p: 3,
       }}
     >
@@ -57,41 +59,41 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
         elevation={3}
         sx={{
           maxWidth: 600,
-          width: '100%',
+          width: "100%",
           p: 4,
-          textAlign: 'center',
+          textAlign: "center",
         }}
       >
         {/* Icon */}
         <Box
           sx={{
-            display: 'flex',
-            justifyContent: 'center',
+            display: "flex",
+            justifyContent: "center",
             mb: 3,
           }}
         >
           <BlockIcon
             sx={{
               fontSize: 80,
-              color: 'error.main',
+              color: "error.main",
             }}
           />
         </Box>
 
         {/* Title */}
         <Typography variant="h4" gutterBottom color="error">
-          {t('unauthorized.title')}
+          {t("unauthorized.title")}
         </Typography>
 
         {/* Description */}
         <Typography variant="body1" color="text.secondary" paragraph>
-          {t('unauthorized.description')}
+          {t("unauthorized.description")}
         </Typography>
 
         {/* Required Roles */}
-        <Box sx={{ my: 3, textAlign: 'left' }}>
+        <Box sx={{ my: 3, textAlign: "left" }}>
           <Typography variant="subtitle2" gutterBottom>
-            {t('unauthorized.required_roles')}
+            {t("unauthorized.required_roles")}
           </Typography>
           <List dense>
             {requiredRoles.map((role) => (
@@ -99,9 +101,7 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
                 <ListItemIcon>
                   <CheckIcon color="primary" fontSize="small" />
                 </ListItemIcon>
-                <ListItemText
-                  primary={t(`roles.${role.toLowerCase()}`)}
-                />
+                <ListItemText primary={t(`roles.${role.toLowerCase()}`)} />
               </ListItem>
             ))}
           </List>
@@ -109,9 +109,9 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
 
         {/* Current Roles */}
         {user && user.roles && user.roles.length > 0 && (
-          <Box sx={{ my: 3, textAlign: 'left' }}>
+          <Box sx={{ my: 3, textAlign: "left" }}>
             <Typography variant="subtitle2" gutterBottom>
-              {t('unauthorized.your_roles')}
+              {t("unauthorized.your_roles")}
             </Typography>
             <List dense>
               {user.roles.map((role) => (
@@ -119,9 +119,7 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
                   <ListItemIcon>
                     <CheckIcon color="action" fontSize="small" />
                   </ListItemIcon>
-                  <ListItemText
-                    primary={t(`roles.${role.toLowerCase()}`)}
-                  />
+                  <ListItemText primary={t(`roles.${role.toLowerCase()}`)} />
                 </ListItem>
               ))}
             </List>
@@ -131,10 +129,10 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
         {/* Actions */}
         <Box
           sx={{
-            display: 'flex',
-            flexDirection: { xs: 'column', sm: 'row' },
+            display: "flex",
+            flexDirection: { xs: "column", sm: "row" },
             gap: 2,
-            justifyContent: 'center',
+            justifyContent: "center",
             mt: 4,
           }}
         >
@@ -143,14 +141,14 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
             startIcon={<HomeIcon />}
             onClick={handleGoHome}
           >
-            {t('unauthorized.go_home')}
+            {t("unauthorized.go_home")}
           </Button>
           <Button
             variant="outlined"
             startIcon={<ContactIcon />}
             onClick={handleRequestAccess}
           >
-            {t('unauthorized.request_access')}
+            {t("unauthorized.request_access")}
           </Button>
         </Box>
 
@@ -158,9 +156,9 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({ requiredRoles }
         <Typography
           variant="caption"
           color="text.secondary"
-          sx={{ display: 'block', mt: 3 }}
+          sx={{ display: "block", mt: 3 }}
         >
-          {t('unauthorized.help_text')}
+          {t("unauthorized.help_text")}
         </Typography>
       </Paper>
     </Box>

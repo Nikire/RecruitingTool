@@ -19,7 +19,11 @@ interface RoleGuardProps {
  * @param redirectTo - Optional custom redirect path (defaults to user's default dashboard)
  * @param showUnauthorized - If true, shows unauthorized page instead of redirecting (default: false)
  */
-export function RoleGuard({ allowedRoles, redirectTo, showUnauthorized = false }: RoleGuardProps) {
+export function RoleGuard({
+  allowedRoles,
+  redirectTo,
+  showUnauthorized = false,
+}: RoleGuardProps) {
   const { user, isLoading } = useAuthMe();
   const location = useLocation();
 

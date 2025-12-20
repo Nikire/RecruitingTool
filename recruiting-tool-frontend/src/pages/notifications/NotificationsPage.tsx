@@ -364,7 +364,14 @@ const NotificationsPage: React.FC = () => {
                     />
 
                     {/* Action Buttons */}
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 1, mt: 1 }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: 1,
+                        mt: 1,
+                      }}
+                    >
                       {/* Invitation Actions */}
                       {isInvitationNotification(notification) && (
                         <Box sx={{ display: "flex", gap: 1 }}>
@@ -373,7 +380,9 @@ const NotificationsPage: React.FC = () => {
                             variant="contained"
                             color="success"
                             startIcon={<CheckIcon />}
-                            onClick={(e) => handleAcceptInvitation(notification, e)}
+                            onClick={(e) =>
+                              handleAcceptInvitation(notification, e)
+                            }
                             disabled={isAcceptingInvitation}
                           >
                             {t("notifications.invitation.accept")}
@@ -383,7 +392,9 @@ const NotificationsPage: React.FC = () => {
                             variant="outlined"
                             color="error"
                             startIcon={<CloseIcon />}
-                            onClick={(e) => handleDeclineInvitation(notification, e)}
+                            onClick={(e) =>
+                              handleDeclineInvitation(notification, e)
+                            }
                           >
                             {t("notifications.invitation.decline")}
                           </Button>
