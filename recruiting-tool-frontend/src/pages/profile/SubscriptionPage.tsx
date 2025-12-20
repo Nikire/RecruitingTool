@@ -52,7 +52,9 @@ const formatDate = (dateString: string | null): string | null => {
   }
 };
 
-const isValidSubscription = (subscription: Subscription | undefined): subscription is Subscription => {
+const isValidSubscription = (
+  subscription: Subscription | undefined,
+): subscription is Subscription => {
   return !!(
     subscription &&
     subscription.uid &&
@@ -69,7 +71,9 @@ const canManageBilling = (subscription: Subscription | undefined): boolean => {
   );
 };
 
-const canCancelSubscription = (subscription: Subscription | undefined): boolean => {
+const canCancelSubscription = (
+  subscription: Subscription | undefined,
+): boolean => {
   return !!(
     subscription &&
     subscription.plan !== SubscriptionPlan.FREE &&
@@ -109,17 +113,17 @@ const SubscriptionPage: React.FC = () => {
   // Memoized validation checks
   const validSubscription = useMemo(
     () => isValidSubscription(subscription),
-    [subscription]
+    [subscription],
   );
 
   const showManageBilling = useMemo(
     () => canManageBilling(subscription),
-    [subscription]
+    [subscription],
   );
 
   const showCancelButton = useMemo(
     () => canCancelSubscription(subscription),
-    [subscription]
+    [subscription],
   );
 
   const handleUpgrade = (plan: SubscriptionPlan) => {
@@ -451,12 +455,7 @@ const SubscriptionPage: React.FC = () => {
         </Box>
       </Box>
 
-      <Grid
-        container
-        spacing={3}
-        justifyContent="center"
-        sx={{ mb: 4 }}
-      >
+      <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
         <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
           <PricingCard
             plan={SubscriptionPlan.FREE}

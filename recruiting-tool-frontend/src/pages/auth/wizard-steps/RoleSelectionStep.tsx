@@ -146,7 +146,9 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                       fontWeight: 600,
                       mb: 1.5,
                       color:
-                        selectedRole === role.value ? "primary.main" : "inherit",
+                        selectedRole === role.value
+                          ? "primary.main"
+                          : "inherit",
                     }}
                   >
                     {role.title}

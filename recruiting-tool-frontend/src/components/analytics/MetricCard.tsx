@@ -169,7 +169,11 @@ const MetricCard: React.FC<MetricCardProps> = ({ data }) => {
                 boxShadow: theme.shadows[1],
               }}
             />
-            <Typography variant="caption" color="text.secondary" fontWeight={500}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={500}
+            >
               {t("analytics.vs_last_period")}
             </Typography>
           </Box>

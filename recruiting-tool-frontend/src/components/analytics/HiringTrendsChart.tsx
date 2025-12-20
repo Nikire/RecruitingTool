@@ -253,7 +253,12 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
           >
             {t("analytics.best_month")}
           </Typography>
-          <Typography variant="h5" fontWeight={700} color="success.main" mt={0.5}>
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            color="success.main"
+            mt={0.5}
+          >
             {Math.max(...data.map((d) => d.count))}
           </Typography>
         </Box>
@@ -278,7 +283,12 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
           >
             {t("analytics.total_period")}
           </Typography>
-          <Typography variant="h5" fontWeight={700} color="primary.main" mt={0.5}>
+          <Typography
+            variant="h5"
+            fontWeight={700}
+            color="primary.main"
+            mt={0.5}
+          >
             {totalHires}
           </Typography>
         </Box>

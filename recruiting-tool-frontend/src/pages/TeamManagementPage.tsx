@@ -261,7 +261,8 @@ const TeamManagementPage: React.FC = () => {
                           {t("team.invited_by", {
                             name: invitation.invitedByName,
                           })}{" "}
-                          • {new Date(invitation.createdAt).toLocaleDateString()}
+                          •{" "}
+                          {new Date(invitation.createdAt).toLocaleDateString()}
                         </Typography>
                       </Stack>
                     </Box>

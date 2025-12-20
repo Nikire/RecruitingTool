@@ -64,7 +64,12 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
             : "rgba(0, 0, 0, 0.01)",
       }}
     >
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={3}
+      >
         <Typography variant="h6" fontWeight={600}>
           {t("analytics.conversion_funnel")}
         </Typography>
@@ -274,7 +279,11 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
         </Typography>
         <Box display="flex" gap={3}>
           <Box textAlign="center">
-            <Typography variant="caption" color="text.secondary" display="block">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+            >
               {t("analytics.total_candidates")}
             </Typography>
             <Typography variant="h6" fontWeight={700} color="primary">
@@ -282,13 +291,21 @@ const ConversionFunnel: React.FC<ConversionFunnelProps> = ({ data }) => {
             </Typography>
           </Box>
           <Box textAlign="center">
-            <Typography variant="caption" color="text.secondary" display="block">
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+            >
               {t("analytics.conversion_rate")}
             </Typography>
             <Typography variant="h6" fontWeight={700} color="success.main">
               {data.length > 0
                 ? Math.round(
-                    (Math.floor((data[data.length - 1].count * data[data.length - 1].rate) / 100) /
+                    (Math.floor(
+                      (data[data.length - 1].count *
+                        data[data.length - 1].rate) /
+                        100,
+                    ) /
                       maxCount) *
                       100,
                   )
