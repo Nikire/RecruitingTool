@@ -23,7 +23,6 @@ import {
 import { UpdateNotificationPreferencesDto } from "../../types/notification-preferences.types";
 import EmailIcon from "@mui/icons-material/Email";
 import NotificationsIcon from "@mui/icons-material/Notifications";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
 const NotificationPreferencesPage: React.FC = () => {
   const { t } = useTranslation();
