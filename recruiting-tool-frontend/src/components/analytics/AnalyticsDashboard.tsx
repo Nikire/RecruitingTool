@@ -153,11 +153,16 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     return (
       <Box
         display="flex"
+        flexDirection="column"
         justifyContent="center"
         alignItems="center"
         minHeight="400px"
+        gap={2}
       >
-        <CircularProgress />
+        <CircularProgress size={60} thickness={4} />
+        <Typography variant="h6" color="text.secondary" fontWeight={500}>
+          {t("analytics.loading_analytics")}
+        </Typography>
       </Box>
     );
   }
@@ -167,13 +172,35 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
     return (
       <Box
         display="flex"
+        flexDirection="column"
         justifyContent="center"
         alignItems="center"
         minHeight="400px"
+        gap={3}
+        textAlign="center"
+        px={3}
       >
-        <Typography variant="body1" color="text.secondary">
-          {t("analytics.no_data")}
-        </Typography>
+        <Box
+          sx={{
+            width: 120,
+            height: 120,
+            borderRadius: "50%",
+            backgroundColor: "action.hover",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <AssignmentIcon sx={{ fontSize: 60, color: "text.disabled" }} />
+        </Box>
+        <Box>
+          <Typography variant="h5" gutterBottom fontWeight={600}>
+            {t("analytics.no_data")}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" maxWidth={500}>
+            {t("analytics.no_data_description")}
+          </Typography>
+        </Box>
       </Box>
     );
   }
@@ -181,10 +208,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
   return (
     <Box>
       {/* Overview Metrics */}
-      <Box mb={4}>
-        <Typography variant="h5" gutterBottom fontWeight={600} mb={3}>
-          {t("analytics.overview")}
-        </Typography>
+      <Box mb={5}>
+        <Box mb={3} display="flex" alignItems="center" gap={2}>
+          <Box
+            sx={{
+              width: 4,
+              height: 32,
+              backgroundColor: "primary.main",
+              borderRadius: 1,
+            }}
+          />
+          <Typography variant="h5" fontWeight={700}>
+            {t("analytics.overview")}
+          </Typography>
+        </Box>
         <Grid container spacing={3}>
           {metricCards.map((card, index) => (
             <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
@@ -195,10 +232,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       </Box>
 
       {/* Hiring Metrics */}
-      <Box mb={4}>
-        <Typography variant="h5" gutterBottom fontWeight={600} mb={3}>
-          {t("analytics.hiring_metrics")}
-        </Typography>
+      <Box mb={5}>
+        <Box mb={3} display="flex" alignItems="center" gap={2}>
+          <Box
+            sx={{
+              width: 4,
+              height: 32,
+              backgroundColor: "info.main",
+              borderRadius: 1,
+            }}
+          />
+          <Typography variant="h5" fontWeight={700}>
+            {t("analytics.hiring_metrics")}
+          </Typography>
+        </Box>
         <Grid container spacing={3}>
           {/* Conversion Funnel */}
           <Grid item xs={12} lg={6}>
@@ -224,10 +271,20 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
 
       {/* Candidate Metrics */}
       {sourcesData && sourcesData.length > 0 && (
-        <Box mb={4}>
-          <Typography variant="h5" gutterBottom fontWeight={600} mb={3}>
-            {t("analytics.candidate_metrics")}
-          </Typography>
+        <Box mb={5}>
+          <Box mb={3} display="flex" alignItems="center" gap={2}>
+            <Box
+              sx={{
+                width: 4,
+                height: 32,
+                backgroundColor: "success.main",
+                borderRadius: 1,
+              }}
+            />
+            <Typography variant="h5" fontWeight={700}>
+              {t("analytics.candidate_metrics")}
+            </Typography>
+          </Box>
           <Grid container spacing={3}>
             {/* Source Distribution */}
             <Grid item xs={12} md={6}>

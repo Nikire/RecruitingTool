@@ -13,6 +13,8 @@ import {
   Stack,
   IconButton,
   Tooltip,
+  Paper,
+  Chip,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import EventIcon from "@mui/icons-material/Event";
@@ -20,6 +22,9 @@ import LinkIcon from "@mui/icons-material/Link";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
 import InfoIcon from "@mui/icons-material/Info";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import SaveIcon from "@mui/icons-material/Save";
+import ScheduleIcon from "@mui/icons-material/Schedule";
 import toast from "react-hot-toast";
 import SettingsCard from "../../components/settings/SettingsCard";
 import StatusIndicator from "../../components/settings/StatusIndicator";
@@ -172,10 +177,21 @@ const CalendarSettingsPage = () => {
   ];
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom sx={{ mb: 4 }}>
-        {t("calendar_settings.title")}
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography
+          variant="h4"
+          component="h1"
+          gutterBottom
+          sx={{ fontWeight: 600, color: "text.primary" }}
+        >
+          {t("calendar_settings.title")}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {t("calendar_settings.subtitle")}
+        </Typography>
+      </Box>
 
       <Grid container spacing={3}>
         {/* Google Calendar Connection Card */}
@@ -269,90 +285,125 @@ const CalendarSettingsPage = () => {
         {/* Working Hours Settings */}
         <Grid item xs={12}>
           <SettingsCard
-            icon={<EventIcon />}
+            icon={<AccessTimeIcon />}
             title={t("calendar_settings.working_hours")}
             iconColor="success.main"
           >
-            <Stack spacing={2}>
-              <Typography variant="body2" color="text.secondary">
+            <Stack spacing={3}>
+              <Alert severity="info" icon={<InfoIcon />}>
                 {t("calendar_settings.working_hours_description")}
-              </Typography>
+              </Alert>
 
               <Divider />
 
               {daysOfWeek.map((day) => {
                 const hours = settings.workingHours[day];
                 return (
-                  <Grid container spacing={2} key={day} alignItems="center">
-                    <Grid item xs={12} sm={3}>
-                      <Typography
-                        variant="body1"
-                        sx={{ textTransform: "capitalize" }}
-                      >
-                        {t(`calendar_settings.days.${day}`)}
-                      </Typography>
+                  <Paper
+                    key={day}
+                    variant="outlined"
+                    sx={{
+                      p: 2,
+                      backgroundColor: hours.enabled
+                        ? "background.paper"
+                        : "action.hover",
+                      transition: "all 0.2s",
+                      "&:hover": {
+                        boxShadow: 1,
+                      },
+                    }}
+                  >
+                    <Grid container spacing={2} alignItems="center">
+                      <Grid item xs={12} sm={3}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                          }}
+                        >
+                          <Typography
+                            variant="body1"
+                            sx={{
+                              textTransform: "capitalize",
+                              fontWeight: 500,
+                            }}
+                          >
+                            {t(`calendar_settings.days.${day}`)}
+                          </Typography>
+                          {hours.enabled && (
+                            <Chip
+                              label={t("calendar_settings.active")}
+                              size="small"
+                              color="success"
+                              sx={{ height: 20 }}
+                            />
+                          )}
+                        </Box>
+                      </Grid>
+                      <Grid item xs={6} sm={2}>
+                        <TextField
+                          select
+                          size="small"
+                          fullWidth
+                          value={hours.enabled ? "enabled" : "disabled"}
+                          onChange={(e) =>
+                            handleWorkingHoursChange(
+                              day,
+                              "enabled",
+                              e.target.value === "enabled",
+                            )
+                          }
+                          label={t("calendar_settings.status")}
+                        >
+                          <MenuItem value="enabled">
+                            {t("calendar_settings.enabled")}
+                          </MenuItem>
+                          <MenuItem value="disabled">
+                            {t("calendar_settings.disabled")}
+                          </MenuItem>
+                        </TextField>
+                      </Grid>
+                      {hours.enabled && (
+                        <>
+                          <Grid item xs={6} sm={3}>
+                            <TextField
+                              type="time"
+                              size="small"
+                              fullWidth
+                              label={t("calendar_settings.start_time")}
+                              value={hours.startTime}
+                              onChange={(e) =>
+                                handleWorkingHoursChange(
+                                  day,
+                                  "startTime",
+                                  e.target.value,
+                                )
+                              }
+                              InputLabelProps={{ shrink: true }}
+                            />
+                          </Grid>
+                          <Grid item xs={6} sm={4}>
+                            <TextField
+                              type="time"
+                              size="small"
+                              fullWidth
+                              label={t("calendar_settings.end_time")}
+                              value={hours.endTime}
+                              onChange={(e) =>
+                                handleWorkingHoursChange(
+                                  day,
+                                  "endTime",
+                                  e.target.value,
+                                )
+                              }
+                              InputLabelProps={{ shrink: true }}
+                            />
+                          </Grid>
+                        </>
+                      )}
                     </Grid>
-                    <Grid item xs={6} sm={2}>
-                      <TextField
-                        select
-                        size="small"
-                        fullWidth
-                        value={hours.enabled ? "enabled" : "disabled"}
-                        onChange={(e) =>
-                          handleWorkingHoursChange(
-                            day,
-                            "enabled",
-                            e.target.value === "enabled",
-                          )
-                        }
-                      >
-                        <MenuItem value="enabled">
-                          {t("calendar_settings.enabled")}
-                        </MenuItem>
-                        <MenuItem value="disabled">
-                          {t("calendar_settings.disabled")}
-                        </MenuItem>
-                      </TextField>
-                    </Grid>
-                    {hours.enabled && (
-                      <>
-                        <Grid item xs={6} sm={3}>
-                          <TextField
-                            type="time"
-                            size="small"
-                            fullWidth
-                            label={t("calendar_settings.start_time")}
-                            value={hours.startTime}
-                            onChange={(e) =>
-                              handleWorkingHoursChange(
-                                day,
-                                "startTime",
-                                e.target.value,
-                              )
-                            }
-                            InputLabelProps={{ shrink: true }}
-                          />
-                        </Grid>
-                        <Grid item xs={6} sm={3}>
-                          <TextField
-                            type="time"
-                            size="small"
-                            fullWidth
-                            label={t("calendar_settings.end_time")}
-                            value={hours.endTime}
-                            onChange={(e) =>
-                              handleWorkingHoursChange(
-                                day,
-                                "endTime",
-                                e.target.value,
-                              )
-                            }
-                            InputLabelProps={{ shrink: true }}
-                          />
-                        </Grid>
-                      </>
-                    )}
-                  </Grid>
+                  </Paper>
                 );
               })}
             </Stack>
@@ -362,78 +413,92 @@ const CalendarSettingsPage = () => {
         {/* Meeting Settings */}
         <Grid item xs={12} md={6}>
           <SettingsCard
-            icon={<EventIcon />}
+            icon={<ScheduleIcon />}
             title={t("calendar_settings.meeting_settings")}
             iconColor="warning.main"
           >
             <Stack spacing={3}>
-              <TextField
-                select
-                label={t("calendar_settings.buffer_time")}
-                value={settings.bufferTime}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    bufferTime: Number(e.target.value),
-                  }))
-                }
-                fullWidth
-                helperText={t("calendar_settings.buffer_time_helper")}
-              >
-                <MenuItem value={0}>
-                  {t("calendar_settings.no_buffer")}
-                </MenuItem>
-                <MenuItem value={5}>
-                  5 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={10}>
-                  10 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={15}>
-                  15 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={30}>
-                  30 {t("calendar_settings.minutes")}
-                </MenuItem>
-              </TextField>
+              <Box>
+                <TextField
+                  select
+                  label={t("calendar_settings.buffer_time")}
+                  value={settings.bufferTime}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      bufferTime: Number(e.target.value),
+                    }))
+                  }
+                  fullWidth
+                  helperText={t("calendar_settings.buffer_time_helper")}
+                  size="medium"
+                >
+                  <MenuItem value={0}>
+                    {t("calendar_settings.no_buffer")}
+                  </MenuItem>
+                  <MenuItem value={5}>
+                    5 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={10}>
+                    10 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={15}>
+                    15 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={30}>
+                    30 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                </TextField>
+              </Box>
 
-              <TextField
-                select
-                label={t("calendar_settings.default_duration")}
-                value={settings.defaultDuration}
-                onChange={(e) =>
-                  setSettings((prev) => ({
-                    ...prev,
-                    defaultDuration: Number(e.target.value),
-                  }))
-                }
-                fullWidth
-                helperText={t("calendar_settings.default_duration_helper")}
-              >
-                <MenuItem value={15}>
-                  15 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={30}>
-                  30 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={45}>
-                  45 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={60}>
-                  60 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={90}>
-                  90 {t("calendar_settings.minutes")}
-                </MenuItem>
-                <MenuItem value={120}>
-                  120 {t("calendar_settings.minutes")}
-                </MenuItem>
-              </TextField>
+              <Box>
+                <TextField
+                  select
+                  label={t("calendar_settings.default_duration")}
+                  value={settings.defaultDuration}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      defaultDuration: Number(e.target.value),
+                    }))
+                  }
+                  fullWidth
+                  helperText={t("calendar_settings.default_duration_helper")}
+                  size="medium"
+                >
+                  <MenuItem value={15}>
+                    15 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={30}>
+                    30 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={45}>
+                    45 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={60}>
+                    60 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={90}>
+                    90 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                  <MenuItem value={120}>
+                    120 {t("calendar_settings.minutes")}
+                  </MenuItem>
+                </TextField>
+              </Box>
+
+              <Divider />
 
               <Button
                 variant="contained"
                 onClick={handleSaveSettings}
                 fullWidth
+                size="large"
+                startIcon={<SaveIcon />}
+                sx={{
+                  py: 1.5,
+                  fontWeight: 600,
+                }}
               >
                 {t("common.save")}
               </Button>

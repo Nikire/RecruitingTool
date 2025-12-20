@@ -10,11 +10,17 @@ import {
   Alert,
   Card,
   CardContent,
+  Typography,
+  Stack,
+  Divider,
+  Container,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GroupIcon from "@mui/icons-material/Group";
 import MailIcon from "@mui/icons-material/Mail";
 import PendingIcon from "@mui/icons-material/Pending";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import InviteTeamMemberDialog from "../components/team/InviteTeamMemberDialog";
@@ -88,7 +94,7 @@ const TeamManagementPage: React.FC = () => {
     invitations?.filter((inv) => inv.status === InvitationStatus.PENDING) || [];
 
   return (
-    <Box sx={{ p: 3 }}>
+    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
       <PageHeader
         title="team.page_title"
         action={
@@ -102,39 +108,74 @@ const TeamManagementPage: React.FC = () => {
         }
       />
 
-      <Paper sx={{ mb: 3 }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
+      <Paper
+        elevation={2}
+        sx={{
+          mb: 3,
+          borderRadius: 2,
+          overflow: "hidden",
+        }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="fullWidth"
+          sx={{
+            borderBottom: 1,
+            borderColor: "divider",
+            "& .MuiTab-root": {
+              minHeight: 72,
+              textTransform: "none",
+              fontSize: "1rem",
+              fontWeight: 500,
+            },
+          }}
+        >
           <Tab
             icon={<GroupIcon />}
+            iconPosition="start"
             label={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {t("team.current_members")}
-                <Chip label={members?.length || 0} size="small" />
+                <Chip
+                  label={members?.length || 0}
+                  size="small"
+                  color="default"
+                  sx={{ ml: 0.5 }}
+                />
               </Box>
             }
           />
           <Tab
             icon={<MailIcon />}
+            iconPosition="start"
             label={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {t("team.pending_invitations")}
                 <Chip
                   label={pendingInvitations.length}
                   size="small"
-                  color="primary"
+                  color={pendingInvitations.length > 0 ? "primary" : "default"}
+                  sx={{ ml: 0.5 }}
                 />
               </Box>
             }
           />
           <Tab
             icon={<PendingIcon />}
+            iconPosition="start"
             label={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {t("team.connection_requests")}
                 <Chip
                   label={connectionRequests?.length || 0}
                   size="small"
-                  color="warning"
+                  color={
+                    connectionRequests && connectionRequests.length > 0
+                      ? "warning"
+                      : "default"
+                  }
+                  sx={{ ml: 0.5 }}
                 />
               </Box>
             }
@@ -171,22 +212,47 @@ const TeamManagementPage: React.FC = () => {
         {isLoadingInvitations ? (
           <CenteredLoadingSpinner minHeight="30vh" />
         ) : pendingInvitations.length === 0 ? (
-          <Alert severity="info">{t("team.no_pending_invitations")}</Alert>
+          <Alert severity="info" icon={<MailIcon />}>
+            {t("team.no_pending_invitations")}
+          </Alert>
         ) : (
-          <Grid container spacing={2}>
+          <Stack spacing={2}>
             {pendingInvitations.map((invitation) => (
-              <Grid item xs={12} key={invitation.uid}>
-                <Card>
-                  <CardContent>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Box>
-                        <Typography variant="h6">{invitation.email}</Typography>
+              <Card
+                key={invitation.uid}
+                elevation={2}
+                sx={{
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    boxShadow: 4,
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      flexDirection: { xs: "column", sm: "row" },
+                      gap: 2,
+                    }}
+                  >
+                    <Box sx={{ flex: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mb: 1,
+                        }}
+                      >
+                        <MailIcon color="primary" fontSize="small" />
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                          {invitation.email}
+                        </Typography>
+                      </Box>
+                      <Stack spacing={0.5}>
                         <Typography variant="body2" color="text.secondary">
                           {t("team.invited_as", {
                             role: t(`roles.${invitation.role.toLowerCase()}`),
@@ -196,40 +262,45 @@ const TeamManagementPage: React.FC = () => {
                           {t("team.invited_by", {
                             name: invitation.invitedByName,
                           })}{" "}
-                          •{" "}
-                          {new Date(invitation.createdAt).toLocaleDateString()}
+                          • {new Date(invitation.createdAt).toLocaleDateString()}
                         </Typography>
-                      </Box>
-                      <Box
-                        sx={{ display: "flex", gap: 1, alignItems: "center" }}
-                      >
-                        <Chip
-                          label={t(`team.expires_at`, {
-                            date: new Date(
-                              invitation.expiresAt,
-                            ).toLocaleDateString(),
-                          })}
+                      </Stack>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        alignItems: "center",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Chip
+                        label={t(`team.expires_at`, {
+                          date: new Date(
+                            invitation.expiresAt,
+                          ).toLocaleDateString(),
+                        })}
+                        size="small"
+                        variant="outlined"
+                        color="warning"
+                      />
+                      {canManage && (
+                        <Button
                           size="small"
                           variant="outlined"
-                        />
-                        {canManage && (
-                          <Button
-                            size="small"
-                            color="error"
-                            onClick={() =>
-                              handleCancelInvitation(invitation.uid)
-                            }
-                          >
-                            {t("common.cancel")}
-                          </Button>
-                        )}
-                      </Box>
+                          color="error"
+                          startIcon={<CancelIcon />}
+                          onClick={() => handleCancelInvitation(invitation.uid)}
+                        >
+                          {t("common.cancel")}
+                        </Button>
+                      )}
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+                  </Box>
+                </CardContent>
+              </Card>
             ))}
-          </Grid>
+          </Stack>
         )}
       </TabPanel>
 
@@ -238,58 +309,109 @@ const TeamManagementPage: React.FC = () => {
         {isLoadingRequests ? (
           <CenteredLoadingSpinner minHeight="30vh" />
         ) : !connectionRequests || connectionRequests.length === 0 ? (
-          <Alert severity="info">{t("team.no_connection_requests")}</Alert>
+          <Alert severity="info" icon={<PendingIcon />}>
+            {t("team.no_connection_requests")}
+          </Alert>
         ) : (
-          <Grid container spacing={2}>
+          <Stack spacing={2}>
             {connectionRequests.map((request) => (
-              <Grid item xs={12} key={request.uid}>
-                <Card>
-                  <CardContent>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <Box>
-                        <Typography variant="h6">{request.userName}</Typography>
+              <Card
+                key={request.uid}
+                elevation={2}
+                sx={{
+                  transition: "all 0.2s",
+                  "&:hover": {
+                    boxShadow: 4,
+                  },
+                }}
+              >
+                <CardContent sx={{ p: 3 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      flexDirection: { xs: "column", sm: "row" },
+                      gap: 2,
+                    }}
+                  >
+                    <Box sx={{ flex: 1 }}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 1,
+                          mb: 1,
+                        }}
+                      >
+                        <PendingIcon color="warning" fontSize="small" />
+                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                          {request.userName}
+                        </Typography>
+                      </Box>
+                      <Stack spacing={0.5}>
                         <Typography variant="body2" color="text.secondary">
                           {request.userEmail}
                         </Typography>
-                        <Typography variant="body2" sx={{ mt: 1 }}>
-                          {t("team.requested_role", {
+                        <Chip
+                          label={t("team.requested_role", {
                             role: t(
                               `roles.${request.requestedRole.toLowerCase()}`,
                             ),
                           })}
-                        </Typography>
+                          size="small"
+                          color="primary"
+                          sx={{ width: "fit-content" }}
+                        />
                         {request.message && (
-                          <Typography variant="caption" color="text.secondary">
-                            {request.message}
-                          </Typography>
-                        )}
-                      </Box>
-                      {canManage && (
-                        <Box sx={{ display: "flex", gap: 1 }}>
-                          <Button
-                            variant="contained"
-                            color="success"
-                            size="small"
+                          <Box
+                            sx={{
+                              mt: 1,
+                              p: 1.5,
+                              backgroundColor: "action.hover",
+                              borderRadius: 1,
+                              borderLeft: 3,
+                              borderColor: "primary.main",
+                            }}
                           >
-                            {t("team.approve")}
-                          </Button>
-                          <Button variant="outlined" color="error" size="small">
-                            {t("team.deny")}
-                          </Button>
-                        </Box>
-                      )}
+                            <Typography variant="caption" fontStyle="italic">
+                              "{request.message}"
+                            </Typography>
+                          </Box>
+                        )}
+                      </Stack>
                     </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
+                    {canManage && (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          gap: 1,
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <Button
+                          variant="contained"
+                          color="success"
+                          size="medium"
+                          startIcon={<CheckCircleIcon />}
+                        >
+                          {t("team.approve")}
+                        </Button>
+                        <Button
+                          variant="outlined"
+                          color="error"
+                          size="medium"
+                          startIcon={<CancelIcon />}
+                        >
+                          {t("team.deny")}
+                        </Button>
+                      </Box>
+                    )}
+                  </Box>
+                </CardContent>
+              </Card>
             ))}
-          </Grid>
+          </Stack>
         )}
       </TabPanel>
 
@@ -299,7 +421,7 @@ const TeamManagementPage: React.FC = () => {
         onClose={() => setInviteDialogOpen(false)}
         companyUid={companyUid}
       />
-    </Box>
+    </Container>
   );
 };
 

@@ -148,14 +148,24 @@ const HRDashboard: React.FC = () => {
         }}
       />
 
-      {/* Statistics Cards */}
+      {/* Statistics Cards - Enhanced with better spacing */}
       <StatisticsCards stats={statsData} isLoading={isLoading} />
 
-      {/* Recent Applications */}
-      <Paper sx={{ p: { xs: 2, sm: 3 } }}>
+      {/* Recent Applications - Enhanced Paper styling */}
+      <Paper
+        elevation={2}
+        sx={{
+          p: { xs: 2.5, sm: 3.5 },
+          borderRadius: 2,
+          transition: "box-shadow 0.3s ease",
+          "&:hover": {
+            boxShadow: 3,
+          },
+        }}
+      >
         <Box
           sx={{
-            mb: { xs: 2, sm: 3 },
+            mb: { xs: 2.5, sm: 3 },
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: "space-between",
@@ -166,15 +176,23 @@ const HRDashboard: React.FC = () => {
           <Typography
             variant="h5"
             component="h2"
-            sx={{ fontSize: { xs: "1.25rem", sm: "1.5rem" } }}
+            sx={{
+              fontSize: { xs: "1.25rem", sm: "1.5rem" },
+              fontWeight: 600,
+              color: "text.primary",
+            }}
           >
             {t("dashboard.recent_applications")}
           </Typography>
           <Button
+            variant="outlined"
             onClick={() => navigate("/hr/applications")}
             sx={{
               width: { xs: "100%", sm: "auto" },
               minHeight: "44px",
+              textTransform: "none",
+              fontWeight: 500,
+              borderRadius: 1.5,
             }}
           >
             {t("dashboard.view_all")}
@@ -184,12 +202,30 @@ const HRDashboard: React.FC = () => {
         {isLoading ? (
           <SkeletonLoader variant="list" count={5} />
         ) : recentApplications.length === 0 ? (
-          <Typography
-            color="text.secondary"
-            sx={{ py: 4, textAlign: "center" }}
+          <Box
+            sx={{
+              py: 6,
+              textAlign: "center",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
+            }}
           >
-            {t("dashboard.no_applications")}
-          </Typography>
+            <AssignmentIcon
+              sx={{ fontSize: 64, color: "text.disabled", mb: 1 }}
+            />
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ fontWeight: 500 }}
+            >
+              {t("dashboard.no_applications")}
+            </Typography>
+            <Typography variant="body2" color="text.disabled">
+              {t("dashboard.no_applications_desc")}
+            </Typography>
+          </Box>
         ) : (
           <Box>
             {recentApplications.map((application) => (
@@ -203,19 +239,21 @@ const HRDashboard: React.FC = () => {
         )}
       </Paper>
 
-      {/* Quick Actions */}
+      {/* Quick Actions - Enhanced section styling */}
       <Box sx={{ mt: { xs: 3, sm: 4 } }}>
         <Typography
           variant="h5"
           component="h2"
           sx={{
-            mb: 2,
+            mb: 2.5,
             fontSize: { xs: "1.25rem", sm: "1.5rem" },
+            fontWeight: 600,
+            color: "text.primary",
           }}
         >
           {t("dashboard.quick_actions")}
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={2.5}>
           {quickActions.map((action, index) => (
             <QuickActionButton
               key={index}

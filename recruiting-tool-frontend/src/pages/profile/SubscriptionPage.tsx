@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
   Box,
   Container,
@@ -16,9 +16,11 @@ import {
   DialogContentText,
   DialogActions,
   Skeleton,
+  Divider,
+  Stack,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { format, isValid, parseISO } from "date-fns";
 import toast from "react-hot-toast";
 import PricingCard, {
   BillingInterval,
@@ -35,7 +37,46 @@ import {
 import {
   SubscriptionPlan,
   SubscriptionStatus,
+  Subscription,
 } from "../../types/subscription.types";
+
+// Helper functions for data validation
+const formatDate = (dateString: string | null): string | null => {
+  if (!dateString) return null;
+
+  try {
+    const date = parseISO(dateString);
+    return isValid(date) ? format(date, "PPP") : null;
+  } catch {
+    return null;
+  }
+};
+
+const isValidSubscription = (subscription: Subscription | undefined): subscription is Subscription => {
+  return !!(
+    subscription &&
+    subscription.uid &&
+    subscription.plan &&
+    subscription.status
+  );
+};
+
+const canManageBilling = (subscription: Subscription | undefined): boolean => {
+  return !!(
+    subscription &&
+    subscription.plan !== SubscriptionPlan.FREE &&
+    subscription.status === SubscriptionStatus.ACTIVE
+  );
+};
+
+const canCancelSubscription = (subscription: Subscription | undefined): boolean => {
+  return !!(
+    subscription &&
+    subscription.plan !== SubscriptionPlan.FREE &&
+    subscription.status === SubscriptionStatus.ACTIVE &&
+    !subscription.cancelAtPeriodEnd
+  );
+};
 
 const SubscriptionPage: React.FC = () => {
   const { t } = useTranslation();
@@ -51,14 +92,35 @@ const SubscriptionPage: React.FC = () => {
     data: subscription,
     isLoading: isLoadingSubscription,
     isError: isErrorSubscription,
+    error: subscriptionError,
   } = useSubscription();
-  const { data: quota, isLoading: isLoadingQuota } = useQuota();
+  const {
+    data: quota,
+    isLoading: isLoadingQuota,
+    isError: isErrorQuota,
+  } = useQuota();
   const { mutate: createCheckout, isPending: isCreatingCheckout } =
     useCheckout();
   const { mutate: openBillingPortal, isPending: isOpeningPortal } =
     useBillingPortal();
   const { mutate: cancelSubscription, isPending: isCanceling } =
     useCancelSubscription();
+
+  // Memoized validation checks
+  const validSubscription = useMemo(
+    () => isValidSubscription(subscription),
+    [subscription]
+  );
+
+  const showManageBilling = useMemo(
+    () => canManageBilling(subscription),
+    [subscription]
+  );
+
+  const showCancelButton = useMemo(
+    () => canCancelSubscription(subscription),
+    [subscription]
+  );
 
   const handleUpgrade = (plan: SubscriptionPlan) => {
     if (plan === SubscriptionPlan.FREE) return;
@@ -96,9 +158,10 @@ const SubscriptionPage: React.FC = () => {
   const handleCancelSubscription = () => {
     cancelSubscription(undefined, {
       onSuccess: (data) => {
+        const formattedDate = formatDate(data.cancelAt);
         toast.success(
           t("subscription.messages.cancel_success", {
-            date: format(new Date(data.cancelAt), "PPP"),
+            date: formattedDate || t("common.unknown"),
           }),
         );
         setCancelDialogOpen(false);
@@ -164,7 +227,19 @@ const SubscriptionPage: React.FC = () => {
   if (isErrorSubscription) {
     return (
       <Container maxWidth="lg" sx={{ py: 4 }}>
-        <Alert severity="error">{t("subscription.errors.load_failed")}</Alert>
+        <Alert severity="error" sx={{ mb: 3 }}>
+          <Typography variant="h6" gutterBottom>
+            {t("subscription.errors.load_failed")}
+          </Typography>
+          <Typography variant="body2">
+            {subscriptionError instanceof Error
+              ? subscriptionError.message
+              : t("errors.try_again")}
+          </Typography>
+        </Alert>
+        <Button variant="contained" onClick={() => window.location.reload()}>
+          {t("common.refresh")}
+        </Button>
       </Container>
     );
   }
@@ -189,85 +264,118 @@ const SubscriptionPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography variant="h4" gutterBottom fontWeight="bold">
-        {t("subscription.title")}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" paragraph>
-        {t("subscription.description")}
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom fontWeight="bold">
+          {t("subscription.title")}
+        </Typography>
+        <Typography variant="body1" color="text.secondary">
+          {t("subscription.description")}
+        </Typography>
+      </Box>
 
       {/* Current Subscription Info */}
-      {subscription && (
-        <Card sx={{ mb: 4 }}>
-          <CardContent>
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                mb: 2,
-              }}
-            >
-              <Typography variant="h6">
-                {t("subscription.current_subscription")}
-              </Typography>
-              <Chip
-                label={t(
-                  `subscription.status.${subscription.status.toLowerCase()}`,
-                )}
-                color={getStatusColor(subscription.status)}
-                size="small"
-              />
-            </Box>
-
-            <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}>
-                <Typography variant="body2" color="text.secondary">
-                  {t("subscription.plan_label")}
+      {validSubscription && subscription && (
+        <Card
+          sx={{
+            mb: 4,
+            border: 1,
+            borderColor: "divider",
+          }}
+        >
+          <CardContent sx={{ p: { xs: 2, md: 3 } }}>
+            <Stack spacing={3}>
+              {/* Header with status */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                  gap: 2,
+                }}
+              >
+                <Typography variant="h6" fontWeight="bold">
+                  {t("subscription.current_subscription")}
                 </Typography>
-                <Typography variant="body1" fontWeight="medium">
-                  {t(
-                    `subscription.plans.${subscription.plan.toLowerCase()}.name`,
+                <Chip
+                  label={t(
+                    `subscription.status.${subscription.status.toLowerCase()}`,
                   )}
-                </Typography>
+                  color={getStatusColor(subscription.status)}
+                  size="medium"
+                />
+              </Box>
+
+              <Divider />
+
+              {/* Subscription Details */}
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ display: "block", mb: 0.5 }}
+                  >
+                    {t("subscription.plan_label")}
+                  </Typography>
+                  <Typography variant="h6" fontWeight="medium">
+                    {t(
+                      `subscription.plans.${subscription.plan.toLowerCase()}.name`,
+                    )}
+                  </Typography>
+                </Grid>
+
+                {subscription.trialEnd && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: "block", mb: 0.5 }}
+                    >
+                      {t("subscription.trial_ends")}
+                    </Typography>
+                    <Typography variant="h6" fontWeight="medium">
+                      {formatDate(subscription.trialEnd) || t("common.n_a")}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {subscription.currentPeriodEnd && (
+                  <Grid item xs={12} sm={6}>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      sx={{ display: "block", mb: 0.5 }}
+                    >
+                      {t("subscription.billing_period_ends")}
+                    </Typography>
+                    <Typography variant="h6" fontWeight="medium">
+                      {formatDate(subscription.currentPeriodEnd) ||
+                        t("common.n_a")}
+                    </Typography>
+                  </Grid>
+                )}
+
+                {subscription.cancelAtPeriodEnd && (
+                  <Grid item xs={12}>
+                    <Alert severity="warning" sx={{ mt: 1 }}>
+                      {t("subscription.messages.will_cancel")}
+                    </Alert>
+                  </Grid>
+                )}
               </Grid>
 
-              {subscription.trialEnd && (
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("subscription.trial_ends")}
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {format(new Date(subscription.trialEnd), "PPP")}
-                  </Typography>
-                </Grid>
-              )}
-
-              {subscription.currentPeriodEnd && (
-                <Grid item xs={12} sm={6}>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("subscription.billing_period_ends")}
-                  </Typography>
-                  <Typography variant="body1" fontWeight="medium">
-                    {format(new Date(subscription.currentPeriodEnd), "PPP")}
-                  </Typography>
-                </Grid>
-              )}
-
-              {subscription.cancelAtPeriodEnd && (
-                <Grid item xs={12}>
-                  <Alert severity="warning">
-                    {t("subscription.messages.will_cancel")}
-                  </Alert>
-                </Grid>
-              )}
-            </Grid>
-
-            <Box sx={{ mt: 3, display: "flex", gap: 2 }}>
-              {subscription.plan !== SubscriptionPlan.FREE &&
-                subscription.status === SubscriptionStatus.ACTIVE && (
-                  <>
+              {/* Action Buttons */}
+              {showManageBilling && (
+                <>
+                  <Divider />
+                  <Stack
+                    direction={{ xs: "column", sm: "row" }}
+                    spacing={2}
+                    sx={{ width: "100%" }}
+                  >
                     <Button
                       variant="outlined"
                       onClick={handleManageBilling}
@@ -275,57 +383,80 @@ const SubscriptionPage: React.FC = () => {
                       startIcon={
                         isOpeningPortal && <CircularProgress size={20} />
                       }
+                      sx={{ flex: 1 }}
                     >
                       {t("subscription.manage_billing")}
                     </Button>
 
-                    {!subscription.cancelAtPeriodEnd && (
+                    {showCancelButton && (
                       <Button
                         variant="outlined"
                         color="error"
                         onClick={() => setCancelDialogOpen(true)}
                         disabled={isCanceling}
+                        sx={{ flex: 1 }}
                       >
                         {t("subscription.cancel_subscription")}
                       </Button>
                     )}
-                  </>
-                )}
-            </Box>
+                  </Stack>
+                </>
+              )}
+            </Stack>
           </CardContent>
         </Card>
       )}
 
       {/* Quota and Usage */}
-      {quota && !isLoadingQuota && (
-        <Box sx={{ mb: 4 }}>
-          <QuotaDisplay
-            quotaStatus={quota}
-            onUpgrade={
-              subscription?.plan !== SubscriptionPlan.ENTERPRISE
-                ? () => {
-                    setSelectedPlan(SubscriptionPlan.PROFESSIONAL);
-                    setUpgradeDialogOpen(true);
-                  }
-                : undefined
-            }
-          />
-        </Box>
+      {isLoadingQuota ? (
+        <Skeleton variant="rectangular" height={200} sx={{ mb: 4 }} />
+      ) : isErrorQuota ? (
+        <Alert severity="warning" sx={{ mb: 4 }}>
+          {t("subscription.errors.quota_load_failed")}
+        </Alert>
+      ) : (
+        quota && (
+          <Box sx={{ mb: 4 }}>
+            <QuotaDisplay
+              quotaStatus={quota}
+              onUpgrade={
+                subscription?.plan !== SubscriptionPlan.ENTERPRISE
+                  ? () => {
+                      setSelectedPlan(SubscriptionPlan.PROFESSIONAL);
+                      setUpgradeDialogOpen(true);
+                    }
+                  : undefined
+              }
+            />
+          </Box>
+        )
       )}
 
-      {/* Pricing Cards */}
-      <Typography variant="h5" gutterBottom fontWeight="bold" sx={{ mb: 3 }}>
-        {t("subscription.available_plans")}
-      </Typography>
+      {/* Pricing Cards Section */}
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h5" gutterBottom fontWeight="bold">
+          {t("subscription.available_plans")}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+          {t("subscription.choose_plan_description")}
+        </Typography>
 
-      {/* Billing Toggle */}
-      <BillingToggle
-        value={billingInterval}
-        onChange={setBillingInterval}
-        discount={20}
-      />
+        {/* Billing Toggle */}
+        <Box sx={{ mb: 4, display: "flex", justifyContent: "center" }}>
+          <BillingToggle
+            value={billingInterval}
+            onChange={setBillingInterval}
+            discount={20}
+          />
+        </Box>
+      </Box>
 
-      <Grid container spacing={3} justifyContent="center">
+      <Grid
+        container
+        spacing={3}
+        justifyContent="center"
+        sx={{ mb: 4 }}
+      >
         <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
           <PricingCard
             plan={SubscriptionPlan.FREE}

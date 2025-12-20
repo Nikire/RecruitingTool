@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/material/styles";
 import { useAuthMe } from "../../hooks/api/useAuth";
+import toast from "react-hot-toast";
 
 // Icons
 import PeopleIcon from "@mui/icons-material/People";
@@ -210,6 +211,14 @@ const LandingPage = () => {
     if (element) {
       element.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  };
+
+  // Coming soon handler for placeholder links
+  const handleComingSoon = () => {
+    toast(t("common.coming_soon"), {
+      icon: "🚀",
+      duration: 3000,
+    });
   };
 
   return (
@@ -1190,6 +1199,11 @@ const LandingPage = () => {
               <Stack direction="row" spacing={1.5}>
                 <IconButton
                   size="small"
+                  component="a"
+                  href="https://twitter.com/borderless"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Twitter"
                   sx={{
                     color: "white",
                     "&:hover": {
@@ -1201,6 +1215,11 @@ const LandingPage = () => {
                 </IconButton>
                 <IconButton
                   size="small"
+                  component="a"
+                  href="https://linkedin.com/company/borderless"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="LinkedIn"
                   sx={{
                     color: "white",
                     "&:hover": {
@@ -1212,6 +1231,11 @@ const LandingPage = () => {
                 </IconButton>
                 <IconButton
                   size="small"
+                  component="a"
+                  href="https://github.com/borderless"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="GitHub"
                   sx={{
                     color: "white",
                     "&:hover": {
@@ -1234,6 +1258,7 @@ const LandingPage = () => {
               <Stack spacing={2}>
                 <Typography
                   variant="body2"
+                  onClick={() => scrollToSection("features")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1245,6 +1270,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={() => scrollToSection("pricing")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1256,6 +1282,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={() => navigate("/careers")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1278,6 +1305,7 @@ const LandingPage = () => {
               <Stack spacing={2}>
                 <Typography
                   variant="body2"
+                  onClick={handleComingSoon}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1289,6 +1317,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={handleComingSoon}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1300,6 +1329,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={handleComingSoon}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1322,6 +1352,7 @@ const LandingPage = () => {
               <Stack spacing={2}>
                 <Typography
                   variant="body2"
+                  onClick={handleComingSoon}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1333,6 +1364,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={handleComingSoon}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1344,6 +1376,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
+                  onClick={handleComingSoon}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",

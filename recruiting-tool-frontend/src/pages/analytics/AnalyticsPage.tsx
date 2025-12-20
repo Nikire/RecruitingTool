@@ -87,20 +87,31 @@ const AnalyticsPage: React.FC = () => {
         <Paper
           elevation={0}
           sx={{
-            p: 3,
+            p: { xs: 2, sm: 3 },
             mb: 4,
             border: (theme) => `1px solid ${theme.palette.divider}`,
+            borderRadius: 3,
+            background: (theme) =>
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.02)"
+                : "rgba(0, 0, 0, 0.01)",
           }}
         >
           <Box
             display="flex"
-            flexDirection={{ xs: "column", md: "row" }}
-            gap={2}
-            alignItems={{ xs: "stretch", md: "center" }}
+            flexDirection={{ xs: "column", sm: "row" }}
+            gap={{ xs: 2, sm: 2, md: 3 }}
+            alignItems={{ xs: "stretch", sm: "flex-start", md: "center" }}
             flexWrap="wrap"
           >
             {/* Date Range Filter */}
-            <Box display="flex" gap={2} flexGrow={1} flexWrap="wrap">
+            <Box
+              display="flex"
+              gap={2}
+              flexGrow={1}
+              flexWrap="wrap"
+              alignItems="center"
+            >
               <DatePicker
                 label={t("analytics.start_date")}
                 value={dateRange.startDate}
@@ -110,7 +121,12 @@ const AnalyticsPage: React.FC = () => {
                 slotProps={{
                   textField: {
                     size: "small",
-                    sx: { minWidth: 200 },
+                    sx: {
+                      minWidth: { xs: "100%", sm: 180, md: 200 },
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                      },
+                    },
                   },
                 }}
               />
@@ -124,18 +140,34 @@ const AnalyticsPage: React.FC = () => {
                 slotProps={{
                   textField: {
                     size: "small",
-                    sx: { minWidth: 200 },
+                    sx: {
+                      minWidth: { xs: "100%", sm: 180, md: 200 },
+                      "& .MuiOutlinedInput-root": {
+                        borderRadius: 2,
+                      },
+                    },
                   },
                 }}
               />
             </Box>
 
             {/* Action Buttons */}
-            <Box display="flex" gap={1}>
+            <Box
+              display="flex"
+              gap={1.5}
+              flexWrap="wrap"
+              sx={{ width: { xs: "100%", sm: "auto" } }}
+            >
               <Button
                 variant="contained"
                 onClick={handleApplyDateRange}
                 disabled={isLoading}
+                sx={{
+                  borderRadius: 2,
+                  px: 3,
+                  fontWeight: 600,
+                  flex: { xs: 1, sm: "unset" },
+                }}
               >
                 {t("common.apply")}
               </Button>
@@ -143,6 +175,11 @@ const AnalyticsPage: React.FC = () => {
                 variant="outlined"
                 onClick={handleClearFilters}
                 disabled={isLoading}
+                sx={{
+                  borderRadius: 2,
+                  px: 2.5,
+                  flex: { xs: 1, sm: "unset" },
+                }}
               >
                 {t("common.clear")}
               </Button>
@@ -153,6 +190,11 @@ const AnalyticsPage: React.FC = () => {
                 startIcon={
                   isLoading ? <CircularProgress size={16} /> : <RefreshIcon />
                 }
+                sx={{
+                  borderRadius: 2,
+                  px: 2.5,
+                  flex: { xs: 1, sm: "unset" },
+                }}
               >
                 {t("common.refresh")}
               </Button>

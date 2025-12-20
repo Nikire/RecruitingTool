@@ -53,33 +53,64 @@ const AdminDashboard: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         width: "100%",
-        py: 6, // Padding top and bottom instead of centering
+        py: { xs: 4, sm: 6 },
       }}
     >
-      <Box sx={{ mb: 4, textAlign: "center", maxWidth: 800 }}>
-        <Typography variant="h4" gutterBottom>
+      {/* Header Section - Enhanced with better typography */}
+      <Box
+        sx={{
+          mb: { xs: 4, sm: 5 },
+          textAlign: "center",
+          maxWidth: 800,
+          px: { xs: 2, sm: 0 },
+        }}
+      >
+        <Typography
+          variant="h3"
+          gutterBottom
+          sx={{
+            fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
+            fontWeight: 600,
+            color: "text.primary",
+            mb: 2,
+          }}
+        >
           {t("admin_dashboard.title")}
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{
+            fontSize: { xs: "0.95rem", sm: "1rem" },
+            lineHeight: 1.7,
+          }}
+        >
           {t("admin_dashboard.welcome", { name: user?.name })}
         </Typography>
       </Box>
 
+      {/* Navigation Cards Grid - Enhanced with better spacing and responsive layout */}
       <Box
         sx={{
-          display: "flex",
-          flexWrap: "wrap",
-          gap: 3,
-          justifyContent: "center",
-          width: "calc(280px * 2 + 24px)", // 2 cards + gap (theme spacing 3 = 24px)
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "1fr",
+            sm: "repeat(2, 1fr)",
+          },
+          gap: { xs: 2.5, sm: 3 },
+          width: "100%",
+          maxWidth: {
+            xs: "100%",
+            sm: "calc(300px * 2 + 24px)",
+          },
+          px: { xs: 2, sm: 0 },
         }}
       >
         {stats.map((stat) => (
           <Box
             key={stat.title}
             sx={{
-              width: 280,
-              minHeight: 160,
+              minHeight: 140,
             }}
           >
             <UnifiedStatCard

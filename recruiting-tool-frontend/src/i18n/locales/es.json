@@ -55,7 +55,8 @@
     "denying": "Denegando...",
     "send": "Enviar",
     "sending": "Enviando...",
-    "go_to_dashboard": "Ir al Panel"
+    "go_to_dashboard": "Ir al Panel",
+    "coming_soon": "¡Próximamente! Esta función está en desarrollo."
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -870,6 +871,7 @@
     "quick_actions": "Acciones Rápidas",
     "view_all": "Ver Todas",
     "no_applications": "Aún no hay aplicaciones",
+    "no_applications_desc": "Las aplicaciones aparecerán aquí cuando los candidatos apliquen a sus posiciones de trabajo",
     "applied_for": "Aplicó para",
     "manage_positions": "Gestionar Posiciones de Trabajo",
     "review_applications": "Revisar Aplicaciones",
@@ -1609,6 +1611,7 @@
     "status_distribution": "Estado de Candidatos",
     "top_skills": "Principales Habilidades",
     "no_data": "No hay datos de análisis disponibles",
+    "no_data_description": "Comienza a analizar tu proceso de reclutamiento creando posiciones de trabajo, aceptando aplicaciones y rastreando el progreso de contratación.",
     "start_date": "Fecha de Inicio",
     "end_date": "Fecha de Fin",
     "date_range": "Rango de Fechas",
@@ -1913,10 +1916,12 @@
     },
     "errors": {
       "load_failed": "Error al cargar los detalles de la suscripción. Por favor, inténtalo de nuevo.",
+      "quota_load_failed": "Error al cargar la información de cuota",
       "checkout_failed": "Error al crear la sesión de pago. Por favor, inténtalo de nuevo.",
       "billing_portal_failed": "Error al abrir el portal de facturación. Por favor, inténtalo de nuevo.",
       "cancel_failed": "Error al cancelar la suscripción. Por favor, inténtalo de nuevo."
     },
+    "choose_plan_description": "Selecciona el plan que mejor se adapte a tus necesidades de reclutamiento. Puedes actualizar o cambiar en cualquier momento.",
     "billing": {
       "toggle_label": "Intervalo de Facturación",
       "monthly": "Mensual",
@@ -2404,7 +2409,10 @@
     "minutes": "minutos",
     "default_duration": "Duración Predeterminada de Reunión",
     "default_duration_helper": "Duración estándar para nuevas reuniones de entrevista",
-    "settings_saved": "¡Configuración del calendario guardada exitosamente!"
+    "settings_saved": "¡Configuración del calendario guardada exitosamente!",
+    "subtitle": "Configura tu integración de calendario y ajustes de disponibilidad",
+    "status": "Estado",
+    "active": "Activo"
   },
   "notifications": {
     "title": "Notificaciones",
@@ -2511,7 +2519,16 @@
     "inAppSystemAnnouncement": "Anuncios del sistema",
     "updated": "Preferencias de notificación actualizadas",
     "updateFailed": "Error al actualizar preferencias de notificación",
-    "loadError": "Error al cargar preferencias de notificación"
+    "loadError": "Error al cargar preferencias de notificación",
+    "active_count": "{{count}} de {{total}} activos",
+    "emailApplicationStatusDesc": "Recibe notificaciones cuando cambian los estados de las solicitudes",
+    "emailInterviewScheduledDesc": "Recibe notificaciones cuando se programan o reprograman entrevistas",
+    "emailNewCandidateDesc": "Notificaciones cuando nuevos candidatos apliquen a posiciones",
+    "emailSystemAnnouncementDesc": "Actualizaciones importantes del sistema y anuncios",
+    "inAppApplicationStatusDesc": "Notificaciones en la aplicación para actualizaciones de estados de solicitudes",
+    "inAppInterviewScheduledDesc": "Alertas en la aplicación para programación de entrevistas",
+    "inAppNewCandidateDesc": "Notificaciones en la aplicación para nuevas solicitudes de candidatos",
+    "inAppSystemAnnouncementDesc": "Notificaciones en la aplicación para anuncios del sistema"
   },
   "company_roles": {
     "title": "Gestión de Equipo",

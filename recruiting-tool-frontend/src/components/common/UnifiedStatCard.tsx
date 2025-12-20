@@ -95,6 +95,7 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
 
   return (
     <Card
+      elevation={isClickable ? 1 : 0}
       sx={{
         height: "100%",
         width: "100%",
@@ -103,24 +104,34 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
         display: "flex",
         flexDirection: "column",
         cursor: isClickable ? "pointer" : "default",
-        transition: "box-shadow 0.3s ease, transform 0.1s ease",
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+        borderRadius: 2,
+        border: "1px solid",
+        borderColor: "divider",
         "&:hover": isClickable
           ? {
-              boxShadow: 4,
-              transform: "translateY(-2px)",
+              boxShadow: 3,
+              transform: "translateY(-4px)",
+              borderColor: "primary.main",
             }
           : {},
       }}
       onClick={onClick}
     >
       <CardContent
-        sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+          p: { xs: 2, sm: 2.5 },
+          "&:last-child": { pb: { xs: 2, sm: 2.5 } },
+        }}
       >
         <Box
           sx={{
             display: "flex",
             alignItems: "center",
-            mb: isStatistic ? 2 : 2,
+            mb: isStatistic ? 1.5 : 1,
           }}
         >
           {isStatistic ? (
@@ -134,18 +145,32 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  opacity: 0.9,
                 }}
               >
                 {icon}
               </Box>
               <Box sx={{ flex: 1 }}>
-                <Typography color="text.secondary" variant="body2">
+                <Typography
+                  color="text.secondary"
+                  variant="body2"
+                  sx={{ fontWeight: 500, mb: 0.5 }}
+                >
                   {displayTitle}
                 </Typography>
                 {isLoading ? (
                   <CircularProgress size={24} sx={{ mt: 0.5 }} />
                 ) : (
-                  <Typography variant="h4">{value}</Typography>
+                  <Typography
+                    variant="h4"
+                    sx={{
+                      fontWeight: 700,
+                      color: "text.primary",
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    {value}
+                  </Typography>
                 )}
               </Box>
             </>
@@ -160,11 +185,16 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
                   borderRadius: 2,
                   display: "flex",
                   mr: 2,
+                  boxShadow: 1,
                 }}
               >
                 {icon}
               </Box>
-              <Typography variant="h6" component="div">
+              <Typography
+                variant="h6"
+                component="div"
+                sx={{ fontWeight: 600, color: "text.primary" }}
+              >
                 {displayTitle}
               </Typography>
             </>
@@ -177,7 +207,11 @@ const UnifiedStatCard: React.FC<UnifiedStatCardProps> = ({
             sx={{
               overflow: "hidden",
               textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
+              display: "-webkit-box",
+              WebkitLineClamp: 2,
+              WebkitBoxOrient: "vertical",
+              lineHeight: 1.5,
+              fontSize: "0.875rem",
             }}
             title={displaySubtitle}
           >

@@ -177,22 +177,49 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
   return (
     <Paper
       elevation={0}
-      sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}
+      sx={{
+        p: 3,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 3,
+        background:
+          theme.palette.mode === "dark"
+            ? "rgba(255, 255, 255, 0.02)"
+            : "rgba(0, 0, 0, 0.01)",
+      }}
     >
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
-        mb={2}
+        mb={3}
+        flexWrap="wrap"
+        gap={2}
       >
         <Typography variant="h6" fontWeight={600}>
           {t("analytics.source_distribution")}
         </Typography>
-        <Box textAlign="right">
-          <Typography variant="caption" color="text.secondary" display="block">
+        <Box
+          textAlign="right"
+          sx={{
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : theme.palette.primary.light + "20",
+            px: 2,
+            py: 1,
+            borderRadius: 2,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            fontWeight={600}
+            sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+          >
             {t("analytics.total_candidates")}
           </Typography>
-          <Typography variant="h6" fontWeight={600} color="primary">
+          <Typography variant="h5" fontWeight={700} color="primary">
             {total}
           </Typography>
         </Box>
@@ -239,17 +266,35 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
       {/* Top Source Highlight */}
       <Box
         sx={{
-          mt: 2,
-          pt: 2,
-          borderTop: `1px solid ${theme.palette.divider}`,
+          mt: 3,
+          pt: 3,
+          borderTop: `2px solid ${theme.palette.divider}`,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: 2,
         }}
       >
-        <Typography variant="caption" color="text.secondary">
-          {t("analytics.top_source")}:
+        <Typography variant="body2" color="text.secondary" fontWeight={500}>
+          {t("analytics.top_source")}
         </Typography>
-        <Typography variant="body2" fontWeight={600} color="primary">
-          {data[0]?.source} ({data[0]?.percentage}%)
-        </Typography>
+        <Box
+          sx={{
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : COLORS[0] + "20",
+            px: 2.5,
+            py: 1.5,
+            borderRadius: 2,
+            border: `2px solid ${COLORS[0]}`,
+          }}
+        >
+          <Typography variant="body2" fontWeight={700} color={COLORS[0]}>
+            {data[0]?.source} ({data[0]?.percentage}%)
+          </Typography>
+        </Box>
       </Box>
     </Paper>
   );

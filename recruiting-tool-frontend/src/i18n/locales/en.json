@@ -55,7 +55,8 @@
     "denying": "Denying...",
     "send": "Send",
     "sending": "Sending...",
-    "go_to_dashboard": "Go to Dashboard"
+    "go_to_dashboard": "Go to Dashboard",
+    "coming_soon": "Coming soon! This feature is under development."
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -862,6 +863,7 @@
     "quick_actions": "Quick Actions",
     "view_all": "View All",
     "no_applications": "No applications yet",
+    "no_applications_desc": "Applications will appear here when candidates apply to your job positions",
     "applied_for": "Applied for",
     "manage_positions": "Manage Job Positions",
     "review_applications": "Review Applications",
@@ -1601,6 +1603,7 @@
     "status_distribution": "Candidate Status",
     "top_skills": "Top Skills",
     "no_data": "No analytics data available",
+    "no_data_description": "Start analyzing your recruitment process by creating job positions, accepting applications, and tracking hiring progress.",
     "start_date": "Start Date",
     "end_date": "End Date",
     "date_range": "Date Range",
@@ -1905,10 +1908,12 @@
     },
     "errors": {
       "load_failed": "Failed to load subscription details. Please try again.",
+      "quota_load_failed": "Failed to load quota information",
       "checkout_failed": "Failed to create checkout session. Please try again.",
       "billing_portal_failed": "Failed to open billing portal. Please try again.",
       "cancel_failed": "Failed to cancel subscription. Please try again."
     },
+    "choose_plan_description": "Select the plan that best fits your recruitment needs. You can upgrade or downgrade at any time.",
     "billing": {
       "toggle_label": "Billing Interval",
       "monthly": "Monthly",
@@ -2396,7 +2401,10 @@
     "minutes": "minutes",
     "default_duration": "Default Meeting Duration",
     "default_duration_helper": "Standard length for new interview meetings",
-    "settings_saved": "Calendar settings saved successfully!"
+    "settings_saved": "Calendar settings saved successfully!",
+    "subtitle": "Configure your calendar integration and availability settings",
+    "status": "Status",
+    "active": "Active"
   },
   "notifications": {
     "title": "Notifications",
@@ -2503,7 +2511,16 @@
     "inAppSystemAnnouncement": "System announcements",
     "updated": "Notification preferences updated",
     "updateFailed": "Failed to update notification preferences",
-    "loadError": "Failed to load notification preferences"
+    "loadError": "Failed to load notification preferences",
+    "active_count": "{{count}} of {{total}} active",
+    "emailApplicationStatusDesc": "Receive notifications when application statuses change",
+    "emailInterviewScheduledDesc": "Get notified when interviews are scheduled or rescheduled",
+    "emailNewCandidateDesc": "Notifications when new candidates apply to positions",
+    "emailSystemAnnouncementDesc": "Important system updates and announcements",
+    "inAppApplicationStatusDesc": "In-app notifications for application status updates",
+    "inAppInterviewScheduledDesc": "In-app alerts for interview scheduling",
+    "inAppNewCandidateDesc": "In-app notifications for new candidate applications",
+    "inAppSystemAnnouncementDesc": "In-app notifications for system announcements"
   },
   "company_roles": {
     "title": "Team Management",

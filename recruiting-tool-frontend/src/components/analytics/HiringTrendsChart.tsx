@@ -79,22 +79,49 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
   return (
     <Paper
       elevation={0}
-      sx={{ p: 3, border: `1px solid ${theme.palette.divider}` }}
+      sx={{
+        p: 3,
+        border: `1px solid ${theme.palette.divider}`,
+        borderRadius: 3,
+        background:
+          theme.palette.mode === "dark"
+            ? "rgba(255, 255, 255, 0.02)"
+            : "rgba(0, 0, 0, 0.01)",
+      }}
     >
       <Box
         display="flex"
         justifyContent="space-between"
         alignItems="center"
         mb={3}
+        flexWrap="wrap"
+        gap={2}
       >
         <Typography variant="h6" fontWeight={600}>
           {t("analytics.hiring_trends")}
         </Typography>
-        <Box textAlign="right">
-          <Typography variant="caption" color="text.secondary" display="block">
+        <Box
+          textAlign="right"
+          sx={{
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : theme.palette.primary.light + "20",
+            px: 2,
+            py: 1,
+            borderRadius: 2,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            display="block"
+            fontWeight={600}
+            sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+          >
             {t("analytics.total_hires")}
           </Typography>
-          <Typography variant="h6" fontWeight={600} color="primary">
+          <Typography variant="h5" fontWeight={700} color="primary">
             {totalHires}
           </Typography>
         </Box>
@@ -171,36 +198,87 @@ const HiringTrendsChart: React.FC<HiringTrendsChartProps> = ({ data }) => {
       {/* Trend Analysis */}
       <Box
         sx={{
-          mt: 2,
-          pt: 2,
-          borderTop: `1px solid ${theme.palette.divider}`,
+          mt: 3,
+          pt: 3,
+          borderTop: `2px solid ${theme.palette.divider}`,
           display: "flex",
           justifyContent: "space-around",
           flexWrap: "wrap",
-          gap: 2,
+          gap: 3,
         }}
       >
-        <Box textAlign="center">
-          <Typography variant="caption" color="text.secondary">
+        <Box
+          textAlign="center"
+          sx={{
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.02)",
+            px: 3,
+            py: 2,
+            borderRadius: 2,
+            minWidth: 120,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+          >
             {t("analytics.average_per_month")}
           </Typography>
-          <Typography variant="h6" fontWeight={600}>
+          <Typography variant="h5" fontWeight={700} color="info.main" mt={0.5}>
             {avgHires}
           </Typography>
         </Box>
-        <Box textAlign="center">
-          <Typography variant="caption" color="text.secondary">
+        <Box
+          textAlign="center"
+          sx={{
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.02)",
+            px: 3,
+            py: 2,
+            borderRadius: 2,
+            minWidth: 120,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+          >
             {t("analytics.best_month")}
           </Typography>
-          <Typography variant="h6" fontWeight={600}>
+          <Typography variant="h5" fontWeight={700} color="success.main" mt={0.5}>
             {Math.max(...data.map((d) => d.count))}
           </Typography>
         </Box>
-        <Box textAlign="center">
-          <Typography variant="caption" color="text.secondary">
+        <Box
+          textAlign="center"
+          sx={{
+            backgroundColor:
+              theme.palette.mode === "dark"
+                ? "rgba(255, 255, 255, 0.05)"
+                : "rgba(0, 0, 0, 0.02)",
+            px: 3,
+            py: 2,
+            borderRadius: 2,
+            minWidth: 120,
+          }}
+        >
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ textTransform: "uppercase", letterSpacing: 0.5 }}
+          >
             {t("analytics.total_period")}
           </Typography>
-          <Typography variant="h6" fontWeight={600}>
+          <Typography variant="h5" fontWeight={700} color="primary.main" mt={0.5}>
             {totalHires}
           </Typography>
         </Box>
