@@ -12,6 +12,9 @@ import {
   BillingPortalResponseDto,
   InvoicesResponseDto,
   InvoiceResponseDto,
+  ListSubscriptionsQueryDto,
+  SubscriptionsListResponseDto,
+  SubscriptionWithCompanyDto,
 } from './dto/stripe.dto';
 import { NotificationsService } from '../notifications/notifications.service';
 
@@ -909,5 +912,140 @@ export class StripeService {
     };
 
     return planHierarchy[newPlan] > planHierarchy[oldPlan];
+  }
+
+  /**
+   * List all subscriptions (Admin only)
+   * Returns paginated list with company information and statistics
+   */
+  async listAllSubscriptions(query: ListSubscriptionsQueryDto): Promise<SubscriptionsListResponseDto> {
+    const page = query.page || 1;
+    const limit = query.limit || 20;
+    const skip = (page - 1) * limit;
+
+    // Build where clause for filtering
+    const where: any = {};
+
+    if (query.status) {
+      where.status = query.status;
+    }
+
+    if (query.plan) {
+      where.plan = query.plan;
+    }
+
+    if (query.search) {
+      where.company = {
+        name: {
+          contains: query.search,
+          mode: 'insensitive',
+        },
+      };
+    }
+
+    // Fetch subscriptions with company info and user count
+    const [subscriptions, total] = await Promise.all([
+      this.databaseService.subscription.findMany({
+        where,
+        skip,
+        take: limit,
+        include: {
+          company: {
+            select: {
+              uid: true,
+              name: true,
+              _count: {
+                select: {
+                  users: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }),
+      this.databaseService.subscription.count({ where }),
+    ]);
+
+    // Calculate revenue based on plan (simplified - real values would come from Stripe)
+    const getPlanRevenue = (plan: SubscriptionPlan): { monthly: number; yearly: number } => {
+      switch (plan) {
+        case SubscriptionPlan.PROFESSIONAL:
+          return { monthly: 4900, yearly: 49000 }; // $49/mo or $490/yr
+        case SubscriptionPlan.ENTERPRISE:
+          return { monthly: 9900, yearly: 99000 }; // $99/mo or $990/yr
+        default:
+          return { monthly: 0, yearly: 0 };
+      }
+    };
+
+    // Get billing interval from Stripe subscription (if exists)
+    const getBillingInterval = async (stripeSubscriptionId: string | null): Promise<string | null> => {
+      if (!stripeSubscriptionId || !this.isEnabled || !this.stripe) {
+        return null;
+      }
+
+      try {
+        const subscription = await this.stripe.subscriptions.retrieve(stripeSubscriptionId);
+        return subscription.plan?.interval || 'monthly';
+      } catch (error) {
+        this.logger.warn(`Failed to retrieve billing interval for subscription ${stripeSubscriptionId}`);
+        return null;
+      }
+    };
+
+    // Map subscriptions to response DTOs
+    const subscriptionDtos: SubscriptionWithCompanyDto[] = await Promise.all(
+      subscriptions.map(async (sub) => {
+        const revenue = getPlanRevenue(sub.plan);
+        const billingInterval = await getBillingInterval(sub.stripeSubscriptionId);
+
+        return {
+          uid: sub.uid,
+          companyUid: sub.company.uid,
+          companyName: sub.company.name,
+          userCount: sub.company._count.users,
+          plan: sub.plan,
+          status: sub.status,
+          currentPeriodStart: sub.currentPeriodStart || undefined,
+          currentPeriodEnd: sub.currentPeriodEnd || undefined,
+          trialEnd: sub.trialEnd || undefined,
+          cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+          gracePeriodEndsAt: sub.gracePeriodEndsAt || undefined,
+          subscriptionEndsAt: sub.subscriptionEndsAt || undefined,
+          monthlyRevenue: revenue.monthly,
+          yearlyRevenue: revenue.yearly,
+          billingInterval: billingInterval || undefined,
+        };
+      }),
+    );
+
+    // Calculate statistics
+    const allSubscriptions = await this.databaseService.subscription.findMany({
+      select: { status: true, plan: true },
+    });
+
+    const stats = {
+      totalActive: allSubscriptions.filter((s) => s.status === SubscriptionStatus.ACTIVE).length,
+      totalTrialing: allSubscriptions.filter((s) => s.status === SubscriptionStatus.TRIALING).length,
+      totalCanceled: allSubscriptions.filter((s) => s.status === SubscriptionStatus.CANCELED).length,
+      totalPastDue: allSubscriptions.filter((s) => s.status === SubscriptionStatus.PAST_DUE).length,
+      totalMonthlyRevenue: allSubscriptions
+        .filter((s) => s.status === SubscriptionStatus.ACTIVE)
+        .reduce((sum, s) => sum + getPlanRevenue(s.plan).monthly, 0),
+      totalYearlyRevenue: allSubscriptions
+        .filter((s) => s.status === SubscriptionStatus.ACTIVE)
+        .reduce((sum, s) => sum + getPlanRevenue(s.plan).yearly, 0),
+    };
+
+    return {
+      subscriptions: subscriptionDtos,
+      total,
+      page,
+      limit,
+      stats,
+    };
   }
 }

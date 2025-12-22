@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus, Headers, RawBodyRequest, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Body, HttpCode, HttpStatus, Headers, RawBodyRequest, Req, BadRequestException, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { Request } from 'express';
 import { StripeService } from './stripe.service';
@@ -13,6 +13,8 @@ import {
   CreateBillingPortalDto,
   BillingPortalResponseDto,
   InvoicesResponseDto,
+  ListSubscriptionsQueryDto,
+  SubscriptionsListResponseDto,
 } from './dto/stripe.dto';
 
 @ApiTags('Stripe Subscriptions')
@@ -190,6 +192,35 @@ export class StripeController {
   })
   async getInvoices(@CurrentUser() user: any): Promise<InvoicesResponseDto> {
     return this.stripeService.getInvoices(user.companyId);
+  }
+
+  @Get('subscriptions/all')
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'List all subscriptions (Admin only)',
+    description:
+      'Retrieves paginated list of all subscriptions with company information, filtering, and statistics. Only accessible by ADMIN and SUPER_ADMIN roles.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Subscriptions list retrieved successfully',
+    type: SubscriptionsListResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - user is not an admin',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  async listAllSubscriptions(@Query() query: ListSubscriptionsQueryDto): Promise<SubscriptionsListResponseDto> {
+    return this.stripeService.listAllSubscriptions(query);
   }
 
   @Post('webhook')

@@ -115,3 +115,35 @@ export interface InvoicesResponse {
   invoices: Invoice[];
   total: number;
 }
+
+// Admin Subscriptions Management Types
+export interface SubscriptionWithCompany extends Subscription {
+  companyName: string;
+  userCount: number;
+  monthlyRevenue: number;
+  yearlyRevenue: number;
+  billingInterval?: string;
+}
+
+export interface SubscriptionsListResponse {
+  subscriptions: SubscriptionWithCompany[];
+  total: number;
+  page: number;
+  limit: number;
+  stats: {
+    totalActive: number;
+    totalTrialing: number;
+    totalCanceled: number;
+    totalPastDue: number;
+    totalMonthlyRevenue: number;
+    totalYearlyRevenue: number;
+  };
+}
+
+export interface ListSubscriptionsQuery {
+  page?: number;
+  limit?: number;
+  status?: SubscriptionStatus;
+  plan?: SubscriptionPlan;
+  search?: string;
+}

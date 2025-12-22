@@ -8,6 +8,8 @@ import {
   BillingPortalResponse,
   CancelSubscriptionResponse,
   InvoicesResponse,
+  SubscriptionsListResponse,
+  ListSubscriptionsQuery,
 } from "../types/subscription.types";
 
 // API functions
@@ -41,6 +43,15 @@ export const subscriptionApi = {
 
   getInvoices: async (): Promise<InvoicesResponse> => {
     const response = await api.get("/stripe/invoices");
+    return response.data;
+  },
+
+  listAllSubscriptions: async (
+    query: ListSubscriptionsQuery,
+  ): Promise<SubscriptionsListResponse> => {
+    const response = await api.get("/stripe/subscriptions/all", {
+      params: query,
+    });
     return response.data;
   },
 };
@@ -121,5 +132,16 @@ export const useInvoices = () => {
     queryKey: ["invoices"],
     queryFn: subscriptionApi.getInvoices,
     staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+};
+
+/**
+ * Hook to fetch all subscriptions (Admin only)
+ */
+export const useListAllSubscriptions = (query: ListSubscriptionsQuery) => {
+  return useQuery({
+    queryKey: ["subscriptions", "all", query],
+    queryFn: () => subscriptionApi.listAllSubscriptions(query),
+    staleTime: 1000 * 60 * 2, // 2 minutes
   });
 };

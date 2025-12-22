@@ -2953,5 +2953,36 @@
         "content": "Mejoramos continuamente nuestras medidas de seguridad y actualizaremos esta política según sea necesario. Los cambios significativos se comunicarán a través de nuestra plataforma y por correo electrónico."
       }
     }
+  },
+  "subscriptions": {
+    "page_title": "Gestión de Suscripciones",
+    "page_description": "Administra todas las suscripciones de empresas, visualiza estadísticas y monitorea ingresos",
+    "company_name": "Nombre de Empresa",
+    "plan": "Plan",
+    "status": "Estado",
+    "users": "Usuarios",
+    "billing": "Facturación",
+    "monthly_revenue": "Ingresos Mensuales",
+    "period_end": "Fin de Período",
+    "search_company": "Buscar por nombre de empresa",
+    "filter_status": "Filtrar por estado",
+    "filter_plan": "Filtrar por plan",
+    "active_subscriptions": "Suscripciones Activas",
+    "trialing_subscriptions": "Suscripciones de Prueba",
+    "past_due_subscriptions": "Vencidas",
+    "monthly_revenue": "Ingresos Mensuales",
+    "error_loading": "Error al cargar suscripciones. Por favor intente nuevamente.",
+    "not_applicable": "N/A",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "plan_free": "Gratis",
+    "plan_professional": "Profesional",
+    "plan_enterprise": "Empresarial",
+    "status_active": "Activa",
+    "status_trialing": "En Prueba",
+    "status_past_due": "Vencida",
+    "status_canceled": "Cancelada",
+    "status_expired": "Expirada",
+    "status_unpaid": "Sin Pagar"
   }
 }

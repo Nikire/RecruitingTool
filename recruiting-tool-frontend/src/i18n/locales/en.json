@@ -2945,5 +2945,36 @@
         "content": "We continuously improve our security measures and will update this policy as needed. Significant changes will be communicated through our platform and via email."
       }
     }
+  },
+  "subscriptions": {
+    "page_title": "Subscriptions Management",
+    "page_description": "Manage all company subscriptions, view statistics, and monitor revenue",
+    "company_name": "Company Name",
+    "plan": "Plan",
+    "status": "Status",
+    "users": "Users",
+    "billing": "Billing",
+    "monthly_revenue": "Monthly Revenue",
+    "period_end": "Period End",
+    "search_company": "Search by company name",
+    "filter_status": "Filter by status",
+    "filter_plan": "Filter by plan",
+    "active_subscriptions": "Active Subscriptions",
+    "trialing_subscriptions": "Trial Subscriptions",
+    "past_due_subscriptions": "Past Due",
+    "monthly_revenue": "Monthly Revenue",
+    "error_loading": "Failed to load subscriptions. Please try again.",
+    "not_applicable": "N/A",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "plan_free": "Free",
+    "plan_professional": "Professional",
+    "plan_enterprise": "Enterprise",
+    "status_active": "Active",
+    "status_trialing": "Trialing",
+    "status_past_due": "Past Due",
+    "status_canceled": "Canceled",
+    "status_expired": "Expired",
+    "status_unpaid": "Unpaid"
   }
 }

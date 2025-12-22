@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsEnum, IsUrl, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsEnum, IsUrl, IsOptional, IsNumber, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
 import { SubscriptionPlan, SubscriptionStatus } from '@prisma/client';
 
 export class CreateCheckoutSessionDto {
@@ -229,4 +230,125 @@ export class InvoicesResponseDto {
     example: 12,
   })
   total: number;
+}
+
+export class ListSubscriptionsQueryDto {
+  @ApiProperty({
+    description: 'Page number (1-indexed)',
+    example: 1,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  page?: number;
+
+  @ApiProperty({
+    description: 'Number of items per page',
+    example: 20,
+    required: false,
+  })
+  @IsOptional()
+  @Type(() => Number)
+  @IsNumber()
+  limit?: number;
+
+  @ApiProperty({
+    description: 'Filter by subscription status',
+    enum: SubscriptionStatus,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(SubscriptionStatus)
+  status?: SubscriptionStatus;
+
+  @ApiProperty({
+    description: 'Filter by subscription plan',
+    enum: SubscriptionPlan,
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(SubscriptionPlan)
+  plan?: SubscriptionPlan;
+
+  @ApiProperty({
+    description: 'Search by company name',
+    example: 'Acme Corp',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  search?: string;
+}
+
+export class SubscriptionWithCompanyDto extends SubscriptionResponseDto {
+  @ApiProperty({
+    description: 'Company name',
+    example: 'Acme Corporation',
+  })
+  companyName: string;
+
+  @ApiProperty({
+    description: 'Number of users in the company',
+    example: 15,
+  })
+  userCount: number;
+
+  @ApiProperty({
+    description: 'Monthly revenue from this subscription (in cents)',
+    example: 4900,
+  })
+  monthlyRevenue: number;
+
+  @ApiProperty({
+    description: 'Yearly revenue from this subscription (in cents)',
+    example: 58800,
+  })
+  yearlyRevenue: number;
+
+  @ApiProperty({
+    description: 'Billing interval (monthly or yearly)',
+    example: 'monthly',
+    required: false,
+  })
+  billingInterval?: string;
+}
+
+export class SubscriptionsListResponseDto {
+  @ApiProperty({
+    description: 'List of subscriptions with company information',
+    type: [SubscriptionWithCompanyDto],
+  })
+  subscriptions: SubscriptionWithCompanyDto[];
+
+  @ApiProperty({
+    description: 'Total number of subscriptions',
+    example: 150,
+  })
+  total: number;
+
+  @ApiProperty({
+    description: 'Current page number',
+    example: 1,
+  })
+  page: number;
+
+  @ApiProperty({
+    description: 'Number of items per page',
+    example: 20,
+  })
+  limit: number;
+
+  @ApiProperty({
+    description: 'Subscription statistics',
+    type: 'object',
+  })
+  stats: {
+    totalActive: number;
+    totalTrialing: number;
+    totalCanceled: number;
+    totalPastDue: number;
+    totalMonthlyRevenue: number;
+    totalYearlyRevenue: number;
+  };
 }
