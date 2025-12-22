@@ -75,8 +75,8 @@ const DEFAULT_CONFIG: DetectorConfig = {
     /^[\d\s\-+()]+$/i, // Phone numbers and numeric strings
     /^[a-z0-9\-_]+$/i, // CSS class names and IDs (lowercase kebab-case)
     /^\$\{.*\}$/i, // Template literal placeholders
-    /^data-[a-z\-]+$/i, // Data attributes
-    /^aria-[a-z\-]+$/i, // ARIA attributes
+    /^data-[a-z-]+$/i, // Data attributes
+    /^aria-[a-z-]+$/i, // ARIA attributes
     /^on[A-Z][a-zA-Z]*$/i, // Event handlers
     /^[A-Z][a-zA-Z0-9]*$/i, // Component names
     /^use[A-Z][a-zA-Z0-9]*$/i, // React hooks

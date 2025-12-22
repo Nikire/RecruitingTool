@@ -199,8 +199,7 @@ export class StripeController {
   @ApiBearerAuth()
   @ApiOperation({
     summary: 'List all subscriptions (Admin only)',
-    description:
-      'Retrieves paginated list of all subscriptions with company information, filtering, and statistics. Only accessible by ADMIN and SUPER_ADMIN roles.',
+    description: 'Retrieves paginated list of all subscriptions with company information, filtering, and statistics. Only accessible by ADMIN and SUPER_ADMIN roles.',
   })
   @ApiResponse({
     status: 200,

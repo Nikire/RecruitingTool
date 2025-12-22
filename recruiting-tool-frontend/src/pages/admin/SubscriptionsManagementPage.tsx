@@ -4,7 +4,6 @@ import {
   Typography,
   TextField,
   MenuItem,
-  CircularProgress,
   Alert,
   Chip,
   Card,
@@ -23,7 +22,6 @@ import { UnifiedStatCard } from "../../components/common";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import HourglassEmptyIcon from "@mui/icons-material/HourglassEmpty";
-import CancelIcon from "@mui/icons-material/Cancel";
 import WarningIcon from "@mui/icons-material/Warning";
 
 const SubscriptionsManagementPage: React.FC = () => {

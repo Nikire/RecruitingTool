@@ -1032,12 +1032,8 @@ export class StripeService {
       totalTrialing: allSubscriptions.filter((s) => s.status === SubscriptionStatus.TRIALING).length,
       totalCanceled: allSubscriptions.filter((s) => s.status === SubscriptionStatus.CANCELED).length,
       totalPastDue: allSubscriptions.filter((s) => s.status === SubscriptionStatus.PAST_DUE).length,
-      totalMonthlyRevenue: allSubscriptions
-        .filter((s) => s.status === SubscriptionStatus.ACTIVE)
-        .reduce((sum, s) => sum + getPlanRevenue(s.plan).monthly, 0),
-      totalYearlyRevenue: allSubscriptions
-        .filter((s) => s.status === SubscriptionStatus.ACTIVE)
-        .reduce((sum, s) => sum + getPlanRevenue(s.plan).yearly, 0),
+      totalMonthlyRevenue: allSubscriptions.filter((s) => s.status === SubscriptionStatus.ACTIVE).reduce((sum, s) => sum + getPlanRevenue(s.plan).monthly, 0),
+      totalYearlyRevenue: allSubscriptions.filter((s) => s.status === SubscriptionStatus.ACTIVE).reduce((sum, s) => sum + getPlanRevenue(s.plan).yearly, 0),
     };
 
     return {
