@@ -341,7 +341,6 @@ export class SubscriptionsListResponseDto {
 
   @ApiProperty({
     description: 'Subscription statistics',
-    type: 'object',
   })
   stats: {
     totalActive: number;

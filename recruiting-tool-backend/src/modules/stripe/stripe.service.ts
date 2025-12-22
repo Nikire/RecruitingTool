@@ -989,7 +989,7 @@ export class StripeService {
 
       try {
         const subscription = await this.stripe.subscriptions.retrieve(stripeSubscriptionId);
-        return subscription.plan?.interval || 'monthly';
+        return subscription.items.data[0]?.plan?.interval || 'monthly';
       } catch (error) {
         this.logger.warn(`Failed to retrieve billing interval for subscription ${stripeSubscriptionId}`);
         return null;
