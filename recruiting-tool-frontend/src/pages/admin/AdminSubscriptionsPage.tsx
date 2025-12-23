@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, Chip, Alert, Skeleton, Grid } from "@mui/material";
+import { Box, Card, CardContent, Typography, Chip, Alert, Skeleton } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useAdminSubscriptions } from "../../hooks/api/useAdminSubscriptions";
