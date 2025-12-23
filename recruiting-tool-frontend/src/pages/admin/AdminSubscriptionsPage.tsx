@@ -1,8 +1,20 @@
-import { Box, Card, CardContent, Typography, Chip, Alert, Skeleton } from "@mui/material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Chip,
+  Alert,
+  Skeleton,
+} from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useAdminSubscriptions } from "../../hooks/api/useAdminSubscriptions";
-import { AdminSubscriptionItem, SubscriptionStatus, SubscriptionPlan } from "../../types/subscription.types";
+import {
+  AdminSubscriptionItem,
+  SubscriptionStatus,
+  SubscriptionPlan,
+} from "../../types/subscription.types";
 import {
   TrendingUp as TrendingUpIcon,
   People as PeopleIcon,
@@ -20,7 +32,9 @@ const AdminSubscriptionsPage: React.FC = () => {
   const { data, isLoading, isError } = useAdminSubscriptions();
 
   // Helper to get status chip color
-  const getStatusColor = (status: SubscriptionStatus): "success" | "warning" | "error" | "default" | "info" => {
+  const getStatusColor = (
+    status: SubscriptionStatus,
+  ): "success" | "warning" | "error" | "default" | "info" => {
     switch (status) {
       case SubscriptionStatus.ACTIVE:
         return "success";
@@ -38,7 +52,9 @@ const AdminSubscriptionsPage: React.FC = () => {
   };
 
   // Helper to get plan chip color
-  const getPlanColor = (plan: SubscriptionPlan): "primary" | "secondary" | "default" => {
+  const getPlanColor = (
+    plan: SubscriptionPlan,
+  ): "primary" | "secondary" | "default" => {
     switch (plan) {
       case SubscriptionPlan.PROFESSIONAL:
         return "primary";
@@ -196,14 +212,20 @@ const AdminSubscriptionsPage: React.FC = () => {
         {isLoading ? (
           <>
             {[...Array(5)].map((_, index) => (
-              <Box key={index} sx={{ flex: "1 1 calc(20% - 24px)", minWidth: 200 }}>
+              <Box
+                key={index}
+                sx={{ flex: "1 1 calc(20% - 24px)", minWidth: 200 }}
+              >
                 <Skeleton variant="rectangular" height={120} />
               </Box>
             ))}
           </>
         ) : (
           statsData.map((stat, index) => (
-            <Box key={index} sx={{ flex: "1 1 calc(20% - 24px)", minWidth: 200 }}>
+            <Box
+              key={index}
+              sx={{ flex: "1 1 calc(20% - 24px)", minWidth: 200 }}
+            >
               <UnifiedStatCard
                 title={stat.title}
                 value={stat.value}
