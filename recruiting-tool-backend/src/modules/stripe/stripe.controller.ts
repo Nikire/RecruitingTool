@@ -15,6 +15,7 @@ import {
   InvoicesResponseDto,
   ListSubscriptionsQueryDto,
   SubscriptionsListResponseDto,
+  AdminSubscriptionsResponseDto,
 } from './dto/stripe.dto';
 
 @ApiTags('Stripe Subscriptions')
@@ -220,6 +221,34 @@ export class StripeController {
   })
   async listAllSubscriptions(@Query() query: ListSubscriptionsQueryDto): Promise<SubscriptionsListResponseDto> {
     return this.stripeService.listAllSubscriptions(query);
+  }
+
+  @Get('admin/subscriptions')
+  @Auth([RolesType.SUPER_ADMIN, RolesType.ADMIN])
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all subscriptions (Admin only)',
+    description: 'Retrieves all subscriptions with company and user details for admin management view. Accessible only by SUPER_ADMIN or ADMIN roles.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'All subscriptions retrieved successfully',
+    type: AdminSubscriptionsResponseDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Unauthorized - invalid or missing JWT token',
+  })
+  @ApiResponse({
+    status: 403,
+    description: 'Forbidden - user is not an admin',
+  })
+  @ApiResponse({
+    status: 500,
+    description: 'Internal server error',
+  })
+  async getAllSubscriptionsAdmin(): Promise<AdminSubscriptionsResponseDto> {
+    return this.stripeService.getAllSubscriptionsAdmin();
   }
 
   @Post('webhook')

@@ -1044,4 +1044,95 @@ export class StripeService {
       stats,
     };
   }
+
+  /**
+   * Get all subscriptions for admin view (SUPER_ADMIN or ADMIN only)
+   * Returns simpler view without pagination
+   */
+  async getAllSubscriptionsAdmin(): Promise<any> {
+    try {
+      // Fetch all subscriptions with company and user data
+      const subscriptions = await this.databaseService.subscription.findMany({
+        include: {
+          company: {
+            select: {
+              uid: true,
+              name: true,
+              users: {
+                where: {
+                  roles: { has: RolesType.COMPANY_OWNER },
+                  isActive: true,
+                },
+                take: 1,
+                select: {
+                  uid: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      // Calculate MRR based on plan (in cents)
+      const calculateMRR = (plan: SubscriptionPlan): number => {
+        switch (plan) {
+          case SubscriptionPlan.PROFESSIONAL:
+            return 2999; // $29.99/month
+          case SubscriptionPlan.ENTERPRISE:
+            return 9999; // $99.99/month
+          case SubscriptionPlan.FREE:
+          default:
+            return 0;
+        }
+      };
+
+      // Map to DTO format
+      const subscriptionItems = subscriptions.map((sub) => {
+        const owner = sub.company.users[0];
+        return {
+          subscriptionUid: sub.uid,
+          companyUid: sub.company.uid,
+          companyName: sub.company.name,
+          ownerUid: owner?.uid,
+          ownerName: owner?.name,
+          ownerEmail: owner?.email,
+          plan: sub.plan,
+          status: sub.status,
+          stripeCustomerId: sub.stripeCustomerId,
+          stripeSubscriptionId: sub.stripeSubscriptionId,
+          currentPeriodStart: sub.currentPeriodStart,
+          currentPeriodEnd: sub.currentPeriodEnd,
+          trialEnd: sub.trialEnd,
+          cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+          mrr: sub.status === SubscriptionStatus.ACTIVE ? calculateMRR(sub.plan) : 0,
+          createdAt: sub.createdAt,
+          updatedAt: sub.updatedAt,
+        };
+      });
+
+      // Calculate statistics
+      const total = subscriptions.length;
+      const totalActive = subscriptions.filter((s) => s.status === SubscriptionStatus.ACTIVE).length;
+      const totalTrialing = subscriptions.filter((s) => s.status === SubscriptionStatus.TRIALING).length;
+      const totalPastDue = subscriptions.filter((s) => s.status === SubscriptionStatus.PAST_DUE).length;
+      const totalMrr = subscriptionItems.reduce((sum, item) => sum + (item.mrr || 0), 0);
+
+      return {
+        subscriptions: subscriptionItems,
+        total,
+        totalActive,
+        totalTrialing,
+        totalPastDue,
+        totalMrr,
+      };
+    } catch (error) {
+      this.logger.error(`Failed to fetch all subscriptions: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to fetch subscriptions');
+    }
+  }
 }

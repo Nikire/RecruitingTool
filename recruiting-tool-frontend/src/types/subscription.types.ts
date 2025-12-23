@@ -116,7 +116,7 @@ export interface InvoicesResponse {
   total: number;
 }
 
-// Admin Subscriptions Management Types
+// Admin Subscriptions Management Types (for admin list view with pagination)
 export interface SubscriptionWithCompany extends Subscription {
   companyName: string;
   userCount: number;
@@ -146,4 +146,35 @@ export interface ListSubscriptionsQuery {
   status?: SubscriptionStatus;
   plan?: SubscriptionPlan;
   search?: string;
+}
+
+// Admin Subscription Item (for admin subscriptions management - simpler view)
+export interface AdminSubscriptionItem {
+  subscriptionUid: string;
+  companyUid: string;
+  companyName: string;
+  ownerUid?: string;
+  ownerName?: string;
+  ownerEmail?: string;
+  plan: SubscriptionPlan;
+  status: SubscriptionStatus;
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  currentPeriodStart?: string;
+  currentPeriodEnd?: string;
+  trialEnd?: string;
+  cancelAtPeriodEnd: boolean;
+  mrr?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Admin Subscriptions Response (for admin subscriptions management - simpler view)
+export interface AdminSubscriptionsResponse {
+  subscriptions: AdminSubscriptionItem[];
+  total: number;
+  totalActive: number;
+  totalTrialing: number;
+  totalPastDue: number;
+  totalMrr: number;
 }

@@ -56,7 +56,9 @@
     "send": "Enviar",
     "sending": "Enviando...",
     "go_to_dashboard": "Ir al Panel",
-    "coming_soon": "¡Próximamente! Esta función está en desarrollo."
+    "coming_soon": "¡Próximamente! Esta función está en desarrollo.",
+    "not_available": "N/D",
+    "not_applicable": "N/A"
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -1172,6 +1174,7 @@
     "dashboard": "Dashboard",
     "companies": "Empresas",
     "users": "Usuarios",
+    "subscriptions": "Suscripciones",
     "deleted_records": "Registros Eliminados",
     "settings": "Configuración",
     "aria_label": "navegación de administrador"
@@ -1438,6 +1441,30 @@
     "user_management_desc": "Gestionar cuentas de usuario, roles y permisos",
     "job_positions": "Posiciones de Trabajo",
     "job_positions_desc": "Ver todas las posiciones de trabajo en todas las empresas"
+  },
+  "admin": {
+    "subscriptions": {
+      "title": "Gestión de Suscripciones",
+      "table_title": "Todas las Suscripciones",
+      "error": "Error al cargar las suscripciones. Por favor, inténtalo de nuevo.",
+      "columns": {
+        "company": "Empresa",
+        "owner": "Propietario",
+        "email": "Correo Electrónico",
+        "plan": "Plan",
+        "status": "Estado",
+        "mrr": "MRR",
+        "period_end": "Fin de Período",
+        "created": "Creado"
+      },
+      "stats": {
+        "total_subscriptions": "Total de Suscripciones",
+        "active_subscriptions": "Suscripciones Activas",
+        "trialing_subscriptions": "Suscripciones de Prueba",
+        "past_due_subscriptions": "Suscripciones Vencidas",
+        "total_mrr": "MRR Total"
+      }
+    }
   },
   "status_editor": {
     "click_to_edit": "Haz clic para editar el estado",

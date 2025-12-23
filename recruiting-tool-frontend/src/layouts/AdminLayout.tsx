@@ -3,6 +3,7 @@ import BusinessIcon from "@mui/icons-material/Business";
 import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
+import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -36,6 +37,12 @@ const AdminLayout: React.FC = () => {
       icon: <PeopleIcon />,
       path: "/admin/users",
       requiresSuperAdmin: true,
+    },
+    {
+      text: t("admin_layout.subscriptions"),
+      icon: <SubscriptionsIcon />,
+      path: "/admin/subscriptions",
+      requiresSuperAdmin: false,
     },
     {
       text: t("admin_layout.deleted_records"),

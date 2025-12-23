@@ -28,6 +28,7 @@ import EmailTemplatesPage from "./pages/email-templates/EmailTemplatesPage";
 import AnalyticsPage from "./pages/analytics/AnalyticsPage";
 import SystemSettingsPage from "./pages/admin/SystemSettingsPage";
 import DeletedRecordsPage from "./pages/admin/DeletedRecordsPage";
+import AdminSubscriptionsPage from "./pages/admin/AdminSubscriptionsPage";
 import BookInterviewPage from "./pages/booking/BookInterviewPage";
 import BookingConfirmedPage from "./pages/booking/BookingConfirmedPage";
 import ErrorBoundaryTest from "./pages/test/ErrorBoundaryTest";
@@ -209,6 +210,10 @@ function App() {
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/companies" element={<CompaniesPage />} />
               <Route path="/admin/users" element={<UserManagementPage />} />
+              <Route
+                path="/admin/subscriptions"
+                element={<AdminSubscriptionsPage />}
+              />
               <Route
                 path="/admin/deleted-records"
                 element={<DeletedRecordsPage />}

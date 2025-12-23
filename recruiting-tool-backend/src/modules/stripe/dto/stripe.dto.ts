@@ -232,6 +232,7 @@ export class InvoicesResponseDto {
   total: number;
 }
 
+// DTOs for paginated subscriptions list (admin endpoint with pagination)
 export class ListSubscriptionsQueryDto {
   @ApiProperty({
     description: 'Page number (1-indexed)',
@@ -350,4 +351,158 @@ export class SubscriptionsListResponseDto {
     totalMonthlyRevenue: number;
     totalYearlyRevenue: number;
   };
+}
+
+// DTOs for simpler admin subscriptions view (no pagination)
+export class AdminSubscriptionItemDto {
+  @ApiProperty({
+    description: 'Subscription UID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  subscriptionUid: string;
+
+  @ApiProperty({
+    description: 'Company UID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  companyUid: string;
+
+  @ApiProperty({
+    description: 'Company name',
+    example: 'Acme Corporation',
+  })
+  companyName: string;
+
+  @ApiProperty({
+    description: 'Company owner/primary user UID',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  ownerUid?: string;
+
+  @ApiProperty({
+    description: 'Company owner/primary user name',
+    example: 'John Doe',
+    required: false,
+  })
+  ownerName?: string;
+
+  @ApiProperty({
+    description: 'Company owner/primary user email',
+    example: 'john@acme.com',
+    required: false,
+  })
+  ownerEmail?: string;
+
+  @ApiProperty({
+    description: 'Subscription plan',
+    enum: SubscriptionPlan,
+    example: 'PROFESSIONAL',
+  })
+  plan: SubscriptionPlan;
+
+  @ApiProperty({
+    description: 'Subscription status',
+    enum: SubscriptionStatus,
+    example: 'ACTIVE',
+  })
+  status: SubscriptionStatus;
+
+  @ApiProperty({
+    description: 'Stripe customer ID',
+    example: 'cus_abc123...',
+    required: false,
+  })
+  stripeCustomerId?: string;
+
+  @ApiProperty({
+    description: 'Stripe subscription ID',
+    example: 'sub_abc123...',
+    required: false,
+  })
+  stripeSubscriptionId?: string;
+
+  @ApiProperty({
+    description: 'Current billing period start',
+    example: '2025-01-01T00:00:00Z',
+    required: false,
+  })
+  currentPeriodStart?: Date;
+
+  @ApiProperty({
+    description: 'Current billing period end',
+    example: '2025-02-01T00:00:00Z',
+    required: false,
+  })
+  currentPeriodEnd?: Date;
+
+  @ApiProperty({
+    description: 'Trial end date',
+    example: '2025-01-15T00:00:00Z',
+    required: false,
+  })
+  trialEnd?: Date;
+
+  @ApiProperty({
+    description: 'Whether subscription will cancel at period end',
+    example: false,
+  })
+  cancelAtPeriodEnd: boolean;
+
+  @ApiProperty({
+    description: 'Monthly recurring revenue (MRR) in cents',
+    example: 2999,
+    required: false,
+  })
+  mrr?: number;
+
+  @ApiProperty({
+    description: 'Subscription created date',
+    example: '2024-12-01T00:00:00Z',
+  })
+  createdAt: Date;
+
+  @ApiProperty({
+    description: 'Subscription last updated date',
+    example: '2025-01-01T00:00:00Z',
+  })
+  updatedAt: Date;
+}
+
+export class AdminSubscriptionsResponseDto {
+  @ApiProperty({
+    description: 'List of all subscriptions',
+    type: [AdminSubscriptionItemDto],
+  })
+  subscriptions: AdminSubscriptionItemDto[];
+
+  @ApiProperty({
+    description: 'Total number of subscriptions',
+    example: 42,
+  })
+  total: number;
+
+  @ApiProperty({
+    description: 'Total active subscriptions',
+    example: 35,
+  })
+  totalActive: number;
+
+  @ApiProperty({
+    description: 'Total trialing subscriptions',
+    example: 5,
+  })
+  totalTrialing: number;
+
+  @ApiProperty({
+    description: 'Total past due subscriptions',
+    example: 2,
+  })
+  totalPastDue: number;
+
+  @ApiProperty({
+    description: 'Total monthly recurring revenue (MRR) in cents',
+    example: 104965,
+  })
+  totalMrr: number;
 }

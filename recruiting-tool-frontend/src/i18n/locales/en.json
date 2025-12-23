@@ -56,7 +56,9 @@
     "send": "Send",
     "sending": "Sending...",
     "go_to_dashboard": "Go to Dashboard",
-    "coming_soon": "Coming soon! This feature is under development."
+    "coming_soon": "Coming soon! This feature is under development.",
+    "not_available": "N/A",
+    "not_applicable": "N/A"
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -1164,6 +1166,7 @@
     "dashboard": "Dashboard",
     "companies": "Companies",
     "users": "Users",
+    "subscriptions": "Subscriptions",
     "deleted_records": "Deleted Records",
     "settings": "Settings",
     "aria_label": "admin navigation"
@@ -1430,6 +1433,30 @@
     "user_management_desc": "Manage user accounts, roles, and permissions",
     "job_positions": "Job Positions",
     "job_positions_desc": "View all job positions across companies"
+  },
+  "admin": {
+    "subscriptions": {
+      "title": "Subscriptions Management",
+      "table_title": "All Subscriptions",
+      "error": "Failed to load subscriptions. Please try again.",
+      "columns": {
+        "company": "Company",
+        "owner": "Owner",
+        "email": "Email",
+        "plan": "Plan",
+        "status": "Status",
+        "mrr": "MRR",
+        "period_end": "Period End",
+        "created": "Created"
+      },
+      "stats": {
+        "total_subscriptions": "Total Subscriptions",
+        "active_subscriptions": "Active Subscriptions",
+        "trialing_subscriptions": "Trial Subscriptions",
+        "past_due_subscriptions": "Past Due Subscriptions",
+        "total_mrr": "Total MRR"
+      }
+    }
   },
   "status_editor": {
     "click_to_edit": "Click to edit status",
