@@ -107,7 +107,7 @@ const AdminSubscriptionsPage: React.FC = () => {
       width: 150,
       renderCell: (params) => (
         <Chip
-          label={t(`subscription.plans.${params.value.toLowerCase()}`)}
+          label={t(`subscription.plans.${params.value.toLowerCase()}.name`)}
           color={getPlanColor(params.value)}
           size="small"
         />
