@@ -1,0 +1,36 @@
+name: Deploy to Development (EC2)
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  deploy:
+    name: SSH Deploy to EC2
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_KEY }}
+          timeout: 10m
+          script: |
+            set -e
+
+            echo "==> Navigating to project directory..."
+            cd ~/borderless
+
+            echo "==> Pulling latest code from development branch..."
+            git pull origin development
+
+            echo "==> Rebuilding and restarting containers..."
+            DOCKER_BUILDKIT=0 docker-compose up -d --build
+
+            echo "==> Verifying container health..."
+            docker-compose ps
+
+            echo "==> Deployment complete."
