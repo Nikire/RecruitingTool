@@ -126,6 +126,8 @@ services:
     build:
       context: ./recruiting-tool-frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api}
     env_file:
       - ./recruiting-tool-frontend/.env
     ports:

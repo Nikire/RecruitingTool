@@ -8,6 +8,8 @@ RUN yarn install --frozen-lockfile
 
 COPY . .
 
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN yarn build:vite -- --mode docker
