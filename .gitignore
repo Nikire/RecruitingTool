@@ -2,6 +2,9 @@
 
 builddocker.sh
 
+# AWS SSH keys - never commit these
+*.pem
+
 # Claude Code settings
 .claude/
 CLAUDE.md
