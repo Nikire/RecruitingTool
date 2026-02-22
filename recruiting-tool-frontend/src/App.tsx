@@ -22,6 +22,7 @@ import CareersPage from "./pages/careers/CareersPage";
 import CandidatesPage from "./pages/candidates/CandidatesPage";
 import HiringProcessesPage from "./pages/hiring-processes/HiringProcessesPage";
 import { CompaniesPage } from "./pages/companies/CompaniesPage";
+import CompanyDetailPage from "./pages/companies/CompanyDetailPage";
 import UserManagementPage from "./pages/users/UserManagementPage";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import HRDashboard from "./pages/hr/HRDashboard";
@@ -226,6 +227,7 @@ function App() {
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/companies" element={<CompaniesPage />} />
+              <Route path="/admin/companies/:uid" element={<CompanyDetailPage />} />
               <Route path="/admin/users" element={<UserManagementPage />} />
               <Route
                 path="/admin/subscriptions"

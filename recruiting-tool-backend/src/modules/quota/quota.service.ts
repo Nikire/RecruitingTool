@@ -36,15 +36,16 @@ export class QuotaService {
     ]);
 
     // Build quota usage array
+    // aiScoringCredits shows 0 used until per-month tracking is implemented
     const quotas: QuotaUsageDto[] = [
       this.buildQuotaUsage('jobPositions', jobPositionsCount, limits.maxJobPositions),
       this.buildQuotaUsage('users', usersCount, limits.maxUsers),
       this.buildQuotaUsage('storage', totalStorageMB, limits.maxStorageMB),
+      this.buildQuotaUsage('aiScoringCredits', 0, limits.aiScoringCreditsPerMonth),
     ];
 
     // Build feature access array
     const features: FeatureAccessDto[] = [
-      { feature: 'aiScoring', enabled: limits.aiScoringEnabled },
       { feature: 'emailTemplates', enabled: limits.emailTemplatesEnabled },
       { feature: 'analytics', enabled: limits.analyticsEnabled },
     ];

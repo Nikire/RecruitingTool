@@ -230,7 +230,7 @@ const SubscriptionPage: React.FC = () => {
 
   if (isErrorSubscription) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         <Alert severity="error" sx={{ mb: 3 }}>
           <Typography variant="h6" gutterBottom>
             {t("subscription.errors.load_failed")}
@@ -250,7 +250,7 @@ const SubscriptionPage: React.FC = () => {
 
   if (isLoadingSubscription) {
     return (
-      <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         <Skeleton variant="rectangular" height={200} sx={{ mb: 3 }} />
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
@@ -268,7 +268,7 @@ const SubscriptionPage: React.FC = () => {
   }
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 3, md: 4 } }}>
+    <Container maxWidth="xl" sx={{ py: { xs: 3, md: 4 } }}>
       {/* Page Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" gutterBottom fontWeight="bold">
@@ -472,7 +472,7 @@ const SubscriptionPage: React.FC = () => {
           <PricingCard
             plan={SubscriptionPlan.PROFESSIONAL}
             monthlyPrice={79}
-            annualPrice={758}
+            annualPrice={799}
             interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.PROFESSIONAL}
@@ -489,8 +489,8 @@ const SubscriptionPage: React.FC = () => {
         <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
           <PricingCard
             plan={SubscriptionPlan.ENTERPRISE}
-            monthlyPrice={299}
-            annualPrice={2870}
+            monthlyPrice={249}
+            annualPrice={2499}
             interval={billingInterval}
             features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
             isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}

@@ -1,7 +1,9 @@
-import { Box, Typography, Chip, IconButton } from "@mui/material";
+import { Box, Typography, Chip, IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useListCompanies } from "../../hooks/api/useCompanies";
 import { Company } from "../../types/company.types";
 import { ActionsCell } from "../tables";
@@ -27,6 +29,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
   onDelete,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { data, isLoading } = useListCompanies({
     page,
     limit,
@@ -100,16 +103,28 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
     {
       field: "actions",
       headerName: t("common.actions"),
-      width: 120,
+      width: 160,
       sortable: false,
       filterable: false,
       align: "center",
       headerAlign: "center",
       renderCell: (params) => (
-        <ActionsCell
-          onEdit={() => onEdit(params.row)}
-          onDelete={() => onDelete(params.row)}
-        />
+        <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
+          <Tooltip title={t("common.view")}>
+            <IconButton
+              size="small"
+              color="info"
+              onClick={() => navigate(`/admin/companies/${params.row.uid}`)}
+              aria-label={t("common.view")}
+            >
+              <VisibilityIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+          <ActionsCell
+            onEdit={() => onEdit(params.row)}
+            onDelete={() => onDelete(params.row)}
+          />
+        </Box>
       ),
       mobileRender: (company) => (
         <Box
@@ -120,6 +135,15 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
             mt: 2,
           }}
         >
+          <IconButton
+            size="small"
+            color="info"
+            onClick={() => navigate(`/admin/companies/${company.uid}`)}
+            aria-label={t("common.view")}
+            sx={{ minHeight: 44, minWidth: 44 }}
+          >
+            <VisibilityIcon />
+          </IconButton>
           <IconButton
             size="small"
             color="primary"

@@ -1,7 +1,12 @@
 import api from "./axios";
 import {
   Company,
+  CompanyUser,
   CreateCompanyDto,
+  ForceJoinDto,
+  ForceJoinResponse,
+  TransferOwnershipDto,
+  TransferOwnershipResponse,
   UpdateCompanyDto,
 } from "../types/company.types";
 import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
@@ -47,6 +52,30 @@ export const companiesApi = {
 
   getPublicWithJobs: async (): Promise<PublicCompany[]> => {
     const response = await api.get("/company/public/with-jobs");
+    return response.data;
+  },
+
+  getCompanyUsers: async (
+    uid: string,
+    params: PaginationParams,
+  ): Promise<PaginatedResponse<CompanyUser>> => {
+    const response = await api.get(`/company/${uid}/users`, { params });
+    return response.data;
+  },
+
+  transferOwnership: async (
+    uid: string,
+    data: TransferOwnershipDto,
+  ): Promise<TransferOwnershipResponse> => {
+    const response = await api.post(`/company/${uid}/transfer-ownership`, data);
+    return response.data;
+  },
+
+  forceJoinUser: async (
+    uid: string,
+    data: ForceJoinDto,
+  ): Promise<ForceJoinResponse> => {
+    const response = await api.post(`/company/${uid}/force-join`, data);
     return response.data;
   },
 };

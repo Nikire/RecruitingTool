@@ -2,7 +2,15 @@ import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto } from './dto/company.dto';
+import {
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  CompanyResponseDto,
+  PublicCompanyResponseDto,
+  CompanyUserResponseDto,
+  TransferOwnershipDto,
+  ForceJoinDto,
+} from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -78,6 +86,39 @@ export class CompanyController {
   @ApiResponse({ status: 200, description: 'Company deleted successfully', type: MessageResponseDto })
   remove(@Param('uid') uid: string): Promise<MessageResponseDto> {
     return this.companyService.remove(uid);
+  }
+
+  @Get(':uid/users')
+  @Auth(['SUPER_ADMIN'])
+  @ApiOperation({ summary: 'Get paginated list of users for a company (SUPER_ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'Returns paginated list of company users', type: [CompanyUserResponseDto] })
+  getCompanyUsers(
+    @Param('uid') uid: string,
+    @Query() paginationDto: PaginationDto,
+  ): Promise<PaginatedResponse<CompanyUserResponseDto>> {
+    return this.companyService.getCompanyUsers(uid, paginationDto);
+  }
+
+  @Post(':uid/transfer-ownership')
+  @Auth(['SUPER_ADMIN'])
+  @ApiOperation({ summary: 'Transfer company ownership to another member (SUPER_ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'Ownership transferred successfully' })
+  transferOwnership(
+    @Param('uid') uid: string,
+    @Body() dto: TransferOwnershipDto,
+  ): Promise<{ message: string; previousOwner: CompanyUserResponseDto; newOwner: CompanyUserResponseDto }> {
+    return this.companyService.transferOwnership(uid, dto);
+  }
+
+  @Post(':uid/force-join')
+  @Auth(['SUPER_ADMIN'])
+  @ApiOperation({ summary: 'Force a user to join a company (SUPER_ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'User successfully joined the company' })
+  forceJoinUser(
+    @Param('uid') uid: string,
+    @Body() dto: ForceJoinDto,
+  ): Promise<{ message: string; user: CompanyUserResponseDto }> {
+    return this.companyService.forceJoinUser(uid, dto);
   }
 
   @Post(':uid/logo')

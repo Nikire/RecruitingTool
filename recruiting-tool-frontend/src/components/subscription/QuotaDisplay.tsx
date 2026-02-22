@@ -61,15 +61,19 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
     "jobPositions",
   );
   const storageQuota = getQuotaByResource(quotaStatus.quotas, "storage");
+  const aiCreditsQuota = getQuotaByResource(
+    quotaStatus.quotas,
+    "aiScoringCredits",
+  );
 
   const isApproachingLimit =
     (usersQuota?.percentageUsed ?? 0) >= 80 ||
     (jobPositionsQuota?.percentageUsed ?? 0) >= 80 ||
-    (storageQuota?.percentageUsed ?? 0) >= 80;
+    (storageQuota?.percentageUsed ?? 0) >= 80 ||
+    (aiCreditsQuota?.percentageUsed ?? 0) >= 80;
 
   // Feature flags
   const features = [
-    { key: "aiScoring", label: t("subscription.features.ai_scoring") },
     {
       key: "emailTemplates",
       label: t("subscription.features.email_templates"),
@@ -187,6 +191,36 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
               >
                 {formatStorageSize(storageQuota.used)} /{" "}
                 {formatStorageSize(storageQuota.limit)}
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
+        {/* AI Scoring Credits */}
+        {aiCreditsQuota && aiCreditsQuota.limit !== 0 && (
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              {t("subscription.quota.ai_scoring_credits")}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+              <Box sx={{ flexGrow: 1 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={
+                    aiCreditsQuota.limit === -1
+                      ? 0
+                      : aiCreditsQuota.percentageUsed
+                  }
+                  color={getUsageColor(aiCreditsQuota.percentageUsed)}
+                  sx={{ height: 8, borderRadius: 1 }}
+                />
+              </Box>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ minWidth: 80, textAlign: "right" }}
+              >
+                {aiCreditsQuota.used} / {formatLimit(aiCreditsQuota.limit)}
               </Typography>
             </Box>
           </Box>

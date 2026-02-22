@@ -9,6 +9,7 @@ import {
   Divider,
   Grid,
   alpha,
+  Skeleton,
 } from "@mui/material";
 import {
   Save as SaveIcon,
@@ -23,20 +24,49 @@ import {
   Schedule as ScheduleIcon,
   Info as InfoIcon,
   VerifiedUser as VerifiedUserIcon,
+  OpenInNew as OpenInNewIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { useForm } from "react-hook-form";
-import { UpdateUserDto } from "../../types/user.types";
+import { UpdateUserDto, UserRoles } from "../../types/user.types";
 import { useUpdateUser } from "../../hooks/api/useUsers";
 import { useEffect } from "react";
 import ProfilePictureUpload from "../../components/user/ProfilePictureUpload";
 import { RoleBadge } from "../../components/common";
+import { useSubscription } from "../../api/subscription";
+import { SubscriptionStatus } from "../../types/subscription.types";
+import { hasRole } from "../../utils/permissions";
 
 const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { user } = useUserAtom();
   const { mutate: updateUser, isPending } = useUpdateUser();
+
+  const isOwner = hasRole(user, UserRoles.COMPANY_OWNER);
+  const { data: subscription, isLoading: isLoadingSubscription } =
+    useSubscription();
+
+  const getSubscriptionStatusColor = (
+    status: SubscriptionStatus,
+  ): "success" | "warning" | "error" | "default" | "info" => {
+    switch (status) {
+      case SubscriptionStatus.ACTIVE:
+        return "success";
+      case SubscriptionStatus.TRIALING:
+        return "info";
+      case SubscriptionStatus.PAST_DUE:
+        return "warning";
+      case SubscriptionStatus.CANCELED:
+      case SubscriptionStatus.UNPAID:
+      case SubscriptionStatus.EXPIRED:
+        return "error";
+      default:
+        return "default";
+    }
+  };
 
   const {
     register,
@@ -288,6 +318,78 @@ const ProfilePage: React.FC = () => {
                   ))}
                 </Box>
               </Box>
+
+              {/* Subscription Section - COMPANY_OWNER only */}
+              {isOwner && (
+                <>
+                  <Divider sx={{ width: "100%", my: 2 }} />
+                  <Box sx={{ width: "100%" }}>
+                    <Typography
+                      variant="subtitle2"
+                      sx={{
+                        mb: 1.5,
+                        fontWeight: 600,
+                        color: "text.secondary",
+                        textAlign: "center",
+                      }}
+                    >
+                      {t("profile_page.your_plan")}
+                    </Typography>
+                    {isLoadingSubscription ? (
+                      <Skeleton
+                        variant="rectangular"
+                        height={32}
+                        sx={{ borderRadius: 1, mb: 1.5 }}
+                      />
+                    ) : subscription ? (
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          gap: 1,
+                        }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 1,
+                            flexWrap: "wrap",
+                            justifyContent: "center",
+                          }}
+                        >
+                          <Chip
+                            label={t(
+                              `subscription.plans.${subscription.plan.toLowerCase()}.name`,
+                            )}
+                            color="primary"
+                            size="small"
+                            variant="outlined"
+                          />
+                          <Chip
+                            label={t(
+                              `subscription.status.${subscription.status.toLowerCase()}`,
+                            )}
+                            color={getSubscriptionStatusColor(
+                              subscription.status,
+                            )}
+                            size="small"
+                          />
+                        </Box>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
+                          onClick={() => navigate("/profile/subscription")}
+                          sx={{ mt: 0.5, width: "100%" }}
+                        >
+                          {t("profile_page.manage_subscription")}
+                        </Button>
+                      </Box>
+                    ) : null}
+                  </Box>
+                </>
+              )}
             </CardContent>
           </Card>
         </Grid>

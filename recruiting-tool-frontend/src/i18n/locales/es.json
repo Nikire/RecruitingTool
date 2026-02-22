@@ -412,6 +412,34 @@
     "delete_title": "Eliminar Empresa",
     "delete_message": "¿Está seguro que desea eliminar esta empresa?"
   },
+  "company_detail": {
+    "back_to_companies": "Volver a Empresas",
+    "not_found": "Empresa no encontrada",
+    "users_section_title": "Miembros de la Empresa",
+    "no_users": "No hay usuarios en esta empresa",
+    "col_name": "Nombre",
+    "col_email": "Correo Electrónico",
+    "col_roles": "Roles",
+    "col_status": "Estado",
+    "col_joined": "Se unió",
+    "status_active": "Activo",
+    "status_inactive": "Inactivo",
+    "transfer_ownership": "Transferir Propiedad",
+    "force_join": "Forzar Unión de Usuario",
+    "transfer_ownership_title": "Transferir Propiedad de la Empresa",
+    "transfer_ownership_warning": "Esto eliminará el rol COMPANY_OWNER del propietario actual y lo asignará al usuario seleccionado.",
+    "current_owner": "Propietario Actual",
+    "new_owner_label": "Seleccionar Nuevo Propietario",
+    "confirm_transfer": "Transferir Propiedad",
+    "transferring": "Transfiriendo...",
+    "force_join_title": "Forzar Unión de Usuario a la Empresa",
+    "user_uid_label": "UID del Usuario",
+    "user_uid_helper": "Ingrese el UID del usuario que desea agregar a esta empresa",
+    "role_label": "Rol",
+    "assign_to_company": "Asignar a la Empresa",
+    "joining": "Uniéndose...",
+    "transfer_to_user": "Transferir propiedad a {{name}}"
+  },
   "users": {
     "title": "Usuarios",
     "create_title": "Crear Nuevo Usuario",
@@ -1076,7 +1104,9 @@
     "about_you": "Sobre Ti",
     "bio": "Biografía",
     "account_active": "Cuenta Activa",
-    "roles": "Roles"
+    "roles": "Roles",
+    "your_plan": "Tu Plan",
+    "manage_subscription": "Gestionar Suscripción"
   },
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",
@@ -2063,6 +2093,7 @@
       "users": "Usuarios",
       "job_positions": "Posiciones de Trabajo",
       "storage": "Almacenamiento",
+      "ai_scoring_credits": "Créditos de Puntuación IA",
       "features": "Funciones Disponibles",
       "approaching_limit": "Te estás acercando a los límites de tu plan. Considera actualizar para obtener más capacidad.",
       "upgrade_now": "Actualizar Ahora",
