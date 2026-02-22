@@ -5,6 +5,9 @@ import {
   Button,
   Alert,
   CircularProgress,
+  Divider,
+  Paper,
+  Stack,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -103,16 +106,16 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   if (showSuccess) {
     return (
-      <Box sx={{ textAlign: "center", py: 4 }}>
-        <CheckCircleIcon sx={{ fontSize: 80, color: "success.main", mb: 2 }} />
-        <Typography variant="h4" gutterBottom>
+      <Box sx={{ textAlign: "center", py: 6 }}>
+        <CheckCircleIcon sx={{ fontSize: 96, color: "success.main", mb: 3 }} />
+        <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
           {t("registration_wizard.confirmation.success_title")}
         </Typography>
-        <Typography variant="body1" color="textSecondary" sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 400, mx: "auto" }}>
           {t("registration_wizard.confirmation.success_message")}
         </Typography>
         {isAuthenticated ? (
-          <Typography variant="body2" color="textSecondary">
+          <Typography variant="body2" color="text.secondary">
             {t("registration_wizard.confirmation.redirecting")}
           </Typography>
         ) : (
@@ -121,11 +124,11 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              gap: 1,
+              gap: 1.5,
             }}
           >
-            <CircularProgress size={16} />
-            <Typography variant="body2" color="textSecondary">
+            <CircularProgress size={18} />
+            <Typography variant="body2" color="text.secondary">
               {t("registration_wizard.confirmation.setting_up")}
             </Typography>
           </Box>
@@ -136,67 +139,92 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ mb: 1, fontWeight: 700 }}
+      >
         {t("registration_wizard.confirmation.title")}
       </Typography>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
+        {t("registration_wizard.confirmation.review_message")}
+      </Typography>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="body2" color="textSecondary" gutterBottom>
-          {t("registration_wizard.confirmation.review_message")}
-        </Typography>
-      </Box>
-
-      <Box
-        sx={{
-          p: 3,
-          bgcolor: "background.default",
-          borderRadius: 1,
-          mb: 3,
-        }}
+      <Paper
+        variant="outlined"
+        sx={{ borderRadius: 2, mb: 3, overflow: "hidden" }}
       >
-        <Typography variant="subtitle2" gutterBottom>
-          {t("registration_wizard.confirmation.role_label")}
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {getRoleTitle()}
-        </Typography>
-
-        <Typography variant="subtitle2" gutterBottom>
-          {t("registration_wizard.confirmation.name_label")}
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {formData.name}
-        </Typography>
-
-        <Typography variant="subtitle2" gutterBottom>
-          {t("registration_wizard.confirmation.email_label")}
-        </Typography>
-        <Typography variant="body1" sx={{ mb: 2 }}>
-          {formData.email}
-        </Typography>
-
-        {formData.selectedRole === "HR" && formData.jobTitle && (
-          <>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("registration_wizard.confirmation.job_title_label")}
+        <Stack divider={<Divider />}>
+          <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+            >
+              {t("registration_wizard.confirmation.role_label")}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {formData.jobTitle}
+            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+              {getRoleTitle()}
             </Typography>
-          </>
-        )}
+          </Box>
 
-        {formData.selectedRole === "COMPANY_OWNER" && formData.companyName && (
-          <>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("registration_wizard.confirmation.company_name_label")}
+          <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+            >
+              {t("registration_wizard.confirmation.name_label")}
             </Typography>
-            <Typography variant="body1" sx={{ mb: 2 }}>
-              {formData.companyName}
+            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+              {formData.name}
             </Typography>
-          </>
-        )}
-      </Box>
+          </Box>
+
+          <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+            >
+              {t("registration_wizard.confirmation.email_label")}
+            </Typography>
+            <Typography variant="body1" sx={{ fontWeight: 500 }}>
+              {formData.email}
+            </Typography>
+          </Box>
+
+          {formData.selectedRole === "HR" && formData.jobTitle && (
+            <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+              >
+                {t("registration_wizard.confirmation.job_title_label")}
+              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {formData.jobTitle}
+              </Typography>
+            </Box>
+          )}
+
+          {formData.selectedRole === "COMPANY_OWNER" && formData.companyName && (
+            <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+              >
+                {t("registration_wizard.confirmation.company_name_label")}
+              </Typography>
+              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                {formData.companyName}
+              </Typography>
+            </Box>
+          )}
+        </Stack>
+      </Paper>
 
       {isError && (
         <Alert severity="error" sx={{ mb: 3 }}>
@@ -205,18 +233,19 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
         </Alert>
       )}
 
-      <Alert severity="info" sx={{ mb: 3 }}>
+      <Alert severity="info" sx={{ mb: 4 }}>
         {t("registration_wizard.confirmation.next_steps")}
       </Alert>
 
-      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-        <Button onClick={onBack} disabled={isPending}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
+        <Button onClick={onBack} disabled={isPending} size="large">
           {t("common.back")}
         </Button>
         <Button
           variant="contained"
           onClick={handleRegister}
           disabled={isPending}
+          size="large"
           startIcon={isPending ? <CircularProgress size={20} /> : null}
         >
           {isPending

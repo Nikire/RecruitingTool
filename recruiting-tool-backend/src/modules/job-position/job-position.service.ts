@@ -181,6 +181,28 @@ export class JobPositionService {
           title: createJobPositionDto.title,
           description: createJobPositionDto.description,
           customQuestions: (createJobPositionDto.customQuestions ? createJobPositionDto.customQuestions : []) as unknown as Prisma.JsonValue,
+          jobCategory: createJobPositionDto.jobCategory,
+          jobType: createJobPositionDto.jobType,
+          workLocation: createJobPositionDto.workLocation,
+          salaryMin: createJobPositionDto.salaryMin,
+          salaryMax: createJobPositionDto.salaryMax,
+          salaryCurrency: createJobPositionDto.salaryCurrency || 'USD',
+          salaryPeriod: createJobPositionDto.salaryPeriod,
+          benefits: createJobPositionDto.benefits || [],
+          requirements: createJobPositionDto.requirements || [],
+          responsibilities: createJobPositionDto.responsibilities || [],
+          experienceLevel: createJobPositionDto.experienceLevel,
+          educationLevel: createJobPositionDto.educationLevel,
+          skills: createJobPositionDto.skills || [],
+          applicationDeadline: createJobPositionDto.applicationDeadline,
+          isUrgent: createJobPositionDto.isUrgent ?? false,
+          isFeatured: createJobPositionDto.isFeatured ?? false,
+          city: createJobPositionDto.city,
+          state: createJobPositionDto.state,
+          country: createJobPositionDto.country,
+          showSalary: createJobPositionDto.showSalary ?? false,
+          tags: createJobPositionDto.tags || [],
+          isHighlighted: createJobPositionDto.isHighlighted ?? false,
           createdBy: { connect: { uid: creatorUid } },
           company: { connect: { id: user.companyId } },
         },
@@ -226,6 +248,28 @@ export class JobPositionService {
       if (updateJobPositionDto.title !== undefined) updateData.title = updateJobPositionDto.title;
       if (updateJobPositionDto.description !== undefined) updateData.description = updateJobPositionDto.description;
       if (updateJobPositionDto.customQuestions !== undefined) updateData.customQuestions = updateJobPositionDto.customQuestions as unknown as Prisma.JsonValue;
+      if (updateJobPositionDto.jobCategory !== undefined) updateData.jobCategory = updateJobPositionDto.jobCategory;
+      if (updateJobPositionDto.jobType !== undefined) updateData.jobType = updateJobPositionDto.jobType;
+      if (updateJobPositionDto.workLocation !== undefined) updateData.workLocation = updateJobPositionDto.workLocation;
+      if (updateJobPositionDto.salaryMin !== undefined) updateData.salaryMin = updateJobPositionDto.salaryMin;
+      if (updateJobPositionDto.salaryMax !== undefined) updateData.salaryMax = updateJobPositionDto.salaryMax;
+      if (updateJobPositionDto.salaryCurrency !== undefined) updateData.salaryCurrency = updateJobPositionDto.salaryCurrency;
+      if (updateJobPositionDto.salaryPeriod !== undefined) updateData.salaryPeriod = updateJobPositionDto.salaryPeriod;
+      if (updateJobPositionDto.benefits !== undefined) updateData.benefits = updateJobPositionDto.benefits;
+      if (updateJobPositionDto.requirements !== undefined) updateData.requirements = updateJobPositionDto.requirements;
+      if (updateJobPositionDto.responsibilities !== undefined) updateData.responsibilities = updateJobPositionDto.responsibilities;
+      if (updateJobPositionDto.experienceLevel !== undefined) updateData.experienceLevel = updateJobPositionDto.experienceLevel;
+      if (updateJobPositionDto.educationLevel !== undefined) updateData.educationLevel = updateJobPositionDto.educationLevel;
+      if (updateJobPositionDto.skills !== undefined) updateData.skills = updateJobPositionDto.skills;
+      if (updateJobPositionDto.applicationDeadline !== undefined) updateData.applicationDeadline = updateJobPositionDto.applicationDeadline;
+      if (updateJobPositionDto.isUrgent !== undefined) updateData.isUrgent = updateJobPositionDto.isUrgent;
+      if (updateJobPositionDto.isFeatured !== undefined) updateData.isFeatured = updateJobPositionDto.isFeatured;
+      if (updateJobPositionDto.city !== undefined) updateData.city = updateJobPositionDto.city;
+      if (updateJobPositionDto.state !== undefined) updateData.state = updateJobPositionDto.state;
+      if (updateJobPositionDto.country !== undefined) updateData.country = updateJobPositionDto.country;
+      if (updateJobPositionDto.showSalary !== undefined) updateData.showSalary = updateJobPositionDto.showSalary;
+      if (updateJobPositionDto.tags !== undefined) updateData.tags = updateJobPositionDto.tags;
+      if (updateJobPositionDto.isHighlighted !== undefined) updateData.isHighlighted = updateJobPositionDto.isHighlighted;
 
       const jobPosition = await this.databaseService.jobPosition.update({
         where: { uid },

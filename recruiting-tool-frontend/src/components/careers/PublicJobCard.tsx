@@ -12,6 +12,7 @@ import { useTranslation } from "react-i18next";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import BusinessIcon from "@mui/icons-material/Business";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import { useNavigate } from "react-router-dom";
 
 interface PublicJobCardProps {
@@ -22,10 +23,29 @@ interface PublicJobCardProps {
     status: string;
     createdAt: string;
     description?: string;
-    // Add any additional fields from your API
+    jobType?: string;
+    workLocation?: string;
+    salaryMin?: number;
+    salaryMax?: number;
+    salaryCurrency?: string;
+    showSalary?: boolean;
   };
   onApplyClick: (uid: string, title: string) => void;
 }
+
+const JOB_TYPE_I18N_KEYS: Record<string, string> = {
+  FULL_TIME: "careersFilters.full_time",
+  PART_TIME: "careersFilters.part_time",
+  CONTRACT: "careersFilters.contract",
+  INTERNSHIP: "careersFilters.internship",
+  TEMPORARY: "careersFilters.temporary",
+};
+
+const WORK_LOCATION_I18N_KEYS: Record<string, string> = {
+  REMOTE: "careersFilters.remote",
+  HYBRID: "careersFilters.hybrid",
+  ON_SITE: "careersFilters.onsite",
+};
 
 const PublicJobCard: React.FC<PublicJobCardProps> = ({
   jobPosition,
@@ -165,26 +185,52 @@ const PublicJobCard: React.FC<PublicJobCardProps> = ({
 
         {/* Job metadata chips */}
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2.5 }}>
-          <Chip
-            icon={<BusinessIcon sx={{ fontSize: 16 }} />}
-            label={t("job_position_card.full_time")}
-            size="small"
-            variant="outlined"
-            sx={{
-              borderColor: "divider",
-              "& .MuiChip-icon": { color: "text.secondary" },
-            }}
-          />
-          <Chip
-            icon={<LocationOnIcon sx={{ fontSize: 16 }} />}
-            label={t("job_position_card.remote")}
-            size="small"
-            variant="outlined"
-            sx={{
-              borderColor: "divider",
-              "& .MuiChip-icon": { color: "text.secondary" },
-            }}
-          />
+          {jobPosition.jobType && JOB_TYPE_I18N_KEYS[jobPosition.jobType] && (
+            <Chip
+              icon={<BusinessIcon sx={{ fontSize: 16 }} />}
+              label={t(JOB_TYPE_I18N_KEYS[jobPosition.jobType])}
+              size="small"
+              variant="outlined"
+              sx={{
+                borderColor: "divider",
+                "& .MuiChip-icon": { color: "text.secondary" },
+              }}
+            />
+          )}
+          {jobPosition.workLocation &&
+            WORK_LOCATION_I18N_KEYS[jobPosition.workLocation] && (
+              <Chip
+                icon={<LocationOnIcon sx={{ fontSize: 16 }} />}
+                label={t(WORK_LOCATION_I18N_KEYS[jobPosition.workLocation])}
+                size="small"
+                variant="outlined"
+                sx={{
+                  borderColor: "divider",
+                  "& .MuiChip-icon": { color: "text.secondary" },
+                }}
+              />
+            )}
+          {jobPosition.showSalary &&
+            (jobPosition.salaryMin !== undefined ||
+              jobPosition.salaryMax !== undefined) && (
+              <Chip
+                icon={<AttachMoneyIcon sx={{ fontSize: 16 }} />}
+                label={
+                  jobPosition.salaryMin !== undefined &&
+                  jobPosition.salaryMax !== undefined
+                    ? `${jobPosition.salaryCurrency || "USD"} ${(jobPosition.salaryMin / 1000).toFixed(0)}k - ${(jobPosition.salaryMax / 1000).toFixed(0)}k`
+                    : jobPosition.salaryMin !== undefined
+                      ? `${t("careersJob.from")} ${jobPosition.salaryCurrency || "USD"} ${(jobPosition.salaryMin / 1000).toFixed(0)}k`
+                      : `${t("careersJob.up_to")} ${jobPosition.salaryCurrency || "USD"} ${(jobPosition.salaryMax! / 1000).toFixed(0)}k`
+                }
+                size="small"
+                variant="outlined"
+                color="success"
+                sx={{
+                  "& .MuiChip-icon": { color: "success.main" },
+                }}
+              />
+            )}
         </Box>
 
         {/* Posted date */}

@@ -56,41 +56,42 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3, textAlign: "center" }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ mb: 1.5, textAlign: "center", fontWeight: 700 }}
+      >
         {t("registration_wizard.role_selection.title")}
       </Typography>
       <Typography
         variant="body1"
         color="textSecondary"
-        sx={{ mb: 4, textAlign: "center" }}
+        sx={{ mb: 5, textAlign: "center", maxWidth: 500, mx: "auto" }}
       >
         {t("registration_wizard.role_selection.subtitle")}
       </Typography>
 
       <Grid container spacing={3} justifyContent="center">
         {roles.map((role) => (
-          <Grid item xs={12} sm={6} md={4} key={role.value}>
+          <Grid item xs={12} sm={4} key={role.value}>
             <Card
               sx={{
                 height: "100%",
-                minHeight: 280,
-                width: 320,
-                maxWidth: "100%",
-                mx: "auto",
+                minHeight: 260,
                 position: "relative",
                 border: 2,
                 borderColor:
-                  selectedRole === role.value ? "primary.main" : "transparent",
-                boxShadow: selectedRole === role.value ? 6 : 2,
-                transition: "all 0.3s ease-in-out",
+                  selectedRole === role.value ? "primary.main" : "divider",
+                boxShadow: selectedRole === role.value ? 6 : 1,
+                transition: "all 0.25s ease-in-out",
                 "&:hover": {
                   boxShadow: 8,
-                  transform: "translateY(-8px)",
+                  transform: "translateY(-6px)",
                   borderColor:
-                    selectedRole === role.value ? "primary.main" : "grey.300",
+                    selectedRole === role.value ? "primary.main" : "primary.light",
                 },
                 ...(selectedRole === role.value && {
-                  backgroundColor: "primary.50",
+                  bgcolor: "primary.50",
                 }),
               }}
             >
@@ -101,7 +102,7 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                   display: "flex",
                   flexDirection: "column",
                   alignItems: "center",
-                  justifyContent: "center",
+                  justifyContent: "flex-start",
                   py: 4,
                   px: 3,
                 }}
@@ -119,7 +120,7 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                 >
                   <Box
                     sx={{
-                      mb: 3,
+                      mb: 2.5,
                       p: 2,
                       borderRadius: "50%",
                       backgroundColor:
@@ -129,11 +130,11 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      transition: "all 0.3s ease-in-out",
+                      transition: "all 0.25s ease-in-out",
                       "& > svg": {
                         color:
                           selectedRole === role.value ? "white" : "inherit",
-                        transition: "color 0.3s ease-in-out",
+                        transition: "color 0.25s ease-in-out",
                       },
                     }}
                   >
@@ -143,23 +144,20 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                     variant="h6"
                     gutterBottom
                     sx={{
-                      fontWeight: 600,
-                      mb: 1.5,
+                      fontWeight: 700,
+                      mb: 1,
                       color:
                         selectedRole === role.value
                           ? "primary.main"
-                          : "inherit",
+                          : "text.primary",
                     }}
                   >
                     {role.title}
                   </Typography>
                   <Typography
                     variant="body2"
-                    color="textSecondary"
-                    sx={{
-                      lineHeight: 1.6,
-                      px: 1,
-                    }}
+                    color="text.secondary"
+                    sx={{ lineHeight: 1.6 }}
                   >
                     {role.description}
                   </Typography>

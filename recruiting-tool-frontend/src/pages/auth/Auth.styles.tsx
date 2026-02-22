@@ -17,6 +17,9 @@ export const AuthPageWrapper = styled.div`
   min-height: calc(100vh - 64px);
   justify-content: center;
   align-items: center;
+  padding: 32px 16px;
+  box-sizing: border-box;
+  width: 100%;
 `;
 export const FormWrapper = styled.form`
   display: flex;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, Paper } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { RegistrationFormData } from "../RegistrationWizard";
@@ -31,7 +31,7 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
 
   const renderHRForm = () => (
     <>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         {t("registration_wizard.role_info.hr_subtitle")}
       </Typography>
 
@@ -47,7 +47,7 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
 
   const renderApplicantForm = () => (
     <>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         {t("registration_wizard.role_info.applicant_subtitle")}
       </Typography>
 
@@ -55,25 +55,27 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
         label={t("registration_wizard.role_info.skills_summary")}
         fullWidth
         multiline
-        rows={4}
+        rows={5}
         margin="normal"
         {...register("skillsSummary")}
         helperText={t("registration_wizard.role_info.skills_helper")}
       />
 
-      <Box sx={{ mt: 2 }}>
-        <Typography variant="body2" gutterBottom>
+      <Paper
+        variant="outlined"
+        sx={{ mt: 3, p: 3, borderRadius: 2, bgcolor: "grey.50" }}
+      >
+        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
           {t("registration_wizard.role_info.resume_upload")}
         </Typography>
         <Typography
-          variant="caption"
-          color="textSecondary"
-          display="block"
-          sx={{ mb: 1 }}
+          variant="body2"
+          color="text.secondary"
+          sx={{ mb: 2 }}
         >
           {t("registration_wizard.role_info.resume_helper")}
         </Typography>
-        <Button variant="outlined" component="label">
+        <Button variant="outlined" component="label" size="medium">
           {t("registration_wizard.role_info.choose_file")}
           <input
             type="file"
@@ -82,13 +84,13 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
             {...register("resumeFile")}
           />
         </Button>
-      </Box>
+      </Paper>
     </>
   );
 
   const renderCompanyOwnerForm = () => (
     <>
-      <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+      <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         {t("registration_wizard.role_info.company_owner_subtitle")}
       </Typography>
 
@@ -123,16 +125,22 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
 
   return (
     <Box>
-      <Typography variant="h5" gutterBottom sx={{ mb: 3 }}>
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{ mb: 1, fontWeight: 700 }}
+      >
         {t("registration_wizard.role_info.title")}
       </Typography>
 
       <form onSubmit={handleSubmit(onSubmit)}>
-        {getRoleSpecificForm()}
+        <Box sx={{ mt: 2 }}>{getRoleSpecificForm()}</Box>
 
-        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-          <Button onClick={onBack}>{t("common.back")}</Button>
-          <Button type="submit" variant="contained">
+        <Box sx={{ display: "flex", justifyContent: "space-between", mt: 5 }}>
+          <Button onClick={onBack} size="large">
+            {t("common.back")}
+          </Button>
+          <Button type="submit" variant="contained" size="large">
             {t("common.next")}
           </Button>
         </Box>

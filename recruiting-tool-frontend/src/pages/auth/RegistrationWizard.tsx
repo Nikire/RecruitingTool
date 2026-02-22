@@ -120,15 +120,29 @@ const RegistrationWizard: React.FC = () => {
   return (
     <AuthPageWrapper>
       <Paper
-        elevation={3}
+        elevation={4}
         sx={{
-          p: 4,
-          maxWidth: 800,
+          p: { xs: 3, sm: 5, md: 6 },
+          maxWidth: 900,
           width: "100%",
           mx: "auto",
+          my: { xs: 2, sm: 4 },
+          borderRadius: 3,
         }}
       >
-        <Stepper activeStep={activeStep} sx={{ mb: 4 }}>
+        <Stepper
+          activeStep={activeStep}
+          sx={{
+            mb: 5,
+            "& .MuiStepLabel-label": {
+              fontSize: { xs: "0.7rem", sm: "0.875rem" },
+              fontWeight: 500,
+            },
+            "& .MuiStepLabel-label.Mui-active": {
+              fontWeight: 700,
+            },
+          }}
+        >
           {steps.map((label) => (
             <Step key={label}>
               <StepLabel>{label}</StepLabel>
@@ -136,7 +150,7 @@ const RegistrationWizard: React.FC = () => {
           ))}
         </Stepper>
 
-        <Box sx={{ mt: 3 }}>{renderStep()}</Box>
+        <Box sx={{ mt: 2 }}>{renderStep()}</Box>
       </Paper>
     </AuthPageWrapper>
   );

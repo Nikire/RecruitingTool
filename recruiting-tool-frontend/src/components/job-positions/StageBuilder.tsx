@@ -10,6 +10,10 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AddIcon from "@mui/icons-material/Add";
@@ -56,6 +60,10 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
   const [deleteIndex, setDeleteIndex] = useState<number | null>(null);
   const [templateMenuAnchor, setTemplateMenuAnchor] =
     useState<null | HTMLElement>(null);
+  const [pendingTemplate, setPendingTemplate] = useState<StageTemplate | null>(
+    null,
+  );
+  const [confirmTemplateOpen, setConfirmTemplateOpen] = useState(false);
 
   // Create stage templates with i18n
   const STAGE_TEMPLATES: StageTemplate[] = [
@@ -231,8 +239,26 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
   };
 
   const handleLoadTemplate = (template: StageTemplate) => {
-    onChange(template.stages);
     setTemplateMenuAnchor(null);
+    if (stages.length > 0) {
+      setPendingTemplate(template);
+      setConfirmTemplateOpen(true);
+    } else {
+      onChange(template.stages);
+    }
+  };
+
+  const handleConfirmTemplateSwitch = () => {
+    if (pendingTemplate) {
+      onChange(pendingTemplate.stages);
+    }
+    setPendingTemplate(null);
+    setConfirmTemplateOpen(false);
+  };
+
+  const handleCancelTemplateSwitch = () => {
+    setPendingTemplate(null);
+    setConfirmTemplateOpen(false);
   };
 
   const getTotalEstimatedTime = () => {
@@ -243,7 +269,8 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
   };
 
   const canAddMore = !maxStages || stages.length < maxStages;
-  const canDeleteMore = stages.length > minStages;
+  // Delete button is always available; form-level validation enforces minimum at submission
+  const canDeleteMore = stages.length > 0;
 
   return (
     <Box>
@@ -282,7 +309,6 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
             size="small"
             startIcon={<AutoFixHighIcon />}
             onClick={(e) => setTemplateMenuAnchor(e.currentTarget)}
-            disabled={stages.length > 0}
           >
             {t("stages.templates")}
           </Button>
@@ -433,6 +459,33 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
             : ""
         }
       />
+
+      {/* Template Switch Confirmation Dialog */}
+      <Dialog
+        open={confirmTemplateOpen}
+        onClose={handleCancelTemplateSwitch}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>{t("stage_builder.switch_template_title")}</DialogTitle>
+        <DialogContent>
+          <Typography>
+            {t("stage_builder.switch_template_message")}
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCancelTemplateSwitch}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            onClick={handleConfirmTemplateSwitch}
+            variant="contained"
+            color="warning"
+          >
+            {t("common.confirm")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

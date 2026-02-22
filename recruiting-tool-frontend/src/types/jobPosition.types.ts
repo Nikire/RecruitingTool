@@ -2,6 +2,8 @@ import { HiringProcess } from "./hiringProcess.types";
 import { Stage } from "./stage.types";
 import { CustomQuestion } from "./customQuestions";
 
+export type SalaryPeriod = "HOURLY" | "MONTHLY" | "YEARLY";
+
 export interface JobPosition {
   uid: string;
   title: string;
@@ -18,12 +20,40 @@ export interface JobPosition {
     email: string;
   };
   createdAt?: Date | string;
+  // Job details
+  jobCategory?: string;
+  jobType?: JobType;
+  workLocation?: WorkLocation;
+  experienceLevel?: ExperienceLevel;
+  educationLevel?: string;
+  skills?: string[];
+  // Salary fields
+  salaryMin?: number;
+  salaryMax?: number;
+  salaryCurrency?: string;
+  salaryPeriod?: SalaryPeriod;
+  showSalary?: boolean;
+  // Additional details
+  benefits?: string[];
+  requirements?: string[];
+  responsibilities?: string[];
+  applicationDeadline?: Date | string;
+  isUrgent?: boolean;
+  isFeatured?: boolean;
+  isHighlighted?: boolean;
+  city?: string;
+  state?: string;
+  country?: string;
+  tags?: string[];
+  viewCount?: number;
+  applicationCount?: number;
 }
 
 export type JobType =
   | "FULL_TIME"
   | "PART_TIME"
   | "CONTRACT"
+  | "FREELANCE"
   | "INTERNSHIP"
   | "TEMPORARY";
 export type WorkLocation = "REMOTE" | "HYBRID" | "ON_SITE";
@@ -46,7 +76,6 @@ export interface PublicJobPosition {
     position: number;
     status?: string;
   }>;
-  // New fields from Issue #164
   jobCategory?: string;
   jobType?: JobType;
   workLocation?: WorkLocation;
@@ -54,6 +83,23 @@ export interface PublicJobPosition {
   salaryMin?: number;
   salaryMax?: number;
   salaryCurrency?: string;
+  salaryPeriod?: SalaryPeriod;
+  showSalary?: boolean;
+  benefits?: string[];
+  requirements?: string[];
+  responsibilities?: string[];
+  skills?: string[];
+  educationLevel?: string;
+  applicationDeadline?: Date | string;
+  isUrgent?: boolean;
+  isFeatured?: boolean;
+  isHighlighted?: boolean;
+  city?: string;
+  state?: string;
+  country?: string;
+  tags?: string[];
+  viewCount?: number;
+  applicationCount?: number;
   createdAt: Date | string;
 }
 
