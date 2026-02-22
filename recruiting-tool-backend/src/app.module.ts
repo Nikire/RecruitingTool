@@ -44,6 +44,7 @@ import { ConnectionRequestsModule } from './modules/connection-requests/connecti
 import { CompanyInvitationsModule } from './modules/company-invitations/company-invitations.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
+import { InternalModule } from './modules/internal/internal.module';
 
 @Module({
   imports: [
@@ -99,6 +100,7 @@ import { ContactMessagesModule } from './modules/contact-messages/contact-messag
     CompanyInvitationsModule,
     FeedbackModule,
     ContactMessagesModule,
+    InternalModule,
   ],
   controllers: [AppController],
   providers: [
