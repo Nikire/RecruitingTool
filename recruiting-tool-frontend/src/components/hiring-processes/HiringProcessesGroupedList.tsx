@@ -288,7 +288,10 @@ const HiringProcessesGroupedList: React.FC<
     sortOrder: "desc",
   });
 
-  const processes = (data?.data as HiringProcess[] | undefined) || [];
+  const processes = useMemo(
+    () => (data?.data as HiringProcess[] | undefined) ?? [],
+    [data?.data],
+  );
 
   const groups = useMemo<JobPositionGroup[]>(() => {
     const groupMap = new Map<string, JobPositionGroup>();
