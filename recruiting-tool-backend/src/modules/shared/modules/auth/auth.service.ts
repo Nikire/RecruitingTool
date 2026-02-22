@@ -8,6 +8,7 @@ import { UserMapper } from 'src/modules/users/entities/users.entities';
 import { UserActivityService } from 'src/modules/users/services/user-activity.service';
 import { DatabaseService } from '../database/database.service';
 import * as crypto from 'crypto';
+import { EmailService } from 'src/modules/email/email.service';
 
 @Injectable()
 export class AuthService {
@@ -23,6 +24,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userActivityService: UserActivityService,
     private readonly databaseService: DatabaseService,
+    private readonly emailService: EmailService,
   ) {}
 
   async register({ name, email, password, roles, companyUid, companyName }: CreateUserDto): Promise<RegisteredUserDto> {
@@ -65,6 +67,27 @@ export class AuthService {
       roles,
       companyUid: finalCompanyUid,
     });
+
+    // Generate email verification token and send verification email
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
+
+    // Store verification token on user record — look up by uid since UserResponseDto has uid but not id
+    await this.databaseService.user.update({
+      where: { uid: user.uid },
+      data: {
+        emailVerificationToken: verificationToken,
+        emailVerificationSentAt: new Date(),
+      },
+    });
+
+    // Send verification email (non-blocking - don't fail registration if email fails)
+    try {
+      await this.emailService.sendVerificationEmail(email, verificationLink);
+    } catch {
+      // Do not reveal email sending failures to the caller
+    }
 
     const { token, refreshToken } = await this.login({ email, password });
     return {
@@ -468,6 +491,170 @@ export class AuthService {
     });
 
     return { message: 'Social account unlinked successfully' };
+  }
+
+  /**
+   * Initiate the forgot password flow
+   * Always returns success regardless of whether the email exists (security best practice)
+   */
+  async forgotPassword(email: string): Promise<{ message: string }> {
+    const successResponse = { message: 'If that email exists, a reset link was sent' };
+
+    // Find user by email — do not reveal whether the email exists
+    const user = await this.databaseService.user.findFirst({
+      where: { email },
+    });
+
+    if (!user) {
+      return successResponse;
+    }
+
+    // Delete any existing unused reset tokens for this user
+    await this.databaseService.passwordResetToken.deleteMany({
+      where: {
+        userId: user.id,
+        usedAt: null,
+      },
+    });
+
+    // Generate a cryptographically secure random token
+    const rawToken = crypto.randomBytes(32).toString('hex');
+
+    // Store the SHA-256 hash of the token — never store the raw token
+    const tokenHash = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+    // Set expiration to 1 hour from now
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    await this.databaseService.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    // Send the reset email with the raw token in the link
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const resetLink = `${frontendUrl}/reset-password?token=${rawToken}`;
+
+    try {
+      await this.emailService.sendPasswordResetEmail(email, resetLink);
+    } catch {
+      // Do not reveal email sending failures to the caller
+    }
+
+    return successResponse;
+  }
+
+  /**
+   * Reset password using a valid reset token
+   */
+  async resetPassword(token: string, newPassword: string): Promise<{ message: string }> {
+    // Hash the incoming token to look it up in the database
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+
+    // Find matching token that is unused and not expired
+    const resetToken = await this.databaseService.passwordResetToken.findUnique({
+      where: { tokenHash },
+    });
+
+    if (!resetToken || resetToken.usedAt !== null || resetToken.expiresAt < new Date()) {
+      throw new BadRequestException('Invalid or expired reset token');
+    }
+
+    // Hash the new password with bcrypt (cost factor 10)
+    const hashedPassword = await bycrypt.hash(newPassword, 10);
+
+    // Update the user's password
+    await this.databaseService.user.update({
+      where: { id: resetToken.userId },
+      data: { password: hashedPassword },
+    });
+
+    // Mark the token as used
+    await this.databaseService.passwordResetToken.update({
+      where: { id: resetToken.id },
+      data: { usedAt: new Date() },
+    });
+
+    // Invalidate all refresh tokens for this user (security measure)
+    await this.revokeAllUserTokens(resetToken.userId);
+
+    return { message: 'Password reset successfully' };
+  }
+
+  /**
+   * Verify user email using the token sent during registration
+   */
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const user = await this.databaseService.user.findFirst({
+      where: { emailVerificationToken: token },
+    });
+
+    if (!user) {
+      throw new BadRequestException('Invalid or expired verification token');
+    }
+
+    // Mark email as verified and clear the token
+    await this.databaseService.user.update({
+      where: { id: user.id },
+      data: {
+        emailVerified: true,
+        emailVerificationToken: null,
+        emailVerificationSentAt: null,
+      },
+    });
+
+    return { message: 'Email verified successfully' };
+  }
+
+  /**
+   * Resend the email verification link for the authenticated user
+   * Rate limited to once every 2 minutes
+   */
+  async resendVerification(userId: number): Promise<{ message: string }> {
+    const user = await this.databaseService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    if (user.emailVerified) {
+      throw new BadRequestException('Email already verified');
+    }
+
+    // Rate limit: do not allow resending if last email was sent less than 2 minutes ago
+    if (user.emailVerificationSentAt) {
+      const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+      if (user.emailVerificationSentAt > twoMinutesAgo) {
+        throw new BadRequestException('Please wait before requesting another email');
+      }
+    }
+
+    // Generate new verification token
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
+
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: {
+        emailVerificationToken: verificationToken,
+        emailVerificationSentAt: new Date(),
+      },
+    });
+
+    try {
+      await this.emailService.sendVerificationEmail(user.email, verificationLink);
+    } catch {
+      // Do not reveal email sending failures to the caller
+    }
+
+    return { message: 'Verification email sent' };
   }
 
   /**

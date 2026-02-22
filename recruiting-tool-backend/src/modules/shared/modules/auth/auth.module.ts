@@ -8,6 +8,7 @@ import { TokenCleanupService } from './services/token-cleanup.service';
 import { Auth0Strategy } from './strategies/auth0.strategy';
 import { PassportModule } from '@nestjs/passport';
 import { ConfigModule } from '@nestjs/config';
+import { EmailModule } from 'src/modules/email/email.module';
 
 @Global()
 @Module({
@@ -15,6 +16,7 @@ import { ConfigModule } from '@nestjs/config';
     forwardRef(() => UsersModule),
     PassportModule,
     ConfigModule,
+    EmailModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

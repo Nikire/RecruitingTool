@@ -2,6 +2,9 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import RegistrationWizard from "./pages/auth/RegistrationWizard";
 import Logout from "./pages/auth/Logout";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
+import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 // Home component is now unused - LandingPage is the root page
 import LandingPage from "./pages/landing/LandingPage";
 import HiringProcessPage from "./pages/hiring-process/HiringProcessPage";
@@ -74,6 +77,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegistrationWizard />} />
           <Route path="/logout" element={<Logout />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/careers/:uid" element={<JobPositionDetailPage />} />
           <Route path="/check-status" element={<CheckStatusPage />} />

@@ -220,6 +220,9 @@ export class UserResponseDto {
   lastLoginAt?: string;
   @ApiProperty({ description: 'Whether the user has completed onboarding', example: false })
   onboardingCompleted?: boolean;
+
+  @ApiProperty({ description: 'Whether the user email has been verified', example: false })
+  emailVerified?: boolean;
 }
 
 export class UserWithPasswordResponseDto extends UserResponseDto {

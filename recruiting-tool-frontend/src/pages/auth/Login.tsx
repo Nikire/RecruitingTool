@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
-import { useNavigate } from "react-router-dom";
-import { Typography, TextField, Button, Divider } from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { Typography, TextField, Button, Divider, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLogin } from "../../hooks/api/useAuth";
 import { getDefaultDashboard } from "../../utils/permissions";
@@ -52,6 +52,15 @@ const Login: React.FC = () => {
             margin="none"
             {...register("password")}
           />
+          <Link
+            component={RouterLink}
+            to="/forgot-password"
+            underline="hover"
+            variant="body2"
+            sx={{ alignSelf: "flex-end" }}
+          >
+            {t("forgot_password.link_label")}
+          </Link>
           <Button
             type="submit"
             variant="contained"

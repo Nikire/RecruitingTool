@@ -1095,6 +1095,49 @@
       "sign_in_with_email": "Or sign in with email"
     }
   },
+  "forgot_password": {
+    "title": "Forgot Password",
+    "description": "Enter your email address and we will send you a link to reset your password.",
+    "send_link": "Send Reset Link",
+    "sending": "Sending...",
+    "success_message": "If an account with that email exists, you will receive a password reset link shortly.",
+    "back_to_login": "Back to Login",
+    "link_label": "Forgot password?"
+  },
+  "reset_password": {
+    "title": "Reset Password",
+    "description": "Enter your new password below.",
+    "new_password": "New Password",
+    "confirm_password": "Confirm New Password",
+    "reset_button": "Reset Password",
+    "resetting": "Resetting...",
+    "success_message": "Your password has been reset successfully.",
+    "redirect_message": "You will be redirected to the login page in a few seconds.",
+    "go_to_login": "Go to Login",
+    "back_to_login": "Back to Login",
+    "missing_token": "Invalid or missing reset token. Please request a new password reset.",
+    "request_new_link": "Request a new reset link",
+    "error_message": "Failed to reset password. The link may have expired or already been used.",
+    "password_required": "Password is required",
+    "password_min_length": "Password must be at least 8 characters",
+    "confirm_password_required": "Please confirm your password",
+    "passwords_must_match": "Passwords must match"
+  },
+  "email_verification": {
+    "verify_title": "Verify Your Email",
+    "verifying": "Verifying your email address...",
+    "success_message": "Your email address has been verified successfully. Welcome aboard!",
+    "error_message": "This verification link is invalid or has already been used. Please request a new verification email.",
+    "missing_token": "Invalid or missing verification token.",
+    "go_to_login": "Back to Login",
+    "go_to_dashboard": "Go to Dashboard",
+    "banner_title": "Please verify your email address",
+    "banner_message": "Check your inbox for a verification link or click the button to resend it.",
+    "resend_button": "Resend verification email",
+    "resending": "Sending...",
+    "resend_success": "Verification email sent. Please check your inbox.",
+    "resend_error": "Failed to resend verification email. Please try again later."
+  },
   "registration_wizard": {
     "steps": {
       "role_selection": "Choose Your Role",

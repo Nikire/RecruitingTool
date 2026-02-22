@@ -27,6 +27,7 @@ import { useNotificationSSE } from "../../hooks/useNotificationSSE";
 import { FeedbackButton } from "../feedback";
 import { SubscriptionWarningBanner } from "../subscription";
 import { useSubscription } from "../../api/subscription";
+import { EmailVerificationBanner } from "../common";
 
 const drawerWidth = 240;
 
@@ -310,6 +311,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         aria-label={t("aria.main_content")}
       >
         <Toolbar /> {/* Spacer for fixed AppBar */}
+        <EmailVerificationBanner />
         {subscription && (
           <SubscriptionWarningBanner subscription={subscription} />
         )}

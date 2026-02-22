@@ -1,6 +1,6 @@
-import { Body, Controller, Delete, Get, Headers, Post, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Headers, Post, Query, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, TokenPairDto } from './dto/auth.dto';
+import { ForgotPasswordDto, LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, ResetPasswordDto, TokenPairDto } from './dto/auth.dto';
 import { CreateUserDto } from 'src/modules/users/dto/users.dto';
 import {
   ApiBadRequestResponse,
@@ -143,6 +143,76 @@ export class AuthController {
     const user = await this.authService.verifyToken(token);
     await this.authService.completeOnboarding(user.id);
     return { message: 'Onboarding completed successfully', onboardingCompleted: true };
+  }
+
+  @Post('forgot-password')
+  @ApiOperation({ summary: 'Request a password reset email' })
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Always returns success to prevent email enumeration',
+    schema: { example: { message: 'If that email exists, a reset link was sent' } },
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many password reset requests.',
+  })
+  @Throttle({ default: { limit: 3, ttl: 900000 } }) // 3 requests per 15 minutes
+  async forgotPassword(@Body() dto: ForgotPasswordDto): Promise<{ message: string }> {
+    return this.authService.forgotPassword(dto.email);
+  }
+
+  @Post('reset-password')
+  @ApiOperation({ summary: 'Reset password using the token from the reset email' })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Password reset successfully',
+    schema: { example: { message: 'Password reset successfully' } },
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid or expired reset token',
+  })
+  @Throttle({ default: { limit: 5, ttl: 900000 } }) // 5 attempts per 15 minutes
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<{ message: string }> {
+    return this.authService.resetPassword(dto.token, dto.newPassword);
+  }
+
+  @Get('verify-email')
+  @ApiOperation({ summary: 'Verify email address using token from verification email' })
+  @ApiResponse({
+    status: 200,
+    description: 'Email verified successfully',
+    schema: { example: { message: 'Email verified successfully' } },
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid or expired verification token',
+  })
+  @SkipThrottle()
+  async verifyEmail(@Query('token') token: string): Promise<{ message: string }> {
+    return this.authService.verifyEmail(token);
+  }
+
+  @Post('resend-verification')
+  @ApiOperation({ summary: 'Resend email verification link for authenticated user' })
+  @ApiResponse({
+    status: 201,
+    description: 'Verification email sent',
+    schema: { example: { message: 'Verification email sent' } },
+  })
+  @ApiBadRequestResponse({
+    description: 'Email already verified or rate limit exceeded',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid or missing token',
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many resend attempts',
+  })
+  @Throttle({ default: { limit: 3, ttl: 300000 } }) // 3 attempts per 5 minutes
+  async resendVerification(@Headers('authorization') authHeader: string): Promise<{ message: string }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    return this.authService.resendVerification(user.id);
   }
 
   @Post('social/callback')

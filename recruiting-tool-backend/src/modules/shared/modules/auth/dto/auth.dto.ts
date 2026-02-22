@@ -108,6 +108,35 @@ export class LinkedAccountResponseDto {
   email?: string;
 }
 
+export class ForgotPasswordDto {
+  @ApiProperty({
+    description: 'The email address to send the reset link to',
+    example: 'user@example.com',
+  })
+  @IsEmail()
+  @IsString()
+  email: string;
+}
+
+export class ResetPasswordDto {
+  @ApiProperty({
+    description: 'The password reset token received via email',
+    example: 'a1b2c3d4e5f6...',
+  })
+  @IsNotEmpty()
+  @IsString()
+  token: string;
+
+  @ApiProperty({
+    description: 'The new password (minimum 8 characters)',
+    example: 'NewPassword123',
+  })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  newPassword: string;
+}
+
 export class LinkedAccountsResponseDto {
   @ApiProperty({
     description: 'List of linked account providers',

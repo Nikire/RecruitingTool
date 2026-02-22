@@ -1103,6 +1103,49 @@
       "sign_in_with_email": "O inicia sesión con correo"
     }
   },
+  "forgot_password": {
+    "title": "Olvidé mi Contraseña",
+    "description": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+    "send_link": "Enviar Enlace",
+    "sending": "Enviando...",
+    "success_message": "Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña en breve.",
+    "back_to_login": "Volver al Inicio de Sesión",
+    "link_label": "¿Olvidaste tu contraseña?"
+  },
+  "reset_password": {
+    "title": "Restablecer Contraseña",
+    "description": "Ingresa tu nueva contraseña a continuación.",
+    "new_password": "Nueva Contraseña",
+    "confirm_password": "Confirmar Nueva Contraseña",
+    "reset_button": "Restablecer Contraseña",
+    "resetting": "Restableciendo...",
+    "success_message": "Tu contraseña ha sido restablecida exitosamente.",
+    "redirect_message": "Serás redirigido a la página de inicio de sesión en unos segundos.",
+    "go_to_login": "Ir al Inicio de Sesión",
+    "back_to_login": "Volver al Inicio de Sesión",
+    "missing_token": "Token de restablecimiento inválido o faltante. Por favor solicita un nuevo restablecimiento de contraseña.",
+    "request_new_link": "Solicitar un nuevo enlace",
+    "error_message": "No se pudo restablecer la contraseña. El enlace puede haber expirado o ya fue utilizado.",
+    "password_required": "La contraseña es requerida",
+    "password_min_length": "La contraseña debe tener al menos 8 caracteres",
+    "confirm_password_required": "Por favor confirma tu contraseña",
+    "passwords_must_match": "Las contraseñas deben coincidir"
+  },
+  "email_verification": {
+    "verify_title": "Verifica tu Email",
+    "verifying": "Verificando tu dirección de correo...",
+    "success_message": "¡Tu dirección de correo ha sido verificada exitosamente. Bienvenido!",
+    "error_message": "Este enlace de verificación es inválido o ya fue utilizado. Por favor solicita un nuevo correo de verificación.",
+    "missing_token": "Token de verificación inválido o faltante.",
+    "go_to_login": "Volver al Inicio de Sesión",
+    "go_to_dashboard": "Ir al Panel",
+    "banner_title": "Por favor verifica tu dirección de correo",
+    "banner_message": "Revisa tu bandeja de entrada para encontrar el enlace de verificación o haz clic en el botón para reenviarlo.",
+    "resend_button": "Reenviar correo de verificación",
+    "resending": "Enviando...",
+    "resend_success": "Correo de verificación enviado. Por favor revisa tu bandeja de entrada.",
+    "resend_error": "No se pudo reenviar el correo de verificación. Por favor inténtalo de nuevo más tarde."
+  },
   "registration_wizard": {
     "steps": {
       "role_selection": "Elige tu Rol",

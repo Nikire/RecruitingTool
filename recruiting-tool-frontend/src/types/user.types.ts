@@ -22,6 +22,7 @@ export interface User {
   resumeUrl?: string;
   resumeFileName?: string;
   onboardingCompleted?: boolean;
+  emailVerified?: boolean;
 }
 
 export enum UserRoles {

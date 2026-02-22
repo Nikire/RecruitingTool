@@ -78,3 +78,38 @@ export function linkSocialAccount(
 export function unlinkSocialAccount(): Promise<{ message: string }> {
   return api.delete("/auth/unlink-social").then((res) => res.data);
 }
+
+/**
+ * Request a password reset email for the given address
+ */
+export function forgotPassword(data: {
+  email: string;
+}): Promise<{ message: string }> {
+  return api.post("/auth/forgot-password", data).then((res) => res.data);
+}
+
+/**
+ * Reset the user password using the token received via email
+ */
+export function resetPassword(data: {
+  token: string;
+  newPassword: string;
+}): Promise<{ message: string }> {
+  return api.post("/auth/reset-password", data).then((res) => res.data);
+}
+
+/**
+ * Verify email address using the token from the verification email
+ */
+export function verifyEmail(token: string): Promise<{ message: string }> {
+  return api
+    .get("/auth/verify-email", { params: { token } })
+    .then((res) => res.data);
+}
+
+/**
+ * Resend the email verification link (requires authentication)
+ */
+export function resendVerification(): Promise<{ message: string }> {
+  return api.post("/auth/resend-verification").then((res) => res.data);
+}

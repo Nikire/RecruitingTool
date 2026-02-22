@@ -1,6 +1,15 @@
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getCurrentUser, login, register, updateProfile } from "../../api/auth";
+import {
+  getCurrentUser,
+  login,
+  register,
+  updateProfile,
+  forgotPassword,
+  resetPassword,
+  verifyEmail,
+  resendVerification,
+} from "../../api/auth";
 import { User } from "../../types/user.types";
 import { useUserAtom } from "./state/useUserAtom";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -158,6 +167,30 @@ export function useLogout() {
     setUser(null);
     queryClient.removeQueries({ queryKey: [AUTH_KEY, "me"] });
   };
+}
+
+export function useForgotPassword() {
+  return useMutation({
+    mutationFn: forgotPassword,
+  });
+}
+
+export function useResetPassword() {
+  return useMutation({
+    mutationFn: resetPassword,
+  });
+}
+
+export function useVerifyEmail() {
+  return useMutation({
+    mutationFn: (token: string) => verifyEmail(token),
+  });
+}
+
+export function useResendVerification() {
+  return useMutation({
+    mutationFn: resendVerification,
+  });
 }
 
 export function useUpdateProfile() {

@@ -34,6 +34,7 @@ export function UserMapper(user: any): UserResponseDto {
     deactivatedAt: user.deactivatedAt ? (typeof user.deactivatedAt === 'string' ? user.deactivatedAt : user.deactivatedAt.toISOString()) : undefined,
     lastLoginAt: user.lastLoginAt ? (typeof user.lastLoginAt === 'string' ? user.lastLoginAt : user.lastLoginAt.toISOString()) : undefined,
     onboardingCompleted: user.onboardingCompleted,
+    emailVerified: user.emailVerified ?? false,
   };
 }
 
@@ -67,6 +68,7 @@ export function UserWithPasswordMapper(user: any): UserWithPasswordResponseDto {
     deactivatedAt: user.deactivatedAt ? user.deactivatedAt.toISOString() : undefined,
     lastLoginAt: user.lastLoginAt ? user.lastLoginAt.toISOString() : undefined,
     onboardingCompleted: user.onboardingCompleted,
+    emailVerified: user.emailVerified ?? false,
     id: user.id, // Internal ID for service layer use
     companyId: user.companyId, // Internal company ID for service layer use
   };

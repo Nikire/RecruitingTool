@@ -437,6 +437,54 @@ ${text}
   }
 
   /**
+   * Send email verification email with verification link
+   */
+  async sendVerificationEmail(to: string, verificationLink: string): Promise<void> {
+    const subject = 'Verify your email address';
+    const text = `
+Please verify your email address
+
+Click the link below to verify your email address:
+${verificationLink}
+
+This link will expire in 24 hours.
+
+If you did not create an account, please ignore this email.
+    `.trim();
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1976d2;">Verify your email address</h2>
+        <p>Thank you for registering. Please click the button below to verify your email address.</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${verificationLink}"
+             style="background-color: #1976d2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 4px; font-size: 16px; display: inline-block;">
+            Verify Email Address
+          </a>
+        </div>
+        <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
+        <p style="color: #666; font-size: 12px; word-break: break-all;">${verificationLink}</p>
+        <p style="color: #999; font-size: 12px;">This link will expire in 24 hours. If you did not create an account, please ignore this email.</p>
+      </div>
+    `;
+
+    await this.sendEmail(to, subject, text, html, 'EMAIL_VERIFICATION');
+  }
+
+  /**
+   * Send password reset email with reset link
+   */
+  async sendPasswordResetEmail(to: string, resetLink: string): Promise<void> {
+    const data: PasswordResetData = {
+      userName: to,
+      resetLink,
+      expirationTime: '1 hour',
+    };
+    const { subject, text, html } = passwordResetTemplate(data);
+    await this.sendEmail(to, subject, text, html, 'PASSWORD_RESET');
+  }
+
+  /**
    * Send welcome email for new users
    */
   async sendWelcomeEmail(userEmail: string, data: WelcomeData): Promise<void> {
