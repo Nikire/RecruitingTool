@@ -1612,8 +1612,14 @@
       "weight_range": "El peso debe estar entre 1 y 100"
     }
   },
+  "coming_soon": {
+    "title": "Próximamente",
+    "message": "Esta funcionalidad está actualmente en desarrollo y estará disponible pronto."
+  },
   "analytics": {
     "title": "Panel de Análisis",
+    "coming_soon_title": "Panel de Análisis",
+    "coming_soon_message": "El panel de análisis estará disponible pronto. Estamos construyendo información poderosa para la Fase 2.",
     "subtitle": "Perspectivas visuales y KPIs del rendimiento de reclutamiento",
     "overview": "Resumen",
     "hiring_metrics": "Métricas de Contratación",
@@ -2673,7 +2679,17 @@
     "invitation_accepted_message": "Te has unido exitosamente a {{company}} como {{role}}.",
     "redirecting_to_dashboard": "Redirigiendo al panel en 3 segundos...",
     "invitation_error_title": "Error de Invitación",
-    "invalid_invitation_token": "Token de invitación inválido"
+    "invalid_invitation_token": "Token de invitación inválido",
+    "roles": {
+      "USER": "Usuario",
+      "HR": "Recursos Humanos",
+      "HR_MANAGER": "Gerente de RH",
+      "RECRUITER": "Reclutador",
+      "ADMIN": "Administrador",
+      "COMPANY_ADMIN": "Administrador de Empresa",
+      "COMPANY_OWNER": "Propietario de Empresa",
+      "SUPER_ADMIN": "Super Administrador"
+    }
   },
   "check_status": {
     "title": "Verificar Estado de Solicitud",

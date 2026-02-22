@@ -4,7 +4,7 @@ import { IsString, IsUrl, IsOptional, IsUUID } from 'class-validator';
 export class ParseResumeRequestDto {
   @ApiProperty({
     description: 'URL to the uploaded resume file (from MinIO)',
-    example: 'http://localhost:9000/recruiting-tool/resumes/abc123.pdf',
+    example: 'http://localhost:9000/borderless/resumes/abc123.pdf',
   })
   @IsUrl()
   @IsString()

@@ -43,20 +43,25 @@ const LANGUAGES: LanguageOption[] = [
  * <LanguageSelector />
  * ```
  */
+const normalizeLanguageCode = (code: string): string =>
+  code.split("-")[0].split("_")[0];
+
 const LanguageSelector: React.FC = () => {
   const { t, i18n } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [currentLang, setCurrentLang] = useState<string>(i18n.language);
+  const [currentLang, setCurrentLang] = useState<string>(
+    normalizeLanguageCode(i18n.language),
+  );
   const open = Boolean(anchorEl);
 
   // Update current language state when i18n language changes
   useEffect(() => {
     const handleLanguageChanged = (lng: string) => {
-      setCurrentLang(lng);
+      setCurrentLang(normalizeLanguageCode(lng));
     };
 
     // Set initial language
-    setCurrentLang(i18n.language);
+    setCurrentLang(normalizeLanguageCode(i18n.language));
 
     // Listen to language change events
     i18n.on("languageChanged", handleLanguageChanged);

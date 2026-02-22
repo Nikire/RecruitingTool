@@ -76,7 +76,7 @@ export class EmailService {
       return;
     }
 
-    const teamName = companyName ? `${companyName} Recruiting Team` : 'The Recruiting Team';
+    const teamName = companyName ? `${companyName} Team` : 'The Borderless Team';
 
     const subject = `Application Received: ${jobTitle}`;
     const text = `
@@ -157,7 +157,7 @@ Congratulations! We are pleased to inform you that your application for the posi
 Our team will be in touch with you shortly with next steps.
 
 Best regards,
-The Recruiting Team
+The Borderless Team
     `.trim();
 
     const html = `
@@ -167,7 +167,7 @@ The Recruiting Team
       <p>Our team will be in touch with you shortly with next steps.</p>
       <br/>
       <p>Best regards,<br/>
-      The Recruiting Team</p>
+      The Borderless Team</p>
     `;
 
     this.logger.log(`Sending acceptance email to ${applicantEmail} for ${jobTitle}`);
@@ -193,7 +193,7 @@ We appreciate your interest and patience. You will hear from us soon with an upd
 Reference: ${applicationUid}
 
 Best regards,
-The Recruiting Team
+The Borderless Team
     `.trim();
 
     const html = `
@@ -205,7 +205,7 @@ The Recruiting Team
       <p><small>Reference: <code>${applicationUid}</code></small></p>
       <br/>
       <p>Best regards,<br/>
-      The Recruiting Team</p>
+      The Borderless Team</p>
     `;
 
     this.logger.log(`Sending review notification to ${applicantEmail} for ${jobTitle}`);
@@ -231,7 +231,7 @@ We appreciate the time you invested in our application process and encourage you
 Reference: ${applicationUid}
 
 Best regards,
-The Recruiting Team
+The Borderless Team
     `.trim();
 
     const html = `
@@ -243,7 +243,7 @@ The Recruiting Team
       <p><small>Reference: <code>${applicationUid}</code></small></p>
       <br/>
       <p>Best regards,<br/>
-      The Recruiting Team</p>
+      The Borderless Team</p>
     `;
 
     this.logger.log(`Sending rejection notification to ${applicantEmail} for ${jobTitle}`);
@@ -302,7 +302,7 @@ The Recruiting Team
   }
 
   private async sendEmail(to: string, subject: string, text: string, html: string, emailType: string = 'GENERAL', relatedEntityId?: string): Promise<void> {
-    const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@recruiting.com');
+    const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@borderless.app');
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
     let status = 'SENT';
 

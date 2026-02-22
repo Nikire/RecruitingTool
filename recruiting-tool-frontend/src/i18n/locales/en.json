@@ -1604,8 +1604,14 @@
       "weight_range": "Weight must be between 1 and 100"
     }
   },
+  "coming_soon": {
+    "title": "Coming Soon",
+    "message": "This feature is currently under development and will be available soon."
+  },
   "analytics": {
     "title": "Analytics Dashboard",
+    "coming_soon_title": "Analytics Dashboard",
+    "coming_soon_message": "Analytics dashboard coming soon. We are building powerful insights for Phase 2.",
     "subtitle": "Visual insights and KPIs for recruitment performance",
     "overview": "Overview",
     "hiring_metrics": "Hiring Metrics",
@@ -2665,7 +2671,17 @@
     "invitation_accepted_message": "You have successfully joined {{company}} as {{role}}.",
     "redirecting_to_dashboard": "Redirecting to dashboard in 3 seconds...",
     "invitation_error_title": "Invitation Error",
-    "invalid_invitation_token": "Invalid invitation token"
+    "invalid_invitation_token": "Invalid invitation token",
+    "roles": {
+      "USER": "User",
+      "HR": "HR",
+      "HR_MANAGER": "HR Manager",
+      "RECRUITER": "Recruiter",
+      "ADMIN": "Admin",
+      "COMPANY_ADMIN": "Company Admin",
+      "COMPANY_OWNER": "Company Owner",
+      "SUPER_ADMIN": "Super Admin"
+    }
   },
   "check_status": {
     "title": "Check Application Status",

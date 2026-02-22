@@ -25,7 +25,7 @@ import HRDashboard from "./pages/hr/HRDashboard";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ApplicationsPage from "./pages/admin/applications/ApplicationsPage";
 import EmailTemplatesPage from "./pages/email-templates/EmailTemplatesPage";
-import AnalyticsPage from "./pages/analytics/AnalyticsPage";
+import ComingSoonPage from "./pages/coming-soon/ComingSoonPage";
 import SystemSettingsPage from "./pages/admin/SystemSettingsPage";
 import DeletedRecordsPage from "./pages/admin/DeletedRecordsPage";
 import AdminSubscriptionsPage from "./pages/admin/AdminSubscriptionsPage";
@@ -153,7 +153,7 @@ function App() {
                 path="/hr/hiring-processes"
                 element={<HiringProcessesPage />}
               />
-              <Route path="/hr/analytics" element={<AnalyticsPage />} />
+              <Route path="/hr/analytics" element={<ComingSoonPage titleKey="analytics.coming_soon_title" messageKey="analytics.coming_soon_message" />} />
               <Route
                 path="/hr/email-templates"
                 element={<EmailTemplatesPage />}

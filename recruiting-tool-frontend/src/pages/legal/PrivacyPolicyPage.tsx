@@ -233,11 +233,11 @@ const PrivacyPolicyPage = () => {
         <Typography variant="body1" paragraph>
           <strong>{t("legal.privacy.contact.email_label")}:</strong>{" "}
           <Link
-            href="mailto:privacy@recruitingtool.com"
+            href="mailto:privacy@borderless.app"
             color="primary"
             underline="hover"
           >
-            privacy@recruitingtool.com
+            privacy@borderless.app
           </Link>
         </Typography>
       </Box>

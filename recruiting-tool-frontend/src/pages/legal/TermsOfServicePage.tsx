@@ -186,11 +186,11 @@ const TermsOfServicePage = () => {
         <Typography variant="body1" paragraph>
           <strong>{t("legal.terms.contact.email_label")}:</strong>{" "}
           <Link
-            href="mailto:legal@recruitingtool.com"
+            href="mailto:legal@borderless.app"
             color="primary"
             underline="hover"
           >
-            legal@recruitingtool.com
+            legal@borderless.app
           </Link>
         </Typography>
       </Box>

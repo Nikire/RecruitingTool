@@ -13,7 +13,7 @@ import { Provider as JotaiProvider } from "jotai";
 
 import { BrowserRouter } from "react-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import recruitingToolPalette from "./palette.ts";
+import borderlessPalette from "./palette.ts";
 import ErrorBoundary from "./components/error/ErrorBoundary.tsx";
 import Auth0ProviderWithNavigate from "./providers/Auth0ProviderWithNavigate.tsx";
 
@@ -52,7 +52,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const theme = createTheme(recruitingToolPalette);
+const theme = createTheme(borderlessPalette);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

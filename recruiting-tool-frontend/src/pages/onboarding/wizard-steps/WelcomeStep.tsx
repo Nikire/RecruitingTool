@@ -150,7 +150,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
               <Button
                 fullWidth
                 variant="outlined"
-                href="https://docs.recruitingtool.com"
+                href="https://docs.borderless.app"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -161,7 +161,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
               <Button
                 fullWidth
                 variant="outlined"
-                href="https://support.recruitingtool.com"
+                href="https://support.borderless.app"
                 target="_blank"
                 rel="noopener noreferrer"
               >
