@@ -7,6 +7,87 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 0.9.0 - 2026-02-22
+
+### 🚀 Features
+
+#### Contact Us Form & Admin View (#265, #269)
+- **Full Contact Us flow: landing page CTA, dedicated /contact page, backend storage, and admin view**
+  - Added "Contact Us" call-to-action button to landing page
+  - Created `/contact` page with form for name, email, subject, and message
+  - New Prisma model `ContactMessage` with migration `20260222000002_add_contact_message`
+  - New backend module `contact-messages` with full CRUD (NestJS service, controller, DTOs)
+  - New admin page `/admin/contact-messages` to view and manage all submitted messages
+  - API hook `useContactMessages` and type definitions `contact-message.types.ts`
+  - Files: `recruiting-tool-backend/prisma/schema.prisma`, `recruiting-tool-backend/src/modules/contact-messages/`, `recruiting-tool-frontend/src/pages/contact/`, `recruiting-tool-frontend/src/pages/admin/ContactMessagesPage.tsx`, `recruiting-tool-frontend/src/api/contactMessages.ts`, `recruiting-tool-frontend/src/hooks/api/useContactMessages.ts`, `recruiting-tool-frontend/src/types/contact-message.types.ts`
+
+#### Hiring Processes Grouped by Job Position (#281)
+- **Toggle to group hiring processes by job position for better organization**
+  - New `HiringProcessesGroupedList` component renders processes grouped under their job position
+  - Toggle button on Hiring Processes page switches between flat and grouped views
+  - Files: `recruiting-tool-frontend/src/components/hiring-processes/HiringProcessesGroupedList.tsx`, `recruiting-tool-frontend/src/pages/hiring-processes/HiringProcessesPage.tsx`
+
+#### Team Management: Remove Member & Change Role (#275, #277)
+- **Three-dots context menu on team member cards now fully functional**
+  - "Remove member" action removes user from the team
+  - "Change role" action opens a new `ChangeRoleDialog` for role reassignment
+  - New shared `RoleBadge` component displays role with consistent styling, reused on Team and Profile pages
+  - Files: `recruiting-tool-frontend/src/components/team/TeamMemberCard.tsx`, `recruiting-tool-frontend/src/components/team/ChangeRoleDialog.tsx`, `recruiting-tool-frontend/src/components/common/RoleBadge.tsx`, `recruiting-tool-frontend/src/pages/TeamManagementPage.tsx`
+
+#### Edit Stages Button on Job Position Cards (#278)
+- **"Edit Stages" shortcut added to job position card actions and to the edit dialog**
+  - Job position cards now surface an "Edit Stages" button for quick access to stage builder
+  - Edit dialog updated to include stage editing alongside position details
+  - Files: `recruiting-tool-frontend/src/components/job-positions/JobPositionCard.tsx`, `recruiting-tool-frontend/src/components/dialogs/UpdateJobPositionDialog.tsx`
+
+### 🐛 Bug Fixes
+
+#### Careers Page Company Filter Replaced with Autocomplete Search (#272)
+- **Replaced static company filter dropdown with dynamic autocomplete search**
+  - `FilterSidebar` now uses an autocomplete input instead of a plain select
+  - Provides faster, more user-friendly company filtering on the careers page
+  - Files: `recruiting-tool-frontend/src/components/careers/FilterSidebar.tsx`
+
+#### Landing Page Features Section Icon Alignment (#273)
+- **Fixed vertical misalignment of icons in the features section**
+  - Corrected CSS for icon containers so icons align properly with text
+  - Files: `recruiting-tool-frontend/src/pages/landing/LandingPage.tsx`, `recruiting-tool-frontend/src/index.css`
+
+#### Markdown Editor Selection Offset (#280)
+- **Fixed text selection offset bug in the markdown editor on the job positions page**
+  - Corrected cursor/selection positioning within the rich text editor
+  - Files: `recruiting-tool-frontend/src/pages/job-positions/JobPositionsPage.tsx`
+
+### 💄 UI/UX
+
+#### Consistent Page Styling Across HR Pages (#273, #278)
+- **Standardized layout and visual style across all HR-facing pages**
+  - Applied consistent header, spacing, and card patterns to Email Templates, Hiring Processes, Job Positions, and Profile pages
+  - Files: `recruiting-tool-frontend/src/pages/email-templates/EmailTemplatesPage.tsx`, `recruiting-tool-frontend/src/pages/hiring-processes/HiringProcessesPage.tsx`, `recruiting-tool-frontend/src/pages/job-positions/JobPositionsPage.tsx`, `recruiting-tool-frontend/src/pages/profile/ProfilePage.tsx`, `recruiting-tool-frontend/src/layouts/AdminLayout.tsx`
+
+#### Shared RoleBadge Component (#275)
+- **Extracted RoleBadge into a reusable shared component**
+  - Previously duplicated role display logic now lives in one component
+  - Reused on Team Management page and Profile page
+  - Files: `recruiting-tool-frontend/src/components/common/RoleBadge.tsx`, `recruiting-tool-frontend/src/components/common/index.ts`
+
+### 🗃️ Database
+
+#### ContactMessage Model (#265)
+- **New Prisma model for storing contact form submissions**
+  - Fields: `id`, `uid`, `name`, `email`, `subject`, `message`, `createdAt`, `updatedAt`
+  - Migration: `recruiting-tool-backend/prisma/migrations/20260222000002_add_contact_message/`
+  - Files: `recruiting-tool-backend/prisma/schema.prisma`, `recruiting-tool-backend/src/app.module.ts`
+
+### Breaking Changes
+None
+
+### Migration Notes
+- Run `npx prisma migrate deploy` (or `migrate dev`) for the `add_contact_message` migration
+- New backend module `contact-messages` is auto-registered via `app.module.ts`
+
+---
+
 ## Version 0.8.0 - 2025-12-07
 
 ### 🚀 Features

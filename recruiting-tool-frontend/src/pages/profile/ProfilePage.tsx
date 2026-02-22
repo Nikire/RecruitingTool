@@ -31,6 +31,7 @@ import { UpdateUserDto } from "../../types/user.types";
 import { useUpdateUser } from "../../hooks/api/useUsers";
 import { useEffect } from "react";
 import ProfilePictureUpload from "../../components/user/ProfilePictureUpload";
+import { RoleBadge } from "../../components/common";
 
 const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
@@ -283,13 +284,7 @@ const ProfilePage: React.FC = () => {
                   }}
                 >
                   {user.roles.map((role) => (
-                    <Chip
-                      key={role}
-                      label={role}
-                      size="small"
-                      color="primary"
-                      sx={{ fontWeight: 500 }}
-                    />
+                    <RoleBadge key={role} role={role} />
                   ))}
                 </Box>
               </Box>

@@ -120,6 +120,10 @@ const JobPositionsPage: React.FC = () => {
     updateDialog.openWith(jobPosition);
   };
 
+  const handleManageStages = (jobPosition: JobPosition) => {
+    setSelectedJobPosition(jobPosition);
+  };
+
   // Loading skeleton cards
   const renderSkeletonCards = () => (
     <Grid container spacing={3} justifyContent="center">
@@ -297,6 +301,7 @@ const JobPositionsPage: React.FC = () => {
                   jobPosition={position}
                   onView={handleViewDetails}
                   onEdit={canManage ? handleEdit : undefined}
+                  onManageStages={canManage ? handleManageStages : undefined}
                 />
               </Grid>
             ))}
@@ -358,6 +363,7 @@ const JobPositionsPage: React.FC = () => {
         open={updateDialog.isOpen}
         onClose={updateDialog.close}
         jobPosition={updateDialog.selectedItem}
+        onManageStages={canManage ? handleManageStages : undefined}
       />
     </Box>
   );

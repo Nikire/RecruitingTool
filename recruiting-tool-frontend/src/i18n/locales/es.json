@@ -265,7 +265,9 @@
     "deleted_success": "¡Posición de trabajo eliminada exitosamente!",
     "create_error": "Error al crear posición de trabajo",
     "update_error": "Error al actualizar posición de trabajo",
-    "delete_error": "Error al eliminar posición de trabajo"
+    "delete_error": "Error al eliminar posición de trabajo",
+    "edit_stages": "Editar Etapas",
+    "edit_stages_aria": "Editar etapas para {{item}}"
   },
   "create_job_position": {
     "section_job_details": "Detalles del Puesto",
@@ -381,7 +383,21 @@
     "select_existing": "Seleccionar Existente",
     "create_new": "Crear Nuevo",
     "no_candidate": "Sin candidato asignado",
-    "delete_message": "¿Estás seguro de que quieres eliminar este proceso de contratación? Esto también eliminará todas las etapas asociadas."
+    "delete_message": "¿Estás seguro de que quieres eliminar este proceso de contratación? Esto también eliminará todas las etapas asociadas.",
+    "group": {
+      "toggle_label": "Agrupar por Posición",
+      "toggle_tooltip": "Agrupar procesos de contratación por posición de trabajo",
+      "toggle_aria": "Alternar agrupación por posición de trabajo",
+      "no_position": "Sin Posición de Trabajo",
+      "count": "{{count}} proceso",
+      "count_plural": "{{count}} procesos",
+      "expand": "Expandir grupo {{title}}",
+      "collapse": "Contraer grupo {{title}}",
+      "expand_icon": "Expandir grupo",
+      "collapse_icon": "Contraer grupo",
+      "column_title": "Título del Proceso",
+      "column_status": "Estado"
+    }
   },
   "companies": {
     "title": "Empresas",
@@ -915,7 +931,8 @@
     "stages_info": "Esta posición de trabajo tiene {{count}} etapa(s) de contratación.",
     "stages_manage_help": "Para gestionar etapas, use el botón \"Gestionar Etapas\" en la página de detalles de la posición de trabajo.",
     "failed_to_update": "Error al actualizar la posición de trabajo. Por favor intente nuevamente.",
-    "update_button": "Actualizar Posición de Trabajo"
+    "update_button": "Actualizar Posición de Trabajo",
+    "stages_manage_help_button": "Use el botón para gestionar etapas directamente."
   },
   "navbar": {
     "home": "Inicio",
@@ -1289,6 +1306,7 @@
     "subscriptions": "Suscripciones",
     "deleted_records": "Registros Eliminados",
     "settings": "Configuración",
+    "contact_messages": "Mensajes de Contacto",
     "aria_label": "navegación de administrador"
   },
   "language": {
@@ -1468,6 +1486,7 @@
     "clear_all": "Limpiar Todo",
     "company": "Empresa",
     "all_companies": "Todas las Empresas",
+    "company_search_placeholder": "Buscar empresas...",
     "category": "Categoría de Trabajo",
     "all_categories": "Todas las Categorías",
     "engineering": "Ingeniería",
@@ -2771,6 +2790,10 @@
     "no_company": "Debes pertenecer a una empresa para gestionar el equipo",
     "edit_role": "Editar Rol",
     "remove_member": "Eliminar Miembro",
+    "remove_member_title": "Eliminar Miembro del Equipo",
+    "remove_member_confirm": "¿Estás seguro de que deseas eliminar a {{name}} del equipo? Perderá acceso a la empresa.",
+    "remove_member_button": "Eliminar",
+    "change_role_title": "Cambiar Rol de {{name}}",
     "invitation_sent": "Invitación enviada exitosamente",
     "invitation_cancelled": "Invitación cancelada",
     "invitation_accepted": "Invitación aceptada exitosamente",
@@ -3125,7 +3148,6 @@
     "active_subscriptions": "Suscripciones Activas",
     "trialing_subscriptions": "Suscripciones de Prueba",
     "past_due_subscriptions": "Vencidas",
-    "monthly_revenue": "Ingresos Mensuales",
     "error_loading": "Error al cargar suscripciones. Por favor intente nuevamente.",
     "not_applicable": "N/A",
     "monthly": "Mensual",
@@ -3139,5 +3161,56 @@
     "status_canceled": "Cancelada",
     "status_expired": "Expirada",
     "status_unpaid": "Sin Pagar"
+  },
+  "contact": {
+    "page_title": "Contáctanos",
+    "page_subtitle": "¿Tienes preguntas o quieres saber más? Nos encantaría escucharte.",
+    "section_title": "Ponte en Contacto",
+    "section_subtitle": "Completa el formulario a continuación y nos pondremos en contacto contigo lo antes posible.",
+    "cta_title": "¿Listo para Transformar tu Proceso de Contratación?",
+    "cta_subtitle": "¿Tienes preguntas sobre nuestros planes o funciones? Estamos aquí para ayudarte.",
+    "cta_button": "Contáctanos",
+    "form_name": "Nombre Completo",
+    "form_email": "Correo Electrónico",
+    "form_company": "Empresa (Opcional)",
+    "form_message": "Mensaje",
+    "form_name_placeholder": "Juan García",
+    "form_email_placeholder": "juan@empresa.com",
+    "form_company_placeholder": "Nombre de tu empresa",
+    "form_message_placeholder": "Cuéntanos cómo podemos ayudarte...",
+    "form_submit": "Enviar Mensaje",
+    "form_submitting": "Enviando...",
+    "success_title": "¡Mensaje Enviado!",
+    "success_message": "Gracias por contactarnos. Te responderemos en menos de 24 horas.",
+    "success_send_another": "Enviar Otro Mensaje",
+    "validation_name_required": "El nombre completo es obligatorio",
+    "validation_email_required": "El correo electrónico es obligatorio",
+    "validation_message_required": "El mensaje es obligatorio",
+    "validation_message_min": "El mensaje debe tener al menos 10 caracteres",
+    "info_response_time": "Generalmente respondemos en 24 horas",
+    "info_email_label": "Escríbenos directamente",
+    "info_email_value": "hello@borderless.dev",
+    "info_location_label": "Ubicación",
+    "info_location_value": "Global, Remoto"
+  },
+  "admin_contact": {
+    "page_title": "Mensajes de Contacto",
+    "page_subtitle": "Gestiona los mensajes de contacto de potenciales clientes",
+    "table_name": "Nombre",
+    "table_email": "Correo",
+    "table_company": "Empresa",
+    "table_message": "Mensaje",
+    "table_date": "Fecha",
+    "table_status": "Estado",
+    "table_actions": "Acciones",
+    "status_read": "Leído",
+    "status_unread": "No Leído",
+    "mark_as_read": "Marcar como Leído",
+    "mark_as_read_success": "Mensaje marcado como leído",
+    "mark_as_read_error": "Error al marcar el mensaje como leído",
+    "no_messages": "No hay mensajes de contacto aún",
+    "message_preview": "{{preview}}...",
+    "loading_error": "Error al cargar los mensajes de contacto",
+    "unread_count": "{{count}} no leídos"
   }
 }

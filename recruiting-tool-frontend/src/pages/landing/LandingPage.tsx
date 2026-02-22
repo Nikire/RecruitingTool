@@ -34,6 +34,7 @@ import LooksOneIcon from "@mui/icons-material/LooksOne";
 import LooksTwoIcon from "@mui/icons-material/LooksTwo";
 import Looks3Icon from "@mui/icons-material/Looks3";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
 
 // Keyframe animations - More dynamic
 const gradientShift = keyframes`
@@ -564,7 +565,14 @@ const LandingPage = () => {
                   },
                 }}
               >
-                <CardContent sx={{ p: 4.5 }}>
+                <CardContent
+                  sx={{
+                    p: 4.5,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                  }}
+                >
                   <Box
                     sx={{
                       width: 64,
@@ -576,6 +584,7 @@ const LandingPage = () => {
                       justifyContent: "center",
                       mb: 3.5,
                       color: "white",
+                      flexShrink: 0,
                       boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.25)}`,
                     }}
                   >
@@ -1081,6 +1090,93 @@ const LandingPage = () => {
 			</Box>
 			*/}
 
+      {/* Contact Us Section */}
+      <Box
+        id="contact"
+        sx={{
+          bgcolor: alpha(theme.palette.primary.main, 0.015),
+          py: { xs: 8, md: 10 },
+        }}
+      >
+        <Container maxWidth="md">
+          <Box
+            sx={{
+              textAlign: "center",
+              p: { xs: 4, md: 6 },
+              borderRadius: 4,
+              border: `2px solid ${alpha(theme.palette.primary.main, 0.12)}`,
+              bgcolor: "background.paper",
+              boxShadow: `0 8px 40px ${alpha(theme.palette.primary.main, 0.06)}`,
+            }}
+          >
+            <Box
+              sx={{
+                width: 64,
+                height: 64,
+                borderRadius: "50%",
+                background: `linear-gradient(135deg, ${theme.palette.primary.main}, ${theme.palette.secondary.main})`,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "white",
+                mx: "auto",
+                mb: 3,
+              }}
+            >
+              <ContactMailIcon sx={{ fontSize: 32 }} />
+            </Box>
+            <Typography
+              variant="h3"
+              component="h2"
+              gutterBottom
+              sx={{
+                fontWeight: 900,
+                mb: 2,
+                fontSize: { xs: "1.75rem", md: "2.25rem" },
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {t("contact.cta_title")}
+            </Typography>
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{
+                mb: 4,
+                lineHeight: 1.7,
+                fontSize: { xs: "1rem", md: "1.1rem" },
+                maxWidth: 500,
+                mx: "auto",
+              }}
+            >
+              {t("contact.cta_subtitle")}
+            </Typography>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => navigate("/contact")}
+              endIcon={<ArrowForwardIcon />}
+              sx={{
+                px: 5,
+                py: 2,
+                fontSize: "1.1rem",
+                fontWeight: 700,
+                borderRadius: 2.5,
+                textTransform: "none",
+                boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.3)}`,
+                "&:hover": {
+                  transform: "translateY(-3px)",
+                  boxShadow: `0 12px 32px ${alpha(theme.palette.primary.main, 0.4)}`,
+                },
+                transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+              }}
+            >
+              {t("contact.cta_button")}
+            </Button>
+          </Box>
+        </Container>
+      </Box>
+
       {/* Final CTA Section */}
       <Box
         sx={{
@@ -1317,7 +1413,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  onClick={handleComingSoon}
+                  onClick={() => navigate("/contact")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",

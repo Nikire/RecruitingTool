@@ -1281,3 +1281,19 @@ enum InvitationStatus {
   EXPIRED
   CANCELLED
 }
+
+model ContactMessage {
+  id        Int      @id @default(autoincrement())
+  uid       String   @unique @default(uuid()) @db.Uuid
+  name      String
+  email     String
+  company   String?
+  message   String   @db.Text
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([uid])
+  @@index([isRead])
+  @@index([createdAt])
+  @@index([email])
+}

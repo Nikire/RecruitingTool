@@ -3,7 +3,6 @@ import {
   Card,
   CardContent,
   Typography,
-  Chip,
   IconButton,
   Menu,
   MenuItem,
@@ -13,6 +12,7 @@ import {
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EmailIcon from "@mui/icons-material/Email";
 import { useTranslation } from "react-i18next";
+import { RoleBadge } from "../common";
 
 interface TeamMemberCardProps {
   uid: string;
@@ -89,13 +89,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
 
         <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
           {roles?.map((role) => (
-            <Chip
-              key={role}
-              label={t(`company_roles.roles.${role}`)}
-              size="small"
-              color="primary"
-              variant="outlined"
-            />
+            <RoleBadge key={role} role={role} />
           ))}
         </Box>
       </CardContent>

@@ -43,6 +43,7 @@ import { CompanyRolesModule } from './modules/company-roles/company-roles.module
 import { ConnectionRequestsModule } from './modules/connection-requests/connection-requests.module';
 import { CompanyInvitationsModule } from './modules/company-invitations/company-invitations.module';
 import { FeedbackModule } from './modules/feedback/feedback.module';
+import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 
 @Module({
   imports: [
@@ -97,6 +98,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
     ConnectionRequestsModule,
     CompanyInvitationsModule,
     FeedbackModule,
+    ContactMessagesModule,
   ],
   controllers: [AppController],
   providers: [

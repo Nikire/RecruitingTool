@@ -4,6 +4,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import SettingsIcon from "@mui/icons-material/Settings";
 import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import EmailIcon from "@mui/icons-material/Email";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -48,6 +49,12 @@ const AdminLayout: React.FC = () => {
       text: t("admin_layout.deleted_records"),
       icon: <RestoreFromTrashIcon />,
       path: "/admin/deleted-records",
+      requiresSuperAdmin: false,
+    },
+    {
+      text: t("admin_layout.contact_messages"),
+      icon: <EmailIcon />,
+      path: "/admin/contact-messages",
       requiresSuperAdmin: false,
     },
     {

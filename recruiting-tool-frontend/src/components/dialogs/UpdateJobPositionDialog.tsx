@@ -20,11 +20,13 @@ import StatusBadgeEditor, { StatusOption } from "../common/StatusBadgeEditor";
 import { CustomQuestionBuilder } from "../forms/CustomQuestionBuilder";
 import { CustomQuestion } from "../../types/customQuestions";
 import { MarkdownEditor } from "../common";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 
 interface UpdateJobPositionDialogProps {
   open: boolean;
   onClose: () => void;
   jobPosition: JobPosition | null;
+  onManageStages?: (jobPosition: JobPosition) => void;
 }
 
 interface JobPositionFormData {
@@ -43,6 +45,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
   open,
   onClose,
   jobPosition,
+  onManageStages,
 }) => {
   const { t } = useTranslation();
   const [currentStatus, setCurrentStatus] = useState<JobPositionStatus>("OPEN");
@@ -171,11 +174,30 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
 
           {/* Stage Management Info */}
           <Box sx={{ mb: 2 }}>
-            <Alert severity="info">
+            <Alert
+              severity="info"
+              action={
+                onManageStages && jobPosition ? (
+                  <Button
+                    color="inherit"
+                    size="small"
+                    startIcon={<AccountTreeIcon />}
+                    onClick={() => {
+                      onManageStages(jobPosition);
+                      handleClose();
+                    }}
+                  >
+                    {t("job_positions.edit_stages")}
+                  </Button>
+                ) : undefined
+              }
+            >
               {t("update_job_position.stages_info", {
                 count: jobPosition?.stages?.length || 0,
               })}{" "}
-              {t("update_job_position.stages_manage_help")}
+              {onManageStages
+                ? t("update_job_position.stages_manage_help_button")
+                : t("update_job_position.stages_manage_help")}
             </Alert>
           </Box>
 

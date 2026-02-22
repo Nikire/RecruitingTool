@@ -13,7 +13,9 @@ import {
   Slider,
   SelectChangeEvent,
   Avatar,
+  TextField,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import { useTranslation } from "react-i18next";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -105,37 +107,49 @@ const FilterSidebar: React.FC<FilterSidebarProps> = memo(
 
         <Stack spacing={3}>
           {/* Company Filter */}
-          <FormControl fullWidth size="small">
-            <InputLabel>{t("careersFilters.company")}</InputLabel>
-            <Select
-              value={company}
-              onChange={(e: SelectChangeEvent) =>
-                onFilterChange("company", e.target.value)
-              }
-              label={t("careersFilters.company")}
-              disabled={isLoadingCompanies}
-            >
-              <MenuItem value="">{t("careersFilters.all_companies")}</MenuItem>
-              {companies.map((comp) => (
-                <MenuItem key={comp.uid} value={comp.uid}>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    {comp.logoUrl ? (
-                      <Avatar
-                        src={comp.logoUrl}
-                        alt={comp.name}
-                        sx={{ width: 20, height: 20 }}
-                      />
-                    ) : (
-                      <BusinessIcon
-                        sx={{ fontSize: 20, color: "text.secondary" }}
-                      />
-                    )}
-                    <Typography variant="body2">{comp.name}</Typography>
-                  </Box>
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <Autocomplete<Company>
+            options={companies}
+            value={companies.find((c) => c.uid === company) ?? null}
+            onChange={(_event, newValue) =>
+              onFilterChange("company", newValue ? newValue.uid : "")
+            }
+            getOptionLabel={(option) => option.name}
+            isOptionEqualToValue={(option, value) => option.uid === value.uid}
+            loading={isLoadingCompanies}
+            clearOnEscape
+            size="small"
+            renderOption={(props, option) => {
+              const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: React.Key };
+              return (
+                <Box
+                  component="li"
+                  key={key}
+                  {...restProps}
+                  sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                >
+                  {option.logoUrl ? (
+                    <Avatar
+                      src={option.logoUrl}
+                      alt={option.name}
+                      sx={{ width: 20, height: 20 }}
+                    />
+                  ) : (
+                    <BusinessIcon
+                      sx={{ fontSize: 20, color: "text.secondary" }}
+                    />
+                  )}
+                  <Typography variant="body2">{option.name}</Typography>
+                </Box>
+              );
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label={t("careersFilters.company")}
+                placeholder={t("careersFilters.company_search_placeholder")}
+              />
+            )}
+          />
 
           {/* Category Filter */}
           <FormControl fullWidth size="small">

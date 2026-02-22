@@ -50,6 +50,8 @@ import BillingPage from "./pages/billing/BillingPage";
 import TermsOfServicePage from "./pages/legal/TermsOfServicePage";
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
+import ContactPage from "./pages/contact/ContactPage";
+import ContactMessagesPage from "./pages/admin/ContactMessagesPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -83,6 +85,7 @@ function App() {
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/careers/:uid" element={<JobPositionDetailPage />} />
           <Route path="/check-status" element={<CheckStatusPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route
             path="/book-interview/:token"
             element={<BookInterviewPage />}
@@ -225,6 +228,10 @@ function App() {
                 element={<DeletedRecordsPage />}
               />
               <Route path="/admin/settings" element={<SystemSettingsPage />} />
+              <Route
+                path="/admin/contact-messages"
+                element={<ContactMessagesPage />}
+              />
             </Route>
           </Route>
         </Route>

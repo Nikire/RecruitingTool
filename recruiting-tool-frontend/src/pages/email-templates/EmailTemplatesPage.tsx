@@ -1,4 +1,4 @@
-import { Typography, Button, Box, Chip } from "@mui/material";
+import { Button, Box, Chip, Paper } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import AddIcon from "@mui/icons-material/Add";
@@ -19,7 +19,10 @@ import EmailTemplateDialog from "../../components/dialogs/EmailTemplateDialog";
 import EmailTemplatePreviewDialog from "../../components/dialogs/EmailTemplatePreviewDialog";
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import { canManageResources } from "../../utils/permissions";
-import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
+import {
+  AccessDeniedMessage,
+  PageHeader,
+} from "../../components/common";
 import {
   EmailTemplate,
   EmailTemplateType,
@@ -218,44 +221,27 @@ const EmailTemplatesPage: React.FC = () => {
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: { xs: "column", sm: "row" },
-          justifyContent: "space-between",
-          alignItems: { xs: "flex-start", sm: "center" },
-          mb: 3,
-          gap: 2,
-        }}
-      >
-        <Box>
-          <Typography variant="h4" sx={{ mb: 0.5 }}>
-            {t("email_templates.title")}
-          </Typography>
-          <Typography variant="body2" color="textSecondary">
-            {t("email_templates.subtitle")}
-          </Typography>
-        </Box>
-        {canManage && (
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={() => createDialog.open()}
-            sx={{
-              width: { xs: "100%", sm: "auto" },
-            }}
-          >
-            {t("email_templates.create_template")}
-          </Button>
-        )}
-      </Box>
-
-      <SearchBar
-        onSearch={setSearchQuery}
-        placeholder={t("email_templates.search_placeholder")}
-        value={searchQuery}
-        containerSx={{ mb: 2 }}
+      <PageHeader
+        title="email_templates.title"
+        subtitle="email_templates.subtitle"
+        action={
+          canManage
+            ? {
+                label: "email_templates.create_template",
+                icon: <AddIcon />,
+                onClick: () => createDialog.open(),
+              }
+            : undefined
+        }
       />
+
+      <Paper sx={{ p: 2, mb: 3 }}>
+        <SearchBar
+          onSearch={setSearchQuery}
+          placeholder={t("email_templates.search_placeholder")}
+          value={searchQuery}
+        />
+      </Paper>
 
       <Box sx={{ height: 600, width: "100%" }}>
         <EnhancedDataGrid

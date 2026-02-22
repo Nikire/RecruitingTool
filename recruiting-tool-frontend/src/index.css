@@ -9,3 +9,22 @@ body,
 html {
 	background: #eeeeee !important;
 }
+
+/*
+ * Fix for @uiw/react-md-editor text selection vertical offset.
+ *
+ * The editor overlays a transparent <textarea> (.w-md-editor-text-input)
+ * on top of a syntax-highlighted <pre> (.w-md-editor-text-pre).
+ * For selection highlight to align with visible text both layers must share
+ * the exact same font-size, line-height, and padding.
+ *
+ * The global `* { font-family: 'Roboto' }` reset causes the textarea to
+ * inherit Roboto metrics before the library's own rules take effect.
+ * Forcing the same values the library uses on the <pre> layer corrects the
+ * vertical misalignment of the selection overlay.
+ */
+.w-md-editor-text-input {
+	font-size: 14px !important;
+	line-height: 18px !important;
+}
+

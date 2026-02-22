@@ -24,13 +24,20 @@ import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import InviteTeamMemberDialog from "../components/team/InviteTeamMemberDialog";
 import TeamMemberCard from "../components/team/TeamMemberCard";
+import ChangeRoleDialog from "../components/team/ChangeRoleDialog";
+import ConfirmDeleteDialog from "../components/dialogs/ConfirmDeleteDialog";
 import { useCompanyMembers } from "../hooks/useCompanyRoles";
+import {
+  useUpdateUserRole,
+  useRemoveUserFromCompany,
+} from "../hooks/api/useCompanyRoles";
 import {
   useCompanyInvitations,
   useCancelInvitation,
 } from "../hooks/useInvitations";
 import { useCompanyConnectionRequests } from "../hooks/useConnectionRequests";
 import { InvitationStatus } from "../types/invitations";
+import { UserRoles } from "../types/user.types";
 import { PageHeader, CenteredLoadingSpinner } from "../components/common";
 
 interface TabPanelProps {
@@ -53,6 +60,21 @@ const TeamManagementPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
 
+  // Remove member state
+  const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
+  const [memberToRemove, setMemberToRemove] = useState<{
+    uid: string;
+    name: string;
+  } | null>(null);
+
+  // Change role state
+  const [changeRoleDialogOpen, setChangeRoleDialogOpen] = useState(false);
+  const [memberToChangeRole, setMemberToChangeRole] = useState<{
+    uid: string;
+    name: string;
+    roles: string[];
+  } | null>(null);
+
   const companyUid = user?.company?.uid || "";
 
   // Fetch data
@@ -64,6 +86,10 @@ const TeamManagementPage: React.FC = () => {
     useCompanyConnectionRequests(companyUid, "PENDING");
 
   const { mutate: cancelInvitation } = useCancelInvitation(companyUid);
+  const { mutate: removeUserFromCompany, isPending: isRemoving } =
+    useRemoveUserFromCompany(companyUid);
+  const { mutate: updateUserRole, isPending: isUpdatingRole } =
+    useUpdateUserRole(companyUid);
 
   // Check if user can manage team
   const canManage =
@@ -79,6 +105,64 @@ const TeamManagementPage: React.FC = () => {
     if (window.confirm(t("team.confirm_cancel_invitation"))) {
       cancelInvitation(invitationUid);
     }
+  };
+
+  // Remove member handlers
+  const handleRemoveMember = (uid: string) => {
+    const member = members?.find((m) => m.uid === uid);
+    if (member) {
+      setMemberToRemove({ uid: member.uid, name: member.name });
+      setRemoveDialogOpen(true);
+    }
+  };
+
+  const handleConfirmRemove = () => {
+    if (memberToRemove) {
+      removeUserFromCompany(memberToRemove.uid, {
+        onSuccess: () => {
+          setRemoveDialogOpen(false);
+          setMemberToRemove(null);
+        },
+      });
+    }
+  };
+
+  const handleCloseRemoveDialog = () => {
+    setRemoveDialogOpen(false);
+    setMemberToRemove(null);
+  };
+
+  // Change role handlers
+  const handleEditRole = (uid: string) => {
+    const member = members?.find((m) => m.uid === uid);
+    if (member) {
+      setMemberToChangeRole({
+        uid: member.uid,
+        name: member.name,
+        roles: member.roles,
+      });
+      setChangeRoleDialogOpen(true);
+    }
+  };
+
+  const handleConfirmChangeRole = (
+    memberUid: string,
+    roles: UserRoles[],
+  ) => {
+    updateUserRole(
+      { userUid: memberUid, data: { roles } },
+      {
+        onSuccess: () => {
+          setChangeRoleDialogOpen(false);
+          setMemberToChangeRole(null);
+        },
+      },
+    );
+  };
+
+  const handleCloseChangeRoleDialog = () => {
+    setChangeRoleDialogOpen(false);
+    setMemberToChangeRole(null);
   };
 
   if (!user?.company) {
@@ -199,6 +283,8 @@ const TeamManagementPage: React.FC = () => {
                   roles={member.roles}
                   profilePicture={member.profilePicture}
                   canManage={canManage}
+                  onEditRole={canManage ? handleEditRole : undefined}
+                  onRemove={canManage ? handleRemoveMember : undefined}
                 />
               </Grid>
             ))}
@@ -421,6 +507,32 @@ const TeamManagementPage: React.FC = () => {
         onClose={() => setInviteDialogOpen(false)}
         companyUid={companyUid}
       />
+
+      {/* Remove Member Dialog */}
+      <ConfirmDeleteDialog
+        open={removeDialogOpen}
+        onClose={handleCloseRemoveDialog}
+        onConfirm={handleConfirmRemove}
+        title={t("team.remove_member_title")}
+        message={t("team.remove_member_confirm", {
+          name: memberToRemove?.name || "",
+        })}
+        isDeleting={isRemoving}
+        confirmText={t("team.remove_member_button")}
+      />
+
+      {/* Change Role Dialog */}
+      {memberToChangeRole && (
+        <ChangeRoleDialog
+          open={changeRoleDialogOpen}
+          onClose={handleCloseChangeRoleDialog}
+          memberName={memberToChangeRole.name}
+          memberUid={memberToChangeRole.uid}
+          currentRoles={memberToChangeRole.roles}
+          onConfirm={handleConfirmChangeRole}
+          isPending={isUpdatingRole}
+        />
+      )}
     </Container>
   );
 };

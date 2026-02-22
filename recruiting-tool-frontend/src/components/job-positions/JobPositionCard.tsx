@@ -14,6 +14,7 @@ import { JobPosition } from "../../types/jobPosition.types";
 import { formatRelativeTime } from "../../utils/dateFormatters";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import BusinessIcon from "@mui/icons-material/Business";
 import WorkIcon from "@mui/icons-material/Work";
@@ -24,6 +25,7 @@ interface JobPositionCardProps {
   jobPosition: JobPosition;
   onView: (jobPosition: JobPosition) => void;
   onEdit?: (jobPosition: JobPosition) => void;
+  onManageStages?: (jobPosition: JobPosition) => void;
   onMore?: (jobPosition: JobPosition) => void;
 }
 
@@ -44,6 +46,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
   jobPosition,
   onView,
   onEdit,
+  onManageStages,
   onMore,
 }) => {
   const { t, i18n } = useTranslation();
@@ -162,6 +165,20 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
                 aria-label={t("aria.edit_item", { item: jobPosition.title })}
               >
                 <EditIcon />
+              </IconButton>
+            </Tooltip>
+          )}
+          {onManageStages && (
+            <Tooltip title={t("job_positions.edit_stages")}>
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() => onManageStages(jobPosition)}
+                aria-label={t("job_positions.edit_stages_aria", {
+                  item: jobPosition.title,
+                })}
+              >
+                <AccountTreeIcon />
               </IconButton>
             </Tooltip>
           )}
