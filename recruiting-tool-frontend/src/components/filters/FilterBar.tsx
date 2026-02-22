@@ -160,7 +160,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
   const hasActiveFilters = activeFilters.length > 0;
 
   return (
-    <Box sx={{ mb: 3 }}>
+    <Paper sx={{ p: 2, mb: 3 }}>
       {/* Search Bar */}
       <Box
         sx={{
@@ -293,7 +293,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
           <FilterChips filters={activeFilters} onClearAll={handleClearAll} />
         </Box>
       )}
-    </Box>
+    </Paper>
   );
 };
 

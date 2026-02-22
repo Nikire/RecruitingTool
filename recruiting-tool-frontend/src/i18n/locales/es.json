@@ -1081,7 +1081,19 @@
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",
     "title": "Aplicaciones de Trabajo",
-    "filter_by_status": "Filtrar por Estado"
+    "filter_by_status": "Filtrar por Estado",
+    "group_by_position": "Agrupar por Posición",
+    "group_toggle_tooltip": "Alternar vista agrupada por posición de trabajo",
+    "group_toggle_aria": "Alternar agrupación por posición de trabajo",
+    "no_position": "Sin Posición de Trabajo",
+    "group": {
+      "count": "{{count}} aplicación",
+      "count_plural": "{{count}} aplicaciones",
+      "expand": "Expandir grupo {{title}}",
+      "collapse": "Contraer grupo {{title}}",
+      "expand_icon": "Expandir grupo",
+      "collapse_icon": "Contraer grupo"
+    }
   },
   "email_templates_page": {
     "create_template": "Crear Plantilla",

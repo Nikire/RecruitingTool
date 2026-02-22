@@ -65,7 +65,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       <Box>
         <Typography
           variant="h4"
-          sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+          sx={{ fontSize: { xs: "1.5rem", sm: "2.125rem" }, fontWeight: 700 }}
         >
           {displayTitle}
         </Typography>

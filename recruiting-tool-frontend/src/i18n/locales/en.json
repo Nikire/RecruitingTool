@@ -1073,7 +1073,19 @@
   "applications_page": {
     "all_applications": "All Applications",
     "title": "Job Applications",
-    "filter_by_status": "Filter by Status"
+    "filter_by_status": "Filter by Status",
+    "group_by_position": "Group by Position",
+    "group_toggle_tooltip": "Toggle grouped view by job position",
+    "group_toggle_aria": "Toggle group by job position",
+    "no_position": "No Job Position",
+    "group": {
+      "count": "{{count}} application",
+      "count_plural": "{{count}} applications",
+      "expand": "Expand group {{title}}",
+      "collapse": "Collapse group {{title}}",
+      "expand_icon": "Expand group",
+      "collapse_icon": "Collapse group"
+    }
   },
   "email_templates_page": {
     "create_template": "Create Template",

@@ -1,20 +1,26 @@
 import { useState } from "react";
 import {
-  Typography,
   Box,
   FormControl,
+  FormControlLabel,
   InputLabel,
-  Select,
   MenuItem,
   Paper,
+  Select,
+  Switch,
+  Tooltip,
+  Typography,
 } from "@mui/material";
+import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
 import { useAuthMe } from "../../../hooks/api/useAuth";
 import { canManageResources } from "../../../utils/permissions";
 import { ApplicationStatus } from "../../../types/application.types";
 import ApplicationsTable from "../../../components/applications/ApplicationsTable";
+import ApplicationsGroupedList from "../../../components/applications/ApplicationsGroupedList";
 import {
   AccessDeniedMessage,
   CenteredLoadingSpinner,
+  PageHeader,
 } from "../../../components/common";
 import { useTranslation } from "react-i18next";
 
@@ -22,6 +28,7 @@ const ApplicationsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user, isLoading: userLoading } = useAuthMe();
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "">("");
+  const [groupByPosition, setGroupByPosition] = useState(false);
 
   // Wait for user data to load before checking permissions (fixes race condition)
   if (userLoading) {
@@ -50,16 +57,7 @@ const ApplicationsPage: React.FC = () => {
 
   return (
     <Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
-        }}
-      >
-        <Typography variant="h4">{t("applications_page.title")}</Typography>
-      </Box>
+      <PageHeader title="applications_page.title" />
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
@@ -86,7 +84,56 @@ const ApplicationsPage: React.FC = () => {
         </Box>
       </Paper>
 
-      <ApplicationsTable statusFilter={statusFilter || undefined} />
+      {/* Group-by toggle */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "flex-end",
+          mt: 1,
+          mb: 0.5,
+          px: 0.5,
+        }}
+      >
+        <Tooltip title={t("applications_page.group_toggle_tooltip")}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={groupByPosition}
+                onChange={(e) => setGroupByPosition(e.target.checked)}
+                size="small"
+                color="primary"
+                inputProps={{
+                  "aria-label": t("applications_page.group_toggle_aria"),
+                }}
+              />
+            }
+            label={
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.5,
+                  color: groupByPosition ? "primary.main" : "text.secondary",
+                }}
+              >
+                <ViewAgendaOutlinedIcon sx={{ fontSize: 16 }} />
+                <Typography variant="body2">
+                  {t("applications_page.group_by_position")}
+                </Typography>
+              </Box>
+            }
+            labelPlacement="start"
+            sx={{ mr: 0 }}
+          />
+        </Tooltip>
+      </Box>
+
+      {groupByPosition ? (
+        <ApplicationsGroupedList statusFilter={statusFilter || undefined} />
+      ) : (
+        <ApplicationsTable statusFilter={statusFilter || undefined} />
+      )}
     </Box>
   );
 };
