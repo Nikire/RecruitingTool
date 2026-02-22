@@ -24,7 +24,7 @@ const HiringProcessesPage: React.FC = () => {
   const { user, isLoading: userLoading } = useAuthMe();
   const [searchState, setSearchState] = useHiringProcessesSearch();
   const { page, limit, search, status } = searchState;
-  const [groupByPosition, setGroupByPosition] = useState(false);
+  const [groupByPosition, setGroupByPosition] = useState(true);
 
   const canManage = canManageResources(user);
 

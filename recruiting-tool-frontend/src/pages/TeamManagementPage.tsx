@@ -12,7 +12,6 @@ import {
   CardContent,
   Typography,
   Stack,
-  Container,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GroupIcon from "@mui/icons-material/Group";
@@ -49,7 +48,7 @@ interface TabPanelProps {
 const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
   return (
     <div role="tabpanel" hidden={value !== index}>
-      {value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
     </div>
   );
 };
@@ -174,7 +173,7 @@ const TeamManagementPage: React.FC = () => {
     invitations?.filter((inv) => inv.status === InvitationStatus.PENDING) || [];
 
   return (
-    <Container maxWidth="lg" sx={{ py: { xs: 2, sm: 3, md: 4 } }}>
+    <Box>
       <PageHeader
         title="team.page_title"
         action={
@@ -270,9 +269,21 @@ const TeamManagementPage: React.FC = () => {
         ) : !members || members.length === 0 ? (
           <Alert severity="info">{t("team.no_members")}</Alert>
         ) : (
-          <Grid container spacing={3}>
+          <Grid
+            container
+            spacing={3}
+            alignItems="stretch"
+            justifyContent="center"
+          >
             {members.map((member) => (
-              <Grid item xs={12} sm={6} md={4} key={member.uid}>
+              <Grid
+                item
+                xs={12}
+                sm={6}
+                md={4}
+                key={member.uid}
+                sx={{ display: "flex" }}
+              >
                 <TeamMemberCard
                   uid={member.uid}
                   name={member.name}
@@ -530,7 +541,7 @@ const TeamManagementPage: React.FC = () => {
           isPending={isUpdatingRole}
         />
       )}
-    </Container>
+    </Box>
   );
 };
 

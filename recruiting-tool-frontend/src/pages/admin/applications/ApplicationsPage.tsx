@@ -28,7 +28,7 @@ const ApplicationsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user, isLoading: userLoading } = useAuthMe();
   const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "">("");
-  const [groupByPosition, setGroupByPosition] = useState(false);
+  const [groupByPosition, setGroupByPosition] = useState(true);
 
   // Wait for user data to load before checking permissions (fixes race condition)
   if (userLoading) {
