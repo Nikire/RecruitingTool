@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from "react";
 import {
   Box,
-  Container,
   Typography,
   Grid,
   Card,
@@ -230,7 +229,7 @@ const SubscriptionPage: React.FC = () => {
 
   if (isErrorSubscription) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Alert severity="error" sx={{ mb: 3 }}>
           <Typography variant="h6" gutterBottom>
             {t("subscription.errors.load_failed")}
@@ -244,13 +243,13 @@ const SubscriptionPage: React.FC = () => {
         <Button variant="contained" onClick={() => window.location.reload()}>
           {t("common.refresh")}
         </Button>
-      </Container>
+      </Box>
     );
   }
 
   if (isLoadingSubscription) {
     return (
-      <Container maxWidth="xl" sx={{ py: 4 }}>
+      <Box sx={{ py: 4 }}>
         <Skeleton variant="rectangular" height={200} sx={{ mb: 3 }} />
         <Grid container spacing={3}>
           <Grid item xs={12} md={4}>
@@ -263,12 +262,12 @@ const SubscriptionPage: React.FC = () => {
             <Skeleton variant="rectangular" height={400} />
           </Grid>
         </Grid>
-      </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="xl" sx={{ py: { xs: 3, md: 4 } }}>
+    <Box sx={{ py: { xs: 3, md: 4 } }}>
       {/* Page Header */}
       <Box sx={{ mb: 4 }}>
         <Typography variant="h4" gutterBottom fontWeight="bold">
@@ -624,7 +623,7 @@ const SubscriptionPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

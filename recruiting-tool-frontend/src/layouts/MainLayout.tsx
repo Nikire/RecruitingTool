@@ -47,6 +47,7 @@ const MainLayout = () => {
     "/candidates",
     "/careers",
     "/onboarding",
+    "/profile/subscription",
   ];
   const isWidePage = widePages.includes(location.pathname);
   const maxWidth = isWidePage ? "xl" : "md";
