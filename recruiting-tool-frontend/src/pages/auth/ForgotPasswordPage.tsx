@@ -10,11 +10,7 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import {
-  AuthGroupWrapper,
-  AuthPageWrapper,
-  FormWrapper,
-} from "./Auth.styles";
+import { AuthGroupWrapper, AuthPageWrapper, FormWrapper } from "./Auth.styles";
 import { useForgotPassword } from "../../hooks/api/useAuth";
 
 interface ForgotPasswordFormData {
@@ -42,9 +38,7 @@ const ForgotPasswordPage: React.FC = () => {
   return (
     <AuthPageWrapper>
       <AuthGroupWrapper>
-        <Typography variant="h4">
-          {t("forgot_password.title")}
-        </Typography>
+        <Typography variant="h4">{t("forgot_password.title")}</Typography>
         <Divider />
 
         {submitted ? (

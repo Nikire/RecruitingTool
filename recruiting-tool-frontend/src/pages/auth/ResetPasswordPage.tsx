@@ -1,5 +1,9 @@
 import { useEffect } from "react";
-import { Link as RouterLink, useNavigate, useSearchParams } from "react-router-dom";
+import {
+  Link as RouterLink,
+  useNavigate,
+  useSearchParams,
+} from "react-router-dom";
 import {
   Typography,
   TextField,
@@ -10,11 +14,7 @@ import {
 } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import {
-  AuthGroupWrapper,
-  AuthPageWrapper,
-  FormWrapper,
-} from "./Auth.styles";
+import { AuthGroupWrapper, AuthPageWrapper, FormWrapper } from "./Auth.styles";
 import { useResetPassword } from "../../hooks/api/useAuth";
 
 interface ResetPasswordFormData {

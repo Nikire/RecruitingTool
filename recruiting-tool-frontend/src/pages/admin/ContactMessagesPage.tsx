@@ -176,7 +176,12 @@ const ContactMessagesPage = () => {
         sx={{ mb: 3 }}
       >
         <Box>
-          <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 0.5 }}>
+          <Stack
+            direction="row"
+            alignItems="center"
+            spacing={1.5}
+            sx={{ mb: 0.5 }}
+          >
             <EmailIcon color="primary" />
             <Typography
               variant="h5"

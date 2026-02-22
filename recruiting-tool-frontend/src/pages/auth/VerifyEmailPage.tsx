@@ -57,7 +57,14 @@ const VerifyEmailPage: React.FC = () => {
         <Divider />
 
         {isPending && (
-          <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 2,
+            }}
+          >
             <CircularProgress />
             <Typography variant="body2" color="text.secondary">
               {t("email_verification.verifying")}
@@ -68,9 +75,7 @@ const VerifyEmailPage: React.FC = () => {
         {isSuccess && (
           <>
             <Box sx={{ display: "flex", justifyContent: "center" }}>
-              <MarkEmailReadIcon
-                sx={{ fontSize: 64, color: "success.main" }}
-              />
+              <MarkEmailReadIcon sx={{ fontSize: 64, color: "success.main" }} />
             </Box>
             <Alert severity="success">
               {t("email_verification.success_message")}

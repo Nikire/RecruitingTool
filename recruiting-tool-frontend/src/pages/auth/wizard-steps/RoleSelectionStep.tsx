@@ -88,7 +88,9 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                   boxShadow: 8,
                   transform: "translateY(-6px)",
                   borderColor:
-                    selectedRole === role.value ? "primary.main" : "primary.light",
+                    selectedRole === role.value
+                      ? "primary.main"
+                      : "primary.light",
                 },
                 ...(selectedRole === role.value && {
                   bgcolor: "primary.50",

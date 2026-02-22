@@ -145,10 +145,7 @@ const TeamManagementPage: React.FC = () => {
     }
   };
 
-  const handleConfirmChangeRole = (
-    memberUid: string,
-    roles: UserRoles[],
-  ) => {
+  const handleConfirmChangeRole = (memberUid: string, roles: UserRoles[]) => {
     updateUserRole(
       { userUid: memberUid, data: { roles } },
       {

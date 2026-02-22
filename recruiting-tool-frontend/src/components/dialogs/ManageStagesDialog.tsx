@@ -410,7 +410,10 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
                             </Box>
 
                             {stage.description && (
-                              <Typography variant="body2" color="text.secondary">
+                              <Typography
+                                variant="body2"
+                                color="text.secondary"
+                              >
                                 {stage.description}
                               </Typography>
                             )}
@@ -446,16 +449,21 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
 
               {/* Save reorder button */}
               {hasPendingPositions && (
-                <Box sx={{ mt: 1, mb: 2, display: "flex", justifyContent: "flex-end" }}>
+                <Box
+                  sx={{
+                    mt: 1,
+                    mb: 2,
+                    display: "flex",
+                    justifyContent: "flex-end",
+                  }}
+                >
                   <Button
                     variant="outlined"
                     size="small"
                     onClick={handleSavePositions}
                     disabled={isUpdating}
                     startIcon={
-                      isUpdating ? (
-                        <CircularProgress size={14} />
-                      ) : undefined
+                      isUpdating ? <CircularProgress size={14} /> : undefined
                     }
                   >
                     {isUpdating
@@ -528,7 +536,11 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
           )}
 
           {newStages.length === 0 && (
-            <Button variant="contained" onClick={handleClose} disabled={isSaving}>
+            <Button
+              variant="contained"
+              onClick={handleClose}
+              disabled={isSaving}
+            >
               {t("manage_stages.done")}
             </Button>
           )}

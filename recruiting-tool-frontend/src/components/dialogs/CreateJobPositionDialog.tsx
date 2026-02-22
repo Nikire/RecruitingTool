@@ -249,8 +249,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
     setter: React.Dispatch<React.SetStateAction<string[]>>,
     list: string[],
   ) => {
-    return (index: number) =>
-      setter(list.filter((_, i) => i !== index));
+    return (index: number) => setter(list.filter((_, i) => i !== index));
   };
 
   const onSubmit = (data: JobPositionFormData) => {
@@ -271,8 +270,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
         position: stage.position,
         estimatedTime: stage.estimatedTime,
       })),
-      customQuestions:
-        customQuestions.length > 0 ? customQuestions : undefined,
+      customQuestions: customQuestions.length > 0 ? customQuestions : undefined,
     };
 
     if (data.description) jobPositionData.description = data.description;
@@ -452,9 +450,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
                         </InputLabel>
                         <Select
                           {...field}
-                          label={t(
-                            "create_job_position.education_level_label",
-                          )}
+                          label={t("create_job_position.education_level_label")}
                         >
                           <MenuItem value="">
                             <em>{t("create_job_position.select_none")}</em>
@@ -619,9 +615,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
                         </InputLabel>
                         <Select
                           {...field}
-                          label={t(
-                            "create_job_position.salary_currency_label",
-                          )}
+                          label={t("create_job_position.salary_currency_label")}
                         >
                           {SALARY_CURRENCIES.map((curr) => (
                             <MenuItem key={curr} value={curr}>
@@ -788,9 +782,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
               type="date"
               InputLabelProps={{ shrink: true }}
               {...register("applicationDeadline")}
-              helperText={t(
-                "create_job_position.application_deadline_hint",
-              )}
+              helperText={t("create_job_position.application_deadline_hint")}
             />
           </Box>
 

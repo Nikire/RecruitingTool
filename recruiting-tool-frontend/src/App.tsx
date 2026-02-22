@@ -162,7 +162,15 @@ function App() {
                 path="/hr/hiring-processes"
                 element={<HiringProcessesPage />}
               />
-              <Route path="/hr/analytics" element={<ComingSoonPage titleKey="analytics.coming_soon_title" messageKey="analytics.coming_soon_message" />} />
+              <Route
+                path="/hr/analytics"
+                element={
+                  <ComingSoonPage
+                    titleKey="analytics.coming_soon_title"
+                    messageKey="analytics.coming_soon_message"
+                  />
+                }
+              />
               <Route
                 path="/hr/email-templates"
                 element={<EmailTemplatesPage />}

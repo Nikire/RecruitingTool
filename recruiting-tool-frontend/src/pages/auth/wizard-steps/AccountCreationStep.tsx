@@ -63,11 +63,7 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({
 
   return (
     <Box>
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ mb: 1, fontWeight: 700 }}
-      >
+      <Typography variant="h4" gutterBottom sx={{ mb: 1, fontWeight: 700 }}>
         {t("registration_wizard.account_creation.title")}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -162,7 +158,9 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({
           }}
           render={({ field }) => (
             <FormControlLabel
-              control={<Checkbox {...field} checked={field.value} size="medium" />}
+              control={
+                <Checkbox {...field} checked={field.value} size="medium" />
+              }
               label={
                 <Typography variant="body2">
                   {t("registration_wizard.account_creation.accept_terms")}{" "}

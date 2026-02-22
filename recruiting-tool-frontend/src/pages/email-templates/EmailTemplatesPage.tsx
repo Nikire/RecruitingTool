@@ -19,10 +19,7 @@ import EmailTemplateDialog from "../../components/dialogs/EmailTemplateDialog";
 import EmailTemplatePreviewDialog from "../../components/dialogs/EmailTemplatePreviewDialog";
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import { canManageResources } from "../../utils/permissions";
-import {
-  AccessDeniedMessage,
-  PageHeader,
-} from "../../components/common";
+import { AccessDeniedMessage, PageHeader } from "../../components/common";
 import {
   EmailTemplate,
   EmailTemplateType,

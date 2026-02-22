@@ -111,7 +111,11 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
         <Typography variant="h3" gutterBottom sx={{ fontWeight: 700 }}>
           {t("registration_wizard.confirmation.success_title")}
         </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 4, maxWidth: 400, mx: "auto" }}>
+        <Typography
+          variant="body1"
+          color="text.secondary"
+          sx={{ mb: 4, maxWidth: 400, mx: "auto" }}
+        >
           {t("registration_wizard.confirmation.success_message")}
         </Typography>
         {isAuthenticated ? (
@@ -139,11 +143,7 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   return (
     <Box>
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ mb: 1, fontWeight: 700 }}
-      >
+      <Typography variant="h4" gutterBottom sx={{ mb: 1, fontWeight: 700 }}>
         {t("registration_wizard.confirmation.title")}
       </Typography>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 4 }}>
@@ -155,11 +155,25 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
         sx={{ borderRadius: 2, mb: 3, overflow: "hidden" }}
       >
         <Stack divider={<Divider />}>
-          <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              display: "flex",
+              gap: 2,
+              alignItems: "baseline",
+            }}
+          >
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+              sx={{
+                fontWeight: 600,
+                minWidth: 140,
+                textTransform: "uppercase",
+                fontSize: "0.75rem",
+                letterSpacing: 0.5,
+              }}
             >
               {t("registration_wizard.confirmation.role_label")}
             </Typography>
@@ -168,11 +182,25 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             </Typography>
           </Box>
 
-          <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              display: "flex",
+              gap: 2,
+              alignItems: "baseline",
+            }}
+          >
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+              sx={{
+                fontWeight: 600,
+                minWidth: 140,
+                textTransform: "uppercase",
+                fontSize: "0.75rem",
+                letterSpacing: 0.5,
+              }}
             >
               {t("registration_wizard.confirmation.name_label")}
             </Typography>
@@ -181,11 +209,25 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             </Typography>
           </Box>
 
-          <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+          <Box
+            sx={{
+              px: 3,
+              py: 2.5,
+              display: "flex",
+              gap: 2,
+              alignItems: "baseline",
+            }}
+          >
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+              sx={{
+                fontWeight: 600,
+                minWidth: 140,
+                textTransform: "uppercase",
+                fontSize: "0.75rem",
+                letterSpacing: 0.5,
+              }}
             >
               {t("registration_wizard.confirmation.email_label")}
             </Typography>
@@ -195,11 +237,25 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
           </Box>
 
           {formData.selectedRole === "HR" && formData.jobTitle && (
-            <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
+            <Box
+              sx={{
+                px: 3,
+                py: 2.5,
+                display: "flex",
+                gap: 2,
+                alignItems: "baseline",
+              }}
+            >
               <Typography
                 variant="body2"
                 color="text.secondary"
-                sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+                sx={{
+                  fontWeight: 600,
+                  minWidth: 140,
+                  textTransform: "uppercase",
+                  fontSize: "0.75rem",
+                  letterSpacing: 0.5,
+                }}
               >
                 {t("registration_wizard.confirmation.job_title_label")}
               </Typography>
@@ -209,20 +265,35 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
             </Box>
           )}
 
-          {formData.selectedRole === "COMPANY_OWNER" && formData.companyName && (
-            <Box sx={{ px: 3, py: 2.5, display: "flex", gap: 2, alignItems: "baseline" }}>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ fontWeight: 600, minWidth: 140, textTransform: "uppercase", fontSize: "0.75rem", letterSpacing: 0.5 }}
+          {formData.selectedRole === "COMPANY_OWNER" &&
+            formData.companyName && (
+              <Box
+                sx={{
+                  px: 3,
+                  py: 2.5,
+                  display: "flex",
+                  gap: 2,
+                  alignItems: "baseline",
+                }}
               >
-                {t("registration_wizard.confirmation.company_name_label")}
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {formData.companyName}
-              </Typography>
-            </Box>
-          )}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    fontWeight: 600,
+                    minWidth: 140,
+                    textTransform: "uppercase",
+                    fontSize: "0.75rem",
+                    letterSpacing: 0.5,
+                  }}
+                >
+                  {t("registration_wizard.confirmation.company_name_label")}
+                </Typography>
+                <Typography variant="body1" sx={{ fontWeight: 500 }}>
+                  {formData.companyName}
+                </Typography>
+              </Box>
+            )}
         </Stack>
       </Paper>
 

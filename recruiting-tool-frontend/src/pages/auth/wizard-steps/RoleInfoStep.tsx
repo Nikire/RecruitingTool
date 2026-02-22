@@ -68,11 +68,7 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
         <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
           {t("registration_wizard.role_info.resume_upload")}
         </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{ mb: 2 }}
-        >
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {t("registration_wizard.role_info.resume_helper")}
         </Typography>
         <Button variant="outlined" component="label" size="medium">
@@ -125,11 +121,7 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
 
   return (
     <Box>
-      <Typography
-        variant="h4"
-        gutterBottom
-        sx={{ mb: 1, fontWeight: 700 }}
-      >
+      <Typography variant="h4" gutterBottom sx={{ mb: 1, fontWeight: 700 }}>
         {t("registration_wizard.role_info.title")}
       </Typography>
 

@@ -140,7 +140,12 @@ const ProcessRow: React.FC<{
     >
       {/* Title */}
       <Box sx={{ flex: "1 1 180px", minWidth: 0 }}>
-        <Typography variant="body2" fontWeight={500} noWrap title={process.title}>
+        <Typography
+          variant="body2"
+          fontWeight={500}
+          noWrap
+          title={process.title}
+        >
           {process.title}
         </Typography>
       </Box>
@@ -267,9 +272,12 @@ const GroupSection: React.FC<{
   );
 };
 
-const HiringProcessesGroupedList: React.FC<
-  HiringProcessesGroupedListProps
-> = ({ page, limit, search, status }) => {
+const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
+  page,
+  limit,
+  search,
+  status,
+}) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useUserAtom();
@@ -299,8 +307,7 @@ const HiringProcessesGroupedList: React.FC<
     for (const process of processes) {
       const key = process.jobPosition?.uid ?? "__no_position__";
       const title =
-        process.jobPosition?.title ??
-        t("hiring_processes.group.no_position");
+        process.jobPosition?.title ?? t("hiring_processes.group.no_position");
 
       if (!groupMap.has(key)) {
         groupMap.set(key, {
@@ -329,7 +336,15 @@ const HiringProcessesGroupedList: React.FC<
       <Box sx={{ mt: 2 }}>
         {[1, 2, 3].map((i) => (
           <Paper key={i} variant="outlined" sx={{ mb: 2, borderRadius: 2 }}>
-            <Box sx={{ px: 2, py: 1.5, display: "flex", alignItems: "center", gap: 1 }}>
+            <Box
+              sx={{
+                px: 2,
+                py: 1.5,
+                display: "flex",
+                alignItems: "center",
+                gap: 1,
+              }}
+            >
               <Skeleton variant="circular" width={20} height={20} />
               <Skeleton variant="text" width={200} height={28} />
               <Box sx={{ flexGrow: 1 }} />

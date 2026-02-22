@@ -29,8 +29,6 @@ export function getContactMessages(
 /**
  * Mark a contact message as read (admin only)
  */
-export function markContactMessageAsRead(
-  uid: string,
-): Promise<ContactMessage> {
+export function markContactMessageAsRead(uid: string): Promise<ContactMessage> {
   return api.patch(`/contact/messages/${uid}/read`).then((res) => res.data);
 }

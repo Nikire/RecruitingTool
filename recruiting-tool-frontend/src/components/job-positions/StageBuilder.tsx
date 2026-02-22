@@ -469,9 +469,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
       >
         <DialogTitle>{t("stage_builder.switch_template_title")}</DialogTitle>
         <DialogContent>
-          <Typography>
-            {t("stage_builder.switch_template_message")}
-          </Typography>
+          <Typography>{t("stage_builder.switch_template_message")}</Typography>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCancelTemplateSwitch}>

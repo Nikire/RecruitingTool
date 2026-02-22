@@ -119,7 +119,10 @@ const FilterSidebar: React.FC<FilterSidebarProps> = memo(
             clearOnEscape
             size="small"
             renderOption={(props, option) => {
-              const { key, ...restProps } = props as React.HTMLAttributes<HTMLLIElement> & { key: React.Key };
+              const { key, ...restProps } =
+                props as React.HTMLAttributes<HTMLLIElement> & {
+                  key: React.Key;
+                };
               return (
                 <Box
                   component="li"
