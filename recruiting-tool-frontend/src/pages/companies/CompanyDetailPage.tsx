@@ -38,7 +38,12 @@ import WorkIcon from "@mui/icons-material/Work";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import SwapHorizIcon from "@mui/icons-material/SwapHoriz";
-import { useCompany, useCompanyUsers, useForceJoinUser, useTransferOwnership } from "../../hooks/api/useCompanies";
+import {
+  useCompany,
+  useCompanyUsers,
+  useForceJoinUser,
+  useTransferOwnership,
+} from "../../hooks/api/useCompanies";
 import { CenteredLoadingSpinner, RoleBadge } from "../../components/common";
 import { CompanyUser } from "../../types/company.types";
 import { UserRoles } from "../../types/user.types";
@@ -71,7 +76,9 @@ const TransferOwnershipDialog: React.FC<TransferOwnershipDialogProps> = ({
   const { mutate: transfer, isPending } = useTransferOwnership(companyUid);
 
   const currentOwner = users.find((u) => u.roles.includes("COMPANY_OWNER"));
-  const eligibleMembers = users.filter((u) => !u.roles.includes("COMPANY_OWNER"));
+  const eligibleMembers = users.filter(
+    (u) => !u.roles.includes("COMPANY_OWNER"),
+  );
 
   const handleConfirm = () => {
     if (!selectedUserUid) return;
@@ -102,7 +109,11 @@ const TransferOwnershipDialog: React.FC<TransferOwnershipDialogProps> = ({
 
           {currentOwner && (
             <Box>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mb: 0.5 }}
+              >
                 {t("company_detail.current_owner")}
               </Typography>
               <Typography variant="body1" sx={{ fontWeight: 600 }}>
@@ -279,7 +290,10 @@ const CompanyInfoCard: React.FC<CompanyInfoCardProps> = ({
             <Stack direction="row" alignItems="center" spacing={1}>
               <PeopleIcon fontSize="small" color="action" />
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 700, lineHeight: 1 }}
+                >
                   {userCount ?? 0}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
@@ -292,7 +306,10 @@ const CompanyInfoCard: React.FC<CompanyInfoCardProps> = ({
             <Stack direction="row" alignItems="center" spacing={1}>
               <WorkIcon fontSize="small" color="action" />
               <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1 }}>
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 700, lineHeight: 1 }}
+                >
                   {jobPositionCount ?? 0}
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
@@ -321,7 +338,10 @@ const CompanyDetailPage: React.FC = () => {
   const [forceJoinDialogOpen, setForceJoinDialogOpen] = useState(false);
 
   const { data: company, isLoading: companyLoading } = useCompany(uid ?? "");
-  const { data: usersData, isLoading: usersLoading } = useCompanyUsers(uid ?? "", { page, limit });
+  const { data: usersData, isLoading: usersLoading } = useCompanyUsers(
+    uid ?? "",
+    { page, limit },
+  );
 
   const users = usersData?.data ?? [];
 
@@ -367,7 +387,10 @@ const CompanyDetailPage: React.FC = () => {
         >
           <ArrowBackIcon />
         </IconButton>
-        <Typography variant="h4" sx={{ fontWeight: 700, fontSize: { xs: "1.5rem", sm: "2.125rem" } }}>
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 700, fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+        >
           {company.name}
         </Typography>
       </Stack>
@@ -441,7 +464,11 @@ const CompanyDetailPage: React.FC = () => {
                     <TableRow key={user.uid} hover>
                       {/* Name + Avatar */}
                       <TableCell>
-                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                        <Stack
+                          direction="row"
+                          alignItems="center"
+                          spacing={1.5}
+                        >
                           <Avatar
                             sx={{
                               width: 32,
@@ -453,11 +480,17 @@ const CompanyDetailPage: React.FC = () => {
                             {getInitials(user.name)}
                           </Avatar>
                           <Box>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                            <Typography
+                              variant="body2"
+                              sx={{ fontWeight: 600 }}
+                            >
                               {user.name}
                             </Typography>
                             {user.position && (
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 {user.position}
                               </Typography>
                             )}
@@ -505,12 +538,18 @@ const CompanyDetailPage: React.FC = () => {
                       {/* Actions */}
                       <TableCell align="center">
                         {!isOwner && (
-                          <Tooltip title={t("company_detail.transfer_to_user", { name: user.name })}>
+                          <Tooltip
+                            title={t("company_detail.transfer_to_user", {
+                              name: user.name,
+                            })}
+                          >
                             <IconButton
                               size="small"
                               color="warning"
                               onClick={() => setTransferDialogOpen(true)}
-                              aria-label={t("company_detail.transfer_to_user", { name: user.name })}
+                              aria-label={t("company_detail.transfer_to_user", {
+                                name: user.name,
+                              })}
                             >
                               <EmojiEventsIcon fontSize="small" />
                             </IconButton>

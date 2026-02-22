@@ -1,13 +1,5 @@
 import { Injectable, HttpException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
-import {
-  CreateCompanyDto,
-  UpdateCompanyDto,
-  CompanyResponseDto,
-  PublicCompanyResponseDto,
-  CompanyUserResponseDto,
-  TransferOwnershipDto,
-  ForceJoinDto,
-} from './dto/company.dto';
+import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto } from './dto/company.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CompanyMapper, includeCompany } from './entities/company.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -221,10 +213,7 @@ export class CompanyService {
         companyId: company.id,
         ...(search
           ? {
-              OR: [
-                { name: { contains: search, mode: 'insensitive' as const } },
-                { email: { contains: search, mode: 'insensitive' as const } },
-              ],
+              OR: [{ name: { contains: search, mode: 'insensitive' as const } }, { email: { contains: search, mode: 'insensitive' as const } }],
             }
           : {}),
       };
@@ -280,10 +269,7 @@ export class CompanyService {
     }
   }
 
-  async transferOwnership(
-    uid: string,
-    dto: TransferOwnershipDto,
-  ): Promise<{ message: string; previousOwner: CompanyUserResponseDto; newOwner: CompanyUserResponseDto }> {
+  async transferOwnership(uid: string, dto: TransferOwnershipDto): Promise<{ message: string; previousOwner: CompanyUserResponseDto; newOwner: CompanyUserResponseDto }> {
     try {
       const company = await this.databaseService.company.findUnique({
         where: { uid },
@@ -397,10 +383,7 @@ export class CompanyService {
     }
   }
 
-  async forceJoinUser(
-    uid: string,
-    dto: ForceJoinDto,
-  ): Promise<{ message: string; user: CompanyUserResponseDto }> {
+  async forceJoinUser(uid: string, dto: ForceJoinDto): Promise<{ message: string; user: CompanyUserResponseDto }> {
     try {
       const company = await this.databaseService.company.findUnique({
         where: { uid },
@@ -424,9 +407,7 @@ export class CompanyService {
 
       // Add role if not already present
       const existingRoles = user.roles as string[];
-      const updatedRoles = existingRoles.includes(roleToAssign)
-        ? existingRoles
-        : [...existingRoles, roleToAssign];
+      const updatedRoles = existingRoles.includes(roleToAssign) ? existingRoles : [...existingRoles, roleToAssign];
 
       // Update user: set companyId and add role
       const updatedUser = await this.databaseService.user.update({

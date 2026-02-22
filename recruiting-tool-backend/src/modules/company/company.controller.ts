@@ -1,22 +1,14 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors, UploadedFile, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CompanyService } from './company.service';
-import {
-  CreateCompanyDto,
-  UpdateCompanyDto,
-  CompanyResponseDto,
-  PublicCompanyResponseDto,
-  CompanyUserResponseDto,
-  TransferOwnershipDto,
-  ForceJoinDto,
-} from './dto/company.dto';
+import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto } from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { FileValidationPipe } from '../storage/pipes/file-validation.pipe';
-import { Request } from 'express';
 
 @ApiTags('company')
 @Controller('company')
@@ -92,10 +84,7 @@ export class CompanyController {
   @Auth(['SUPER_ADMIN'])
   @ApiOperation({ summary: 'Get paginated list of users for a company (SUPER_ADMIN only)' })
   @ApiResponse({ status: 200, description: 'Returns paginated list of company users', type: [CompanyUserResponseDto] })
-  getCompanyUsers(
-    @Param('uid') uid: string,
-    @Query() paginationDto: PaginationDto,
-  ): Promise<PaginatedResponse<CompanyUserResponseDto>> {
+  getCompanyUsers(@Param('uid') uid: string, @Query() paginationDto: PaginationDto): Promise<PaginatedResponse<CompanyUserResponseDto>> {
     return this.companyService.getCompanyUsers(uid, paginationDto);
   }
 
@@ -114,10 +103,7 @@ export class CompanyController {
   @Auth(['SUPER_ADMIN'])
   @ApiOperation({ summary: 'Force a user to join a company (SUPER_ADMIN only)' })
   @ApiResponse({ status: 200, description: 'User successfully joined the company' })
-  forceJoinUser(
-    @Param('uid') uid: string,
-    @Body() dto: ForceJoinDto,
-  ): Promise<{ message: string; user: CompanyUserResponseDto }> {
+  forceJoinUser(@Param('uid') uid: string, @Body() dto: ForceJoinDto): Promise<{ message: string; user: CompanyUserResponseDto }> {
     return this.companyService.forceJoinUser(uid, dto);
   }
 
@@ -142,9 +128,9 @@ export class CompanyController {
     @Param('uid') uid: string,
     @UploadedFile(new FileValidationPipe('image'))
     file: Express.Multer.File,
-    @Req() req: Request,
+    @CurrentUser() currentUser: any,
   ): Promise<CompanyResponseDto> {
-    const userUid = (req.user as any)?.uid;
+    const userUid = currentUser?.uid;
     return this.companyService.uploadLogo(uid, file, userUid);
   }
 }

@@ -88,7 +88,10 @@ export const useDeleteCompany = () => {
   });
 };
 
-export const useCompanyUsers = (companyUid: string, params: PaginationParams) => {
+export const useCompanyUsers = (
+  companyUid: string,
+  params: PaginationParams,
+) => {
   return useQuery({
     queryKey: [COMPANIES_KEY, companyUid, "users", params],
     queryFn: () => companiesApi.getCompanyUsers(companyUid, params),

@@ -227,7 +227,10 @@ function App() {
             <Route element={<AdminLayout />}>
               <Route path="/admin" element={<AdminDashboard />} />
               <Route path="/admin/companies" element={<CompaniesPage />} />
-              <Route path="/admin/companies/:uid" element={<CompanyDetailPage />} />
+              <Route
+                path="/admin/companies/:uid"
+                element={<CompanyDetailPage />}
+              />
               <Route path="/admin/users" element={<UserManagementPage />} />
               <Route
                 path="/admin/subscriptions"
