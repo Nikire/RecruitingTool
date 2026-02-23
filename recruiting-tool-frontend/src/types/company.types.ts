@@ -7,6 +7,38 @@ export interface Company {
   jobPositionCount?: number;
 }
 
+export interface CompanyProfile {
+  uid: string;
+  name: string;
+  description?: string;
+  logoUrl?: string;
+  website?: string;
+  industry?: string;
+  companySize?: string;
+  foundedYear?: number;
+  location?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  instagramUrl?: string;
+  careersEnabled: boolean;
+  careersHeadline?: string;
+}
+
+export interface UpdateCompanyProfileDto {
+  name?: string;
+  description?: string;
+  website?: string;
+  industry?: string;
+  companySize?: string;
+  foundedYear?: number;
+  location?: string;
+  linkedinUrl?: string;
+  twitterUrl?: string;
+  instagramUrl?: string;
+  careersEnabled?: boolean;
+  careersHeadline?: string;
+}
+
 export interface CreateCompanyDto {
   name: string;
   description?: string;

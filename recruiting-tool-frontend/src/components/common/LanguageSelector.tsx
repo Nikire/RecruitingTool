@@ -8,6 +8,7 @@ import {
   Tooltip,
   Box,
 } from "@mui/material";
+import TranslateIcon from "@mui/icons-material/Translate";
 import { useTranslation } from "react-i18next";
 
 /**
@@ -120,15 +121,7 @@ const LanguageSelector: React.FC = () => {
           aria-expanded={open ? "true" : undefined}
           sx={{ ml: 1 }}
         >
-          <Box
-            component="span"
-            className={currentLanguage.flagClass}
-            sx={{
-              width: "1.5em",
-              height: "1.5em",
-              display: "inline-block",
-            }}
-          />
+          <TranslateIcon />
         </IconButton>
       </Tooltip>
 

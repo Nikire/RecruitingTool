@@ -31,6 +31,25 @@ export function CompanyMapper(company: Company | CompanyWithRelations) {
   return result;
 }
 
+export function CompanyProfileMapper(company: Company) {
+  return {
+    uid: company.uid,
+    name: company.name,
+    description: company.description ?? undefined,
+    logoUrl: company.logoUrl ?? undefined,
+    website: company.website ?? undefined,
+    industry: company.industry ?? undefined,
+    companySize: company.companySize ?? undefined,
+    foundedYear: company.foundedYear ?? undefined,
+    location: company.location ?? undefined,
+    linkedinUrl: company.linkedinUrl ?? undefined,
+    twitterUrl: company.twitterUrl ?? undefined,
+    instagramUrl: company.instagramUrl ?? undefined,
+    careersEnabled: company.careersEnabled,
+    careersHeadline: company.careersHeadline ?? undefined,
+  };
+}
+
 export function PublicCompanyMapper(company: Company) {
   return {
     uid: company.uid,

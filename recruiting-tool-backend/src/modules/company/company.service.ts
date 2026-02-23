@@ -1,7 +1,7 @@
 import { Injectable, HttpException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto } from './dto/company.dto';
+import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto, UpdateCompanyProfileDto, CompanyProfileResponseDto } from './dto/company.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { CompanyMapper, includeCompany } from './entities/company.entity';
+import { CompanyMapper, CompanyProfileMapper, includeCompany } from './entities/company.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
@@ -452,6 +452,87 @@ export class CompanyService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to force join user: ${error.message}`);
+    }
+  }
+
+  async getMyCompanyProfile(userCompanyId: number): Promise<CompanyProfileResponseDto> {
+    try {
+      const company = await this.databaseService.company.findUnique({
+        where: { id: userCompanyId },
+      });
+
+      if (!company) {
+        throw new EntityNotFoundException('Company', String(userCompanyId));
+      }
+
+      return CompanyProfileMapper(company);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get company profile: ${error.message}`);
+    }
+  }
+
+  async updateMyCompanyProfile(userCompanyId: number, dto: UpdateCompanyProfileDto): Promise<CompanyProfileResponseDto> {
+    try {
+      const company = await this.databaseService.company.update({
+        where: { id: userCompanyId },
+        data: {
+          ...(dto.name !== undefined && { name: dto.name }),
+          ...(dto.description !== undefined && { description: dto.description }),
+          ...(dto.website !== undefined && { website: dto.website }),
+          ...(dto.industry !== undefined && { industry: dto.industry }),
+          ...(dto.companySize !== undefined && { companySize: dto.companySize }),
+          ...(dto.foundedYear !== undefined && { foundedYear: dto.foundedYear }),
+          ...(dto.location !== undefined && { location: dto.location }),
+          ...(dto.linkedinUrl !== undefined && { linkedinUrl: dto.linkedinUrl }),
+          ...(dto.twitterUrl !== undefined && { twitterUrl: dto.twitterUrl }),
+          ...(dto.instagramUrl !== undefined && { instagramUrl: dto.instagramUrl }),
+          ...(dto.careersEnabled !== undefined && { careersEnabled: dto.careersEnabled }),
+          ...(dto.careersHeadline !== undefined && { careersHeadline: dto.careersHeadline }),
+        },
+      });
+
+      // Invalidate company caches
+      await this.cacheService.invalidate(`company:${company.uid}`);
+      await this.cacheService.invalidate('company');
+
+      return CompanyProfileMapper(company);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to update company profile: ${error.message}`);
+    }
+  }
+
+  async uploadLogoForMyCompany(userCompanyId: number, file: Express.Multer.File, userUid: string): Promise<CompanyProfileResponseDto> {
+    try {
+      const company = await this.databaseService.company.findUnique({
+        where: { id: userCompanyId },
+      });
+
+      if (!company) {
+        throw new EntityNotFoundException('Company', String(userCompanyId));
+      }
+
+      const uploadedFile = await this.filesService.uploadFile(file, userUid);
+
+      const updatedCompany = await this.databaseService.company.update({
+        where: { id: userCompanyId },
+        data: { logoUrl: uploadedFile.downloadUrl },
+      });
+
+      await this.cacheService.invalidate(`company:${company.uid}`);
+      await this.cacheService.invalidate('company');
+
+      return CompanyProfileMapper(updatedCompany);
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to upload logo: ${error.message}`);
     }
   }
 

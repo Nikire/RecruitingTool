@@ -284,8 +284,12 @@ const ProfilePage: React.FC = () => {
               <Box sx={{ mb: 2 }}>
                 <Chip
                   icon={<VerifiedUserIcon />}
-                  label={t("profile_page.account_active")}
-                  color="success"
+                  label={
+                    user.emailVerified
+                      ? t("profile_page.email_verified")
+                      : t("profile_page.email_not_verified")
+                  }
+                  color={user.emailVerified ? "success" : "warning"}
                   size="medium"
                   sx={{ fontWeight: 600 }}
                 />

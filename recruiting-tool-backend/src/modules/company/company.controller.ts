@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Put, Param, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto } from './dto/company.dto';
+import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto, UpdateCompanyProfileDto, CompanyProfileResponseDto } from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -26,6 +26,47 @@ export class CompanyController {
   })
   findAllPublicWithJobs(): Promise<Array<PublicCompanyResponseDto>> {
     return this.companyService.findAllPublicWithJobs();
+  }
+
+  @Get('profile')
+  @Auth(['COMPANY_OWNER', 'COMPANY_ADMIN', 'HR', 'HR_MANAGER', 'RECRUITER', 'ADMIN', 'SUPER_ADMIN'])
+  @ApiOperation({ summary: 'Get current company profile (authenticated users of that company)' })
+  @ApiResponse({ status: 200, description: 'Company profile retrieved successfully', type: CompanyProfileResponseDto })
+  getMyProfile(@CurrentUser() currentUser: any): Promise<CompanyProfileResponseDto> {
+    return this.companyService.getMyCompanyProfile(currentUser.companyId);
+  }
+
+  @Patch('profile')
+  @Auth(['COMPANY_OWNER', 'COMPANY_ADMIN'])
+  @ApiOperation({ summary: 'Update current company profile (COMPANY_OWNER, COMPANY_ADMIN only)' })
+  @ApiResponse({ status: 200, description: 'Company profile updated successfully', type: CompanyProfileResponseDto })
+  updateMyProfile(@Body() dto: UpdateCompanyProfileDto, @CurrentUser() currentUser: any): Promise<CompanyProfileResponseDto> {
+    return this.companyService.updateMyCompanyProfile(currentUser.companyId, dto);
+  }
+
+  @Post('profile/logo')
+  @Auth(['COMPANY_OWNER', 'COMPANY_ADMIN'])
+  @UseInterceptors(FileInterceptor('logo'))
+  @ApiConsumes('multipart/form-data')
+  @ApiOperation({ summary: 'Upload company logo (COMPANY_OWNER, COMPANY_ADMIN only)' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        logo: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 200, description: 'Logo uploaded successfully', type: CompanyProfileResponseDto })
+  async uploadMyLogo(
+    @UploadedFile(new FileValidationPipe('image'))
+    file: Express.Multer.File,
+    @CurrentUser() currentUser: any,
+  ): Promise<CompanyProfileResponseDto> {
+    return this.companyService.uploadLogoForMyCompany(currentUser.companyId, file, currentUser.uid);
   }
 
   @Post()

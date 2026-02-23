@@ -199,6 +199,19 @@ const Navbar: React.FC = () => {
                   {t("navbar.careers")}
                 </Button>
 
+                {/* Contact (for unauthenticated users) */}
+                {!isAuthenticated && (
+                  <Button
+                    color="inherit"
+                    component={NavLink}
+                    to="/contact"
+                    sx={linkSx}
+                    aria-label={t("navbar.contact")}
+                  >
+                    {t("navbar.contact")}
+                  </Button>
+                )}
+
                 {/* HR Panel (for HR users) */}
                 {isAuthenticated && canManageResources(logedUser) && (
                   <Button
@@ -304,7 +317,7 @@ const Navbar: React.FC = () => {
                       <ListItemText>{t("navbar.profile")}</ListItemText>
                     </MenuItem>
                     <MenuItem
-                      onClick={() => handleUserMenuNavigation("/profile")}
+                      onClick={() => handleUserMenuNavigation("/profile/subscription")}
                     >
                       <ListItemIcon>
                         <SubscriptionIcon fontSize="small" />

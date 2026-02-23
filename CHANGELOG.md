@@ -7,6 +7,64 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 0.10.0 - 2026-02-23
+
+### 🚀 Features
+
+#### Navless Auth Layout (#291)
+- **Created `AuthLayout.tsx` for scroll-free, navbar-free authentication pages**
+  - Minimal top bar with logo, 100vh layout with no overflow issues
+  - Automatically redirects already-authenticated users away from auth pages
+  - Routes `/login`, `/register`, `/logout`, `/forgot-password`, `/reset-password`, `/verify-email` now use `AuthLayout`
+  - Removed `/login` and `/register` from `MainLayout` publicRoutes
+  - Updated `Auth.styles.tsx` min-height to match new layout
+  - Files: `recruiting-tool-frontend/src/layouts/AuthLayout.tsx`, `recruiting-tool-frontend/src/App.tsx`, `recruiting-tool-frontend/src/layouts/MainLayout.tsx`, `recruiting-tool-frontend/src/pages/auth/Auth.styles.tsx`
+
+#### Company Profile Page (#292)
+- **Full-stack Company Profile settings page for HR admins in the HR panel**
+  - 10 new Prisma fields on `Company` model: `logoUrl`, `website`, `industry`, `size`, `founded`, `description`, `linkedinUrl`, `twitterUrl`, `githubUrl`, `careersPageEnabled`
+  - New migration: `20260222000003_add_company_profile_fields`
+  - 3 new backend endpoints: `GET /api/company/profile`, `PATCH /api/company/profile`, `POST /api/company/profile/logo`
+  - New `CompanyProfilePage.tsx` at `/hr/settings/company` with sections: logo upload, basic info, social links, and careers settings
+  - Added "Company Profile" link to HRLayout sidebar
+  - New API hooks in `useCompanies.ts`, types in `company.types.ts`, API functions in `companies.ts`
+  - Files: `recruiting-tool-backend/prisma/schema.prisma`, `recruiting-tool-backend/prisma/migrations/20260222000003_add_company_profile_fields/`, `recruiting-tool-backend/src/modules/company/company.controller.ts`, `recruiting-tool-backend/src/modules/company/company.service.ts`, `recruiting-tool-backend/src/modules/company/dto/company.dto.ts`, `recruiting-tool-backend/src/modules/company/entities/company.entity.ts`, `recruiting-tool-frontend/src/pages/hr/company-profile/CompanyProfilePage.tsx`, `recruiting-tool-frontend/src/hooks/api/useCompanies.ts`, `recruiting-tool-frontend/src/api/companies.ts`, `recruiting-tool-frontend/src/types/company.types.ts`, `recruiting-tool-frontend/src/layouts/HRLayout.tsx`
+
+### 🐛 Bug Fixes
+
+#### Stripe Checkout Redirect Handling
+- **`SubscriptionPage.tsx` detects `?success=true` and `?canceled=true` query params after Stripe redirect**
+  - Shows toast notifications for success and cancellation scenarios
+  - Force-invalidates React Query caches so subscription state updates immediately
+  - Cleans up the URL after processing the redirect params
+  - Added i18n keys `checkout_success` and `checkout_canceled`
+  - Files: `recruiting-tool-frontend/src/pages/profile/SubscriptionPage.tsx`, `recruiting-tool-frontend/src/i18n/locales/en.json`, `recruiting-tool-frontend/src/i18n/locales/es.json`
+
+#### Stripe Self-Healing Subscription Sync
+- **`stripe.service.ts` now recovers subscriptions from Stripe when webhook was missed**
+  - New `recoverSubscriptionFromStripe()` method queries Stripe directly when `stripeCustomerId` exists but `stripeSubscriptionId` is null
+  - New `getPlanFromPriceId()` helper unifies plan resolution from price IDs
+  - Fixed `syncSubscriptionWithStripe` to update the plan alongside status
+  - Files: `recruiting-tool-backend/src/modules/stripe/stripe.service.ts`, `recruiting-tool-backend/src/modules/stripe/stripe.controller.ts`, `recruiting-tool-backend/src/modules/stripe/dto/stripe.dto.ts`
+
+#### Storage Quota Counts Only Document Files
+- **`quota.service.ts` `getStorageUsageMB()` now excludes profile pictures and company logos**
+  - Only counts document MIME types (PDF, DOC, DOCX, TXT) towards storage quota
+  - Prevents avatars and logos from inflating the storage quota meter
+  - Files: `recruiting-tool-backend/src/modules/quota/quota.service.ts`
+
+#### Navbar Subscription Button Link
+- **Fixed incorrect navigation link on the navbar subscription button**
+  - Was navigating to `/profile` instead of the correct `/profile/subscription`
+  - Files: `recruiting-tool-frontend/src/components/navbar/Navbar.tsx`
+
+#### Contact Page Styling and Navbar Link (#291)
+- **Info cards made thinner and vertically centered, form spacing improved**
+  - Added "Contact" nav link in desktop navbar and mobile drawer for unauthenticated users
+  - Files: `recruiting-tool-frontend/src/pages/contact/ContactPage.tsx`, `recruiting-tool-frontend/src/components/navbar/Navbar.tsx`, `recruiting-tool-frontend/src/components/navbar/NavbarDrawer.tsx`
+
+---
+
 ## Version 0.9.0 - 2026-02-22
 
 ### 🚀 Features

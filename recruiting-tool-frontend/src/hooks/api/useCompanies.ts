@@ -5,6 +5,7 @@ import {
   ForceJoinDto,
   TransferOwnershipDto,
   UpdateCompanyDto,
+  UpdateCompanyProfileDto,
 } from "../../types/company.types";
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -133,6 +134,47 @@ export const useForceJoinUser = (companyUid: string) => {
     },
     onError: (error) => {
       showErrorToast(error, "Failed to force join user");
+    },
+  });
+};
+
+const COMPANY_PROFILE_KEY = "company-profile";
+
+export const useMyCompanyProfile = () => {
+  return useQuery({
+    queryKey: [COMPANY_PROFILE_KEY],
+    queryFn: () => companiesApi.getMyProfile(),
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+export const useUpdateMyCompanyProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (data: UpdateCompanyProfileDto) =>
+      companiesApi.updateMyProfile(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [COMPANY_PROFILE_KEY] });
+      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to update company profile");
+    },
+  });
+};
+
+export const useUploadCompanyLogo = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => companiesApi.uploadLogo(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [COMPANY_PROFILE_KEY] });
+      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to upload logo");
     },
   });
 };

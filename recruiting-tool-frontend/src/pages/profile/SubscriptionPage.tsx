@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -19,6 +19,8 @@ import {
   Stack,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
 import { format, isValid, parseISO } from "date-fns";
 import toast from "react-hot-toast";
 import PricingCard, {
@@ -83,6 +85,8 @@ const canCancelSubscription = (
 
 const SubscriptionPage: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryClient = useQueryClient();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
@@ -124,6 +128,35 @@ const SubscriptionPage: React.FC = () => {
     () => canCancelSubscription(subscription),
     [subscription],
   );
+
+  // Handle Stripe checkout redirect with ?success=true or ?canceled=true
+  useEffect(() => {
+    const success = searchParams.get("success");
+    const canceled = searchParams.get("canceled");
+
+    if (!success && !canceled) return;
+
+    if (success === "true") {
+      toast.success(t("subscription.messages.checkout_success"));
+      // Force-refetch subscription and quota data
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      queryClient.invalidateQueries({ queryKey: ["quota"] });
+      // Refetch again after a short delay in case the Stripe webhook hasn't
+      // been processed yet (webhooks are async and may arrive slightly later)
+      const timer = setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ["subscription"] });
+        queryClient.invalidateQueries({ queryKey: ["quota"] });
+      }, 3000);
+      setSearchParams({}, { replace: true });
+      return () => clearTimeout(timer);
+    } else if (canceled === "true") {
+      toast(t("subscription.messages.checkout_canceled"), {
+        icon: "ℹ️",
+      });
+      setSearchParams({}, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleUpgrade = (plan: SubscriptionPlan) => {
     if (plan === SubscriptionPlan.FREE) return;

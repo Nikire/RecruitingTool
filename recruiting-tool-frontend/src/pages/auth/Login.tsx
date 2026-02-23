@@ -73,6 +73,12 @@ const Login: React.FC = () => {
             <Typography color="error">{t("auth.login_failed")}</Typography>
           )}
         </FormWrapper>
+        <Typography variant="body2" align="center">
+          {t("auth.no_account")}{" "}
+          <Link component={RouterLink} to="/register" underline="hover">
+            {t("auth.sign_up_link")}
+          </Link>
+        </Typography>
       </AuthGroupWrapper>
     </AuthPageWrapper>
   );

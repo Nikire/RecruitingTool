@@ -2,6 +2,7 @@ import {
   Close as CloseIcon,
   Home as HomeIcon,
   WorkOutline as CareersIcon,
+  ContactMail as ContactIcon,
   Dashboard as DashboardIcon,
   AdminPanelSettings as AdminIcon,
   Login as LoginIcon,
@@ -192,6 +193,22 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
             </ListItemIcon>
             <ListItemText primary={t("navbar.careers")} />
           </ListItemButton>
+
+          {/* Contact (for unauthenticated users) */}
+          {!isAuthenticated && (
+            <ListItemButton
+              component={NavLink}
+              sx={drawerLinkSx}
+              to="/contact"
+              onClick={handleMenuClick}
+              aria-label={t("navbar.contact")}
+            >
+              <ListItemIcon sx={{ minWidth: 40 }}>
+                <ContactIcon />
+              </ListItemIcon>
+              <ListItemText primary={t("navbar.contact")} />
+            </ListItemButton>
+          )}
 
           {/* HR Panel (for HR users) */}
           {isAuthenticated && canManageResources(user ?? null) && (

@@ -14,12 +14,14 @@ export const AuthGroupWrapper = styled.div`
 export const AuthPageWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 64px);
+  min-height: 100%;
+  height: 100%;
   justify-content: center;
   align-items: center;
   padding: 32px 16px;
   box-sizing: border-box;
   width: 100%;
+  overflow: hidden;
 `;
 export const FormWrapper = styled.form`
   display: flex;

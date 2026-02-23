@@ -1,6 +1,7 @@
 import api from "./axios";
 import {
   Company,
+  CompanyProfile,
   CompanyUser,
   CreateCompanyDto,
   ForceJoinDto,
@@ -8,6 +9,7 @@ import {
   TransferOwnershipDto,
   TransferOwnershipResponse,
   UpdateCompanyDto,
+  UpdateCompanyProfileDto,
 } from "../types/company.types";
 import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
 
@@ -76,6 +78,27 @@ export const companiesApi = {
     data: ForceJoinDto,
   ): Promise<ForceJoinResponse> => {
     const response = await api.post(`/company/${uid}/force-join`, data);
+    return response.data;
+  },
+
+  getMyProfile: async (): Promise<CompanyProfile> => {
+    const response = await api.get("/company/profile");
+    return response.data;
+  },
+
+  updateMyProfile: async (
+    data: UpdateCompanyProfileDto,
+  ): Promise<CompanyProfile> => {
+    const response = await api.patch("/company/profile", data);
+    return response.data;
+  },
+
+  uploadLogo: async (file: File): Promise<CompanyProfile> => {
+    const formData = new FormData();
+    formData.append("logo", file);
+    const response = await api.post("/company/profile/logo", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
     return response.data;
   },
 };

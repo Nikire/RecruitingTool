@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Box, Stepper, Step, StepLabel, Paper } from "@mui/material";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+import { Box, Stepper, Step, StepLabel, Paper, Typography, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AuthPageWrapper } from "./Auth.styles";
 import RoleSelectionStep from "./wizard-steps/RoleSelectionStep";
@@ -151,6 +151,15 @@ const RegistrationWizard: React.FC = () => {
         </Stepper>
 
         <Box sx={{ mt: 2 }}>{renderStep()}</Box>
+
+        <Box sx={{ mt: 4, textAlign: "center" }}>
+          <Typography variant="body2">
+            {t("auth.already_have_account")}{" "}
+            <Link component={RouterLink} to="/login" underline="hover">
+              {t("auth.sign_in_link")}
+            </Link>
+          </Typography>
+        </Box>
       </Paper>
     </AuthPageWrapper>
   );

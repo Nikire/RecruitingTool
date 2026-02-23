@@ -13,6 +13,7 @@ import { RoleGuard } from "./lib/RoleGuard";
 import { UserRoles } from "./types/user.types";
 import DocumentContainer from "./layouts/DocumentContainer";
 import MainLayout from "./layouts/MainLayout";
+import AuthLayout from "./layouts/AuthLayout";
 import LandingPageLayout from "./layouts/LandingPageLayout";
 import AdminLayout from "./layouts/AdminLayout";
 import HRLayout from "./layouts/HRLayout";
@@ -48,6 +49,7 @@ import AcceptInvitationPage from "./pages/invitations/AcceptInvitationPage";
 import CheckStatusPage from "./pages/status/CheckStatusPage";
 import NotificationsPage from "./pages/notifications/NotificationsPage";
 import BillingPage from "./pages/billing/BillingPage";
+import CompanyProfilePage from "./pages/hr/company-profile/CompanyProfilePage";
 import TermsOfServicePage from "./pages/legal/TermsOfServicePage";
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
@@ -75,14 +77,18 @@ function App() {
           </Route>
         )}
 
-        {/* Main Layout - for other public pages */}
-        <Route element={<MainLayout />}>
+        {/* Auth Layout - navless, scroll-free, redirects authenticated users */}
+        <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegistrationWizard />} />
           <Route path="/logout" element={<Logout />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
+        </Route>
+
+        {/* Main Layout - for other public pages */}
+        <Route element={<MainLayout />}>
           <Route path="/careers" element={<CareersPage />} />
           <Route path="/careers/:uid" element={<JobPositionDetailPage />} />
           <Route path="/check-status" element={<CheckStatusPage />} />
@@ -211,6 +217,33 @@ function App() {
           >
             <Route element={<HRLayout />}>
               <Route path="/hr/billing" element={<BillingPage />} />
+            </Route>
+          </Route>
+        </Route>
+
+        {/* Company Profile Route - accessible to COMPANY_OWNER and COMPANY_ADMIN */}
+        <Route element={<ProtectedRoute />}>
+          <Route
+            element={
+              <RoleGuard
+                allowedRoles={[
+                  UserRoles.COMPANY_OWNER,
+                  UserRoles.COMPANY_ADMIN,
+                  UserRoles.HR,
+                  UserRoles.HR_MANAGER,
+                  UserRoles.RECRUITER,
+                  UserRoles.ADMIN,
+                  UserRoles.SUPER_ADMIN,
+                ]}
+                showUnauthorized={true}
+              />
+            }
+          >
+            <Route element={<HRLayout />}>
+              <Route
+                path="/hr/settings/company"
+                element={<CompanyProfilePage />}
+              />
             </Route>
           </Route>
         </Route>

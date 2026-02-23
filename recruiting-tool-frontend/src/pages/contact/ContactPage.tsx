@@ -96,13 +96,13 @@ const ContactPage = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: "80vh", py: { xs: 6, md: 10 } }}>
+    <Box sx={{ minHeight: "80vh", py: { xs: 5, md: 8 } }}>
       <Container maxWidth="lg">
         {/* Page Header */}
         <Box
           sx={{
             textAlign: "center",
-            mb: 8,
+            mb: 6,
             animation: `${fadeInUp} 0.6s ease-out`,
           }}
         >
@@ -146,7 +146,7 @@ const ContactPage = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={6} alignItems="flex-start">
+        <Grid container spacing={4} alignItems="flex-start">
           {/* Contact Form */}
           <Grid
             item
@@ -215,12 +215,12 @@ const ContactPage = () => {
                   <Typography
                     variant="h5"
                     gutterBottom
-                    sx={{ fontWeight: 800, mb: 3, letterSpacing: "-0.01em" }}
+                    sx={{ fontWeight: 800, mb: 2.5, letterSpacing: "-0.01em" }}
                   >
                     {t("contact.section_subtitle")}
                   </Typography>
 
-                  <Grid container spacing={3}>
+                  <Grid container spacing={2.5}>
                     <Grid item xs={12} sm={6}>
                       <TextField
                         label={t("contact.form_name")}
@@ -324,29 +324,29 @@ const ContactPage = () => {
             md={5}
             sx={{ animation: `${fadeInUp} 0.7s ease-out 0.2s both` }}
           >
-            <Stack spacing={3}>
+            <Stack spacing={2}>
               {infoItems.map((item, index) => (
                 <Paper
                   key={index}
                   elevation={0}
                   sx={{
-                    p: 3.5,
+                    p: 2,
                     borderRadius: 3,
                     border: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
                     display: "flex",
-                    alignItems: "flex-start",
-                    gap: 2.5,
+                    alignItems: "center",
+                    gap: 2,
                     transition: "all 0.3s ease",
                     "&:hover": {
                       borderColor: alpha(theme.palette.primary.main, 0.2),
-                      boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.08)}`,
+                      boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.08)}`,
                     },
                   }}
                 >
                   <Box
                     sx={{
-                      width: 48,
-                      height: 48,
+                      width: 40,
+                      height: 40,
                       borderRadius: 2,
                       bgcolor: alpha(theme.palette.primary.main, 0.08),
                       display: "flex",
@@ -358,10 +358,10 @@ const ContactPage = () => {
                   >
                     {item.icon}
                   </Box>
-                  <Box>
+                  <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
                     <Typography
                       variant="subtitle2"
-                      sx={{ fontWeight: 700, mb: 0.5, fontSize: "0.95rem" }}
+                      sx={{ fontWeight: 700, lineHeight: 1.3, fontSize: "0.875rem" }}
                     >
                       {item.label}
                     </Typography>
@@ -369,7 +369,7 @@ const ContactPage = () => {
                       <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ fontSize: "0.9rem" }}
+                        sx={{ fontSize: "0.8rem", lineHeight: 1.4, mt: 0.25 }}
                       >
                         {item.value}
                       </Typography>

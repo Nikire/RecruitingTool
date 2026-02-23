@@ -214,6 +214,15 @@ export class StripeService {
         });
       }
 
+      // If we have a Stripe customer but no subscription ID, recover from Stripe directly.
+      // This handles the case where the webhook was missed (e.g. Stripe CLI wasn't running).
+      if (!subscription.stripeSubscriptionId && subscription.stripeCustomerId && this.isEnabled) {
+        await this.recoverSubscriptionFromStripe(subscription.id, subscription.stripeCustomerId);
+        subscription = await this.databaseService.subscription.findUnique({
+          where: { id: subscription.id },
+        });
+      }
+
       // Sync with Stripe if there's a subscription ID
       if (subscription.stripeSubscriptionId) {
         await this.syncSubscriptionWithStripe(subscription.id, subscription.stripeSubscriptionId);
@@ -352,6 +361,69 @@ export class StripeService {
   }
 
   /**
+   * Recover subscription data directly from Stripe when the webhook was missed.
+   * Queries active/trialing subscriptions for the customer and populates the DB.
+   */
+  private async recoverSubscriptionFromStripe(subscriptionId: number, customerId: string): Promise<void> {
+    try {
+      // Try active first, then trialing
+      let stripeSub: Stripe.Subscription | null = null;
+      for (const status of ['active', 'trialing'] as const) {
+        const result = await this.stripe!.subscriptions.list({ customer: customerId, status, limit: 1 });
+        if (result.data.length) {
+          stripeSub = result.data[0];
+          break;
+        }
+      }
+
+      if (!stripeSub) {
+        this.logger.log(`No active Stripe subscription found for customer ${customerId}`);
+        return;
+      }
+
+      const priceId = stripeSub.items?.data?.[0]?.price?.id;
+      const plan = this.getPlanFromPriceId(priceId);
+      const currentPeriodStart = stripeSub.items?.data?.[0]?.current_period_start;
+      const currentPeriodEnd = stripeSub.items?.data?.[0]?.current_period_end;
+
+      await this.databaseService.subscription.update({
+        where: { id: subscriptionId },
+        data: {
+          stripeSubscriptionId: stripeSub.id,
+          plan,
+          status: this.mapStripeStatus(stripeSub.status),
+          currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
+          currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,
+          cancelAtPeriodEnd: stripeSub.cancel_at_period_end,
+        },
+      });
+
+      this.logger.log(`Recovered subscription ${subscriptionId} from Stripe (sub: ${stripeSub.id}, plan: ${plan})`);
+    } catch (error) {
+      this.logger.error(`Failed to recover subscription from Stripe: ${error.message}`, error.stack);
+      // Don't throw - this is a recovery operation
+    }
+  }
+
+  /**
+   * Determine plan from a Stripe price ID using configured env vars.
+   */
+  private getPlanFromPriceId(priceId: string | undefined): SubscriptionPlan {
+    if (!priceId) return SubscriptionPlan.FREE;
+
+    const proMonthly = this.configService.get<string>('STRIPE_PROFESSIONAL_PRICE_ID');
+    const proAnnual = this.configService.get<string>('STRIPE_PROFESSIONAL_ANNUAL_PRICE_ID');
+    const entMonthly = this.configService.get<string>('STRIPE_ENTERPRISE_PRICE_ID');
+    const entAnnual = this.configService.get<string>('STRIPE_ENTERPRISE_ANNUAL_PRICE_ID');
+
+    if (priceId === proMonthly || priceId === proAnnual) return SubscriptionPlan.PROFESSIONAL;
+    if (priceId === entMonthly || priceId === entAnnual) return SubscriptionPlan.ENTERPRISE;
+
+    this.logger.warn(`Unknown price ID ${priceId}, defaulting to FREE`);
+    return SubscriptionPlan.FREE;
+  }
+
+  /**
    * Sync subscription data from Stripe
    */
   private async syncSubscriptionWithStripe(subscriptionId: number, stripeSubscriptionId: string): Promise<void> {
@@ -359,12 +431,14 @@ export class StripeService {
       const stripeSubscription = await this.stripe!.subscriptions.retrieve(stripeSubscriptionId);
 
       // Get current period from the first subscription item
+      const priceId = stripeSubscription.items?.data?.[0]?.price?.id;
       const currentPeriodStart = stripeSubscription.items?.data?.[0]?.current_period_start;
       const currentPeriodEnd = stripeSubscription.items?.data?.[0]?.current_period_end;
 
       await this.databaseService.subscription.update({
         where: { id: subscriptionId },
         data: {
+          plan: this.getPlanFromPriceId(priceId),
           status: this.mapStripeStatus(stripeSubscription.status),
           currentPeriodStart: currentPeriodStart ? new Date(currentPeriodStart * 1000) : null,
           currentPeriodEnd: currentPeriodEnd ? new Date(currentPeriodEnd * 1000) : null,

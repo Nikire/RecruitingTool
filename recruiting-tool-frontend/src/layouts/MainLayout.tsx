@@ -23,8 +23,6 @@ const MainLayout = () => {
     // Don't redirect on public routes
     const publicRoutes = [
       "/careers",
-      "/login",
-      "/register",
       "/book-interview",
       "/booking-confirmed",
     ];

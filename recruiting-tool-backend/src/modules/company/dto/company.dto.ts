@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, MinLength, MaxLength, IsOptional } from 'class-validator';
+import { IsString, IsNotEmpty, MinLength, MaxLength, IsOptional, IsBoolean, IsInt, IsUrl, Min, Max } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class CreateCompanyDto {
   @ApiProperty({ description: 'The name of the company', example: 'Tech Corp' })
@@ -41,6 +42,82 @@ export class UpdateCompanyDto {
   logoUrl?: string;
 }
 
+export class UpdateCompanyProfileDto {
+  @ApiProperty({ description: 'Company name', example: 'Tech Corp', required: false })
+  @IsOptional()
+  @IsString()
+  @MinLength(2)
+  @MaxLength(100)
+  name?: string;
+
+  @ApiProperty({ description: 'Short company description shown on careers page', example: 'We build great software', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(1000)
+  description?: string;
+
+  @ApiProperty({ description: 'Company website URL', example: 'https://techcorp.com', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  website?: string;
+
+  @ApiProperty({ description: 'Industry the company operates in', example: 'Technology', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  industry?: string;
+
+  @ApiProperty({ description: 'Number of employees range', example: '51-200', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(50)
+  companySize?: string;
+
+  @ApiProperty({ description: 'Year the company was founded', example: 2020, required: false })
+  @IsOptional()
+  @IsInt()
+  @Min(1800)
+  @Max(new Date().getFullYear())
+  @Type(() => Number)
+  foundedYear?: number;
+
+  @ApiProperty({ description: 'Primary company location', example: 'Buenos Aires, Argentina', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(200)
+  location?: string;
+
+  @ApiProperty({ description: 'LinkedIn profile URL', example: 'https://linkedin.com/company/techcorp', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  linkedinUrl?: string;
+
+  @ApiProperty({ description: 'Twitter/X profile URL', example: 'https://twitter.com/techcorp', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  twitterUrl?: string;
+
+  @ApiProperty({ description: 'Instagram profile URL', example: 'https://instagram.com/techcorp', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(500)
+  instagramUrl?: string;
+
+  @ApiProperty({ description: 'Whether careers page is enabled', example: true, required: false })
+  @IsOptional()
+  @IsBoolean()
+  careersEnabled?: boolean;
+
+  @ApiProperty({ description: 'Headline shown on careers page', example: 'Join our growing team!', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(300)
+  careersHeadline?: string;
+}
+
 export class CompanyResponseDto {
   @ApiProperty({ description: 'The UID of the company', example: '123e4567-e89b-12d3-a456-426614174000' })
   uid: string;
@@ -59,6 +136,50 @@ export class CompanyResponseDto {
 
   @ApiProperty({ description: 'Number of job positions', example: 10, required: false })
   jobPositionCount?: number;
+}
+
+export class CompanyProfileResponseDto {
+  @ApiProperty({ description: 'The UID of the company' })
+  uid: string;
+
+  @ApiProperty({ description: 'Company name' })
+  name: string;
+
+  @ApiProperty({ description: 'Company description', required: false })
+  description?: string;
+
+  @ApiProperty({ description: 'Company logo URL', required: false })
+  logoUrl?: string;
+
+  @ApiProperty({ description: 'Company website URL', required: false })
+  website?: string;
+
+  @ApiProperty({ description: 'Industry', required: false })
+  industry?: string;
+
+  @ApiProperty({ description: 'Employee count range', required: false })
+  companySize?: string;
+
+  @ApiProperty({ description: 'Founded year', required: false })
+  foundedYear?: number;
+
+  @ApiProperty({ description: 'Primary location', required: false })
+  location?: string;
+
+  @ApiProperty({ description: 'LinkedIn URL', required: false })
+  linkedinUrl?: string;
+
+  @ApiProperty({ description: 'Twitter/X URL', required: false })
+  twitterUrl?: string;
+
+  @ApiProperty({ description: 'Instagram URL', required: false })
+  instagramUrl?: string;
+
+  @ApiProperty({ description: 'Whether careers page is enabled' })
+  careersEnabled: boolean;
+
+  @ApiProperty({ description: 'Careers page headline', required: false })
+  careersHeadline?: string;
 }
 
 export class PublicCompanyResponseDto {

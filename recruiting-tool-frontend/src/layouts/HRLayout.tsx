@@ -6,6 +6,7 @@ import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import EmailIcon from "@mui/icons-material/Email";
 import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
+import BusinessIcon from "@mui/icons-material/Business";
 import { DashboardLayout, DashboardMenuItem } from "../components/layout";
 import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
@@ -65,6 +66,12 @@ const HRLayout: React.FC = () => {
       text: t("hr_layout.billing"),
       icon: <ReceiptIcon />,
       path: "/hr/billing",
+      requiresCompanyOwner: true,
+    },
+    {
+      text: t("hr_layout.company_profile"),
+      icon: <BusinessIcon />,
+      path: "/hr/settings/company",
       requiresCompanyOwner: true,
     },
   ];
