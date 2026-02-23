@@ -2,7 +2,17 @@ import { Controller, Get, Post, Body, Put, Patch, Param, Delete, Query, UseInter
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CompanyService } from './company.service';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto, UpdateCompanyProfileDto, CompanyProfileResponseDto } from './dto/company.dto';
+import {
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  CompanyResponseDto,
+  PublicCompanyResponseDto,
+  CompanyUserResponseDto,
+  TransferOwnershipDto,
+  ForceJoinDto,
+  UpdateCompanyProfileDto,
+  CompanyProfileResponseDto,
+} from './dto/company.dto';
 import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';

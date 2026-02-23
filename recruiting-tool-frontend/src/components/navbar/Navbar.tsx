@@ -317,7 +317,9 @@ const Navbar: React.FC = () => {
                       <ListItemText>{t("navbar.profile")}</ListItemText>
                     </MenuItem>
                     <MenuItem
-                      onClick={() => handleUserMenuNavigation("/profile/subscription")}
+                      onClick={() =>
+                        handleUserMenuNavigation("/profile/subscription")
+                      }
                     >
                       <ListItemIcon>
                         <SubscriptionIcon fontSize="small" />

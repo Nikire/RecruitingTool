@@ -276,12 +276,7 @@ export class QuotaService {
 
   private async getStorageUsageMB(companyId: number): Promise<number> {
     // Only count resume/document files — exclude profile pictures and company logos (images)
-    const DOCUMENT_MIMETYPES = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain',
-    ];
+    const DOCUMENT_MIMETYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
 
     const result = await this.databaseService.fileUpload.aggregate({
       where: {

@@ -34,7 +34,11 @@ import {
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import { useEffect, useRef, useState } from "react";
-import { useMyCompanyProfile, useUpdateMyCompanyProfile, useUploadCompanyLogo } from "../../../hooks/api/useCompanies";
+import {
+  useMyCompanyProfile,
+  useUpdateMyCompanyProfile,
+  useUploadCompanyLogo,
+} from "../../../hooks/api/useCompanies";
 import { UpdateCompanyProfileDto } from "../../../types/company.types";
 import { showSuccessToast, showErrorToast } from "../../../utils/toast";
 import { PageHeader } from "../../../components/common";
@@ -71,11 +75,15 @@ const COMPANY_SIZE_OPTIONS = [
 const CompanyProfilePage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
-  const isAdmin = hasRole(user, UserRoles.COMPANY_OWNER) || hasRole(user, UserRoles.COMPANY_ADMIN);
+  const isAdmin =
+    hasRole(user, UserRoles.COMPANY_OWNER) ||
+    hasRole(user, UserRoles.COMPANY_ADMIN);
 
   const { data: profile, isLoading } = useMyCompanyProfile();
-  const { mutate: updateProfile, isPending: isSaving } = useUpdateMyCompanyProfile();
-  const { mutate: uploadLogo, isPending: isUploadingLogo } = useUploadCompanyLogo();
+  const { mutate: updateProfile, isPending: isSaving } =
+    useUpdateMyCompanyProfile();
+  const { mutate: uploadLogo, isPending: isUploadingLogo } =
+    useUploadCompanyLogo();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
@@ -138,7 +146,13 @@ const CompanyProfilePage: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const validTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+    const validTypes = [
+      "image/jpeg",
+      "image/jpg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+    ];
     if (!validTypes.includes(file.type)) {
       showErrorToast(t("company_profile.logo_invalid_type"));
       return;
@@ -180,10 +194,18 @@ const CompanyProfilePage: React.FC = () => {
         <Skeleton variant="text" width={200} height={24} sx={{ mb: 4 }} />
         <Grid container spacing={3}>
           <Grid size={{ xs: 12 }}>
-            <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
+            <Skeleton
+              variant="rectangular"
+              height={200}
+              sx={{ borderRadius: 2 }}
+            />
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <Skeleton variant="rectangular" height={400} sx={{ borderRadius: 2 }} />
+            <Skeleton
+              variant="rectangular"
+              height={400}
+              sx={{ borderRadius: 2 }}
+            />
           </Grid>
         </Grid>
       </Box>
@@ -210,7 +232,9 @@ const CompanyProfilePage: React.FC = () => {
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+                >
                   <BusinessIcon color="primary" fontSize="small" />
                   <Typography variant="h6" fontWeight={600}>
                     {t("company_profile.section_logo")}
@@ -254,7 +278,11 @@ const CompanyProfilePage: React.FC = () => {
                   </Box>
 
                   <Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ mb: 1.5 }}
+                    >
                       {t("company_profile.logo_hint")}
                     </Typography>
                     <input
@@ -292,7 +320,9 @@ const CompanyProfilePage: React.FC = () => {
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+                >
                   <WorkIcon color="primary" fontSize="small" />
                   <Typography variant="h6" fontWeight={600}>
                     {t("company_profile.section_basic_info")}
@@ -308,8 +338,14 @@ const CompanyProfilePage: React.FC = () => {
                       error={!!errors.name}
                       helperText={errors.name?.message}
                       {...register("name", {
-                        minLength: { value: 2, message: t("validation.min_length", { min: 2 }) },
-                        maxLength: { value: 100, message: t("validation.max_length", { max: 100 }) },
+                        minLength: {
+                          value: 2,
+                          message: t("validation.min_length", { min: 2 }),
+                        },
+                        maxLength: {
+                          value: 100,
+                          message: t("validation.max_length", { max: 100 }),
+                        },
                       })}
                     />
                   </Grid>
@@ -322,7 +358,14 @@ const CompanyProfilePage: React.FC = () => {
                       placeholder="https://company.com"
                       error={!!errors.website}
                       helperText={errors.website?.message}
-                      InputProps={{ startAdornment: <LanguageIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} /> }}
+                      InputProps={{
+                        startAdornment: (
+                          <LanguageIcon
+                            fontSize="small"
+                            sx={{ mr: 1, color: "text.secondary" }}
+                          />
+                        ),
+                      }}
                       {...register("website")}
                     />
                   </Grid>
@@ -334,11 +377,16 @@ const CompanyProfilePage: React.FC = () => {
                       multiline
                       rows={3}
                       disabled={!isAdmin}
-                      placeholder={t("company_profile.field_description_placeholder")}
+                      placeholder={t(
+                        "company_profile.field_description_placeholder",
+                      )}
                       error={!!errors.description}
                       helperText={errors.description?.message}
                       {...register("description", {
-                        maxLength: { value: 1000, message: t("validation.max_length", { max: 1000 }) },
+                        maxLength: {
+                          value: 1000,
+                          message: t("validation.max_length", { max: 1000 }),
+                        },
                       })}
                     />
                   </Grid>
@@ -349,8 +397,14 @@ const CompanyProfilePage: React.FC = () => {
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth disabled={!isAdmin}>
-                          <InputLabel>{t("company_profile.field_industry")}</InputLabel>
-                          <Select label={t("company_profile.field_industry")} {...field} value={field.value || ""}>
+                          <InputLabel>
+                            {t("company_profile.field_industry")}
+                          </InputLabel>
+                          <Select
+                            label={t("company_profile.field_industry")}
+                            {...field}
+                            value={field.value || ""}
+                          >
                             <MenuItem value="">
                               <em>{t("company_profile.select_none")}</em>
                             </MenuItem>
@@ -371,14 +425,22 @@ const CompanyProfilePage: React.FC = () => {
                       control={control}
                       render={({ field }) => (
                         <FormControl fullWidth disabled={!isAdmin}>
-                          <InputLabel>{t("company_profile.field_company_size")}</InputLabel>
-                          <Select label={t("company_profile.field_company_size")} {...field} value={field.value || ""}>
+                          <InputLabel>
+                            {t("company_profile.field_company_size")}
+                          </InputLabel>
+                          <Select
+                            label={t("company_profile.field_company_size")}
+                            {...field}
+                            value={field.value || ""}
+                          >
                             <MenuItem value="">
                               <em>{t("company_profile.select_none")}</em>
                             </MenuItem>
                             {COMPANY_SIZE_OPTIONS.map((size) => (
                               <MenuItem key={size} value={size}>
-                                {t("company_profile.size_employees", { range: size })}
+                                {t("company_profile.size_employees", {
+                                  range: size,
+                                })}
                               </MenuItem>
                             ))}
                           </Select>
@@ -397,10 +459,23 @@ const CompanyProfilePage: React.FC = () => {
                       inputProps={{ min: 1800, max: new Date().getFullYear() }}
                       error={!!errors.foundedYear}
                       helperText={errors.foundedYear?.message}
-                      InputProps={{ startAdornment: <CalendarTodayIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} /> }}
+                      InputProps={{
+                        startAdornment: (
+                          <CalendarTodayIcon
+                            fontSize="small"
+                            sx={{ mr: 1, color: "text.secondary" }}
+                          />
+                        ),
+                      }}
                       {...register("foundedYear", {
-                        min: { value: 1800, message: t("company_profile.founded_year_min") },
-                        max: { value: new Date().getFullYear(), message: t("company_profile.founded_year_max") },
+                        min: {
+                          value: 1800,
+                          message: t("company_profile.founded_year_min"),
+                        },
+                        max: {
+                          value: new Date().getFullYear(),
+                          message: t("company_profile.founded_year_max"),
+                        },
                       })}
                     />
                   </Grid>
@@ -410,8 +485,17 @@ const CompanyProfilePage: React.FC = () => {
                       label={t("company_profile.field_location")}
                       fullWidth
                       disabled={!isAdmin}
-                      placeholder={t("company_profile.field_location_placeholder")}
-                      InputProps={{ startAdornment: <LocationOnIcon fontSize="small" sx={{ mr: 1, color: "text.secondary" }} /> }}
+                      placeholder={t(
+                        "company_profile.field_location_placeholder",
+                      )}
+                      InputProps={{
+                        startAdornment: (
+                          <LocationOnIcon
+                            fontSize="small"
+                            sx={{ mr: 1, color: "text.secondary" }}
+                          />
+                        ),
+                      }}
                       {...register("location")}
                     />
                   </Grid>
@@ -431,7 +515,9 @@ const CompanyProfilePage: React.FC = () => {
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+                >
                   <PublicIcon color="primary" fontSize="small" />
                   <Typography variant="h6" fontWeight={600}>
                     {t("company_profile.section_social")}
@@ -445,7 +531,14 @@ const CompanyProfilePage: React.FC = () => {
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://linkedin.com/company/..."
-                      InputProps={{ startAdornment: <LinkedInIcon fontSize="small" sx={{ mr: 1, color: "#0A66C2" }} /> }}
+                      InputProps={{
+                        startAdornment: (
+                          <LinkedInIcon
+                            fontSize="small"
+                            sx={{ mr: 1, color: "#0A66C2" }}
+                          />
+                        ),
+                      }}
                       {...register("linkedinUrl")}
                     />
                   </Grid>
@@ -456,7 +549,14 @@ const CompanyProfilePage: React.FC = () => {
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://twitter.com/..."
-                      InputProps={{ startAdornment: <TwitterIcon fontSize="small" sx={{ mr: 1, color: "#1DA1F2" }} /> }}
+                      InputProps={{
+                        startAdornment: (
+                          <TwitterIcon
+                            fontSize="small"
+                            sx={{ mr: 1, color: "#1DA1F2" }}
+                          />
+                        ),
+                      }}
                       {...register("twitterUrl")}
                     />
                   </Grid>
@@ -467,7 +567,14 @@ const CompanyProfilePage: React.FC = () => {
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://instagram.com/..."
-                      InputProps={{ startAdornment: <InstagramIcon fontSize="small" sx={{ mr: 1, color: "#E1306C" }} /> }}
+                      InputProps={{
+                        startAdornment: (
+                          <InstagramIcon
+                            fontSize="small"
+                            sx={{ mr: 1, color: "#E1306C" }}
+                          />
+                        ),
+                      }}
                       {...register("instagramUrl")}
                     />
                   </Grid>
@@ -487,7 +594,9 @@ const CompanyProfilePage: React.FC = () => {
               }}
             >
               <CardContent sx={{ p: 3 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}>
+                <Box
+                  sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+                >
                   <PeopleIcon color="primary" fontSize="small" />
                   <Typography variant="h6" fontWeight={600}>
                     {t("company_profile.section_careers")}
@@ -514,7 +623,10 @@ const CompanyProfilePage: React.FC = () => {
                               <Typography variant="body1" fontWeight={500}>
                                 {t("company_profile.careers_enabled_label")}
                               </Typography>
-                              <Typography variant="caption" color="text.secondary">
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                              >
                                 {t("company_profile.careers_enabled_hint")}
                               </Typography>
                             </Box>
@@ -529,11 +641,16 @@ const CompanyProfilePage: React.FC = () => {
                       label={t("company_profile.field_careers_headline")}
                       fullWidth
                       disabled={!isAdmin}
-                      placeholder={t("company_profile.field_careers_headline_placeholder")}
+                      placeholder={t(
+                        "company_profile.field_careers_headline_placeholder",
+                      )}
                       error={!!errors.careersHeadline}
                       helperText={errors.careersHeadline?.message}
                       {...register("careersHeadline", {
-                        maxLength: { value: 300, message: t("validation.max_length", { max: 300 }) },
+                        maxLength: {
+                          value: 300,
+                          message: t("validation.max_length", { max: 300 }),
+                        },
                       })}
                     />
                   </Grid>
@@ -550,7 +667,13 @@ const CompanyProfilePage: React.FC = () => {
                   type="submit"
                   variant="contained"
                   size="large"
-                  startIcon={isSaving ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
+                  startIcon={
+                    isSaving ? (
+                      <CircularProgress size={18} color="inherit" />
+                    ) : (
+                      <SaveIcon />
+                    )
+                  }
                   disabled={isSaving || !isDirty}
                   sx={{ minWidth: 160 }}
                 >

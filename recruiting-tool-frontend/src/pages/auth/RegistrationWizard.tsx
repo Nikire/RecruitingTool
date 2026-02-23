@@ -1,6 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
-import { Box, Stepper, Step, StepLabel, Paper, Typography, Link } from "@mui/material";
+import {
+  Box,
+  Stepper,
+  Step,
+  StepLabel,
+  Paper,
+  Typography,
+  Link,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { AuthPageWrapper } from "./Auth.styles";
 import RoleSelectionStep from "./wizard-steps/RoleSelectionStep";

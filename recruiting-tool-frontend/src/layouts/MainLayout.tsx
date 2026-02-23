@@ -21,11 +21,7 @@ const MainLayout = () => {
     const currentPath = window.location.pathname;
 
     // Don't redirect on public routes
-    const publicRoutes = [
-      "/careers",
-      "/book-interview",
-      "/booking-confirmed",
-    ];
+    const publicRoutes = ["/careers", "/book-interview", "/booking-confirmed"];
     const isPublicRoute = publicRoutes.some((route) =>
       currentPath.startsWith(route),
     );

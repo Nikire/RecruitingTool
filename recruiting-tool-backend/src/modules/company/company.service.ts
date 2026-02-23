@@ -1,5 +1,15 @@
 import { Injectable, HttpException, InternalServerErrorException, BadRequestException } from '@nestjs/common';
-import { CreateCompanyDto, UpdateCompanyDto, CompanyResponseDto, PublicCompanyResponseDto, CompanyUserResponseDto, TransferOwnershipDto, ForceJoinDto, UpdateCompanyProfileDto, CompanyProfileResponseDto } from './dto/company.dto';
+import {
+  CreateCompanyDto,
+  UpdateCompanyDto,
+  CompanyResponseDto,
+  PublicCompanyResponseDto,
+  CompanyUserResponseDto,
+  TransferOwnershipDto,
+  ForceJoinDto,
+  UpdateCompanyProfileDto,
+  CompanyProfileResponseDto,
+} from './dto/company.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CompanyMapper, CompanyProfileMapper, includeCompany } from './entities/company.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';

@@ -358,10 +358,20 @@ const ContactPage = () => {
                   >
                     {item.icon}
                   </Box>
-                  <Box sx={{ display: "flex", flexDirection: "column", justifyContent: "center" }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "center",
+                    }}
+                  >
                     <Typography
                       variant="subtitle2"
-                      sx={{ fontWeight: 700, lineHeight: 1.3, fontSize: "0.875rem" }}
+                      sx={{
+                        fontWeight: 700,
+                        lineHeight: 1.3,
+                        fontSize: "0.875rem",
+                      }}
                     >
                       {item.label}
                     </Typography>

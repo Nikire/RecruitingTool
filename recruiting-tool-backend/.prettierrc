@@ -2,5 +2,6 @@
   "singleQuote": true,
   "trailingComma": "all",
   "plugins": ["prettier-plugin-prisma"],
-  "printWidth": 180
+  "printWidth": 180,
+  "endOfLine": "lf"
 }
