@@ -73,7 +73,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
         <AccordionSummary expandIcon={<KeyboardArrowDown />}>
           <AccordionHeaderWrapper>
             {stage.status === "CURRENT" ? (
-              <LockOpen sx={{ color: "#000" }} />
+              <LockOpen sx={{ color: "text.primary" }} />
             ) : stage.status === "DONE" ? (
               <CheckCircle color="primary" />
             ) : (

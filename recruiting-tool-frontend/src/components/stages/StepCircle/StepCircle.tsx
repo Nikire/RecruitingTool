@@ -1,7 +1,7 @@
-import { green, grey } from "@mui/material/colors";
+import { green } from "@mui/material/colors";
+import { Typography, useTheme } from "@mui/material";
 import { StepCircleWrapper } from "./StepCircle.styles";
 import { StageStatus } from "../../../types/stage.types";
-import { Typography } from "@mui/material";
 
 type StepCircleProps = {
   position: number;
@@ -14,13 +14,16 @@ const StepCircle: React.FC<StepCircleProps> = ({
   status,
   disabled,
 }) => {
+  const theme = useTheme();
+
   return (
     <StepCircleWrapper
       style={
         disabled
-          ? { backgroundColor: grey[200] }
+          ? { backgroundColor: theme.palette.action.disabledBackground }
           : {
-              backgroundColor: status == "CURRENT" ? "#000" : green.A100,
+              backgroundColor:
+                status == "CURRENT" ? theme.palette.text.primary : green.A100,
             }
       }
     >
@@ -28,9 +31,9 @@ const StepCircle: React.FC<StepCircleProps> = ({
         variant="h6"
         sx={
           disabled
-            ? { color: grey[500] }
+            ? { color: "text.disabled" }
             : {
-                color: status == "CURRENT" ? green.A400 : "#000",
+                color: status == "CURRENT" ? green.A400 : "text.primary",
               }
         }
       >

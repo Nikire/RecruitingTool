@@ -82,9 +82,9 @@ const EmailTemplatePreviewDialog: React.FC<EmailTemplatePreviewDialogProps> = ({
               </Typography>
               <Box
                 sx={{
-                  backgroundColor: "white",
+                  backgroundColor: "background.paper",
                   border: "1px solid",
-                  borderColor: "grey.300",
+                  borderColor: "divider",
                   borderRadius: 1,
                   minHeight: "200px",
                   maxHeight: "400px",
@@ -99,6 +99,7 @@ const EmailTemplatePreviewDialog: React.FC<EmailTemplatePreviewDialogProps> = ({
                     minHeight: "200px",
                     height: "400px",
                     border: "none",
+                    /* iframe renders actual email HTML which requires a white background */
                     backgroundColor: "white",
                   }}
                   sandbox="allow-same-origin"

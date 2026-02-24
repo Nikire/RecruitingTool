@@ -155,6 +155,10 @@ const lightThemeOptions: ThemeOptions = {
       main: green.A400,
       light: green.A100,
     },
+    background: {
+      default: "#eeeeee",
+      paper: "#ffffff",
+    },
     action: {
       disabled: grey[400],
       disabledOpacity: 1,

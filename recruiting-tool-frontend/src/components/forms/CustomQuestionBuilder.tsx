@@ -154,7 +154,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
 
       <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
         {questions.map((question, index) => (
-          <Card key={question.id} sx={{ backgroundColor: "#f5f5f5" }}>
+          <Card key={question.id} sx={{ backgroundColor: "background.paper" }}>
             <CardContent
               sx={{
                 display: "flex",

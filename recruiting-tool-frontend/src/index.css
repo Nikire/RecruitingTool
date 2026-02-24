@@ -5,10 +5,11 @@
 	font-family: 'Roboto', sans-serif;
 }
 
-body,
-html {
-	background: #eeeeee !important;
-}
+/*
+ * Body/html background is intentionally left unset here.
+ * MUI CssBaseline (in ThemeWrapper) applies theme.palette.background.default
+ * to <body> so the background responds correctly to light/dark mode toggles.
+ */
 
 /*
  * Fix for @uiw/react-md-editor text selection vertical offset.

@@ -7,7 +7,7 @@ const DocumentContainer = () => (
       minHeight: "100vh",
       display: "flex",
       justifyContent: "center",
-      backgroundColor: "#f5f5f5",
+      backgroundColor: "background.default",
       py: 4,
     }}
   >

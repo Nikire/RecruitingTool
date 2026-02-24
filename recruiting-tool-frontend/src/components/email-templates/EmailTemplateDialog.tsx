@@ -323,7 +323,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
               </Alert>
               <Paper
                 variant="outlined"
-                sx={{ p: 2, mb: 2, backgroundColor: "#f5f5f5" }}
+                sx={{ p: 2, mb: 2, backgroundColor: "background.default" }}
               >
                 <Typography
                   variant="subtitle2"

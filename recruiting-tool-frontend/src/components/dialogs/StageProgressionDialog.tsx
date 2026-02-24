@@ -152,15 +152,15 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
                   >
                     {stage.status === "DONE" ? (
                       <CheckCircleIcon
-                        sx={{ fontSize: 20, color: "#4caf50" }}
+                        sx={{ fontSize: 20, color: "success.main" }}
                       />
                     ) : stage.status === "CURRENT" ? (
                       <RadioButtonUncheckedIcon
-                        sx={{ fontSize: 20, color: "#2196f3" }}
+                        sx={{ fontSize: 20, color: "info.main" }}
                       />
                     ) : (
                       <RadioButtonUncheckedIcon
-                        sx={{ fontSize: 20, color: "#9e9e9e" }}
+                        sx={{ fontSize: 20, color: "text.disabled" }}
                       />
                     )}
                     <Box>
