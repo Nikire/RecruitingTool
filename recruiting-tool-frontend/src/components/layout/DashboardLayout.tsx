@@ -12,12 +12,16 @@ import {
   AppBar,
   IconButton,
   Divider,
+  Tooltip,
 } from "@mui/material";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
+import LightModeIcon from "@mui/icons-material/LightMode";
+import DarkModeIcon from "@mui/icons-material/DarkMode";
+import { useAtom } from "jotai";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { useTranslation } from "react-i18next";
 import LanguageSelector from "../common/LanguageSelector";
@@ -28,6 +32,7 @@ import { FeedbackButton } from "../feedback";
 import { SubscriptionWarningBanner } from "../subscription";
 import { useSubscription } from "../../api/subscription";
 import { EmailVerificationBanner } from "../common";
+import { themeModeAtom } from "../../store/preferences.atoms";
 
 const drawerWidth = 240;
 
@@ -102,6 +107,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const { t } = useTranslation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: subscription } = useSubscription();
+  const [themeMode, setThemeMode] = useAtom(themeModeAtom);
+
+  const handleThemeToggle = () => {
+    setThemeMode(themeMode === "dark" ? "light" : "dark");
+  };
 
   // Establish SSE connection for real-time notifications
   useNotificationSSE();
@@ -290,6 +300,25 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             >
               {displayTitle}
             </Typography>
+            <Tooltip
+              title={
+                themeMode === "dark"
+                  ? t("theme.switch_to_light")
+                  : t("theme.switch_to_dark")
+              }
+            >
+              <IconButton
+                color="inherit"
+                onClick={handleThemeToggle}
+                aria-label={
+                  themeMode === "dark"
+                    ? t("aria.switch_to_light_mode")
+                    : t("aria.switch_to_dark_mode")
+                }
+              >
+                {themeMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+              </IconButton>
+            </Tooltip>
             <LanguageSelector />
             <NotificationBell />
             <ProfileDropdown
