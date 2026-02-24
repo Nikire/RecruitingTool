@@ -7,5 +7,4 @@ export const StepCircleWrapper = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #f0f0f0;
 `;

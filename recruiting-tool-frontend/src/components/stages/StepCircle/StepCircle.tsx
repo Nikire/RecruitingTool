@@ -1,4 +1,3 @@
-import { green } from "@mui/material/colors";
 import { Typography, useTheme } from "@mui/material";
 import { StepCircleWrapper } from "./StepCircle.styles";
 import { StageStatus } from "../../../types/stage.types";
@@ -23,7 +22,9 @@ const StepCircle: React.FC<StepCircleProps> = ({
           ? { backgroundColor: theme.palette.action.disabledBackground }
           : {
               backgroundColor:
-                status == "CURRENT" ? theme.palette.text.primary : green.A100,
+                status == "CURRENT"
+                  ? theme.palette.text.primary
+                  : theme.palette.primary.light,
             }
       }
     >

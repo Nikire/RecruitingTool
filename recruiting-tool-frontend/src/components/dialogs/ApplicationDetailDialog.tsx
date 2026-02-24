@@ -296,7 +296,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
                   <Box
                     sx={{
                       p: 2,
-                      bgcolor: "grey.50",
+                      bgcolor: "background.default",
                       borderRadius: 1,
                       maxHeight: 200,
                       overflowY: "auto",

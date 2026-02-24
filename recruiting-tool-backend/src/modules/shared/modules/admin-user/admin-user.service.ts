@@ -42,13 +42,7 @@ export class AdminUserService implements OnApplicationBootstrap {
         email: ADMIN_EMAIL,
         name: ADMIN_NAME,
         password: ADMIN_PASSWORD,
-        roles: [
-          RolesType.USER,
-          RolesType.HR,
-          RolesType.ADMIN,
-          RolesType.SUPER_ADMIN,
-          RolesType.COMPANY_OWNER,
-        ],
+        roles: [RolesType.USER, RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.COMPANY_OWNER],
       });
       admin = await this.usersService.findByEmail(ADMIN_EMAIL);
     }
@@ -56,16 +50,11 @@ export class AdminUserService implements OnApplicationBootstrap {
     if (!admin) return;
 
     // Ensure admin is linked to Borderless, is COMPANY_OWNER, and email is verified
-    const needsUpdate =
-      admin.companyId !== company.id ||
-      !admin.emailVerified ||
-      !admin.roles.includes(RolesType.COMPANY_OWNER);
+    const needsUpdate = admin.companyId !== company.id || !admin.emailVerified || !admin.roles.includes(RolesType.COMPANY_OWNER);
 
     if (needsUpdate) {
       this.logger.log('Configuring admin user with Borderless company...');
-      const roles = Array.from(
-        new Set([...admin.roles, RolesType.COMPANY_OWNER]),
-      );
+      const roles = Array.from(new Set([...admin.roles, RolesType.COMPANY_OWNER]));
       await this.db.user.update({
         where: { id: admin.id },
         data: {
