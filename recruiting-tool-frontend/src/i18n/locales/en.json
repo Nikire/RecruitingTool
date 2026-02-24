@@ -1099,6 +1099,9 @@
     "account_active": "Account Active",
     "email_verified": "Email Verified",
     "email_not_verified": "Email Not Verified",
+    "resend_verification": "Resend Verification Email",
+    "resend_verification_success": "Verification email sent! Please check your inbox.",
+    "resend_verification_error": "Failed to send verification email. Please try again.",
     "roles": "Roles",
     "your_plan": "Your Plan",
     "manage_subscription": "Manage Subscription"
@@ -1734,7 +1737,13 @@
     "form_error": "Form error",
     "required_field": "Required field",
     "pagination_navigation": "Pagination navigation",
-    "pagination_controls": "Pagination controls"
+    "pagination_controls": "Pagination controls",
+    "switch_to_dark_mode": "Switch to dark mode",
+    "switch_to_light_mode": "Switch to light mode"
+  },
+  "theme": {
+    "switch_to_dark": "Switch to dark mode",
+    "switch_to_light": "Switch to light mode"
   },
   "ai_ranking": {
     "title": "AI Candidate Rankings",

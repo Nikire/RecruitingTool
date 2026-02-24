@@ -1107,6 +1107,9 @@
     "account_active": "Cuenta Activa",
     "email_verified": "Correo Verificado",
     "email_not_verified": "Correo No Verificado",
+    "resend_verification": "Reenviar Correo de Verificación",
+    "resend_verification_success": "¡Correo de verificación enviado! Por favor revisa tu bandeja de entrada.",
+    "resend_verification_error": "Error al enviar el correo de verificación. Por favor intenta de nuevo.",
     "roles": "Roles",
     "your_plan": "Tu Plan",
     "manage_subscription": "Gestionar Suscripción"
@@ -1753,7 +1756,13 @@
     "form_error": "Error de formulario",
     "required_field": "Campo requerido",
     "pagination_navigation": "Navegación de paginación",
-    "pagination_controls": "Controles de paginación"
+    "pagination_controls": "Controles de paginación",
+    "switch_to_dark_mode": "Cambiar a modo oscuro",
+    "switch_to_light_mode": "Cambiar a modo claro"
+  },
+  "theme": {
+    "switch_to_dark": "Cambiar a modo oscuro",
+    "switch_to_light": "Cambiar a modo claro"
   },
   "ai_ranking": {
     "title": "Rankings de Candidatos IA",

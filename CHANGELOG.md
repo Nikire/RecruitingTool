@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 0.10.1 - 2026-02-23
+
+### 🚀 Features
+
+#### Dark Mode Support (#287)
+- **Full dark/light theme toggle available in the navbar**
+  - New `recruiting-tool-frontend/src/theme/index.ts` exports `lightTheme` and `darkTheme` MUI theme objects derived from the existing Borderless palette
+  - `main.tsx` refactored: `JotaiProvider` now wraps `ThemeWrapper`, a new component that reads `themeModeAtom` and applies the correct MUI + Styled Components theme reactively
+  - Navbar dark/light mode toggle button added (sun/moon icon) with i18n tooltip and aria labels
+  - Theme preference persisted via Jotai atom `themeModeAtom` in the preferences store
+  - Files: `recruiting-tool-frontend/src/theme/index.ts` (new), `recruiting-tool-frontend/src/main.tsx`, `recruiting-tool-frontend/src/components/navbar/Navbar.tsx`, `recruiting-tool-frontend/src/i18n/locales/en.json`, `recruiting-tool-frontend/src/i18n/locales/es.json`
+
+### 🐛 Bug Fixes
+
+#### Account Active Badge Fix + Resend Verification Email (#288)
+- **Profile page account status section now shows correct badge and allows resending the verification email**
+  - Badge section converted to a flex column so the "Resend Verification Email" button appears below the badge
+  - New `Button` (outlined, warning color) conditionally rendered when `user.emailVerified` is false
+  - Uses `useResendVerification` hook and shows success/error toast notifications via `showSuccessToast` / `showErrorToast`
+  - Added i18n keys: `profile_page.resend_verification`, `profile_page.resend_verification_success`, `profile_page.resend_verification_error`, `common.sending`
+  - Files: `recruiting-tool-frontend/src/pages/profile/ProfilePage.tsx`, `recruiting-tool-frontend/src/i18n/locales/en.json`, `recruiting-tool-frontend/src/i18n/locales/es.json`
+
+### Closed Issues (No Code Changes)
+
+#### Language Selector Icon (#286)
+- Language selector icon implementation was already present from a previous session; issue closed.
+
+#### Auth Cross-Links (#289)
+- Login/Register cross-links between auth pages were already implemented in a previous session; issue closed.
+
+---
+
 ## Version 0.10.0 - 2026-02-23
 
 ### 🚀 Features

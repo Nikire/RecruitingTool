@@ -6,6 +6,7 @@ import {
   IconButton,
   PropTypes,
   Toolbar,
+  Tooltip,
   Typography,
   alpha,
   useTheme,
@@ -17,6 +18,7 @@ import {
   Divider,
 } from "@mui/material";
 import { useState } from "react";
+import { useAtom } from "jotai";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import NavbarDrawer from "./NavbarDrawer";
@@ -25,12 +27,15 @@ import UserAvatar from "../user/UserAvatar";
 import LanguageSelector from "../common/LanguageSelector";
 import { NotificationBell } from "../notifications";
 import { canManageResources, isAdmin } from "../../utils/permissions";
+import { themeModeAtom } from "../../store/preferences.atoms";
 import {
   Person as ProfileIcon,
   CreditCard as SubscriptionIcon,
   Logout as LogoutIcon,
   Dashboard as DashboardIcon,
   AdminPanelSettings as AdminIcon,
+  LightMode as LightModeIcon,
+  DarkMode as DarkModeIcon,
 } from "@mui/icons-material";
 
 const Navbar: React.FC = () => {
@@ -62,10 +67,15 @@ const Navbar: React.FC = () => {
   };
 
   const { user: logedUser, isAuthenticated } = useUserAtom();
+  const [themeMode, setThemeMode] = useAtom(themeModeAtom);
   const [menuOpen, setMenuOpen] = useState(false);
   const [userMenuAnchor, setUserMenuAnchor] = useState<null | HTMLElement>(
     null,
   );
+
+  const handleThemeToggle = () => {
+    setThemeMode(themeMode === "dark" ? "light" : "dark");
+  };
 
   const handleMenuClick = () => {
     setMenuOpen(!menuOpen);
@@ -246,6 +256,32 @@ const Navbar: React.FC = () => {
 
             {/* Right side actions */}
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+              {/* Dark / Light mode toggle */}
+              <Tooltip
+                title={
+                  themeMode === "dark"
+                    ? t("theme.switch_to_light")
+                    : t("theme.switch_to_dark")
+                }
+              >
+                <IconButton
+                  color="inherit"
+                  onClick={handleThemeToggle}
+                  aria-label={
+                    themeMode === "dark"
+                      ? t("aria.switch_to_light_mode")
+                      : t("aria.switch_to_dark_mode")
+                  }
+                  sx={{
+                    "&:hover": {
+                      bgcolor: alpha(theme.palette.common.white, 0.1),
+                    },
+                  }}
+                >
+                  {themeMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
+                </IconButton>
+              </Tooltip>
+
               <LanguageSelector />
 
               {isAuthenticated ? (

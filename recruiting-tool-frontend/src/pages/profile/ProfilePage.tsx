@@ -32,7 +32,9 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { useForm } from "react-hook-form";
 import { UpdateUserDto, UserRoles } from "../../types/user.types";
 import { useUpdateUser } from "../../hooks/api/useUsers";
+import { useResendVerification } from "../../hooks/api/useAuth";
 import { useEffect } from "react";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import ProfilePictureUpload from "../../components/user/ProfilePictureUpload";
 import { RoleBadge } from "../../components/common";
 import { useSubscription } from "../../api/subscription";
@@ -44,6 +46,8 @@ const ProfilePage: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useUserAtom();
   const { mutate: updateUser, isPending } = useUpdateUser();
+  const { mutate: resendVerification, isPending: isResendingVerification } =
+    useResendVerification();
 
   const isOwner = hasRole(user, UserRoles.COMPANY_OWNER);
   const { data: subscription, isLoading: isLoadingSubscription } =
@@ -281,7 +285,15 @@ const ProfilePage: React.FC = () => {
               </Box>
 
               {/* Account Status Badge */}
-              <Box sx={{ mb: 2 }}>
+              <Box
+                sx={{
+                  mb: 2,
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  gap: 1,
+                }}
+              >
                 <Chip
                   icon={<VerifiedUserIcon />}
                   label={
@@ -293,6 +305,32 @@ const ProfilePage: React.FC = () => {
                   size="medium"
                   sx={{ fontWeight: 600 }}
                 />
+                {!user.emailVerified && (
+                  <Button
+                    size="small"
+                    variant="outlined"
+                    color="warning"
+                    disabled={isResendingVerification}
+                    onClick={() =>
+                      resendVerification(undefined, {
+                        onSuccess: () =>
+                          showSuccessToast(
+                            t("profile_page.resend_verification_success"),
+                          ),
+                        onError: (error) =>
+                          showErrorToast(
+                            error,
+                            t("profile_page.resend_verification_error"),
+                          ),
+                      })
+                    }
+                    sx={{ fontSize: "0.75rem" }}
+                  >
+                    {isResendingVerification
+                      ? t("common.sending")
+                      : t("profile_page.resend_verification")}
+                  </Button>
+                )}
               </Box>
 
               {/* Roles Section */}
