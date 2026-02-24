@@ -15,29 +15,19 @@ const StepCircle: React.FC<StepCircleProps> = ({
 }) => {
   const theme = useTheme();
 
+  const bgColor = disabled
+    ? theme.palette.action.disabledBackground
+    : status === "CURRENT"
+      ? theme.palette.text.primary
+      : theme.palette.primary.light;
+
+  const textColor = disabled
+    ? theme.palette.text.disabled
+    : theme.palette.getContrastText(bgColor);
+
   return (
-    <StepCircleWrapper
-      style={
-        disabled
-          ? { backgroundColor: theme.palette.action.disabledBackground }
-          : {
-              backgroundColor:
-                status == "CURRENT"
-                  ? theme.palette.text.primary
-                  : theme.palette.primary.light,
-            }
-      }
-    >
-      <Typography
-        variant="h6"
-        sx={
-          disabled
-            ? { color: "text.disabled" }
-            : {
-                color: status == "CURRENT" ? "primary.main" : "text.primary",
-              }
-        }
-      >
+    <StepCircleWrapper style={{ backgroundColor: bgColor }}>
+      <Typography variant="h6" sx={{ color: textColor }}>
         {position}
       </Typography>
     </StepCircleWrapper>
