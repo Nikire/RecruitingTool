@@ -34,7 +34,7 @@ const StepCircle: React.FC<StepCircleProps> = ({
           disabled
             ? { color: "text.disabled" }
             : {
-                color: status == "CURRENT" ? green.A400 : "text.primary",
+                color: status == "CURRENT" ? "primary.main" : "text.primary",
               }
         }
       >
