@@ -2462,40 +2462,40 @@
       "recommended": "Recommended",
       "cta": "Get Started",
       "free": {
-        "name": "Free",
+        "name": "Free Trial",
         "price": "$0",
-        "description": "Perfect for small teams getting started",
+        "description": "14 days to explore the full platform",
         "features": {
-          "positions": "Up to 5 job positions",
-          "candidates": "Up to 50 candidates",
-          "basic_analytics": "Basic analytics",
-          "email_support": "Email support"
+          "ats": "Full applicant tracking system",
+          "email_templates": "Email templates library",
+          "limits": "3 job positions · 3 team members",
+          "storage": "500 MB storage · 20 AI credits"
         }
       },
       "professional": {
         "name": "Professional",
-        "price": "$29",
-        "description": "For growing teams with advanced needs",
+        "price": "$79",
+        "description": "Everything your hiring team needs to move fast",
         "features": {
-          "unlimited_positions": "Unlimited job positions",
-          "unlimited_candidates": "Unlimited candidates",
-          "ai_screening": "AI resume screening",
-          "advanced_analytics": "Advanced analytics & reports",
-          "priority_support": "Priority support",
-          "custom_branding": "Custom branding"
+          "ats": "Full applicant tracking system",
+          "email_templates": "Email templates library",
+          "positions": "Up to 15 active job positions",
+          "team": "Up to 10 team members · 10 GB storage",
+          "ai": "AI candidate scoring (200 credits/month)",
+          "analytics": "Analytics dashboard & pipeline insights"
         }
       },
       "enterprise": {
         "name": "Enterprise",
-        "price": "$99",
-        "description": "For large organizations at scale",
+        "price": "$249",
+        "description": "Unlimited scale for high-growth teams",
         "features": {
-          "everything_professional": "Everything in Professional",
-          "dedicated_support": "Dedicated account manager",
-          "sso": "Single Sign-On (SSO)",
-          "api_access": "API access",
-          "custom_integrations": "Custom integrations",
-          "sla": "SLA guarantee"
+          "positions": "Unlimited job positions & candidates",
+          "team": "Unlimited team members & storage",
+          "ai": "Unlimited AI scoring credits",
+          "analytics": "Advanced analytics & reporting",
+          "support": "Priority support & SLA guarantee",
+          "api": "API access & custom integrations"
         }
       }
     },

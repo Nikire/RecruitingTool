@@ -2481,40 +2481,40 @@
       "recommended": "Recomendado",
       "cta": "Comenzar",
       "free": {
-        "name": "Gratis",
+        "name": "Prueba Gratuita",
         "price": "$0",
-        "description": "Perfecto para equipos pequeños que comienzan",
+        "description": "14 días para explorar la plataforma completa",
         "features": {
-          "positions": "Hasta 5 posiciones de trabajo",
-          "candidates": "Hasta 50 candidatos",
-          "basic_analytics": "Análisis básicos",
-          "email_support": "Soporte por email"
+          "ats": "Sistema completo de seguimiento de candidatos",
+          "email_templates": "Biblioteca de plantillas de email",
+          "limits": "3 posiciones de trabajo · 3 miembros del equipo",
+          "storage": "500 MB de almacenamiento · 20 créditos IA"
         }
       },
       "professional": {
         "name": "Profesional",
-        "price": "$29",
-        "description": "Para equipos en crecimiento con necesidades avanzadas",
+        "price": "$79",
+        "description": "Todo lo que tu equipo de contratación necesita para moverse rápido",
         "features": {
-          "unlimited_positions": "Posiciones de trabajo ilimitadas",
-          "unlimited_candidates": "Candidatos ilimitados",
-          "ai_screening": "Filtrado de currículums con IA",
-          "advanced_analytics": "Análisis e informes avanzados",
-          "priority_support": "Soporte prioritario",
-          "custom_branding": "Marca personalizada"
+          "ats": "Sistema completo de seguimiento de candidatos",
+          "email_templates": "Biblioteca de plantillas de email",
+          "positions": "Hasta 15 posiciones de trabajo activas",
+          "team": "Hasta 10 miembros del equipo · 10 GB de almacenamiento",
+          "ai": "Puntuación IA de candidatos (200 créditos/mes)",
+          "analytics": "Panel de análisis e insights de pipeline"
         }
       },
       "enterprise": {
         "name": "Empresarial",
-        "price": "$99",
-        "description": "Para grandes organizaciones a escala",
+        "price": "$249",
+        "description": "Escala ilimitada para equipos de alto crecimiento",
         "features": {
-          "everything_professional": "Todo en Profesional",
-          "dedicated_support": "Gerente de cuenta dedicado",
-          "sso": "Inicio de sesión único (SSO)",
-          "api_access": "Acceso a API",
-          "custom_integrations": "Integraciones personalizadas",
-          "sla": "Garantía SLA"
+          "positions": "Posiciones de trabajo y candidatos ilimitados",
+          "team": "Miembros del equipo y almacenamiento ilimitados",
+          "ai": "Créditos de puntuación IA ilimitados",
+          "analytics": "Análisis avanzado e informes",
+          "support": "Soporte prioritario y garantía SLA",
+          "api": "Acceso a API e integraciones personalizadas"
         }
       }
     },

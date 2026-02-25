@@ -157,49 +157,43 @@ const LandingPage = () => {
   const pricingPlans = [
     {
       name: t("landing.pricing.free.name"),
-      price: "$0",
+      price: t("landing.pricing.free.price"),
       period: t("landing.pricing.per_month"),
-      description: "Perfect for small teams",
-      features: [
-        "1 job position",
-        "25 applications/month",
-        "Basic tracking",
-        "Email support",
-      ],
+      description: t("landing.pricing.free.description"),
+      features: Object.values(
+        t("landing.pricing.free.features", { returnObjects: true }) as Record<
+          string,
+          string
+        >,
+      ),
       recommended: false,
       color: theme.palette.grey[600],
       buttonVariant: "outlined" as const,
     },
     {
       name: t("landing.pricing.professional.name"),
-      price: "$79",
+      price: t("landing.pricing.professional.price"),
       period: t("landing.pricing.per_month"),
-      description: "For growing teams",
-      features: [
-        "Unlimited job positions",
-        "Unlimited applications",
-        "AI resume screening",
-        "Interview scheduling",
-        "Advanced analytics",
-        "Priority support",
-      ],
+      description: t("landing.pricing.professional.description"),
+      features: Object.values(
+        t("landing.pricing.professional.features", {
+          returnObjects: true,
+        }) as Record<string, string>,
+      ),
       recommended: true,
       color: theme.palette.primary.main,
       buttonVariant: "contained" as const,
     },
     {
       name: t("landing.pricing.enterprise.name"),
-      price: "$299",
+      price: t("landing.pricing.enterprise.price"),
       period: t("landing.pricing.per_month"),
-      description: "For large organizations",
-      features: [
-        "Everything in Professional",
-        "White-label branding",
-        "Unlimited AI screening",
-        "Dedicated support",
-        "SSO & API access",
-        "SLA guarantee",
-      ],
+      description: t("landing.pricing.enterprise.description"),
+      features: Object.values(
+        t("landing.pricing.enterprise.features", {
+          returnObjects: true,
+        }) as Record<string, string>,
+      ),
       recommended: false,
       color: theme.palette.secondary.main,
       buttonVariant: "outlined" as const,
