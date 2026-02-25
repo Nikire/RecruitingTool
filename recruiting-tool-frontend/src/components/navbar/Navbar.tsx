@@ -169,11 +169,7 @@ const Navbar: React.FC = () => {
               ) : (
                 <Box
                   component="img"
-                  src={
-                    theme.palette.mode === "dark"
-                      ? "/borderless-logo-light.png"
-                      : "/borderless-logo-dark.png"
-                  }
+                  src="/borderless-logo-light.png"
                   alt="Borderless"
                   sx={{
                     height: { xs: 28, sm: 32 },

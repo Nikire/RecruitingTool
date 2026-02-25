@@ -13,7 +13,6 @@ import {
   IconButton,
   Divider,
   Tooltip,
-  useTheme,
 } from "@mui/material";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -106,7 +105,6 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const { user } = useUserAtom();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: subscription } = useSubscription();
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
@@ -132,14 +130,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
 
   const drawer = (
     <Box>
-      <Toolbar>
+      <Toolbar sx={{ bgcolor: "primary.main" }}>
         <Box
           component="img"
-          src={
-            theme.palette.mode === "dark"
-              ? "/borderless-logo-light.png"
-              : "/borderless-logo-dark.png"
-          }
+          src="/borderless-logo-light.png"
           alt="Borderless"
           sx={{ height: 28, width: "auto", mr: 1 }}
         />
