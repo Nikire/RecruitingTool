@@ -4,7 +4,7 @@ import { QuotaService } from './quota.service';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
-import { QuotaStatusDto } from './dto/quota.dto';
+import { QuotaStatusDto, PlanLimitsResponseDto } from './dto/quota.dto';
 
 @ApiTags('Quota')
 @Controller('quota')
@@ -12,6 +12,21 @@ export class QuotaController {
   private readonly logger = new Logger(QuotaController.name);
 
   constructor(private readonly quotaService: QuotaService) {}
+
+  @Get('plan-limits')
+  @ApiOperation({
+    summary: 'Get all plan limits (public)',
+    description: 'Returns the limits for all subscription tiers (FREE, PROFESSIONAL, ENTERPRISE). No authentication required.',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Plan limits retrieved successfully',
+    type: PlanLimitsResponseDto,
+  })
+  getPlanLimits(): PlanLimitsResponseDto {
+    this.logger.log('Getting public plan limits');
+    return this.quotaService.getPlanLimits();
+  }
 
   @Get()
   @Auth([RolesType.USER, RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])

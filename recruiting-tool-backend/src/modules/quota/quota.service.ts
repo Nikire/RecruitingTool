@@ -2,13 +2,20 @@ import { Injectable, Logger, HttpException, HttpStatus, NotFoundException } from
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SubscriptionPlan } from '@prisma/client';
 import { PLAN_LIMITS, QuotaResource } from './config/plan-limits.config';
-import { QuotaStatusDto, QuotaUsageDto, FeatureAccessDto } from './dto/quota.dto';
+import { QuotaStatusDto, QuotaUsageDto, FeatureAccessDto, PlanLimitsResponseDto } from './dto/quota.dto';
 
 @Injectable()
 export class QuotaService {
   private readonly logger = new Logger(QuotaService.name);
 
   constructor(private readonly databaseService: DatabaseService) {}
+
+  /**
+   * Get all plan limits from config — public, no authentication required
+   */
+  getPlanLimits(): PlanLimitsResponseDto {
+    return { plans: PLAN_LIMITS };
+  }
 
   /**
    * Get comprehensive quota status for a company
