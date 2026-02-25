@@ -228,7 +228,7 @@ const LandingPage = () => {
 						${theme.palette.secondary.main} 100%)`,
           backgroundSize: "200% 200%",
           animation: `${gradientShift} 5s ease infinite`,
-          color: "white",
+          color: theme.palette.common.white,
           pt: { xs: 12, md: 14 },
           pb: { xs: 12, md: 14 },
           overflow: "hidden",
@@ -295,7 +295,7 @@ const LandingPage = () => {
                     fontSize: { xs: "2.75rem", sm: "3.75rem", md: "4.5rem" },
                     lineHeight: 1.15,
                     mb: 3,
-                    color: "white",
+                    color: theme.palette.common.white,
                     textShadow: "0 2px 20px rgba(0,0,0,0.1)",
                     letterSpacing: "-0.02em",
                   }}
@@ -336,7 +336,7 @@ const LandingPage = () => {
                       onClick={() => navigate("/hr/dashboard")}
                       endIcon={<ArrowForwardIcon />}
                       sx={{
-                        bgcolor: "white",
+                        bgcolor: theme.palette.common.white,
                         color: theme.palette.primary.main,
                         px: 6,
                         py: 2.5,
@@ -365,7 +365,7 @@ const LandingPage = () => {
                       onClick={() => scrollToSection("pricing")}
                       endIcon={<ArrowForwardIcon />}
                       sx={{
-                        bgcolor: "white",
+                        bgcolor: theme.palette.common.white,
                         color: theme.palette.primary.main,
                         px: 5,
                         py: 2,
@@ -390,7 +390,7 @@ const LandingPage = () => {
                       onClick={() => scrollToSection("features")}
                       sx={{
                         borderColor: alpha(theme.palette.common.white, 0.8),
-                        color: "white",
+                        color: theme.palette.common.white,
                         px: 5,
                         py: 2,
                         fontSize: "1.125rem",
@@ -399,7 +399,7 @@ const LandingPage = () => {
                         textTransform: "none",
                         borderWidth: 2,
                         "&:hover": {
-                          borderColor: "white",
+                          borderColor: theme.palette.common.white,
                           bgcolor: alpha(theme.palette.common.white, 0.12),
                           borderWidth: 2,
                           transform: "translateY(-3px)",

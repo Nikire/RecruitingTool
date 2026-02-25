@@ -182,20 +182,6 @@ const Navbar: React.FC = () => {
                   }}
                 />
               )}
-              {isAuthenticated && logedUser?.company?.name && (
-                <Typography
-                  variant="h6"
-                  component="div"
-                  sx={{
-                    fontSize: { xs: "1rem", sm: "1.25rem" },
-                    fontWeight: 700,
-                    letterSpacing: 0.5,
-                    display: { xs: "none", sm: "block" },
-                  }}
-                >
-                  {logedUser.company.name}
-                </Typography>
-              )}
             </Box>
 
             {/* Desktop Navigation Links */}
