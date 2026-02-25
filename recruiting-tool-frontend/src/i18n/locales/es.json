@@ -1929,7 +1929,22 @@
     "pipeline_funnel_subtitle": "Candidatos en cada etapa",
     "overall_conversion": "Conversión general: {{rate}}%",
     "no_pipeline_data": "No hay datos de pipeline disponibles",
-    "no_source_data": "No hay datos de fuente disponibles"
+    "no_source_data": "No hay datos de fuente disponibles",
+    "bottleneck": "Cuello de botella",
+    "median": "Mediana",
+    "completed": "Completados",
+    "no_stage_data": "No hay datos de duración de etapas",
+    "total_applications_col": "Aplicaciones",
+    "hires_col": "Contrataciones",
+    "success_rate": "Tasa de éxito",
+    "avg_time_to_hire_col": "Tiempo medio de contratación",
+    "ai_quality_score": "Puntuación IA",
+    "no_source_effectiveness_data": "No hay datos de efectividad por fuente",
+    "current_avg": "Promedio actual",
+    "prev_period": "Período anterior",
+    "change": "Cambio",
+    "no_time_to_hire_data": "No hay datos de tiempo de contratación",
+    "hires_count_label": "Contrataciones: {{count}}"
   },
   "search": {
     "advanced_search": "Búsqueda Avanzada",

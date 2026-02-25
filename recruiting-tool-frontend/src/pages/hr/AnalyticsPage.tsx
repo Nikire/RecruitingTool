@@ -17,6 +17,9 @@ import { PageHeader } from "../../components/common";
 import OverviewStatsRow from "../../components/analytics/OverviewStatsRow";
 import PipelineFunnelChart from "../../components/analytics/PipelineFunnelChart";
 import SourcesDonutChart from "../../components/analytics/SourcesDonutChart";
+import SourceEffectivenessTable from "../../components/analytics/SourceEffectivenessTable";
+import StageDurationTable from "../../components/analytics/StageDurationTable";
+import TimeToHireChart from "../../components/analytics/TimeToHireChart";
 
 /**
  * Date range option type for the analytics filter
@@ -162,17 +165,17 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Time to Hire Trend */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <ChartPlaceholder title={t("analytics.time_to_hire_trend")} />
+          <TimeToHireChart dateRange={computedDateRange} />
         </Grid>
 
         {/* Stage Duration Bottleneck */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <ChartPlaceholder title={t("analytics.stage_duration")} />
+          <StageDurationTable dateRange={computedDateRange} />
         </Grid>
 
         {/* Source Effectiveness */}
         <Grid size={{ xs: 12 }}>
-          <ChartPlaceholder title={t("analytics.source_effectiveness")} />
+          <SourceEffectivenessTable dateRange={computedDateRange} />
         </Grid>
       </Grid>
     </Box>

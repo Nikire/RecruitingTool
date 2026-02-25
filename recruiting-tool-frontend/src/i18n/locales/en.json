@@ -1910,7 +1910,22 @@
     "pipeline_funnel_subtitle": "Candidates at each stage",
     "overall_conversion": "Overall conversion: {{rate}}%",
     "no_pipeline_data": "No pipeline data available",
-    "no_source_data": "No source data available"
+    "no_source_data": "No source data available",
+    "bottleneck": "Bottleneck",
+    "median": "Median",
+    "completed": "Completed",
+    "no_stage_data": "No stage duration data available",
+    "total_applications_col": "Applications",
+    "hires_col": "Hires",
+    "success_rate": "Success Rate",
+    "avg_time_to_hire_col": "Avg. Time to Hire",
+    "ai_quality_score": "AI Quality Score",
+    "no_source_effectiveness_data": "No source effectiveness data available",
+    "current_avg": "Current Avg.",
+    "prev_period": "Prev. Period",
+    "change": "Change",
+    "no_time_to_hire_data": "No time-to-hire data available",
+    "hires_count_label": "Hires: {{count}}"
   },
   "search": {
     "advanced_search": "Advanced Search",
