@@ -11,32 +11,26 @@ export interface PlanLimits {
   analyticsEnabled: boolean;
 }
 
-/**
- * FREE plan uses Professional limits because it is a 14-day trial.
- * After the trial expires the subscription status becomes EXPIRED and users
- * are blocked from the app entirely, so the quota values are moot at that point.
- */
 export const PLAN_LIMITS: Record<SubscriptionPlan, PlanLimits> = {
   [SubscriptionPlan.FREE]: {
-    // Pro limits during the 14-day trial
-    maxJobPositions: 25,
-    maxCandidatesPerPosition: 300,
-    maxUsers: 10,
-    maxStorageMB: 5000,
+    maxJobPositions: 3,
+    maxCandidatesPerPosition: 50,
+    maxUsers: 3,
+    maxStorageMB: 500,
     aiScoringEnabled: true,
-    aiScoringCreditsPerMonth: 200,
+    aiScoringCreditsPerMonth: 20,
     emailTemplatesEnabled: true,
     analyticsEnabled: false,
   },
   [SubscriptionPlan.PROFESSIONAL]: {
-    maxJobPositions: 25,
-    maxCandidatesPerPosition: 300,
+    maxJobPositions: 15,
+    maxCandidatesPerPosition: 200,
     maxUsers: 10,
-    maxStorageMB: 5000,
+    maxStorageMB: 10000,
     aiScoringEnabled: true,
     aiScoringCreditsPerMonth: 200,
     emailTemplatesEnabled: true,
-    analyticsEnabled: false,
+    analyticsEnabled: true,
   },
   [SubscriptionPlan.ENTERPRISE]: {
     maxJobPositions: -1,
@@ -46,7 +40,7 @@ export const PLAN_LIMITS: Record<SubscriptionPlan, PlanLimits> = {
     aiScoringEnabled: true,
     aiScoringCreditsPerMonth: -1,
     emailTemplatesEnabled: true,
-    analyticsEnabled: false,
+    analyticsEnabled: true,
   },
 };
 

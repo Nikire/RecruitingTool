@@ -2122,34 +2122,42 @@
     },
     "plans": {
       "free": {
-        "name": "Gratis",
+        "name": "Prueba Gratuita",
         "price": "$0",
-        "description": "Perfecto para probar la plataforma",
+        "description": "14 días de prueba para explorar la plataforma",
         "features": {
-          "basic_recruiting": "Funciones básicas de reclutamiento",
-          "unlimited_candidates": "Hasta 5 posiciones de trabajo"
+          "ats": "Sistema completo de seguimiento de candidatos",
+          "email_templates": "Biblioteca de plantillas de email",
+          "limits": "3 posiciones de trabajo · 3 miembros del equipo",
+          "storage": "500 MB de almacenamiento · 20 créditos de IA"
         }
       },
       "professional": {
         "name": "Profesional",
         "price": "$79",
-        "description": "Para equipos de reclutamiento en crecimiento",
+        "period": "/mes",
+        "description": "Todo lo que tu equipo de contratación necesita para avanzar rápido",
         "features": {
-          "ai_parsing": "Análisis de currículums con IA",
-          "advanced_analytics": "Análisis avanzados",
-          "custom_branding": "Marca personalizada",
-          "priority_support": "Soporte prioritario"
+          "ats": "Sistema completo de seguimiento de candidatos",
+          "email_templates": "Biblioteca de plantillas de email",
+          "positions": "Hasta 15 posiciones de trabajo activas",
+          "team": "Hasta 10 miembros del equipo · 10 GB de almacenamiento",
+          "ai": "Puntuación IA de candidatos (200 créditos/mes)",
+          "analytics": "Panel de análisis e información del pipeline"
         }
       },
       "enterprise": {
         "name": "Empresarial",
-        "price": "$299",
-        "description": "Para grandes organizaciones",
+        "price": "$249",
+        "period": "/mes",
+        "description": "Escala ilimitada para equipos de alto crecimiento",
         "features": {
-          "api_access": "Acceso a API",
-          "custom_integrations": "Integraciones personalizadas",
-          "unlimited_everything": "Todo ilimitado",
-          "dedicated_support": "Soporte dedicado"
+          "positions": "Posiciones de trabajo y candidatos ilimitados",
+          "team": "Miembros del equipo y almacenamiento ilimitados",
+          "ai": "Créditos de puntuación IA ilimitados",
+          "analytics": "Análisis avanzados e informes",
+          "support": "Soporte prioritario y garantía SLA",
+          "api": "Acceso a API e integraciones personalizadas"
         }
       }
     },

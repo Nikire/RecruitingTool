@@ -209,36 +209,34 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const getPlanFeatures = (plan: SubscriptionPlan): string[] => {
-    const baseFeatures = [
-      t("subscription.plans.free.features.basic_recruiting"),
-      t("subscription.plans.free.features.unlimited_candidates"),
-    ];
-
-    const proFeatures = [
-      ...baseFeatures,
-      t("subscription.plans.professional.features.ai_parsing"),
-      t("subscription.plans.professional.features.advanced_analytics"),
-      t("subscription.plans.professional.features.custom_branding"),
-      t("subscription.plans.professional.features.priority_support"),
-    ];
-
-    const enterpriseFeatures = [
-      ...proFeatures,
-      t("subscription.plans.enterprise.features.api_access"),
-      t("subscription.plans.enterprise.features.custom_integrations"),
-      t("subscription.plans.enterprise.features.unlimited_everything"),
-      t("subscription.plans.enterprise.features.dedicated_support"),
-    ];
-
     switch (plan) {
       case SubscriptionPlan.FREE:
-        return baseFeatures;
+        return [
+          t("subscription.plans.free.features.ats"),
+          t("subscription.plans.free.features.email_templates"),
+          t("subscription.plans.free.features.limits"),
+          t("subscription.plans.free.features.storage"),
+        ];
       case SubscriptionPlan.PROFESSIONAL:
-        return proFeatures;
+        return [
+          t("subscription.plans.professional.features.ats"),
+          t("subscription.plans.professional.features.email_templates"),
+          t("subscription.plans.professional.features.positions"),
+          t("subscription.plans.professional.features.team"),
+          t("subscription.plans.professional.features.ai"),
+          t("subscription.plans.professional.features.analytics"),
+        ];
       case SubscriptionPlan.ENTERPRISE:
-        return enterpriseFeatures;
+        return [
+          t("subscription.plans.enterprise.features.positions"),
+          t("subscription.plans.enterprise.features.team"),
+          t("subscription.plans.enterprise.features.ai"),
+          t("subscription.plans.enterprise.features.analytics"),
+          t("subscription.plans.enterprise.features.support"),
+          t("subscription.plans.enterprise.features.api"),
+        ];
       default:
-        return baseFeatures;
+        return [];
     }
   };
 

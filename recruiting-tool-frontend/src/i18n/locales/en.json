@@ -2103,34 +2103,42 @@
     },
     "plans": {
       "free": {
-        "name": "Free",
+        "name": "Free Trial",
         "price": "$0",
-        "description": "Perfect for trying out the platform",
+        "description": "14-day trial to explore the platform",
         "features": {
-          "basic_recruiting": "Basic recruiting features",
-          "unlimited_candidates": "Up to 5 job positions"
+          "ats": "Full applicant tracking system",
+          "email_templates": "Email templates library",
+          "limits": "3 job positions · 3 team members",
+          "storage": "500 MB storage · 20 AI credits"
         }
       },
       "professional": {
         "name": "Professional",
         "price": "$79",
-        "description": "For growing recruitment teams",
+        "period": "/month",
+        "description": "Everything your hiring team needs to move fast",
         "features": {
-          "ai_parsing": "AI-powered resume parsing",
-          "advanced_analytics": "Advanced analytics",
-          "custom_branding": "Custom branding",
-          "priority_support": "Priority support"
+          "ats": "Full applicant tracking system",
+          "email_templates": "Email templates library",
+          "positions": "Up to 15 active job positions",
+          "team": "Up to 10 team members · 10 GB storage",
+          "ai": "AI candidate scoring (200 credits/month)",
+          "analytics": "Analytics dashboard & pipeline insights"
         }
       },
       "enterprise": {
         "name": "Enterprise",
-        "price": "$299",
-        "description": "For large organizations",
+        "price": "$249",
+        "period": "/month",
+        "description": "Unlimited scale for high-growth teams",
         "features": {
-          "api_access": "API access",
-          "custom_integrations": "Custom integrations",
-          "unlimited_everything": "Unlimited everything",
-          "dedicated_support": "Dedicated support"
+          "positions": "Unlimited job positions & candidates",
+          "team": "Unlimited team members & storage",
+          "ai": "Unlimited AI scoring credits",
+          "analytics": "Advanced analytics & reporting",
+          "support": "Priority support & SLA guarantee",
+          "api": "API access & custom integrations"
         }
       }
     },
