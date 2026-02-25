@@ -8,7 +8,6 @@ import { grey } from "@mui/material/colors";
 const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
   typography: {
     fontFamily: [
-      '"Clash Grotesk"',
       "Roboto",
       "-apple-system",
       "BlinkMacSystemFont",
@@ -30,45 +29,45 @@ const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
 
     h1: {
       fontSize: "3.5rem",
-      fontWeight: 700,
+      fontWeight: 500,
       lineHeight: 1.15,
       letterSpacing: "-0.02em",
-      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
+      fontFamily: "Roboto, sans-serif",
     },
     h2: {
       fontSize: "2.5rem",
-      fontWeight: 700,
+      fontWeight: 500,
       lineHeight: 1.2,
       letterSpacing: "-0.015em",
-      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
+      fontFamily: "Roboto, sans-serif",
     },
     h3: {
       fontSize: "2rem",
-      fontWeight: 600,
+      fontWeight: 500,
       lineHeight: 1.25,
       letterSpacing: "-0.01em",
-      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
+      fontFamily: "Roboto, sans-serif",
     },
     h4: {
       fontSize: "1.5rem",
-      fontWeight: 600,
+      fontWeight: 500,
       lineHeight: 1.3,
       letterSpacing: "-0.005em",
-      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
+      fontFamily: "Roboto, sans-serif",
     },
     h5: {
       fontSize: "1.25rem",
-      fontWeight: 600,
+      fontWeight: 500,
       lineHeight: 1.4,
       letterSpacing: "0em",
-      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
+      fontFamily: "Roboto, sans-serif",
     },
     h6: {
       fontSize: "1.125rem",
-      fontWeight: 600,
+      fontWeight: 500,
       lineHeight: 1.4,
       letterSpacing: "0.005em",
-      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
+      fontFamily: "Roboto, sans-serif",
     },
     subtitle1: {
       fontSize: "1rem",

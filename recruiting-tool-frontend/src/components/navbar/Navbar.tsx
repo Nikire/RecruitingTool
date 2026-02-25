@@ -168,35 +168,19 @@ const Navbar: React.FC = () => {
                   }}
                 />
               ) : (
-                <>
-                  {/* Icon — always visible, inverted to white on this dark navbar */}
-                  <Box
-                    component="img"
-                    src="/borderless-icon-white2.png"
-                    alt=""
-                    aria-hidden="true"
-                    sx={{
-                      height: { xs: 28, sm: 32 },
-                      width: "auto",
-                      filter: "invert(1)",
-                    }}
-                  />
-                  {/* Brand name — hidden on mobile */}
-                  <Typography
-                    component="span"
-                    sx={{
-                      fontFamily: '"Clash Grotesk", sans-serif',
-                      fontWeight: 500,
-                      fontSize: { xs: "1.1rem", sm: "1.25rem" },
-                      letterSpacing: "-0.01em",
-                      color: "inherit",
-                      lineHeight: 1,
-                      display: { xs: "none", sm: "block" },
-                    }}
-                  >
-                    Borderless
-                  </Typography>
-                </>
+                <Box
+                  component="img"
+                  src={
+                    theme.palette.mode === "dark"
+                      ? "/borderless-logo-light.png"
+                      : "/borderless-logo-dark.png"
+                  }
+                  alt="Borderless"
+                  sx={{
+                    height: { xs: 28, sm: 32 },
+                    width: "auto",
+                  }}
+                />
               )}
               {isAuthenticated && logedUser?.company?.name && (
                 <Typography

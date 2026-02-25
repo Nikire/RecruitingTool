@@ -135,29 +135,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
       <Toolbar>
         <Box
           component="img"
-          src="/borderless-icon-white2.png"
-          alt=""
-          aria-hidden="true"
-          sx={{
-            height: 28,
-            width: "auto",
-            mr: 1,
-            filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
-          }}
+          src={
+            theme.palette.mode === "dark"
+              ? "/borderless-logo-light.png"
+              : "/borderless-logo-dark.png"
+          }
+          alt="Borderless"
+          sx={{ height: 28, width: "auto", mr: 1 }}
         />
-        <Typography
-          component="span"
-          sx={{
-            fontFamily: '"Clash Grotesk", sans-serif',
-            fontWeight: 500,
-            fontSize: "1.15rem",
-            letterSpacing: "-0.01em",
-            color: "text.primary",
-            lineHeight: 1,
-          }}
-        >
-          Borderless
-        </Typography>
       </Toolbar>
       <Divider />
       <List>

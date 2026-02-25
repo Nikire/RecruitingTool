@@ -2,7 +2,7 @@ import {
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
 } from "@mui/icons-material";
-import { Box, IconButton, Tooltip, Typography, useTheme } from "@mui/material";
+import { Box, IconButton, Tooltip, useTheme } from "@mui/material";
 import { useEffect } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -65,28 +65,14 @@ const AuthLayout = () => {
         >
           <Box
             component="img"
-            src="/borderless-icon-white2.png"
-            alt=""
-            aria-hidden="true"
-            sx={{
-              height: 28,
-              width: "auto",
-              filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
-            }}
+            src={
+              theme.palette.mode === "dark"
+                ? "/borderless-logo-light.png"
+                : "/borderless-logo-dark.png"
+            }
+            alt="Borderless"
+            sx={{ height: 28, width: "auto" }}
           />
-          <Typography
-            component="span"
-            sx={{
-              fontFamily: '"Clash Grotesk", sans-serif',
-              fontWeight: 500,
-              fontSize: "1.25rem",
-              letterSpacing: "-0.01em",
-              color: "text.primary",
-              lineHeight: 1,
-            }}
-          >
-            Borderless
-          </Typography>
         </Box>
         <Tooltip
           title={
