@@ -47,3 +47,6 @@ export { useValidationRules } from "./validation";
 
 // Permission Utilities
 export * from "./permissions";
+
+// Plan Feature Builder
+export { buildPlanFeatures } from "./buildPlanFeatures";
