@@ -1,5 +1,5 @@
-import { createTheme, ThemeOptions } from "@mui/material";
-import { green, grey } from "@mui/material/colors";
+import { alpha, createTheme, ThemeOptions } from "@mui/material/styles";
+import { grey } from "@mui/material/colors";
 
 /**
  * Shared typography and component overrides used by both light and dark themes.
@@ -8,6 +8,7 @@ import { green, grey } from "@mui/material/colors";
 const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
   typography: {
     fontFamily: [
+      '"Clash Grotesk"',
       "Roboto",
       "-apple-system",
       "BlinkMacSystemFont",
@@ -32,42 +33,42 @@ const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
       fontWeight: 700,
       lineHeight: 1.15,
       letterSpacing: "-0.02em",
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
     },
     h2: {
       fontSize: "2.5rem",
       fontWeight: 700,
       lineHeight: 1.2,
       letterSpacing: "-0.015em",
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
     },
     h3: {
       fontSize: "2rem",
       fontWeight: 600,
       lineHeight: 1.25,
       letterSpacing: "-0.01em",
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
     },
     h4: {
       fontSize: "1.5rem",
       fontWeight: 600,
       lineHeight: 1.3,
       letterSpacing: "-0.005em",
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
     },
     h5: {
       fontSize: "1.25rem",
       fontWeight: 600,
       lineHeight: 1.4,
       letterSpacing: "0em",
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
     },
     h6: {
       fontSize: "1.125rem",
       fontWeight: 600,
       lineHeight: 1.4,
       letterSpacing: "0.005em",
-      fontFamily: "Roboto, sans-serif",
+      fontFamily: '"Clash Grotesk", Roboto, sans-serif',
     },
     subtitle1: {
       fontSize: "1rem",
@@ -119,7 +120,7 @@ const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
       MuiTimelineConnector: {
         styleOverrides: {
           root: {
-            backgroundColor: green.A400,
+            backgroundColor: "#325CE7",
           },
         },
       },
@@ -145,18 +146,18 @@ const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
 
 /**
  * Light theme — the default Borderless palette.
- * Colors match the existing palette.ts configuration.
+ * Colors match the Borderless brand identity.
  */
 const lightThemeOptions: ThemeOptions = {
   ...sharedThemeOptions,
   palette: {
     mode: "light",
     primary: {
-      main: green.A400,
-      light: green.A100,
+      main: "#325CE7",
+      light: "#B6C5F6",
     },
     background: {
-      default: "#eeeeee",
+      default: "#DEE7E7",
       paper: "#ffffff",
     },
     action: {
@@ -170,7 +171,7 @@ const lightThemeOptions: ThemeOptions = {
     MuiAccordion: {
       styleOverrides: {
         root: ({ theme }) => ({
-          backgroundColor: green.A100,
+          backgroundColor: alpha("#B6C5F6", 0.3),
           "&.Mui-disabled .MuiTypography-root": {
             color: theme.palette.text.disabled,
           },
@@ -184,7 +185,7 @@ const lightThemeOptions: ThemeOptions = {
 };
 
 /**
- * Dark theme — professional dark palette with green accent colors.
+ * Dark theme — professional dark palette with blue accent colors.
  * Maintains the Borderless brand identity with appropriate dark surfaces.
  */
 const darkThemeOptions: ThemeOptions = {
@@ -192,8 +193,8 @@ const darkThemeOptions: ThemeOptions = {
   palette: {
     mode: "dark",
     primary: {
-      main: green.A400,
-      light: green.A100,
+      main: "#325CE7",
+      light: "#B6C5F6",
     },
     secondary: {
       main: "#1e2a38",

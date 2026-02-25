@@ -1,4 +1,4 @@
-import { Menu as MenuIcon, WorkOutline as WorkIcon } from "@mui/icons-material";
+import { Menu as MenuIcon } from "@mui/icons-material";
 import {
   AppBar,
   Box,
@@ -168,22 +168,50 @@ const Navbar: React.FC = () => {
                   }}
                 />
               ) : (
-                <WorkIcon sx={{ fontSize: { xs: 28, sm: 32 } }} />
+                <>
+                  {/* Icon — always visible, inverted to white on this dark navbar */}
+                  <Box
+                    component="img"
+                    src="/borderless-icon-white2.png"
+                    alt=""
+                    aria-hidden="true"
+                    sx={{
+                      height: { xs: 28, sm: 32 },
+                      width: "auto",
+                      filter: "invert(1)",
+                    }}
+                  />
+                  {/* Brand name — hidden on mobile */}
+                  <Typography
+                    component="span"
+                    sx={{
+                      fontFamily: '"Clash Grotesk", sans-serif',
+                      fontWeight: 500,
+                      fontSize: { xs: "1.1rem", sm: "1.25rem" },
+                      letterSpacing: "-0.01em",
+                      color: "inherit",
+                      lineHeight: 1,
+                      display: { xs: "none", sm: "block" },
+                    }}
+                  >
+                    Borderless
+                  </Typography>
+                </>
               )}
-              <Typography
-                variant="h6"
-                component="div"
-                sx={{
-                  fontSize: { xs: "1rem", sm: "1.25rem" },
-                  fontWeight: 700,
-                  letterSpacing: 0.5,
-                  display: { xs: "none", sm: "block" },
-                }}
-              >
-                {isAuthenticated && logedUser?.company?.name
-                  ? logedUser.company.name
-                  : t("navbar.app_title")}
-              </Typography>
+              {isAuthenticated && logedUser?.company?.name && (
+                <Typography
+                  variant="h6"
+                  component="div"
+                  sx={{
+                    fontSize: { xs: "1rem", sm: "1.25rem" },
+                    fontWeight: 700,
+                    letterSpacing: 0.5,
+                    display: { xs: "none", sm: "block" },
+                  }}
+                >
+                  {logedUser.company.name}
+                </Typography>
+              )}
             </Box>
 
             {/* Desktop Navigation Links */}

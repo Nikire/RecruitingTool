@@ -448,15 +448,40 @@ const LandingPage = () => {
                     },
                   }}
                 >
-                  <Stack spacing={3} alignItems="center">
-                    <AutoAwesomeIcon sx={{ fontSize: 100, opacity: 0.6 }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 3,
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src="/borderless-icon.png"
+                      alt="Borderless"
+                      sx={{
+                        width: { xs: 120, md: 180 },
+                        height: "auto",
+                        opacity: 0.85,
+                        filter: "brightness(0) invert(1)",
+                        animation: `${float} 4s ease-in-out infinite`,
+                      }}
+                    />
                     <Typography
                       variant="h6"
-                      sx={{ opacity: 0.7, fontWeight: 500 }}
+                      sx={{
+                        opacity: 0.6,
+                        fontWeight: 500,
+                        letterSpacing: "0.15em",
+                        textTransform: "uppercase",
+                        fontSize: "0.75rem",
+                      }}
                     >
-                      {t("landing.hero.image_placeholder")}
+                      {t("landing.hero.coming_soon")}
                     </Typography>
-                  </Stack>
+                  </Box>
                 </Box>
               </Box>
             </Grid>

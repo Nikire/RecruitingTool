@@ -13,6 +13,7 @@ import {
   IconButton,
   Divider,
   Tooltip,
+  useTheme,
 } from "@mui/material";
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -105,6 +106,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const { user } = useUserAtom();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const theme = useTheme();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: subscription } = useSubscription();
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
@@ -131,8 +133,30 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const drawer = (
     <Box>
       <Toolbar>
-        <Typography variant="h6" noWrap component="div">
-          {displayTitle}
+        <Box
+          component="img"
+          src="/borderless-icon-white2.png"
+          alt=""
+          aria-hidden="true"
+          sx={{
+            height: 28,
+            width: "auto",
+            mr: 1,
+            filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
+          }}
+        />
+        <Typography
+          component="span"
+          sx={{
+            fontFamily: '"Clash Grotesk", sans-serif',
+            fontWeight: 500,
+            fontSize: "1.15rem",
+            letterSpacing: "-0.01em",
+            color: "text.primary",
+            lineHeight: 1,
+          }}
+        >
+          Borderless
         </Typography>
       </Toolbar>
       <Divider />
