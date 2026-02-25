@@ -1901,7 +1901,12 @@
     "source": "Source",
     "count": "Count",
     "stage": "Stage",
-    "vs_last_period": "vs. Last Period"
+    "vs_last_period": "vs. Last Period",
+    "overview_stats": "Overview",
+    "pipeline_funnel": "Pipeline Funnel",
+    "applications_by_source": "Applications by Source",
+    "stage_duration": "Stage Duration Bottleneck",
+    "loading": "Loading analytics..."
   },
   "search": {
     "advanced_search": "Advanced Search",

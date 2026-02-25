@@ -3,6 +3,7 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import GroupIcon from "@mui/icons-material/Group";
 import WorkIcon from "@mui/icons-material/Work";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import EmailIcon from "@mui/icons-material/Email";
 import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
@@ -51,6 +52,11 @@ const HRLayout: React.FC = () => {
       text: t("hr_layout.hiring_processes"),
       icon: <AccountTreeIcon />,
       path: "/hr/hiring-processes",
+    },
+    {
+      text: t("hr_layout.analytics"),
+      icon: <BarChartIcon />,
+      path: "/hr/analytics",
     },
     {
       text: t("hr_layout.email_templates"),

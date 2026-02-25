@@ -50,6 +50,7 @@ import CheckStatusPage from "./pages/status/CheckStatusPage";
 import NotificationsPage from "./pages/notifications/NotificationsPage";
 import BillingPage from "./pages/billing/BillingPage";
 import CompanyProfilePage from "./pages/hr/company-profile/CompanyProfilePage";
+import AnalyticsPage from "./pages/hr/AnalyticsPage";
 import TermsOfServicePage from "./pages/legal/TermsOfServicePage";
 import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
@@ -171,12 +172,7 @@ function App() {
               />
               <Route
                 path="/hr/analytics"
-                element={
-                  <ComingSoonPage
-                    titleKey="analytics.coming_soon_title"
-                    messageKey="analytics.coming_soon_message"
-                  />
-                }
+                element={<AnalyticsPage />}
               />
               <Route
                 path="/hr/email-templates"

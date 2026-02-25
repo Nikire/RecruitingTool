@@ -1920,7 +1920,12 @@
     "source": "Fuente",
     "count": "Cantidad",
     "stage": "Etapa",
-    "vs_last_period": "vs. Período Anterior"
+    "vs_last_period": "vs. Período Anterior",
+    "overview_stats": "Resumen",
+    "pipeline_funnel": "Embudo del Pipeline",
+    "applications_by_source": "Aplicaciones por Fuente",
+    "stage_duration": "Duración por Etapa",
+    "loading": "Cargando análisis..."
   },
   "search": {
     "advanced_search": "Búsqueda Avanzada",
