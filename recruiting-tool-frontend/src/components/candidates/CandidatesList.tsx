@@ -1,3 +1,4 @@
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -65,7 +66,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
       headerName: t("candidates.name_label"),
       flex: 1,
       minWidth: 150,
-      mobileRender: (candidate) => (
+      mobileRender: (candidate: Candidate) => (
         <Typography
           variant="h6"
           sx={{ mb: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
@@ -79,7 +80,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
       headerName: t("candidates.email_label"),
       flex: 1,
       minWidth: 200,
-      mobileRender: (candidate) => (
+      mobileRender: (candidate: Candidate) => (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
           {t("candidates.email_label")}: {candidate.email}
         </Typography>
@@ -89,8 +90,8 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
       field: "phone",
       headerName: t("candidates.phone_label"),
       width: 150,
-      renderCell: (params) => params.value || "-",
-      mobileRender: (candidate) =>
+      renderCell: (params: GridRenderCellParams) => params.value || "-",
+      mobileRender: (candidate: Candidate) =>
         candidate.phone ? (
           <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
             {t("candidates.phone_label")}: {candidate.phone}
@@ -101,7 +102,9 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
       field: "createdAt",
       headerName: t("common.created"),
       width: 150,
-      renderCell: (params) => <DateCell value={params.value} />,
+      renderCell: (params: GridRenderCellParams) => (
+        <DateCell value={params.value} />
+      ),
     },
     ...(canManage
       ? [
@@ -168,12 +171,23 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
         serverPagination={true}
-        checkboxSelection={!!onSelectionChange}
-        rowSelectionModel={selectedCandidates || []}
-        onRowSelectionModelChange={(newSelection) => {
-          if (onSelectionChange) {
-            onSelectionChange(newSelection as string[]);
-          }
+        dataGridProps={{
+          checkboxSelection: !!onSelectionChange,
+          rowSelectionModel: (selectedCandidates ||
+            []) as unknown as import("@mui/x-data-grid").GridRowSelectionModel,
+          onRowSelectionModelChange: (newSelection) => {
+            if (onSelectionChange) {
+              // MUI v7: GridRowSelectionModel is GridRowId[] (array of string | number)
+              const selectionArray = newSelection as unknown as (
+                | string
+                | number
+              )[];
+              const ids = Array.isArray(selectionArray)
+                ? selectionArray.map(String)
+                : [];
+              onSelectionChange(ids);
+            }
+          },
         }}
       />
 

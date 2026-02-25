@@ -149,9 +149,7 @@ const ContactPage = () => {
         <Grid container spacing={4} alignItems="flex-start">
           {/* Contact Form */}
           <Grid
-            item
-            xs={12}
-            md={7}
+            size={{ xs: 12, md: 7 }}
             sx={{ animation: `${fadeInUp} 0.7s ease-out 0.1s both` }}
           >
             <Paper
@@ -221,7 +219,7 @@ const ContactPage = () => {
                   </Typography>
 
                   <Grid container spacing={2.5}>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label={t("contact.form_name")}
                         placeholder={t("contact.form_name_placeholder")}
@@ -238,7 +236,7 @@ const ContactPage = () => {
                         helperText={errors.name?.message}
                       />
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid size={{ xs: 12, sm: 6 }}>
                       <TextField
                         label={t("contact.form_email")}
                         placeholder={t("contact.form_email_placeholder")}
@@ -249,7 +247,7 @@ const ContactPage = () => {
                         helperText={errors.email?.message}
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <TextField
                         label={t("contact.form_company")}
                         placeholder={t("contact.form_company_placeholder")}
@@ -259,7 +257,7 @@ const ContactPage = () => {
                         helperText={errors.company?.message}
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <TextField
                         label={t("contact.form_message")}
                         placeholder={t("contact.form_message_placeholder")}
@@ -278,7 +276,7 @@ const ContactPage = () => {
                         helperText={errors.message?.message}
                       />
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid size={{ xs: 12 }}>
                       <Button
                         type="submit"
                         variant="contained"
@@ -319,9 +317,7 @@ const ContactPage = () => {
 
           {/* Info Panel */}
           <Grid
-            item
-            xs={12}
-            md={5}
+            size={{ xs: 12, md: 5 }}
             sx={{ animation: `${fadeInUp} 0.7s ease-out 0.2s both` }}
           >
             <Stack spacing={2}>

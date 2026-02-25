@@ -119,7 +119,7 @@ const BookInterviewPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {availableSlots.map((slot) => (
-          <Grid item xs={12} sm={6} md={4} key={slot.uid}>
+          <Grid size={{ xs: 12, sm: 6, md: 4 }} key={slot.uid}>
             <Paper
               elevation={selectedSlotUid === slot.uid ? 8 : 2}
               sx={{

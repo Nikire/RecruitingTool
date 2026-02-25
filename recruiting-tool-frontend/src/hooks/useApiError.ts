@@ -137,7 +137,8 @@ function normalizeErrorObject(
           dataWithErrors.errors &&
           typeof dataWithErrors.errors === "object"
         ) {
-          normalized.errors = dataWithErrors.errors;
+          normalized.errors =
+            dataWithErrors.errors as import("../types/api.types").ValidationErrors;
         }
       }
     }

@@ -1,3 +1,4 @@
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Typography, Chip, IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -47,7 +48,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       headerName: t("companies.name_label"),
       flex: 1,
       minWidth: 150,
-      mobileRender: (company) => (
+      mobileRender: (company: Company) => (
         <Typography
           variant="h6"
           sx={{ mb: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
@@ -61,8 +62,8 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       headerName: t("companies.description_label"),
       flex: 2,
       minWidth: 200,
-      renderCell: (params) => params.value || "-",
-      mobileRender: (company) => (
+      renderCell: (params: GridRenderCellParams) => params.value || "-",
+      mobileRender: (company: Company) => (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
           {company.description || "-"}
         </Typography>
@@ -75,7 +76,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       align: "center",
       headerAlign: "center",
       valueGetter: (value) => value || 0,
-      mobileRender: (company) => (
+      mobileRender: (company: Company) => (
         <Chip
           label={`${company.userCount || 0} ${t("users.title")}`}
           variant="outlined"
@@ -91,7 +92,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       align: "center",
       headerAlign: "center",
       valueGetter: (value) => value || 0,
-      mobileRender: (company) => (
+      mobileRender: (company: Company) => (
         <Chip
           label={`${company.jobPositionCount || 0} ${t("job_positions.title")}`}
           variant="outlined"
@@ -108,7 +109,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       filterable: false,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: "flex", gap: 0.5, alignItems: "center" }}>
           <Tooltip title={t("common.view")}>
             <IconButton
@@ -126,7 +127,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
           />
         </Box>
       ),
-      mobileRender: (company) => (
+      mobileRender: (company: Company) => (
         <Box
           sx={{
             display: "flex",

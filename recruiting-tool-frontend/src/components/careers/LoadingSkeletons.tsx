@@ -49,11 +49,8 @@ const LoadingSkeletons: React.FC<LoadingSkeletonsProps> = memo(
     <Grid container spacing={3}>
       {Array.from({ length: count }).map((_, i) => (
         <Grid
-          item
           key={i}
-          xs={12}
-          sm={6}
-          lg={4}
+          size={{ xs: 12, sm: 6, lg: 4 }}
           sx={{
             overflow: "visible",
             display: "flex",

@@ -46,8 +46,8 @@ export interface SearchPaginationHandlers {
  * );
  * ```
  */
-export const useSearchPaginationHandlers = (
-  setSearchState: React.Dispatch<React.SetStateAction<SearchState>>,
+export const useSearchPaginationHandlers = <T extends SearchState>(
+  setSearchState: React.Dispatch<React.SetStateAction<T>>,
 ): SearchPaginationHandlers => {
   /**
    * Handle search input changes

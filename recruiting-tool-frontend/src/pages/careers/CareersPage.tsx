@@ -119,13 +119,10 @@ const CareersPage: React.FC = () => {
     [applyDialog],
   );
 
-  const handleFilterChange = useCallback(
-    (key: keyof Filters, value: string) => {
-      setFilters((prev) => ({ ...prev, [key]: value }));
-      setPage(1); // Reset to first page when filters change
-    },
-    [],
-  );
+  const handleFilterChange = useCallback((key: string, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+    setPage(1); // Reset to first page when filters change
+  }, []);
 
   const handleClearFilters = useCallback(() => {
     setFilters({

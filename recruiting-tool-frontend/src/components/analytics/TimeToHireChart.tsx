@@ -95,7 +95,7 @@ const ComparisonCard = ({
   highlight,
 }: {
   label: string;
-  value: number | string;
+  value: number | string | React.ReactNode;
   unit?: string;
   highlight?: "positive" | "negative" | "neutral";
 }) => {

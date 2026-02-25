@@ -74,7 +74,8 @@ const JobPositionDetailPage: React.FC = () => {
 
   const canManage = canManageResources(user);
 
-  const statusOptions: HiringProcessStatus[] = [
+  const statusOptions: (HiringProcessStatus | "ALL")[] = [
+    "ALL",
     "OPEN",
     "IN_PROGRESS",
     "CLOSED",

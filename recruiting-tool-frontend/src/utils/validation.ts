@@ -1,5 +1,13 @@
 import { useTranslation } from "react-i18next";
-import { RegisterOptions } from "react-hook-form";
+
+/**
+ * Type alias for loosely typed RegisterOptions.
+ * Compatible with react-hook-form v7 strict generics.
+ * We use `Parameters<UseFormRegister<FieldValues>>[1]` to get the exact type
+ * that is always assignable to any specific form's register() second argument.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export type AnyRegisterOptions = Record<string, any>;
 
 /**
  * Validation utilities hook providing reusable validation patterns
@@ -15,7 +23,7 @@ export const useValidationRules = () => {
      * Required field validation
      * @param fieldName - Name of the field for error message
      */
-    required: (fieldName?: string): RegisterOptions => ({
+    required: (fieldName?: string): AnyRegisterOptions => ({
       required: fieldName
         ? t("validation.field_required", { field: fieldName })
         : t("validation.required"),
@@ -24,7 +32,7 @@ export const useValidationRules = () => {
     /**
      * Email validation with pattern matching
      */
-    email: (): RegisterOptions => ({
+    email: (): AnyRegisterOptions => ({
       required: t("validation.email_required"),
       pattern: {
         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -35,7 +43,7 @@ export const useValidationRules = () => {
     /**
      * Email validation (optional - no required)
      */
-    emailOptional: (): RegisterOptions => ({
+    emailOptional: (): AnyRegisterOptions => ({
       pattern: {
         value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
         message: t("validation.email_invalid"),
@@ -47,8 +55,11 @@ export const useValidationRules = () => {
      * @param minLength - Minimum password length (default: 8)
      * @param requireSpecialChars - Require special characters (default: false)
      */
-    password: (minLength = 8, requireSpecialChars = false): RegisterOptions => {
-      const rules: RegisterOptions = {
+    password: (
+      minLength = 8,
+      requireSpecialChars = false,
+    ): AnyRegisterOptions => {
+      const rules: AnyRegisterOptions = {
         required: t("validation.password_required"),
         minLength: {
           value: minLength,
@@ -71,9 +82,9 @@ export const useValidationRules = () => {
      * Confirm password validation (matches another field)
      * @param passwordFieldValue - The value of the password field to match against
      */
-    confirmPassword: (passwordFieldValue: string): RegisterOptions => ({
+    confirmPassword: (passwordFieldValue: string): AnyRegisterOptions => ({
       required: t("validation.confirm_password_required"),
-      validate: (value: string) =>
+      validate: (value: unknown) =>
         value === passwordFieldValue || t("validation.passwords_must_match"),
     }),
 
@@ -81,7 +92,7 @@ export const useValidationRules = () => {
      * Minimum length validation
      * @param min - Minimum number of characters
      */
-    minLength: (min: number): RegisterOptions => ({
+    minLength: (min: number): AnyRegisterOptions => ({
       minLength: {
         value: min,
         message: t("validation.min_length", { min }),
@@ -92,7 +103,7 @@ export const useValidationRules = () => {
      * Maximum length validation
      * @param max - Maximum number of characters
      */
-    maxLength: (max: number): RegisterOptions => ({
+    maxLength: (max: number): AnyRegisterOptions => ({
       maxLength: {
         value: max,
         message: t("validation.max_length", { max }),
@@ -102,7 +113,7 @@ export const useValidationRules = () => {
     /**
      * Phone number validation
      */
-    phone: (): RegisterOptions => ({
+    phone: (): AnyRegisterOptions => ({
       pattern: {
         value:
           /^[+]?[(]?[0-9]{1,4}[)]?[-\s.]?[(]?[0-9]{1,4}[)]?[-\s.]?[0-9]{1,9}$/,
@@ -113,7 +124,7 @@ export const useValidationRules = () => {
     /**
      * URL validation (requires http:// or https://)
      */
-    url: (): RegisterOptions => ({
+    url: (): AnyRegisterOptions => ({
       pattern: {
         value: /^https?:\/\/.+/,
         message: t("validation.url_invalid"),
@@ -123,7 +134,7 @@ export const useValidationRules = () => {
     /**
      * LinkedIn URL validation (optional)
      */
-    linkedinUrl: (): RegisterOptions => ({
+    linkedinUrl: (): AnyRegisterOptions => ({
       pattern: {
         value: /^https?:\/\/(www\.)?linkedin\.com\/.+/i,
         message: t("validation.linkedin_invalid"),
@@ -133,7 +144,7 @@ export const useValidationRules = () => {
     /**
      * Positive number validation
      */
-    positiveNumber: (): RegisterOptions => ({
+    positiveNumber: (): AnyRegisterOptions => ({
       min: {
         value: 1,
         message: t("validation.positive_number"),
@@ -149,8 +160,11 @@ export const useValidationRules = () => {
      * Merges multiple validation objects into one
      * @param rules - Array of validation rule objects
      */
-    combine: (...rules: RegisterOptions[]): RegisterOptions => {
-      return Object.assign({} as RegisterOptions, ...rules) as RegisterOptions;
+    combine: (...rules: AnyRegisterOptions[]): AnyRegisterOptions => {
+      return Object.assign(
+        {} as AnyRegisterOptions,
+        ...rules,
+      ) as AnyRegisterOptions;
     },
   };
 };

@@ -17,6 +17,7 @@ import {
   useListJobPositions,
   usePublicJobPositions,
 } from "../../hooks/api/useJobPositions";
+import { JobPosition, PublicJobPosition } from "../../types/jobPosition.types";
 import { useNavigate } from "react-router-dom";
 import { ApplyToJobDialog } from "../dialogs/ApplyToJobDialog";
 import { useDialog } from "../../hooks/useDialog";
@@ -65,7 +66,7 @@ const JobPositionCardSkeleton = () => (
 
 // Mobile card view component
 const JobPositionCardView: React.FC<{
-  jobPosition: Record<string, unknown>;
+  jobPosition: JobPosition | PublicJobPosition;
   onApplyClick: (uid: string, title: string) => void;
   onViewDetails: (uid: string) => void;
   publicMode?: boolean;
@@ -125,13 +126,14 @@ const JobPositionCardView: React.FC<{
           </Typography>
         )}
 
-        {jobPosition.createdBy && (
+        {(jobPosition as JobPosition).createdBy && (
           <Typography
             variant="caption"
             color="textSecondary"
             sx={{ display: "block", mb: 2 }}
           >
-            {t("job_positions.posted_by")}: {jobPosition.createdBy.name}
+            {t("job_positions.posted_by")}:{" "}
+            {(jobPosition as JobPosition).createdBy?.name}
           </Typography>
         )}
 
@@ -195,7 +197,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
   const applyDialog = useDialog<{ uid: string; title: string }>();
 
   // Use public endpoint if in public mode, otherwise use authenticated endpoint
-  const publicQuery = usePublicJobPositions({ enabled: publicMode });
+  const publicQuery = usePublicJobPositions(undefined, { enabled: publicMode });
   const authQuery = useListJobPositions(
     {
       page,

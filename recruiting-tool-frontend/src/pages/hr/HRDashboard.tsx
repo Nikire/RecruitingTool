@@ -42,8 +42,13 @@ const HRDashboard: React.FC = () => {
   const { data: applications, isLoading: applicationsLoading } =
     useApplications();
   const { data: candidates, isLoading: candidatesLoading } = useCandidates();
-  const { data: jobPositions, isLoading: jobPositionsLoading } =
+  const { data: jobPositionsData, isLoading: jobPositionsLoading } =
     useJobPositions();
+  const jobPositions = Array.isArray(jobPositionsData)
+    ? jobPositionsData
+    : jobPositionsData
+      ? [jobPositionsData]
+      : undefined;
 
   // Wait for user data to load before checking permissions (fixes race condition)
   if (userLoading) {

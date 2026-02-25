@@ -71,8 +71,13 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
   });
 
   const { mutate: createCandidate, isPending, isError } = useCreateCandidate();
-  const { data: jobPositions, isLoading: jobPositionsLoading } =
+  const { data: jobPositionsData, isLoading: jobPositionsLoading } =
     useJobPositions();
+  const jobPositions = Array.isArray(jobPositionsData)
+    ? jobPositionsData
+    : jobPositionsData
+      ? [jobPositionsData]
+      : [];
 
   const onSubmit = (data: ManualCandidateFormData) => {
     const candidateData = {

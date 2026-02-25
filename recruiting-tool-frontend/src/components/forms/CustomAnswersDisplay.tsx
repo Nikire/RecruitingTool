@@ -43,14 +43,14 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
       case QuestionType.TEXTAREA:
         return (
           <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-            {answer}
+            {String(answer)}
           </Typography>
         );
 
       case QuestionType.MULTIPLE_CHOICE:
         return (
           <Chip
-            label={answer}
+            label={String(answer)}
             variant="outlined"
             color="primary"
             size="small"
@@ -63,8 +63,8 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
             {Array.isArray(answer) ? (
               answer.map((item) => (
                 <Chip
-                  key={item}
-                  label={item}
+                  key={String(item)}
+                  label={String(item)}
                   variant="outlined"
                   color="primary"
                   size="small"
@@ -72,7 +72,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
               ))
             ) : (
               <Chip
-                label={answer}
+                label={String(answer)}
                 variant="outlined"
                 color="primary"
                 size="small"

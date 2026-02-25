@@ -91,10 +91,11 @@ const TeamManagementPage: React.FC = () => {
     useUpdateUserRole(companyUid);
 
   // Check if user can manage team
-  const canManage =
-    user?.roles?.includes("COMPANY_OWNER") ||
-    user?.roles?.includes("COMPANY_ADMIN") ||
-    user?.roles?.includes("ADMIN");
+  const canManage = Boolean(
+    user?.roles?.includes(UserRoles.COMPANY_OWNER) ||
+    user?.roles?.includes(UserRoles.COMPANY_ADMIN) ||
+    user?.roles?.includes(UserRoles.ADMIN),
+  );
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -277,10 +278,7 @@ const TeamManagementPage: React.FC = () => {
           >
             {members.map((member) => (
               <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
+                size={{ xs: 12, sm: 6, md: 4 }}
                 key={member.uid}
                 sx={{ display: "flex" }}
               >

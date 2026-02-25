@@ -5,7 +5,7 @@ import {
   Typography,
   Card,
   List,
-  ListItem,
+  ListItemButton,
   ListItemText,
   ListItemAvatar,
   Avatar,
@@ -278,8 +278,7 @@ const NotificationsPage: React.FC = () => {
             <List sx={{ p: 0 }}>
               {notifications.map((notification, index) => (
                 <React.Fragment key={notification.uid}>
-                  <ListItem
-                    button
+                  <ListItemButton
                     onClick={() => handleNotificationClick(notification)}
                     sx={{
                       py: 2,
@@ -412,7 +411,7 @@ const NotificationsPage: React.FC = () => {
                         </IconButton>
                       )}
                     </Box>
-                  </ListItem>
+                  </ListItemButton>
 
                   {/* Divider between items */}
                   {index < notifications.length - 1 && <Divider />}

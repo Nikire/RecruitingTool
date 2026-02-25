@@ -21,7 +21,7 @@ const AcceptInvitationPage: React.FC = () => {
   const { t } = useTranslation();
   const { token } = useParams<{ token: string }>();
   const navigate = useNavigate();
-  const [user] = useUserAtom();
+  const { user } = useUserAtom();
 
   const [hasAccepted, setHasAccepted] = useState(false);
   const [error, setError] = useState<string | null>(null);

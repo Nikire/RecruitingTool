@@ -3,6 +3,7 @@ import {
   Pagination as MuiPagination,
   Typography,
   Select,
+  SelectChangeEvent,
   MenuItem,
   FormControl,
   InputLabel,
@@ -32,7 +33,7 @@ const Pagination: React.FC<PaginationProps> = ({
     onPageChange(value);
   };
 
-  const handleLimitChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleLimitChange = (event: SelectChangeEvent<number>) => {
     onLimitChange(Number(event.target.value));
   };
 

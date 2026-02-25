@@ -128,7 +128,11 @@ const JobPositionsPage: React.FC = () => {
   const renderSkeletonCards = () => (
     <Grid container spacing={3} justifyContent="center">
       {[1, 2, 3].map((i) => (
-        <Grid item xs={12} sm={6} md={4} key={i} sx={{ overflow: "visible" }}>
+        <Grid
+          size={{ xs: 12, sm: 6, md: 4 }}
+          key={i}
+          sx={{ overflow: "visible" }}
+        >
           <Paper
             sx={{
               height: "100%",
@@ -290,10 +294,7 @@ const JobPositionsPage: React.FC = () => {
           <Grid container spacing={3} justifyContent="center">
             {jobPositions.map((position) => (
               <Grid
-                item
-                xs={12}
-                sm={6}
-                md={4}
+                size={{ xs: 12, sm: 6, md: 4 }}
                 key={position.uid}
                 sx={{ overflow: "visible" }}
               >

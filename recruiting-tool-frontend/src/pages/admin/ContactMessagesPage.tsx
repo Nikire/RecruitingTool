@@ -1,3 +1,4 @@
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useState } from "react";
 import {
   Box,
@@ -44,7 +45,7 @@ const ContactMessagesPage = () => {
       headerName: t("admin_contact.table_name"),
       flex: 1,
       minWidth: 140,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Box>
           <Typography variant="body2" sx={{ fontWeight: 600 }}>
             {params.row.name}
@@ -54,7 +55,7 @@ const ContactMessagesPage = () => {
           </Typography>
         </Box>
       ),
-      mobileRender: (msg) => (
+      mobileRender: (msg: ContactMessage) => (
         <Box>
           <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
             {msg.name}
@@ -69,7 +70,7 @@ const ContactMessagesPage = () => {
       field: "company",
       headerName: t("admin_contact.table_company"),
       width: 150,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Typography variant="body2" color="text.secondary">
           {params.row.company || t("common.n_a")}
         </Typography>
@@ -80,7 +81,7 @@ const ContactMessagesPage = () => {
       headerName: t("admin_contact.table_message"),
       flex: 2,
       minWidth: 200,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Typography
           variant="body2"
           color="text.secondary"
@@ -96,7 +97,7 @@ const ContactMessagesPage = () => {
             : params.row.message}
         </Typography>
       ),
-      mobileRender: (msg) => (
+      mobileRender: (msg: ContactMessage) => (
         <Typography variant="body2" color="text.secondary">
           {msg.message.length > 100
             ? `${msg.message.substring(0, 100)}...`
@@ -108,13 +109,15 @@ const ContactMessagesPage = () => {
       field: "createdAt",
       headerName: t("admin_contact.table_date"),
       width: 140,
-      renderCell: (params) => <DateCell value={params.row.createdAt} />,
+      renderCell: (params: GridRenderCellParams) => (
+        <DateCell value={params.row.createdAt} />
+      ),
     },
     {
       field: "isRead",
       headerName: t("admin_contact.table_status"),
       width: 120,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Chip
           label={
             params.row.isRead
@@ -133,7 +136,7 @@ const ContactMessagesPage = () => {
       headerName: t("admin_contact.table_actions"),
       width: 80,
       sortable: false,
-      renderCell: (params) =>
+      renderCell: (params: GridRenderCellParams) =>
         !params.row.isRead ? (
           <Tooltip title={t("admin_contact.mark_as_read")}>
             <span>
@@ -149,7 +152,7 @@ const ContactMessagesPage = () => {
             </span>
           </Tooltip>
         ) : null,
-      mobileRender: (msg) =>
+      mobileRender: (msg: ContactMessage) =>
         !msg.isRead ? (
           <IconButton
             size="small"

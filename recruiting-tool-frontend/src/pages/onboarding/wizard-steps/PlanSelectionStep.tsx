@@ -141,10 +141,7 @@ const PlanSelectionStep: React.FC<PlanSelectionStepProps> = ({ onNext }) => {
       <Grid container spacing={3} justifyContent="center">
         {plans.map((planCard) => (
           <Grid
-            item
-            xs={12}
-            sm={6}
-            md={4}
+            size={{ xs: 12, sm: 6, md: 4 }}
             key={planCard.plan}
             sx={{ overflow: "visible" }}
           >

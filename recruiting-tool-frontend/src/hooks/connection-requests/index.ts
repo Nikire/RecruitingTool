@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { toast } from "react-toastify";
+import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useTranslation } from "react-i18next";
 import {
   createConnectionRequest,
@@ -28,13 +28,13 @@ export const useCreateConnectionRequest = () => {
       queryClient.invalidateQueries({
         queryKey: ["connection-requests", "my"],
       });
-      toast.success(t("connection_requests.request_sent"));
+      showSuccessToast(t("connection_requests.request_sent"));
     },
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message || t("connection_requests.errors.create_failed");
-      toast.error(message);
+      showErrorToast(null, message);
     },
   });
 };
@@ -80,13 +80,13 @@ export const useApproveConnectionRequest = () => {
     }) => approveConnectionRequest(requestUid, dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
-      toast.success(t("connection_requests.request_approved"));
+      showSuccessToast(t("connection_requests.request_approved"));
     },
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message || t("connection_requests.errors.approve_failed");
-      toast.error(message);
+      showErrorToast(null, message);
     },
   });
 };
@@ -108,13 +108,13 @@ export const useDenyConnectionRequest = () => {
     }) => denyConnectionRequest(requestUid, dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
-      toast.success(t("connection_requests.request_denied"));
+      showSuccessToast(t("connection_requests.request_denied"));
     },
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message || t("connection_requests.errors.deny_failed");
-      toast.error(message);
+      showErrorToast(null, message);
     },
   });
 };
@@ -132,13 +132,13 @@ export const useCancelConnectionRequest = () => {
       queryClient.invalidateQueries({
         queryKey: ["connection-requests", "my"],
       });
-      toast.success(t("connection_requests.request_cancelled"));
+      showSuccessToast(t("connection_requests.request_cancelled"));
     },
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message || t("connection_requests.errors.cancel_failed");
-      toast.error(message);
+      showErrorToast(null, message);
     },
   });
 };

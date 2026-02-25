@@ -1,5 +1,6 @@
 import { Box, Typography, Button } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { useJobPositionsSearch } from "../../hooks/api/state/useSearchState";
 import { useSearchPaginationHandlers } from "../../hooks/useSearchPaginationHandlers";
@@ -10,6 +11,7 @@ import SearchBar from "../../components/search/SearchBar";
 import JobPositionsManagementList from "../../components/job-positions/JobPositionsManagementList";
 
 const Dashboard: React.FC = () => {
+  const { t } = useTranslation();
   const createDialog = useDialog<never>();
   const [searchState, setSearchState] = useJobPositionsSearch();
   const { page, limit, search } = searchState;

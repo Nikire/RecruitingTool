@@ -45,12 +45,13 @@ interface ScorecardTemplateEditorProps {
   isSaving?: boolean;
 }
 
-interface CategoryForm extends CreateCategoryDto {
+interface CriterionForm extends CreateCriterionDto {
   tempId: string;
 }
 
-interface CriterionForm extends CreateCriterionDto {
+interface CategoryForm extends Omit<CreateCategoryDto, "criteria"> {
   tempId: string;
+  criteria: CriterionForm[];
 }
 
 const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({

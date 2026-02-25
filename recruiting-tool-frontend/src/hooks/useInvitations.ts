@@ -35,8 +35,11 @@ export const useCreateInvitation = (companyUid: string) => {
       toast.success(t("team.invitation_sent"));
     },
     onError: (error: unknown) => {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
       const message =
-        error.response?.data?.message || t("errors.create_failed");
+        axiosError.response?.data?.message || t("errors.create_failed");
       toast.error(message);
     },
   });
@@ -59,8 +62,11 @@ export const useCancelInvitation = (companyUid: string) => {
       toast.success(t("team.invitation_cancelled"));
     },
     onError: (error: unknown) => {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
       const message =
-        error.response?.data?.message || t("errors.operation_failed");
+        axiosError.response?.data?.message || t("errors.operation_failed");
       toast.error(message);
     },
   });
@@ -81,8 +87,11 @@ export const useAcceptInvitation = () => {
       toast.success(t("team.invitation_accepted"));
     },
     onError: (error: unknown) => {
+      const axiosError = error as {
+        response?: { data?: { message?: string } };
+      };
       const message =
-        error.response?.data?.message || t("errors.operation_failed");
+        axiosError.response?.data?.message || t("errors.operation_failed");
       toast.error(message);
     },
   });

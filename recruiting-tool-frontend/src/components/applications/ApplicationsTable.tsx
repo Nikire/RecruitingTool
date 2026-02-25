@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Typography, Box, Paper } from "@mui/material";
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { useApplications } from "../../hooks/api/useApplications";
 import { Application, ApplicationStatus } from "../../types/application.types";
@@ -57,7 +58,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       headerName: t("applications.applicant_name"),
       flex: 1,
       minWidth: 150,
-      mobileRender: (app) => (
+      mobileRender: (app: Application) => (
         <Typography variant="h6" sx={{ mb: 1 }}>
           {app.applicantName}
         </Typography>
@@ -68,7 +69,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       headerName: t("applications.email"),
       flex: 1,
       minWidth: 180,
-      mobileRender: (app) => (
+      mobileRender: (app: Application) => (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
           {app.applicantEmail}
         </Typography>
@@ -78,8 +79,8 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       field: "applicantPhone",
       headerName: t("applications.phone"),
       width: 130,
-      renderCell: (params) => params.value || "-",
-      mobileRender: (app) =>
+      renderCell: (params: GridRenderCellParams) => params.value || "-",
+      mobileRender: (app: Application) =>
         app.applicantPhone ? (
           <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
             {app.applicantPhone}
@@ -91,7 +92,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       headerName: t("applications.job_position"),
       flex: 1,
       minWidth: 180,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <CellColumn gap={0.25}>
           <Typography variant="body2">{params.value}</Typography>
           {params.row.companyName && (
@@ -101,7 +102,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
           )}
         </CellColumn>
       ),
-      mobileRender: (app) => (
+      mobileRender: (app: Application) => (
         <Box sx={{ mb: 1 }}>
           <Typography variant="body2">{app.jobPositionTitle}</Typography>
           {app.companyName && (
@@ -116,7 +117,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       field: "status",
       headerName: t("applications.status"),
       width: 130,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <CellRow centered>
           <StatusCell
             status={params.value}
@@ -124,7 +125,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
           />
         </CellRow>
       ),
-      mobileRender: (app) => (
+      mobileRender: (app: Application) => (
         <StatusCell status={app.status} colorMap={applicationStatusColors} />
       ),
     },
@@ -132,8 +133,10 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       field: "appliedAt",
       headerName: t("applications.applied_date"),
       width: 170,
-      renderCell: (params) => <DateCell value={params.value} showTime />,
-      mobileRender: (app) => (
+      renderCell: (params: GridRenderCellParams) => (
+        <DateCell value={params.value} showTime />
+      ),
+      mobileRender: (app: Application) => (
         <Typography variant="caption" color="textSecondary">
           {new Date(app.appliedAt).toLocaleString()}
         </Typography>
@@ -147,8 +150,10 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
       filterable: false,
       align: "center",
       headerAlign: "center",
-      renderCell: (params) => (
-        <ActionsCell onView={() => handleViewClick(params.row)} />
+      renderCell: (params: GridRenderCellParams) => (
+        <ActionsCell
+          onView={() => handleViewClick(params.row as Application)}
+        />
       ),
       showInMobile: false, // Hide actions in mobile, rely on row click
     },

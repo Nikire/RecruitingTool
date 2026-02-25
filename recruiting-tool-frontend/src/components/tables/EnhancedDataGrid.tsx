@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import { Box } from "@mui/material";
 import { DataGridProps, GridToolbarContainer } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
@@ -90,7 +90,7 @@ const EnhancedDataGrid: React.FC<EnhancedDataGridProps> = ({
       {showOnboarding && (
         <DataGridOnboarding
           onboardingKey={onboardingKey}
-          containerRef={containerRef}
+          containerRef={containerRef as React.RefObject<HTMLDivElement>}
         />
       )}
     </Box>

@@ -121,7 +121,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
 
   const onSubmit = (data: CompanySetupFormData) => {
     // Pass the logo file along with other data
-    onNext({ ...data, logoFile });
+    onNext({ ...data, companyLogo: logoFile ?? undefined });
   };
 
   const handleSkip = () => {

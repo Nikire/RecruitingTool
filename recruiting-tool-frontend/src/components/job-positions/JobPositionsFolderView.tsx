@@ -12,15 +12,22 @@ import {
 import FolderIcon from "@mui/icons-material/Folder";
 import { useListJobPositions } from "../../hooks/api/useJobPositions";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
+interface HiringProcessEntry {
+  jobPosition?: { uid: string };
+  status?: string;
+}
 
 interface JobPositionsFolderViewProps {
-  hiringProcesses?: unknown[];
+  hiringProcesses?: HiringProcessEntry[];
 }
 
 const JobPositionsFolderView: React.FC<JobPositionsFolderViewProps> = ({
   hiringProcesses,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { data: jobPositionsData, isLoading } = useListJobPositions({
     page: 1,
     limit: 100,

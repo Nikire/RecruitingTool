@@ -27,6 +27,7 @@ import StatusLabel from "../../../components/StatusLabel";
 import { HiringProcessStatus } from "../../../types/hiringProcess.types";
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
 import { canManageResources } from "../../../utils/permissions";
+import { UserRoles } from "../../../types/user.types";
 import { useTranslation } from "react-i18next";
 import UpdateJobPositionDialog from "../../../components/dialogs/UpdateJobPositionDialog";
 import ConfirmDeleteDialog from "../../../components/dialogs/ConfirmDeleteDialog";
@@ -87,9 +88,7 @@ const HRJobPositionDetailPage: React.FC = () => {
   const updateDialog = useDialog<JobPosition>();
   const manageStagesDialog = useDialog<JobPosition>();
   const deleteMutation = useDeleteJobPosition();
-  const deleteConfirm = useConfirmDelete<JobPosition>(deleteMutation, () => {
-    navigate("/hr/job-positions");
-  });
+  const deleteConfirm = useConfirmDelete<JobPosition>(deleteMutation);
 
   const canManage = canManageResources(user);
 
@@ -127,9 +126,9 @@ const HRJobPositionDetailPage: React.FC = () => {
 
   // Company permission check
   const canAccess =
-    user.roles.includes("ADMIN") ||
-    user.roles.includes("SUPER_ADMIN") ||
-    user.companyUid === jobPosition.companyUid;
+    user?.roles.includes(UserRoles.ADMIN) ||
+    user?.roles.includes(UserRoles.SUPER_ADMIN) ||
+    user?.companyUid === jobPosition.companyUid;
 
   if (!canAccess) {
     return (

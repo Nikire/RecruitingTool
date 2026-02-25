@@ -196,7 +196,7 @@ const SubscriptionsManagementPage: React.FC = () => {
       {/* Statistics Cards */}
       {data?.stats && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <UnifiedStatCard
               title={t("subscriptions.active_subscriptions")}
               value={data.stats.totalActive}
@@ -205,7 +205,7 @@ const SubscriptionsManagementPage: React.FC = () => {
               translate={false}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <UnifiedStatCard
               title={t("subscriptions.trialing_subscriptions")}
               value={data.stats.totalTrialing}
@@ -214,7 +214,7 @@ const SubscriptionsManagementPage: React.FC = () => {
               translate={false}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <UnifiedStatCard
               title={t("subscriptions.past_due_subscriptions")}
               value={data.stats.totalPastDue}
@@ -223,7 +223,7 @@ const SubscriptionsManagementPage: React.FC = () => {
               translate={false}
             />
           </Grid>
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <UnifiedStatCard
               title={t("subscriptions.monthly_revenue")}
               value={formatCurrency(data.stats.totalMonthlyRevenue)}
@@ -239,7 +239,7 @@ const SubscriptionsManagementPage: React.FC = () => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField
                 fullWidth
                 label={t("subscriptions.search_company")}
@@ -248,7 +248,7 @@ const SubscriptionsManagementPage: React.FC = () => {
                 size="small"
               />
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField
                 fullWidth
                 select
@@ -277,7 +277,7 @@ const SubscriptionsManagementPage: React.FC = () => {
                 </MenuItem>
               </TextField>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }}>
               <TextField
                 fullWidth
                 select

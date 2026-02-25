@@ -195,7 +195,7 @@ const CalendarSettingsPage = () => {
 
       <Grid container spacing={3}>
         {/* Google Calendar Connection Card */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <SettingsCard
             icon={<EventIcon />}
             title={t("calendar_settings.google_calendar")}
@@ -283,7 +283,7 @@ const CalendarSettingsPage = () => {
         </Grid>
 
         {/* Working Hours Settings */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <SettingsCard
             icon={<AccessTimeIcon />}
             title={t("calendar_settings.working_hours")}
@@ -314,7 +314,7 @@ const CalendarSettingsPage = () => {
                     }}
                   >
                     <Grid container spacing={2} alignItems="center">
-                      <Grid item xs={12} sm={3}>
+                      <Grid size={{ xs: 12, sm: 3 }}>
                         <Box
                           sx={{
                             display: "flex",
@@ -341,7 +341,7 @@ const CalendarSettingsPage = () => {
                           )}
                         </Box>
                       </Grid>
-                      <Grid item xs={6} sm={2}>
+                      <Grid size={{ xs: 6, sm: 2 }}>
                         <TextField
                           select
                           size="small"
@@ -366,7 +366,7 @@ const CalendarSettingsPage = () => {
                       </Grid>
                       {hours.enabled && (
                         <>
-                          <Grid item xs={6} sm={3}>
+                          <Grid size={{ xs: 6, sm: 3 }}>
                             <TextField
                               type="time"
                               size="small"
@@ -383,7 +383,7 @@ const CalendarSettingsPage = () => {
                               InputLabelProps={{ shrink: true }}
                             />
                           </Grid>
-                          <Grid item xs={6} sm={4}>
+                          <Grid size={{ xs: 6, sm: 4 }}>
                             <TextField
                               type="time"
                               size="small"
@@ -411,7 +411,7 @@ const CalendarSettingsPage = () => {
         </Grid>
 
         {/* Meeting Settings */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<ScheduleIcon />}
             title={t("calendar_settings.meeting_settings")}

@@ -280,7 +280,7 @@ const LandingPage = () => {
 
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
           <Grid container spacing={8} alignItems="center">
-            <Grid item xs={12} md={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Box
                 sx={{
                   animation: `${fadeInUp} 0.8s ease-out`,
@@ -413,7 +413,7 @@ const LandingPage = () => {
                 )}
               </Box>
             </Grid>
-            <Grid item xs={12} md={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -569,10 +569,7 @@ const LandingPage = () => {
         <Grid container spacing={4} justifyContent="center">
           {features.map((feature, index) => (
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
+              size={{ xs: 12, sm: 6, md: 4 }}
               key={index}
               sx={{ overflow: "visible" }}
             >
@@ -688,9 +685,7 @@ const LandingPage = () => {
           <Grid container spacing={6} justifyContent="center">
             {howItWorksSteps.map((step, index) => (
               <Grid
-                item
-                xs={12}
-                md={4}
+                size={{ xs: 12, md: 4 }}
                 key={index}
                 sx={{ overflow: "visible" }}
               >
@@ -819,10 +814,7 @@ const LandingPage = () => {
         <Grid container spacing={4} justifyContent="center">
           {pricingPlans.map((plan, index) => (
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
+              size={{ xs: 12, sm: 6, md: 4 }}
               key={index}
               sx={{ display: "flex", overflow: "visible" }}
             >
@@ -1058,7 +1050,7 @@ const LandingPage = () => {
 								company: t('landing.social_proof.testimonial_3.company'),
 							},
 						].map((testimonial, index) => (
-							<Grid item xs={12} md={4} key={index} sx={{ overflow: 'visible' }}>
+							<Grid size={{ xs: 12, md: 4 }} key={index} sx={{ overflow: 'visible' }}>
 								<Card
 									sx={{
 										height: '100%',
@@ -1305,7 +1297,7 @@ const LandingPage = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={5}>
-            <Grid item xs={12} md={4}>
+            <Grid size={{ xs: 12, md: 4 }}>
               <Typography
                 variant="h5"
                 gutterBottom
@@ -1375,7 +1367,7 @@ const LandingPage = () => {
                 </IconButton>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 gutterBottom
@@ -1422,7 +1414,7 @@ const LandingPage = () => {
                 </Typography>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 gutterBottom
@@ -1469,7 +1461,7 @@ const LandingPage = () => {
                 </Typography>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 gutterBottom
@@ -1516,7 +1508,7 @@ const LandingPage = () => {
                 </Typography>
               </Stack>
             </Grid>
-            <Grid item xs={6} md={2}>
+            <Grid size={{ xs: 6, md: 2 }}>
               <Typography
                 variant="subtitle2"
                 gutterBottom

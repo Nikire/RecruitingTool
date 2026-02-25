@@ -61,7 +61,7 @@ const QuickActionButton: React.FC<QuickActionButtonProps> = ({
   const displayLabel = translate ? t(label) : label;
 
   return (
-    <Grid item xs={xs} sm={sm} md={md}>
+    <Grid size={{ xs: xs, sm: sm, md: md }}>
       <Button
         variant="outlined"
         fullWidth

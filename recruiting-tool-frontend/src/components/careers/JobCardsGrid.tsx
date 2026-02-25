@@ -1,13 +1,13 @@
 import React, { memo } from "react";
 import { Grid, Box, Typography, Button, Pagination } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { PublicJobPositionDto } from "../../api/jobPositions";
+import { JobPosition } from "../../types/jobPosition.types";
 import CompactJobCard from "./CompactJobCard";
 import WorkIcon from "@mui/icons-material/Work";
 import SearchOffIcon from "@mui/icons-material/SearchOff";
 
 interface JobCardsGridProps {
-  jobPositions: PublicJobPositionDto[];
+  jobPositions: JobPosition[];
   isLoading: boolean;
   error: Error | null;
   openJobsCount: number;
@@ -97,10 +97,7 @@ const JobCardsGrid: React.FC<JobCardsGridProps> = memo(
           {jobPositions.map((job) => (
             <Grid
               key={job.uid}
-              item
-              xs={12}
-              sm={6}
-              lg={4}
+              size={{ xs: 12, sm: 6, lg: 4 }}
               sx={{
                 overflow: "visible",
                 display: "flex",

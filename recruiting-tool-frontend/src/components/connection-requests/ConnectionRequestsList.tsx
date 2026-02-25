@@ -14,6 +14,7 @@ import {
   TextField,
   CircularProgress,
   Alert,
+  MenuItem,
 } from "@mui/material";
 import {
   CheckCircle as ApproveIcon,
@@ -160,7 +161,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
     <Box>
       <Grid container spacing={2}>
         {requests.map((request) => (
-          <Grid item xs={12} key={request.uid}>
+          <Grid size={{ xs: 12 }} key={request.uid}>
             <Card>
               <CardContent>
                 <Box

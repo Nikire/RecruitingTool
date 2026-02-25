@@ -105,7 +105,7 @@ const Home: React.FC = () => {
       >
         <Container maxWidth="lg">
           <Grid container spacing={4} alignItems="center">
-            <Grid item xs={12} md={7}>
+            <Grid size={{ xs: 12, md: 7 }}>
               <Typography
                 variant="h2"
                 component="h1"
@@ -177,7 +177,7 @@ const Home: React.FC = () => {
                 </Button>
               </Stack>
             </Grid>
-            <Grid item xs={12} md={5}>
+            <Grid size={{ xs: 12, md: 5 }}>
               <Box
                 sx={{
                   display: "flex",
@@ -226,7 +226,7 @@ const Home: React.FC = () => {
 
         <Grid container spacing={3} justifyContent="center">
           {features.map((feature, index) => (
-            <Grid item xs={12} sm={6} md={4} key={index}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
               <Card
                 sx={{
                   height: "100%",

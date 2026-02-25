@@ -15,7 +15,7 @@ const MANAGEMENT_ROLES = [
  * @param user - The user to check permissions for
  * @returns true if the user has any management role, false otherwise
  */
-export const canManageResources = (user: User | null): boolean => {
+export const canManageResources = (user: User | null | undefined): boolean => {
   if (!user || !Array.isArray(user.roles)) return false;
   return MANAGEMENT_ROLES.some((role) => user.roles.includes(role));
 };
@@ -26,7 +26,10 @@ export const canManageResources = (user: User | null): boolean => {
  * @param role - The role to check for
  * @returns true if the user has the specified role, false otherwise
  */
-export const hasRole = (user: User | null, role: UserRoles): boolean => {
+export const hasRole = (
+  user: User | null | undefined,
+  role: UserRoles,
+): boolean => {
   if (!user || !Array.isArray(user.roles)) return false;
   return user.roles.includes(role);
 };
@@ -37,7 +40,10 @@ export const hasRole = (user: User | null, role: UserRoles): boolean => {
  * @param roles - Array of roles to check for
  * @returns true if the user has any of the specified roles, false otherwise
  */
-export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
+export const hasAnyRole = (
+  user: User | null | undefined,
+  roles: UserRoles[],
+): boolean => {
   if (!user || !Array.isArray(user.roles)) return false;
   return roles.some((role) => user.roles.includes(role));
 };
@@ -47,7 +53,7 @@ export const hasAnyRole = (user: User | null, roles: UserRoles[]): boolean => {
  * @param user - The user to check
  * @returns true if the user is an admin, false otherwise
  */
-export const isAdmin = (user: User | null): boolean => {
+export const isAdmin = (user: User | null | undefined): boolean => {
   if (!user || !Array.isArray(user.roles)) return false;
   return (
     user.roles.includes(UserRoles.ADMIN) ||
@@ -61,7 +67,7 @@ export const isAdmin = (user: User | null): boolean => {
  * @param user - The user to get the dashboard for
  * @returns The appropriate dashboard route
  */
-export const getDefaultDashboard = (user: User | null): string => {
+export const getDefaultDashboard = (user: User | null | undefined): string => {
   if (!user || !Array.isArray(user.roles)) return "/careers";
 
   // Super admins go to admin panel

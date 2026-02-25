@@ -86,7 +86,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
           </Typography>
           <Grid container spacing={3}>
             {features.map((feature, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
+              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
                 <Box
                   sx={{
                     display: "flex",
@@ -146,7 +146,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
             {t("onboarding.welcome.resources_title")}
           </Typography>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 fullWidth
                 variant="outlined"
@@ -157,7 +157,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
                 {t("onboarding.welcome.resources.documentation")}
               </Button>
             </Grid>
-            <Grid item xs={12} sm={6}>
+            <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 fullWidth
                 variant="outlined"

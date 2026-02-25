@@ -224,7 +224,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </Box>
         <Grid container spacing={3}>
           {metricCards.map((card, index) => (
-            <Grid item xs={12} sm={6} md={4} lg={2.4} key={index}>
+            <Grid size={{ xs: 12, sm: 6, md: 4, lg: 2.4 }} key={index}>
               <MetricCard data={card} />
             </Grid>
           ))}
@@ -248,19 +248,19 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         </Box>
         <Grid container spacing={3}>
           {/* Conversion Funnel */}
-          <Grid item xs={12} lg={6}>
+          <Grid size={{ xs: 12, lg: 6 }}>
             <ConversionFunnel data={convertToLegacyConversionRates(data)} />
           </Grid>
 
           {/* Time to Hire Chart */}
           {/* TODO: TimeToHireChart component needs to be created */}
-          {/* <Grid item xs={12} lg={6}>
+          {/* <Grid size={{ xs: 12, lg: 6 }}>
             <TimeToHireChart data={timeToHireData} />
           </Grid> */}
 
           {/* Hiring Trends */}
           {timeToHireData && (
-            <Grid item xs={12}>
+            <Grid size={{ xs: 12 }}>
               <HiringTrendsChart
                 data={convertToLegacyHiringTrends(timeToHireData)}
               />
@@ -287,7 +287,7 @@ const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
           </Box>
           <Grid container spacing={3}>
             {/* Source Distribution */}
-            <Grid item xs={12} md={6}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <SourceDistributionChart
                 data={convertToLegacySourceDistribution(sourcesData)}
               />

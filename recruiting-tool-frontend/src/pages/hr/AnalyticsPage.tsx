@@ -1,16 +1,12 @@
 import { useState, useMemo } from "react";
 import {
   Box,
-  Card,
-  CardContent,
-  CircularProgress,
   FormControl,
   Grid,
   InputLabel,
   MenuItem,
   Select,
   SelectChangeEvent,
-  Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "../../components/common";
@@ -25,66 +21,6 @@ import TimeToHireChart from "../../components/analytics/TimeToHireChart";
  * Date range option type for the analytics filter
  */
 type DateRangeOption = "30" | "90" | "180" | "365";
-
-/**
- * Chart placeholder card props
- */
-interface ChartPlaceholderProps {
-  title: string;
-}
-
-/**
- * ChartPlaceholder - Displays a loading placeholder card for a chart
- * Will be replaced in subsequent issues (#294-#299) with actual chart components
- */
-const ChartPlaceholder: React.FC<ChartPlaceholderProps> = ({ title }) => {
-  const { t } = useTranslation();
-
-  return (
-    <Card
-      elevation={2}
-      sx={{
-        borderRadius: 2,
-        height: "100%",
-        transition: "box-shadow 0.3s ease",
-        "&:hover": {
-          boxShadow: 4,
-        },
-      }}
-    >
-      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
-        <Typography
-          variant="h6"
-          component="h2"
-          sx={{
-            fontWeight: 600,
-            mb: 2,
-            fontSize: { xs: "1rem", sm: "1.25rem" },
-          }}
-        >
-          {title}
-        </Typography>
-        <Box
-          sx={{
-            minHeight: 260,
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 2,
-            bgcolor: "action.hover",
-            borderRadius: 1,
-          }}
-        >
-          <CircularProgress size={40} />
-          <Typography variant="body2" color="text.secondary">
-            {t("analytics.loading")}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-};
 
 /**
  * AnalyticsPage - Analytics & Reporting dashboard for HR users

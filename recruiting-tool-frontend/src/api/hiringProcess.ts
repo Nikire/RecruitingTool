@@ -15,10 +15,10 @@ export function getHiringProcesses(
 }
 
 export function listHiringProcesses(
-  params: PaginationParams,
+  params: PaginationParams & { status?: string },
 ): Promise<PaginatedResponse<HiringProcess>> {
   // Filter out 'all' status value - backend only accepts valid enum values
-  const filteredParams = { ...params };
+  const filteredParams: PaginationParams & { status?: string } = { ...params };
   if (filteredParams.status === "all" || filteredParams.status === "") {
     delete filteredParams.status;
   }

@@ -9,6 +9,7 @@ export interface User {
   company?: {
     uid: string;
     name: string;
+    logoUrl?: string;
   };
   profilePicture?: string;
   phoneNumber?: string;

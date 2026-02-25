@@ -204,7 +204,7 @@ const PipelineFunnelChart: React.FC<PipelineFunnelChartProps> = ({
             <YAxis dataKey="stage" type="category" width={110} />
             <Tooltip content={<PipelineFunnelTooltip />} />
             <Bar dataKey="count" radius={[0, 8, 8, 0]}>
-              {data.stages.map((entry, index) => (
+              {data.stages.map((_entry, index) => (
                 <Cell
                   key={`cell-${index}`}
                   fill={stageColors[index % stageColors.length]}

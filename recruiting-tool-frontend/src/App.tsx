@@ -30,7 +30,6 @@ import HRDashboard from "./pages/hr/HRDashboard";
 import ProfilePage from "./pages/profile/ProfilePage";
 import ApplicationsPage from "./pages/admin/applications/ApplicationsPage";
 import EmailTemplatesPage from "./pages/email-templates/EmailTemplatesPage";
-import ComingSoonPage from "./pages/coming-soon/ComingSoonPage";
 import SystemSettingsPage from "./pages/admin/SystemSettingsPage";
 import DeletedRecordsPage from "./pages/admin/DeletedRecordsPage";
 import AdminSubscriptionsPage from "./pages/admin/AdminSubscriptionsPage";

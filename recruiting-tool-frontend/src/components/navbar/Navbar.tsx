@@ -7,7 +7,6 @@ import {
   PropTypes,
   Toolbar,
   Tooltip,
-  Typography,
   alpha,
   useTheme,
   useMediaQuery,

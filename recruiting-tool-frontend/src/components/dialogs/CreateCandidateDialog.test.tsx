@@ -25,7 +25,7 @@ describe("CreateCandidateDialog", () => {
       mutate: mockMutate,
       isPending: false,
       isError: false,
-    } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+    } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
   });
 
   describe("Rendering", () => {
@@ -284,13 +284,13 @@ describe("CreateCandidateDialog", () => {
 
       // Mock successful mutation
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
-        mutate: (data: unknown, options: { onSuccess: () => void }) => {
+        mutate: (_data: unknown, options: { onSuccess: () => void }) => {
           // Immediately call onSuccess callback
           options.onSuccess();
         },
         isPending: false,
         isError: false,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog
@@ -321,12 +321,12 @@ describe("CreateCandidateDialog", () => {
       // Mock successful mutation
       let capturedCallback: unknown;
       vi.mocked(useCandidatesHook.useCreateCandidate).mockReturnValue({
-        mutate: (data: unknown, options: { onSuccess: () => void }) => {
+        mutate: (_data: unknown, options: { onSuccess: () => void }) => {
           capturedCallback = options.onSuccess;
         },
         isPending: false,
         isError: false,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       const { rerender } = renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -348,7 +348,7 @@ describe("CreateCandidateDialog", () => {
 
       // Trigger onSuccess callback
       if (capturedCallback) {
-        capturedCallback();
+        (capturedCallback as () => void)();
       }
 
       // Reopen dialog to check if form was reset
@@ -373,7 +373,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -390,7 +390,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -406,7 +406,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: true,
         isError: false,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -427,7 +427,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: false,
         isError: true,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,
@@ -443,7 +443,7 @@ describe("CreateCandidateDialog", () => {
         mutate: mockMutate,
         isPending: false,
         isError: false,
-      } as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
+      } as unknown as ReturnType<typeof useCandidatesHook.useCreateCandidate>);
 
       renderWithProviders(
         <CreateCandidateDialog open={true} onClose={mockOnClose} />,

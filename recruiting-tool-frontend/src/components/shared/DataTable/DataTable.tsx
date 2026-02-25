@@ -16,8 +16,11 @@ import { ReactNode } from "react";
 
 /**
  * Column configuration for DataTable<T>
+ * Extends GridColDef with mobile card rendering support.
  */
-export interface DataTableColumn<T> extends GridColDef {
+export type DataTableColumn<T> = GridColDef & {
+  /** Required field name - ensures each column has an identifier */
+  field: string;
   /**
    * Mobile card renderer function
    * If provided, this field will be shown in mobile card view
@@ -28,7 +31,7 @@ export interface DataTableColumn<T> extends GridColDef {
    * @default false (only fields with mobileRender are shown)
    */
   showInMobile?: boolean;
-}
+};
 
 /**
  * Props for DataTable<T> component
@@ -169,9 +172,7 @@ const DefaultMobileCard = <T,>({
                 );
               }
               // Fallback: render field value as text
-              const value = (item as Record<string, unknown>)[
-                col.field as string
-              ];
+              const value = (item as Record<string, unknown>)[col.field];
               return (
                 <Typography
                   key={`${col.field}-${index}`}

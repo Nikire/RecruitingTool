@@ -19,6 +19,7 @@ import { getDefaultDashboard } from "../../../utils/permissions";
 interface ConfirmationStepProps {
   formData: RegistrationFormData;
   onBack: () => void;
+  onComplete?: () => void;
 }
 
 const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
@@ -62,7 +63,13 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   const handleRegister = () => {
     // Prepare registration data based on role
-    const registrationData: Record<string, unknown> = {
+    const registrationData: {
+      name: string;
+      email: string;
+      password: string;
+      roles?: string[];
+      companyName?: string;
+    } = {
       name: formData.name,
       email: formData.email,
       password: formData.password,

@@ -234,10 +234,11 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
             cx="50%"
             cy="50%"
             outerRadius={100}
-            label={renderCustomLabel}
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            label={renderCustomLabel as any}
             labelLine={false}
           >
-            {data.map((entry, index) => (
+            {data.map((_entry, index) => (
               <Cell
                 key={`cell-${index}`}
                 fill={COLORS[index % COLORS.length]}
@@ -253,14 +254,17 @@ const SourceDistributionChart: React.FC<SourceDistributionChartProps> = ({
       </ResponsiveContainer>
 
       <Box mt={1}>
-        <Legend
-          content={renderLegend}
-          payload={data.map((item, index) => ({
+        {/* Recharts Legend requires payload prop not in its TypeScript type definition */}
+        {/* eslint-disable @typescript-eslint/no-explicit-any */}
+        {React.createElement(Legend as any, {
+          content: renderLegend as any,
+          payload: data.map((item, index) => ({
             value: item.source,
             color: COLORS[index % COLORS.length],
             payload: item,
-          }))}
-        />
+          })),
+        })}
+        {/* eslint-enable @typescript-eslint/no-explicit-any */}
       </Box>
 
       {/* Top Source Highlight */}

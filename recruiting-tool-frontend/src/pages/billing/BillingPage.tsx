@@ -42,7 +42,7 @@ const BillingPage: React.FC = () => {
   if (isError) {
     return (
       <Box sx={{ p: 3 }}>
-        <PageHeader title={t("billing.title")} icon={<ReceiptIcon />} />
+        <PageHeader title={t("billing.title")} />
         <Alert severity="error" sx={{ mt: 3 }}>
           {t("billing.error_loading")}
         </Alert>
@@ -54,7 +54,7 @@ const BillingPage: React.FC = () => {
   const hasInvoices = invoices.length > 0;
 
   const handleManageBilling = () => {
-    billingPortal.mutate({ returnUrl: window.location.origin + "/hr/billing" });
+    billingPortal.mutate(undefined as never);
   };
 
   const getSubscriptionStatusColor = (status: SubscriptionStatus) => {
@@ -76,11 +76,7 @@ const BillingPage: React.FC = () => {
 
   return (
     <Box sx={{ p: 3 }}>
-      <PageHeader
-        title={t("billing.title")}
-        subtitle={t("billing.subtitle")}
-        icon={<ReceiptIcon />}
-      />
+      <PageHeader title={t("billing.title")} subtitle={t("billing.subtitle")} />
 
       {/* Subscription Status Card */}
       {subscription && (

@@ -259,13 +259,13 @@ const SubscriptionPage: React.FC = () => {
       <Box sx={{ py: 4 }}>
         <Skeleton variant="rectangular" height={200} sx={{ mb: 3 }} />
         <Grid container spacing={3}>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Skeleton variant="rectangular" height={400} />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Skeleton variant="rectangular" height={400} />
           </Grid>
-          <Grid item xs={12} md={4}>
+          <Grid size={{ xs: 12, md: 4 }}>
             <Skeleton variant="rectangular" height={400} />
           </Grid>
         </Grid>
@@ -322,7 +322,7 @@ const SubscriptionPage: React.FC = () => {
 
               {/* Subscription Details */}
               <Grid container spacing={3}>
-                <Grid item xs={12} sm={6}>
+                <Grid size={{ xs: 12, sm: 6 }}>
                   <Typography
                     variant="caption"
                     color="text.secondary"
@@ -338,7 +338,7 @@ const SubscriptionPage: React.FC = () => {
                 </Grid>
 
                 {subscription.trialEnd && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography
                       variant="caption"
                       color="text.secondary"
@@ -353,7 +353,7 @@ const SubscriptionPage: React.FC = () => {
                 )}
 
                 {subscription.currentPeriodEnd && (
-                  <Grid item xs={12} sm={6}>
+                  <Grid size={{ xs: 12, sm: 6 }}>
                     <Typography
                       variant="caption"
                       color="text.secondary"
@@ -369,7 +369,7 @@ const SubscriptionPage: React.FC = () => {
                 )}
 
                 {subscription.cancelAtPeriodEnd && (
-                  <Grid item xs={12}>
+                  <Grid size={{ xs: 12 }}>
                     <Alert severity="warning" sx={{ mt: 1 }}>
                       {t("subscription.messages.will_cancel")}
                     </Alert>
@@ -464,14 +464,14 @@ const SubscriptionPage: React.FC = () => {
       {limitsLoading ? (
         <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
           {[0, 1, 2].map((i) => (
-            <Grid item xs={12} md={4} key={i}>
+            <Grid size={{ xs: 12, md: 4 }} key={i}>
               <Skeleton variant="rectangular" height={400} />
             </Grid>
           ))}
         </Grid>
       ) : (
         <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
-          <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ overflow: "visible" }}>
             <PricingCard
               plan={SubscriptionPlan.FREE}
               monthlyPrice={0}
@@ -483,7 +483,7 @@ const SubscriptionPage: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ overflow: "visible" }}>
             <PricingCard
               plan={SubscriptionPlan.PROFESSIONAL}
               monthlyPrice={79}
@@ -503,7 +503,7 @@ const SubscriptionPage: React.FC = () => {
             />
           </Grid>
 
-          <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
+          <Grid size={{ xs: 12, md: 4 }} sx={{ overflow: "visible" }}>
             <PricingCard
               plan={SubscriptionPlan.ENTERPRISE}
               monthlyPrice={249}

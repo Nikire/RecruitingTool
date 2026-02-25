@@ -49,7 +49,7 @@ const HiringProcessesPage: React.FC = () => {
     setSearchState({
       ...searchState,
       search: filters.search,
-      status: filters.status,
+      status: filters.status as typeof searchState.status,
     });
   };
 

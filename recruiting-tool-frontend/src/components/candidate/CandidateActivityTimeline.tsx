@@ -137,8 +137,8 @@ const CandidateActivityTimeline: React.FC<CandidateActivityTimelineProps> = ({
     <Timeline position="alternate">
       {activities.map((activity, index) => (
         <TimelineItem key={activity.uid}>
-          <TimelineOppositeContent color="textSecondary">
-            <Typography variant="body2">
+          <TimelineOppositeContent>
+            <Typography variant="body2" color="textSecondary">
               {format(new Date(activity.createdAt), "PPp")}
             </Typography>
             {activity.userName && (

@@ -161,7 +161,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
         {/* Filter Dropdowns and Inputs */}
         <Grid container spacing={2}>
           {/* Status Filter */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               select
               fullWidth
@@ -180,7 +180,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Department Filter */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               select
               fullWidth
@@ -212,7 +212,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Location Filter */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               fullWidth
               label={t("job_position_filters.location_label")}
@@ -224,7 +224,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Sort By */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               select
               fullWidth
@@ -253,7 +253,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Date From */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               fullWidth
               type="date"
@@ -266,7 +266,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Date To */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               fullWidth
               type="date"
@@ -279,7 +279,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Sort Order */}
-          <Grid item xs={12} sm={6} md={3}>
+          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
             <TextField
               select
               fullWidth
@@ -300,10 +300,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           {/* Clear Filters Button */}
           {hasActiveFilters && (
             <Grid
-              item
-              xs={12}
-              sm={6}
-              md={3}
+              size={{ xs: 12, sm: 6, md: 3 }}
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Button

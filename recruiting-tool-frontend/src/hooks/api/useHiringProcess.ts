@@ -25,7 +25,9 @@ export function useHiringProcesses(uid?: string) {
   });
 }
 
-export function useListHiringProcesses(params: PaginationParams) {
+export function useListHiringProcesses(
+  params: PaginationParams & { status?: string },
+) {
   return useQuery({
     queryKey: [HIRING_PROCESS_KEY, "list", params],
     queryFn: () => listHiringProcesses(params),

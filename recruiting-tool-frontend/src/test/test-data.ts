@@ -15,11 +15,13 @@ export const createMockApplication = (
   applicantName: "John Doe",
   applicantEmail: "john.doe@example.com",
   applicantPhone: "+1234567890",
+  jobPositionUid: "job-position-uid-123",
   jobPositionTitle: "Senior Frontend Developer",
   companyName: "Tech Corp",
   status: ApplicationStatus.PENDING,
-  appliedAt: "2025-01-15T10:30:00Z",
-  resumeUrl: "https://example.com/resume.pdf",
+  appliedAt: new Date("2025-01-15T10:30:00Z"),
+  createdAt: new Date("2025-01-15T10:30:00Z"),
+  updatedAt: new Date("2025-01-15T10:30:00Z"),
   coverLetter: "I am interested in this position...",
   ...overrides,
 });
@@ -53,6 +55,8 @@ export const createMockPaginationMeta = (
   limit: 10,
   total: 100,
   totalPages: 10,
+  hasNextPage: false,
+  hasPreviousPage: false,
   ...overrides,
 });
 

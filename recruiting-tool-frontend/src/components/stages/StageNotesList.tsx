@@ -23,7 +23,7 @@ import { enUS, es } from "date-fns/locale";
 import { StageNote } from "../../types/stage.types";
 import { useDeleteStageNote } from "../../hooks/api/useStages";
 import { useAtomValue } from "jotai";
-import { userAtom } from "../../hooks/api/state/atoms";
+import { userAtom } from "../../store";
 import EditStageNoteDialog from "./EditStageNoteDialog";
 
 interface StageNotesListProps {

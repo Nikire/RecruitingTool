@@ -1,3 +1,4 @@
+import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -55,7 +56,7 @@ const UsersList: React.FC<UsersListProps> = ({
       headerName: t("users.name_label"),
       flex: 1,
       minWidth: 150,
-      mobileRender: (user) => (
+      mobileRender: (user: User) => (
         <Typography
           variant="h6"
           sx={{ mb: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
@@ -69,7 +70,7 @@ const UsersList: React.FC<UsersListProps> = ({
       headerName: t("users.email_label"),
       flex: 1,
       minWidth: 200,
-      mobileRender: (user) => (
+      mobileRender: (user: User) => (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 1 }}>
           {user.email}
         </Typography>
@@ -79,14 +80,14 @@ const UsersList: React.FC<UsersListProps> = ({
       field: "roles",
       headerName: t("users.roles_label"),
       width: 200,
-      renderCell: (params) => (
+      renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
-          {params.row.roles.map((role) => (
+          {(params.row.roles as UserRoles[]).map((role: UserRoles) => (
             <StatusChip key={role} status={role} type="userRole" size="small" />
           ))}
         </Box>
       ),
-      mobileRender: (user) => (
+      mobileRender: (user: User) => (
         <Box sx={{ display: "flex", gap: 0.5, mb: 1, flexWrap: "wrap" }}>
           {user.roles.map((role) => (
             <StatusChip key={role} status={role} type="userRole" size="small" />
@@ -98,8 +99,9 @@ const UsersList: React.FC<UsersListProps> = ({
       field: "company",
       headerName: t("users.company_label"),
       width: 150,
-      valueGetter: (value: { name?: string } | unknown) => value?.name || "-",
-      mobileRender: (user) => (
+      valueGetter: (value: unknown) =>
+        (value as { name?: string })?.name || "-",
+      mobileRender: (user: User) => (
         <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
           {t("users.company_label")}: {user.company?.name || "-"}
         </Typography>
@@ -109,8 +111,10 @@ const UsersList: React.FC<UsersListProps> = ({
       field: "createdAt",
       headerName: t("users.created_label"),
       width: 130,
-      renderCell: (params) => <DateCell value={params.value} />,
-      mobileRender: (user) => (
+      renderCell: (params: GridRenderCellParams) => (
+        <DateCell value={params.value} />
+      ),
+      mobileRender: (user: User) => (
         <Typography
           variant="caption"
           color="textSecondary"

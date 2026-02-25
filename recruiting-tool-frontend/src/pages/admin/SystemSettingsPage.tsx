@@ -18,6 +18,7 @@ import {
   TestConnectionButton,
 } from "../../components/settings";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
+import { UserRoles } from "../../types/user.types";
 import { Navigate } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
@@ -74,7 +75,7 @@ const SystemSettingsPage: React.FC = () => {
   const [testingEmail, setTestingEmail] = useState(false);
 
   // Permission check - SUPER_ADMIN only
-  const isSuperAdmin = user?.roles?.includes("SUPER_ADMIN");
+  const isSuperAdmin = user?.roles?.includes(UserRoles.SUPER_ADMIN);
 
   if (!user) {
     return <Navigate to="/login" />;
@@ -152,7 +153,7 @@ const SystemSettingsPage: React.FC = () => {
 
       <Grid container spacing={3}>
         {/* General Settings */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<SettingsIcon />}
             title={t("settings.general_settings")}
@@ -211,7 +212,7 @@ const SystemSettingsPage: React.FC = () => {
         </Grid>
 
         {/* Email Settings */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<EmailIcon />}
             title={t("settings.email_configuration")}
@@ -265,7 +266,7 @@ const SystemSettingsPage: React.FC = () => {
         </Grid>
 
         {/* AI Settings */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<PsychologyIcon />}
             title={t("settings.ai_configuration")}
@@ -316,7 +317,7 @@ const SystemSettingsPage: React.FC = () => {
         </Grid>
 
         {/* Integration Status */}
-        <Grid item xs={12} md={6}>
+        <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<ExtensionIcon />}
             title={t("settings.integrations")}
@@ -357,14 +358,14 @@ const SystemSettingsPage: React.FC = () => {
         </Grid>
 
         {/* System Health */}
-        <Grid item xs={12}>
+        <Grid size={{ xs: 12 }}>
           <SettingsCard
             icon={<HealthIcon />}
             title={t("settings.system_health")}
             iconColor="success.main"
           >
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Box>
                   <Typography
                     variant="body2"
@@ -380,7 +381,7 @@ const SystemSettingsPage: React.FC = () => {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Box>
                   <Typography
                     variant="body2"
@@ -396,7 +397,7 @@ const SystemSettingsPage: React.FC = () => {
                 </Box>
               </Grid>
 
-              <Grid item xs={12} sm={4}>
+              <Grid size={{ xs: 12, sm: 4 }}>
                 <Box>
                   <Typography
                     variant="body2"

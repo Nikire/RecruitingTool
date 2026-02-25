@@ -29,6 +29,7 @@ export interface Subscription {
   subscriptionEndsAt: string | null;
   createdAt: string;
   updatedAt: string;
+  stripeCustomerId?: string;
 }
 
 // Quota Usage Item (from backend)

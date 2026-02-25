@@ -55,7 +55,8 @@ export interface UseConfirmDeleteReturn<T> {
  * ```
  */
 export const useConfirmDelete = <T extends { uid: string }>(
-  deleteMutation: UseMutationResult<void, Error, string, unknown>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  deleteMutation: UseMutationResult<any, Error, string, unknown>,
 ): UseConfirmDeleteReturn<T> => {
   const dialog = useDialog<T>();
 

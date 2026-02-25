@@ -15,6 +15,7 @@ import {
   Grid,
   IconButton,
   CircularProgress,
+  Chip,
 } from "@mui/material";
 import {
   Add as AddIcon,
@@ -113,7 +114,7 @@ const ScorecardTemplateList: React.FC<ScorecardTemplateListProps> = ({
         /* Template Cards Grid */
         <Grid container spacing={3}>
           {templates.map((template) => (
-            <Grid item xs={12} sm={6} md={4} key={template.uid}>
+            <Grid size={{ xs: 12, sm: 6, md: 4 }} key={template.uid}>
               <Card
                 sx={{
                   height: "100%",

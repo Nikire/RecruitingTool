@@ -67,6 +67,8 @@ export interface CreateCriterionDto {
   name: string;
   description?: string;
   maxScore: number;
+  /** Temporary ID used for client-side identification before persistence */
+  tempId?: string;
 }
 
 export interface SubmitScorecardDto {

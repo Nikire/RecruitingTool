@@ -73,7 +73,7 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
 
       <Grid container spacing={3} justifyContent="center">
         {roles.map((role) => (
-          <Grid item xs={12} sm={4} key={role.value}>
+          <Grid size={{ xs: 12, sm: 4 }} key={role.value}>
             <Card
               sx={{
                 height: "100%",

@@ -22,14 +22,6 @@ interface UserActivityTimelineProps {
   userUid: string;
 }
 
-interface ActivityLog {
-  uid: string;
-  action: string;
-  timestamp: string;
-  details?: string;
-  metadata?: Record<string, unknown>;
-}
-
 const getActivityIcon = (action: string) => {
   switch (action.toLowerCase()) {
     case "user_created":
@@ -90,13 +82,10 @@ const UserActivityTimeline: React.FC<UserActivityTimelineProps> = ({
 
   return (
     <Timeline position="right">
-      {activities.map((activity: ActivityLog, index: number) => (
-        <TimelineItem key={activity.uid}>
+      {activities.map((activity, index: number) => (
+        <TimelineItem key={`${activity.action}-${index}`}>
           <TimelineOppositeContent
             sx={{ m: "auto 0", display: { xs: "none", sm: "block" } }}
-            align="right"
-            variant="body2"
-            color="textSecondary"
           >
             {new Date(activity.timestamp).toLocaleString()}
           </TimelineOppositeContent>

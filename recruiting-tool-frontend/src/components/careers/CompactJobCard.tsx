@@ -24,7 +24,7 @@ interface CompactJobCardProps {
     companyName?: string;
     companyLogoUrl?: string;
     status: string;
-    createdAt: string;
+    createdAt?: Date | string;
     description?: string;
     // New fields from backend
     city?: string;
@@ -52,10 +52,12 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
     };
 
     // Calculate days since posted
-    const daysSincePosted = Math.floor(
-      (Date.now() - new Date(jobPosition.createdAt).getTime()) /
-        (1000 * 60 * 60 * 24),
-    );
+    const daysSincePosted = jobPosition.createdAt
+      ? Math.floor(
+          (Date.now() - new Date(jobPosition.createdAt).getTime()) /
+            (1000 * 60 * 60 * 24),
+        )
+      : 0;
 
     const getPostedText = () => {
       if (daysSincePosted === 0) {

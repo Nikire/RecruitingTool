@@ -152,7 +152,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         <Box component="form" sx={{ mt: 2 }}>
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Grid container spacing={2}>
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Controller
                   name="scheduledDate"
                   control={control}
@@ -184,7 +184,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Controller
                   name="scheduledTime"
                   control={control}
@@ -205,7 +205,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Controller
                   name="duration"
                   control={control}
@@ -230,7 +230,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Controller
                   name="meetingLink"
                   control={control}
@@ -249,7 +249,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                 />
               </Grid>
 
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Controller
                   name="notes"
                   control={control}
