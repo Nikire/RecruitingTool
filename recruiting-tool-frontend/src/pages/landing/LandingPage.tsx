@@ -416,76 +416,89 @@ const LandingPage = () => {
             <Grid item xs={12} md={5}>
               <Box
                 sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
                   animation: `${scaleIn} 0.8s ease-out 0.3s both`,
                 }}
               >
                 <Box
+                  component="img"
+                  src="/borderless-logo-light.png"
+                  alt="Borderless"
                   sx={{
-                    width: "100%",
-                    height: { xs: 320, md: 420 },
-                    bgcolor: alpha(theme.palette.common.white, 0.08),
-                    borderRadius: 5,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    backdropFilter: "blur(30px)",
-                    border: `2px solid ${alpha(theme.palette.common.white, 0.15)}`,
-                    boxShadow: "0 25px 70px rgba(0,0,0,0.25)",
-                    position: "relative",
-                    overflow: "hidden",
-                    "&::before": {
-                      content: '""',
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      background: `linear-gradient(135deg, ${alpha(
-                        theme.palette.primary.light,
-                        0.15,
-                      )} 0%, transparent 100%)`,
-                      pointerEvents: "none",
-                    },
+                    width: { xs: "65%", md: "80%" },
+                    maxWidth: 380,
+                    height: "auto",
+                    opacity: 0.92,
                   }}
-                >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      gap: 3,
-                    }}
-                  >
-                    <Box
-                      component="img"
-                      src="/borderless-icon.png"
-                      alt="Borderless"
-                      sx={{
-                        width: { xs: 120, md: 180 },
-                        height: "auto",
-                        opacity: 0.85,
-                        filter: "brightness(0) invert(1)",
-                        animation: `${float} 4s ease-in-out infinite`,
-                      }}
-                    />
-                    <Typography
-                      variant="h6"
-                      sx={{
-                        opacity: 0.6,
-                        fontWeight: 500,
-                        letterSpacing: "0.15em",
-                        textTransform: "uppercase",
-                        fontSize: "0.75rem",
-                      }}
-                    >
-                      {t("landing.hero.coming_soon")}
-                    </Typography>
-                  </Box>
-                </Box>
+                />
               </Box>
             </Grid>
           </Grid>
+        </Container>
+      </Box>
+
+      {/* Product Preview Section */}
+      <Box
+        sx={{
+          py: { xs: 8, md: 12 },
+          bgcolor: "background.default",
+          borderBottom: `1px solid ${alpha(theme.palette.divider, 0.1)}`,
+        }}
+      >
+        <Container maxWidth="lg">
+          <Box sx={{ textAlign: "center", mb: 6 }}>
+            <Typography
+              variant="h3"
+              component="h2"
+              sx={{ fontWeight: 600, mb: 2 }}
+            >
+              {t("landing.product_preview.title")}
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{ fontWeight: 400, maxWidth: 560, mx: "auto" }}
+            >
+              {t("landing.product_preview.subtitle")}
+            </Typography>
+          </Box>
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: 900,
+              mx: "auto",
+              height: { xs: 280, md: 420 },
+              bgcolor: alpha(theme.palette.primary.main, 0.04),
+              borderRadius: 4,
+              border: `2px solid ${alpha(theme.palette.primary.main, 0.12)}`,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: 3,
+            }}
+          >
+            <Box
+              component="img"
+              src="/borderless-icon.png"
+              alt="Borderless"
+              sx={{
+                width: { xs: 72, md: 100 },
+                height: "auto",
+                opacity: 0.35,
+                filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
+              }}
+            />
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              sx={{ fontWeight: 500, letterSpacing: "0.08em" }}
+            >
+              {t("landing.product_preview.coming_soon")}
+            </Typography>
+          </Box>
         </Container>
       </Box>
 
