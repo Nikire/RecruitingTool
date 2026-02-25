@@ -71,6 +71,20 @@ export const isFeatureEnabled = (
   return feature?.enabled ?? false;
 };
 
+// Plan Limits (public endpoint - no auth required)
+export interface PlanLimits {
+  maxJobPositions: number;
+  maxCandidatesPerPosition: number;
+  maxUsers: number;
+  maxStorageMB: number;
+  aiScoringEnabled: boolean;
+  aiScoringCreditsPerMonth: number;
+  emailTemplatesEnabled: boolean;
+  analyticsEnabled: boolean;
+}
+
+export type PlanLimitsMap = Record<SubscriptionPlan, PlanLimits>;
+
 // Create Checkout Session DTO
 export interface CreateCheckoutSessionDto {
   plan: SubscriptionPlan;

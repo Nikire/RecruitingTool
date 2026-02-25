@@ -3336,5 +3336,22 @@
     "message_preview": "{{preview}}...",
     "loading_error": "Error al cargar los mensajes de contacto",
     "unread_count": "{{count}} no leídos"
+  },
+  "plan_features": {
+    "job_positions": "Hasta {{count}} posiciones activas",
+    "job_positions_unlimited": "Posiciones activas ilimitadas",
+    "candidates_per_position": "Hasta {{count}} candidatos por posición",
+    "candidates_unlimited": "Candidatos ilimitados",
+    "users": "Hasta {{count}} miembros del equipo",
+    "users_unlimited": "Miembros del equipo ilimitados",
+    "storage": "{{count}} MB de almacenamiento",
+    "storage_gb": "{{count}} GB de almacenamiento",
+    "storage_unlimited": "Almacenamiento ilimitado",
+    "ai_credits": "{{count}} créditos de IA por mes",
+    "ai_credits_unlimited": "Créditos de IA ilimitados",
+    "analytics_enabled": "Panel de análisis e informes",
+    "analytics_disabled": "Solo vista básica del pipeline",
+    "email_templates": "Plantillas de correo personalizadas",
+    "candidates_per_position_value": "Hasta {{count}} candidatos por posición"
   }
 }

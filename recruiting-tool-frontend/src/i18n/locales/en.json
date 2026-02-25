@@ -3328,5 +3328,22 @@
     "settings": "Settings",
     "contact_messages": "Contact Messages",
     "aria_label": "admin navigation"
+  },
+  "plan_features": {
+    "job_positions": "Up to {{count}} active job positions",
+    "job_positions_unlimited": "Unlimited active job positions",
+    "candidates_per_position": "Up to {{count}} candidates per position",
+    "candidates_unlimited": "Unlimited candidates",
+    "users": "Up to {{count}} team members",
+    "users_unlimited": "Unlimited team members",
+    "storage": "{{count}} MB storage",
+    "storage_gb": "{{count}} GB storage",
+    "storage_unlimited": "Unlimited storage",
+    "ai_credits": "{{count}} AI screening credits/month",
+    "ai_credits_unlimited": "Unlimited AI credits",
+    "analytics_enabled": "Analytics & reporting dashboard",
+    "analytics_disabled": "Basic pipeline view only",
+    "email_templates": "Custom email templates",
+    "candidates_per_position_value": "Up to {{count}} candidates per position"
   }
 }
