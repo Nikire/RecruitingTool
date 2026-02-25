@@ -16,6 +16,8 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/material/styles";
 import { useAuthMe } from "../../hooks/api/useAuth";
+import { usePlanLimits } from "../../hooks/api/usePlanLimits";
+import { buildPlanFeatures } from "../../utils/buildPlanFeatures";
 import toast from "react-hot-toast";
 
 // Icons
@@ -96,6 +98,7 @@ const LandingPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthMe();
+  const { data: planLimits } = usePlanLimits();
 
   const features = [
     {
@@ -154,18 +157,17 @@ const LandingPage = () => {
     },
   ];
 
+  const freePlanFeatures = planLimits ? buildPlanFeatures(planLimits["FREE"], t) : [];
+  const proPlanFeatures = planLimits ? buildPlanFeatures(planLimits["PROFESSIONAL"], t) : [];
+  const enterprisePlanFeatures = planLimits ? buildPlanFeatures(planLimits["ENTERPRISE"], t) : [];
+
   const pricingPlans = [
     {
       name: t("landing.pricing.free.name"),
       price: t("landing.pricing.free.price"),
       period: t("landing.pricing.per_month"),
       description: t("landing.pricing.free.description"),
-      features: Object.values(
-        t("landing.pricing.free.features", { returnObjects: true }) as Record<
-          string,
-          string
-        >,
-      ),
+      features: freePlanFeatures,
       recommended: false,
       color: theme.palette.grey[600],
       buttonVariant: "outlined" as const,
@@ -175,11 +177,7 @@ const LandingPage = () => {
       price: t("landing.pricing.professional.price"),
       period: t("landing.pricing.per_month"),
       description: t("landing.pricing.professional.description"),
-      features: Object.values(
-        t("landing.pricing.professional.features", {
-          returnObjects: true,
-        }) as Record<string, string>,
-      ),
+      features: proPlanFeatures,
       recommended: true,
       color: theme.palette.primary.main,
       buttonVariant: "contained" as const,
@@ -189,11 +187,7 @@ const LandingPage = () => {
       price: t("landing.pricing.enterprise.price"),
       period: t("landing.pricing.per_month"),
       description: t("landing.pricing.enterprise.description"),
-      features: Object.values(
-        t("landing.pricing.enterprise.features", {
-          returnObjects: true,
-        }) as Record<string, string>,
-      ),
+      features: enterprisePlanFeatures,
       recommended: false,
       color: theme.palette.secondary.main,
       buttonVariant: "outlined" as const,
