@@ -40,6 +40,8 @@ import {
   SubscriptionStatus,
   Subscription,
 } from "../../types/subscription.types";
+import { usePlanLimits } from "../../hooks/api/usePlanLimits";
+import { buildPlanFeatures } from "../../utils/buildPlanFeatures";
 
 // Helper functions for data validation
 const formatDate = (dateString: string | null): string | null => {
@@ -112,6 +114,7 @@ const SubscriptionPage: React.FC = () => {
     useBillingPortal();
   const { mutate: cancelSubscription, isPending: isCanceling } =
     useCancelSubscription();
+  const { data: planLimits, isLoading: limitsLoading } = usePlanLimits();
 
   // Memoized validation checks
   const validSubscription = useMemo(
@@ -209,35 +212,8 @@ const SubscriptionPage: React.FC = () => {
   };
 
   const getPlanFeatures = (plan: SubscriptionPlan): string[] => {
-    switch (plan) {
-      case SubscriptionPlan.FREE:
-        return [
-          t("subscription.plans.free.features.ats"),
-          t("subscription.plans.free.features.email_templates"),
-          t("subscription.plans.free.features.limits"),
-          t("subscription.plans.free.features.storage"),
-        ];
-      case SubscriptionPlan.PROFESSIONAL:
-        return [
-          t("subscription.plans.professional.features.ats"),
-          t("subscription.plans.professional.features.email_templates"),
-          t("subscription.plans.professional.features.positions"),
-          t("subscription.plans.professional.features.team"),
-          t("subscription.plans.professional.features.ai"),
-          t("subscription.plans.professional.features.analytics"),
-        ];
-      case SubscriptionPlan.ENTERPRISE:
-        return [
-          t("subscription.plans.enterprise.features.positions"),
-          t("subscription.plans.enterprise.features.team"),
-          t("subscription.plans.enterprise.features.ai"),
-          t("subscription.plans.enterprise.features.analytics"),
-          t("subscription.plans.enterprise.features.support"),
-          t("subscription.plans.enterprise.features.api"),
-        ];
-      default:
-        return [];
-    }
+    if (!planLimits) return [];
+    return buildPlanFeatures(planLimits[plan], t);
   };
 
   const getStatusColor = (
@@ -485,53 +461,65 @@ const SubscriptionPage: React.FC = () => {
         </Box>
       </Box>
 
-      <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
-        <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
-          <PricingCard
-            plan={SubscriptionPlan.FREE}
-            monthlyPrice={0}
-            annualPrice={0}
-            interval={billingInterval}
-            features={getPlanFeatures(SubscriptionPlan.FREE)}
-            isCurrentPlan={subscription?.plan === SubscriptionPlan.FREE}
-            upgradeDisabled
-          />
+      {limitsLoading ? (
+        <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
+          {[0, 1, 2].map((i) => (
+            <Grid item xs={12} md={4} key={i}>
+              <Skeleton variant="rectangular" height={400} />
+            </Grid>
+          ))}
         </Grid>
+      ) : (
+        <Grid container spacing={3} justifyContent="center" sx={{ mb: 4 }}>
+          <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
+            <PricingCard
+              plan={SubscriptionPlan.FREE}
+              monthlyPrice={0}
+              annualPrice={0}
+              interval={billingInterval}
+              features={getPlanFeatures(SubscriptionPlan.FREE)}
+              isCurrentPlan={subscription?.plan === SubscriptionPlan.FREE}
+              upgradeDisabled
+            />
+          </Grid>
 
-        <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
-          <PricingCard
-            plan={SubscriptionPlan.PROFESSIONAL}
-            monthlyPrice={79}
-            annualPrice={799}
-            interval={billingInterval}
-            features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
-            isCurrentPlan={subscription?.plan === SubscriptionPlan.PROFESSIONAL}
-            onUpgrade={() => handleUpgrade(SubscriptionPlan.PROFESSIONAL)}
-            upgradeDisabled={
-              isCreatingCheckout ||
-              subscription?.plan === SubscriptionPlan.PROFESSIONAL ||
-              subscription?.plan === SubscriptionPlan.ENTERPRISE
-            }
-            highlighted
-          />
-        </Grid>
+          <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
+            <PricingCard
+              plan={SubscriptionPlan.PROFESSIONAL}
+              monthlyPrice={79}
+              annualPrice={799}
+              interval={billingInterval}
+              features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
+              isCurrentPlan={
+                subscription?.plan === SubscriptionPlan.PROFESSIONAL
+              }
+              onUpgrade={() => handleUpgrade(SubscriptionPlan.PROFESSIONAL)}
+              upgradeDisabled={
+                isCreatingCheckout ||
+                subscription?.plan === SubscriptionPlan.PROFESSIONAL ||
+                subscription?.plan === SubscriptionPlan.ENTERPRISE
+              }
+              highlighted
+            />
+          </Grid>
 
-        <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
-          <PricingCard
-            plan={SubscriptionPlan.ENTERPRISE}
-            monthlyPrice={249}
-            annualPrice={2499}
-            interval={billingInterval}
-            features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
-            isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}
-            onUpgrade={() => handleUpgrade(SubscriptionPlan.ENTERPRISE)}
-            upgradeDisabled={
-              isCreatingCheckout ||
-              subscription?.plan === SubscriptionPlan.ENTERPRISE
-            }
-          />
+          <Grid item xs={12} md={4} sx={{ overflow: "visible" }}>
+            <PricingCard
+              plan={SubscriptionPlan.ENTERPRISE}
+              monthlyPrice={249}
+              annualPrice={2499}
+              interval={billingInterval}
+              features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
+              isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}
+              onUpgrade={() => handleUpgrade(SubscriptionPlan.ENTERPRISE)}
+              upgradeDisabled={
+                isCreatingCheckout ||
+                subscription?.plan === SubscriptionPlan.ENTERPRISE
+              }
+            />
+          </Grid>
         </Grid>
-      </Grid>
+      )}
 
       {/* Cancel Confirmation Dialog */}
       <Dialog
