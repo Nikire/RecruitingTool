@@ -1906,7 +1906,11 @@
     "pipeline_funnel": "Pipeline Funnel",
     "applications_by_source": "Applications by Source",
     "stage_duration": "Stage Duration Bottleneck",
-    "loading": "Loading analytics..."
+    "loading": "Loading analytics...",
+    "pipeline_funnel_subtitle": "Candidates at each stage",
+    "overall_conversion": "Overall conversion: {{rate}}%",
+    "no_pipeline_data": "No pipeline data available",
+    "no_source_data": "No source data available"
   },
   "search": {
     "advanced_search": "Advanced Search",

@@ -1925,7 +1925,11 @@
     "pipeline_funnel": "Embudo del Pipeline",
     "applications_by_source": "Aplicaciones por Fuente",
     "stage_duration": "Duración por Etapa",
-    "loading": "Cargando análisis..."
+    "loading": "Cargando análisis...",
+    "pipeline_funnel_subtitle": "Candidatos en cada etapa",
+    "overall_conversion": "Conversión general: {{rate}}%",
+    "no_pipeline_data": "No hay datos de pipeline disponibles",
+    "no_source_data": "No hay datos de fuente disponibles"
   },
   "search": {
     "advanced_search": "Búsqueda Avanzada",

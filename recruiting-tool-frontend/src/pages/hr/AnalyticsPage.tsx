@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Box,
   Card,
@@ -14,6 +14,9 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { PageHeader } from "../../components/common";
+import OverviewStatsRow from "../../components/analytics/OverviewStatsRow";
+import PipelineFunnelChart from "../../components/analytics/PipelineFunnelChart";
+import SourcesDonutChart from "../../components/analytics/SourcesDonutChart";
 
 /**
  * Date range option type for the analytics filter
@@ -93,6 +96,17 @@ const AnalyticsPage: React.FC = () => {
     setDateRange(event.target.value as DateRangeOption);
   };
 
+  // Convert dateRange string (days) to ISO date range object
+  const computedDateRange = useMemo(() => {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - parseInt(dateRange));
+    return {
+      startDate: start.toISOString().split("T")[0],
+      endDate: end.toISOString().split("T")[0],
+    };
+  }, [dateRange]);
+
   const dateRangeOptions: { value: DateRangeOption; label: string }[] = [
     { value: "30", label: t("analytics.last_30_days") },
     { value: "90", label: t("analytics.last_90_days") },
@@ -133,17 +147,17 @@ const AnalyticsPage: React.FC = () => {
       <Grid container spacing={3}>
         {/* Overview Stats - Full width row */}
         <Grid size={{ xs: 12 }}>
-          <ChartPlaceholder title={t("analytics.overview_stats")} />
+          <OverviewStatsRow dateRange={computedDateRange} />
         </Grid>
 
         {/* Pipeline Funnel */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <ChartPlaceholder title={t("analytics.pipeline_funnel")} />
+          <PipelineFunnelChart dateRange={computedDateRange} />
         </Grid>
 
         {/* Applications by Source */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <ChartPlaceholder title={t("analytics.applications_by_source")} />
+          <SourcesDonutChart dateRange={computedDateRange} />
         </Grid>
 
         {/* Time to Hire Trend */}
