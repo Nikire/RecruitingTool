@@ -14,6 +14,7 @@ import {
   formatRelative,
   isValid,
   parseISO,
+  type Locale,
 } from "date-fns";
 import { es, enUS } from "date-fns/locale";
 

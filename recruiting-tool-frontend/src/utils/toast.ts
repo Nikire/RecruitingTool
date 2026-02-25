@@ -84,7 +84,9 @@ export const showErrorToast = (
       error.response &&
       typeof error.response === "object"
     ) {
-      const response = error.response as ErrorWithResponse["response"];
+      const response = error.response as NonNullable<
+        ErrorWithResponse["response"]
+      >;
 
       // Handle various error response formats
       if (response.data) {

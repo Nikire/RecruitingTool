@@ -28,7 +28,6 @@ export {
 
 // Toast Notifications
 export {
-  showToast,
   showSuccessToast,
   showErrorToast,
   showInfoToast,

@@ -1,4 +1,4 @@
-import React from "react";
+import { type ReactElement } from "react";
 import EventIcon from "@mui/icons-material/Event";
 import DescriptionIcon from "@mui/icons-material/Description";
 import InfoIcon from "@mui/icons-material/Info";
@@ -13,7 +13,7 @@ import { NotificationType, Notification } from "../types/notification";
 /**
  * Get icon for notification type
  */
-export const getNotificationIcon = (type: NotificationType): JSX.Element => {
+export const getNotificationIcon = (type: NotificationType): ReactElement => {
   switch (type) {
     // Interview notifications
     case NotificationType.INTERVIEW_SCHEDULED:

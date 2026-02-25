@@ -150,7 +150,7 @@ export const useValidationRules = () => {
      * @param rules - Array of validation rule objects
      */
     combine: (...rules: RegisterOptions[]): RegisterOptions => {
-      return rules.reduce((acc, rule) => ({ ...acc, ...rule }), {});
+      return Object.assign({} as RegisterOptions, ...rules) as RegisterOptions;
     },
   };
 };
