@@ -65,7 +65,11 @@ const StageDurationTable: React.FC<StageDurationTableProps> = ({
       >
         <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
           <Skeleton variant="text" width="55%" height={32} sx={{ mb: 1 }} />
-          <Skeleton variant="rectangular" height={260} sx={{ borderRadius: 1 }} />
+          <Skeleton
+            variant="rectangular"
+            height={260}
+            sx={{ borderRadius: 1 }}
+          />
         </CardContent>
       </Card>
     );
@@ -180,7 +184,10 @@ const StageDurationTable: React.FC<StageDurationTableProps> = ({
                           flexWrap: "wrap",
                         }}
                       >
-                        <Typography variant="body2" fontWeight={isBottleneck ? 600 : 400}>
+                        <Typography
+                          variant="body2"
+                          fontWeight={isBottleneck ? 600 : 400}
+                        >
                           {row.stageType}
                         </Typography>
                         {isBottleneck && (

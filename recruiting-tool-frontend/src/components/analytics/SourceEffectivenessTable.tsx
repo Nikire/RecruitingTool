@@ -120,7 +120,10 @@ const SourceEffectivenessTable: React.FC<SourceEffectivenessTableProps> = ({
         {/* Table */}
         {!isLoading && sortedData.length > 0 && (
           <TableContainer>
-            <Table size="small" aria-label={t("analytics.source_effectiveness")}>
+            <Table
+              size="small"
+              aria-label={t("analytics.source_effectiveness")}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 600 }}>
