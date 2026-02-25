@@ -27,6 +27,9 @@ jobs:
             echo "==> Pulling latest code from development branch..."
             git pull origin development
 
+            echo "==> Freeing up disk space..."
+            docker system prune -f --volumes || true
+
             echo "==> Rebuilding and restarting containers..."
             DOCKER_BUILDKIT=0 docker-compose up -d --build
 
