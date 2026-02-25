@@ -170,10 +170,7 @@ function App() {
                 path="/hr/hiring-processes"
                 element={<HiringProcessesPage />}
               />
-              <Route
-                path="/hr/analytics"
-                element={<AnalyticsPage />}
-              />
+              <Route path="/hr/analytics" element={<AnalyticsPage />} />
               <Route
                 path="/hr/email-templates"
                 element={<EmailTemplatesPage />}

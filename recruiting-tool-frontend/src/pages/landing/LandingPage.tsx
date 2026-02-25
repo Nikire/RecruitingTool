@@ -157,9 +157,15 @@ const LandingPage = () => {
     },
   ];
 
-  const freePlanFeatures = planLimits ? buildPlanFeatures(planLimits["FREE"], t) : [];
-  const proPlanFeatures = planLimits ? buildPlanFeatures(planLimits["PROFESSIONAL"], t) : [];
-  const enterprisePlanFeatures = planLimits ? buildPlanFeatures(planLimits["ENTERPRISE"], t) : [];
+  const freePlanFeatures = planLimits
+    ? buildPlanFeatures(planLimits["FREE"], t)
+    : [];
+  const proPlanFeatures = planLimits
+    ? buildPlanFeatures(planLimits["PROFESSIONAL"], t)
+    : [];
+  const enterprisePlanFeatures = planLimits
+    ? buildPlanFeatures(planLimits["ENTERPRISE"], t)
+    : [];
 
   const pricingPlans = [
     {

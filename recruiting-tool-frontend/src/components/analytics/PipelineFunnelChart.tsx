@@ -112,7 +112,11 @@ const PipelineFunnelChart: React.FC<PipelineFunnelChartProps> = ({
         <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
           <Skeleton variant="text" width="50%" height={32} sx={{ mb: 1 }} />
           <Skeleton variant="text" width="30%" height={20} sx={{ mb: 2 }} />
-          <Skeleton variant="rectangular" height={260} sx={{ borderRadius: 1 }} />
+          <Skeleton
+            variant="rectangular"
+            height={260}
+            sx={{ borderRadius: 1 }}
+          />
         </CardContent>
       </Card>
     );

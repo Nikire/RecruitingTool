@@ -55,7 +55,12 @@ const OverviewStatsRow: React.FC<OverviewStatsRowProps> = ({ dateRange }) => {
                   <Skeleton variant="rounded" width={40} height={40} />
                 </Box>
                 <Skeleton variant="text" width="40%" height={48} />
-                <Skeleton variant="text" width="50%" height={26} sx={{ mt: 2 }} />
+                <Skeleton
+                  variant="text"
+                  width="50%"
+                  height={26}
+                  sx={{ mt: 2 }}
+                />
               </CardContent>
             </Card>
           </Grid>

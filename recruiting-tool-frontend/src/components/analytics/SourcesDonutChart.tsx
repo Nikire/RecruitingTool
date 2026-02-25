@@ -8,13 +8,7 @@ import {
   useTheme,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import {
-  Cell,
-  Pie,
-  PieChart,
-  ResponsiveContainer,
-  Tooltip,
-} from "recharts";
+import { Cell, Pie, PieChart, ResponsiveContainer, Tooltip } from "recharts";
 import { useAnalyticsSources, DateRange } from "../../hooks/api/useAnalytics";
 
 /**
@@ -122,7 +116,11 @@ const SourcesDonutChart: React.FC<SourcesDonutChartProps> = ({ dateRange }) => {
         {/* Loading state */}
         {isLoading && (
           <Box>
-            <Skeleton variant="rectangular" height={260} sx={{ borderRadius: 1 }} />
+            <Skeleton
+              variant="rectangular"
+              height={260}
+              sx={{ borderRadius: 1 }}
+            />
             <Box sx={{ mt: 2 }}>
               {[1, 2, 3].map((i) => (
                 <Skeleton
