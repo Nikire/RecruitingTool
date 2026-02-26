@@ -11,13 +11,7 @@ import {
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import {
-  startOfDay,
-  endOfDay,
-  subDays,
-  startOfYear,
-  format,
-} from "date-fns";
+import { startOfDay, endOfDay, subDays, startOfYear, format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import TuneIcon from "@mui/icons-material/Tune";
@@ -102,9 +96,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
       : null,
   );
   const [customTo, setCustomTo] = useState<Date | null>(
-    value.preset === "custom" && value.endDate
-      ? new Date(value.endDate)
-      : null,
+    value.preset === "custom" && value.endDate ? new Date(value.endDate) : null,
   );
 
   // ------------------------------------------------------------------
@@ -169,12 +161,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
     <LocalizationProvider dateAdapter={AdapterDateFns}>
       <Box>
         {/* Period label shown above the picker buttons */}
-        <Box
-          display="flex"
-          alignItems="center"
-          gap={1}
-          mb={1.5}
-        >
+        <Box display="flex" alignItems="center" gap={1} mb={1.5}>
           <CalendarTodayIcon
             fontSize="small"
             sx={{ color: "text.secondary" }}
@@ -218,9 +205,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
                   minWidth: 90,
                   border: "1px solid",
                   borderColor:
-                    value.preset === key
-                      ? "primary.main"
-                      : "divider",
+                    value.preset === key ? "primary.main" : "divider",
                   "&:not(:last-child)": {
                     borderRight: "1px solid",
                     borderRightColor:

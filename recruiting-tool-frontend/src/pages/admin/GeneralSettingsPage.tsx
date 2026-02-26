@@ -35,7 +35,14 @@ interface InfoRowProps {
 
 const InfoRow: React.FC<InfoRowProps> = ({ icon, label, value }) => (
   <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5 }}>
-    <Box sx={{ color: "text.secondary", display: "flex", alignItems: "center", pt: 0.25 }}>
+    <Box
+      sx={{
+        color: "text.secondary",
+        display: "flex",
+        alignItems: "center",
+        pt: 0.25,
+      }}
+    >
       {icon}
     </Box>
     <Box>

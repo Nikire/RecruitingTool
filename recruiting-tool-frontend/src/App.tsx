@@ -274,10 +274,7 @@ function App() {
                 path="/admin/contact-messages"
                 element={<ContactMessagesPage />}
               />
-              <Route
-                path="/admin/plan-limits"
-                element={<PlanLimitsPage />}
-              />
+              <Route path="/admin/plan-limits" element={<PlanLimitsPage />} />
               <Route
                 path="/admin/feature-flags"
                 element={<FeatureFlagsPage />}
@@ -286,10 +283,7 @@ function App() {
                 path="/admin/general-settings"
                 element={<GeneralSettingsPage />}
               />
-              <Route
-                path="/admin/webhooks"
-                element={<WebhooksPage />}
-              />
+              <Route path="/admin/webhooks" element={<WebhooksPage />} />
             </Route>
           </Route>
         </Route>

@@ -142,7 +142,9 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
         : "";
 
       if (min && max) {
-        return periodSuffix ? `${min} - ${max}${periodSuffix}` : `${min} - ${max}`;
+        return periodSuffix
+          ? `${min} - ${max}${periodSuffix}`
+          : `${min} - ${max}`;
       } else if (min) {
         return periodSuffix
           ? `${t("careersJob.from")} ${min}${periodSuffix}`
@@ -175,7 +177,11 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
 
     // Format application deadline
     const getDeadlineText = () => {
-      if (!jobPosition.applicationDeadline || daysUntilDeadline === null || daysUntilDeadline < 0) {
+      if (
+        !jobPosition.applicationDeadline ||
+        daysUntilDeadline === null ||
+        daysUntilDeadline < 0
+      ) {
         return null;
       }
       const date = new Date(jobPosition.applicationDeadline);
@@ -189,7 +195,10 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
 
     const experienceLevelLabel = getExperienceLevelLabel();
     const deadlineText = getDeadlineText();
-    const isDeadlineSoon = daysUntilDeadline !== null && daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
+    const isDeadlineSoon =
+      daysUntilDeadline !== null &&
+      daysUntilDeadline >= 0 &&
+      daysUntilDeadline <= 7;
 
     // Get work location type badge color
     const getWorkLocationColor = () => {
@@ -369,7 +378,13 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
           </Stack>
 
           {/* Job Type and Experience Level */}
-          <Stack direction="row" spacing={0.5} flexWrap="wrap" gap={0.5} mb={1.5}>
+          <Stack
+            direction="row"
+            spacing={0.5}
+            flexWrap="wrap"
+            gap={0.5}
+            mb={1.5}
+          >
             <Chip
               icon={<WorkIcon sx={{ fontSize: 14 }} />}
               label={getJobTypeLabel()}

@@ -19,7 +19,10 @@ import { useTranslation } from "react-i18next";
 import { Navigate } from "react-router-dom";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
-import { useFeatureFlags, useToggleFeatureFlag } from "../../hooks/api/useFeatureFlags";
+import {
+  useFeatureFlags,
+  useToggleFeatureFlag,
+} from "../../hooks/api/useFeatureFlags";
 import type { FeatureFlagRecord } from "../../types/featureFlags.types";
 import PageHeader from "../../components/common/PageHeader";
 import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
@@ -55,7 +58,9 @@ function featureI18nKey(key: FeatureKey): string {
 }
 
 // Build a lookup: featureKey -> planType -> FeatureFlagRecord
-type FlagMatrix = Partial<Record<FeatureKey, Partial<Record<PlanType, FeatureFlagRecord>>>>;
+type FlagMatrix = Partial<
+  Record<FeatureKey, Partial<Record<PlanType, FeatureFlagRecord>>>
+>;
 
 function buildMatrix(flags: FeatureFlagRecord[]): FlagMatrix {
   const matrix: FlagMatrix = {};
@@ -95,7 +100,12 @@ const LoadingSkeleton: React.FC = () => (
             </TableCell>
             {PLAN_ORDER.map((plan) => (
               <TableCell key={plan} align="center">
-                <Skeleton variant="rectangular" width={36} height={20} sx={{ mx: "auto", borderRadius: 10 }} />
+                <Skeleton
+                  variant="rectangular"
+                  width={36}
+                  height={20}
+                  sx={{ mx: "auto", borderRadius: 10 }}
+                />
               </TableCell>
             ))}
           </TableRow>
@@ -247,7 +257,9 @@ const FeatureFlagsPage: React.FC = () => {
                     );
                   }
 
-                  const updatedLabel = new Date(flag.updatedAt).toLocaleString();
+                  const updatedLabel = new Date(
+                    flag.updatedAt,
+                  ).toLocaleString();
 
                   return (
                     <TableCell key={plan} align="center">
@@ -264,9 +276,10 @@ const FeatureFlagsPage: React.FC = () => {
                             "& .MuiSwitch-switchBase.Mui-checked": {
                               color: color.main,
                             },
-                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
-                              backgroundColor: color.main,
-                            },
+                            "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track":
+                              {
+                                backgroundColor: color.main,
+                              },
                           }}
                         />
                       </Tooltip>

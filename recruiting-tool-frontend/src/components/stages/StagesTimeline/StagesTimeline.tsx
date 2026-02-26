@@ -13,7 +13,10 @@ type StagesTimelineProps = {
   hiringProcessUid: string;
 };
 
-const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages, hiringProcessUid }) => {
+const StagesTimeline: React.FC<StagesTimelineProps> = ({
+  stages,
+  hiringProcessUid,
+}) => {
   return (
     <Timeline
       sx={{
@@ -34,7 +37,11 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages, hiringProcessUi
               />
             </TimelineSeparator>
             <TimelineContent>
-              <StagesAccordion stage={stage} hiringProcessUid={hiringProcessUid} disabled={false} />
+              <StagesAccordion
+                stage={stage}
+                hiringProcessUid={hiringProcessUid}
+                disabled={false}
+              />
             </TimelineContent>
           </TimelineItem>
         ) : (
@@ -48,7 +55,11 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages, hiringProcessUi
               <TimelineConnector sx={{ width: "10px" }} />
             </TimelineSeparator>
             <TimelineContent>
-              <StagesAccordion stage={stage} hiringProcessUid={hiringProcessUid} disabled={false} />
+              <StagesAccordion
+                stage={stage}
+                hiringProcessUid={hiringProcessUid}
+                disabled={false}
+              />
             </TimelineContent>
           </TimelineItem>
         ),

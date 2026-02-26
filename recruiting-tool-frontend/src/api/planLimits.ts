@@ -1,5 +1,8 @@
 import api from "./axios";
-import type { PlanLimitRecord, UpdatePlanLimitDto } from "../types/planLimits.types";
+import type {
+  PlanLimitRecord,
+  UpdatePlanLimitDto,
+} from "../types/planLimits.types";
 
 /**
  * Fetch all plan limit records (SUPER_ADMIN only)

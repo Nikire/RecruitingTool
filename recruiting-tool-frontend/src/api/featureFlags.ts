@@ -8,7 +8,9 @@ import type {
  * Fetch all feature flag records (SUPER_ADMIN only)
  * @param planType - optional filter by plan type (FREE | STARTER | PROFESSIONAL | ENTERPRISE)
  */
-export function getFeatureFlags(planType?: string): Promise<FeatureFlagRecord[]> {
+export function getFeatureFlags(
+  planType?: string,
+): Promise<FeatureFlagRecord[]> {
   const params = planType ? { planType } : undefined;
   return api.get("/admin/feature-flags", { params }).then((res) => res.data);
 }

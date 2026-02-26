@@ -388,9 +388,7 @@ const ContactPage = () => {
                         {...register(
                           "subject",
                           validationRules.combine(
-                            validationRules.required(
-                              t("contact.form_subject"),
-                            ),
+                            validationRules.required(t("contact.form_subject")),
                             validationRules.maxLength(200),
                           ),
                         )}
@@ -403,10 +401,7 @@ const ContactPage = () => {
                         label={t("contact.form_company")}
                         placeholder={t("contact.form_company_placeholder")}
                         fullWidth
-                        {...register(
-                          "company",
-                          validationRules.maxLength(200),
-                        )}
+                        {...register("company", validationRules.maxLength(200))}
                         error={!!errors.company}
                         helperText={errors.company?.message}
                       />
@@ -421,9 +416,7 @@ const ContactPage = () => {
                         {...register(
                           "message",
                           validationRules.combine(
-                            validationRules.required(
-                              t("contact.form_message"),
-                            ),
+                            validationRules.required(t("contact.form_message")),
                             validationRules.minLength(10),
                             validationRules.maxLength(5000),
                           ),
@@ -565,7 +558,10 @@ const ContactPage = () => {
               }}
             >
               <Box>
-                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.25 }}>
+                <Typography
+                  variant="subtitle2"
+                  sx={{ fontWeight: 700, mb: 0.25 }}
+                >
                   {t("contact.cta_title")}
                 </Typography>
                 <Typography variant="body2" sx={{ opacity: 0.85 }}>

@@ -30,8 +30,14 @@ import { useTranslation } from "react-i18next";
 import { Navigate } from "react-router-dom";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
-import { useAdminPlanLimits, useUpdatePlanLimit } from "../../hooks/api/useAdminPlanLimits";
-import type { PlanLimitRecord, UpdatePlanLimitDto } from "../../types/planLimits.types";
+import {
+  useAdminPlanLimits,
+  useUpdatePlanLimit,
+} from "../../hooks/api/useAdminPlanLimits";
+import type {
+  PlanLimitRecord,
+  UpdatePlanLimitDto,
+} from "../../types/planLimits.types";
 import PageHeader from "../../components/common/PageHeader";
 import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
 
@@ -46,7 +52,11 @@ const PLAN_COLORS: Record<
   ENTERPRISE: { main: "#f57f17", light: "#fff8e1", contrastText: "#fff" },
 };
 
-const DEFAULT_COLOR = { main: "#9e9e9e", light: "#fafafa", contrastText: "#fff" };
+const DEFAULT_COLOR = {
+  main: "#9e9e9e",
+  light: "#fafafa",
+  contrastText: "#fff",
+};
 
 function getPlanColor(planType: string) {
   return PLAN_COLORS[planType] ?? DEFAULT_COLOR;
@@ -107,7 +117,9 @@ const EditableNumberField: React.FC<EditableNumberFieldProps> = ({
 
   return (
     <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
-      <Box sx={{ color: "text.secondary", display: "flex", alignItems: "center" }}>
+      <Box
+        sx={{ color: "text.secondary", display: "flex", alignItems: "center" }}
+      >
         {icon}
       </Box>
       <Box sx={{ flex: 1 }}>
@@ -147,7 +159,11 @@ interface PlanCardProps {
   isUpdating: boolean;
 }
 
-const PlanCard: React.FC<PlanCardProps> = ({ record, onUpdate, isUpdating }) => {
+const PlanCard: React.FC<PlanCardProps> = ({
+  record,
+  onUpdate,
+  isUpdating,
+}) => {
   const { t } = useTranslation();
   const color = getPlanColor(record.planType);
 
@@ -254,7 +270,9 @@ const PlanCard: React.FC<PlanCardProps> = ({ record, onUpdate, isUpdating }) => 
               label={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                   <AiIcon fontSize="small" sx={{ color: "text.secondary" }} />
-                  <Typography variant="body2">{t("plan_limits.ai_enabled")}</Typography>
+                  <Typography variant="body2">
+                    {t("plan_limits.ai_enabled")}
+                  </Typography>
                 </Box>
               }
             />
@@ -272,8 +290,13 @@ const PlanCard: React.FC<PlanCardProps> = ({ record, onUpdate, isUpdating }) => 
               }
               label={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <BrandingIcon fontSize="small" sx={{ color: "text.secondary" }} />
-                  <Typography variant="body2">{t("plan_limits.custom_branding")}</Typography>
+                  <BrandingIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
+                  />
+                  <Typography variant="body2">
+                    {t("plan_limits.custom_branding")}
+                  </Typography>
                 </Box>
               }
             />
@@ -292,7 +315,9 @@ const PlanCard: React.FC<PlanCardProps> = ({ record, onUpdate, isUpdating }) => 
               label={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                   <ApiIcon fontSize="small" sx={{ color: "text.secondary" }} />
-                  <Typography variant="body2">{t("plan_limits.api_access")}</Typography>
+                  <Typography variant="body2">
+                    {t("plan_limits.api_access")}
+                  </Typography>
                 </Box>
               }
             />
@@ -358,14 +383,15 @@ const PlanLimitsPage: React.FC = () => {
   if (isLoading) {
     return (
       <Box>
-        <PageHeader
-          title="plan_limits.title"
-          subtitle="plan_limits.subtitle"
-        />
+        <PageHeader title="plan_limits.title" subtitle="plan_limits.subtitle" />
         <Grid container spacing={3}>
           {[...Array(4)].map((_, i) => (
             <Grid key={i} size={{ xs: 12, sm: 6, lg: 3 }}>
-              <Skeleton variant="rectangular" height={420} sx={{ borderRadius: 2 }} />
+              <Skeleton
+                variant="rectangular"
+                height={420}
+                sx={{ borderRadius: 2 }}
+              />
             </Grid>
           ))}
         </Grid>
@@ -377,10 +403,7 @@ const PlanLimitsPage: React.FC = () => {
   if (isError || !planLimits) {
     return (
       <Box>
-        <PageHeader
-          title="plan_limits.title"
-          subtitle="plan_limits.subtitle"
-        />
+        <PageHeader title="plan_limits.title" subtitle="plan_limits.subtitle" />
         <Typography color="error">{t("plan_limits.load_error")}</Typography>
       </Box>
     );
@@ -394,10 +417,7 @@ const PlanLimitsPage: React.FC = () => {
 
   return (
     <Box>
-      <PageHeader
-        title="plan_limits.title"
-        subtitle="plan_limits.subtitle"
-      />
+      <PageHeader title="plan_limits.title" subtitle="plan_limits.subtitle" />
 
       <Grid container spacing={3}>
         {sortedPlans.map((record) => (

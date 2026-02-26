@@ -45,7 +45,9 @@ const SkeletonTableRows: React.FC<{ columns: number; rows?: number }> = ({
           <TableCell key={colIdx}>
             <Skeleton
               variant="text"
-              width={colIdx === 0 ? "60%" : colIdx === columns - 1 ? "40%" : "80%"}
+              width={
+                colIdx === 0 ? "60%" : colIdx === columns - 1 ? "40%" : "80%"
+              }
               height={24}
             />
           </TableCell>
@@ -79,10 +81,7 @@ const WebhooksPage: React.FC = () => {
 
   return (
     <Box>
-      <PageHeader
-        title="webhooks.title"
-        subtitle="webhooks.subtitle"
-      />
+      <PageHeader title="webhooks.title" subtitle="webhooks.subtitle" />
 
       <Grid container spacing={3}>
         {/* API Keys Card */}
@@ -124,7 +123,10 @@ const WebhooksPage: React.FC = () => {
                 </Typography>
 
                 <TableContainer component={Paper} variant="outlined">
-                  <Table size="small" aria-label={t("webhooks.api_keys_section")}>
+                  <Table
+                    size="small"
+                    aria-label={t("webhooks.api_keys_section")}
+                  >
                     <TableHead>
                       <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>
@@ -200,7 +202,10 @@ const WebhooksPage: React.FC = () => {
                 </Typography>
 
                 <TableContainer component={Paper} variant="outlined">
-                  <Table size="small" aria-label={t("webhooks.webhooks_section")}>
+                  <Table
+                    size="small"
+                    aria-label={t("webhooks.webhooks_section")}
+                  >
                     <TableHead>
                       <TableRow>
                         <TableCell sx={{ fontWeight: 600 }}>

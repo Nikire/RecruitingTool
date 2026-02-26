@@ -77,14 +77,15 @@ const AnalyticsPage: React.FC = () => {
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* ---- Header ------------------------------------------------- */}
-      <Box mb={3} display="flex" alignItems="flex-start" flexWrap="wrap" gap={1}>
+      <Box
+        mb={3}
+        display="flex"
+        alignItems="flex-start"
+        flexWrap="wrap"
+        gap={1}
+      >
         <Box flexGrow={1}>
-          <Typography
-            variant="h4"
-            component="h1"
-            gutterBottom
-            fontWeight={700}
-          >
+          <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
             {t("analytics.title")}
           </Typography>
           <Box display="flex" alignItems="center" gap={1} flexWrap="wrap">
@@ -127,7 +128,10 @@ const AnalyticsPage: React.FC = () => {
           onChange={(newValue) => {
             setDateRangeValue(newValue);
             // Auto-refetch when a preset is chosen (not custom pending apply)
-            if (newValue.preset !== "custom" || (newValue.startDate && newValue.endDate)) {
+            if (
+              newValue.preset !== "custom" ||
+              (newValue.startDate && newValue.endDate)
+            ) {
               // React Query will automatically refetch because queryKey changes
             }
           }}
@@ -137,7 +141,8 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Currently selected period display */}
         <Typography variant="caption" color="text.secondary">
-          {t("analytics.showing_period")}: <strong>{dateRangeValue.label}</strong>
+          {t("analytics.showing_period")}:{" "}
+          <strong>{dateRangeValue.label}</strong>
         </Typography>
       </Paper>
 

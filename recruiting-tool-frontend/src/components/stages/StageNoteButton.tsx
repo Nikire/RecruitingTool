@@ -1,11 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Collapse,
-  IconButton,
-  Tooltip,
-  Typography,
-} from "@mui/material";
+import { Box, Collapse, IconButton, Tooltip, Typography } from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import { useTranslation } from "react-i18next";
 import { StageEvalNote } from "../../types/stage.types";

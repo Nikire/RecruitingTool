@@ -26,7 +26,5 @@ export function updateSystemSettings(
  * Send a test email to the current SUPER_ADMIN user (SUPER_ADMIN only)
  */
 export function testEmailConnection(): Promise<TestEmailResponse> {
-  return api
-    .post("/admin/system-settings/test-email")
-    .then((res) => res.data);
+  return api.post("/admin/system-settings/test-email").then((res) => res.data);
 }

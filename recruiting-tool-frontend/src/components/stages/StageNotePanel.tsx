@@ -11,7 +11,10 @@ import SaveIcon from "@mui/icons-material/Save";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTranslation } from "react-i18next";
-import { useUpsertStageNote, useDeleteStageEvalNote } from "../../hooks/api/useStageNotes";
+import {
+  useUpsertStageNote,
+  useDeleteStageEvalNote,
+} from "../../hooks/api/useStageNotes";
 import { StageEvalNote } from "../../types/stage.types";
 
 const MAX_CHARS = 1000;
@@ -31,11 +34,14 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
 }) => {
   const { t } = useTranslation();
   const [content, setContent] = useState(existingNote?.content ?? "");
-  const [rating, setRating] = useState<number | null>(existingNote?.rating ?? null);
+  const [rating, setRating] = useState<number | null>(
+    existingNote?.rating ?? null,
+  );
   const [savedBriefly, setSavedBriefly] = useState(false);
 
   const { mutate: upsertNote, isPending: isSaving } = useUpsertStageNote();
-  const { mutate: deleteNote, isPending: isDeleting } = useDeleteStageEvalNote();
+  const { mutate: deleteNote, isPending: isDeleting } =
+    useDeleteStageEvalNote();
 
   // Sync form when the note from the server changes (e.g. after query refetch).
   useEffect(() => {
@@ -147,7 +153,9 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
         <Button
           variant="outlined"
           size="small"
-          startIcon={isDeleting ? <CircularProgress size={14} /> : <DeleteOutlineIcon />}
+          startIcon={
+            isDeleting ? <CircularProgress size={14} /> : <DeleteOutlineIcon />
+          }
           onClick={handleClear}
           disabled={isLoading}
         >

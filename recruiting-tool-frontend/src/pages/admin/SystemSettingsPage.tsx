@@ -88,7 +88,11 @@ const SystemSettingsPage: React.FC = () => {
         <Grid container spacing={3}>
           {[...Array(6)].map((_, i) => (
             <Grid key={i} size={{ xs: 12, md: 6 }}>
-              <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
+              <Skeleton
+                variant="rectangular"
+                height={200}
+                sx={{ borderRadius: 2 }}
+              />
             </Grid>
           ))}
         </Grid>
@@ -312,7 +316,8 @@ const SystemSettingsPage: React.FC = () => {
                   {t("settings.backup_schedule_label")}
                 </Typography>
                 <Typography variant="body1" fontFamily="monospace">
-                  {settings.backup.schedule ?? t("settings.backup_not_configured")}
+                  {settings.backup.schedule ??
+                    t("settings.backup_not_configured")}
                 </Typography>
               </Box>
 
@@ -321,8 +326,7 @@ const SystemSettingsPage: React.FC = () => {
                   {t("settings.backup_retention_label")}
                 </Typography>
                 <Typography variant="body1">
-                  {settings.backup.retentionDays}{" "}
-                  {t("settings.days")}
+                  {settings.backup.retentionDays} {t("settings.days")}
                 </Typography>
               </Box>
 
@@ -348,7 +352,12 @@ const SystemSettingsPage: React.FC = () => {
                 }}
               >
                 <InfoIcon
-                  sx={{ fontSize: 16, color: "text.secondary", mt: 0.25, flexShrink: 0 }}
+                  sx={{
+                    fontSize: 16,
+                    color: "text.secondary",
+                    mt: 0.25,
+                    flexShrink: 0,
+                  }}
                 />
                 <Typography variant="caption" color="text.secondary">
                   {t("settings.backup_env_note")}
