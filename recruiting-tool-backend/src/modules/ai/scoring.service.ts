@@ -294,8 +294,33 @@ export class ScoringService {
         throw new NotFoundException('One or more candidates not found');
       }
 
+      // Fetch hiring processes for each candidate for this job position,
+      // including their stages and stage notes so the AI can factor in HR evaluator assessments
+      const hiringProcesses = await this.databaseService.hiringProcess.findMany({
+        where: {
+          jobPositionId: jobPosition.id,
+          candidateId: { in: candidates.map((c) => c.id) },
+        },
+        include: {
+          stages: {
+            where: { deletedAt: null },
+            orderBy: { position: 'asc' },
+            include: {
+              notes: {
+                include: {
+                  author: { select: { name: true } },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      // Build a lookup map: candidateId → hiring process with stages + notes
+      const hiringProcessByCandidateId = new Map(hiringProcesses.map((hp) => [hp.candidateId, hp]));
+
       // Generate AI comparison
-      const aiComparison = await this.generateAIComparison(candidates, jobPosition);
+      const aiComparison = await this.generateAIComparison(candidates, jobPosition, hiringProcessByCandidateId);
 
       // Build response
       const candidatesComparison: CandidateComparisonSummary[] = aiComparison.candidates.map((candidate, index) => ({
@@ -461,24 +486,41 @@ Return a JSON object with this exact structure:
   private async generateAIComparison(
     candidates: any[],
     jobPosition: any,
+    hiringProcessByCandidateId: Map<number | null, any>,
   ): Promise<{
     candidates: CandidateComparisonSummary[];
     analysis: ComparisonAnalysis;
   }> {
     const systemInstruction = `You are an expert HR recruiter specialized in candidate comparison and evaluation. Your task is to compare multiple candidates for a job position and provide objective, detailed analysis. Always return valid JSON that matches the requested schema exactly. Be thorough, fair, and highlight both strengths and weaknesses for each candidate.`;
 
-    // Build candidate profiles for the prompt
+    // Build candidate profiles for the prompt, including HR evaluator stage notes
     const candidateProfiles = candidates
-      .map(
-        (candidate, index) => `
+      .map((candidate, index) => {
+        const hiringProcess = hiringProcessByCandidateId.get(candidate.id);
+
+        // Build stage notes section if any stages have notes
+        let stageNotesSection = '';
+        if (hiringProcess?.stages?.length) {
+          const stagesWithNotes = hiringProcess.stages.filter((s: any) => s.notes?.length > 0);
+          if (stagesWithNotes.length > 0) {
+            const noteLines = stagesWithNotes.map((stage: any) => {
+              const note = stage.notes[0]; // One note per stage
+              const ratingStr = note.rating ? ` (Rating: ${note.rating}/5)` : '';
+              return `  - ${stage.title}: "${note.content}"${ratingStr}`;
+            });
+            stageNotesSection = `\n- HR Evaluator Notes:\n${noteLines.join('\n')}`;
+          }
+        }
+
+        return `
 **Candidate ${index + 1}: ${candidate.name}**
 - Email: ${candidate.email}
 - Source: ${candidate.source || 'Unknown'}
 - Additional Info: ${candidate.sourceDetails || 'No additional info'}
 - Number of files: ${candidate.files?.length || 0}
-- Number of notes: ${candidate.notes?.length || 0}
-`,
-      )
+- Number of general notes: ${candidate.notes?.length || 0}${stageNotesSection}
+`;
+      })
       .join('\n');
 
     const prompt = `Compare the following candidates for the job position and provide a comprehensive comparative analysis.
@@ -490,18 +532,20 @@ Description: ${jobPosition.description || 'No description provided'}
 **Candidates to Compare:**
 ${candidateProfiles}
 
+IMPORTANT: When a candidate has "HR Evaluator Notes" listed above, these are assessments from the hiring team recorded at specific recruitment stages. Each note may include a 1-5 star rating reflecting the evaluator's overall impression at that stage. Factor these evaluator assessments meaningfully into your scoring and analysis — positive notes with high ratings should boost the candidate's scores, while negative notes or low ratings should lower them relative to other candidates.
+
 Please provide a detailed comparison with the following structure:
 
 1. For each candidate, provide:
    - **Skills Score (0-100)**: Rate the candidate's technical and professional skills match
    - **Experience Score (0-100)**: Rate the candidate's relevant work experience
    - **Education Score (0-100)**: Rate the candidate's educational qualifications
-   - **Overall Score (0-100)**: Calculate weighted overall (40% skills, 35% experience, 25% education)
-   - **Strengths**: List 3-5 key strengths specific to this candidate
-   - **Weaknesses**: List 2-4 potential gaps or concerns
+   - **Overall Score (0-100)**: Calculate weighted overall (40% skills, 35% experience, 25% education). Adjust scores to reflect HR evaluator notes and ratings if present.
+   - **Strengths**: List 3-5 key strengths specific to this candidate (include evaluator observations if relevant)
+   - **Weaknesses**: List 2-4 potential gaps or concerns (include evaluator concerns if relevant)
 
 2. Provide comparative analysis:
-   - **Summary**: Brief overview comparing all candidates
+   - **Summary**: Brief overview comparing all candidates (mention if HR notes influenced the assessment)
    - **Top Candidate**: Identify the strongest candidate and explain why
    - **Key Differentiators**: List 3-5 factors that distinguish candidates from each other
    - **Final Recommendation**: Detailed hiring recommendation including primary and backup candidates
