@@ -2050,7 +2050,16 @@
     "app_version": "Versión",
     "update_success": "Configuración del sistema actualizada correctamente.",
     "update_error": "Error al actualizar la configuración del sistema.",
-    "load_error": "Error al cargar la configuración del sistema. Por favor, inténtelo de nuevo."
+    "load_error": "Error al cargar la configuración del sistema. Por favor, inténtelo de nuevo.",
+    "ai_provider": "Proveedor de IA",
+    "ai_key_status": "Estado de la Clave API",
+    "ai_key_configured": "Configurada",
+    "ai_key_not_configured": "No Configurada",
+    "ai_env_note": "La configuración de IA se gestiona mediante variables de entorno. Los cambios requieren reiniciar el servidor.",
+    "ai_feature_flags_link": "Gestionar flags de funciones de IA",
+    "ai_enabled": "Estado de IA",
+    "ai_enabled_yes": "Habilitada",
+    "ai_enabled_no": "Deshabilitada"
   },
   "booking": {
     "title": "Reserva Tu Entrevista",

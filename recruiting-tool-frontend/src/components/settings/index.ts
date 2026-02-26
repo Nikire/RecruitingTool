@@ -12,3 +12,6 @@ export type { StatusIndicatorProps, StatusType } from "./StatusIndicator";
 
 export { default as TestConnectionButton } from "./TestConnectionButton";
 export type { TestConnectionButtonProps } from "./TestConnectionButton";
+
+export { default as AIConfigCard } from "./AIConfigCard";
+export type { AIConfigCardProps, AISettings } from "./AIConfigCard";

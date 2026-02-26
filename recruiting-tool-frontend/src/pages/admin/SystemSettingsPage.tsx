@@ -11,7 +11,6 @@ import {
 import { useTranslation } from "react-i18next";
 import {
   Email as EmailIcon,
-  Psychology as PsychologyIcon,
   Storage as StorageIcon,
   Speed as SpeedIcon,
   Backup as BackupIcon,
@@ -21,6 +20,7 @@ import {
   SettingsCard,
   StatusIndicator,
   TestConnectionButton,
+  AIConfigCard,
 } from "../../components/settings";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
@@ -203,36 +203,7 @@ const SystemSettingsPage: React.FC = () => {
 
         {/* AI Configuration */}
         <Grid size={{ xs: 12, md: 6 }}>
-          <SettingsCard
-            icon={<PsychologyIcon />}
-            title={t("settings.ai_configuration")}
-            iconColor="secondary.main"
-          >
-            <Stack spacing={2}>
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t("settings.ai_model")}
-                </Typography>
-                <Chip
-                  label={settings.ai.model || t("common.n_a")}
-                  size="small"
-                  color="secondary"
-                  sx={{ fontFamily: "monospace" }}
-                />
-              </Box>
-
-              <Box>
-                <Typography variant="body2" color="text.secondary">
-                  {t("settings.ai_tier")}
-                </Typography>
-                <Chip
-                  label={settings.ai.tier || t("common.n_a")}
-                  size="small"
-                  variant="outlined"
-                />
-              </Box>
-            </Stack>
-          </SettingsCard>
+          <AIConfigCard aiSettings={settings.ai} isLoading={false} />
         </Grid>
 
         {/* Storage Configuration */}
@@ -280,9 +251,9 @@ const SystemSettingsPage: React.FC = () => {
                   {t("settings.rate_limit_general")}
                 </Typography>
                 <Typography variant="body1">
-                  {settings.rateLimiting.generalLimit}{" "}
+                  {settings.rateLimiting.general.limit}{" "}
                   {t("settings.requests_per_window")}{" "}
-                  {Math.round(settings.rateLimiting.generalTtl / 1000)}
+                  {Math.round(settings.rateLimiting.general.ttl / 1000)}
                   {t("settings.seconds")}
                 </Typography>
               </Box>
@@ -292,9 +263,9 @@ const SystemSettingsPage: React.FC = () => {
                   {t("settings.rate_limit_auth")}
                 </Typography>
                 <Typography variant="body1">
-                  {settings.rateLimiting.authLimit}{" "}
+                  {settings.rateLimiting.auth.limit}{" "}
                   {t("settings.requests_per_window")}{" "}
-                  {Math.round(settings.rateLimiting.generalTtl / 1000)}
+                  {Math.round(settings.rateLimiting.auth.ttl / 1000)}
                   {t("settings.seconds")}
                 </Typography>
               </Box>
@@ -304,9 +275,9 @@ const SystemSettingsPage: React.FC = () => {
                   {t("settings.rate_limit_ai")}
                 </Typography>
                 <Typography variant="body1">
-                  {settings.rateLimiting.aiLimit}{" "}
+                  {settings.rateLimiting.ai.limit}{" "}
                   {t("settings.requests_per_window")}{" "}
-                  {Math.round(settings.rateLimiting.generalTtl / 1000)}
+                  {Math.round(settings.rateLimiting.ai.ttl / 1000)}
                   {t("settings.seconds")}
                 </Typography>
               </Box>

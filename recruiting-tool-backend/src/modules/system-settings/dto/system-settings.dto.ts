@@ -34,18 +34,23 @@ export class StorageSettingsDto {
   bucket: string;
 }
 
+export class RateLimitEndpointDto {
+  @ApiProperty({ description: 'Time window in milliseconds', example: 60000 })
+  ttl: number;
+
+  @ApiProperty({ description: 'Maximum requests per time window', example: 100 })
+  limit: number;
+}
+
 export class RateLimitingSettingsDto {
-  @ApiProperty({ description: 'General throttle TTL in milliseconds', example: 60000 })
-  generalTtl: number;
+  @ApiProperty({ description: 'General API rate limit configuration', type: RateLimitEndpointDto })
+  general: RateLimitEndpointDto;
 
-  @ApiProperty({ description: 'General throttle request limit', example: 100 })
-  generalLimit: number;
+  @ApiProperty({ description: 'Auth endpoints rate limit configuration', type: RateLimitEndpointDto })
+  auth: RateLimitEndpointDto;
 
-  @ApiProperty({ description: 'Auth throttle request limit', example: 5 })
-  authLimit: number;
-
-  @ApiProperty({ description: 'AI throttle request limit', example: 10 })
-  aiLimit: number;
+  @ApiProperty({ description: 'AI endpoints rate limit configuration', type: RateLimitEndpointDto })
+  ai: RateLimitEndpointDto;
 }
 
 export class BackupSettingsDto {

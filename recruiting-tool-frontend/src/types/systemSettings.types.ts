@@ -29,15 +29,20 @@ export interface StorageSettings {
   bucket: string;
 }
 
+export interface RateLimitEndpoint {
+  /** Time window in milliseconds */
+  ttl: number;
+  /** Maximum requests per time window */
+  limit: number;
+}
+
 export interface RateLimitingSettings {
-  /** General throttle TTL in milliseconds */
-  generalTtl: number;
-  /** General throttle request limit */
-  generalLimit: number;
-  /** Auth throttle request limit */
-  authLimit: number;
-  /** AI throttle request limit */
-  aiLimit: number;
+  /** General API rate limit configuration */
+  general: RateLimitEndpoint;
+  /** Auth endpoints rate limit configuration */
+  auth: RateLimitEndpoint;
+  /** AI endpoints rate limit configuration */
+  ai: RateLimitEndpoint;
 }
 
 export interface BackupSettings {

@@ -2029,7 +2029,16 @@
     "app_version": "Version",
     "update_success": "System settings updated successfully.",
     "update_error": "Failed to update system settings.",
-    "load_error": "Failed to load system settings. Please try again."
+    "load_error": "Failed to load system settings. Please try again.",
+    "ai_provider": "AI Provider",
+    "ai_key_status": "API Key Status",
+    "ai_key_configured": "Configured",
+    "ai_key_not_configured": "Not Configured",
+    "ai_env_note": "AI settings are configured via environment variables. Changes require a server restart.",
+    "ai_feature_flags_link": "Manage AI feature flags",
+    "ai_enabled": "AI Status",
+    "ai_enabled_yes": "Enabled",
+    "ai_enabled_no": "Disabled"
   },
   "booking": {
     "title": "Book Your Interview",

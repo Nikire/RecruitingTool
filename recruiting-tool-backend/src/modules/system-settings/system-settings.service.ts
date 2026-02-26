@@ -45,10 +45,18 @@ export class SystemSettingsService {
         bucket: this.configService.get<string>('S3_BUCKET_NAME', 'recruiting-tool'),
       },
       rateLimiting: {
-        generalTtl: parseInt(this.configService.get<string>('THROTTLE_TTL', '60000'), 10),
-        generalLimit: parseInt(this.configService.get<string>('THROTTLE_LIMIT', '100'), 10),
-        authLimit: parseInt(this.configService.get<string>('THROTTLE_AUTH_LIMIT', '5'), 10),
-        aiLimit: parseInt(this.configService.get<string>('THROTTLE_AI_LIMIT', '10'), 10),
+        general: {
+          ttl: parseInt(this.configService.get<string>('THROTTLE_TTL', '60000'), 10),
+          limit: parseInt(this.configService.get<string>('THROTTLE_LIMIT', '100'), 10),
+        },
+        auth: {
+          ttl: parseInt(this.configService.get<string>('THROTTLE_AUTH_TTL', '900000'), 10),
+          limit: parseInt(this.configService.get<string>('THROTTLE_AUTH_LIMIT', '5'), 10),
+        },
+        ai: {
+          ttl: parseInt(this.configService.get<string>('THROTTLE_AI_TTL', '60000'), 10),
+          limit: parseInt(this.configService.get<string>('THROTTLE_AI_LIMIT', '10'), 10),
+        },
       },
       backup: {
         enabled: this.configService.get<string>('BACKUP_ENABLED', 'false') === 'true',
