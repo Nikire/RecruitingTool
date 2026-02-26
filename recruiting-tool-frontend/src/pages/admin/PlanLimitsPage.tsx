@@ -290,7 +290,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
               }
               label={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <EmailIcon fontSize="small" sx={{ color: "text.secondary" }} />
+                  <EmailIcon
+                    fontSize="small"
+                    sx={{ color: "text.secondary" }}
+                  />
                   <Typography variant="body2">
                     {t("plan_limits.email_templates_enabled")}
                   </Typography>
