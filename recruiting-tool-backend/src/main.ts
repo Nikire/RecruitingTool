@@ -50,15 +50,20 @@ async function bootstrap() {
 
   SwaggerModule.setup('api', app, documentFactory);
 
-  // Seed default plan limits into the database if the table is empty.
-  // This is idempotent — safe to call on every bootstrap.
-  const planLimitsService = app.get(PlanLimitsService);
-  await planLimitsService.seedDefaults();
+  // Seed default plan limits and feature flags — non-blocking, app starts even if seeding fails.
+  try {
+    const planLimitsService = app.get(PlanLimitsService);
+    await planLimitsService.seedDefaults();
+  } catch (err) {
+    console.warn('[bootstrap] PlanLimits seed skipped:', err?.message ?? err);
+  }
 
-  // Seed default feature flags into the database if the table is empty.
-  // This is idempotent — safe to call on every bootstrap.
-  const featureFlagsService = app.get(FeatureFlagsService);
-  await featureFlagsService.seedDefaults();
+  try {
+    const featureFlagsService = app.get(FeatureFlagsService);
+    await featureFlagsService.seedDefaults();
+  } catch (err) {
+    console.warn('[bootstrap] FeatureFlags seed skipped:', err?.message ?? err);
+  }
 
   await app.listen(PORT ?? 4000);
 }
