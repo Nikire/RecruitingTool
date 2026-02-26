@@ -1,4 +1,4 @@
-import { GridRenderCellParams } from "@mui/x-data-grid";
+import { GridRenderCellParams, GridRowSelectionModel } from "@mui/x-data-grid";
 import { Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -173,18 +173,15 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
         serverPagination={true}
         dataGridProps={{
           checkboxSelection: !!onSelectionChange,
-          rowSelectionModel: (selectedCandidates ||
-            []) as unknown as import("@mui/x-data-grid").GridRowSelectionModel,
-          onRowSelectionModelChange: (newSelection) => {
+          // MUI X DataGrid v8: GridRowSelectionModel is { type: 'include' | 'exclude', ids: Set<GridRowId> }
+          rowSelectionModel: {
+            type: "include",
+            ids: new Set(selectedCandidates || []),
+          } as GridRowSelectionModel,
+          onRowSelectionModelChange: (newSelection: GridRowSelectionModel) => {
             if (onSelectionChange) {
-              // MUI v7: GridRowSelectionModel is GridRowId[] (array of string | number)
-              const selectionArray = newSelection as unknown as (
-                | string
-                | number
-              )[];
-              const ids = Array.isArray(selectionArray)
-                ? selectionArray.map(String)
-                : [];
+              // v8: extract ids from the Set and convert to string[]
+              const ids = Array.from(newSelection.ids).map(String);
               onSelectionChange(ids);
             }
           },
