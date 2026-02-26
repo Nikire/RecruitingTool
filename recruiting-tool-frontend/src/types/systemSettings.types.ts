@@ -48,10 +48,12 @@ export interface RateLimitingSettings {
 export interface BackupSettings {
   /** Whether automated backups are enabled */
   enabled: boolean;
-  /** Backup cron schedule */
-  schedule: string;
+  /** Backup cron schedule, or null if not configured */
+  schedule: string | null;
   /** Backup retention in days */
   retentionDays: number;
+  /** Timestamp of the last completed backup, null if never run */
+  lastBackup: string | null;
 }
 
 export interface AppSettings {

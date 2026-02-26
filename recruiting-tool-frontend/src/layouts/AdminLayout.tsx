@@ -7,6 +7,8 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import EmailIcon from "@mui/icons-material/Email";
 import TuneIcon from "@mui/icons-material/Tune";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
+import DisplaySettingsOutlinedIcon from "@mui/icons-material/DisplaySettingsOutlined";
+import WebhookOutlinedIcon from "@mui/icons-material/WebhookOutlined";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -69,6 +71,18 @@ const AdminLayout: React.FC = () => {
       text: t("admin_layout.feature_flags"),
       icon: <FlagOutlinedIcon />,
       path: "/admin/feature-flags",
+      requiresSuperAdmin: true,
+    },
+    {
+      text: t("admin_layout.general_settings"),
+      icon: <DisplaySettingsOutlinedIcon />,
+      path: "/admin/general-settings",
+      requiresSuperAdmin: true,
+    },
+    {
+      text: t("admin_layout.webhooks"),
+      icon: <WebhookOutlinedIcon />,
+      path: "/admin/webhooks",
       requiresSuperAdmin: true,
     },
     {

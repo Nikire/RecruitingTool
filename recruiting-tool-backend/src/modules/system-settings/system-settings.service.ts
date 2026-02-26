@@ -60,8 +60,9 @@ export class SystemSettingsService {
       },
       backup: {
         enabled: this.configService.get<string>('BACKUP_ENABLED', 'false') === 'true',
-        schedule: this.configService.get<string>('BACKUP_CRON', '0 2 * * *'),
-        retentionDays: parseInt(this.configService.get<string>('BACKUP_RETENTION_DAYS', '30'), 10),
+        schedule: this.configService.get<string>('BACKUP_SCHEDULE') ?? null,
+        retentionDays: parseInt(this.configService.get<string>('BACKUP_RETENTION_DAYS', '7'), 10),
+        lastBackup: null,
       },
       app: {
         environment: this.configService.get<string>('NODE_ENV', 'development'),

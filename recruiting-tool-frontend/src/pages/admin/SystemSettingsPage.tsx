@@ -301,34 +301,59 @@ const SystemSettingsPage: React.FC = () => {
                   status={settings.backup.enabled ? "ok" : "warning"}
                   label={
                     settings.backup.enabled
-                      ? "settings.status_enabled"
-                      : "settings.status_disabled"
+                      ? "settings.backup_enabled"
+                      : "settings.backup_disabled"
                   }
                 />
               </Box>
 
-              {settings.backup.enabled && (
-                <>
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {t("settings.backup_schedule")}
-                    </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
-                      {settings.backup.schedule}
-                    </Typography>
-                  </Box>
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.backup_schedule_label")}
+                </Typography>
+                <Typography variant="body1" fontFamily="monospace">
+                  {settings.backup.schedule ?? t("settings.backup_not_configured")}
+                </Typography>
+              </Box>
 
-                  <Box>
-                    <Typography variant="body2" color="text.secondary">
-                      {t("settings.backup_retention")}
-                    </Typography>
-                    <Typography variant="body1">
-                      {settings.backup.retentionDays}{" "}
-                      {t("settings.days")}
-                    </Typography>
-                  </Box>
-                </>
-              )}
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.backup_retention_label")}
+                </Typography>
+                <Typography variant="body1">
+                  {settings.backup.retentionDays}{" "}
+                  {t("settings.days")}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.backup_last_backup")}
+                </Typography>
+                <Typography variant="body1">
+                  {settings.backup.lastBackup
+                    ? new Date(settings.backup.lastBackup).toLocaleString()
+                    : t("settings.backup_never")}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 1,
+                  p: 1.5,
+                  borderRadius: 1,
+                  bgcolor: "action.hover",
+                }}
+              >
+                <InfoIcon
+                  sx={{ fontSize: 16, color: "text.secondary", mt: 0.25, flexShrink: 0 }}
+                />
+                <Typography variant="caption" color="text.secondary">
+                  {t("settings.backup_env_note")}
+                </Typography>
+              </Box>
             </Stack>
           </SettingsCard>
         </Grid>

@@ -57,11 +57,14 @@ export class BackupSettingsDto {
   @ApiProperty({ description: 'Whether backups are enabled', example: false })
   enabled: boolean;
 
-  @ApiProperty({ description: 'Backup cron schedule', example: '0 2 * * *' })
-  schedule: string;
+  @ApiProperty({ description: 'Backup cron schedule, or null if not configured', example: '0 2 * * *', nullable: true })
+  schedule: string | null;
 
-  @ApiProperty({ description: 'Backup retention in days', example: 30 })
+  @ApiProperty({ description: 'Backup retention in days', example: 7 })
   retentionDays: number;
+
+  @ApiProperty({ description: 'Timestamp of the last completed backup, always null (no DB tracking yet)', nullable: true, example: null })
+  lastBackup: string | null;
 }
 
 export class AppSettingsDto {

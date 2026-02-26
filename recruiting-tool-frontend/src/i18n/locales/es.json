@@ -1410,6 +1410,8 @@
     "contact_messages": "Mensajes de Contacto",
     "plan_limits": "Límites de Plan",
     "feature_flags": "Banderas de Funcionalidad",
+    "general_settings": "Configuración General",
+    "webhooks": "Webhooks y Claves API",
     "aria_label": "navegación de administrador"
   },
   "language": {
@@ -2059,7 +2061,15 @@
     "ai_feature_flags_link": "Gestionar flags de funciones de IA",
     "ai_enabled": "Estado de IA",
     "ai_enabled_yes": "Habilitada",
-    "ai_enabled_no": "Deshabilitada"
+    "ai_enabled_no": "Deshabilitada",
+    "backup_enabled": "Habilitado",
+    "backup_disabled": "Deshabilitado",
+    "backup_schedule_label": "Horario (Cron)",
+    "backup_not_configured": "No configurado",
+    "backup_retention_label": "Período de Retención",
+    "backup_last_backup": "Última Copia de Seguridad",
+    "backup_never": "Nunca",
+    "backup_env_note": "Las copias de seguridad se gestionan mediante variables de entorno. Los cambios requieren reiniciar el servidor."
   },
   "booking": {
     "title": "Reserva Tu Entrevista",
@@ -3477,5 +3487,46 @@
     "toggle_error": "Error al actualizar la bandera de funcionalidad",
     "load_error": "Error al cargar las banderas de funcionalidad",
     "last_updated": "Última actualización"
+  },
+  "general_settings": {
+    "title": "Configuración General",
+    "subtitle": "Gestiona la configuración global de la aplicación: información de empresa, zona horaria y preferencias de notificación",
+    "company_section": "Configuración de Empresa",
+    "notifications_section": "Configuración de Notificaciones",
+    "coming_soon_chip": "Próximamente",
+    "coming_soon_note": "El soporte de edición completo para esta sección estará disponible en una versión futura.",
+    "company_name_label": "Nombre de la Empresa",
+    "company_name_placeholder": "Borderless",
+    "timezone_label": "Zona Horaria Predeterminada",
+    "timezone_placeholder": "UTC (Tiempo Universal Coordinado)",
+    "default_locale_label": "Idioma Predeterminado",
+    "default_locale_placeholder": "es — Español",
+    "notifications_description": "Configura qué eventos del sistema generan notificaciones por correo para tu equipo de administración.",
+    "notifications_new_application": "Nueva solicitud recibida",
+    "notifications_stage_change": "Etapa del candidato cambiada",
+    "notifications_candidate_hired": "Candidato marcado como contratado",
+    "notifications_system_alerts": "Alertas y errores del sistema"
+  },
+  "webhooks": {
+    "title": "Webhooks y Claves API",
+    "subtitle": "Gestiona las claves API para integraciones externas y configura los endpoints de webhook",
+    "api_keys_section": "Claves API",
+    "webhooks_section": "Webhooks",
+    "generate_api_key": "Generar Clave API",
+    "add_webhook": "Agregar Webhook",
+    "coming_soon": "Próximamente",
+    "coming_soon_note": "La gestión completa de webhooks y claves API estará disponible en una versión futura.",
+    "api_keys_description": "Las claves API permiten que servicios externos se autentiquen con la API de Borderless en nombre de tu organización.",
+    "webhooks_description": "Los webhooks te permiten recibir notificaciones de eventos en tiempo real en tus propios sistemas cuando ocurren acciones específicas.",
+    "no_api_keys": "Aún no se han generado claves API.",
+    "no_webhooks": "Aún no se han configurado webhooks.",
+    "col_name": "Nombre",
+    "col_key_prefix": "Prefijo de Clave",
+    "col_url": "URL del Endpoint",
+    "col_events": "Eventos",
+    "col_status": "Estado",
+    "col_created": "Creado",
+    "col_last_used": "Último Uso",
+    "col_actions": "Acciones"
   }
 }

@@ -2038,7 +2038,15 @@
     "ai_feature_flags_link": "Manage AI feature flags",
     "ai_enabled": "AI Status",
     "ai_enabled_yes": "Enabled",
-    "ai_enabled_no": "Disabled"
+    "ai_enabled_no": "Disabled",
+    "backup_enabled": "Enabled",
+    "backup_disabled": "Disabled",
+    "backup_schedule_label": "Schedule (Cron)",
+    "backup_not_configured": "Not configured",
+    "backup_retention_label": "Retention Period",
+    "backup_last_backup": "Last Backup",
+    "backup_never": "Never",
+    "backup_env_note": "Backup is managed via environment variables. Changes require a server restart."
   },
   "booking": {
     "title": "Book Your Interview",
@@ -3401,6 +3409,8 @@
     "contact_messages": "Contact Messages",
     "plan_limits": "Plan Limits",
     "feature_flags": "Feature Flags",
+    "general_settings": "General Settings",
+    "webhooks": "Webhooks & API Keys",
     "aria_label": "admin navigation"
   },
   "plan_features": {
@@ -3469,5 +3479,46 @@
     "toggle_error": "Failed to update feature flag",
     "load_error": "Failed to load feature flags",
     "last_updated": "Last updated"
+  },
+  "general_settings": {
+    "title": "General Settings",
+    "subtitle": "Manage app-wide settings such as company information, timezone, and notification preferences",
+    "company_section": "Company Settings",
+    "notifications_section": "Notification Settings",
+    "coming_soon_chip": "Coming Soon",
+    "coming_soon_note": "Full editing support for this section will be available in a future release.",
+    "company_name_label": "Company Name",
+    "company_name_placeholder": "Borderless",
+    "timezone_label": "Default Timezone",
+    "timezone_placeholder": "UTC (Coordinated Universal Time)",
+    "default_locale_label": "Default Locale",
+    "default_locale_placeholder": "en — English",
+    "notifications_description": "Configure which system events trigger email notifications for your admin team.",
+    "notifications_new_application": "New application received",
+    "notifications_stage_change": "Candidate stage changed",
+    "notifications_candidate_hired": "Candidate marked as hired",
+    "notifications_system_alerts": "System alerts & errors"
+  },
+  "webhooks": {
+    "title": "Webhooks & API Keys",
+    "subtitle": "Manage API keys for external integrations and configure webhook endpoints",
+    "api_keys_section": "API Keys",
+    "webhooks_section": "Webhooks",
+    "generate_api_key": "Generate API Key",
+    "add_webhook": "Add Webhook",
+    "coming_soon": "Coming Soon",
+    "coming_soon_note": "Full webhook and API key management will be available in a future release.",
+    "api_keys_description": "API keys allow external services to authenticate with the Borderless API on behalf of your organization.",
+    "webhooks_description": "Webhooks allow you to receive real-time event notifications in your own systems when specific actions occur.",
+    "no_api_keys": "No API keys have been generated yet.",
+    "no_webhooks": "No webhooks have been configured yet.",
+    "col_name": "Name",
+    "col_key_prefix": "Key Prefix",
+    "col_url": "Endpoint URL",
+    "col_events": "Events",
+    "col_status": "Status",
+    "col_created": "Created",
+    "col_last_used": "Last Used",
+    "col_actions": "Actions"
   }
 }
