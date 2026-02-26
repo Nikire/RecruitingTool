@@ -858,14 +858,14 @@ const LandingPage = () => {
                       left: "50%",
                       transform: "translateX(-50%)",
                       bgcolor: plan.color,
-                      color: "white",
+                      color: theme.palette.getContrastText(plan.color),
                       fontWeight: 800,
                       fontSize: "0.875rem",
                       height: 32,
                       px: 2,
                       boxShadow: `0 4px 12px ${alpha(plan.color, 0.4)}`,
                       "& .MuiChip-icon": {
-                        color: "white",
+                        color: theme.palette.getContrastText(plan.color),
                       },
                     }}
                   />
@@ -1484,7 +1484,7 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  onClick={handleComingSoon}
+                  onClick={() => navigate("/contact")}
                   sx={{
                     opacity: 0.7,
                     cursor: "pointer",
@@ -1493,6 +1493,20 @@ const LandingPage = () => {
                   }}
                 >
                   {t("landing.footer.support")}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  component="a"
+                  href="mailto:noreply@borderless.app"
+                  sx={{
+                    opacity: 0.6,
+                    color: "inherit",
+                    textDecoration: "none",
+                    transition: "all 0.2s ease",
+                    "&:hover": { opacity: 1, textDecoration: "underline" },
+                  }}
+                >
+                  noreply@borderless.app
                 </Typography>
                 <Typography
                   variant="body2"

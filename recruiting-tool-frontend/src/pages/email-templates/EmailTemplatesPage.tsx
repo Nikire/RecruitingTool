@@ -162,24 +162,6 @@ const EmailTemplatesPage: React.FC = () => {
         ) : null,
     },
     {
-      field: "companyUid",
-      headerName: t("job_positions.company"),
-      width: 150,
-      renderCell: (params) => (
-        <CellRow centered>
-          {params.value ? (
-            <Chip label={t("job_positions.company")} size="small" />
-          ) : (
-            <Chip
-              label={t("email_templates.system_wide")}
-              size="small"
-              color="secondary"
-            />
-          )}
-        </CellRow>
-      ),
-    },
-    {
       field: "createdByName",
       headerName: t("email_templates.table_created_by"),
       width: 150,
