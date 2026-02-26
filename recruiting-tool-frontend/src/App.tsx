@@ -55,6 +55,7 @@ import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
 import ContactPage from "./pages/contact/ContactPage";
 import ContactMessagesPage from "./pages/admin/ContactMessagesPage";
+import PlanLimitsPage from "./pages/admin/PlanLimitsPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -269,6 +270,10 @@ function App() {
               <Route
                 path="/admin/contact-messages"
                 element={<ContactMessagesPage />}
+              />
+              <Route
+                path="/admin/plan-limits"
+                element={<PlanLimitsPage />}
               />
             </Route>
           </Route>

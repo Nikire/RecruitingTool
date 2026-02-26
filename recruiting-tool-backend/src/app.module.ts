@@ -48,6 +48,7 @@ import { InternalModule } from './modules/internal/internal.module';
 import { StageNotesModule } from './modules/stage-notes/stage-notes.module';
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
+import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 
 @Module({
   imports: [
@@ -107,6 +108,7 @@ import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
     StageNotesModule,
     SystemSettingsModule,
     PlanLimitsModule,
+    FeatureFlagsModule,
   ],
   controllers: [AppController],
   providers: [

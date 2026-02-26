@@ -1408,6 +1408,7 @@
     "deleted_records": "Registros Eliminados",
     "settings": "Configuración",
     "contact_messages": "Mensajes de Contacto",
+    "plan_limits": "Límites de Plan",
     "aria_label": "navegación de administrador"
   },
   "language": {
@@ -3414,6 +3415,22 @@
     "privacy_email": "privacy@borderless.app",
     "security_email": "security@borderless.app",
     "legal_email": "legal@borderless.app"
+  },
+  "plan_limits": {
+    "title": "Gestión de Límites de Plan",
+    "subtitle": "Configura los límites de funcionalidades y controles de acceso para cada plan de suscripción",
+    "max_job_positions": "Máx. Posiciones de Trabajo",
+    "max_candidates": "Máx. Candidatos por Posición",
+    "max_users": "Máx. Usuarios",
+    "max_storage": "Máx. Almacenamiento (MB)",
+    "max_emails": "Máx. Correos / Mes",
+    "ai_enabled": "IA Habilitada",
+    "custom_branding": "Marca Personalizada",
+    "api_access": "Acceso a API",
+    "save_success": "Límite de plan actualizado exitosamente",
+    "save_error": "Error al actualizar el límite de plan",
+    "load_error": "Error al cargar los límites de plan",
+    "last_updated": "Última actualización"
   },
   "stage_note": {
     "add_note": "Agregar nota",

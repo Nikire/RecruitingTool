@@ -6,6 +6,7 @@ import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { PlanLimitsService } from './modules/plan-limits/plan-limits.service';
+import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 
 const { PORT, FRONTEND_URL } = process.env;
 
@@ -53,6 +54,11 @@ async function bootstrap() {
   // This is idempotent — safe to call on every bootstrap.
   const planLimitsService = app.get(PlanLimitsService);
   await planLimitsService.seedDefaults();
+
+  // Seed default feature flags into the database if the table is empty.
+  // This is idempotent — safe to call on every bootstrap.
+  const featureFlagsService = app.get(FeatureFlagsService);
+  await featureFlagsService.seedDefaults();
 
   await app.listen(PORT ?? 4000);
 }
