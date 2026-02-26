@@ -1,16 +1,21 @@
-import { Box, Typography, Grid, Stack, Chip } from "@mui/material";
-import { useTranslation } from "react-i18next";
-import { useState } from "react";
-import toast from "react-hot-toast";
 import {
-  Settings as SettingsIcon,
+  Box,
+  Typography,
+  Grid,
+  Stack,
+  Chip,
+  Switch,
+  FormControlLabel,
+  Skeleton,
+} from "@mui/material";
+import { useTranslation } from "react-i18next";
+import {
   Email as EmailIcon,
   Psychology as PsychologyIcon,
-  Extension as ExtensionIcon,
-  HealthAndSafety as HealthIcon,
-  Public as PublicIcon,
-  Language as LanguageIcon,
-  CalendarMonth as CalendarIcon,
+  Storage as StorageIcon,
+  Speed as SpeedIcon,
+  Backup as BackupIcon,
+  Info as InfoIcon,
 } from "@mui/icons-material";
 import {
   SettingsCard,
@@ -21,58 +26,35 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
 import { Navigate } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
-import LoadingSpinner from "../../components/common/LoadingSpinner";
 import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
+import {
+  useSystemSettings,
+  useUpdateSystemSettings,
+  useTestEmailConnection,
+} from "../../hooks/api/useSystemSettings";
 
 /**
  * SystemSettingsPage - System configuration and health monitoring (SUPER_ADMIN only)
  *
  * @description
- * Comprehensive system settings page displaying:
- * - General application settings (timezone, language, date format)
- * - Email configuration status and testing
- * - AI settings and quotas
- * - Integration status (Google Calendar, n8n, MinIO)
- * - System health monitoring (Database, API, Storage)
+ * Comprehensive system settings page displaying real configuration from the backend:
+ * - Email configuration (SMTP host, port, sender, application emails toggle)
+ * - AI settings (model, tier)
+ * - Storage configuration (type, bucket)
+ * - Rate limiting details
+ * - Backup configuration
+ * - Application info (environment, version)
  *
  * @access SUPER_ADMIN only
  */
 
-// Mock data - will be replaced with real API calls
-interface SystemSettings {
-  general: {
-    applicationName: string;
-    defaultTimezone: string;
-    defaultLanguage: string;
-    dateFormat: string;
-  };
-  email: {
-    configured: boolean;
-    smtpHost?: string;
-    smtpPort?: number;
-  };
-  ai: {
-    enabled: boolean;
-    defaultQuota: number;
-    model: string;
-  };
-  integrations: {
-    googleCalendar: "connected" | "error" | "not_configured";
-    n8nWebhook: "connected" | "error" | "not_configured";
-    minioStorage: "connected" | "error" | "not_configured";
-  };
-  health: {
-    database: "ok" | "error" | "warning";
-    backend: "ok" | "error" | "warning";
-    storage: "ok" | "error" | "warning";
-  };
-}
-
 const SystemSettingsPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
-  const [isLoading] = useState(false);
-  const [testingEmail, setTestingEmail] = useState(false);
+
+  const { data: settings, isLoading, isError } = useSystemSettings();
+  const updateSettings = useUpdateSystemSettings();
+  const testEmail = useTestEmailConnection();
 
   // Permission check - SUPER_ADMIN only
   const isSuperAdmin = user?.roles?.includes(UserRoles.SUPER_ADMIN);
@@ -85,62 +67,46 @@ const SystemSettingsPage: React.FC = () => {
     return <AccessDeniedMessage requiredRoles={["SUPER_ADMIN"]} />;
   }
 
-  // Mock settings data - TODO: Replace with API call
-  const settings: SystemSettings = {
-    general: {
-      applicationName: "BorderLess",
-      defaultTimezone: "America/New_York",
-      defaultLanguage: "en",
-      dateFormat: "MM/DD/YYYY",
-    },
-    email: {
-      configured: true,
-      smtpHost: "smtp.gmail.com",
-      smtpPort: 587,
-    },
-    ai: {
-      enabled: true,
-      defaultQuota: 100,
-      model: "gpt-4",
-    },
-    integrations: {
-      googleCalendar: "connected",
-      n8nWebhook: "connected",
-      minioStorage: "connected",
-    },
-    health: {
-      database: "ok",
-      backend: "ok",
-      storage: "ok",
-    },
+  const handleToggleApplicationEmails = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    updateSettings.mutate({ applicationEmailsEnabled: event.target.checked });
   };
 
-  // Test email connection handler
-  const handleTestEmail = async () => {
-    setTestingEmail(true);
-    try {
-      // TODO: Implement actual email test API call
-      // await testEmailConnection();
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate API call
-      toast.success(t("settings.email_test_success"));
-    } catch {
-      toast.error(t("settings.email_test_failed"));
-    } finally {
-      setTestingEmail(false);
-    }
+  const handleTestEmail = () => {
+    testEmail.mutate();
   };
 
-  // Helper function to map integration status to StatusType
-  const getStatusType = (
-    status: "connected" | "error" | "not_configured",
-  ): "ok" | "error" | "warning" => {
-    if (status === "connected") return "ok";
-    if (status === "error") return "error";
-    return "warning";
-  };
-
+  // Loading skeleton while fetching settings
   if (isLoading) {
-    return <LoadingSpinner message={t("settings.loading_settings")} />;
+    return (
+      <Box>
+        <PageHeader
+          title={t("settings.system_settings_title")}
+          subtitle={t("settings.system_settings_subtitle")}
+        />
+        <Grid container spacing={3}>
+          {[...Array(6)].map((_, i) => (
+            <Grid key={i} size={{ xs: 12, md: 6 }}>
+              <Skeleton variant="rectangular" height={200} sx={{ borderRadius: 2 }} />
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    );
+  }
+
+  // Error state
+  if (isError || !settings) {
+    return (
+      <Box>
+        <PageHeader
+          title={t("settings.system_settings_title")}
+          subtitle={t("settings.system_settings_subtitle")}
+        />
+        <Typography color="error">{t("settings.load_error")}</Typography>
+      </Box>
+    );
   }
 
   return (
@@ -152,66 +118,7 @@ const SystemSettingsPage: React.FC = () => {
       />
 
       <Grid container spacing={3}>
-        {/* General Settings */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <SettingsCard
-            icon={<SettingsIcon />}
-            title={t("settings.general_settings")}
-            iconColor="primary.main"
-          >
-            <Stack spacing={2}>
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t("settings.application_name")}
-                </Typography>
-                <Typography variant="body1" fontWeight={500}>
-                  {settings.general.applicationName}
-                </Typography>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <PublicIcon fontSize="small" color="action" />
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("settings.default_timezone")}
-                  </Typography>
-                  <Typography variant="body1">
-                    {settings.general.defaultTimezone}
-                  </Typography>
-                </Box>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <LanguageIcon fontSize="small" color="action" />
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("settings.default_language")}
-                  </Typography>
-                  <Chip
-                    label={t(`language.${settings.general.defaultLanguage}`)}
-                    size="small"
-                    color="primary"
-                    variant="outlined"
-                  />
-                </Box>
-              </Box>
-
-              <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                <CalendarIcon fontSize="small" color="action" />
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("settings.date_format")}
-                  </Typography>
-                  <Typography variant="body1" fontFamily="monospace">
-                    {settings.general.dateFormat}
-                  </Typography>
-                </Box>
-              </Box>
-            </Stack>
-          </SettingsCard>
-        </Grid>
-
-        {/* Email Settings */}
+        {/* Email Configuration */}
         <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<EmailIcon />}
@@ -220,8 +127,8 @@ const SystemSettingsPage: React.FC = () => {
             action={
               <TestConnectionButton
                 onTest={handleTestEmail}
-                isLoading={testingEmail}
-                disabled={!settings.email.configured}
+                isLoading={testEmail.isPending}
+                disabled={!settings.email.enabled}
               />
             }
           >
@@ -231,23 +138,23 @@ const SystemSettingsPage: React.FC = () => {
                   {t("settings.smtp_status")}
                 </Typography>
                 <StatusIndicator
-                  status={settings.email.configured ? "ok" : "error"}
+                  status={settings.email.enabled ? "ok" : "error"}
                   label={
-                    settings.email.configured
+                    settings.email.enabled
                       ? "settings.status_configured"
                       : "settings.status_not_configured"
                   }
                 />
               </Box>
 
-              {settings.email.configured && (
+              {settings.email.enabled && (
                 <>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
                       {t("settings.smtp_host")}
                     </Typography>
                     <Typography variant="body1" fontFamily="monospace">
-                      {settings.email.smtpHost}
+                      {settings.email.host}
                     </Typography>
                   </Box>
 
@@ -256,16 +163,45 @@ const SystemSettingsPage: React.FC = () => {
                       {t("settings.smtp_port")}
                     </Typography>
                     <Typography variant="body1" fontFamily="monospace">
-                      {settings.email.smtpPort}
+                      {settings.email.port}
+                    </Typography>
+                  </Box>
+
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("settings.smtp_sender")}
+                    </Typography>
+                    <Typography variant="body1" fontFamily="monospace">
+                      {settings.email.from}
                     </Typography>
                   </Box>
                 </>
               )}
+
+              <Box>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={settings.email.applicationEmailsEnabled}
+                      onChange={handleToggleApplicationEmails}
+                      disabled={
+                        updateSettings.isPending || !settings.email.enabled
+                      }
+                      color="primary"
+                    />
+                  }
+                  label={
+                    <Typography variant="body2">
+                      {t("settings.application_emails_enabled")}
+                    </Typography>
+                  }
+                />
+              </Box>
             </Stack>
           </SettingsCard>
         </Grid>
 
-        {/* AI Settings */}
+        {/* AI Configuration */}
         <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
             icon={<PsychologyIcon />}
@@ -275,39 +211,149 @@ const SystemSettingsPage: React.FC = () => {
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t("settings.ai_status")}
+                  {t("settings.ai_model")}
+                </Typography>
+                <Chip
+                  label={settings.ai.model || t("common.n_a")}
+                  size="small"
+                  color="secondary"
+                  sx={{ fontFamily: "monospace" }}
+                />
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.ai_tier")}
+                </Typography>
+                <Chip
+                  label={settings.ai.tier || t("common.n_a")}
+                  size="small"
+                  variant="outlined"
+                />
+              </Box>
+            </Stack>
+          </SettingsCard>
+        </Grid>
+
+        {/* Storage Configuration */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <SettingsCard
+            icon={<StorageIcon />}
+            title={t("settings.storage_configuration")}
+            iconColor="warning.main"
+          >
+            <Stack spacing={2}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("settings.storage_type")}
+                </Typography>
+                <Chip
+                  label={settings.storage.type || t("common.n_a")}
+                  size="small"
+                  color="warning"
+                  sx={{ fontFamily: "monospace" }}
+                />
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.storage_bucket")}
+                </Typography>
+                <Typography variant="body1" fontFamily="monospace">
+                  {settings.storage.bucket || t("common.n_a")}
+                </Typography>
+              </Box>
+            </Stack>
+          </SettingsCard>
+        </Grid>
+
+        {/* Rate Limiting */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <SettingsCard
+            icon={<SpeedIcon />}
+            title={t("settings.rate_limiting")}
+            iconColor="error.main"
+          >
+            <Stack spacing={2}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("settings.rate_limit_general")}
+                </Typography>
+                <Typography variant="body1">
+                  {settings.rateLimiting.generalLimit}{" "}
+                  {t("settings.requests_per_window")}{" "}
+                  {Math.round(settings.rateLimiting.generalTtl / 1000)}
+                  {t("settings.seconds")}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.rate_limit_auth")}
+                </Typography>
+                <Typography variant="body1">
+                  {settings.rateLimiting.authLimit}{" "}
+                  {t("settings.requests_per_window")}{" "}
+                  {Math.round(settings.rateLimiting.generalTtl / 1000)}
+                  {t("settings.seconds")}
+                </Typography>
+              </Box>
+
+              <Box>
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.rate_limit_ai")}
+                </Typography>
+                <Typography variant="body1">
+                  {settings.rateLimiting.aiLimit}{" "}
+                  {t("settings.requests_per_window")}{" "}
+                  {Math.round(settings.rateLimiting.generalTtl / 1000)}
+                  {t("settings.seconds")}
+                </Typography>
+              </Box>
+            </Stack>
+          </SettingsCard>
+        </Grid>
+
+        {/* Backup Configuration */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <SettingsCard
+            icon={<BackupIcon />}
+            title={t("settings.backup_configuration")}
+            iconColor="success.main"
+          >
+            <Stack spacing={2}>
+              <Box>
+                <Typography variant="body2" color="text.secondary" gutterBottom>
+                  {t("settings.backup_status")}
                 </Typography>
                 <StatusIndicator
-                  status={settings.ai.enabled ? "ok" : "warning"}
+                  status={settings.backup.enabled ? "ok" : "warning"}
                   label={
-                    settings.ai.enabled
+                    settings.backup.enabled
                       ? "settings.status_enabled"
                       : "settings.status_disabled"
                   }
                 />
               </Box>
 
-              {settings.ai.enabled && (
+              {settings.backup.enabled && (
                 <>
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      {t("settings.ai_model")}
+                      {t("settings.backup_schedule")}
                     </Typography>
-                    <Chip
-                      label={settings.ai.model}
-                      size="small"
-                      color="secondary"
-                      sx={{ fontFamily: "monospace" }}
-                    />
+                    <Typography variant="body1" fontFamily="monospace">
+                      {settings.backup.schedule}
+                    </Typography>
                   </Box>
 
                   <Box>
                     <Typography variant="body2" color="text.secondary">
-                      {t("settings.default_quota")}
+                      {t("settings.backup_retention")}
                     </Typography>
                     <Typography variant="body1">
-                      {settings.ai.defaultQuota}{" "}
-                      {t("settings.requests_per_month")}
+                      {settings.backup.retentionDays}{" "}
+                      {t("settings.days")}
                     </Typography>
                   </Box>
                 </>
@@ -316,103 +362,41 @@ const SystemSettingsPage: React.FC = () => {
           </SettingsCard>
         </Grid>
 
-        {/* Integration Status */}
+        {/* Application Info */}
         <Grid size={{ xs: 12, md: 6 }}>
           <SettingsCard
-            icon={<ExtensionIcon />}
-            title={t("settings.integrations")}
-            iconColor="warning.main"
+            icon={<InfoIcon />}
+            title={t("settings.app_info")}
+            iconColor="primary.main"
           >
             <Stack spacing={2}>
               <Box>
                 <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t("settings.google_calendar")}
+                  {t("settings.app_environment")}
                 </Typography>
-                <StatusIndicator
-                  status={getStatusType(settings.integrations.googleCalendar)}
-                  label={`settings.status_${settings.integrations.googleCalendar}`}
+                <Chip
+                  label={settings.app.environment}
+                  size="small"
+                  color={
+                    settings.app.environment === "production"
+                      ? "error"
+                      : settings.app.environment === "staging"
+                        ? "warning"
+                        : "success"
+                  }
+                  sx={{ fontFamily: "monospace" }}
                 />
               </Box>
 
               <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t("settings.n8n_webhook")}
+                <Typography variant="body2" color="text.secondary">
+                  {t("settings.app_version")}
                 </Typography>
-                <StatusIndicator
-                  status={getStatusType(settings.integrations.n8nWebhook)}
-                  label={`settings.status_${settings.integrations.n8nWebhook}`}
-                />
-              </Box>
-
-              <Box>
-                <Typography variant="body2" color="text.secondary" gutterBottom>
-                  {t("settings.minio_storage")}
+                <Typography variant="body1" fontFamily="monospace">
+                  v{settings.app.version}
                 </Typography>
-                <StatusIndicator
-                  status={getStatusType(settings.integrations.minioStorage)}
-                  label={`settings.status_${settings.integrations.minioStorage}`}
-                />
               </Box>
             </Stack>
-          </SettingsCard>
-        </Grid>
-
-        {/* System Health */}
-        <Grid size={{ xs: 12 }}>
-          <SettingsCard
-            icon={<HealthIcon />}
-            title={t("settings.system_health")}
-            iconColor="success.main"
-          >
-            <Grid container spacing={3}>
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {t("settings.database_status")}
-                  </Typography>
-                  <StatusIndicator
-                    status={settings.health.database}
-                    label={`settings.status_${settings.health.database}`}
-                  />
-                </Box>
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {t("settings.backend_api_status")}
-                  </Typography>
-                  <StatusIndicator
-                    status={settings.health.backend}
-                    label={`settings.status_${settings.health.backend}`}
-                  />
-                </Box>
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 4 }}>
-                <Box>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
-                    {t("settings.storage_service_status")}
-                  </Typography>
-                  <StatusIndicator
-                    status={settings.health.storage}
-                    label={`settings.status_${settings.health.storage}`}
-                  />
-                </Box>
-              </Grid>
-            </Grid>
           </SettingsCard>
         </Grid>
       </Grid>

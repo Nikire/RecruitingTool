@@ -47,6 +47,7 @@ import { ContactMessagesModule } from './modules/contact-messages/contact-messag
 import { InternalModule } from './modules/internal/internal.module';
 import { StageNotesModule } from './modules/stage-notes/stage-notes.module';
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
+import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
 
 @Module({
   imports: [
@@ -105,6 +106,7 @@ import { SystemSettingsModule } from './modules/system-settings/system-settings.
     InternalModule,
     StageNotesModule,
     SystemSettingsModule,
+    PlanLimitsModule,
   ],
   controllers: [AppController],
   providers: [

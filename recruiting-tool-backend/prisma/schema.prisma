@@ -1322,3 +1322,22 @@ model SystemConfig {
 
   @@index([key])
 }
+
+model PlanLimit {
+  id                      Int      @id @default(autoincrement())
+  uid                     String   @unique @default(cuid())
+  planType                String   // "FREE", "PROFESSIONAL", "ENTERPRISE"
+  maxJobPositions         Int      // -1 means unlimited
+  maxCandidatesPerPosition Int     // -1 means unlimited
+  maxUsers                Int      // -1 means unlimited
+  maxStorageMB            Int      // in MB, -1 means unlimited
+  aiScoringEnabled        Boolean  @default(false)
+  aiScoringCreditsPerMonth Int     // -1 = unlimited, 0 = disabled
+  emailTemplatesEnabled   Boolean  @default(true)
+  analyticsEnabled        Boolean  @default(false)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@unique([planType])
+  @@index([planType])
+}
