@@ -17,6 +17,9 @@ export interface PublicCompany {
   uid: string;
   name: string;
   logoUrl?: string;
+  website?: string;
+  industry?: string;
+  description?: string;
 }
 
 export const companiesApi = {

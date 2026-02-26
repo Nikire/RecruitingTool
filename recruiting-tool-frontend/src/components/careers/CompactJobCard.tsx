@@ -15,6 +15,7 @@ import LocationOnIcon from "@mui/icons-material/LocationOn";
 import WorkIcon from "@mui/icons-material/Work";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import EventIcon from "@mui/icons-material/Event";
 import { useNavigate } from "react-router-dom";
 
 interface CompactJobCardProps {
@@ -26,16 +27,23 @@ interface CompactJobCardProps {
     status: string;
     createdAt?: Date | string;
     description?: string;
-    // New fields from backend
+    // Location and work type
     city?: string;
     country?: string;
     jobType?: string;
     workLocation?: string;
+    // Experience and urgency
     experienceLevel?: string;
+    isUrgent?: boolean;
+    // Salary
     salaryMin?: number;
     salaryMax?: number;
     salaryCurrency?: string;
+    salaryPeriod?: string;
     showSalary?: boolean;
+    // Application deadline
+    applicationDeadline?: Date | string;
+    // Misc
     tags?: string[];
     isHighlighted?: boolean;
   };
@@ -58,6 +66,14 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
             (1000 * 60 * 60 * 24),
         )
       : 0;
+
+    // Calculate days until deadline
+    const daysUntilDeadline = jobPosition.applicationDeadline
+      ? Math.ceil(
+          (new Date(jobPosition.applicationDeadline).getTime() - Date.now()) /
+            (1000 * 60 * 60 * 24),
+        )
+      : null;
 
     const getPostedText = () => {
       if (daysSincePosted === 0) {
@@ -94,6 +110,20 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
       return parts.join(", ") || t("careersJob.location_not_specified");
     };
 
+    // Format salary period suffix
+    const getSalaryPeriodSuffix = () => {
+      switch (jobPosition.salaryPeriod) {
+        case "YEARLY":
+          return t("careersJob.per_year");
+        case "MONTHLY":
+          return t("careersJob.per_month");
+        case "HOURLY":
+          return t("careersJob.per_hour");
+        default:
+          return "";
+      }
+    };
+
     // Format salary
     const getSalaryText = () => {
       if (
@@ -103,6 +133,7 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
         return null;
       }
       const currency = jobPosition.salaryCurrency || "$";
+      const periodSuffix = getSalaryPeriodSuffix();
       const min = jobPosition.salaryMin
         ? `${currency}${jobPosition.salaryMin.toLocaleString()}`
         : "";
@@ -111,14 +142,54 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
         : "";
 
       if (min && max) {
-        return `${min} - ${max}`;
+        return periodSuffix ? `${min} - ${max}${periodSuffix}` : `${min} - ${max}`;
       } else if (min) {
-        return `${t("careersJob.from")} ${min}`;
+        return periodSuffix
+          ? `${t("careersJob.from")} ${min}${periodSuffix}`
+          : `${t("careersJob.from")} ${min}`;
       } else if (max) {
-        return `${t("careersJob.up_to")} ${max}`;
+        return periodSuffix
+          ? `${t("careersJob.up_to")} ${max}${periodSuffix}`
+          : `${t("careersJob.up_to")} ${max}`;
       }
       return null;
     };
+
+    // Get experience level label
+    const getExperienceLevelLabel = () => {
+      switch (jobPosition.experienceLevel) {
+        case "ENTRY":
+          return t("careersFilters.entry_level");
+        case "MID":
+          return t("careersFilters.mid_level");
+        case "SENIOR":
+          return t("careersFilters.senior_level");
+        case "LEAD":
+          return t("careersFilters.lead_level");
+        case "EXECUTIVE":
+          return t("careersFilters.executive_level");
+        default:
+          return null;
+      }
+    };
+
+    // Format application deadline
+    const getDeadlineText = () => {
+      if (!jobPosition.applicationDeadline || daysUntilDeadline === null || daysUntilDeadline < 0) {
+        return null;
+      }
+      const date = new Date(jobPosition.applicationDeadline);
+      const formattedDate = date.toLocaleDateString(undefined, {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      });
+      return t("careersJob.apply_by", { date: formattedDate });
+    };
+
+    const experienceLevelLabel = getExperienceLevelLabel();
+    const deadlineText = getDeadlineText();
+    const isDeadlineSoon = daysUntilDeadline !== null && daysUntilDeadline >= 0 && daysUntilDeadline <= 7;
 
     // Get work location type badge color
     const getWorkLocationColor = () => {
@@ -297,8 +368,8 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
             />
           </Stack>
 
-          {/* Job Type */}
-          <Box sx={{ mb: 1.5 }}>
+          {/* Job Type and Experience Level */}
+          <Stack direction="row" spacing={0.5} flexWrap="wrap" gap={0.5} mb={1.5}>
             <Chip
               icon={<WorkIcon sx={{ fontSize: 14 }} />}
               label={getJobTypeLabel()}
@@ -311,7 +382,24 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
                 "& .MuiChip-icon": { color: "text.secondary" },
               }}
             />
-          </Box>
+            {experienceLevelLabel && (
+              <Chip
+                label={experienceLevelLabel}
+                size="small"
+                variant="outlined"
+                color="secondary"
+                sx={{ fontSize: "0.7rem", height: 24 }}
+              />
+            )}
+            {jobPosition.isUrgent && (
+              <Chip
+                label={t("careersJob.urgent")}
+                size="small"
+                color="error"
+                sx={{ fontSize: "0.7rem", height: 24, fontWeight: 600 }}
+              />
+            )}
+          </Stack>
 
           {/* Salary (if shown) */}
           {salaryText && (
@@ -351,6 +439,30 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
                 />
               ))}
             </Stack>
+          )}
+
+          {/* Application deadline */}
+          {deadlineText && (
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                mb: 1,
+                color: isDeadlineSoon ? "warning.main" : "text.secondary",
+              }}
+            >
+              <EventIcon sx={{ fontSize: 14 }} />
+              <Typography
+                variant="caption"
+                sx={{
+                  fontWeight: isDeadlineSoon ? 600 : 500,
+                  fontSize: "0.7rem",
+                }}
+              >
+                {deadlineText}
+              </Typography>
+            </Box>
           )}
 
           {/* Posted date */}

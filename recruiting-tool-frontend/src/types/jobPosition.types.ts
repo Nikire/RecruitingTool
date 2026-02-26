@@ -11,6 +11,9 @@ export interface JobPosition {
   description?: string;
   companyUid?: string;
   companyName?: string;
+  companyLogoUrl?: string;
+  companyWebsite?: string;
+  companyIndustry?: string;
   customQuestions?: Array<CustomQuestion>;
   hiringProcesses?: Array<HiringProcess>;
   stages: Array<Stage>;
@@ -66,6 +69,9 @@ export interface PublicJobPosition {
   status: "OPEN" | "CLOSED" | "CANCELLED";
   companyName?: string;
   companyDescription?: string;
+  companyLogoUrl?: string;
+  companyWebsite?: string;
+  companyIndustry?: string;
   customQuestions?: Array<CustomQuestion>;
   stages?: Array<{
     uid: string;

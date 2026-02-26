@@ -191,6 +191,15 @@ export class PublicCompanyResponseDto {
 
   @ApiProperty({ description: 'The logo URL of the company', example: 'https://example.com/logo.png', required: false })
   logoUrl?: string;
+
+  @ApiProperty({ description: 'The company website URL', example: 'https://techcorp.com', required: false })
+  website?: string;
+
+  @ApiProperty({ description: 'The industry the company operates in', example: 'Technology', required: false })
+  industry?: string;
+
+  @ApiProperty({ description: 'Short company description', example: 'A leading tech company', required: false })
+  description?: string;
 }
 
 export class CompanyUserResponseDto {

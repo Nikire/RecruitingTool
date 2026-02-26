@@ -2679,7 +2679,14 @@
     "location_not_specified": "Ubicación no especificada",
     "from": "Desde",
     "up_to": "Hasta",
-    "featured": "Destacado"
+    "featured": "Destacado",
+    "urgent": "Urgente",
+    "per_year": "/año",
+    "per_month": "/mes",
+    "per_hour": "/hora",
+    "apply_by": "Aplicar antes del {{date}}",
+    "visit_website": "Visitar Sitio Web",
+    "company_header_jobs": "Posiciones Abiertas"
   },
   "calendar_settings": {
     "title": "Configuración del Calendario",

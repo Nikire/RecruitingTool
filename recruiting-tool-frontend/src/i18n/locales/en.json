@@ -2660,7 +2660,14 @@
     "location_not_specified": "Location not specified",
     "from": "From",
     "up_to": "Up to",
-    "featured": "Featured"
+    "featured": "Featured",
+    "urgent": "Urgent",
+    "per_year": "/yr",
+    "per_month": "/mo",
+    "per_hour": "/hr",
+    "apply_by": "Apply by {{date}}",
+    "visit_website": "Visit Website",
+    "company_header_jobs": "Open Positions"
   },
   "calendar_settings": {
     "title": "Calendar Settings",

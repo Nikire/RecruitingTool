@@ -123,6 +123,9 @@ export class CompanyService {
           uid: true,
           name: true,
           logoUrl: true,
+          website: true,
+          industry: true,
+          description: true,
         },
         orderBy: {
           name: 'asc', // Alphabetical order for dropdown

@@ -8,6 +8,7 @@ import {
   Drawer,
   IconButton,
   Button,
+  Avatar,
   useMediaQuery,
   useTheme,
 } from "@mui/material";
@@ -20,6 +21,7 @@ import { ApplyToJobDialog } from "../../components/dialogs/ApplyToJobDialog";
 import { useDialog } from "../../hooks/useDialog";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import CloseIcon from "@mui/icons-material/Close";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import FilterSidebar from "../../components/careers/FilterSidebar";
 import JobCardsGrid from "../../components/careers/JobCardsGrid";
 import LoadingSkeletons from "../../components/careers/LoadingSkeletons";
@@ -79,6 +81,18 @@ const CareersPage: React.FC = () => {
   const { data: companiesData, isLoading: isLoadingCompanies } =
     usePublicCompaniesWithJobs();
   const companies = useMemo(() => companiesData || [], [companiesData]);
+
+  // Determine which company to show in the header section.
+  // Show the selected company when a filter is active, or the only company when there's exactly one.
+  const selectedCompany = useMemo(() => {
+    if (filters.company) {
+      return companies.find((c) => c.uid === filters.company) || null;
+    }
+    if (companies.length === 1) {
+      return companies[0];
+    }
+    return null;
+  }, [filters.company, companies]);
 
   // Build API filters from UI state
   const apiFilters: PublicJobPositionFilters = useMemo(() => {
@@ -204,6 +218,100 @@ const CareersPage: React.FC = () => {
       }}
     >
       <Container maxWidth="xl">
+        {/* Company header section — shown when a company is selected or only one company exists */}
+        {selectedCompany && (
+          <Box
+            sx={{
+              mb: 4,
+              p: 3,
+              borderRadius: 2,
+              border: 1,
+              borderColor: "divider",
+              bgcolor: "background.paper",
+              display: "flex",
+              alignItems: "flex-start",
+              gap: 2.5,
+              flexWrap: "wrap",
+            }}
+          >
+            {/* Logo */}
+            {selectedCompany.logoUrl ? (
+              <Avatar
+                src={selectedCompany.logoUrl}
+                alt={selectedCompany.name}
+                sx={{ width: 80, height: 80, boxShadow: 2, flexShrink: 0 }}
+                variant="rounded"
+              />
+            ) : (
+              <Avatar
+                sx={{
+                  width: 80,
+                  height: 80,
+                  bgcolor: "primary.main",
+                  fontSize: "1.75rem",
+                  fontWeight: 700,
+                  boxShadow: 2,
+                  flexShrink: 0,
+                }}
+                variant="rounded"
+              >
+                {selectedCompany.name.charAt(0).toUpperCase()}
+              </Avatar>
+            )}
+
+            {/* Company details */}
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+                {selectedCompany.name}
+              </Typography>
+
+              {/* Industry chip */}
+              {selectedCompany.industry && (
+                <Chip
+                  label={selectedCompany.industry}
+                  size="small"
+                  variant="outlined"
+                  sx={{ mb: 1, fontSize: "0.75rem" }}
+                />
+              )}
+
+              {/* Description */}
+              {selectedCompany.description && (
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mb: 1.5,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                  }}
+                >
+                  {selectedCompany.description}
+                </Typography>
+              )}
+
+              {/* Website button */}
+              {selectedCompany.website && (
+                <Button
+                  variant="outlined"
+                  size="small"
+                  endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
+                  href={selectedCompany.website}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  sx={{ fontSize: "0.75rem", py: 0.5 }}
+                >
+                  {t("careersJob.visit_website")}
+                </Button>
+              )}
+            </Box>
+          </Box>
+        )}
+
         {/* Page header */}
         <Box sx={{ mb: 4 }}>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>

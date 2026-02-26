@@ -569,6 +569,15 @@ export class PublicJobPositionResponseDto {
   @ApiProperty({ description: 'The company description', example: 'A leading tech company', required: false })
   companyDescription?: string;
 
+  @ApiProperty({ description: 'The company logo URL', example: 'https://example.com/logo.png', required: false })
+  companyLogoUrl?: string;
+
+  @ApiProperty({ description: 'The company website URL', example: 'https://techcorp.com', required: false })
+  companyWebsite?: string;
+
+  @ApiProperty({ description: 'The company industry', example: 'Technology', required: false })
+  companyIndustry?: string;
+
   @ApiProperty({ description: 'When the job position was created', example: '2025-01-15T10:30:00Z' })
   createdAt: Date;
 
