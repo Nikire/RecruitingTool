@@ -56,6 +56,7 @@ import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
 import ContactPage from "./pages/contact/ContactPage";
 import ContactMessagesPage from "./pages/admin/ContactMessagesPage";
 import PlanLimitsPage from "./pages/admin/PlanLimitsPage";
+import FeatureFlagsPage from "./pages/admin/FeatureFlagsPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -274,6 +275,10 @@ function App() {
               <Route
                 path="/admin/plan-limits"
                 element={<PlanLimitsPage />}
+              />
+              <Route
+                path="/admin/feature-flags"
+                element={<FeatureFlagsPage />}
               />
             </Route>
           </Route>

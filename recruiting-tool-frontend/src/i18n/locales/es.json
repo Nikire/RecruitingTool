@@ -1409,6 +1409,7 @@
     "settings": "Configuración",
     "contact_messages": "Mensajes de Contacto",
     "plan_limits": "Límites de Plan",
+    "feature_flags": "Banderas de Funcionalidad",
     "aria_label": "navegación de administrador"
   },
   "language": {
@@ -1945,7 +1946,16 @@
     "prev_period": "Período anterior",
     "change": "Cambio",
     "no_time_to_hire_data": "No hay datos de tiempo de contratación",
-    "hires_count_label": "Contrataciones: {{count}}"
+    "hires_count_label": "Contrataciones: {{count}}",
+    "period_7d": "Últimos 7 días",
+    "period_30d": "Últimos 30 días",
+    "period_90d": "Últimos 90 días",
+    "period_year": "Este año",
+    "period_custom": "Personalizado",
+    "date_from": "Desde",
+    "date_to": "Hasta",
+    "apply": "Aplicar",
+    "showing_period": "Mostrando datos para"
   },
   "search": {
     "advanced_search": "Búsqueda Avanzada",
@@ -3443,5 +3453,20 @@
     "char_count": "{{count}} / 1000",
     "rating_label": "Calificación",
     "no_rating": "Sin calificación"
+  },
+  "feature_flags": {
+    "title": "Gestión de Banderas de Funcionalidad",
+    "subtitle": "Habilitar o deshabilitar funcionalidades por nivel de plan de suscripción",
+    "feature_column": "Funcionalidad",
+    "ai_screening": "Selección con IA",
+    "bulk_import": "Importación Masiva",
+    "advanced_analytics": "Analítica Avanzada",
+    "custom_branding": "Marca Personalizada",
+    "api_access": "Acceso a API",
+    "priority_support": "Soporte Prioritario",
+    "toggle_success": "Bandera de funcionalidad actualizada exitosamente",
+    "toggle_error": "Error al actualizar la bandera de funcionalidad",
+    "load_error": "Error al cargar las banderas de funcionalidad",
+    "last_updated": "Última actualización"
   }
 }

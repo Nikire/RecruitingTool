@@ -6,6 +6,7 @@ import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import EmailIcon from "@mui/icons-material/Email";
 import TuneIcon from "@mui/icons-material/Tune";
+import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -62,6 +63,12 @@ const AdminLayout: React.FC = () => {
       text: t("admin_layout.plan_limits"),
       icon: <TuneIcon />,
       path: "/admin/plan-limits",
+      requiresSuperAdmin: true,
+    },
+    {
+      text: t("admin_layout.feature_flags"),
+      icon: <FlagOutlinedIcon />,
+      path: "/admin/feature-flags",
       requiresSuperAdmin: true,
     },
     {

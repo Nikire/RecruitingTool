@@ -1925,7 +1925,16 @@
     "prev_period": "Prev. Period",
     "change": "Change",
     "no_time_to_hire_data": "No time-to-hire data available",
-    "hires_count_label": "Hires: {{count}}"
+    "hires_count_label": "Hires: {{count}}",
+    "period_7d": "Last 7 days",
+    "period_30d": "Last 30 days",
+    "period_90d": "Last 90 days",
+    "period_year": "This year",
+    "period_custom": "Custom",
+    "date_from": "From",
+    "date_to": "To",
+    "apply": "Apply",
+    "showing_period": "Showing data for"
   },
   "search": {
     "advanced_search": "Advanced Search",
@@ -3382,6 +3391,7 @@
     "settings": "Settings",
     "contact_messages": "Contact Messages",
     "plan_limits": "Plan Limits",
+    "feature_flags": "Feature Flags",
     "aria_label": "admin navigation"
   },
   "plan_features": {
@@ -3435,5 +3445,20 @@
     "char_count": "{{count}} / 1000",
     "rating_label": "Rating",
     "no_rating": "No rating"
+  },
+  "feature_flags": {
+    "title": "Feature Flags Management",
+    "subtitle": "Enable or disable features per subscription plan tier",
+    "feature_column": "Feature",
+    "ai_screening": "AI Screening",
+    "bulk_import": "Bulk Import",
+    "advanced_analytics": "Advanced Analytics",
+    "custom_branding": "Custom Branding",
+    "api_access": "API Access",
+    "priority_support": "Priority Support",
+    "toggle_success": "Feature flag updated successfully",
+    "toggle_error": "Failed to update feature flag",
+    "load_error": "Failed to load feature flags",
+    "last_updated": "Last updated"
   }
 }
