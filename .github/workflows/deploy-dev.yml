@@ -27,13 +27,35 @@ jobs:
             echo "==> Pulling latest code from development branch..."
             git pull origin development
 
-            echo "==> Freeing up disk space..."
+            echo "==> Disk usage before cleanup..."
+            df -h /
+
+            echo "==> Freeing up disk space (aggressive cleanup)..."
             docker system prune -f --volumes || true
+            docker image prune -af || true
+
+            echo "==> Disk usage after cleanup..."
+            df -h /
+
+            echo "==> Resolving any failed Prisma migrations on DB..."
+            DB_USER=$(docker exec borderless-db-1 sh -c 'echo $POSTGRES_USER' 2>/dev/null || echo "postgres")
+            docker exec borderless-db-1 psql -U "$DB_USER" -d recruiting_tool_db -c \
+              "DELETE FROM _prisma_migrations WHERE migration_name LIKE '20260226%' AND finished_at IS NULL AND rolled_back_at IS NULL; DELETE FROM \"StageNote\";" \
+              2>/dev/null || echo "==> DB fix skipped (container not ready or no failed migrations)"
 
             echo "==> Rebuilding and restarting containers..."
             DOCKER_BUILDKIT=0 docker-compose up -d --build
 
+            echo "==> Waiting for containers to initialize..."
+            sleep 30
+
             echo "==> Verifying container health..."
             docker-compose ps
+
+            echo "==> Backend container logs (last 60 lines)..."
+            docker logs borderless-backend-1 --tail=60 2>&1 || true
+
+            echo "==> Disk usage after deploy..."
+            df -h /
 
             echo "==> Deployment complete."
