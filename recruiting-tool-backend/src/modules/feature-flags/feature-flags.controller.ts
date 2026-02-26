@@ -20,9 +20,7 @@ export class FeatureFlagsController {
   @Get()
   @ApiOperation({
     summary: 'List all feature flags (SUPER_ADMIN only)',
-    description:
-      'Returns all feature flag records stored in the database, ordered by key then planType. ' +
-      'Optionally filter by planType query parameter (e.g. ?planType=FREE).',
+    description: 'Returns all feature flag records stored in the database, ordered by key then planType. ' + 'Optionally filter by planType query parameter (e.g. ?planType=FREE).',
   })
   @ApiQuery({
     name: 'planType',

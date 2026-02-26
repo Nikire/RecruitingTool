@@ -53,10 +53,7 @@ export class StageNotesController {
   })
   @ApiParam({ name: 'hiringProcessUid', required: true, description: 'Hiring Process UID' })
   @ApiParam({ name: 'stageUid', required: true, description: 'Stage UID' })
-  findOne(
-    @Param('hiringProcessUid') hiringProcessUid: string,
-    @Param('stageUid') stageUid: string,
-  ): Promise<StageNoteResponseDto> {
+  findOne(@Param('hiringProcessUid') hiringProcessUid: string, @Param('stageUid') stageUid: string): Promise<StageNoteResponseDto> {
     return this.stageNotesService.findOne(hiringProcessUid, stageUid);
   }
 
@@ -73,10 +70,7 @@ export class StageNotesController {
   })
   @ApiParam({ name: 'hiringProcessUid', required: true, description: 'Hiring Process UID' })
   @ApiParam({ name: 'stageUid', required: true, description: 'Stage UID' })
-  remove(
-    @Param('hiringProcessUid') hiringProcessUid: string,
-    @Param('stageUid') stageUid: string,
-  ): Promise<{ message: string }> {
+  remove(@Param('hiringProcessUid') hiringProcessUid: string, @Param('stageUid') stageUid: string): Promise<{ message: string }> {
     return this.stageNotesService.remove(hiringProcessUid, stageUid);
   }
 }

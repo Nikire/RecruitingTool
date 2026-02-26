@@ -23,10 +23,7 @@ export class SystemSettingsService {
       where: { key: APPLICATION_EMAILS_KEY },
     });
 
-    const applicationEmailsEnabled =
-      dbOverride !== null
-        ? dbOverride.value === 'true'
-        : this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
+    const applicationEmailsEnabled = dbOverride !== null ? dbOverride.value === 'true' : this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
     return {
       email: {

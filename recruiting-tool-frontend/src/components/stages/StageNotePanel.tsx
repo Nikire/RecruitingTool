@@ -37,11 +37,11 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
   const { mutate: upsertNote, isPending: isSaving } = useUpsertStageNote();
   const { mutate: deleteNote, isPending: isDeleting } = useDeleteStageEvalNote();
 
-  // Sync form when existingNote changes (e.g. after query refetch)
+  // Sync form when the note from the server changes (e.g. after query refetch).
   useEffect(() => {
     setContent(existingNote?.content ?? "");
     setRating(existingNote?.rating ?? null);
-  }, [existingNote?.uid]);
+  }, [existingNote?.uid, existingNote?.content, existingNote?.rating]);
 
   const handleSave = () => {
     if (!content.trim()) return;
