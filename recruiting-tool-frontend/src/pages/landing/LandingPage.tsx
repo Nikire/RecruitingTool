@@ -18,6 +18,7 @@ import { keyframes } from "@mui/material/styles";
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { usePlanLimits } from "../../hooks/api/usePlanLimits";
 import { buildPlanFeatures } from "../../utils/buildPlanFeatures";
+import { SOCIAL_LINKS } from "../../config/social-links";
 import toast from "react-hot-toast";
 
 // Icons
@@ -1320,7 +1321,7 @@ const LandingPage = () => {
                 <IconButton
                   size="small"
                   component="a"
-                  href="https://twitter.com/borderless"
+                  href={SOCIAL_LINKS.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Twitter"
@@ -1336,7 +1337,7 @@ const LandingPage = () => {
                 <IconButton
                   size="small"
                   component="a"
-                  href="https://linkedin.com/company/borderless"
+                  href={SOCIAL_LINKS.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="LinkedIn"
@@ -1352,7 +1353,7 @@ const LandingPage = () => {
                 <IconButton
                   size="small"
                   component="a"
-                  href="https://github.com/borderless"
+                  href={SOCIAL_LINKS.github}
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="GitHub"
@@ -1497,7 +1498,7 @@ const LandingPage = () => {
                 <Typography
                   variant="caption"
                   component="a"
-                  href="mailto:noreply@borderless.app"
+                  href={`mailto:${t("app.contact_email")}`}
                   sx={{
                     opacity: 0.6,
                     color: "inherit",
@@ -1506,7 +1507,7 @@ const LandingPage = () => {
                     "&:hover": { opacity: 1, textDecoration: "underline" },
                   }}
                 >
-                  noreply@borderless.app
+                  {t("app.contact_email")}
                 </Typography>
                 <Typography
                   variant="body2"

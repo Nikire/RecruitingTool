@@ -3384,5 +3384,12 @@
     "analytics_disabled": "Solo vista básica del pipeline",
     "email_templates": "Plantillas de correo personalizadas",
     "candidates_per_position_value": "Hasta {{count}} candidatos por posición"
+  },
+  "app": {
+    "contact_email": "noreply@borderless.app",
+    "support_email": "noreply@borderless.app",
+    "privacy_email": "privacy@borderless.app",
+    "security_email": "security@borderless.app",
+    "legal_email": "legal@borderless.app"
   }
 }

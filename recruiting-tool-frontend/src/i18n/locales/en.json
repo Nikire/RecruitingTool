@@ -3376,5 +3376,12 @@
     "analytics_disabled": "Basic pipeline view only",
     "email_templates": "Custom email templates",
     "candidates_per_position_value": "Up to {{count}} candidates per position"
+  },
+  "app": {
+    "contact_email": "noreply@borderless.app",
+    "support_email": "noreply@borderless.app",
+    "privacy_email": "privacy@borderless.app",
+    "security_email": "security@borderless.app",
+    "legal_email": "legal@borderless.app"
   }
 }

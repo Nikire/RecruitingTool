@@ -260,11 +260,11 @@ const SecurityPolicyPage = () => {
         <Typography variant="body1" paragraph>
           <strong>{t("legal.security.reporting.email_label")}:</strong>{" "}
           <Link
-            href="mailto:security@borderless.app"
+            href={`mailto:${t("app.security_email")}`}
             color="primary"
             underline="hover"
           >
-            security@borderless.app
+            {t("app.security_email")}
           </Link>
         </Typography>
       </Box>
