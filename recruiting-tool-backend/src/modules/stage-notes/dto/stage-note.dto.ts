@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsInt, IsNotEmpty, IsOptional, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
 
-export class CreateStageNoteDto {
+export class UpsertStageNoteDto {
   @ApiProperty({
-    description: 'Content of the note',
-    example: 'Candidate showed excellent technical skills during the interview.',
+    description: 'Content of the stage note',
+    example: 'Candidate demonstrated strong problem-solving skills and clear communication.',
     minLength: 10,
     maxLength: 2000,
   })
@@ -19,49 +19,11 @@ export class CreateStageNoteDto {
     example: 4,
     minimum: 1,
     maximum: 5,
-    required: false,
   })
-  @IsOptional()
   @IsInt({ message: 'Rating must be an integer' })
   @Min(1, { message: 'Rating must be at least 1' })
   @Max(5, { message: 'Rating must be at most 5' })
-  rating?: number;
-
-  @ApiProperty({
-    description: 'The UID of the hiring process this note belongs to',
-    example: '123e4567-e89b-12d3-a456-426614174005',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  hiringProcessUid?: string;
-}
-
-export class UpdateStageNoteDto {
-  @ApiProperty({
-    description: 'Content of the note',
-    example: 'Candidate showed excellent technical skills during the interview.',
-    minLength: 10,
-    maxLength: 2000,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(10, { message: 'Note content must be at least 10 characters' })
-  @MaxLength(2000, { message: 'Note content must be less than 2000 characters' })
-  content: string;
-
-  @ApiProperty({
-    description: 'Rating for this stage (1-5 stars)',
-    example: 4,
-    minimum: 1,
-    maximum: 5,
-    required: false,
-  })
-  @IsOptional()
-  @IsInt({ message: 'Rating must be an integer' })
-  @Min(1, { message: 'Rating must be at least 1' })
-  @Max(5, { message: 'Rating must be at most 5' })
-  rating?: number;
+  rating: number;
 }
 
 export class StageNoteResponseDto {
@@ -73,16 +35,17 @@ export class StageNoteResponseDto {
 
   @ApiProperty({
     description: 'Content of the note',
-    example: 'Candidate showed excellent technical skills during the interview.',
+    example: 'Candidate demonstrated strong problem-solving skills and clear communication.',
   })
   content: string;
 
   @ApiProperty({
     description: 'Rating for this stage (1-5 stars)',
     example: 4,
-    required: false,
+    minimum: 1,
+    maximum: 5,
   })
-  rating?: number;
+  rating: number;
 
   @ApiProperty({
     description: 'UUID of the stage',
@@ -91,9 +54,15 @@ export class StageNoteResponseDto {
   stageUid: string;
 
   @ApiProperty({
+    description: 'UUID of the hiring process',
+    example: '123e4567-e89b-12d3-a456-426614174003',
+  })
+  hiringProcessUid: string;
+
+  @ApiProperty({
     description: 'Author information',
     example: {
-      uid: '123e4567-e89b-12d3-a456-426614174003',
+      uid: '123e4567-e89b-12d3-a456-426614174004',
       name: 'Alice Johnson',
       email: 'alice@example.com',
     },

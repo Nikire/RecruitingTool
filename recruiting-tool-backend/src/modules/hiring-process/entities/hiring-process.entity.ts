@@ -1,10 +1,18 @@
 import { Prisma } from '@prisma/client';
-import { StageMapper } from '../modules/stages/entities/stage.entity';
+import { StageWithNoteMapper } from '../modules/stages/entities/stage.entity';
 import { CandidateMapper } from '../modules/candidate/entities/candidate.entity';
 
 export const includeHiringProcess = {
   candidate: true,
-  stages: true,
+  stages: {
+    include: {
+      notes: {
+        include: {
+          author: true,
+        },
+      },
+    },
+  },
   jobPosition: {
     include: {
       createdBy: true,
@@ -24,7 +32,7 @@ export function HiringProcessOneMapper(hiringProcess: HiringProcessWithRelations
     title: hiringProcess.title,
     status: hiringProcess.status,
     jobPositionUid: hiringProcess.jobPosition?.uid,
-    stages: Array.isArray(hiringProcess.stages) ? hiringProcess.stages.map((stage) => StageMapper(stage)) : [],
+    stages: Array.isArray(hiringProcess.stages) ? hiringProcess.stages.map((stage) => StageWithNoteMapper(stage, hiringProcess.uid)) : [],
     candidate: hiringProcess.candidate ? CandidateMapper(hiringProcess.candidate) : null,
     company: hiringProcess.company
       ? {

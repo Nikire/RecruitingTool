@@ -45,6 +45,7 @@ import { CompanyInvitationsModule } from './modules/company-invitations/company-
 import { FeedbackModule } from './modules/feedback/feedback.module';
 import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 import { InternalModule } from './modules/internal/internal.module';
+import { StageNotesModule } from './modules/stage-notes/stage-notes.module';
 
 @Module({
   imports: [
@@ -101,6 +102,7 @@ import { InternalModule } from './modules/internal/internal.module';
     FeedbackModule,
     ContactMessagesModule,
     InternalModule,
+    StageNotesModule,
   ],
   controllers: [AppController],
   providers: [

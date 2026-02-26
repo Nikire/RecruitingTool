@@ -954,7 +954,9 @@ export class DummyService implements OnApplicationBootstrap {
         await this.databaseService.stageNote.create({
           data: {
             content: note.content,
+            rating: (note as any).rating ?? 3,
             stageId: stage.id,
+            hiringProcessId: hiringProcess.id,
             authorId: createdUsers[note.authorUserIndex].id,
             createdAt: new Date(note.createdAt),
           },

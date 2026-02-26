@@ -75,6 +75,32 @@ export class UpdateStageDto {
   position?: number;
 }
 
+export class StageNoteEmbeddedDto {
+  @ApiProperty({ description: 'The UID of the note' })
+  uid: string;
+
+  @ApiProperty({ description: 'Content of the note' })
+  content: string;
+
+  @ApiProperty({ description: 'Rating (1-5)' })
+  rating: number;
+
+  @ApiProperty({ description: 'The UID of the stage' })
+  stageUid: string;
+
+  @ApiProperty({ description: 'The UID of the hiring process' })
+  hiringProcessUid: string;
+
+  @ApiProperty({ description: 'Author information' })
+  author: { uid: string; name: string; email: string };
+
+  @ApiProperty({ description: 'Date when the note was created' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Date when the note was last updated' })
+  updatedAt: Date;
+}
+
 export class StageResponseDto {
   @ApiProperty({ description: 'The UID of the stage', example: '123e4567-e89b-12d3-a456-426614174000' })
   uid: string;
@@ -102,4 +128,7 @@ export class StageResponseDto {
 
   @ApiProperty({ description: 'The UID of the hiring process (if this is a hiring process stage)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   hiringProcessUid?: string;
+
+  @ApiProperty({ description: 'The note for this stage in the current hiring process, if any', required: false, type: StageNoteEmbeddedDto, nullable: true })
+  note?: StageNoteEmbeddedDto | null;
 }

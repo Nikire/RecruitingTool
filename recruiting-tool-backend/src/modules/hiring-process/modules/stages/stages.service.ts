@@ -587,9 +587,9 @@ export class StagesService {
     return updatedStages.map(StageMapper);
   }
 
-  // Stage Notes methods
+  // Stage Notes methods (legacy endpoints - use /hiring-processes/:uid/stages/:uid/note for new flow)
   async createNote(stageUid: string, createNoteDto: CreateStageNoteDto, authorUserId: number): Promise<StageNoteResponseDto> {
-    // Find stage by UID to get the numeric ID
+    // Find stage by UID to get the numeric ID and hiringProcessId
     const stage = await this.databaseService.stage.findFirst({
       where: { uid: stageUid, deletedAt: null },
     });
@@ -598,10 +598,35 @@ export class StagesService {
       throw new NotFoundException(`Stage ${stageUid} not found`);
     }
 
-    const note = await this.databaseService.stageNote.create({
-      data: {
+    // hiringProcessId is required — resolve from DTO or stage relation
+    let hiringProcessId: number;
+    if (createNoteDto.hiringProcessUid) {
+      const hp = await this.databaseService.hiringProcess.findUnique({
+        where: { uid: createNoteDto.hiringProcessUid },
+        select: { id: true },
+      });
+      if (!hp) throw new NotFoundException(`Hiring process ${createNoteDto.hiringProcessUid} not found`);
+      hiringProcessId = hp.id;
+    } else if (stage.hiringProcessId) {
+      hiringProcessId = stage.hiringProcessId;
+    } else {
+      throw new NotFoundException('Cannot create note: stage has no associated hiring process. Provide hiringProcessUid in the request body.');
+    }
+
+    const note = await this.databaseService.stageNote.upsert({
+      where: {
+        stageId_hiringProcessId: { stageId: stage.id, hiringProcessId },
+      },
+      create: {
         content: createNoteDto.content,
+        rating: createNoteDto.rating ?? 3,
         stageId: stage.id,
+        hiringProcessId,
+        authorId: authorUserId,
+      },
+      update: {
+        content: createNoteDto.content,
+        ...(createNoteDto.rating !== undefined && { rating: createNoteDto.rating }),
         authorId: authorUserId,
       },
       include: {
@@ -613,6 +638,7 @@ export class StagesService {
     return {
       uid: note.uid,
       content: note.content,
+      rating: note.rating,
       stageUid: note.stage.uid,
       author: {
         uid: note.author.uid,
@@ -645,6 +671,7 @@ export class StagesService {
     return notes.map((note) => ({
       uid: note.uid,
       content: note.content,
+      rating: note.rating,
       stageUid: note.stage.uid,
       author: {
         uid: note.author.uid,
@@ -677,7 +704,10 @@ export class StagesService {
 
     const note = await this.databaseService.stageNote.update({
       where: { uid: noteUid },
-      data: { content: updateNoteDto.content },
+      data: {
+        content: updateNoteDto.content,
+        ...(updateNoteDto.rating !== undefined && { rating: updateNoteDto.rating }),
+      },
       include: {
         author: true,
         stage: true,
@@ -687,6 +717,7 @@ export class StagesService {
     return {
       uid: note.uid,
       content: note.content,
+      rating: note.rating,
       stageUid: note.stage.uid,
       author: {
         uid: note.author.uid,
