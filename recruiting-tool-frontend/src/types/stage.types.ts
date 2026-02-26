@@ -8,6 +8,7 @@ export interface Stage {
   estimatedTime?: number;
   jobPositionUid?: string;
   hiringProcessUid?: string;
+  note?: StageEvalNote | null;
 }
 
 export interface CreateStageDto {
@@ -90,4 +91,18 @@ export interface CreateStageNoteDto {
 
 export interface UpdateStageNoteDto {
   content: string;
+}
+
+// Stage Evaluation Note (per-stage, per-hiring-process note with rating)
+export interface StageEvalNote {
+  uid: string;
+  content: string;
+  rating: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface UpsertStageEvalNoteDto {
+  content: string;
+  rating: number;
 }

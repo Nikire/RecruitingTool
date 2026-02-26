@@ -531,6 +531,30 @@ If you did not create an account, please ignore this email.
   }
 
   /**
+   * Send a test connection email to the given address
+   * Used by system settings to verify SMTP is working
+   */
+  async sendTestConnectionEmail(recipientEmail: string): Promise<void> {
+    const subject = 'Borderless Admin — Test Email Connection';
+    const text = `
+This is a test email from the Borderless admin panel.
+
+If you received this, your email configuration is working correctly.
+    `.trim();
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1976d2;">Test Email Connection</h2>
+        <p>This is a test email from the <strong>Borderless</strong> admin panel.</p>
+        <p>If you received this, your email configuration is working correctly.</p>
+        <p style="color: #999; font-size: 12px; margin-top: 32px;">Sent from Borderless System Settings</p>
+      </div>
+    `;
+
+    await this.sendEmail(recipientEmail, subject, text, html, 'SYSTEM_TEST');
+  }
+
+  /**
    * Check if email service is properly configured
    * Used by health check endpoints to verify email service availability
    * @returns boolean - true if email service is configured

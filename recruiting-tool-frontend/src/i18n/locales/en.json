@@ -3383,5 +3383,17 @@
     "privacy_email": "privacy@borderless.app",
     "security_email": "security@borderless.app",
     "legal_email": "legal@borderless.app"
+  },
+  "stage_note": {
+    "add_note": "Add note",
+    "edit_note": "Edit note",
+    "note_placeholder": "Write your evaluation notes for this stage...",
+    "save": "Save note",
+    "clear": "Clear note",
+    "saving": "Saving...",
+    "saved": "Note saved",
+    "char_count": "{{count}} / 1000",
+    "rating_label": "Rating",
+    "no_rating": "No rating"
   }
 }

@@ -1,0 +1,103 @@
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsBoolean, IsOptional } from 'class-validator';
+
+export class EmailSettingsDto {
+  @ApiProperty({ description: 'Whether SMTP is enabled', example: false })
+  enabled: boolean;
+
+  @ApiProperty({ description: 'SMTP host', example: 'smtp.resend.com' })
+  host: string;
+
+  @ApiProperty({ description: 'SMTP port', example: 465 })
+  port: number;
+
+  @ApiProperty({ description: 'Sender email address', example: 'noreply@borderless.app' })
+  from: string;
+
+  @ApiProperty({ description: 'Whether application emails are enabled', example: true })
+  applicationEmailsEnabled: boolean;
+}
+
+export class AiSettingsDto {
+  @ApiProperty({ description: 'Gemini model name', example: 'gemini-1.5-flash' })
+  model: string;
+
+  @ApiProperty({ description: 'Gemini tier', example: 'free' })
+  tier: string;
+}
+
+export class StorageSettingsDto {
+  @ApiProperty({ description: 'Storage type', example: 'minio' })
+  type: string;
+
+  @ApiProperty({ description: 'S3/MinIO bucket name', example: 'recruiting-tool' })
+  bucket: string;
+}
+
+export class RateLimitingSettingsDto {
+  @ApiProperty({ description: 'General throttle TTL in milliseconds', example: 60000 })
+  generalTtl: number;
+
+  @ApiProperty({ description: 'General throttle request limit', example: 100 })
+  generalLimit: number;
+
+  @ApiProperty({ description: 'Auth throttle request limit', example: 5 })
+  authLimit: number;
+
+  @ApiProperty({ description: 'AI throttle request limit', example: 10 })
+  aiLimit: number;
+}
+
+export class BackupSettingsDto {
+  @ApiProperty({ description: 'Whether backups are enabled', example: false })
+  enabled: boolean;
+
+  @ApiProperty({ description: 'Backup cron schedule', example: '0 2 * * *' })
+  schedule: string;
+
+  @ApiProperty({ description: 'Backup retention in days', example: 30 })
+  retentionDays: number;
+}
+
+export class AppSettingsDto {
+  @ApiProperty({ description: 'Node environment', example: 'production' })
+  environment: string;
+
+  @ApiProperty({ description: 'Application version', example: '1.0.0' })
+  version: string;
+}
+
+export class SystemSettingsResponseDto {
+  @ApiProperty({ description: 'Email configuration', type: EmailSettingsDto })
+  email: EmailSettingsDto;
+
+  @ApiProperty({ description: 'AI configuration', type: AiSettingsDto })
+  ai: AiSettingsDto;
+
+  @ApiProperty({ description: 'Storage configuration', type: StorageSettingsDto })
+  storage: StorageSettingsDto;
+
+  @ApiProperty({ description: 'Rate limiting configuration', type: RateLimitingSettingsDto })
+  rateLimiting: RateLimitingSettingsDto;
+
+  @ApiProperty({ description: 'Backup configuration', type: BackupSettingsDto })
+  backup: BackupSettingsDto;
+
+  @ApiProperty({ description: 'Application info', type: AppSettingsDto })
+  app: AppSettingsDto;
+}
+
+export class UpdateSystemSettingsDto {
+  @ApiPropertyOptional({ description: 'Enable or disable application emails', example: true })
+  @IsOptional()
+  @IsBoolean()
+  applicationEmailsEnabled?: boolean;
+}
+
+export class TestEmailResponseDto {
+  @ApiProperty({ description: 'Whether the test email was sent successfully', example: true })
+  success: boolean;
+
+  @ApiProperty({ description: 'Result message', example: 'Test email sent to admin@example.com' })
+  message: string;
+}

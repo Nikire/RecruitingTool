@@ -25,14 +25,17 @@ import { Interview } from "../../../types/interview.types";
 import { canManageResources } from "../../../utils/permissions";
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
 import { useTranslation } from "react-i18next";
+import StageNoteButton from "../StageNoteButton";
 
 type StagesAccordionProps = {
   stage: Stage;
+  hiringProcessUid: string;
   disabled?: boolean;
 };
 
 const StagesAccordion: React.FC<StagesAccordionProps> = ({
   stage,
+  hiringProcessUid,
   disabled,
 }) => {
   const { t } = useTranslation();
@@ -71,16 +74,33 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
         square={false}
       >
         <AccordionSummary expandIcon={<KeyboardArrowDown />}>
-          <AccordionHeaderWrapper>
-            {stage.status === "CURRENT" ? (
-              <LockOpen sx={{ color: "text.primary" }} />
-            ) : stage.status === "DONE" ? (
-              <CheckCircle color="primary" />
-            ) : (
-              <Lock color="disabled" />
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              width: "100%",
+              pr: 1,
+            }}
+          >
+            <AccordionHeaderWrapper>
+              {stage.status === "CURRENT" ? (
+                <LockOpen sx={{ color: "text.primary" }} />
+              ) : stage.status === "DONE" ? (
+                <CheckCircle color="primary" />
+              ) : (
+                <Lock color="disabled" />
+              )}
+              <Typography variant="h6">{stage.title}</Typography>
+            </AccordionHeaderWrapper>
+            {!disabled && (
+              <StageNoteButton
+                hiringProcessUid={hiringProcessUid}
+                stageUid={stage.uid}
+                existingNote={stage.note}
+              />
             )}
-            <Typography variant="h6">{stage.title}</Typography>
-          </AccordionHeaderWrapper>
+          </Box>
         </AccordionSummary>
         <AccordionDetails>
           <Typography variant="body2" sx={{ mb: 3 }}>

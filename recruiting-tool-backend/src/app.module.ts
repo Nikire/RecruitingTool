@@ -46,6 +46,7 @@ import { FeedbackModule } from './modules/feedback/feedback.module';
 import { ContactMessagesModule } from './modules/contact-messages/contact-messages.module';
 import { InternalModule } from './modules/internal/internal.module';
 import { StageNotesModule } from './modules/stage-notes/stage-notes.module';
+import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 
 @Module({
   imports: [
@@ -103,6 +104,7 @@ import { StageNotesModule } from './modules/stage-notes/stage-notes.module';
     ContactMessagesModule,
     InternalModule,
     StageNotesModule,
+    SystemSettingsModule,
   ],
   controllers: [AppController],
   providers: [

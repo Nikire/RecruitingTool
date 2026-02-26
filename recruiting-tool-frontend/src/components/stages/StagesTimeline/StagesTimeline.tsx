@@ -10,9 +10,10 @@ import StagesAccordion from "../StagesAccordion/StagesAccordion";
 
 type StagesTimelineProps = {
   stages: Stage[];
+  hiringProcessUid: string;
 };
 
-const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages }) => {
+const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages, hiringProcessUid }) => {
   return (
     <Timeline
       sx={{
@@ -33,7 +34,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages }) => {
               />
             </TimelineSeparator>
             <TimelineContent>
-              <StagesAccordion stage={stage} disabled={false} />
+              <StagesAccordion stage={stage} hiringProcessUid={hiringProcessUid} disabled={false} />
             </TimelineContent>
           </TimelineItem>
         ) : (
@@ -47,7 +48,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({ stages }) => {
               <TimelineConnector sx={{ width: "10px" }} />
             </TimelineSeparator>
             <TimelineContent>
-              <StagesAccordion stage={stage} disabled={false} />
+              <StagesAccordion stage={stage} hiringProcessUid={hiringProcessUid} disabled={false} />
             </TimelineContent>
           </TimelineItem>
         ),

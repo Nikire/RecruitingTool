@@ -3391,5 +3391,17 @@
     "privacy_email": "privacy@borderless.app",
     "security_email": "security@borderless.app",
     "legal_email": "legal@borderless.app"
+  },
+  "stage_note": {
+    "add_note": "Agregar nota",
+    "edit_note": "Editar nota",
+    "note_placeholder": "Escribe tus notas de evaluación para esta etapa...",
+    "save": "Guardar nota",
+    "clear": "Eliminar nota",
+    "saving": "Guardando...",
+    "saved": "Nota guardada",
+    "char_count": "{{count}} / 1000",
+    "rating_label": "Calificación",
+    "no_rating": "Sin calificación"
   }
 }
