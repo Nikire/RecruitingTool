@@ -1,17 +1,18 @@
 /**
  * A plan limit record returned by GET /admin/plan-limits
+ * Field names match the backend PlanLimitResponseDto exactly.
  */
 export interface PlanLimitRecord {
   uid: string;
   planType: string; // "FREE" | "STARTER" | "PROFESSIONAL" | "ENTERPRISE"
   maxJobPositions: number;
-  maxCandidates: number; // maxCandidatesPerPosition in DB
+  maxCandidatesPerPosition: number; // -1 means unlimited
   maxUsers: number;
-  maxStorage: number; // in MB
-  maxEmailsPerMonth: number;
-  aiEnabled: boolean;
-  customBranding: boolean;
-  apiAccess: boolean;
+  maxStorageMB: number; // in MB, -1 means unlimited
+  aiScoringEnabled: boolean;
+  aiScoringCreditsPerMonth: number; // -1 = unlimited, 0 = disabled
+  emailTemplatesEnabled: boolean;
+  analyticsEnabled: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -22,11 +23,11 @@ export interface PlanLimitRecord {
  */
 export interface UpdatePlanLimitDto {
   maxJobPositions?: number;
-  maxCandidates?: number;
+  maxCandidatesPerPosition?: number;
   maxUsers?: number;
-  maxStorage?: number;
-  maxEmailsPerMonth?: number;
-  aiEnabled?: boolean;
-  customBranding?: boolean;
-  apiAccess?: boolean;
+  maxStorageMB?: number;
+  aiScoringEnabled?: boolean;
+  aiScoringCreditsPerMonth?: number;
+  emailTemplatesEnabled?: boolean;
+  analyticsEnabled?: boolean;
 }

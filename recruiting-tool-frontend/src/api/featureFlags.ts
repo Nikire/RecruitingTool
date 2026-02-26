@@ -12,7 +12,7 @@ export function getFeatureFlags(
   planType?: string,
 ): Promise<FeatureFlagRecord[]> {
   const params = planType ? { planType } : undefined;
-  return api.get("/admin/feature-flags", { params }).then((res) => res.data);
+  return api.get("/admin/feature-flags", { params }).then((res) => res.data.featureFlags);
 }
 
 /**

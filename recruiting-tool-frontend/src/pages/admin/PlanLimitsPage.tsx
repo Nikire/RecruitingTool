@@ -20,10 +20,10 @@ import {
   PeopleOutline as CandidatesIcon,
   GroupOutlined as UsersIcon,
   StorageOutlined as StorageIcon,
-  EmailOutlined as EmailIcon,
   Psychology as AiIcon,
-  BrandingWatermark as BrandingIcon,
-  Api as ApiIcon,
+  AutoAwesome as AiCreditsIcon,
+  EmailOutlined as EmailIcon,
+  BarChart as AnalyticsIcon,
   AccessTime as ClockIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
@@ -87,7 +87,6 @@ const EditableNumberField: React.FC<EditableNumberFieldProps> = ({
     if (!isNaN(parsed) && parsed !== value) {
       onSave(parsed);
     } else {
-      // Reset to original if invalid
       setLocalValue(String(value));
     }
   }, [localValue, onSave, value]);
@@ -108,7 +107,6 @@ const EditableNumberField: React.FC<EditableNumberFieldProps> = ({
     setEditing(true);
   }, []);
 
-  // Sync when value prop changes (after successful mutation)
   React.useEffect(() => {
     if (!editing) {
       setLocalValue(String(value));
@@ -132,7 +130,7 @@ const EditableNumberField: React.FC<EditableNumberFieldProps> = ({
           value={localValue}
           disabled={disabled}
           type="number"
-          inputProps={{ min: 0, step: 1 }}
+          inputProps={{ min: -1, step: 1 }}
           onChange={(e) => setLocalValue(e.target.value)}
           onBlur={handleBlur}
           onFocus={handleFocus}
@@ -175,7 +173,9 @@ const PlanCard: React.FC<PlanCardProps> = ({
   );
 
   const handleToggle = useCallback(
-    (field: "aiEnabled" | "customBranding" | "apiAccess") =>
+    (
+      field: "aiScoringEnabled" | "emailTemplatesEnabled" | "analyticsEnabled",
+    ) =>
       (event: React.ChangeEvent<HTMLInputElement>) => {
         onUpdate(record.uid, { [field]: event.target.checked });
       },
@@ -225,10 +225,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
             disabled={isUpdating}
           />
           <EditableNumberField
-            label={t("plan_limits.max_candidates")}
-            value={record.maxCandidates}
+            label={t("plan_limits.max_candidates_per_position")}
+            value={record.maxCandidatesPerPosition}
             icon={<CandidatesIcon fontSize="small" />}
-            onSave={(v) => handleNumericSave("maxCandidates", v)}
+            onSave={(v) => handleNumericSave("maxCandidatesPerPosition", v)}
             disabled={isUpdating}
           />
           <EditableNumberField
@@ -239,17 +239,17 @@ const PlanCard: React.FC<PlanCardProps> = ({
             disabled={isUpdating}
           />
           <EditableNumberField
-            label={t("plan_limits.max_storage")}
-            value={record.maxStorage}
+            label={t("plan_limits.max_storage_mb")}
+            value={record.maxStorageMB}
             icon={<StorageIcon fontSize="small" />}
-            onSave={(v) => handleNumericSave("maxStorage", v)}
+            onSave={(v) => handleNumericSave("maxStorageMB", v)}
             disabled={isUpdating}
           />
           <EditableNumberField
-            label={t("plan_limits.max_emails")}
-            value={record.maxEmailsPerMonth}
-            icon={<EmailIcon fontSize="small" />}
-            onSave={(v) => handleNumericSave("maxEmailsPerMonth", v)}
+            label={t("plan_limits.ai_credits_per_month")}
+            value={record.aiScoringCreditsPerMonth}
+            icon={<AiCreditsIcon fontSize="small" />}
+            onSave={(v) => handleNumericSave("aiScoringCreditsPerMonth", v)}
             disabled={isUpdating}
           />
 
@@ -260,8 +260,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
             <FormControlLabel
               control={
                 <Switch
-                  checked={record.aiEnabled}
-                  onChange={handleToggle("aiEnabled")}
+                  checked={record.aiScoringEnabled}
+                  onChange={handleToggle("aiScoringEnabled")}
                   disabled={isUpdating}
                   color="secondary"
                   size="small"
@@ -271,7 +271,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
                   <AiIcon fontSize="small" sx={{ color: "text.secondary" }} />
                   <Typography variant="body2">
-                    {t("plan_limits.ai_enabled")}
+                    {t("plan_limits.ai_scoring_enabled")}
                   </Typography>
                 </Box>
               }
@@ -281,8 +281,8 @@ const PlanCard: React.FC<PlanCardProps> = ({
             <FormControlLabel
               control={
                 <Switch
-                  checked={record.customBranding}
-                  onChange={handleToggle("customBranding")}
+                  checked={record.emailTemplatesEnabled}
+                  onChange={handleToggle("emailTemplatesEnabled")}
                   disabled={isUpdating}
                   color="secondary"
                   size="small"
@@ -290,33 +290,33 @@ const PlanCard: React.FC<PlanCardProps> = ({
               }
               label={
                 <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <BrandingIcon
+                  <EmailIcon fontSize="small" sx={{ color: "text.secondary" }} />
+                  <Typography variant="body2">
+                    {t("plan_limits.email_templates_enabled")}
+                  </Typography>
+                </Box>
+              }
+            />
+          </Box>
+          <Box>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={record.analyticsEnabled}
+                  onChange={handleToggle("analyticsEnabled")}
+                  disabled={isUpdating}
+                  color="secondary"
+                  size="small"
+                />
+              }
+              label={
+                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
+                  <AnalyticsIcon
                     fontSize="small"
                     sx={{ color: "text.secondary" }}
                   />
                   <Typography variant="body2">
-                    {t("plan_limits.custom_branding")}
-                  </Typography>
-                </Box>
-              }
-            />
-          </Box>
-          <Box>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={record.apiAccess}
-                  onChange={handleToggle("apiAccess")}
-                  disabled={isUpdating}
-                  color="secondary"
-                  size="small"
-                />
-              }
-              label={
-                <Box sx={{ display: "flex", alignItems: "center", gap: 0.75 }}>
-                  <ApiIcon fontSize="small" sx={{ color: "text.secondary" }} />
-                  <Typography variant="body2">
-                    {t("plan_limits.api_access")}
+                    {t("plan_limits.analytics_enabled")}
                   </Typography>
                 </Box>
               }
@@ -352,10 +352,7 @@ const PlanCard: React.FC<PlanCardProps> = ({
 };
 
 /**
- * PlanLimitsPage - Manage plan limits for each subscription tier (SUPER_ADMIN only)
- *
- * Displays a grid of cards — one per plan — with inline-editable numeric fields
- * and toggle switches for boolean features. Changes are saved immediately on blur/toggle.
+ * PlanLimitsPage — Manage plan limits for each subscription tier (SUPER_ADMIN only)
  */
 const PlanLimitsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -364,7 +361,6 @@ const PlanLimitsPage: React.FC = () => {
   const { data: planLimits, isLoading, isError } = useAdminPlanLimits();
   const updatePlanLimit = useUpdatePlanLimit();
 
-  // Permission check — SUPER_ADMIN only
   const isSuperAdmin = user?.roles?.includes(UserRoles.SUPER_ADMIN);
 
   if (!user) {
@@ -379,7 +375,6 @@ const PlanLimitsPage: React.FC = () => {
     updatePlanLimit.mutate({ uid, dto });
   };
 
-  // Loading skeleton
   if (isLoading) {
     return (
       <Box>
@@ -399,7 +394,6 @@ const PlanLimitsPage: React.FC = () => {
     );
   }
 
-  // Error state
   if (isError || !planLimits) {
     return (
       <Box>
@@ -409,7 +403,6 @@ const PlanLimitsPage: React.FC = () => {
     );
   }
 
-  // Sort plans in a logical order
   const PLAN_ORDER = ["FREE", "STARTER", "PROFESSIONAL", "ENTERPRISE"];
   const sortedPlans = [...planLimits].sort(
     (a, b) => PLAN_ORDER.indexOf(a.planType) - PLAN_ORDER.indexOf(b.planType),

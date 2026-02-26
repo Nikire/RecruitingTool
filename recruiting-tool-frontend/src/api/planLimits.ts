@@ -8,7 +8,7 @@ import type {
  * Fetch all plan limit records (SUPER_ADMIN only)
  */
 export function getPlanLimits(): Promise<PlanLimitRecord[]> {
-  return api.get("/admin/plan-limits").then((res) => res.data);
+  return api.get("/admin/plan-limits").then((res) => res.data.planLimits);
 }
 
 /**
