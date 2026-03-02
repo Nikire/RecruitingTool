@@ -689,12 +689,7 @@ const CustomPlansPage: React.FC = () => {
     null,
   );
 
-  // Permission guard
-  if (!user) return <Navigate to="/login" />;
-  if (!isSuperAdmin)
-    return <AccessDeniedMessage requiredRoles={["SUPER_ADMIN"]} />;
-
-  // Handlers
+  // Handlers — defined before early returns to satisfy Rules of Hooks
   const handleCreate = useCallback(
     (values: PlanFormValues) => {
       const dto: CreateCustomPlanDto = {
@@ -764,6 +759,11 @@ const CustomPlansPage: React.FC = () => {
     },
     [syncToStripe],
   );
+
+  // Permission guard
+  if (!user) return <Navigate to="/login" />;
+  if (!isSuperAdmin)
+    return <AccessDeniedMessage requiredRoles={["SUPER_ADMIN"]} />;
 
   // Loading state
   if (isLoading) {
