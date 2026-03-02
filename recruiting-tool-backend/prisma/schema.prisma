@@ -57,6 +57,7 @@ model Company {
   connectionRequests ConnectionRequest[]
   invitations        CompanyInvitation[] @relation("CompanyInvitations")
   feedback           Feedback[]          @relation("CompanyFeedback")
+  customPlans        CustomPlan[]        @relation("CompanyCustomPlan")
 
   @@index([uid])
   @@index([name])
@@ -64,14 +65,14 @@ model Company {
 }
 
 model User {
-  id                         Int                    @id @default(autoincrement())
-  uid                        String                 @unique @default(uuid()) @db.Uuid
+  id                         Int                     @id @default(autoincrement())
+  uid                        String                  @unique @default(uuid()) @db.Uuid
   name                       String
   email                      String
   password                   String?
-  auth0Id                    String?                @unique
-  provider                   String?                @default("local")
-  roles                      RolesType[]            @default([USER])
+  auth0Id                    String?                 @unique
+  provider                   String?                 @default("local")
+  roles                      RolesType[]             @default([USER])
   profilePicture             String?
   phoneNumber                String?
   position                   String?
@@ -84,43 +85,43 @@ model User {
   googleRefreshToken         String?
   resumeUrl                  String?
   resumeFileName             String?
-  onboardingCompleted        Boolean                @default(false)
-  emailVerified              Boolean                @default(false)
-  emailVerificationToken     String?                @unique
+  onboardingCompleted        Boolean                 @default(false)
+  emailVerified              Boolean                 @default(false)
+  emailVerificationToken     String?                 @unique
   emailVerificationSentAt    DateTime?
-  isActive                   Boolean                @default(true)
+  isActive                   Boolean                 @default(true)
   deactivatedAt              DateTime?
   deactivatedBy              Int?
   lastLoginAt                DateTime?
-  createdAt                  DateTime               @default(now())
-  updatedAt                  DateTime               @updatedAt
+  createdAt                  DateTime                @default(now())
+  updatedAt                  DateTime                @updatedAt
   companyId                  Int?
-  company                    Company?               @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  company                    Company?                @relation(fields: [companyId], references: [id], onDelete: Restrict)
   profile                    Profile?
-  jobPositions               JobPosition[]          @relation("JobPositionsUser")
-  fileUploads                FileUpload[]           @relation("FileUploadsUser")
-  reviewedApplications       Application[]          @relation("ApplicationReviewer")
-  candidateNotes             CandidateNote[]        @relation("CandidateNoteAuthor")
-  emailTemplates             EmailTemplate[]        @relation("EmailTemplateCreatedBy")
-  scheduledInterviews        Interview[]            @relation("InterviewScheduledBy")
-  interviewParticipations    InterviewInterviewer[] @relation("InterviewParticipations")
-  interviewReschedules       InterviewReschedule[]  @relation("InterviewReschedules")
-  stageNotes                 StageNote[]            @relation("StageNoteAuthor")
-  activityLogs               UserActivityLog[]      @relation("UserActivityLogs")
-  schedules                  HRSchedule[]           @relation("UserSchedules")
-  scorecardEvaluations       Scorecard[]            @relation("ScorecardEvaluations")
-  aiUsageLogs                AIUsageLog[]           @relation("UserAIUsageLogs")
-  candidateActivities        CandidateActivity[]    @relation("CandidateActivityUser")
-  refreshTokens              RefreshToken[]         @relation("UserRefreshTokens")
-  passwordResetTokens        PasswordResetToken[]   @relation("UserPasswordResetTokens")
-  auditLogs                  AuditLog[]             @relation("UserAuditLogs")
-  calendarConnections        CalendarConnection[]   @relation("UserCalendarConnections")
-  notifications              Notification[]             @relation("UserNotifications")
-  notificationPreferences    NotificationPreference?    @relation("UserNotificationPreferences")
-  connectionRequests         ConnectionRequest[]        @relation("UserConnectionRequests")
-  reviewedConnectionRequests ConnectionRequest[]        @relation("ReviewedConnectionRequests")
-  sentInvitations            CompanyInvitation[]        @relation("UserInvitations")
-  feedback                   Feedback[]                 @relation("UserFeedback")
+  jobPositions               JobPosition[]           @relation("JobPositionsUser")
+  fileUploads                FileUpload[]            @relation("FileUploadsUser")
+  reviewedApplications       Application[]           @relation("ApplicationReviewer")
+  candidateNotes             CandidateNote[]         @relation("CandidateNoteAuthor")
+  emailTemplates             EmailTemplate[]         @relation("EmailTemplateCreatedBy")
+  scheduledInterviews        Interview[]             @relation("InterviewScheduledBy")
+  interviewParticipations    InterviewInterviewer[]  @relation("InterviewParticipations")
+  interviewReschedules       InterviewReschedule[]   @relation("InterviewReschedules")
+  stageNotes                 StageNote[]             @relation("StageNoteAuthor")
+  activityLogs               UserActivityLog[]       @relation("UserActivityLogs")
+  schedules                  HRSchedule[]            @relation("UserSchedules")
+  scorecardEvaluations       Scorecard[]             @relation("ScorecardEvaluations")
+  aiUsageLogs                AIUsageLog[]            @relation("UserAIUsageLogs")
+  candidateActivities        CandidateActivity[]     @relation("CandidateActivityUser")
+  refreshTokens              RefreshToken[]          @relation("UserRefreshTokens")
+  passwordResetTokens        PasswordResetToken[]    @relation("UserPasswordResetTokens")
+  auditLogs                  AuditLog[]              @relation("UserAuditLogs")
+  calendarConnections        CalendarConnection[]    @relation("UserCalendarConnections")
+  notifications              Notification[]          @relation("UserNotifications")
+  notificationPreferences    NotificationPreference? @relation("UserNotificationPreferences")
+  connectionRequests         ConnectionRequest[]     @relation("UserConnectionRequests")
+  reviewedConnectionRequests ConnectionRequest[]     @relation("ReviewedConnectionRequests")
+  sentInvitations            CompanyInvitation[]     @relation("UserInvitations")
+  feedback                   Feedback[]              @relation("UserFeedback")
 
   @@unique([email, companyId])
   @@index([email])
@@ -159,22 +160,22 @@ model Notification {
 }
 
 model NotificationPreference {
-  id        Int      @id @default(autoincrement())
-  uid       String   @unique @default(uuid()) @db.Uuid
-  userId    Int      @unique
-  user      User     @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Cascade)
+  id     Int    @id @default(autoincrement())
+  uid    String @unique @default(uuid()) @db.Uuid
+  userId Int    @unique
+  user   User   @relation("UserNotificationPreferences", fields: [userId], references: [id], onDelete: Cascade)
 
   // Email preferences
-  emailApplicationStatus    Boolean @default(true)
-  emailInterviewScheduled   Boolean @default(true)
-  emailNewCandidate         Boolean @default(true)
-  emailSystemAnnouncement   Boolean @default(true)
+  emailApplicationStatus  Boolean @default(true)
+  emailInterviewScheduled Boolean @default(true)
+  emailNewCandidate       Boolean @default(true)
+  emailSystemAnnouncement Boolean @default(true)
 
   // In-app preferences
-  inAppApplicationStatus    Boolean @default(true)
-  inAppInterviewScheduled   Boolean @default(true)
-  inAppNewCandidate         Boolean @default(true)
-  inAppSystemAnnouncement   Boolean @default(true)
+  inAppApplicationStatus  Boolean @default(true)
+  inAppInterviewScheduled Boolean @default(true)
+  inAppNewCandidate       Boolean @default(true)
+  inAppSystemAnnouncement Boolean @default(true)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1324,19 +1325,19 @@ model SystemConfig {
 }
 
 model PlanLimit {
-  id                      Int      @id @default(autoincrement())
-  uid                     String   @unique @default(cuid())
-  planType                String   // "FREE", "PROFESSIONAL", "ENTERPRISE"
-  maxJobPositions         Int      // -1 means unlimited
-  maxCandidatesPerPosition Int     // -1 means unlimited
-  maxUsers                Int      // -1 means unlimited
-  maxStorageMB            Int      // in MB, -1 means unlimited
-  aiScoringEnabled        Boolean  @default(false)
-  aiScoringCreditsPerMonth Int     // -1 = unlimited, 0 = disabled
-  emailTemplatesEnabled   Boolean  @default(true)
-  analyticsEnabled        Boolean  @default(false)
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                       Int      @id @default(autoincrement())
+  uid                      String   @unique @default(cuid())
+  planType                 String // "FREE", "PROFESSIONAL", "ENTERPRISE"
+  maxJobPositions          Int // -1 means unlimited
+  maxCandidatesPerPosition Int // -1 means unlimited
+  maxUsers                 Int // -1 means unlimited
+  maxStorageMB             Int // in MB, -1 means unlimited
+  aiScoringEnabled         Boolean  @default(false)
+  aiScoringCreditsPerMonth Int // -1 = unlimited, 0 = disabled
+  emailTemplatesEnabled    Boolean  @default(true)
+  analyticsEnabled         Boolean  @default(false)
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
 
   @@unique([planType])
   @@index([planType])
@@ -1347,8 +1348,8 @@ model PlanLimit {
 model FeatureFlag {
   id          Int      @id @default(autoincrement())
   uid         String   @unique @default(cuid())
-  key         String   // e.g. "ai_screening", "bulk_import", "advanced_analytics"
-  planType    String   // "FREE" | "STARTER" | "PROFESSIONAL" | "ENTERPRISE"
+  key         String // e.g. "ai_screening", "bulk_import", "advanced_analytics"
+  planType    String // "FREE" | "STARTER" | "PROFESSIONAL" | "ENTERPRISE"
   enabled     Boolean  @default(false)
   description String?
   createdAt   DateTime @default(now())
@@ -1357,4 +1358,40 @@ model FeatureFlag {
   @@unique([key, planType])
   @@index([planType])
   @@index([key])
+}
+
+// Custom plans allow SUPER_ADMIN to create bespoke plan configurations for specific companies.
+// These override the standard plan limits and can be synced to Stripe as products/prices.
+model CustomPlan {
+  id                       Int      @id @default(autoincrement())
+  uid                      String   @unique @default(cuid())
+  companyId                Int? // nullable — plan can exist before being assigned
+  company                  Company? @relation("CompanyCustomPlan", fields: [companyId], references: [id], onDelete: SetNull)
+  name                     String
+  isCustom                 Boolean  @default(true)
+  // Quota fields
+  maxUsers                 Int      @default(10)
+  maxJobPositions          Int      @default(10)
+  maxCandidatesPerPosition Int      @default(100)
+  maxStorageMB             Int      @default(5000)
+  aiScoringCreditsPerMonth Int      @default(100)
+  emailTemplatesEnabled    Boolean  @default(true)
+  analyticsEnabled         Boolean  @default(true)
+  // Pricing
+  monthlyPrice             Int      @default(0) // in cents
+  annualPrice              Int      @default(0) // in cents
+  currency                 String   @default("USD")
+  // Stripe integration
+  stripeProductId          String?
+  stripePriceId            String? // monthly price ID
+  stripeAnnualPriceId      String? // annual price ID
+  monthlyPaymentLink       String? // Stripe Payment Link URL for monthly billing
+  annualPaymentLink        String? // Stripe Payment Link URL for annual billing
+  stripeIsTestMode         Boolean? // true = synced with test key, false = live key
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([uid])
+  @@index([companyId])
+  @@index([createdAt])
 }

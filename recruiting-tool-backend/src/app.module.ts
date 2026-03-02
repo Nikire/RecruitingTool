@@ -49,6 +49,7 @@ import { StageNotesModule } from './modules/stage-notes/stage-notes.module';
 import { SystemSettingsModule } from './modules/system-settings/system-settings.module';
 import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
+import { CustomPlansModule } from './modules/custom-plans/custom-plans.module';
 
 @Module({
   imports: [
@@ -109,6 +110,7 @@ import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module
     SystemSettingsModule,
     PlanLimitsModule,
     FeatureFlagsModule,
+    CustomPlansModule,
   ],
   controllers: [AppController],
   providers: [

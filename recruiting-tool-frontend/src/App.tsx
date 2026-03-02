@@ -59,6 +59,7 @@ import PlanLimitsPage from "./pages/admin/PlanLimitsPage";
 import FeatureFlagsPage from "./pages/admin/FeatureFlagsPage";
 import GeneralSettingsPage from "./pages/admin/GeneralSettingsPage";
 import WebhooksPage from "./pages/admin/WebhooksPage";
+import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -284,6 +285,7 @@ function App() {
                 element={<GeneralSettingsPage />}
               />
               <Route path="/admin/webhooks" element={<WebhooksPage />} />
+              <Route path="/admin/custom-plans" element={<CustomPlansPage />} />
             </Route>
           </Route>
         </Route>

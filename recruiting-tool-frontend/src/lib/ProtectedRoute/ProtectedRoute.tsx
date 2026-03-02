@@ -1,9 +1,11 @@
 import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuthMe } from "../../hooks/api/useAuth";
+import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
 
 export function ProtectedRoute() {
   const { isAuthenticated, isLoading, isError, user } = useAuthMe();
+  const { user: atomUser } = useUserAtom();
   const location = useLocation();
 
   // Define onboarding paths that should be excluded from redirect
@@ -16,7 +18,11 @@ export function ProtectedRoute() {
     location.pathname.startsWith(path),
   );
 
-  if (isLoading) {
+  // Wait for the auth query AND for the Jotai atom to be populated.
+  // Without this, children render in the same commit as the query resolving
+  // and see a null atom (useEffect hasn't fired yet), causing a spurious
+  // redirect to /login → which AuthLayout then bounces to /.
+  if (isLoading || (user && !atomUser)) {
     return null;
   }
 

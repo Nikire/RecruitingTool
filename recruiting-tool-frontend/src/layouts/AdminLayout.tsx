@@ -9,6 +9,7 @@ import TuneIcon from "@mui/icons-material/Tune";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import DisplaySettingsOutlinedIcon from "@mui/icons-material/DisplaySettingsOutlined";
 import WebhookOutlinedIcon from "@mui/icons-material/WebhookOutlined";
+import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -83,6 +84,12 @@ const AdminLayout: React.FC = () => {
       text: t("admin_layout.webhooks"),
       icon: <WebhookOutlinedIcon />,
       path: "/admin/webhooks",
+      requiresSuperAdmin: true,
+    },
+    {
+      text: t("admin_layout.custom_plans"),
+      icon: <WorkspacePremiumOutlinedIcon />,
+      path: "/admin/custom-plans",
       requiresSuperAdmin: true,
     },
     {
