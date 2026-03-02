@@ -30,7 +30,7 @@ export class SystemSettingsService {
         enabled: this.configService.get<string>('SMTP_ENABLED', 'false') === 'true',
         host: this.configService.get<string>('SMTP_HOST', ''),
         port: parseInt(this.configService.get<string>('SMTP_PORT', '465'), 10),
-        from: this.configService.get<string>('EMAIL_FROM', 'noreply@borderless.app'),
+        from: this.configService.get<string>('EMAIL_FROM', 'noreply@borderlessats.com'),
         applicationEmailsEnabled,
       },
       ai: {

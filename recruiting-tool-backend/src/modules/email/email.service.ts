@@ -302,7 +302,7 @@ The Borderless Team
   }
 
   private async sendEmail(to: string, subject: string, text: string, html: string, emailType: string = 'GENERAL', relatedEntityId?: string): Promise<void> {
-    const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@borderless.app');
+    const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@borderlessats.com');
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
     let status = 'SENT';
 

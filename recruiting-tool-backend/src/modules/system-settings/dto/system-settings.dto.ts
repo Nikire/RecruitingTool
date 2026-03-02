@@ -11,7 +11,7 @@ export class EmailSettingsDto {
   @ApiProperty({ description: 'SMTP port', example: 465 })
   port: number;
 
-  @ApiProperty({ description: 'Sender email address', example: 'noreply@borderless.app' })
+  @ApiProperty({ description: 'Sender email address', example: 'noreply@borderlessats.com' })
   from: string;
 
   @ApiProperty({ description: 'Whether application emails are enabled', example: true })

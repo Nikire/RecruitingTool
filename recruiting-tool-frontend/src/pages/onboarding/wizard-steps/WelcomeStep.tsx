@@ -150,7 +150,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
               <Button
                 fullWidth
                 variant="outlined"
-                href="https://docs.borderless.app"
+                href="https://docs.borderlessats.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -161,7 +161,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
               <Button
                 fullWidth
                 variant="outlined"
-                href="https://support.borderless.app"
+                href="https://support.borderlessats.com"
                 target="_blank"
                 rel="noopener noreferrer"
               >

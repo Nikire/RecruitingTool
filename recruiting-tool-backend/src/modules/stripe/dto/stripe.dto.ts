@@ -25,7 +25,7 @@ export class CreateCheckoutSessionDto {
 
   @ApiProperty({
     description: 'URL to redirect to after successful payment',
-    example: 'https://app.borderless.app/subscription/success',
+    example: 'https://app.borderlessats.com/subscription/success',
   })
   @IsUrl({ require_tld: false }) // Allow localhost for development
   @IsNotEmpty()
@@ -33,7 +33,7 @@ export class CreateCheckoutSessionDto {
 
   @ApiProperty({
     description: 'URL to redirect to after canceled payment',
-    example: 'https://app.borderless.app/subscription/cancel',
+    example: 'https://app.borderlessats.com/subscription/cancel',
   })
   @IsUrl({ require_tld: false }) // Allow localhost for development
   @IsNotEmpty()
@@ -140,7 +140,7 @@ export class CancelSubscriptionResponseDto {
 export class CreateBillingPortalDto {
   @ApiProperty({
     description: 'URL to redirect to after user exits the billing portal',
-    example: 'https://app.borderless.app/subscription',
+    example: 'https://app.borderlessats.com/subscription',
   })
   @IsUrl({ require_tld: false }) // Allow localhost for development
   @IsNotEmpty()

@@ -3456,11 +3456,11 @@
     "candidates_per_position_value": "Up to {{count}} candidates per position"
   },
   "app": {
-    "contact_email": "noreply@borderless.app",
-    "support_email": "noreply@borderless.app",
-    "privacy_email": "privacy@borderless.app",
-    "security_email": "security@borderless.app",
-    "legal_email": "legal@borderless.app"
+    "contact_email": "noreply@borderlessats.com",
+    "support_email": "noreply@borderlessats.com",
+    "privacy_email": "privacy@borderlessats.com",
+    "security_email": "security@borderlessats.com",
+    "legal_email": "legal@borderlessats.com"
   },
   "plan_limits": {
     "title": "Plan Limits Management",
