@@ -69,6 +69,23 @@ export class EmailService {
     }
   }
 
+  private async sendViaResendApi(to: string, subject: string, text: string, html: string, emailFrom: string): Promise<void> {
+    const apiKey = this.configService.get<string>('SMTP_PASSWORD');
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ from: emailFrom, to: [to], subject, text, html }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(`Resend API error ${response.status}: ${error}`);
+    }
+  }
+
   async sendApplicationConfirmation(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string, companyName?: string): Promise<void> {
     const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
@@ -307,15 +324,9 @@ The Borderless Team
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
     let status = 'SENT';
 
-    if (smtpEnabled && this.transporter) {
+    if (smtpEnabled) {
       try {
-        await this.transporter.sendMail({
-          from: emailFrom,
-          to,
-          subject,
-          text,
-          html,
-        });
+        await this.sendViaResendApi(to, subject, text, html, emailFrom);
         this.logger.log(`Email sent to ${to}: ${subject}`);
       } catch (error) {
         status = 'FAILED';
