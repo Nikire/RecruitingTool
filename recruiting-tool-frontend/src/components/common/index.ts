@@ -29,3 +29,4 @@ export { default as MarkdownEditor } from "./MarkdownEditor";
 export { default as EmailVerificationBanner } from "./EmailVerificationBanner";
 export { default as RoleBadge } from "./RoleBadge";
 export type { RoleBadgeProps } from "./RoleBadge";
+export { ScrollToTop } from "./ScrollToTop";

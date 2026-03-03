@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Stepper, Step, StepLabel, Paper, Container } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import ProfileStep from "./onboarding-steps/ProfileStep";
 import ResumeStep from "./onboarding-steps/ResumeStep";
 import PreferencesStep from "./onboarding-steps/PreferencesStep";
 import CompletionStep from "./onboarding-steps/CompletionStep";
+import { useAuthMe } from "../../hooks/api/useAuth";
 
 export interface OnboardingData {
   // Profile data
@@ -29,8 +30,28 @@ export interface OnboardingData {
 const ApplicantOnboarding: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const { user } = useAuthMe();
   const [activeStep, setActiveStep] = useState(0);
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({});
+  const profilePrefilled = useRef(false);
+
+  // Pre-populate onboarding data from existing profile fields on the user.
+  // We do this in an effect so it also works when user data loads asynchronously
+  // from the React Query cache. The ref guard ensures we only pre-fill once —
+  // any data the user edits during the wizard should not be overwritten.
+  useEffect(() => {
+    if (user && !profilePrefilled.current) {
+      profilePrefilled.current = true;
+      setOnboardingData((prev) => ({
+        ...prev,
+        fullName: prev.fullName || user.name || undefined,
+        phoneNumber: prev.phoneNumber || user.phoneNumber || undefined,
+        location: prev.location || user.location || undefined,
+        linkedinUrl: prev.linkedinUrl || user.linkedinUrl || undefined,
+        portfolioUrl: prev.portfolioUrl || user.portfolioUrl || undefined,
+      }));
+    }
+  }, [user]);
 
   const steps = [
     t("applicant_onboarding.steps.welcome"),

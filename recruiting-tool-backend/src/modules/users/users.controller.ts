@@ -117,7 +117,7 @@ export class UsersController {
   @ApiParam({ name: 'uid', required: true })
   @Auth(['SUPER_ADMIN'])
   deactivateUser(@Param('uid') uid: string, @Request() req): Promise<UserResponseDto> {
-    return this.usersService.deactivateUser(uid, req.user.id);
+    return this.usersService.deactivateUser(uid, req.currentUser.id);
   }
 
   @Put(':uid/reactivate')
@@ -130,7 +130,7 @@ export class UsersController {
   @ApiParam({ name: 'uid', required: true })
   @Auth(['SUPER_ADMIN'])
   reactivateUser(@Param('uid') uid: string, @Request() req): Promise<UserResponseDto> {
-    return this.usersService.reactivateUser(uid, req.user.id);
+    return this.usersService.reactivateUser(uid, req.currentUser.id);
   }
 
   @Get(':uid/activity')
@@ -156,7 +156,7 @@ export class UsersController {
   @ApiBody({ type: UpdateProfileDto })
   @Auth(['USER'])
   updateProfile(@Request() req, @Body() updateProfileDto: UpdateProfileDto): Promise<UserResponseDto> {
-    return this.usersService.updateProfile(req.user.id, updateProfileDto);
+    return this.usersService.updateProfile(req.currentUser.id, updateProfileDto);
   }
 
   @Get('onboarding/hr/status')
@@ -168,7 +168,7 @@ export class UsersController {
   })
   @Auth(['HR', 'USER'])
   getHROnboardingStatus(@Request() req): Promise<HROnboardingStatusDto> {
-    return this.onboardingService.getHROnboardingStatus(req.user.id);
+    return this.onboardingService.getHROnboardingStatus(req.currentUser.id);
   }
 
   @Post('onboarding/hr/complete')
@@ -181,7 +181,7 @@ export class UsersController {
   @ApiBody({ type: CompleteHROnboardingDto })
   @Auth(['HR', 'USER'])
   completeHROnboarding(@Request() req, @Body() data: CompleteHROnboardingDto): Promise<HROnboardingCompleteResponseDto> {
-    return this.onboardingService.completeHROnboarding(req.user.id, data);
+    return this.onboardingService.completeHROnboarding(req.currentUser.id, data);
   }
 
   @Post('resume')
@@ -215,7 +215,7 @@ export class UsersController {
     @UploadedFile(new FileValidationPipe('document'))
     file: Express.Multer.File,
   ): Promise<UserResponseDto> {
-    return this.usersService.uploadResume(req.user.id, file);
+    return this.usersService.uploadResume(req.currentUser.id, file);
   }
 
   @Get('resume/download')
@@ -237,7 +237,7 @@ export class UsersController {
   })
   @Auth(['USER'])
   async getResumeDownloadUrl(@Request() req) {
-    return this.usersService.getResumeDownloadUrl(req.user.id);
+    return this.usersService.getResumeDownloadUrl(req.currentUser.id);
   }
 
   @Delete('resume')
@@ -253,6 +253,6 @@ export class UsersController {
   })
   @Auth(['USER'])
   async deleteResume(@Request() req): Promise<MessageResponseDto> {
-    return this.usersService.deleteResume(req.user.id);
+    return this.usersService.deleteResume(req.currentUser.id);
   }
 }

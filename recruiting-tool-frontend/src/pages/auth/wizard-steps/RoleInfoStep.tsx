@@ -63,7 +63,13 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
 
       <Paper
         variant="outlined"
-        sx={{ mt: 3, p: 3, borderRadius: 2, bgcolor: "grey.50" }}
+        sx={{
+          mt: 3,
+          p: 3,
+          borderRadius: 2,
+          bgcolor: "action.hover",
+          borderColor: "divider",
+        }}
       >
         <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
           {t("registration_wizard.role_info.resume_upload")}

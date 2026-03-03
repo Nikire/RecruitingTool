@@ -61,11 +61,13 @@ import GeneralSettingsPage from "./pages/admin/GeneralSettingsPage";
 import WebhooksPage from "./pages/admin/WebhooksPage";
 import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import { Toaster } from "react-hot-toast";
+import { ScrollToTop } from "./components/common/ScrollToTop";
 
 function App() {
   return (
     <>
       <Toaster />
+      <ScrollToTop />
       <Routes>
         {/* Landing Page - Marketing Page (root) */}
         <Route element={<LandingPageLayout />}>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, TextField, Button, Typography } from "@mui/material";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -27,6 +27,7 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<ProfileFormData>({
     defaultValues: {
@@ -37,6 +38,29 @@ const ProfileStep: React.FC<ProfileStepProps> = ({ data, onNext, onBack }) => {
       portfolioUrl: data.portfolioUrl || "",
     },
   });
+
+  // When parent pre-populates onboarding data (e.g. from async user fetch),
+  // reset the form so the fields reflect the latest values. We only do this
+  // when at least one of the pre-fill fields is non-empty to avoid clearing
+  // values the user has already typed.
+  useEffect(() => {
+    if (data.fullName || data.phoneNumber || data.location) {
+      reset({
+        fullName: data.fullName || "",
+        phoneNumber: data.phoneNumber || "",
+        location: data.location || "",
+        linkedinUrl: data.linkedinUrl || "",
+        portfolioUrl: data.portfolioUrl || "",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    data.fullName,
+    data.phoneNumber,
+    data.location,
+    data.linkedinUrl,
+    data.portfolioUrl,
+  ]);
 
   const onSubmit = (formData: ProfileFormData) => {
     onNext(formData);

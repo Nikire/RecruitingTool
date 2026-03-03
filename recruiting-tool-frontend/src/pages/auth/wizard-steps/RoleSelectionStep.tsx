@@ -30,19 +30,19 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
   const roles = [
     {
       value: "HR" as UserRole,
-      icon: <BusinessCenterIcon sx={{ fontSize: 60, color: "primary.main" }} />,
+      icon: <BusinessCenterIcon sx={{ fontSize: 60 }} />,
       title: t("registration_wizard.roles.hr.title"),
       description: t("registration_wizard.roles.hr.description"),
     },
     {
       value: "USER" as UserRole,
-      icon: <WorkIcon sx={{ fontSize: 60, color: "success.main" }} />,
+      icon: <WorkIcon sx={{ fontSize: 60 }} />,
       title: t("registration_wizard.roles.applicant.title"),
       description: t("registration_wizard.roles.applicant.description"),
     },
     {
       value: "COMPANY_OWNER" as UserRole,
-      icon: <BusinessIcon sx={{ fontSize: 60, color: "secondary.main" }} />,
+      icon: <BusinessIcon sx={{ fontSize: 60 }} />,
       title: t("registration_wizard.roles.company_owner.title"),
       description: t("registration_wizard.roles.company_owner.description"),
     },
@@ -128,14 +128,16 @@ const RoleSelectionStep: React.FC<RoleSelectionStepProps> = ({
                       backgroundColor:
                         selectedRole === role.value
                           ? "primary.main"
-                          : "grey.100",
+                          : "action.selected",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       transition: "all 0.25s ease-in-out",
                       "& > svg": {
                         color:
-                          selectedRole === role.value ? "white" : "inherit",
+                          selectedRole === role.value
+                            ? "primary.contrastText"
+                            : "text.primary",
                         transition: "color 0.25s ease-in-out",
                       },
                     }}

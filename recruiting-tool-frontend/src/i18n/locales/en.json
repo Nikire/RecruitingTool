@@ -2465,6 +2465,7 @@
       "cta_start_now": "Start Now",
       "cta_view_pricing": "View Pricing",
       "cta_learn_more": "Learn More",
+      "cta_browse_jobs": "Browse Jobs",
       "welcome_back": "Welcome back, {{name}}!"
     },
     "stats": {
@@ -2675,7 +2676,7 @@
       "subtitle": "Let us know what kind of job you're looking for to show you the best matches.",
       "desired_job_types": "Desired Job Types",
       "preferred_locations": "Preferred Work Locations",
-      "salary_expectation": "Salary Expectation (Optional)",
+      "salary_expectation": "Salary Expectation (USD, Optional)",
       "salary_optional": "Optional - e.g., $50,000 - $70,000",
       "select_multiple": "You can select multiple options"
     },

@@ -1,7 +1,8 @@
 import { Body, Controller, Delete, Get, Headers, Post, Query, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { ForgotPasswordDto, LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, ResetPasswordDto, TokenPairDto } from './dto/auth.dto';
-import { CreateUserDto } from 'src/modules/users/dto/users.dto';
+import { CreateUserDto, UserResponseDto } from 'src/modules/users/dto/users.dto';
+import { UserMapper } from 'src/modules/users/entities/users.entities';
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -69,14 +70,15 @@ export class AuthController {
   @ApiResponse({
     status: 200,
     description: 'Returns user details if token is valid',
-    type: RegisteredUserDto,
+    type: UserResponseDto,
   })
   @ApiUnauthorizedResponse({
     description: 'Invalid or missing token',
   })
-  async getProfile(@Headers('authorization') authHeader: string) {
+  async getProfile(@Headers('authorization') authHeader: string): Promise<UserResponseDto> {
     const token = authHeader?.replace('Bearer ', '');
-    return this.authService.verifyToken(token);
+    const user = await this.authService.verifyToken(token);
+    return UserMapper(user);
   }
 
   @Post('refresh')

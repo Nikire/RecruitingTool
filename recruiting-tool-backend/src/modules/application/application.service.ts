@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { ApplicationStatus, StageStatus, User, NotificationType } from '@prisma/client';
+import { ApplicationStatus, StageStatus, User, NotificationType, Prisma } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
@@ -147,6 +147,9 @@ export class ApplicationService {
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
+      }
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException('You have already applied to this position');
       }
       throw new InternalServerErrorException(`Failed to create: ${error.message}`);
     }

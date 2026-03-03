@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/material/styles";
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { usePlanLimits } from "../../hooks/api/usePlanLimits";
+import { UserRoles } from "../../types/user.types";
 import { buildPlanFeatures } from "../../utils/buildPlanFeatures";
 import { SOCIAL_LINKS } from "../../config/social-links";
 import toast from "react-hot-toast";
@@ -100,6 +101,12 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthMe();
   const { data: planLimits } = usePlanLimits();
+
+  // Detect applicant-only users (USER role with no HR/admin roles)
+  const isApplicantOnly =
+    isAuthenticated &&
+    user?.roles?.length === 1 &&
+    user.roles.includes(UserRoles.USER);
 
   const features = [
     {
@@ -196,7 +203,10 @@ const LandingPage = () => {
       description: t("landing.pricing.enterprise.description"),
       features: enterprisePlanFeatures,
       recommended: false,
-      color: theme.palette.secondary.main,
+      color:
+        theme.palette.mode === "dark"
+          ? theme.palette.secondary.light
+          : theme.palette.secondary.main,
       buttonVariant: "outlined" as const,
     },
   ];
@@ -318,7 +328,7 @@ const LandingPage = () => {
                   {t("landing.hero.new_subheadline")}
                 </Typography>
                 {isAuthenticated ? (
-                  // Logged-in state: Welcome message and Dashboard button
+                  // Logged-in state: Welcome message and context-aware CTA
                   <Box>
                     <Typography
                       variant="h6"
@@ -331,31 +341,61 @@ const LandingPage = () => {
                     >
                       {t("landing.hero.welcome_back", { name: user?.name })}
                     </Typography>
-                    <Button
-                      variant="contained"
-                      size="large"
-                      onClick={() => navigate("/hr/dashboard")}
-                      endIcon={<ArrowForwardIcon />}
-                      sx={{
-                        bgcolor: theme.palette.common.white,
-                        color: theme.palette.primary.main,
-                        px: 6,
-                        py: 2.5,
-                        fontSize: "1.125rem",
-                        fontWeight: 700,
-                        borderRadius: 2.5,
-                        textTransform: "none",
-                        boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
-                        "&:hover": {
-                          bgcolor: alpha(theme.palette.common.white, 0.95),
-                          transform: "translateY(-3px)",
-                          boxShadow: "0 15px 50px rgba(0,0,0,0.2)",
-                        },
-                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                      }}
-                    >
-                      {t("common.go_to_dashboard")}
-                    </Button>
+                    {isApplicantOnly ? (
+                      // Applicant-only users: show Browse Jobs CTA
+                      <Button
+                        variant="contained"
+                        size="large"
+                        onClick={() => navigate("/careers")}
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                          bgcolor: theme.palette.common.white,
+                          color: theme.palette.primary.main,
+                          px: 6,
+                          py: 2.5,
+                          fontSize: "1.125rem",
+                          fontWeight: 700,
+                          borderRadius: 2.5,
+                          textTransform: "none",
+                          boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.common.white, 0.95),
+                            transform: "translateY(-3px)",
+                            boxShadow: "0 15px 50px rgba(0,0,0,0.2)",
+                          },
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        }}
+                      >
+                        {t("landing.hero.cta_browse_jobs")}
+                      </Button>
+                    ) : (
+                      // HR/admin users: show Go to Dashboard CTA
+                      <Button
+                        variant="contained"
+                        size="large"
+                        onClick={() => navigate("/hr/dashboard")}
+                        endIcon={<ArrowForwardIcon />}
+                        sx={{
+                          bgcolor: theme.palette.common.white,
+                          color: theme.palette.primary.main,
+                          px: 6,
+                          py: 2.5,
+                          fontSize: "1.125rem",
+                          fontWeight: 700,
+                          borderRadius: 2.5,
+                          textTransform: "none",
+                          boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                          "&:hover": {
+                            bgcolor: alpha(theme.palette.common.white, 0.95),
+                            transform: "translateY(-3px)",
+                            boxShadow: "0 15px 50px rgba(0,0,0,0.2)",
+                          },
+                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        }}
+                      >
+                        {t("common.go_to_dashboard")}
+                      </Button>
+                    )}
                   </Box>
                 ) : (
                   // Not logged in: Show login/register buttons
@@ -610,7 +650,7 @@ const LandingPage = () => {
                       borderRadius: 2.5,
                       background: feature.gradient,
                       display: "flex",
-                      alignItems: "center",
+                      alignSelf: "center",
                       justifyContent: "center",
                       mb: 3.5,
                       color: "white",
@@ -829,7 +869,9 @@ const LandingPage = () => {
                   borderRadius: 4,
                   border: plan.recommended
                     ? `2px solid ${plan.color}`
-                    : `1px solid ${alpha(theme.palette.divider, 0.08)}`,
+                    : theme.palette.mode === "dark"
+                      ? `1px solid ${alpha(plan.color, 0.35)}`
+                      : `1px solid ${alpha(theme.palette.divider, 0.08)}`,
                   overflow: "visible",
                   transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
                   bgcolor: "background.paper",

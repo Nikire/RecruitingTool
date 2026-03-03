@@ -265,7 +265,8 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
           >
             {isAuthenticated && user && (
               <Button
-                variant="outlined"
+                variant="contained"
+                color="secondary"
                 startIcon={
                   autoFilling ? <CircularProgress size={16} /> : <PersonIcon />
                 }
@@ -279,12 +280,6 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
                   fontSize: { xs: "0.9rem", sm: "0.95rem" },
                   textTransform: "none",
                   borderRadius: 1,
-                  borderColor: "primary.main",
-                  color: "primary.main",
-                  "&:hover": {
-                    borderColor: "primary.dark",
-                    backgroundColor: "primary.light",
-                  },
                 }}
               >
                 {autoFilling
@@ -349,7 +344,8 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
 
             <Box sx={{ mb: 0 }}>
               <Button
-                variant="outlined"
+                variant="contained"
+                color="secondary"
                 component="label"
                 startIcon={<AttachFileIcon />}
                 fullWidth
