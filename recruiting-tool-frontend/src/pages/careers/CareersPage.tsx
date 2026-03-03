@@ -37,7 +37,7 @@ interface Filters {
   company: string;
 }
 
-const ITEMS_PER_PAGE = 12;
+const ITEMS_PER_PAGE = 9;
 const MIN_SALARY = 0;
 const MAX_SALARY = 300000;
 const SALARY_STEP = 5000;
@@ -441,10 +441,16 @@ const CareersPage: React.FC = () => {
                   color="text.secondary"
                   sx={{ mb: 2 }}
                 >
-                  {t("careersResults.showing_results", {
-                    count: jobPositions.length,
-                    total: openJobsCount,
-                  })}
+                  {openJobsCount > 0
+                    ? t("careersResults.showing_range", {
+                        start: (page - 1) * ITEMS_PER_PAGE + 1,
+                        end: Math.min(page * ITEMS_PER_PAGE, openJobsCount),
+                        total: openJobsCount,
+                      })
+                    : t("careersResults.showing_results", {
+                        count: 0,
+                        total: 0,
+                      })}
                 </Typography>
 
                 {/* Active filter chips */}

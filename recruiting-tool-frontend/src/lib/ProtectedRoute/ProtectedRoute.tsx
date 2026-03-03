@@ -8,13 +8,21 @@ export function ProtectedRoute() {
   const { user: atomUser } = useUserAtom();
   const location = useLocation();
 
-  // Define onboarding paths that should be excluded from redirect
-  const onboardingPaths = [
+  // Define paths that should be excluded from the onboarding redirect.
+  // Onboarding paths are excluded so the wizard itself doesn't loop.
+  // Profile, notifications, and settings paths are excluded so applicants
+  // can always access their account even before completing onboarding.
+  const onboardingExcludedPaths = [
     "/onboarding",
     "/onboarding/hr",
     "/applicant/onboarding",
+    "/profile",
+    "/notifications",
+    "/settings/notifications",
+    "/invitations/accept",
+    "/logout",
   ];
-  const isOnboardingPath = onboardingPaths.some((path) =>
+  const isOnboardingPath = onboardingExcludedPaths.some((path) =>
     location.pathname.startsWith(path),
   );
 

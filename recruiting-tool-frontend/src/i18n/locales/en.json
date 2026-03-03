@@ -1602,7 +1602,9 @@
   },
   "careersResults": {
     "showing_results": "Showing {{count}} of {{total}} jobs",
-    "showing_results_plural": "Showing {{count}} of {{total}} jobs"
+    "showing_results_plural": "Showing {{count}} of {{total}} jobs",
+    "showing_range": "Showing {{start}}-{{end}} of {{total}} jobs",
+    "page_of_total": "Page {{page}} of {{total}}"
   },
   "careersSort": {
     "sort_by": "Sort By",

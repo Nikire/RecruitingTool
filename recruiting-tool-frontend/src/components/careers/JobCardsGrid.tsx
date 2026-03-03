@@ -109,12 +109,14 @@ const JobCardsGrid: React.FC<JobCardsGridProps> = memo(
           ))}
         </Grid>
 
-        {/* Pagination */}
+        {/* Pagination — always show when there is more than one page */}
         {totalPages > 1 && (
           <Box
             sx={{
               display: "flex",
-              justifyContent: "center",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 1,
               mt: 6,
             }}
           >
@@ -132,6 +134,12 @@ const JobCardsGrid: React.FC<JobCardsGridProps> = memo(
                 },
               }}
             />
+            <Typography variant="caption" color="text.secondary">
+              {t("careersResults.page_of_total", {
+                page: currentPage,
+                total: totalPages,
+              })}
+            </Typography>
           </Box>
         )}
       </>

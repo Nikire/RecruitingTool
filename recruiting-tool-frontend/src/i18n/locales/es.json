@@ -1626,7 +1626,9 @@
   },
   "careersResults": {
     "showing_results": "Mostrando {{count}} de {{total}} trabajos",
-    "showing_results_plural": "Mostrando {{count}} de {{total}} trabajos"
+    "showing_results_plural": "Mostrando {{count}} de {{total}} trabajos",
+    "showing_range": "Mostrando {{start}}-{{end}} de {{total}} trabajos",
+    "page_of_total": "Página {{page}} de {{total}}"
   },
   "careersSort": {
     "sort_by": "Ordenar Por",
