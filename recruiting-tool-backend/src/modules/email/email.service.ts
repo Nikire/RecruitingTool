@@ -56,10 +56,11 @@ export class EmailService {
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
 
     if (smtpEnabled) {
+      const smtpPort = this.configService.get<number>('SMTP_PORT', 587);
       this.transporter = nodemailer.createTransport({
         host: this.configService.get<string>('SMTP_HOST'),
-        port: this.configService.get<number>('SMTP_PORT'),
-        secure: false,
+        port: smtpPort,
+        secure: smtpPort === 465,
         auth: {
           user: this.configService.get<string>('SMTP_USER'),
           pass: this.configService.get<string>('SMTP_PASSWORD'),
