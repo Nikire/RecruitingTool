@@ -203,7 +203,10 @@ const LandingPage = () => {
       description: t("landing.pricing.enterprise.description"),
       features: enterprisePlanFeatures,
       recommended: false,
-      color: theme.palette.secondary.main,
+      color:
+        theme.palette.mode === "dark"
+          ? theme.palette.secondary.light
+          : theme.palette.secondary.main,
       buttonVariant: "outlined" as const,
     },
   ];
