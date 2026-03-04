@@ -205,7 +205,7 @@ const LandingPage = () => {
       recommended: false,
       color:
         theme.palette.mode === "dark"
-          ? theme.palette.secondary.light
+          ? theme.palette.primary.light
           : theme.palette.secondary.main,
       buttonVariant: "outlined" as const,
     },
