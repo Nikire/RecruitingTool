@@ -1,6 +1,12 @@
 import { LinkedAccountsResponse, User } from "../types/user.types";
 import api from "./axios";
 
+export interface RegisteredUserDto {
+  user: User;
+  token: string;
+  refreshToken: string;
+}
+
 export function getCurrentUser(): Promise<User> {
   return api.get("/auth/me").then((res) => res.data);
 }
@@ -112,4 +118,20 @@ export function verifyEmail(token: string): Promise<{ message: string }> {
  */
 export function resendVerification(): Promise<{ message: string }> {
   return api.post("/auth/resend-verification").then((res) => res.data);
+}
+
+/**
+ * Exchange an Auth0 access token for a local JWT.
+ * Called after Auth0 redirects back to the app and isAuthenticated becomes true.
+ */
+export function socialCallback(auth0Token: string): Promise<RegisteredUserDto> {
+  return api
+    .post(
+      "/auth/social/callback",
+      {},
+      {
+        headers: { Authorization: `Bearer ${auth0Token}` },
+      },
+    )
+    .then((res) => res.data);
 }

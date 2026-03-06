@@ -7,7 +7,7 @@ services:
       POSTGRES_DB: recruiting_tool_db
       TZ: America/Argentina/Buenos_Aires
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
@@ -15,8 +15,8 @@ services:
     healthcheck:
       test:
         [
-          'CMD-SHELL',
-          'pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1 -p 5432',
+          "CMD-SHELL",
+          "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB -h 127.0.0.1 -p 5432",
         ]
       interval: 10s
       timeout: 5s
@@ -30,7 +30,7 @@ services:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_PASSWORD}
     ports:
-      - '8080:80'
+      - "8080:80"
     depends_on:
       db:
         condition: service_healthy
@@ -67,7 +67,7 @@ services:
       # Enable verbose logging for debugging (disable in production)
       - PGBOUNCER_VERBOSE=0
     ports:
-      - '6432:6432'
+      - "6432:6432"
     depends_on:
       db:
         condition: service_healthy
@@ -75,7 +75,17 @@ services:
       - app-network
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'pg_isready', '-h', 'localhost', '-p', '6432', '-U', '${POSTGRES_USER}']
+      test:
+        [
+          "CMD",
+          "pg_isready",
+          "-h",
+          "localhost",
+          "-p",
+          "6432",
+          "-U",
+          "${POSTGRES_USER}",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -85,7 +95,7 @@ services:
       context: ./recruiting-tool-backend
       dockerfile: Dockerfile
     ports:
-      - '${API_PORT:-4000}:${API_PORT:-4000}'
+      - "${API_PORT:-4000}:${API_PORT:-4000}"
     depends_on:
       db:
         condition: service_healthy
@@ -112,11 +122,19 @@ services:
       - backup_data:/backups
     networks:
       - app-network
-    entrypoint: ['/bin/sh', '/app/docker-entrypoint.sh']
-    command: ['node', '-r', 'ts-node/register', '-r', 'tsconfig-paths/register', 'src/main.ts']
+    entrypoint: ["/bin/sh", "/app/docker-entrypoint.sh"]
+    command:
+      [
+        "node",
+        "-r",
+        "ts-node/register",
+        "-r",
+        "tsconfig-paths/register",
+        "src/main.ts",
+      ]
     restart: unless-stopped
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:4000/api/health/liveness']
+      test: ["CMD", "curl", "-f", "http://localhost:4000/api/health/liveness"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -130,16 +148,17 @@ services:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:4000/api}
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN:-}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID:-}
+        VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE:-}
     env_file:
       - ./recruiting-tool-frontend/.env
     ports:
-      - '${VITE_PORT:-5137}:80'
+      - "${VITE_PORT:-5137}:80"
     depends_on:
       - backend
     networks:
       - app-network
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:80']
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -149,8 +168,8 @@ services:
     image: minio/minio:latest
     container_name: recruiting_minio
     ports:
-      - '9000:9000' # S3 API port
-      - '9001:9001' # MinIO Console (Web UI)
+      - "9000:9000" # S3 API port
+      - "9001:9001" # MinIO Console (Web UI)
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
@@ -160,7 +179,7 @@ services:
       - app-network
     command: server /data --console-address ":9001"
     healthcheck:
-      test: ['CMD', 'curl', '-f', 'http://localhost:9000/minio/health/live']
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -171,7 +190,7 @@ services:
     profiles: [tools]
     restart: unless-stopped
     ports:
-      - '5678:5678'
+      - "5678:5678"
     environment:
       - N8N_BASIC_AUTH_ACTIVE=true
       - N8N_BASIC_AUTH_USER=${N8N_USER:-admin}
@@ -188,7 +207,15 @@ services:
     depends_on:
       - backend
     healthcheck:
-      test: ['CMD', 'wget', '--no-verbose', '--tries=1', '--spider', 'http://localhost:5678/healthz']
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:5678/healthz",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3

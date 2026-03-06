@@ -1161,7 +1161,9 @@
       "redirecting": "Redirecting...",
       "sign_in_with_email": "Or sign in with email",
       "login_with_linkedin": "Continue with LinkedIn",
-      "signup_with_linkedin": "Sign up with LinkedIn"
+      "signup_with_linkedin": "Sign up with LinkedIn",
+      "completing_login": "Completing sign-in, please wait...",
+      "callback_error": "Sign-in with social account failed. Please try again."
     }
   },
   "forgot_password": {

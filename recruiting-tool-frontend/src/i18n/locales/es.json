@@ -1169,7 +1169,9 @@
       "redirecting": "Redirigiendo...",
       "sign_in_with_email": "O inicia sesión con correo",
       "login_with_linkedin": "Continuar con LinkedIn",
-      "signup_with_linkedin": "Registrarse con LinkedIn"
+      "signup_with_linkedin": "Registrarse con LinkedIn",
+      "completing_login": "Completando inicio de sesión, por favor espere...",
+      "callback_error": "El inicio de sesión con cuenta social falló. Por favor intente nuevamente."
     }
   },
   "forgot_password": {

@@ -62,12 +62,15 @@ import WebhooksPage from "./pages/admin/WebhooksPage";
 import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
+import Auth0CallbackHandler from "./components/auth/Auth0CallbackHandler";
 
 function App() {
   return (
     <>
       <Toaster />
       <ScrollToTop />
+      {/* Exchanges Auth0 token for a local JWT after social login */}
+      <Auth0CallbackHandler />
       <Routes>
         {/* Landing Page - Marketing Page (root) */}
         <Route element={<LandingPageLayout />}>
