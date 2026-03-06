@@ -8,7 +8,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useAuth0 } from "@auth0/auth0-react";
 import GoogleIcon from "@mui/icons-material/Google";
-import GitHubIcon from "@mui/icons-material/GitHub";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import { useAuth0Configured } from "../../providers/Auth0ProviderWithNavigate";
 
 interface SocialLoginButtonsProps {
@@ -59,10 +59,10 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
     });
   };
 
-  const handleGitHubLogin = () => {
+  const handleLinkedInLogin = () => {
     loginWithRedirect({
       authorizationParams: {
-        connection: "github",
+        connection: "linkedin",
       },
     });
   };
@@ -104,14 +104,14 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
             : t(`auth.social.${translationKey}_with_google`)}
         </Button>
 
-        {/* GitHub Login Button */}
+        {/* LinkedIn Login Button */}
         <Button
           variant="outlined"
           fullWidth
-          onClick={handleGitHubLogin}
+          onClick={handleLinkedInLogin}
           disabled={isLoading}
           startIcon={
-            isLoading ? <CircularProgress size={20} /> : <GitHubIcon />
+            isLoading ? <CircularProgress size={20} /> : <LinkedInIcon />
           }
           sx={{
             textTransform: "none",
@@ -125,7 +125,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
         >
           {isLoading
             ? t("auth.social.redirecting")
-            : t(`auth.social.${translationKey}_with_github`)}
+            : t(`auth.social.${translationKey}_with_linkedin`)}
         </Button>
       </Box>
 

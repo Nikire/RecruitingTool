@@ -1156,12 +1156,12 @@
     "sign_in_link": "Sign in",
     "social": {
       "login_with_google": "Continue with Google",
-      "login_with_github": "Continue with GitHub",
       "signup_with_google": "Sign up with Google",
-      "signup_with_github": "Sign up with GitHub",
       "or": "or",
       "redirecting": "Redirecting...",
-      "sign_in_with_email": "Or sign in with email"
+      "sign_in_with_email": "Or sign in with email",
+      "login_with_linkedin": "Continue with LinkedIn",
+      "signup_with_linkedin": "Sign up with LinkedIn"
     }
   },
   "forgot_password": {

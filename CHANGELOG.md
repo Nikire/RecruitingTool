@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 0.10.2 - 2026-03-06
+
+### Added
+- Auth0 social login integration with Google and LinkedIn
+  - Replaced GitHub social login button with LinkedIn in `SocialLoginButtons.tsx`
+  - Added Auth0 environment variables (`VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`) to frontend `.env`, `Dockerfile`, and `docker-compose.yml` build args
+  - Updated i18n keys in `en.json` and `es.json`: replaced `github` keys with `linkedin` equivalents
+  - Affected files: `recruiting-tool-frontend/src/components/auth/SocialLoginButtons.tsx`, `recruiting-tool-frontend/Dockerfile`, `docker-compose.yml`, `recruiting-tool-frontend/src/i18n/locales/en.json`, `recruiting-tool-frontend/src/i18n/locales/es.json`
+
+---
+
 ## Version 0.10.1 - 2026-02-23
 
 ### 🚀 Features
