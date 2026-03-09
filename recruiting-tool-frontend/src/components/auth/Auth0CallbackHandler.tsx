@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Box, CircularProgress, Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { socialCallback } from "../../api/auth";
 import { useUserAtom } from "../../store";
@@ -24,7 +24,6 @@ const Auth0CallbackHandler: React.FC = () => {
   const navigate = useNavigate();
   const isAuth0Configured = useAuth0Configured();
 
-  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Guard against double-invocation in React StrictMode
@@ -57,7 +56,6 @@ const Auth0CallbackHandler: React.FC = () => {
     handledRef.current = true;
 
     const exchangeToken = async () => {
-      setProcessing(true);
       setError(null);
 
       try {
@@ -81,7 +79,6 @@ const Auth0CallbackHandler: React.FC = () => {
         setUser(data.user);
 
         // Navigate to the appropriate dashboard
-        setProcessing(false);
         const destination = getDefaultDashboard(data.user);
         navigate(destination, { replace: true });
       } catch (err) {
@@ -91,7 +88,6 @@ const Auth0CallbackHandler: React.FC = () => {
         setError(t("auth.social.callback_error"));
         // Reset guard so user can retry if they re-authenticate
         handledRef.current = false;
-        setProcessing(false);
       }
     };
 
@@ -105,31 +101,6 @@ const Auth0CallbackHandler: React.FC = () => {
     setUser,
     t,
   ]);
-
-  // Show a full-screen spinner while exchanging the token
-  // Once the token is stored, hide spinner even if processing state lags behind
-  if (processing && !error && !localStorage.getItem("authToken")) {
-    return (
-      <Box
-        sx={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9999,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 2,
-          bgcolor: "background.default",
-        }}
-      >
-        <CircularProgress size={48} />
-        <Typography variant="body1" color="text.secondary">
-          {t("auth.social.completing_login")}
-        </Typography>
-      </Box>
-    );
-  }
 
   // Show a brief error state — user can navigate away
   if (error) {
