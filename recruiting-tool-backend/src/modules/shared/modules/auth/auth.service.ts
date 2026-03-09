@@ -104,7 +104,7 @@ export class AuthService {
     }
 
     // Check if user is active
-    if (!foundUser.isActive) {
+    if (foundUser.isActive === false) {
       throw new UnauthorizedException('User account has been deactivated');
     }
 
@@ -154,7 +154,7 @@ export class AuthService {
       }
 
       // Check if user is active
-      if (!freshUser.isActive) {
+      if (freshUser.isActive === false) {
         throw new UnauthorizedException('User account has been deactivated');
       }
 
@@ -230,7 +230,7 @@ export class AuthService {
     }
 
     // Check if user is still active
-    if (!storedToken.user.isActive) {
+    if (storedToken.user.isActive === false) {
       throw new UnauthorizedException('User account has been deactivated');
     }
 
@@ -375,7 +375,7 @@ export class AuthService {
     }
 
     // Check if user is active
-    if (!user.isActive) {
+    if (user.isActive === false) {
       throw new UnauthorizedException('User account has been deactivated');
     }
 

@@ -294,7 +294,6 @@ export class UsersService {
         data: {
           isActive: false,
           deactivatedAt: new Date(),
-          deactivatedBy: adminUserId,
         },
         include: {
           company: true,
@@ -335,7 +334,6 @@ export class UsersService {
         data: {
           isActive: true,
           deactivatedAt: null,
-          deactivatedBy: null,
         },
         include: {
           company: true,

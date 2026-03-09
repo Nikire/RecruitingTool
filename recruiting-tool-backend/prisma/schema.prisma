@@ -72,6 +72,9 @@ model User {
   emailVerified              Boolean                 @default(false)
   emailVerificationToken     String?                 @unique
   emailVerificationSentAt    DateTime?
+  isActive                   Boolean                 @default(true)
+  deactivatedAt              DateTime?
+  lastLoginAt                DateTime?
   aiUsageLogs                AIUsageLog[]            @relation("UserAIUsageLogs")
   reviewedApplications       Application[]           @relation("ApplicationReviewer")
   auditLogs                  AuditLog[]              @relation("UserAuditLogs")
@@ -104,6 +107,8 @@ model User {
   @@index([uid])
   @@index([auth0Id])
   @@index([provider])
+  @@index([isActive])
+  @@index([lastLoginAt])
   @@map("User")
 }
 
