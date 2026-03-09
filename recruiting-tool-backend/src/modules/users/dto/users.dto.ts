@@ -159,8 +159,10 @@ export class UserResponseDto {
   @ApiProperty({
     description: 'The email of the user',
     example: 'jhondoe@hotmail.com',
+    nullable: true,
+    required: false,
   })
-  email: string;
+  email?: string | null;
   @ApiProperty({
     description: 'The date the user was created',
     example: '2021-08-01T00:00:00.000Z',

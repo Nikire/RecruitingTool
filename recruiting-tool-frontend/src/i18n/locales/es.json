@@ -1112,7 +1112,9 @@
     "resend_verification_error": "Error al enviar el correo de verificación. Por favor intenta de nuevo.",
     "roles": "Roles",
     "your_plan": "Tu Plan",
-    "manage_subscription": "Gestionar Suscripción"
+    "manage_subscription": "Gestionar Suscripción",
+    "no_email": "Sin dirección de correo",
+    "email_read_only": "El correo electrónico no se puede cambiar aquí"
   },
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",

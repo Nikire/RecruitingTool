@@ -69,7 +69,7 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
     if (user) {
       reset({
         name: user.name,
-        email: user.email,
+        email: user.email ?? undefined,
         password: "",
         companyUid: user.company?.uid || "",
         roles: user.roles || [UserRoles.USER],

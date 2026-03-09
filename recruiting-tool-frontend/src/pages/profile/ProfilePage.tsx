@@ -81,7 +81,6 @@ const ProfilePage: React.FC = () => {
   } = useForm<UpdateUserDto>({
     defaultValues: {
       name: user?.name || "",
-      email: user?.email || "",
       phoneNumber: user?.phoneNumber || "",
       position: user?.position || "",
       department: user?.department || "",
@@ -97,7 +96,6 @@ const ProfilePage: React.FC = () => {
     if (user) {
       reset({
         name: user.name,
-        email: user.email,
         phoneNumber: user.phoneNumber || "",
         position: user.position || "",
         department: user.department || "",
@@ -132,7 +130,6 @@ const ProfilePage: React.FC = () => {
     if (user) {
       reset({
         name: user.name,
-        email: user.email,
         phoneNumber: user.phoneNumber || "",
         position: user.position || "",
         department: user.department || "",
@@ -270,68 +267,72 @@ const ProfilePage: React.FC = () => {
               >
                 {watchedName || user.name}
               </Typography>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 0.5,
-                  mb: 2,
-                }}
-              >
-                <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-                <Typography variant="body2" color="text.secondary">
-                  {user.email}
-                </Typography>
-              </Box>
+              {user.email && (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 0.5,
+                    mb: 2,
+                  }}
+                >
+                  <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+                  <Typography variant="body2" color="text.secondary">
+                    {user.email}
+                  </Typography>
+                </Box>
+              )}
 
-              {/* Account Status Badge */}
-              <Box
-                sx={{
-                  mb: 2,
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                <Chip
-                  icon={<VerifiedUserIcon />}
-                  label={
-                    user.emailVerified
-                      ? t("profile_page.email_verified")
-                      : t("profile_page.email_not_verified")
-                  }
-                  color={user.emailVerified ? "success" : "warning"}
-                  size="medium"
-                  sx={{ fontWeight: 600 }}
-                />
-                {!user.emailVerified && (
-                  <Button
-                    size="small"
-                    variant="outlined"
-                    color="warning"
-                    disabled={isResendingVerification}
-                    onClick={() =>
-                      resendVerification(undefined, {
-                        onSuccess: () =>
-                          showSuccessToast(
-                            t("profile_page.resend_verification_success"),
-                          ),
-                        onError: (error) =>
-                          showErrorToast(
-                            error,
-                            t("profile_page.resend_verification_error"),
-                          ),
-                      })
+              {/* Account Status Badge — only for accounts with email */}
+              {user.email && (
+                <Box
+                  sx={{
+                    mb: 2,
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <Chip
+                    icon={<VerifiedUserIcon />}
+                    label={
+                      user.emailVerified
+                        ? t("profile_page.email_verified")
+                        : t("profile_page.email_not_verified")
                     }
-                    sx={{ fontSize: "0.75rem" }}
-                  >
-                    {isResendingVerification
-                      ? t("common.sending")
-                      : t("profile_page.resend_verification")}
-                  </Button>
-                )}
-              </Box>
+                    color={user.emailVerified ? "success" : "warning"}
+                    size="medium"
+                    sx={{ fontWeight: 600 }}
+                  />
+                  {!user.emailVerified && (
+                    <Button
+                      size="small"
+                      variant="outlined"
+                      color="warning"
+                      disabled={isResendingVerification}
+                      onClick={() =>
+                        resendVerification(undefined, {
+                          onSuccess: () =>
+                            showSuccessToast(
+                              t("profile_page.resend_verification_success"),
+                            ),
+                          onError: (error) =>
+                            showErrorToast(
+                              error,
+                              t("profile_page.resend_verification_error"),
+                            ),
+                        })
+                      }
+                      sx={{ fontSize: "0.75rem" }}
+                    >
+                      {isResendingVerification
+                        ? t("common.sending")
+                        : t("profile_page.resend_verification")}
+                    </Button>
+                  )}
+                </Box>
+              )}
 
               {/* Roles Section */}
               <Divider sx={{ width: "100%", my: 2 }} />
@@ -497,17 +498,11 @@ const ProfilePage: React.FC = () => {
                       fullWidth
                       label={t("profile_page.email_address")}
                       type="email"
-                      {...register("email", {
-                        required: t("validation.email_required"),
-                        pattern: {
-                          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                          message: t("validation.email_invalid"),
-                        },
-                      })}
-                      error={!!errors.email}
-                      helperText={errors.email?.message}
+                      value={user.email || t("profile_page.no_email")}
                       variant="outlined"
                       size="small"
+                      disabled
+                      helperText={t("profile_page.email_read_only")}
                       InputProps={{
                         startAdornment: (
                           <EmailIcon sx={{ mr: 1, color: "info.main" }} />

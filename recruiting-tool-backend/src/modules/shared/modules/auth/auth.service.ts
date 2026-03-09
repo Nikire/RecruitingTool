@@ -142,8 +142,12 @@ export class AuthService {
     try {
       const decoded = await this.jwtService.verifyAsync(token);
 
-      // Fetch fresh user data from database instead of using stale token data
-      const freshUser = await this.usersService.findByEmail(decoded.email);
+      // Fetch fresh user data from database using sub (userId) from token
+      // Email may be null for social-only accounts, so look up by id
+      const freshUser = await this.databaseService.user.findUnique({
+        where: { id: decoded.sub },
+        include: { company: true },
+      });
 
       if (!freshUser) {
         throw new UnauthorizedException('User not found');
@@ -154,7 +158,7 @@ export class AuthService {
         throw new UnauthorizedException('User account has been deactivated');
       }
 
-      return freshUser;
+      return freshUser as any;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
     }
@@ -163,12 +167,12 @@ export class AuthService {
   /**
    * Generate both access and refresh tokens for a user
    */
-  private async generateTokens(userId: number, email: string, roles: any[], companyId: number | null): Promise<{ accessToken: string; refreshToken: string }> {
+  private async generateTokens(userId: number, email: string | null, roles: any[], companyId: number | null): Promise<{ accessToken: string; refreshToken: string }> {
     // Create minimal JWT payload for access token
     const payload = {
       sub: userId,
       id: userId,
-      email,
+      email: email ?? null,
       roles,
       companyId,
     };
@@ -233,7 +237,7 @@ export class AuthService {
     // Generate new token pair
     const { accessToken, refreshToken: newRefreshToken } = await this.generateTokens(
       storedToken.userId,
-      storedToken.user.email,
+      storedToken.user.email ?? null,
       storedToken.user.roles,
       storedToken.user.companyId,
     );
@@ -356,19 +360,11 @@ export class AuthService {
 
     // If still no user, create new account
     if (!user) {
-      // LinkedIn (and some providers) may not include email in the JWT claims.
-      // Require email to create a user — cannot create account without it.
-      if (!auth0User.email) {
-        throw new BadRequestException(
-          'Your social account did not provide an email address. Please ensure your LinkedIn profile has a primary email and try again.',
-        );
-      }
-
-      const userName = auth0User.name || auth0User.email.split('@')[0] || 'User';
+      const userName = auth0User.name || auth0User.email?.split('@')[0] || 'User';
 
       user = await this.databaseService.user.create({
         data: {
-          email: auth0User.email,
+          email: auth0User.email || null, // Email may be absent for some social providers
           name: userName,
           auth0Id: auth0User.auth0Id,
           provider: auth0User.provider,
@@ -638,6 +634,11 @@ export class AuthService {
       throw new BadRequestException('User not found');
     }
 
+    // Social-only accounts have no email — nothing to verify
+    if (!user.email) {
+      throw new BadRequestException('No email address associated with this account');
+    }
+
     if (user.emailVerified) {
       throw new BadRequestException('Email already verified');
     }
@@ -664,7 +665,7 @@ export class AuthService {
     });
 
     try {
-      await this.emailService.sendVerificationEmail(user.email, verificationLink);
+      await this.emailService.sendVerificationEmail(user.email!, verificationLink);
     } catch {
       // Do not reveal email sending failures to the caller
     }

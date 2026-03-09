@@ -40,7 +40,6 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({
   } = useForm<UpdateUserDto>({
     defaultValues: {
       name: user.name,
-      email: user.email,
       phoneNumber: user.phoneNumber || "",
       position: user.position || "",
       department: user.department || "",
@@ -117,18 +116,6 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({
                   )}
                   error={!!errors.name}
                   helperText={errors.name?.message}
-                  variant="outlined"
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12, sm: 6 }}>
-                <TextField
-                  fullWidth
-                  label={t("edit_profile.email_address")}
-                  type="email"
-                  {...register("email", validationRules.email())}
-                  error={!!errors.email}
-                  helperText={errors.email?.message}
                   variant="outlined"
                 />
               </Grid>

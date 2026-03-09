@@ -1104,7 +1104,9 @@
     "resend_verification_error": "Failed to send verification email. Please try again.",
     "roles": "Roles",
     "your_plan": "Your Plan",
-    "manage_subscription": "Manage Subscription"
+    "manage_subscription": "Manage Subscription",
+    "no_email": "No email address",
+    "email_read_only": "Email cannot be changed here"
   },
   "applications_page": {
     "all_applications": "All Applications",

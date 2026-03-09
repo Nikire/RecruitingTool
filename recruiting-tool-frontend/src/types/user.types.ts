@@ -1,7 +1,7 @@
 export interface User {
   uid: string;
   name: string;
-  email: string;
+  email?: string | null;
   createdAt?: string;
   updatedAt?: string;
   roles: UserRoles[];

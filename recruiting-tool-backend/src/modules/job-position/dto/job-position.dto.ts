@@ -184,7 +184,7 @@ export class JobPositionResponseDto {
   createdBy?: {
     uid: string;
     name: string;
-    email: string;
+    email?: string | null;
   };
 
   @ApiProperty({ description: 'The stages of the job position' })
