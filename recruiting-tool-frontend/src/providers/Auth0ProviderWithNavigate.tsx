@@ -20,7 +20,6 @@ const Auth0ProviderWithNavigate = ({ children }: PropsWithChildren) => {
 
   const domain = import.meta.env.VITE_AUTH0_DOMAIN;
   const clientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
-  const audience = import.meta.env.VITE_AUTH0_AUDIENCE;
 
   // If Auth0 is not configured, render children without Auth0Provider
   if (!domain || !clientId) {
