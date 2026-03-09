@@ -11,7 +11,8 @@ const Logout: React.FC = () => {
   const navigate = useNavigate();
   const logout = useLogout();
   const isAuth0Configured = useAuth0Configured();
-  const { logout: auth0Logout, isAuthenticated: isAuth0Authenticated } = useAuth0();
+  const { logout: auth0Logout, isAuthenticated: isAuth0Authenticated } =
+    useAuth0();
 
   useEffect(() => {
     // Clear local tokens and state

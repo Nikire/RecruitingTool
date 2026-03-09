@@ -63,7 +63,7 @@ const Auth0CallbackHandler: React.FC = () => {
         const idToken = idTokenClaims?.__raw;
 
         if (!idToken) {
-          throw new Error('Could not retrieve ID token');
+          throw new Error("Could not retrieve ID token");
         }
 
         const data = await socialCallback(idToken);
