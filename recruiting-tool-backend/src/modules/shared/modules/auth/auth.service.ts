@@ -108,6 +108,11 @@ export class AuthService {
       throw new UnauthorizedException('User account has been deactivated');
     }
 
+    // Social-only accounts have no password — direct them to use social login
+    if (!foundUser.password) {
+      throw new UnauthorizedException('This account was created with social login. Please sign in with Google or LinkedIn.');
+    }
+
     const isPasswordValid = await bycrypt.compare(password, foundUser.password);
 
     if (!isPasswordValid) {
@@ -351,10 +356,20 @@ export class AuthService {
 
     // If still no user, create new account
     if (!user) {
+      // LinkedIn (and some providers) may not include email in the JWT claims.
+      // Require email to create a user — cannot create account without it.
+      if (!auth0User.email) {
+        throw new BadRequestException(
+          'Your social account did not provide an email address. Please ensure your LinkedIn profile has a primary email and try again.',
+        );
+      }
+
+      const userName = auth0User.name || auth0User.email.split('@')[0] || 'User';
+
       user = await this.databaseService.user.create({
         data: {
           email: auth0User.email,
-          name: auth0User.name,
+          name: userName,
           auth0Id: auth0User.auth0Id,
           provider: auth0User.provider,
           password: null, // No password for social login users

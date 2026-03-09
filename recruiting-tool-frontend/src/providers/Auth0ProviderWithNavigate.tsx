@@ -36,10 +36,8 @@ const Auth0ProviderWithNavigate = ({ children }: PropsWithChildren) => {
     clientId,
     authorizationParams: {
       redirect_uri: window.location.origin,
-      ...(audience && { audience }), // Only include audience if provided
     },
     onRedirectCallback,
-    useRefreshTokens: true,
     cacheLocation: "localstorage",
   };
 

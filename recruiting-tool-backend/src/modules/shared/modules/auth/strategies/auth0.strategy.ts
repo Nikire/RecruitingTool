@@ -20,8 +20,8 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
 
   constructor(configService: ConfigService) {
     const auth0Domain = configService.get<string>('AUTH0_DOMAIN');
-    const auth0Audience = configService.get<string>('AUTH0_AUDIENCE');
-    const isConfigured = !!(auth0Domain && auth0Audience);
+    const auth0ClientId = configService.get<string>('AUTH0_CLIENT_ID');
+    const isConfigured = !!(auth0Domain && auth0ClientId);
 
     // Build configuration based on whether Auth0 is configured
     if (isConfigured) {
@@ -37,8 +37,8 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
           jwksUri: `https://${auth0Domain}/.well-known/jwks.json`,
         }),
 
-        // Verify audience (API identifier)
-        audience: auth0Audience,
+        // Verify audience — ID token audience is the Auth0 Client ID
+        audience: auth0ClientId,
 
         // Verify issuer (Auth0 domain)
         issuer: `https://${auth0Domain}/`,
@@ -61,7 +61,7 @@ export class Auth0Strategy extends PassportStrategy(Strategy, 'auth0') {
     this.isConfigured = isConfigured;
 
     if (isConfigured) {
-      console.log('[Auth0Strategy] Initialized successfully');
+      console.log('[Auth0Strategy] Initialized successfully with client ID audience');
     } else {
       console.log('[Auth0Strategy] Auth0 not configured - social login disabled');
     }

@@ -52,6 +52,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   }
 
   const handleGoogleLogin = () => {
+    sessionStorage.setItem("auth0_login_pending", "true");
     loginWithRedirect({
       authorizationParams: {
         connection: "google-oauth2",
@@ -60,6 +61,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
   };
 
   const handleLinkedInLogin = () => {
+    sessionStorage.setItem("auth0_login_pending", "true");
     loginWithRedirect({
       authorizationParams: {
         connection: "linkedin",

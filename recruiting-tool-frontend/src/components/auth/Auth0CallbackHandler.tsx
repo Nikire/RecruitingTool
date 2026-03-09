@@ -19,7 +19,7 @@ import { getDefaultDashboard } from "../../utils/permissions";
  */
 const Auth0CallbackHandler: React.FC = () => {
   const { t } = useTranslation();
-  const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0();
+  const { isAuthenticated, isLoading, getIdTokenClaims } = useAuth0();
   const { setUser } = useUserAtom();
   const navigate = useNavigate();
   const isAuth0Configured = useAuth0Configured();
@@ -42,6 +42,14 @@ const Auth0CallbackHandler: React.FC = () => {
       return;
     }
 
+    // Only proceed if the user explicitly initiated a social login from this app.
+    // This prevents the handler from firing on every page load when Auth0 has a
+    // cached session but no local JWT (e.g. after a failed or incomplete exchange).
+    const loginPending = sessionStorage.getItem("auth0_login_pending");
+    if (!loginPending) {
+      return;
+    }
+
     // Prevent double-execution (React StrictMode mounts effects twice)
     if (handledRef.current) {
       return;
@@ -53,17 +61,17 @@ const Auth0CallbackHandler: React.FC = () => {
       setError(null);
 
       try {
-        const audience = import.meta.env.VITE_AUTH0_AUDIENCE as
-          | string
-          | undefined;
+        const idTokenClaims = await getIdTokenClaims();
+        const idToken = idTokenClaims?.__raw;
 
-        const accessToken = await getAccessTokenSilently({
-          authorizationParams: {
-            ...(audience ? { audience } : {}),
-          },
-        });
+        if (!idToken) {
+          throw new Error('Could not retrieve ID token');
+        }
 
-        const data = await socialCallback(accessToken);
+        const data = await socialCallback(idToken);
+
+        // Clear the pending flag — exchange completed successfully
+        sessionStorage.removeItem("auth0_login_pending");
 
         // Store local JWT tokens
         localStorage.setItem("authToken", data.token);
@@ -73,10 +81,13 @@ const Auth0CallbackHandler: React.FC = () => {
         setUser(data.user);
 
         // Navigate to the appropriate dashboard
+        setProcessing(false);
         const destination = getDefaultDashboard(data.user);
         navigate(destination, { replace: true });
       } catch (err) {
         console.error("[Auth0CallbackHandler] Token exchange failed:", err);
+        // Clear the pending flag so we don't retry on every render
+        sessionStorage.removeItem("auth0_login_pending");
         setError(t("auth.social.callback_error"));
         // Reset guard so user can retry if they re-authenticate
         handledRef.current = false;
@@ -89,14 +100,15 @@ const Auth0CallbackHandler: React.FC = () => {
     isAuth0Configured,
     isAuthenticated,
     isLoading,
-    getAccessTokenSilently,
+    getIdTokenClaims,
     navigate,
     setUser,
     t,
   ]);
 
   // Show a full-screen spinner while exchanging the token
-  if (processing && !error) {
+  // Once the token is stored, hide spinner even if processing state lags behind
+  if (processing && !error && !localStorage.getItem("authToken")) {
     return (
       <Box
         sx={{
