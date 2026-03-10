@@ -157,3 +157,30 @@ export class AddEmailDto {
   @IsNotEmpty()
   email: string;
 }
+
+export class RequestEmailChangeDto {
+  @ApiProperty({ description: 'New email address to change to', example: 'newemail@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  newEmail: string;
+}
+
+export class ConfirmEmailChangeDto {
+  @ApiProperty({ description: '6-digit verification code sent to the new email', example: '123456' })
+  @IsNotEmpty()
+  @IsString()
+  code: string;
+}
+
+export class ConfirmPasswordChangeDto {
+  @ApiProperty({ description: '6-digit verification code sent to the current email', example: '123456' })
+  @IsNotEmpty()
+  @IsString()
+  code: string;
+
+  @ApiProperty({ description: 'The new password (minimum 8 characters)', example: 'NewPassword123' })
+  @IsNotEmpty()
+  @IsString()
+  @MinLength(8)
+  newPassword: string;
+}

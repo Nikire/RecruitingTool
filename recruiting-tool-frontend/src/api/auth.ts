@@ -130,6 +130,43 @@ export function addEmail(data: {
 }
 
 /**
+ * Request an email address change — sends a 6-digit code to the new email
+ */
+export function requestEmailChange(data: {
+  newEmail: string;
+}): Promise<{ message: string }> {
+  return api.post("/auth/change-email/request", data).then((res) => res.data);
+}
+
+/**
+ * Confirm email address change using the 6-digit code
+ */
+export function confirmEmailChange(data: {
+  code: string;
+}): Promise<{ message: string }> {
+  return api.post("/auth/change-email/confirm", data).then((res) => res.data);
+}
+
+/**
+ * Request a password change — sends a 6-digit code to the current email
+ */
+export function requestPasswordChange(): Promise<{ message: string }> {
+  return api.post("/auth/change-password/request").then((res) => res.data);
+}
+
+/**
+ * Confirm password change using the 6-digit code and new password
+ */
+export function confirmPasswordChange(data: {
+  code: string;
+  newPassword: string;
+}): Promise<{ message: string }> {
+  return api
+    .post("/auth/change-password/confirm", data)
+    .then((res) => res.data);
+}
+
+/**
  * Exchange an Auth0 access token for a local JWT.
  * Called after Auth0 redirects back to the app and isAuthenticated becomes true.
  */

@@ -11,6 +11,10 @@ import {
   resendVerification,
   addEmail,
   getLinkedAccounts,
+  requestEmailChange,
+  confirmEmailChange,
+  requestPasswordChange,
+  confirmPasswordChange,
 } from "../../api/auth";
 import { LinkedAccountsResponse, User } from "../../types/user.types";
 import { useUserAtom } from "./state/useUserAtom";
@@ -233,5 +237,34 @@ export function useLinkedAccounts() {
     queryFn: getLinkedAccounts,
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
+  });
+}
+
+export function useRequestEmailChange() {
+  return useMutation({
+    mutationFn: requestEmailChange,
+  });
+}
+
+export function useConfirmEmailChange() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: confirmEmailChange,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [AUTH_KEY, "me"] });
+    },
+  });
+}
+
+export function useRequestPasswordChange() {
+  return useMutation({
+    mutationFn: requestPasswordChange,
+  });
+}
+
+export function useConfirmPasswordChange() {
+  return useMutation({
+    mutationFn: confirmPasswordChange,
   });
 }

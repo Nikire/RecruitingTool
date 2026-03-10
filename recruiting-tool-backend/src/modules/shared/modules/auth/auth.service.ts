@@ -686,7 +686,7 @@ export class AuthService {
     }
 
     // Determine available providers
-    const availableProviders = ['google', 'github']; // Can be expanded
+    const availableProviders = ['google'];
 
     const linkedAccounts = availableProviders.map((provider) => {
       const isLinked = currentUser.auth0Id && currentUser.provider === provider;
@@ -701,6 +701,218 @@ export class AuthService {
       linkedAccounts,
       hasLocalPassword: !!currentUser.password,
     };
+  }
+
+  /**
+   * Request an email address change — sends a 6-digit code to the new email
+   */
+  async requestEmailChange(userId: number, newEmail: string): Promise<{ message: string }> {
+    // Check new email is not already in use by another account
+    const existing = await this.databaseService.user.findFirst({
+      where: { email: newEmail },
+    });
+    if (existing) {
+      throw new BadRequestException('Email is already in use');
+    }
+
+    // Generate 6-digit numeric code
+    const rawCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store SHA-256 hash of the code
+    const tokenHash = crypto.createHash('sha256').update(rawCode).digest('hex');
+
+    // Set expiration to 1 hour from now
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    // Store on user record
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: {
+        pendingEmail: newEmail,
+        emailChangeToken: tokenHash,
+        emailChangeExpiresAt: expiresAt,
+      },
+    });
+
+    // Send verification code to new email
+    const subject = 'Email Change Verification Code';
+    const text = `Your verification code is: ${rawCode}. This code expires in 1 hour. If you did not request this, please ignore this email or contact support.`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1976d2;">Email Change Verification</h2>
+        <p>Your verification code is:</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #1976d2;">${rawCode}</span>
+        </div>
+        <p style="color: #666; font-size: 14px;">This code expires in 1 hour.</p>
+        <p style="color: #999; font-size: 12px;">If you did not request this, please ignore this email or contact support.</p>
+      </div>
+    `;
+
+    try {
+      await this.emailService['sendEmail'](newEmail, subject, text, html, 'EMAIL_CHANGE');
+    } catch {
+      // Non-blocking — do not fail if email sending fails
+    }
+
+    return { message: 'Verification code sent to your new email address' };
+  }
+
+  /**
+   * Confirm email address change using the 6-digit code
+   */
+  async confirmEmailChange(userId: number, code: string): Promise<{ message: string }> {
+    const user = await this.databaseService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    if (!user.pendingEmail || !user.emailChangeToken || !user.emailChangeExpiresAt) {
+      throw new BadRequestException('No pending email change request found');
+    }
+
+    // Check expiry
+    if (new Date() > user.emailChangeExpiresAt) {
+      throw new BadRequestException('Verification code has expired');
+    }
+
+    // Hash the submitted code and compare
+    const submittedHash = crypto.createHash('sha256').update(code).digest('hex');
+    if (submittedHash !== user.emailChangeToken) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    // Update email and clear pending fields
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: {
+        email: user.pendingEmail,
+        emailVerified: true,
+        pendingEmail: null,
+        emailChangeToken: null,
+        emailChangeExpiresAt: null,
+      },
+    });
+
+    // Invalidate all refresh tokens (security measure)
+    await this.revokeAllUserTokens(userId);
+
+    return { message: 'Email updated successfully' };
+  }
+
+  /**
+   * Request a password change — sends a 6-digit code to the user's current email
+   */
+  async requestPasswordChange(userId: number): Promise<{ message: string }> {
+    const user = await this.databaseService.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    if (!user.email) {
+      throw new BadRequestException('No email address associated with this account. Please add an email first.');
+    }
+
+    // Delete any existing unused password change tokens for this user
+    await this.databaseService.passwordResetToken.deleteMany({
+      where: {
+        userId: user.id,
+        usedAt: null,
+      },
+    });
+
+    // Generate 6-digit numeric code
+    const rawCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Store SHA-256 hash of the code
+    const tokenHash = crypto.createHash('sha256').update(rawCode).digest('hex');
+
+    // Set expiration to 1 hour from now
+    const expiresAt = new Date();
+    expiresAt.setHours(expiresAt.getHours() + 1);
+
+    await this.databaseService.passwordResetToken.create({
+      data: {
+        userId: user.id,
+        tokenHash,
+        expiresAt,
+      },
+    });
+
+    // Send verification code to current email
+    const subject = 'Password Change Verification Code';
+    const text = `Your password change code is: ${rawCode}. This code expires in 1 hour. If you did not request this, please ignore this email or contact support.`;
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1976d2;">Password Change Verification</h2>
+        <p>Your password change code is:</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <span style="font-size: 36px; font-weight: bold; letter-spacing: 8px; color: #1976d2;">${rawCode}</span>
+        </div>
+        <p style="color: #666; font-size: 14px;">This code expires in 1 hour.</p>
+        <p style="color: #999; font-size: 12px;">If you did not request this, please ignore this email or contact support.</p>
+      </div>
+    `;
+
+    try {
+      await this.emailService['sendEmail'](user.email, subject, text, html, 'PASSWORD_CHANGE');
+    } catch {
+      // Non-blocking — do not fail if email sending fails
+    }
+
+    return { message: 'Verification code sent to your email address' };
+  }
+
+  /**
+   * Confirm password change using the 6-digit code and new password
+   */
+  async confirmPasswordChange(userId: number, code: string, newPassword: string): Promise<{ message: string }> {
+    // Find the most recent unused token for this user
+    const resetToken = await this.databaseService.passwordResetToken.findFirst({
+      where: {
+        userId,
+        usedAt: null,
+        expiresAt: { gt: new Date() },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (!resetToken) {
+      throw new BadRequestException('No valid verification code found. Please request a new code.');
+    }
+
+    // Hash the submitted code and compare
+    const submittedHash = crypto.createHash('sha256').update(code).digest('hex');
+    if (submittedHash !== resetToken.tokenHash) {
+      throw new BadRequestException('Invalid verification code');
+    }
+
+    // Hash the new password with bcrypt
+    const hashedPassword = await bycrypt.hash(newPassword, 10);
+
+    // Update the user's password
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: { password: hashedPassword },
+    });
+
+    // Mark the token as used
+    await this.databaseService.passwordResetToken.update({
+      where: { id: resetToken.id },
+      data: { usedAt: new Date() },
+    });
+
+    // Invalidate all refresh tokens (security measure)
+    await this.revokeAllUserTokens(userId);
+
+    return { message: 'Password updated successfully' };
   }
 
   /**

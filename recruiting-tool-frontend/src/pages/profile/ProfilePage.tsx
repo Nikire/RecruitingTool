@@ -26,6 +26,7 @@ import {
   VerifiedUser as VerifiedUserIcon,
   OpenInNew as OpenInNewIcon,
   Link as LinkIcon,
+  Lock as LockIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -37,13 +38,15 @@ import {
   useResendVerification,
   useLinkedAccounts,
 } from "../../hooks/api/useAuth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import ProfilePictureUpload from "../../components/user/ProfilePictureUpload";
 import { RoleBadge } from "../../components/common";
 import { useSubscription } from "../../api/subscription";
 import { SubscriptionStatus } from "../../types/subscription.types";
 import { hasRole } from "../../utils/permissions";
+import ChangeEmailDialog from "../../components/dialogs/ChangeEmailDialog";
+import ChangePasswordDialog from "../../components/dialogs/ChangePasswordDialog";
 
 const ProfilePage: React.FC = () => {
   const { t } = useTranslation();
@@ -52,6 +55,8 @@ const ProfilePage: React.FC = () => {
   const { mutate: updateUser, isPending } = useUpdateUser();
   const { mutate: resendVerification, isPending: isResendingVerification } =
     useResendVerification();
+  const [changeEmailOpen, setChangeEmailOpen] = useState(false);
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
 
   const isOwner = hasRole(user, UserRoles.COMPANY_OWNER);
   const { data: subscription, isLoading: isLoadingSubscription } =
@@ -441,34 +446,6 @@ const ProfilePage: React.FC = () => {
                           />
                         );
                       })()}
-                      {/* LinkedIn */}
-                      {(() => {
-                        const linkedinAccount =
-                          linkedAccountsData.linkedAccounts.find(
-                            (a) =>
-                              a.provider === "linkedin" ||
-                              a.provider === "linkedin-openid",
-                          );
-                        const isLinked = linkedinAccount?.isLinked ?? false;
-                        return (
-                          <Chip
-                            label={`LinkedIn · ${isLinked ? t("auth.connected") : t("auth.not_connected")}`}
-                            color={isLinked ? "success" : "default"}
-                            size="small"
-                            variant={isLinked ? "filled" : "outlined"}
-                            icon={
-                              <LinkedInIcon
-                                sx={{
-                                  fontSize: "1rem !important",
-                                  color: isLinked
-                                    ? "success.dark"
-                                    : "text.disabled",
-                                }}
-                              />
-                            }
-                          />
-                        );
-                      })()}
                     </Box>
                   </Box>
                 </>
@@ -621,6 +598,50 @@ const ProfilePage: React.FC = () => {
                         ),
                       }}
                     />
+                  </Grid>
+
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <Box
+                      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
+                    >
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<EmailIcon />}
+                        onClick={() => setChangeEmailOpen(true)}
+                        disabled={!user.email}
+                        title={
+                          !user.email
+                            ? t("profile_page.change_email_no_email_tooltip")
+                            : undefined
+                        }
+                        fullWidth
+                      >
+                        {t("profile_page.change_email")}
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        startIcon={<LockIcon />}
+                        onClick={() => setChangePasswordOpen(true)}
+                        disabled={
+                          !user.email ||
+                          (linkedAccountsData !== undefined &&
+                            !linkedAccountsData.hasLocalPassword)
+                        }
+                        title={
+                          !user.email
+                            ? t("profile_page.change_email_no_email_tooltip")
+                            : linkedAccountsData !== undefined &&
+                                !linkedAccountsData.hasLocalPassword
+                              ? t("profile_page.change_password_social_tooltip")
+                              : undefined
+                        }
+                        fullWidth
+                      >
+                        {t("profile_page.change_password")}
+                      </Button>
+                    </Box>
                   </Grid>
 
                   <Grid size={{ xs: 12 }}>
@@ -820,6 +841,15 @@ const ProfilePage: React.FC = () => {
           </Card>
         </Grid>
       </Grid>
+
+      <ChangeEmailDialog
+        open={changeEmailOpen}
+        onClose={() => setChangeEmailOpen(false)}
+      />
+      <ChangePasswordDialog
+        open={changePasswordOpen}
+        onClose={() => setChangePasswordOpen(false)}
+      />
     </Box>
   );
 };

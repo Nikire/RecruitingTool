@@ -1106,7 +1106,11 @@
     "your_plan": "Your Plan",
     "manage_subscription": "Manage Subscription",
     "no_email": "No email address",
-    "email_read_only": "Email cannot be changed here"
+    "email_read_only": "Email cannot be changed here",
+    "change_email": "Change Email",
+    "change_password": "Change Password",
+    "change_email_no_email_tooltip": "Add an email first to change it",
+    "change_password_social_tooltip": "Social login accounts cannot change password this way"
   },
   "applications_page": {
     "all_applications": "All Applications",
@@ -1176,7 +1180,27 @@
     "add_email_label": "Email Address",
     "connected_accounts": "Connected Accounts",
     "connected": "Connected",
-    "not_connected": "Not connected"
+    "not_connected": "Not connected",
+    "change_email_title": "Change Email Address",
+    "change_email_step1_desc": "Enter your new email address. We'll send a verification code to confirm the change.",
+    "change_email_new_email": "New Email Address",
+    "change_email_send_code": "Send Code",
+    "change_email_step2_desc": "Enter the 6-digit code we sent to your new email address.",
+    "change_email_code": "Verification Code",
+    "change_email_confirm": "Confirm Change",
+    "change_email_success": "Email updated successfully!",
+    "change_email_code_sent": "Verification code sent. Check your inbox.",
+    "change_password_title": "Change Password",
+    "change_password_step1_desc": "We'll send a verification code to your email address to confirm the password change.",
+    "change_password_send_code": "Send Code",
+    "change_password_step2_desc": "Enter the code from your email and your new password.",
+    "change_password_code": "Verification Code",
+    "change_password_new": "New Password",
+    "change_password_confirm_label": "Confirm New Password",
+    "change_password_confirm_btn": "Update Password",
+    "change_password_success": "Password updated successfully!",
+    "change_password_code_sent": "Verification code sent. Check your inbox.",
+    "change_password_mismatch": "Passwords do not match"
   },
   "forgot_password": {
     "title": "Forgot Password",

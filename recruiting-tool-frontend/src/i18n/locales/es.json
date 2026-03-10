@@ -1114,7 +1114,11 @@
     "your_plan": "Tu Plan",
     "manage_subscription": "Gestionar Suscripción",
     "no_email": "Sin dirección de correo",
-    "email_read_only": "El correo electrónico no se puede cambiar aquí"
+    "email_read_only": "El correo electrónico no se puede cambiar aquí",
+    "change_email": "Cambiar Email",
+    "change_password": "Cambiar Contraseña",
+    "change_email_no_email_tooltip": "Agrega un email primero para cambiarlo",
+    "change_password_social_tooltip": "Las cuentas de inicio de sesión social no pueden cambiar la contraseña de esta forma"
   },
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",
@@ -1184,7 +1188,27 @@
     "add_email_label": "Dirección de Email",
     "connected_accounts": "Cuentas Conectadas",
     "connected": "Conectado",
-    "not_connected": "No conectado"
+    "not_connected": "No conectado",
+    "change_email_title": "Cambiar Dirección de Email",
+    "change_email_step1_desc": "Ingresa tu nueva dirección de email. Te enviaremos un código de verificación para confirmar el cambio.",
+    "change_email_new_email": "Nueva Dirección de Email",
+    "change_email_send_code": "Enviar Código",
+    "change_email_step2_desc": "Ingresa el código de 6 dígitos que enviamos a tu nueva dirección de email.",
+    "change_email_code": "Código de Verificación",
+    "change_email_confirm": "Confirmar Cambio",
+    "change_email_success": "¡Email actualizado exitosamente!",
+    "change_email_code_sent": "Código de verificación enviado. Revisa tu bandeja de entrada.",
+    "change_password_title": "Cambiar Contraseña",
+    "change_password_step1_desc": "Te enviaremos un código de verificación a tu dirección de email para confirmar el cambio de contraseña.",
+    "change_password_send_code": "Enviar Código",
+    "change_password_step2_desc": "Ingresa el código de tu email y tu nueva contraseña.",
+    "change_password_code": "Código de Verificación",
+    "change_password_new": "Nueva Contraseña",
+    "change_password_confirm_label": "Confirmar Nueva Contraseña",
+    "change_password_confirm_btn": "Actualizar Contraseña",
+    "change_password_success": "¡Contraseña actualizada exitosamente!",
+    "change_password_code_sent": "Código de verificación enviado. Revisa tu bandeja de entrada.",
+    "change_password_mismatch": "Las contraseñas no coinciden"
   },
   "forgot_password": {
     "title": "Olvidé mi Contraseña",

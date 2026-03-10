@@ -1,6 +1,18 @@
 import { Body, Controller, Delete, Get, Headers, Post, Query, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { AddEmailDto, ForgotPasswordDto, LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, ResetPasswordDto, TokenPairDto } from './dto/auth.dto';
+import {
+  AddEmailDto,
+  ConfirmEmailChangeDto,
+  ConfirmPasswordChangeDto,
+  ForgotPasswordDto,
+  LinkedAccountsResponseDto,
+  LoginDto,
+  RegisteredUserDto,
+  RefreshTokenDto,
+  RequestEmailChangeDto,
+  ResetPasswordDto,
+  TokenPairDto,
+} from './dto/auth.dto';
 import { CreateUserDto, UserResponseDto } from 'src/modules/users/dto/users.dto';
 import { UserMapper } from 'src/modules/users/entities/users.entities';
 import {
@@ -330,6 +342,73 @@ export class AuthController {
     const token = authHeader?.replace('Bearer ', '');
     const user = await this.authService.verifyToken(token);
     return this.authService.getLinkedAccounts(user.id);
+  }
+
+  @Post('change-email/request')
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Request email address change — sends 6-digit code to new email' })
+  @ApiBody({ type: RequestEmailChangeDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Verification code sent to new email address',
+    schema: { example: { message: 'Verification code sent to your new email address' } },
+  })
+  @ApiBadRequestResponse({ description: 'Email already in use or invalid format' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async requestEmailChange(@Headers('authorization') authHeader: string, @Body() dto: RequestEmailChangeDto): Promise<{ message: string }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    return this.authService.requestEmailChange(user.id, dto.newEmail);
+  }
+
+  @Post('change-email/confirm')
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Confirm email address change using 6-digit verification code' })
+  @ApiBody({ type: ConfirmEmailChangeDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Email updated successfully',
+    schema: { example: { message: 'Email updated successfully' } },
+  })
+  @ApiBadRequestResponse({ description: 'Invalid or expired code' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async confirmEmailChange(@Headers('authorization') authHeader: string, @Body() dto: ConfirmEmailChangeDto): Promise<{ message: string }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    return this.authService.confirmEmailChange(user.id, dto.code);
+  }
+
+  @Post('change-password/request')
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Request password change — sends 6-digit code to current email' })
+  @ApiResponse({
+    status: 201,
+    description: 'Verification code sent to current email address',
+    schema: { example: { message: 'Verification code sent to your email address' } },
+  })
+  @ApiBadRequestResponse({ description: 'No email associated with this account' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async requestPasswordChange(@Headers('authorization') authHeader: string): Promise<{ message: string }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    return this.authService.requestPasswordChange(user.id);
+  }
+
+  @Post('change-password/confirm')
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Confirm password change using 6-digit code and new password' })
+  @ApiBody({ type: ConfirmPasswordChangeDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Password updated successfully',
+    schema: { example: { message: 'Password updated successfully' } },
+  })
+  @ApiBadRequestResponse({ description: 'Invalid or expired code' })
+  @ApiUnauthorizedResponse({ description: 'Invalid or missing token' })
+  async confirmPasswordChange(@Headers('authorization') authHeader: string, @Body() dto: ConfirmPasswordChangeDto): Promise<{ message: string }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    return this.authService.confirmPasswordChange(user.id, dto.code, dto.newPassword);
   }
 
   @Post('add-email')
