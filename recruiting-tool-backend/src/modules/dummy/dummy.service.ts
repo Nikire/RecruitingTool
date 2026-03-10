@@ -324,43 +324,25 @@ export class DummyService implements OnApplicationBootstrap {
     let createdHiringProcessStages = [];
     let createdInterviews = [];
 
-    // Create companies (idempotent - check first)
-    const existingCompaniesCount = await this.databaseService.company.count();
-    if (existingCompaniesCount === 0) {
-      this.logger.log('Creating companies...');
-      for (const company of data.companies) {
-        const created = await this.databaseService.company.create({
+    // Create companies (idempotent by name - avoids race condition with AdminUserService)
+    this.logger.log('Ensuring dummy companies exist...');
+    for (const company of data.companies) {
+      let existing = await this.databaseService.company.findFirst({
+        where: { name: company.name },
+      });
+      if (!existing) {
+        existing = await this.databaseService.company.create({
           data: {
             name: company.name,
             description: company.description,
           },
         });
-        createdCompanies.push(created);
-        this.logger.log(`Created company: ${created.name}`);
+        this.logger.log(`Created company: ${existing.name}`);
       }
-    } else {
-      // Companies exist - retrieve them in order
-      createdCompanies = await this.databaseService.company.findMany({
-        orderBy: { id: 'asc' },
-      });
+      createdCompanies.push(existing);
     }
 
-    // Update admin user to belong to first company (only if companies were just created)
-    if (existingCompaniesCount === 0) {
-      const adminEmail = this.configService.get<string>('ADMIN_EMAIL');
-      if (adminEmail) {
-        const adminUser = await this.databaseService.user.findFirst({
-          where: { email: adminEmail },
-        });
-        if (adminUser && createdCompanies.length > 0) {
-          await this.databaseService.user.update({
-            where: { id: adminUser.id },
-            data: { companyId: createdCompanies[0].id },
-          });
-          this.logger.log(`Updated admin user to belong to ${createdCompanies[0].name}`);
-        }
-      }
-    }
+    // AdminUserService handles linking the admin to the Borderless company - no action needed here
 
     // Create users (idempotent - check first)
     const existingUsersCount = await this.databaseService.user.count({
