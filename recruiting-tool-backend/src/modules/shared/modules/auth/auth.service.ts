@@ -337,12 +337,11 @@ export class AuthService {
       where: { auth0Id: auth0User.auth0Id },
     });
 
-    // If not found by auth0Id, check by email
+    // If not found by auth0Id, check by email (case-insensitive)
     if (!user && auth0User.email) {
       user = await this.databaseService.user.findFirst({
         where: {
-          email: auth0User.email,
-          companyId: null, // Only match users without company (prevents cross-company linking)
+          email: { equals: auth0User.email, mode: 'insensitive' },
         },
       });
 
