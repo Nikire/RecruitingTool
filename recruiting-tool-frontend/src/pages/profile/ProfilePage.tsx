@@ -25,6 +25,7 @@ import {
   Info as InfoIcon,
   VerifiedUser as VerifiedUserIcon,
   OpenInNew as OpenInNewIcon,
+  Link as LinkIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -32,7 +33,10 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { useForm } from "react-hook-form";
 import { UpdateUserDto, UserRoles } from "../../types/user.types";
 import { useUpdateUser } from "../../hooks/api/useUsers";
-import { useResendVerification } from "../../hooks/api/useAuth";
+import {
+  useResendVerification,
+  useLinkedAccounts,
+} from "../../hooks/api/useAuth";
 import { useEffect } from "react";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import ProfilePictureUpload from "../../components/user/ProfilePictureUpload";
@@ -52,6 +56,7 @@ const ProfilePage: React.FC = () => {
   const isOwner = hasRole(user, UserRoles.COMPANY_OWNER);
   const { data: subscription, isLoading: isLoadingSubscription } =
     useSubscription();
+  const { data: linkedAccountsData } = useLinkedAccounts();
 
   const getSubscriptionStatusColor = (
     status: SubscriptionStatus,
@@ -361,6 +366,113 @@ const ProfilePage: React.FC = () => {
                   ))}
                 </Box>
               </Box>
+
+              {/* Connected Accounts Section */}
+              {linkedAccountsData && (
+                <>
+                  <Divider sx={{ width: "100%", my: 2 }} />
+                  <Box sx={{ width: "100%" }}>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: 0.5,
+                        mb: 1.5,
+                      }}
+                    >
+                      <LinkIcon
+                        sx={{ fontSize: 16, color: "text.secondary" }}
+                      />
+                      <Typography
+                        variant="subtitle2"
+                        sx={{
+                          fontWeight: 600,
+                          color: "text.secondary",
+                          textAlign: "center",
+                        }}
+                      >
+                        {t("auth.connected_accounts")}
+                      </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        gap: 1,
+                        flexWrap: "wrap",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {/* Google */}
+                      {(() => {
+                        const googleAccount =
+                          linkedAccountsData.linkedAccounts.find(
+                            (a) => a.provider === "google",
+                          );
+                        const isLinked = googleAccount?.isLinked ?? false;
+                        return (
+                          <Chip
+                            label={`Google · ${isLinked ? t("auth.connected") : t("auth.not_connected")}`}
+                            color={isLinked ? "success" : "default"}
+                            size="small"
+                            variant={isLinked ? "filled" : "outlined"}
+                            icon={
+                              <Box
+                                component="span"
+                                sx={{
+                                  width: 16,
+                                  height: 16,
+                                  borderRadius: "50%",
+                                  bgcolor: isLinked
+                                    ? "success.dark"
+                                    : "text.disabled",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  fontSize: "0.6rem",
+                                  fontWeight: 700,
+                                  color: "white",
+                                  flexShrink: 0,
+                                }}
+                              >
+                                G
+                              </Box>
+                            }
+                          />
+                        );
+                      })()}
+                      {/* LinkedIn */}
+                      {(() => {
+                        const linkedinAccount =
+                          linkedAccountsData.linkedAccounts.find(
+                            (a) =>
+                              a.provider === "linkedin" ||
+                              a.provider === "linkedin-openid",
+                          );
+                        const isLinked = linkedinAccount?.isLinked ?? false;
+                        return (
+                          <Chip
+                            label={`LinkedIn · ${isLinked ? t("auth.connected") : t("auth.not_connected")}`}
+                            color={isLinked ? "success" : "default"}
+                            size="small"
+                            variant={isLinked ? "filled" : "outlined"}
+                            icon={
+                              <LinkedInIcon
+                                sx={{
+                                  fontSize: "1rem !important",
+                                  color: isLinked
+                                    ? "success.dark"
+                                    : "text.disabled",
+                                }}
+                              />
+                            }
+                          />
+                        );
+                      })()}
+                    </Box>
+                  </Box>
+                </>
+              )}
 
               {/* Subscription Section - COMPANY_OWNER only */}
               {isOwner && (

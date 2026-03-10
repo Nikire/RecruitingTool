@@ -150,3 +150,10 @@ export class LinkedAccountsResponseDto {
   })
   hasLocalPassword: boolean;
 }
+
+export class AddEmailDto {
+  @ApiProperty({ description: 'Email address to add', example: 'user@example.com' })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+}

@@ -121,6 +121,15 @@ export function resendVerification(): Promise<{ message: string }> {
 }
 
 /**
+ * Add an email address to a social-only account (user has no email set)
+ */
+export function addEmail(data: {
+  email: string;
+}): Promise<{ message: string }> {
+  return api.post("/auth/add-email", data).then((res) => res.data);
+}
+
+/**
  * Exchange an Auth0 access token for a local JWT.
  * Called after Auth0 redirects back to the app and isAuthenticated becomes true.
  */

@@ -1174,7 +1174,17 @@
       "signup_with_linkedin": "Registrarse con LinkedIn",
       "completing_login": "Completando inicio de sesión, por favor espere...",
       "callback_error": "El inicio de sesión con cuenta social falló. Por favor intente nuevamente."
-    }
+    },
+    "add_email_banner": "Tu cuenta no tiene dirección de correo. Agrega una para desbloquear todas las funciones.",
+    "add_email_action": "Agregar Email",
+    "add_email_dialog_title": "Agregar Dirección de Email",
+    "add_email_dialog_description": "Agrega un email para habilitar notificaciones, recuperación de contraseña y funciones de suscripción.",
+    "add_email_success": "¡Email agregado! Revisa tu bandeja de entrada para verificarlo.",
+    "add_email_error": "Error al agregar email. Por favor intente nuevamente.",
+    "add_email_label": "Dirección de Email",
+    "connected_accounts": "Cuentas Conectadas",
+    "connected": "Conectado",
+    "not_connected": "No conectado"
   },
   "forgot_password": {
     "title": "Olvidé mi Contraseña",

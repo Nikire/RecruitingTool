@@ -32,6 +32,7 @@ import { FeedbackButton } from "../feedback";
 import { SubscriptionWarningBanner } from "../subscription";
 import { useSubscription } from "../../api/subscription";
 import { EmailVerificationBanner } from "../common";
+import AddEmailBanner from "../navbar/AddEmailBanner";
 import { themeModeAtom } from "../../store/preferences.atoms";
 
 const drawerWidth = 240;
@@ -343,6 +344,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         aria-label={t("aria.main_content")}
       >
         <Toolbar /> {/* Spacer for fixed AppBar */}
+        <AddEmailBanner />
         <EmailVerificationBanner />
         {subscription && (
           <SubscriptionWarningBanner subscription={subscription} />

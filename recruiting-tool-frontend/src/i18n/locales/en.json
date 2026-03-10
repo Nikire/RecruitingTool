@@ -1166,7 +1166,17 @@
       "signup_with_linkedin": "Sign up with LinkedIn",
       "completing_login": "Completing sign-in, please wait...",
       "callback_error": "Sign-in with social account failed. Please try again."
-    }
+    },
+    "add_email_banner": "Your account has no email address. Add one to unlock all features.",
+    "add_email_action": "Add Email",
+    "add_email_dialog_title": "Add Email Address",
+    "add_email_dialog_description": "Add an email to enable notifications, password recovery, and subscription features.",
+    "add_email_success": "Email added! Check your inbox to verify it.",
+    "add_email_error": "Failed to add email. Please try again.",
+    "add_email_label": "Email Address",
+    "connected_accounts": "Connected Accounts",
+    "connected": "Connected",
+    "not_connected": "Not connected"
   },
   "forgot_password": {
     "title": "Forgot Password",

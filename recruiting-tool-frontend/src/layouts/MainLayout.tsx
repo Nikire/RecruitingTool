@@ -2,6 +2,7 @@ import { Container, Toolbar } from "@mui/material";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import Navbar from "../components/navbar/Navbar";
+import AddEmailBanner from "../components/navbar/AddEmailBanner";
 import { useAuthMe } from "../hooks/api/useAuth";
 import { useNotificationSSE } from "../hooks/useNotificationSSE";
 
@@ -50,6 +51,7 @@ const MainLayout = () => {
     <>
       <Navbar />
       <Toolbar /> {/* Offset spacer for fixed AppBar */}
+      <AddEmailBanner />
       <Container sx={{ py: 2 }} maxWidth={maxWidth}>
         <Outlet />
       </Container>

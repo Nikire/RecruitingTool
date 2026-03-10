@@ -703,4 +703,44 @@ export class AuthService {
       hasLocalPassword: !!currentUser.password,
     };
   }
+
+  /**
+   * Add an email address to a social-only account (user has no email yet)
+   */
+  async addEmail(userId: number, email: string): Promise<{ message: string }> {
+    // Check if email is already in use by another account
+    const existing = await this.databaseService.user.findFirst({
+      where: { email },
+    });
+    if (existing) {
+      throw new BadRequestException('Email is already in use');
+    }
+
+    // Update the user's email
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: { email },
+    });
+
+    // Send verification email (non-blocking)
+    const verificationToken = crypto.randomBytes(32).toString('hex');
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const verificationLink = `${frontendUrl}/verify-email?token=${verificationToken}`;
+
+    await this.databaseService.user.update({
+      where: { id: userId },
+      data: {
+        emailVerificationToken: verificationToken,
+        emailVerificationSentAt: new Date(),
+      },
+    });
+
+    try {
+      await this.emailService.sendVerificationEmail(email, verificationLink);
+    } catch {
+      // non-blocking — do not fail if email sending fails
+    }
+
+    return { message: 'Email added successfully. Please check your inbox to verify it.' };
+  }
 }

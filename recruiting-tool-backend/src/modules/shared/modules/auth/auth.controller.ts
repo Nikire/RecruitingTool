@@ -1,6 +1,6 @@
 import { Body, Controller, Delete, Get, Headers, Post, Query, Request, UseGuards, UnauthorizedException } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { ForgotPasswordDto, LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, ResetPasswordDto, TokenPairDto } from './dto/auth.dto';
+import { AddEmailDto, ForgotPasswordDto, LinkedAccountsResponseDto, LoginDto, RegisteredUserDto, RefreshTokenDto, ResetPasswordDto, TokenPairDto } from './dto/auth.dto';
 import { CreateUserDto, UserResponseDto } from 'src/modules/users/dto/users.dto';
 import { UserMapper } from 'src/modules/users/entities/users.entities';
 import {
@@ -330,5 +330,26 @@ export class AuthController {
     const token = authHeader?.replace('Bearer ', '');
     const user = await this.authService.verifyToken(token);
     return this.authService.getLinkedAccounts(user.id);
+  }
+
+  @Post('add-email')
+  @SkipThrottle()
+  @ApiOperation({ summary: 'Add email address to a social-only account' })
+  @ApiBody({ type: AddEmailDto })
+  @ApiResponse({
+    status: 201,
+    description: 'Email added successfully',
+    schema: { example: { message: 'Email added successfully. Please check your inbox to verify it.' } },
+  })
+  @ApiBadRequestResponse({
+    description: 'Email is already in use',
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Invalid or missing token',
+  })
+  async addEmail(@Headers('authorization') authHeader: string, @Body() dto: AddEmailDto): Promise<{ message: string }> {
+    const token = authHeader?.replace('Bearer ', '');
+    const user = await this.authService.verifyToken(token);
+    return this.authService.addEmail(user.id, dto.email);
   }
 }

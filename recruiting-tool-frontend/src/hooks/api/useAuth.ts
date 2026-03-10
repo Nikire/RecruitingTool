@@ -9,8 +9,10 @@ import {
   resetPassword,
   verifyEmail,
   resendVerification,
+  addEmail,
+  getLinkedAccounts,
 } from "../../api/auth";
-import { User } from "../../types/user.types";
+import { LinkedAccountsResponse, User } from "../../types/user.types";
 import { useUserAtom } from "./state/useUserAtom";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
@@ -208,5 +210,28 @@ export function useUpdateProfile() {
     onError: (error) => {
       showErrorToast(error, "Failed to update profile. Please try again.");
     },
+  });
+}
+
+export function useAddEmail() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: addEmail,
+    onSuccess: () => {
+      // Refresh user data so email field updates
+      queryClient.invalidateQueries({ queryKey: [AUTH_KEY, "me"] });
+    },
+  });
+}
+
+export function useLinkedAccounts() {
+  const token = localStorage.getItem("authToken");
+
+  return useQuery<LinkedAccountsResponse>({
+    queryKey: [AUTH_KEY, "linked-accounts"],
+    queryFn: getLinkedAccounts,
+    enabled: !!token,
+    staleTime: 5 * 60 * 1000,
   });
 }
