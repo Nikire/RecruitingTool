@@ -316,7 +316,7 @@ export class DummyService implements OnApplicationBootstrap {
     const data: DummyDataStructure = JSON.parse(jsonContent);
 
     // Arrays to store created or existing entities
-    let createdCompanies = [];
+    const createdCompanies = [];
     const createdUsers = [];
     let createdJobPositions = [];
     const createdCandidates = [];
