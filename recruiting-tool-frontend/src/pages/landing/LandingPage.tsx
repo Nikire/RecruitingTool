@@ -651,6 +651,7 @@ const LandingPage = () => {
                       background: feature.gradient,
                       display: "flex",
                       alignSelf: "center",
+                      alignItems: "center",
                       justifyContent: "center",
                       mb: 3.5,
                       color: "white",

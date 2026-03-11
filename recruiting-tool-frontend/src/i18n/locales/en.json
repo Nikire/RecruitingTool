@@ -1110,7 +1110,10 @@
     "change_email": "Change Email",
     "change_password": "Change Password",
     "change_email_no_email_tooltip": "Add an email first to change it",
-    "change_password_social_tooltip": "Social login accounts cannot change password this way"
+    "change_password_social_tooltip": "Social login accounts cannot change password this way",
+    "security": "Security",
+    "security_desc": "Manage your email address and password",
+    "linkedin_no_email_notice": "Signed in with LinkedIn · LinkedIn does not share your real email. Add one to unlock all features."
   },
   "applications_page": {
     "all_applications": "All Applications",

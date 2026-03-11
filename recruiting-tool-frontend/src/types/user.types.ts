@@ -24,6 +24,7 @@ export interface User {
   resumeFileName?: string;
   onboardingCompleted?: boolean;
   emailVerified?: boolean;
+  provider?: string;
 }
 
 export enum UserRoles {

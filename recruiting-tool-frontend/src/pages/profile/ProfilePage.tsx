@@ -372,6 +372,29 @@ const ProfilePage: React.FC = () => {
                 </Box>
               </Box>
 
+              {/* LinkedIn notice — no real email from LinkedIn */}
+              {user.provider === "linkedin" && (
+                <>
+                  <Divider sx={{ width: "100%", my: 2 }} />
+                  <Chip
+                    icon={<InfoIcon sx={{ fontSize: 16 }} />}
+                    label={t("profile_page.linkedin_no_email_notice")}
+                    color="info"
+                    size="small"
+                    variant="outlined"
+                    sx={{
+                      fontSize: "0.7rem",
+                      height: "auto",
+                      py: 0.5,
+                      "& .MuiChip-label": {
+                        whiteSpace: "normal",
+                        textAlign: "center",
+                      },
+                    }}
+                  />
+                </>
+              )}
+
               {/* Connected Accounts Section */}
               {linkedAccountsData && (
                 <>
@@ -600,50 +623,6 @@ const ProfilePage: React.FC = () => {
                     />
                   </Grid>
 
-                  <Grid size={{ xs: 12, sm: 6 }}>
-                    <Box
-                      sx={{ display: "flex", flexDirection: "column", gap: 1 }}
-                    >
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<EmailIcon />}
-                        onClick={() => setChangeEmailOpen(true)}
-                        disabled={!user.email}
-                        title={
-                          !user.email
-                            ? t("profile_page.change_email_no_email_tooltip")
-                            : undefined
-                        }
-                        fullWidth
-                      >
-                        {t("profile_page.change_email")}
-                      </Button>
-                      <Button
-                        variant="outlined"
-                        size="small"
-                        startIcon={<LockIcon />}
-                        onClick={() => setChangePasswordOpen(true)}
-                        disabled={
-                          !user.email ||
-                          (linkedAccountsData !== undefined &&
-                            !linkedAccountsData.hasLocalPassword)
-                        }
-                        title={
-                          !user.email
-                            ? t("profile_page.change_email_no_email_tooltip")
-                            : linkedAccountsData !== undefined &&
-                                !linkedAccountsData.hasLocalPassword
-                              ? t("profile_page.change_password_social_tooltip")
-                              : undefined
-                        }
-                        fullWidth
-                      >
-                        {t("profile_page.change_password")}
-                      </Button>
-                    </Box>
-                  </Grid>
-
                   <Grid size={{ xs: 12 }}>
                     <TextField
                       fullWidth
@@ -794,6 +773,84 @@ const ProfilePage: React.FC = () => {
                     />
                   </Grid>
                 </Grid>
+              </Box>
+
+              {/* Security Section */}
+              <Box
+                sx={{
+                  mb: 4,
+                  p: 3,
+                  borderRadius: 2,
+                  backgroundColor: (theme) =>
+                    alpha(theme.palette.error.main, 0.04),
+                  border: (theme) =>
+                    `1px solid ${alpha(theme.palette.error.main, 0.15)}`,
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", mb: 2.5 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      width: 40,
+                      height: 40,
+                      borderRadius: "50%",
+                      backgroundColor: "error.main",
+                      color: "white",
+                      mr: 2,
+                    }}
+                  >
+                    <LockIcon />
+                  </Box>
+                  <Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
+                      {t("profile_page.security")}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("profile_page.security_desc")}
+                    </Typography>
+                  </Box>
+                </Box>
+                <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="medium"
+                    startIcon={<EmailIcon />}
+                    onClick={() => setChangeEmailOpen(true)}
+                    disabled={!user.email}
+                    title={
+                      !user.email
+                        ? t("profile_page.change_email_no_email_tooltip")
+                        : undefined
+                    }
+                  >
+                    {t("profile_page.change_email")}
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="medium"
+                    startIcon={<LockIcon />}
+                    onClick={() => setChangePasswordOpen(true)}
+                    disabled={
+                      !user.email ||
+                      (linkedAccountsData !== undefined &&
+                        !linkedAccountsData.hasLocalPassword)
+                    }
+                    title={
+                      !user.email
+                        ? t("profile_page.change_email_no_email_tooltip")
+                        : linkedAccountsData !== undefined &&
+                            !linkedAccountsData.hasLocalPassword
+                          ? t("profile_page.change_password_social_tooltip")
+                          : undefined
+                    }
+                  >
+                    {t("profile_page.change_password")}
+                  </Button>
+                </Box>
               </Box>
 
               {/* Bio Section */}

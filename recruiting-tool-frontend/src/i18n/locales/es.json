@@ -1118,7 +1118,10 @@
     "change_email": "Cambiar Email",
     "change_password": "Cambiar Contraseña",
     "change_email_no_email_tooltip": "Agrega un email primero para cambiarlo",
-    "change_password_social_tooltip": "Las cuentas de inicio de sesión social no pueden cambiar la contraseña de esta forma"
+    "change_password_social_tooltip": "Las cuentas de inicio de sesión social no pueden cambiar la contraseña de esta forma",
+    "security": "Seguridad",
+    "security_desc": "Administra tu dirección de correo y contraseña",
+    "linkedin_no_email_notice": "Sesión iniciada con LinkedIn · LinkedIn no comparte tu email real. Agrega uno para desbloquear todas las funciones."
   },
   "applications_page": {
     "all_applications": "Todas las Aplicaciones",
