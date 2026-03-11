@@ -20,7 +20,9 @@ const Logout: React.FC = () => {
 
     // Also logout from Auth0 if the user authenticated via social login
     if (isAuth0Configured && isAuth0Authenticated) {
-      auth0Logout({ logoutParams: { returnTo: window.location.origin } });
+      auth0Logout({
+        logoutParams: { returnTo: `${window.location.origin}/login` },
+      });
       return; // Auth0 logout will redirect the page
     }
 
