@@ -28,9 +28,7 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import GroupWorkIcon from "@mui/icons-material/GroupWork";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StarIcon from "@mui/icons-material/Star";
-import TwitterIcon from "@mui/icons-material/Twitter";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
-import GitHubIcon from "@mui/icons-material/GitHub";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import EmailIcon from "@mui/icons-material/Email";
 import CloudIcon from "@mui/icons-material/Cloud";
@@ -1364,22 +1362,6 @@ const LandingPage = () => {
                 <IconButton
                   size="small"
                   component="a"
-                  href={SOCIAL_LINKS.twitter}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Twitter"
-                  sx={{
-                    color: "white",
-                    "&:hover": {
-                      bgcolor: alpha(theme.palette.common.white, 0.1),
-                    },
-                  }}
-                >
-                  <TwitterIcon />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  component="a"
                   href={SOCIAL_LINKS.linkedin}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -1392,22 +1374,6 @@ const LandingPage = () => {
                   }}
                 >
                   <LinkedInIcon />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  component="a"
-                  href={SOCIAL_LINKS.github}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="GitHub"
-                  sx={{
-                    color: "white",
-                    "&:hover": {
-                      bgcolor: alpha(theme.palette.common.white, 0.1),
-                    },
-                  }}
-                >
-                  <GitHubIcon />
                 </IconButton>
               </Stack>
             </Grid>
