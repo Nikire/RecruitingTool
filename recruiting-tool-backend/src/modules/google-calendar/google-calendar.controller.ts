@@ -64,9 +64,9 @@ export class GoogleCalendarController {
     await this.googleCalendarService.handleOAuthCallback(code, userId);
 
     // Redirect to frontend success page
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
     return {
-      url: `${frontendUrl}/settings/integrations?calendar=connected`,
+      url: `${frontendUrl}/settings/calendar?calendar=connected`,
       statusCode: 302,
     };
   }
