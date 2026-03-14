@@ -1,4 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, Redirect, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, Res, BadRequestException } from '@nestjs/common';
+import { Response } from 'express';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { GoogleCalendarService } from './google-calendar.service';
 import {
@@ -46,12 +47,8 @@ export class GoogleCalendarController {
   @ApiOperation({ summary: 'OAuth callback endpoint (handled by Google)' })
   @ApiQuery({ name: 'code', description: 'Authorization code from Google' })
   @ApiQuery({ name: 'state', description: 'User ID passed in state parameter' })
-  @ApiResponse({
-    status: 302,
-    description: 'Redirects to frontend after successful authorization',
-  })
-  @Redirect()
-  async handleCallback(@Query('code') code: string, @Query('state') state: string) {
+  @ApiResponse({ status: 302, description: 'Redirects to frontend after successful authorization' })
+  async handleCallback(@Query('code') code: string, @Query('state') state: string, @Res() res: Response) {
     if (!code || !state) {
       throw new BadRequestException('Missing authorization code or state');
     }
@@ -63,12 +60,8 @@ export class GoogleCalendarController {
 
     await this.googleCalendarService.handleOAuthCallback(code, userId);
 
-    // Redirect to popup close page — parent window polls for popup.closed
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
-    return {
-      url: `${frontendUrl}/oauth/success`,
-      statusCode: 302,
-    };
+    return res.redirect(`${frontendUrl}/oauth/success`);
   }
 
   @Get('status')
