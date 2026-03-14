@@ -380,8 +380,7 @@ export class DummyService implements OnApplicationBootstrap {
       for (const user of data.users) {
         const existingUser = await this.databaseService.user.findFirst({
           where: {
-            email: user.email,
-            companyId: createdCompanies[user.companyIndex].id,
+            email: { equals: user.email, mode: 'insensitive' },
           },
         });
         if (existingUser) {
