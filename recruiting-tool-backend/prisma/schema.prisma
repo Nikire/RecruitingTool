@@ -873,17 +873,20 @@ model AuditLog {
 }
 
 model CalendarConnection {
-  id           Int              @id @default(autoincrement())
-  uid          String           @unique @default(uuid()) @db.Uuid
-  userId       Int
-  provider     CalendarProvider
-  accessToken  String?
-  refreshToken String
-  tokenExpiry  DateTime?
-  email        String
-  createdAt    DateTime         @default(now())
-  updatedAt    DateTime         @updatedAt
-  user         User             @relation("UserCalendarConnections", fields: [userId], references: [id], onDelete: Cascade)
+  id              Int              @id @default(autoincrement())
+  uid             String           @unique @default(uuid()) @db.Uuid
+  userId          Int
+  provider        CalendarProvider
+  accessToken     String?
+  refreshToken    String
+  tokenExpiry     DateTime?
+  email           String
+  bufferTime      Int              @default(15)
+  defaultDuration Int              @default(60)
+  workingHours    Json?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  user            User             @relation("UserCalendarConnections", fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, provider])
   @@index([userId])

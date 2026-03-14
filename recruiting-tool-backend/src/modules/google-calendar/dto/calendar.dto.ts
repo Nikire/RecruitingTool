@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsDateString, IsArray, IsEmail, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsDateString, IsArray, IsEmail, ValidateNested, IsInt, Min, Max, IsBoolean, IsObject } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class CalendarAttendeeDto {
@@ -186,4 +186,93 @@ export class AvailabilityResponseDto {
     type: [AvailabilitySlotDto],
   })
   availableSlots: AvailabilitySlotDto[];
+}
+
+export class WorkingHoursDayDto {
+  @ApiProperty({ description: 'Whether this day is a working day' })
+  @IsBoolean()
+  enabled: boolean;
+
+  @ApiProperty({ description: 'Start time in HH:MM format', example: '09:00' })
+  @IsString()
+  startTime: string;
+
+  @ApiProperty({ description: 'End time in HH:MM format', example: '17:00' })
+  @IsString()
+  endTime: string;
+}
+
+export class WorkingHoursDto {
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  monday: WorkingHoursDayDto;
+
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  tuesday: WorkingHoursDayDto;
+
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  wednesday: WorkingHoursDayDto;
+
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  thursday: WorkingHoursDayDto;
+
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  friday: WorkingHoursDayDto;
+
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  saturday: WorkingHoursDayDto;
+
+  @ApiProperty({ type: WorkingHoursDayDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDayDto)
+  sunday: WorkingHoursDayDto;
+}
+
+export class SaveCalendarSettingsDto {
+  @ApiProperty({ description: 'Buffer time between meetings in minutes', minimum: 0, maximum: 60 })
+  @IsInt()
+  @Min(0)
+  @Max(60)
+  bufferTime: number;
+
+  @ApiProperty({ description: 'Default meeting duration in minutes', minimum: 15, maximum: 120 })
+  @IsInt()
+  @Min(15)
+  @Max(120)
+  defaultDuration: number;
+
+  @ApiProperty({ description: 'Working hours per day of week', type: WorkingHoursDto })
+  @IsObject()
+  @ValidateNested()
+  @Type(() => WorkingHoursDto)
+  workingHours: WorkingHoursDto;
+}
+
+export class CalendarSettingsResponseDto {
+  @ApiProperty({ description: 'Buffer time between meetings in minutes' })
+  bufferTime: number;
+
+  @ApiProperty({ description: 'Default meeting duration in minutes' })
+  defaultDuration: number;
+
+  @ApiProperty({ description: 'Working hours per day of week', type: WorkingHoursDto })
+  workingHours: WorkingHoursDto;
 }

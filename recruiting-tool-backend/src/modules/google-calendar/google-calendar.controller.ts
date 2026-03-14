@@ -1,7 +1,15 @@
 import { Controller, Get, Post, Put, Delete, Body, Param, Query, Redirect, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { GoogleCalendarService } from './google-calendar.service';
-import { CreateCalendarEventDto, UpdateCalendarEventDto, GetAvailabilityDto, CalendarEventResponseDto, AvailabilityResponseDto } from './dto/calendar.dto';
+import {
+  CreateCalendarEventDto,
+  UpdateCalendarEventDto,
+  GetAvailabilityDto,
+  CalendarEventResponseDto,
+  AvailabilityResponseDto,
+  SaveCalendarSettingsDto,
+  CalendarSettingsResponseDto,
+} from './dto/calendar.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType, User } from '@prisma/client';
@@ -94,6 +102,34 @@ export class GoogleCalendarController {
     return {
       message: 'Google Calendar disconnected successfully',
     };
+  }
+
+  @Get('settings')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Get calendar settings for the current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Calendar settings retrieved successfully',
+    type: CalendarSettingsResponseDto,
+  })
+  async getSettings(@CurrentUser() user: User): Promise<CalendarSettingsResponseDto> {
+    return this.googleCalendarService.getCalendarSettings(user.id);
+  }
+
+  @Put('settings')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Save calendar settings for the current user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Calendar settings saved successfully',
+    type: CalendarSettingsResponseDto,
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'No Google Calendar connection found',
+  })
+  async saveSettings(@CurrentUser() user: User, @Body() dto: SaveCalendarSettingsDto): Promise<CalendarSettingsResponseDto> {
+    return this.googleCalendarService.saveCalendarSettings(user.id, dto);
   }
 
   @Post('events')

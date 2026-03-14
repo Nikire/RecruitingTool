@@ -5,6 +5,34 @@ export interface CalendarConnectionStatus {
   connected: boolean;
 }
 
+export interface WorkingHoursDay {
+  enabled: boolean;
+  startTime: string;
+  endTime: string;
+}
+
+export interface WorkingHours {
+  monday: WorkingHoursDay;
+  tuesday: WorkingHoursDay;
+  wednesday: WorkingHoursDay;
+  thursday: WorkingHoursDay;
+  friday: WorkingHoursDay;
+  saturday: WorkingHoursDay;
+  sunday: WorkingHoursDay;
+}
+
+export interface CalendarSettingsResponse {
+  bufferTime: number;
+  defaultDuration: number;
+  workingHours: WorkingHours;
+}
+
+export interface SaveCalendarSettingsDto {
+  bufferTime: number;
+  defaultDuration: number;
+  workingHours: WorkingHours;
+}
+
 export interface AuthUrlResponse {
   authUrl: string;
   message: string;
@@ -171,5 +199,40 @@ export const useGetAvailability = (params: {
       return response.data;
     },
     enabled: !!params.startDate && !!params.endDate,
+  });
+};
+
+/**
+ * Hook to get calendar settings (working hours, buffer time, default duration)
+ */
+export const useGetCalendarSettings = () => {
+  return useQuery<CalendarSettingsResponse>({
+    queryKey: ["google-calendar", "settings"],
+    queryFn: async () => {
+      const response = await api.get<CalendarSettingsResponse>(
+        "/google-calendar/settings",
+      );
+      return response.data;
+    },
+  });
+};
+
+/**
+ * Hook to save calendar settings
+ */
+export const useSaveCalendarSettings = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<CalendarSettingsResponse, Error, SaveCalendarSettingsDto>({
+    mutationFn: async (dto: SaveCalendarSettingsDto) => {
+      const response = await api.put<CalendarSettingsResponse>(
+        "/google-calendar/settings",
+        dto,
+      );
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.setQueryData(["google-calendar", "settings"], data);
+    },
   });
 };

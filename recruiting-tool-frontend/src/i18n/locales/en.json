@@ -2803,9 +2803,12 @@
     "default_duration": "Default Meeting Duration",
     "default_duration_helper": "Standard length for new interview meetings",
     "settings_saved": "Calendar settings saved successfully!",
+    "settings_save_error": "Failed to save calendar settings. Please try again.",
+    "settings_no_connection": "Connect your Google Calendar first to save settings.",
     "subtitle": "Configure your calendar integration and availability settings",
     "status": "Status",
-    "active": "Active"
+    "active": "Active",
+    "loading_settings": "Loading settings..."
   },
   "notifications": {
     "title": "Notifications",

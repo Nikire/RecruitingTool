@@ -1,9 +1,20 @@
-import { Injectable, Logger, BadRequestException, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, Logger, BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { google, calendar_v3 } from 'googleapis';
 import { OAuth2Client } from 'google-auth-library';
-import { CreateCalendarEventDto, UpdateCalendarEventDto, GetAvailabilityDto, CalendarEventResponseDto, AvailabilityResponseDto, AvailabilitySlotDto } from './dto/calendar.dto';
+import { CalendarProvider } from '@prisma/client';
+import {
+  CreateCalendarEventDto,
+  UpdateCalendarEventDto,
+  GetAvailabilityDto,
+  CalendarEventResponseDto,
+  AvailabilityResponseDto,
+  AvailabilitySlotDto,
+  SaveCalendarSettingsDto,
+  CalendarSettingsResponseDto,
+  WorkingHoursDto,
+} from './dto/calendar.dto';
 
 @Injectable()
 export class GoogleCalendarService {
@@ -358,5 +369,78 @@ export class GoogleCalendarService {
     });
 
     this.logger.log(`Disconnected Google Calendar for user ${userId}`);
+  }
+
+  /**
+   * Default working hours structure
+   */
+  private getDefaultWorkingHours(): WorkingHoursDto {
+    const defaultDay = { enabled: true, startTime: '09:00', endTime: '17:00' };
+    const weekendDay = { enabled: false, startTime: '09:00', endTime: '17:00' };
+    return {
+      monday: defaultDay,
+      tuesday: defaultDay,
+      wednesday: defaultDay,
+      thursday: defaultDay,
+      friday: defaultDay,
+      saturday: weekendDay,
+      sunday: weekendDay,
+    };
+  }
+
+  /**
+   * Get calendar settings for a user (from CalendarConnection if exists, or defaults)
+   */
+  async getCalendarSettings(userId: number): Promise<CalendarSettingsResponseDto> {
+    const connection = await this.databaseService.calendarConnection.findFirst({
+      where: { userId, provider: CalendarProvider.GOOGLE },
+      select: { bufferTime: true, defaultDuration: true, workingHours: true },
+    });
+
+    if (!connection) {
+      // Return defaults when no connection exists yet
+      return {
+        bufferTime: 15,
+        defaultDuration: 60,
+        workingHours: this.getDefaultWorkingHours(),
+      };
+    }
+
+    return {
+      bufferTime: connection.bufferTime,
+      defaultDuration: connection.defaultDuration,
+      workingHours: (connection.workingHours as unknown as WorkingHoursDto | null) ?? this.getDefaultWorkingHours(),
+    };
+  }
+
+  /**
+   * Save calendar settings for a user (requires an active CalendarConnection)
+   */
+  async saveCalendarSettings(userId: number, dto: SaveCalendarSettingsDto): Promise<CalendarSettingsResponseDto> {
+    const connection = await this.databaseService.calendarConnection.findFirst({
+      where: { userId, provider: CalendarProvider.GOOGLE },
+    });
+
+    if (!connection) {
+      throw new NotFoundException('No Google Calendar connection found. Please connect your calendar first.');
+    }
+
+    const updated = await this.databaseService.calendarConnection.update({
+      where: { id: connection.id },
+      data: {
+        bufferTime: dto.bufferTime,
+        defaultDuration: dto.defaultDuration,
+        workingHours: dto.workingHours as object,
+      },
+      select: { bufferTime: true, defaultDuration: true, workingHours: true },
+    });
+
+    this.logger.log(`Saved calendar settings for user ${userId}`);
+
+    return {
+      bufferTime: updated.bufferTime,
+      defaultDuration: updated.defaultDuration,
+      workingHours: (updated.workingHours as unknown as WorkingHoursDto | null) ?? this.getDefaultWorkingHours(),
+    };
   }
 }

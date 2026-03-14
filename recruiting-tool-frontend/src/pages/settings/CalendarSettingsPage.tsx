@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -32,6 +32,8 @@ import {
   useCalendarConnectionStatus,
   useGetAuthUrl,
   useDisconnectCalendar,
+  useGetCalendarSettings,
+  useSaveCalendarSettings,
 } from "../../hooks/api/useGoogleCalendar";
 
 /**
@@ -98,8 +100,23 @@ const CalendarSettingsPage = () => {
   const { mutate: getAuthUrl, isPending: isGettingAuthUrl } = useGetAuthUrl();
   const { mutate: disconnectCalendar, isPending: isDisconnecting } =
     useDisconnectCalendar();
+  const { data: savedSettings, isLoading: isLoadingSettings } =
+    useGetCalendarSettings();
+  const { mutate: saveSettings, isPending: isSaving } =
+    useSaveCalendarSettings();
 
   const isConnected = connectionStatus?.connected ?? false;
+
+  // Populate form with saved settings when they load
+  useEffect(() => {
+    if (savedSettings) {
+      setSettings({
+        workingHours: savedSettings.workingHours,
+        bufferTime: savedSettings.bufferTime,
+        defaultDuration: savedSettings.defaultDuration,
+      });
+    }
+  }, [savedSettings]);
 
   const handleConnect = () => {
     getAuthUrl(undefined, {
@@ -161,9 +178,25 @@ const CalendarSettingsPage = () => {
   };
 
   const handleSaveSettings = () => {
-    // TODO: Call backend API to save settings
-    // For now, just show success message
-    toast.success(t("calendar_settings.settings_saved"));
+    if (!isConnected) {
+      toast.error(t("calendar_settings.settings_no_connection"));
+      return;
+    }
+    saveSettings(
+      {
+        bufferTime: settings.bufferTime,
+        defaultDuration: settings.defaultDuration,
+        workingHours: settings.workingHours,
+      },
+      {
+        onSuccess: () => {
+          toast.success(t("calendar_settings.settings_saved"));
+        },
+        onError: () => {
+          toast.error(t("calendar_settings.settings_save_error"));
+        },
+      },
+    );
   };
 
   const daysOfWeek: Array<keyof CalendarSettings["workingHours"]> = [
@@ -494,13 +527,20 @@ const CalendarSettingsPage = () => {
                 onClick={handleSaveSettings}
                 fullWidth
                 size="large"
-                startIcon={<SaveIcon />}
+                startIcon={
+                  isSaving ? (
+                    <CircularProgress size={18} color="inherit" />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
+                disabled={isSaving || isLoadingSettings}
                 sx={{
                   py: 1.5,
                   fontWeight: 600,
                 }}
               >
-                {t("common.save")}
+                {isSaving ? t("common.saving") : t("common.save")}
               </Button>
             </Stack>
           </SettingsCard>

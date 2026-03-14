@@ -2827,9 +2827,12 @@
     "default_duration": "Duración Predeterminada de Reunión",
     "default_duration_helper": "Duración estándar para nuevas reuniones de entrevista",
     "settings_saved": "¡Configuración del calendario guardada exitosamente!",
+    "settings_save_error": "Error al guardar la configuración del calendario. Por favor intenta de nuevo.",
+    "settings_no_connection": "Conecta tu Google Calendar primero para guardar la configuración.",
     "subtitle": "Configura tu integración de calendario y ajustes de disponibilidad",
     "status": "Estado",
-    "active": "Activo"
+    "active": "Activo",
+    "loading_settings": "Cargando configuración..."
   },
   "notifications": {
     "title": "Notificaciones",
