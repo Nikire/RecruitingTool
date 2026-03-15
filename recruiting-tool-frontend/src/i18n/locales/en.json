@@ -917,7 +917,10 @@
     "notes_placeholder": "Additional information about the interview...",
     "schedule": "Schedule",
     "date_future_error": "Date must be in the future",
-    "duration_min_error": "Duration must be at least {{min}} minute"
+    "duration_min_error": "Duration must be at least {{min}} minute",
+    "create_google_meet_event": "Create Google Meet event automatically",
+    "connect_google_calendar_hint": "Connect Google Calendar in Calendar Settings to auto-generate Meet links",
+    "google_event_summary": "Interview"
   },
   "update_hiring_process": {
     "title": "Update Hiring Process",
@@ -1382,7 +1385,8 @@
     "analytics": "Analytics",
     "team": "Team",
     "billing": "Billing",
-    "company_profile": "Company Profile"
+    "company_profile": "Company Profile",
+    "calendar": "Calendar"
   },
   "company_profile": {
     "title": "Company Profile",

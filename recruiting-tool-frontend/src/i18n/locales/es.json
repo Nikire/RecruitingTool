@@ -925,7 +925,10 @@
     "notes_placeholder": "Información adicional sobre la entrevista...",
     "schedule": "Programar",
     "date_future_error": "La fecha debe ser en el futuro",
-    "duration_min_error": "La duración debe ser al menos {{min}} minuto"
+    "duration_min_error": "La duración debe ser al menos {{min}} minuto",
+    "create_google_meet_event": "Crear evento de Google Meet automáticamente",
+    "connect_google_calendar_hint": "Conecta Google Calendar en Configuración de Calendario para generar enlaces de Meet automáticamente",
+    "google_event_summary": "Entrevista"
   },
   "update_hiring_process": {
     "title": "Actualizar Proceso de Contratación",
@@ -1390,7 +1393,8 @@
     "analytics": "Análisis",
     "team": "Equipo",
     "billing": "Facturación",
-    "company_profile": "Perfil de Empresa"
+    "company_profile": "Perfil de Empresa",
+    "calendar": "Calendario"
   },
   "company_profile": {
     "title": "Perfil de Empresa",

@@ -8,6 +8,10 @@ import {
   Box,
   Grid,
   CircularProgress,
+  FormControlLabel,
+  Checkbox,
+  Typography,
+  Alert,
 } from "@mui/material";
 import {
   LocalizationProvider,
@@ -16,14 +20,18 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useForm, Controller } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useCreateInterview,
   useUpdateInterview,
 } from "../../hooks/api/useInterview";
 import { Interview } from "../../types/interview.types";
-import { format } from "date-fns";
+import { format, addMinutes } from "date-fns";
+import {
+  useCalendarConnectionStatus,
+  useCreateCalendarEvent,
+} from "../../hooks/api/useGoogleCalendar";
 
 interface ScheduleInterviewDialogProps {
   open: boolean;
@@ -51,10 +59,17 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   const createMutation = useCreateInterview();
   const updateMutation = useUpdateInterview();
 
+  const { data: calendarStatus } = useCalendarConnectionStatus();
+  const isCalendarConnected = calendarStatus?.connected ?? false;
+  const createCalendarEvent = useCreateCalendarEvent();
+
+  const [createGoogleMeetEvent, setCreateGoogleMeetEvent] = useState(true);
+
   const {
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
@@ -100,8 +115,53 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     }
   }, [interview, reset]);
 
+  const buildCalendarStartTime = (
+    date: Date | null,
+    time: Date | null,
+  ): Date | null => {
+    if (!date) return null;
+    const start = new Date(date);
+    if (time) {
+      start.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    } else {
+      start.setHours(0, 0, 0, 0);
+    }
+    return start;
+  };
+
   const onSubmit = async (data: FormData) => {
     try {
+      let resolvedMeetingLink = data.meetingLink;
+
+      // If calendar is connected and user wants a Google Meet event, create it first
+      if (isCalendarConnected && createGoogleMeetEvent) {
+        const startDateTime = buildCalendarStartTime(
+          data.scheduledDate,
+          data.scheduledTime,
+        );
+
+        if (startDateTime) {
+          const durationMinutes = data.duration || 60;
+          const endDateTime = addMinutes(startDateTime, durationMinutes);
+          const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+          const calendarResponse = await createCalendarEvent.mutateAsync({
+            summary: t("schedule_interview.google_event_summary"),
+            description: data.notes || undefined,
+            startTime: startDateTime.toISOString(),
+            endTime: endDateTime.toISOString(),
+            timeZone,
+            createMeetLink: true,
+            sendUpdates: false,
+          });
+
+          if (calendarResponse.meetLink) {
+            resolvedMeetingLink = calendarResponse.meetLink;
+            setValue("meetingLink", calendarResponse.meetLink);
+          }
+        }
+      }
+
       const payload = {
         stageUid,
         scheduledDate: data.scheduledDate
@@ -111,7 +171,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
           ? format(data.scheduledTime, "HH:mm")
           : undefined,
         duration: data.duration || undefined,
-        meetingLink: data.meetingLink || undefined,
+        meetingLink: resolvedMeetingLink || undefined,
         notes: data.notes || undefined,
       };
 
@@ -140,6 +200,11 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     reset();
     onClose();
   };
+
+  const isSubmitting =
+    createMutation.isPending ||
+    updateMutation.isPending ||
+    createCalendarEvent.isPending;
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -230,6 +295,36 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                 />
               </Grid>
 
+              {/* Google Calendar integration section */}
+              {isCalendarConnected ? (
+                <Grid size={{ xs: 12 }}>
+                  <FormControlLabel
+                    control={
+                      <Checkbox
+                        checked={createGoogleMeetEvent}
+                        onChange={(e) =>
+                          setCreateGoogleMeetEvent(e.target.checked)
+                        }
+                        color="primary"
+                      />
+                    }
+                    label={
+                      <Typography variant="body2">
+                        {t("schedule_interview.create_google_meet_event")}
+                      </Typography>
+                    }
+                  />
+                </Grid>
+              ) : (
+                <Grid size={{ xs: 12 }}>
+                  <Alert severity="info" variant="outlined" sx={{ py: 0.5 }}>
+                    <Typography variant="body2">
+                      {t("schedule_interview.connect_google_calendar_hint")}
+                    </Typography>
+                  </Alert>
+                </Grid>
+              )}
+
               <Grid size={{ xs: 12 }}>
                 <Controller
                   name="meetingLink"
@@ -276,9 +371,9 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         <Button
           onClick={handleSubmit(onSubmit)}
           variant="contained"
-          disabled={createMutation.isPending || updateMutation.isPending}
+          disabled={isSubmitting}
         >
-          {createMutation.isPending || updateMutation.isPending ? (
+          {isSubmitting ? (
             <CircularProgress size={20} />
           ) : isEditMode ? (
             t("common.update")

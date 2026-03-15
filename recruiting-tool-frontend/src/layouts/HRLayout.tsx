@@ -5,6 +5,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import BarChartIcon from "@mui/icons-material/BarChart";
 import EmailIcon from "@mui/icons-material/Email";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -62,6 +63,11 @@ const HRLayout: React.FC = () => {
       text: t("hr_layout.email_templates"),
       icon: <EmailIcon />,
       path: "/hr/email-templates",
+    },
+    {
+      text: t("hr_layout.calendar"),
+      icon: <CalendarMonthIcon />,
+      path: "/settings/calendar",
     },
     {
       text: t("hr_layout.team"),
