@@ -18,7 +18,7 @@ import {
   CalendarInterview,
   useCompanyCalendarInterviews,
 } from "../../hooks/api/useCalendarInterviews";
-import { useUsers } from "../../hooks/api/useUsers";
+import { useListUsers } from "../../hooks/api/useUsers";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import MemberFilterPanel from "../../components/calendar/MemberFilterPanel";
 import InterviewDetailPopover from "../../components/calendar/InterviewDetailPopover";
@@ -87,7 +87,11 @@ const CompanyCalendarPage: React.FC = () => {
   const { data: interviews = [], isLoading: interviewsLoading } =
     useCompanyCalendarInterviews(startDate, endDate, memberUidsParam);
 
-  const { data: usersData = [], isLoading: usersLoading } = useUsers();
+  const { data: usersResponse, isLoading: usersLoading } = useListUsers({
+    page: 1,
+    limit: 200,
+  });
+  const usersData = usersResponse?.data ?? [];
 
   // ─── Navigation ───────────────────────────────────────────────────────────
   const navigate = useCallback(
