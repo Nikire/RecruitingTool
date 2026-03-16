@@ -170,17 +170,17 @@
       "timezone": "America/New_York"
     },
     {
-      "name": "Borderless Admin",
-      "email": "admin@borderlessats.com",
-      "password": "Borderless2026!",
+      "name": "Test Super Admin",
+      "email": "test.superadmin@security-audit.com",
+      "password": "TestPassword123!",
       "roles": [
         "SUPER_ADMIN"
       ],
       "companyIndex": 0,
       "phoneNumber": "+1-555-9005",
-      "position": "Platform Administrator",
-      "department": "Administration",
-      "bio": "Borderless platform administrator with full system access",
+      "position": "Test Super Admin Account",
+      "department": "Security Audit",
+      "bio": "Test account for security audit - SUPER_ADMIN role with full system access",
       "timezone": "America/New_York"
     }
   ],
@@ -327,7 +327,7 @@
     },
     {
       "userIndex": 10,
-      "bio": "Borderless platform administrator with full system access.",
+      "bio": "Test account for security audit - SUPER_ADMIN role with full system access. Used for testing highest-level permissions and security boundaries.",
       "phone": "+1-555-9005",
       "location": "New York, NY, USA",
       "timezone": "America/New_York",
