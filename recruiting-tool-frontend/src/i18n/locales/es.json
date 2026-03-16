@@ -643,7 +643,15 @@
     "page_subtitle": "Todas las entrevistas programadas en tu empresa",
     "organizer": "Organizador",
     "join_meeting": "Unirse",
-    "stage": "Etapa"
+    "stage": "Etapa",
+    "notes_add": "Agregar Notas",
+    "notes_edit": "Editar Notas",
+    "notes_placeholder": "Agrega tus notas de la entrevista aquí...",
+    "notes_save": "Guardar",
+    "notes_cancel": "Cancelar",
+    "notes_clear": "Limpiar",
+    "notes_saved": "Notas guardadas exitosamente",
+    "notes_cleared": "Notas eliminadas"
   },
   "files": {
     "upload": "Subir Archivo",

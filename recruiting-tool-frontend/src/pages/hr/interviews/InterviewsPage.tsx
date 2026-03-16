@@ -1,20 +1,27 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
+  Collapse,
+  Divider,
+  IconButton,
   Skeleton,
   Stack,
+  TextField,
+  Tooltip,
   Typography,
-  Button,
 } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import EditNoteIcon from "@mui/icons-material/EditNote";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import {
   CalendarInterview,
   useCompanyCalendarInterviews,
+  useUpdateInterviewNotes,
 } from "../../../hooks/api/useCalendarInterviews";
 import PageHeader from "../../../components/common/PageHeader";
 
@@ -96,6 +103,23 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
   highlighted,
 }) => {
   const { t } = useTranslation();
+  const [notesOpen, setNotesOpen] = useState(false);
+  const [draft, setDraft] = useState(interview.notes ?? "");
+  const { mutate: saveNotes, isPending } = useUpdateInterviewNotes();
+
+  const hasNotes = !!interview.notes;
+
+  const handleSave = () => {
+    saveNotes(
+      { uid: interview.uid, notes: draft.trim() || null },
+      { onSuccess: () => setNotesOpen(false) },
+    );
+  };
+
+  const handleCancel = () => {
+    setDraft(interview.notes ?? "");
+    setNotesOpen(false);
+  };
 
   return (
     <Card
@@ -164,7 +188,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             )}
           </Box>
 
-          {/* Right: status chip + meeting link */}
+          {/* Right: status chip + meeting link + notes toggle */}
           <Stack
             direction="row"
             spacing={1}
@@ -190,8 +214,68 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
                 {t("interviews.join_meeting")}
               </Button>
             )}
+            <Tooltip
+              title={
+                hasNotes
+                  ? t("interviews.notes_edit")
+                  : t("interviews.notes_add")
+              }
+            >
+              <IconButton
+                size="small"
+                color={hasNotes ? "primary" : "default"}
+                onClick={() => {
+                  setDraft(interview.notes ?? "");
+                  setNotesOpen((prev) => !prev);
+                }}
+                aria-label={
+                  hasNotes
+                    ? t("interviews.notes_edit")
+                    : t("interviews.notes_add")
+                }
+              >
+                <EditNoteIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Stack>
         </Stack>
+
+        {/* Notes panel */}
+        <Collapse in={notesOpen} unmountOnExit>
+          <Divider sx={{ mt: 1.5, mb: 1.5 }} />
+          <Typography variant="subtitle2" gutterBottom>
+            {t("interviews.notes")}
+          </Typography>
+          <TextField
+            multiline
+            minRows={3}
+            maxRows={8}
+            fullWidth
+            size="small"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            placeholder={t("interviews.notes_placeholder")}
+            inputProps={{ maxLength: 1000 }}
+          />
+          <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ mt: 1 }}>
+            <Button
+              size="small"
+              color="inherit"
+              onClick={handleCancel}
+              disabled={isPending}
+            >
+              {t("interviews.notes_cancel")}
+            </Button>
+            <Button
+              size="small"
+              variant="contained"
+              onClick={handleSave}
+              disabled={isPending}
+            >
+              {t("interviews.notes_save")}
+            </Button>
+          </Stack>
+        </Collapse>
       </CardContent>
     </Card>
   );

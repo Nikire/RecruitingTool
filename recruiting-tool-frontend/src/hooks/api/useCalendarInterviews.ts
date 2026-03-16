@@ -118,6 +118,37 @@ export const useRescheduleInterview = () => {
 };
 
 /**
+ * Updates the notes field of an interview via PATCH /interview/:uid.
+ */
+export const useUpdateInterviewNotes = () => {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: ({ uid, notes }: { uid: string; notes: string | null }) =>
+      axiosInstance
+        .patch<CalendarInterview>(`/interview/${uid}`, { notes })
+        .then((res) => res.data),
+    onSuccess: (_data, { notes }) => {
+      toast.success(
+        notes === null || notes === ""
+          ? t("interviews.notes_cleared")
+          : t("interviews.notes_saved"),
+      );
+      queryClient.invalidateQueries({
+        queryKey: [CALENDAR_INTERVIEWS_QUERY_KEY],
+      });
+    },
+    onError: (error: unknown) => {
+      toast.error(
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("errors.generic"),
+      );
+    },
+  });
+};
+
+/**
  * Cancels an interview via DELETE /interviews/:uid.
  * Invalidates all calendar and interview queries on success.
  */

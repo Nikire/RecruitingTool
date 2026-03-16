@@ -643,7 +643,15 @@
     "page_subtitle": "All scheduled interviews across your company",
     "organizer": "Organizer",
     "join_meeting": "Join Meeting",
-    "stage": "Stage"
+    "stage": "Stage",
+    "notes_add": "Add Notes",
+    "notes_edit": "Edit Notes",
+    "notes_placeholder": "Add your interview notes here...",
+    "notes_save": "Save",
+    "notes_cancel": "Cancel",
+    "notes_clear": "Clear",
+    "notes_saved": "Notes saved successfully",
+    "notes_cleared": "Notes cleared"
   },
   "files": {
     "upload": "Upload File",
