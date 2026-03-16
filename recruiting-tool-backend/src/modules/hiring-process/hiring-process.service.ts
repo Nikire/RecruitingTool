@@ -325,6 +325,18 @@ export class HiringProcessService {
         include: includeHiringProcess,
       });
 
+      // Cascade-archive pending/reviewed applications when hiring process is closed
+      if (updateHiringProcessDto.status && ['CLOSED', 'REJECTED', 'CANCELLED'].includes(updateHiringProcessDto.status)) {
+        await this.databaseService.application.updateMany({
+          where: {
+            jobPositionId: existingHiringProcess.jobPositionId,
+            status: { in: ['PENDING', 'REVIEWED'] as any[] },
+          },
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          data: { status: 'ARCHIVED' as any },
+        });
+      }
+
       // Send notifications if status changed
       if (statusChanged) {
         try {

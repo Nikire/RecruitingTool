@@ -187,10 +187,12 @@ export class QuotaService {
     }
 
     // Count candidates in hiring processes for this job position
+    // Exclude terminal statuses so closed/rejected/cancelled processes don't consume quota
     const candidatesCount = await this.databaseService.hiringProcess.count({
       where: {
         jobPositionId,
         companyId,
+        status: { notIn: ['CLOSED', 'REJECTED', 'CANCELLED'] },
       },
     });
 

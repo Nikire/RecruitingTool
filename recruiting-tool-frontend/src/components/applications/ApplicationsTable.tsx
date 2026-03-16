@@ -50,6 +50,7 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
     REVIEWED: "primary",
     ACCEPTED: "success",
     REJECTED: "error",
+    ARCHIVED: "default",
   };
 
   const columns: DataTableColumn<Application>[] = [

@@ -1128,6 +1128,7 @@ enum ApplicationStatus {
   REVIEWED
   REJECTED
   ACCEPTED
+  ARCHIVED
 }
 
 enum EmailTemplateType {

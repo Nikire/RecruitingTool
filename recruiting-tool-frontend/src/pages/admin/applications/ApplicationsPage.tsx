@@ -53,6 +53,7 @@ const ApplicationsPage: React.FC = () => {
     { value: ApplicationStatus.REVIEWED, label: t("status.reviewed") },
     { value: ApplicationStatus.ACCEPTED, label: t("status.accepted") },
     { value: ApplicationStatus.REJECTED, label: t("status.rejected") },
+    { value: ApplicationStatus.ARCHIVED, label: t("status.archived") },
   ];
 
   return (

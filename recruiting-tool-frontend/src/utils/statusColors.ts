@@ -19,6 +19,8 @@ export const getApplicationStatusColor = (
       return "success";
     case ApplicationStatus.REJECTED:
       return "error";
+    case ApplicationStatus.ARCHIVED:
+      return "default";
     default:
       return "default";
   }

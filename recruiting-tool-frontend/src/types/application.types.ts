@@ -3,6 +3,7 @@ export enum ApplicationStatus {
   REVIEWED = "REVIEWED",
   REJECTED = "REJECTED",
   ACCEPTED = "ACCEPTED",
+  ARCHIVED = "ARCHIVED",
 }
 
 export interface Application {
