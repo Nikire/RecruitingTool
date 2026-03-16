@@ -284,22 +284,46 @@ export class QuotaService {
   }
 
   private async getStorageUsageMB(companyId: number): Promise<number> {
-    // Only count resume/document files — exclude profile pictures and company logos (images)
-    const DOCUMENT_MIMETYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
+    // Count each distinct file once per company, even if shared across multiple candidates/jobs.
+    // A file belongs to a company if:
+    //   (a) it was uploaded by an HR user of that company, OR
+    //   (b) it is linked to a candidate who has at least one hiring process at that company.
+    // Candidate CVs are deduplicated (same hash = one record), so DISTINCT prevents double-counting
+    // when the same file appears in multiple applications within the same company.
+    const DOCUMENT_MIMETYPES = [
+      'application/pdf',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+      'text/plain',
+    ];
 
-    const result = await this.databaseService.fileUpload.aggregate({
-      where: {
-        uploadedBy: {
-          companyId,
-        },
-        mimetype: { in: DOCUMENT_MIMETYPES },
-      },
-      _sum: {
-        size: true,
-      },
-    });
+    const mimetypePlaceholders = DOCUMENT_MIMETYPES.map((_, i) => `$${i + 2}`).join(', ');
 
-    const totalBytes = result._sum.size || 0;
-    return totalBytes / (1024 * 1024); // Convert to MB
+    const result = await this.databaseService.$queryRawUnsafe<[{ total_bytes: bigint }]>(`
+      SELECT COALESCE(SUM(f.size), 0) AS total_bytes
+      FROM (
+        SELECT DISTINCT fu.id, fu.size
+        FROM "FileUpload" fu
+        WHERE fu.mimetype IN (${mimetypePlaceholders})
+          AND (
+            -- (a) uploaded by an HR user belonging to this company
+            EXISTS (
+              SELECT 1 FROM "User" u
+              WHERE u.id = fu."uploadedById"
+                AND u."companyId" = $1
+            )
+            OR
+            -- (b) linked to a candidate with a hiring process at this company
+            EXISTS (
+              SELECT 1 FROM "HiringProcess" hp
+              WHERE hp."candidateId" = fu."candidateId"
+                AND hp."companyId" = $1
+            )
+          )
+      ) f
+    `, companyId, ...DOCUMENT_MIMETYPES);
+
+    const totalBytes = Number(result[0]?.total_bytes ?? 0);
+    return totalBytes / (1024 * 1024);
   }
 }
