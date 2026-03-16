@@ -154,7 +154,9 @@ const CompanyCalendarPage: React.FC = () => {
   const interviewsByDate = useMemo(() => {
     const map: Record<string, CalendarInterview[]> = {};
     for (const iv of interviews) {
-      const key = iv.scheduledDate ?? "unknown";
+      if (!iv.scheduledDate) continue;
+      // Normalize ISO date string (e.g. "2026-03-14T00:00:00.000Z") to "2026-03-14"
+      const key = iv.scheduledDate.substring(0, 10);
       if (!map[key]) map[key] = [];
       map[key].push(iv);
     }
@@ -719,8 +721,7 @@ const CompanyCalendarPage: React.FC = () => {
   };
 
   // ─── Empty state ──────────────────────────────────────────────────────────
-  const isEmpty =
-    !interviewsLoading && interviews.length === 0 && view === "month";
+  const isEmpty = !interviewsLoading && interviews.length === 0;
 
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
@@ -812,26 +813,25 @@ const CompanyCalendarPage: React.FC = () => {
             overflow: "hidden",
           }}
         >
-          {view === "month" && renderMonthView()}
-          {view === "week" && renderWeekView()}
-          {view === "day" && renderDayView()}
-
-          {/* Empty state overlay for month view */}
-          {isEmpty && (
+          {isEmpty ? (
             <Box
               sx={{
-                position: "absolute",
-                inset: 0,
+                flex: 1,
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                pointerEvents: "none",
               }}
             >
               <Typography variant="body1" color="text.secondary">
                 {t("calendar.no_interviews")}
               </Typography>
             </Box>
+          ) : (
+            <>
+              {view === "month" && renderMonthView()}
+              {view === "week" && renderWeekView()}
+              {view === "day" && renderDayView()}
+            </>
           )}
         </Box>
       </Box>
