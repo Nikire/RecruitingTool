@@ -91,7 +91,7 @@ const CompanyCalendarPage: React.FC = () => {
     page: 1,
     limit: 200,
   });
-  const usersData = usersResponse?.data ?? [];
+  const usersData = useMemo(() => usersResponse?.data ?? [], [usersResponse]);
 
   // ─── Navigation ───────────────────────────────────────────────────────────
   const navigate = useCallback(
