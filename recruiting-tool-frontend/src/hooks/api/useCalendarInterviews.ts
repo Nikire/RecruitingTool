@@ -76,7 +76,7 @@ export const useCompanyCalendarInterviews = (
       }
 
       const response = await axiosInstance.get<CalendarInterview[]>(
-        "/interviews/calendar",
+        "/interview/calendar",
         { params },
       );
       return response.data;
