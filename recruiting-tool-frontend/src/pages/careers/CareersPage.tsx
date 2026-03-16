@@ -88,9 +88,6 @@ const CareersPage: React.FC = () => {
     if (filters.company) {
       return companies.find((c) => c.uid === filters.company) || null;
     }
-    if (companies.length === 1) {
-      return companies[0];
-    }
     return null;
   }, [filters.company, companies]);
 
