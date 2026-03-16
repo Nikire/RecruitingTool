@@ -290,30 +290,24 @@ export class QuotaService {
     //   (b) it is linked to a candidate who has at least one hiring process at that company.
     // Candidate CVs are deduplicated (same hash = one record), so DISTINCT prevents double-counting
     // when the same file appears in multiple applications within the same company.
-    const DOCUMENT_MIMETYPES = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'text/plain',
-    ];
+    const DOCUMENT_MIMETYPES = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'text/plain'];
 
     const mimetypePlaceholders = DOCUMENT_MIMETYPES.map((_, i) => `$${i + 2}`).join(', ');
 
-    const result = await this.databaseService.$queryRawUnsafe<[{ total_bytes: bigint }]>(`
+    const result = await this.databaseService.$queryRawUnsafe<[{ total_bytes: bigint }]>(
+      `
       SELECT COALESCE(SUM(f.size), 0) AS total_bytes
       FROM (
         SELECT DISTINCT fu.id, fu.size
         FROM "FileUpload" fu
         WHERE fu.mimetype IN (${mimetypePlaceholders})
           AND (
-            -- (a) uploaded by an HR user belonging to this company
             EXISTS (
               SELECT 1 FROM "User" u
               WHERE u.id = fu."uploadedById"
                 AND u."companyId" = $1
             )
             OR
-            -- (b) linked to a candidate with a hiring process at this company
             EXISTS (
               SELECT 1 FROM "HiringProcess" hp
               WHERE hp."candidateId" = fu."candidateId"
@@ -321,7 +315,10 @@ export class QuotaService {
             )
           )
       ) f
-    `, companyId, ...DOCUMENT_MIMETYPES);
+    `,
+      companyId,
+      ...DOCUMENT_MIMETYPES,
+    );
 
     const totalBytes = Number(result[0]?.total_bytes ?? 0);
     return totalBytes / (1024 * 1024);
