@@ -1394,7 +1394,8 @@
     "team": "Equipo",
     "billing": "Facturación",
     "company_profile": "Perfil de Empresa",
-    "calendar": "Calendario"
+    "calendar": "Calendario",
+    "meetings": "Reuniones"
   },
   "company_profile": {
     "title": "Perfil de Empresa",

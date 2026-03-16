@@ -40,7 +40,7 @@ export class InterviewService {
   ) {}
 
   async create(createInterviewDto: CreateInterviewDto, scheduledByUid: string): Promise<InterviewResponseDto> {
-    const { stageUid, scheduledDate, scheduledTime, duration, meetingLink, location, notes } = createInterviewDto;
+    const { stageUid, scheduledDate, scheduledTime, duration, meetingLink, location, notes, organizerUid } = createInterviewDto;
 
     // Look up the full user by UID
     const scheduledBy = await this.databaseService.user.findUnique({
@@ -49,6 +49,20 @@ export class InterviewService {
 
     if (!scheduledBy) {
       throw new NotFoundException(`User with UID ${scheduledByUid} not found`);
+    }
+
+    // Resolve organizer: use provided organizerUid or fall back to the requesting user
+    let organizerId: number | null = null;
+    if (organizerUid) {
+      const organizer = await this.databaseService.user.findUnique({
+        where: { uid: organizerUid },
+      });
+      if (!organizer) {
+        throw new NotFoundException(`Organizer with UID ${organizerUid} not found`);
+      }
+      organizerId = organizer.id;
+    } else {
+      organizerId = scheduledBy.id;
     }
 
     // Get the stage and verify it exists
@@ -86,9 +100,15 @@ export class InterviewService {
         scheduledBy: {
           connect: { id: scheduledBy.id },
         },
+        ...(organizerId !== null && {
+          organizer: {
+            connect: { id: organizerId },
+          },
+        }),
       },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: true,
         interviewers: {
           include: {
@@ -218,6 +238,7 @@ export class InterviewService {
       where: { uid, deletedAt: null },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: {
           include: {
             hiringProcess: true,
@@ -263,6 +284,7 @@ export class InterviewService {
       where: { stageId: stage.id, deletedAt: null },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: true,
         interviewers: {
           include: {
@@ -330,6 +352,7 @@ export class InterviewService {
       },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: {
           include: {
             hiringProcess: {
@@ -430,6 +453,7 @@ export class InterviewService {
       data: { status: InterviewStatus.CANCELLED },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: true,
         interviewers: {
           include: {
@@ -509,6 +533,7 @@ export class InterviewService {
       data: { status: InterviewStatus.COMPLETED },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: true,
         interviewers: {
           include: {
@@ -774,6 +799,7 @@ export class InterviewService {
       },
       include: {
         scheduledBy: true,
+        organizer: true,
         stage: {
           include: {
             hiringProcess: {

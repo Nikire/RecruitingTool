@@ -1386,7 +1386,8 @@
     "team": "Team",
     "billing": "Billing",
     "company_profile": "Company Profile",
-    "calendar": "Calendar"
+    "calendar": "Calendar",
+    "meetings": "Meetings"
   },
   "company_profile": {
     "title": "Company Profile",

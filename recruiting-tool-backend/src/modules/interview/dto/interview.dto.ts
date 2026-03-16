@@ -11,6 +11,14 @@ export class CreateInterviewDto {
   @IsNotEmpty()
   stageUid: string;
 
+  @ApiPropertyOptional({
+    description: 'UID of the HR member who owns/organizes this interview. Defaults to the requesting user if omitted.',
+    example: '123e4567-e89b-12d3-a456-426614174002',
+  })
+  @IsOptional()
+  @IsString()
+  organizerUid?: string;
+
   @ApiProperty({
     description: 'The scheduled date for the interview (ISO 8601 format)',
     example: '2025-12-15T00:00:00.000Z',
@@ -329,6 +337,18 @@ export class InterviewResponseDto {
     example: 'John Doe',
   })
   scheduledByName: string;
+
+  @ApiPropertyOptional({
+    description: 'The HR member who owns/organizes this interview (used for calendar color-coding and filtering)',
+    type: 'object',
+    properties: {
+      uid: { type: 'string', example: '123e4567-e89b-12d3-a456-426614174002' },
+      name: { type: 'string', example: 'Jane Smith' },
+      profilePicture: { type: 'string', example: 'https://example.com/avatar.jpg', nullable: true },
+    },
+    nullable: true,
+  })
+  organizer: { uid: string; name: string; profilePicture: string | null } | null;
 
   @ApiProperty({
     description: 'List of interviewers participating in this interview',

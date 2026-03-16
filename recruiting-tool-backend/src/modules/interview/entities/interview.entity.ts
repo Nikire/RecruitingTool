@@ -5,6 +5,7 @@ type InterviewWithRelations = Interview & {
   scheduledBy: User;
   stage: Stage;
   interviewers?: Array<InterviewInterviewer & { user: User }>;
+  organizer?: User | null;
 };
 
 type InterviewRescheduleWithRelations = InterviewReschedule & {
@@ -24,6 +25,13 @@ export const InterviewMapper = (interview: InterviewWithRelations): InterviewRes
     notes: interview.notes,
     scheduledByUid: interview.scheduledBy.uid,
     scheduledByName: interview.scheduledBy.name,
+    organizer: interview.organizer
+      ? {
+          uid: interview.organizer.uid,
+          name: interview.organizer.name,
+          profilePicture: interview.organizer.profilePicture ?? null,
+        }
+      : null,
     interviewers: interview.interviewers
       ? interview.interviewers.map((interviewer) => ({
           userUid: interviewer.user.uid,

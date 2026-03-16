@@ -92,6 +92,7 @@ model User {
   fileUploads                FileUpload[]            @relation("FileUploadsUser")
   schedules                  HRSchedule[]            @relation("UserSchedules")
   scheduledInterviews        Interview[]             @relation("InterviewScheduledBy")
+  organizedInterviews        Interview[]             @relation("InterviewOrganizer")
   interviewParticipations    InterviewInterviewer[]  @relation("InterviewParticipations")
   interviewReschedules       InterviewReschedule[]   @relation("InterviewReschedules")
   jobPositions               JobPosition[]           @relation("JobPositionsUser")
@@ -456,7 +457,9 @@ model Interview {
   rescheduledReason     String?
   deletedAt             DateTime?
   calendarEventId       String?
+  organizerId           Int?
   scheduledBy           User                    @relation("InterviewScheduledBy", fields: [scheduledById], references: [id])
+  organizer             User?                   @relation("InterviewOrganizer", fields: [organizerId], references: [id])
   stage                 Stage                   @relation("StageInterviews", fields: [stageId], references: [id], onDelete: Cascade)
   bookingTokens         InterviewBookingToken[] @relation("InterviewBookingTokens")
   interviewers          InterviewInterviewer[]  @relation("InterviewInterviewers")
@@ -466,6 +469,7 @@ model Interview {
 
   @@index([stageId])
   @@index([scheduledById])
+  @@index([organizerId])
   @@index([status])
   @@index([scheduledDate])
   @@index([deletedAt])

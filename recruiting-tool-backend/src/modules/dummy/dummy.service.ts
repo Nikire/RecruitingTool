@@ -135,6 +135,7 @@ interface DummyDataStructure {
     location?: string;
     notes?: string;
     scheduledByUserIndex: number;
+    organizerUserIndex?: number;
   }>;
   interviewInterviewers: Array<{
     interviewIndex: number;
@@ -828,6 +829,10 @@ export class DummyService implements OnApplicationBootstrap {
           selectedStatus = 'COMPLETED';
         }
 
+        // Organizer defaults to the same user who scheduled the interview
+        const organizerIndex = interview.organizerUserIndex ?? interview.scheduledByUserIndex;
+        const organizerUser = createdUsers[organizerIndex];
+
         const created = await this.databaseService.interview.create({
           data: {
             stageId: stage.id,
@@ -839,6 +844,7 @@ export class DummyService implements OnApplicationBootstrap {
             location: interview.location,
             notes: interview.notes,
             scheduledById: createdUsers[interview.scheduledByUserIndex].id,
+            organizerId: organizerUser ? organizerUser.id : null,
             createdAt: stageEnteredDate,
           },
         });
