@@ -642,7 +642,8 @@
     "page_title": "Interviews",
     "page_subtitle": "All scheduled interviews across your company",
     "organizer": "Organizer",
-    "join_meeting": "Join Meeting"
+    "join_meeting": "Join Meeting",
+    "stage": "Stage"
   },
   "files": {
     "upload": "Upload File",
@@ -1391,7 +1392,8 @@
     "billing": "Billing",
     "company_profile": "Company Profile",
     "calendar": "Calendar",
-    "meetings": "Meetings"
+    "meetings": "Meetings",
+    "interviews": "Interviews"
   },
   "company_profile": {
     "title": "Company Profile",

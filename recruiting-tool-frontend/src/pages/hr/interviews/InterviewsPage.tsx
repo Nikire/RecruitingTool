@@ -63,9 +63,13 @@ function formatDuration(minutes?: number): string {
 /** Format a scheduled date + time into a readable string */
 function formatDateTime(date?: string, time?: string): string {
   if (!date) return "";
-  const parts: string[] = [date];
-  if (time) parts.push(time);
-  return parts.join(" · ");
+  const d = new Date(date);
+  const dateStr = d.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+  return time ? `${dateStr} · ${time}` : dateStr;
 }
 
 // ─── Sub-component: skeleton loader ──────────────────────────────────────────

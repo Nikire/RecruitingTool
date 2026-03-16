@@ -130,8 +130,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     : menuItems;
 
   const drawer = (
-    <Box>
-      <Toolbar sx={{ bgcolor: "primary.main" }}>
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <Toolbar sx={{ bgcolor: "primary.main", flexShrink: 0 }}>
         <Box
           component="img"
           src="/borderless-logo-light.png"
@@ -140,7 +140,23 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         />
       </Toolbar>
       <Divider />
-      <List>
+      <List
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          overflowX: "hidden",
+          scrollbarWidth: "thin",
+          scrollbarColor: (theme) =>
+            `${theme.palette.primary.main} transparent`,
+          "&::-webkit-scrollbar": { width: 5 },
+          "&::-webkit-scrollbar-track": { background: "transparent" },
+          "&::-webkit-scrollbar-thumb": {
+            borderRadius: 3,
+            bgcolor: "primary.main",
+            opacity: 0.6,
+          },
+        }}
+      >
         {visibleMenuItems.map((item) => {
           const itemText = translate ? t(item.text) : item.text;
           return (
@@ -151,14 +167,14 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 end={item.path.endsWith("/dashboard") || item.path === "/admin"}
                 sx={{
                   "&.active": {
-                    bgcolor: "primary.light",
+                    bgcolor: "primary.dark",
                     color: "primary.contrastText",
                     "& .MuiListItemIcon-root": {
                       color: "primary.contrastText",
                     },
                   },
                 }}
-                onClick={() => setMobileOpen(false)} // Close mobile drawer on item click
+                onClick={() => setMobileOpen(false)}
                 aria-label={itemText}
               >
                 <ListItemIcon>{item.icon}</ListItemIcon>
@@ -169,7 +185,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         })}
       </List>
       <Divider />
-      <List>
+      <List sx={{ flexShrink: 0 }}>
         <ListItem disablePadding>
           <ListItemButton
             component={NavLink}

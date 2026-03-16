@@ -642,7 +642,8 @@
     "page_title": "Entrevistas",
     "page_subtitle": "Todas las entrevistas programadas en tu empresa",
     "organizer": "Organizador",
-    "join_meeting": "Unirse"
+    "join_meeting": "Unirse",
+    "stage": "Etapa"
   },
   "files": {
     "upload": "Subir Archivo",
@@ -1399,7 +1400,8 @@
     "billing": "Facturación",
     "company_profile": "Perfil de Empresa",
     "calendar": "Calendario",
-    "meetings": "Reuniones"
+    "meetings": "Reuniones",
+    "interviews": "Entrevistas"
   },
   "company_profile": {
     "title": "Perfil de Empresa",
