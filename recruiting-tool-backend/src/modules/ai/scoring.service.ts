@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma } from '@prisma/client';
+import { Prisma, QuotaType } from '@prisma/client';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { CompareCandidatesResponseDto, CandidateComparisonSummary, ComparisonAnalysis } from './dto/candidate-comparison.dto';
@@ -27,9 +27,14 @@ export class ScoringService {
   /**
    * Score a candidate for a specific job position using AI
    */
-  async scoreCandidate(candidateUid: string, jobPositionUid: string): Promise<CandidateScoreResponseDto> {
+  async scoreCandidate(candidateUid: string, jobPositionUid: string, companyId?: number): Promise<CandidateScoreResponseDto> {
     if (!this.geminiService.isConfigured()) {
       throw new InternalServerErrorException('AI API is not configured. Please set GEMINI_API_KEY in environment variables.');
+    }
+
+    // Check AI quota for single scoring before making the AI call
+    if (companyId !== undefined) {
+      await this.checkSingleScoringQuota(companyId);
     }
 
     try {
@@ -105,6 +110,11 @@ export class ScoringService {
           },
         });
         this.logger.log(`Created new score for candidate ${candidateUid} and job ${jobPositionUid}`);
+      }
+
+      // Increment AI quota usage after successful scoring
+      if (companyId !== undefined) {
+        await this.incrementSingleScoringQuota(companyId);
       }
 
       // Emit SSE event for score updated
@@ -478,6 +488,52 @@ Return a JSON object with this exact structure:
       createdAt: score.createdAt,
       updatedAt: score.updatedAt,
     };
+  }
+
+  /**
+   * Check AI quota for a single candidate scoring operation.
+   * If no quota record exists for the company, the operation is allowed.
+   */
+  private async checkSingleScoringQuota(companyId: number): Promise<void> {
+    const quota = await this.databaseService.aIQuota.findUnique({
+      where: {
+        companyId_quotaType: {
+          companyId,
+          quotaType: QuotaType.CANDIDATE_SCORING,
+        },
+      },
+    });
+
+    if (!quota) {
+      this.logger.warn(`No AI quota record found for company ${companyId} and type CANDIDATE_SCORING. Allowing operation.`);
+      return;
+    }
+
+    if (quota.used + 1 > quota.limit) {
+      throw new BadRequestException('AI scoring quota exceeded for this month');
+    }
+  }
+
+  /**
+   * Increment the used count for single candidate scoring after a successful AI call.
+   */
+  private async incrementSingleScoringQuota(companyId: number): Promise<void> {
+    try {
+      await this.databaseService.aIQuota.update({
+        where: {
+          companyId_quotaType: {
+            companyId,
+            quotaType: QuotaType.CANDIDATE_SCORING,
+          },
+        },
+        data: {
+          used: { increment: 1 },
+        },
+      });
+    } catch (error) {
+      // If the quota record was deleted between check and increment, log but do not fail the request
+      this.logger.error(`Failed to increment AI quota for company ${companyId}: ${error.message}`);
+    }
   }
 
   /**

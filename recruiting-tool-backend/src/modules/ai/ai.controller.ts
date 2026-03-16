@@ -95,8 +95,8 @@ export class AiController {
     status: 500,
     description: 'Internal server error - AI API error or configuration issue',
   })
-  async scoreCandidate(@Body() scoreCandidateDto: ScoreCandidateDto): Promise<CandidateScoreResponseDto> {
-    return this.scoringService.scoreCandidate(scoreCandidateDto.candidateUid, scoreCandidateDto.jobPositionUid);
+  async scoreCandidate(@Body() scoreCandidateDto: ScoreCandidateDto, @CurrentUser() user: any): Promise<CandidateScoreResponseDto> {
+    return this.scoringService.scoreCandidate(scoreCandidateDto.candidateUid, scoreCandidateDto.jobPositionUid, user.companyId);
   }
 
   @Get('score/:candidateUid/:jobPositionUid')

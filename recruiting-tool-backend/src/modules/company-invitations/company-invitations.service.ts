@@ -1,8 +1,10 @@
-import { Injectable, NotFoundException, BadRequestException, ForbiddenException, ConflictException, Logger } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ForbiddenException, ConflictException, Logger, HttpException, HttpStatus } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
-import { RolesType, InvitationStatus, NotificationType } from '@prisma/client';
+import { QuotaService } from '../quota/quota.service';
+import { RolesType, InvitationStatus, NotificationType, SubscriptionPlan } from '@prisma/client';
+import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { CreateInvitationDto, CompanyInvitationResponseDto, GetInvitationsQueryDto } from './dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 
@@ -14,6 +16,7 @@ export class CompanyInvitationsService {
     private readonly database: DatabaseService,
     private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
+    private readonly quotaService: QuotaService,
   ) {}
 
   /**
@@ -68,6 +71,24 @@ export class CompanyInvitationsService {
 
     if (existingInvitation) {
       throw new ConflictException('A pending invitation already exists for this email');
+    }
+
+    // Check user quota: active users + pending invitations must not exceed plan limit
+    const [activeUsers, pendingInvitations] = await Promise.all([
+      this.database.user.count({ where: { companyId: company.id, isActive: true } }),
+      this.database.companyInvitation.count({ where: { companyId: company.id, status: InvitationStatus.PENDING } }),
+    ]);
+
+    const companyWithPlan = await this.database.company.findUnique({
+      where: { id: company.id },
+      include: { subscription: true },
+    });
+
+    const plan = companyWithPlan?.subscription?.plan ?? SubscriptionPlan.FREE;
+    const maxUsers = PLAN_LIMITS[plan].maxUsers;
+
+    if (maxUsers !== -1 && activeUsers + pendingInvitations >= maxUsers) {
+      throw new HttpException('User limit reached for your plan', HttpStatus.PAYMENT_REQUIRED);
     }
 
     // Create invitation (expires in 7 days)
