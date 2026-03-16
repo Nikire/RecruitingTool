@@ -196,8 +196,8 @@ const CompanyCalendarPage: React.FC = () => {
 
   // ─── Render helpers ───────────────────────────────────────────────────────
   const renderEventChip = (iv: CalendarInterview, compact = false) => {
-    const color = iv.organizer?.uid
-      ? getOrganizerColor(iv.organizer.uid)
+    const color = iv.candidate?.uid
+      ? getOrganizerColor(iv.candidate.uid)
       : "#757575";
     return (
       <Tooltip
@@ -512,8 +512,8 @@ const CompanyCalendarPage: React.FC = () => {
                     const topPx =
                       ((clampedMins - startMins) / 60) * SLOT_HEIGHT;
                     const heightPx = ((iv.duration ?? 30) / 60) * SLOT_HEIGHT;
-                    const color = iv.organizer?.uid
-                      ? getOrganizerColor(iv.organizer.uid)
+                    const color = iv.candidate?.uid
+                      ? getOrganizerColor(iv.candidate.uid)
                       : "#757575";
 
                     return (
@@ -645,8 +645,8 @@ const CompanyCalendarPage: React.FC = () => {
                 );
                 const topPx = ((clampedMins - startMins) / 60) * SLOT_HEIGHT;
                 const heightPx = ((iv.duration ?? 30) / 60) * SLOT_HEIGHT;
-                const color = iv.organizer?.uid
-                  ? getOrganizerColor(iv.organizer.uid)
+                const color = iv.candidate?.uid
+                  ? getOrganizerColor(iv.candidate.uid)
                   : "#757575";
 
                 return (

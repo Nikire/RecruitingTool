@@ -97,7 +97,7 @@ export const useRescheduleInterview = () => {
   return useMutation({
     mutationFn: ({ uid, data }: { uid: string; data: UpdateInterviewDto }) =>
       axiosInstance
-        .patch<CalendarInterview>(`/interviews/${uid}`, data)
+        .patch<CalendarInterview>(`/interview/${uid}`, data)
         .then((res) => res.data),
     onSuccess: () => {
       toast.success(t("success.interview_rescheduled"));
@@ -128,7 +128,7 @@ export const useCancelCalendarInterview = () => {
   return useMutation({
     mutationFn: (uid: string) =>
       axiosInstance
-        .delete<{ message: string }>(`/interviews/${uid}`)
+        .delete<{ message: string }>(`/interview/${uid}`)
         .then((res) => res.data),
     onSuccess: () => {
       toast.success(t("success.interview_cancelled"));

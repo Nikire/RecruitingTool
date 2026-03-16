@@ -111,7 +111,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
         transformOrigin={{ vertical: "top", horizontal: "left" }}
         slotProps={{
           paper: {
-            sx: { width: 340, maxWidth: "calc(100vw - 32px)", p: 0 },
+            sx: { width: 480, maxWidth: "calc(100vw - 32px)", p: 0 },
           },
         }}
       >
