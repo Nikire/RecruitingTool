@@ -38,6 +38,7 @@ interface ScheduleInterviewDialogProps {
   onClose: () => void;
   stageUid: string;
   interview?: Interview | null;
+  candidate?: { name: string; email: string };
 }
 
 interface FormData {
@@ -53,6 +54,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   onClose,
   stageUid,
   interview,
+  candidate,
 }) => {
   const { t } = useTranslation();
   const isEditMode = !!interview;
@@ -146,13 +148,18 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
           const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
           const calendarResponse = await createCalendarEvent.mutateAsync({
-            summary: t("schedule_interview.google_event_summary"),
+            summary: candidate
+              ? `${t("schedule_interview.google_event_summary")} - ${candidate.name}`
+              : t("schedule_interview.google_event_summary"),
             description: data.notes || undefined,
             startTime: startDateTime.toISOString(),
             endTime: endDateTime.toISOString(),
             timeZone,
             createMeetLink: true,
-            sendUpdates: false,
+            sendUpdates: true,
+            attendees: candidate
+              ? [{ email: candidate.email, displayName: candidate.name }]
+              : undefined,
           });
 
           if (calendarResponse.meetLink) {

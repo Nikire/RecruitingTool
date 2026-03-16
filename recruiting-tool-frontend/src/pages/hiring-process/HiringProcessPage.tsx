@@ -194,7 +194,11 @@ const HiringProcessPage: React.FC = () => {
       </Box>
 
       {hiringProcess.stages && (
-        <StagesTimeline stages={hiringProcess.stages} hiringProcessUid={uid!} />
+        <StagesTimeline
+          stages={hiringProcess.stages}
+          hiringProcessUid={uid!}
+          candidate={hiringProcess.candidate}
+        />
       )}
 
       {uid && (

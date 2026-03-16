@@ -31,12 +31,14 @@ type StagesAccordionProps = {
   stage: Stage;
   hiringProcessUid: string;
   disabled?: boolean;
+  candidate?: { name: string; email: string };
 };
 
 const StagesAccordion: React.FC<StagesAccordionProps> = ({
   stage,
   hiringProcessUid,
   disabled,
+  candidate,
 }) => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
@@ -176,6 +178,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
           onClose={handleCloseDialog}
           stageUid={stage.uid}
           interview={editingInterview}
+          candidate={candidate}
         />
       )}
     </>

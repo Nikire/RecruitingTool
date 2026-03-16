@@ -11,11 +11,13 @@ import StagesAccordion from "../StagesAccordion/StagesAccordion";
 type StagesTimelineProps = {
   stages: Stage[];
   hiringProcessUid: string;
+  candidate?: { name: string; email: string };
 };
 
 const StagesTimeline: React.FC<StagesTimelineProps> = ({
   stages,
   hiringProcessUid,
+  candidate,
 }) => {
   return (
     <Timeline
@@ -41,6 +43,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({
                 stage={stage}
                 hiringProcessUid={hiringProcessUid}
                 disabled={false}
+                candidate={candidate}
               />
             </TimelineContent>
           </TimelineItem>
@@ -59,6 +62,7 @@ const StagesTimeline: React.FC<StagesTimelineProps> = ({
                 stage={stage}
                 hiringProcessUid={hiringProcessUid}
                 disabled={false}
+                candidate={candidate}
               />
             </TimelineContent>
           </TimelineItem>
