@@ -43,6 +43,7 @@ import HROnboardingWizard from "./pages/onboarding/HROnboardingWizard";
 import ApplicantOnboarding from "./pages/applicant/ApplicantOnboarding";
 import CalendarSettingsPage from "./pages/settings/CalendarSettingsPage";
 import CompanyCalendarPage from "./pages/calendar/CompanyCalendarPage";
+import InterviewsPage from "./pages/hr/interviews/InterviewsPage";
 import OAuthSuccessPage from "./pages/auth/OAuthSuccessPage";
 import NotificationPreferencesPage from "./pages/settings/NotificationPreferencesPage";
 import TeamManagementPage from "./pages/TeamManagementPage";
@@ -194,6 +195,7 @@ function App() {
                 element={<CalendarSettingsPage />}
               />
               <Route path="/hr/calendar" element={<CompanyCalendarPage />} />
+              <Route path="/hr/interviews" element={<InterviewsPage />} />
             </Route>
           </Route>
 

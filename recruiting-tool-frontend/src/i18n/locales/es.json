@@ -638,7 +638,11 @@
     "select_job_position": "Seleccione una posición de trabajo",
     "select_interviewers": "Seleccione entrevistadores",
     "location_placeholder": "ej., Sala de Oficina 201 o Zoom",
-    "meeting_link_placeholder": "ej., https://zoom.us/j/123456789"
+    "meeting_link_placeholder": "ej., https://zoom.us/j/123456789",
+    "page_title": "Entrevistas",
+    "page_subtitle": "Todas las entrevistas programadas en tu empresa",
+    "organizer": "Organizador",
+    "join_meeting": "Unirse"
   },
   "files": {
     "upload": "Subir Archivo",
