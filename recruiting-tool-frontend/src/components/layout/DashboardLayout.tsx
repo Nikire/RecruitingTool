@@ -1,6 +1,7 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Box,
+  Collapse,
   Drawer,
   List,
   ListItem,
@@ -14,7 +15,9 @@ import {
   Divider,
   Tooltip,
 } from "@mui/material";
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { Outlet, NavLink, useNavigate, useLocation } from "react-router-dom";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
@@ -52,13 +55,27 @@ export interface DashboardMenuItem {
 }
 
 /**
+ * Grouped menu section with collapsible children
+ */
+export interface DashboardMenuGroup {
+  /** Display label for the group header */
+  label: string;
+  /** Icon for the group header */
+  icon: React.ReactNode;
+  /** Child menu items */
+  items: DashboardMenuItem[];
+}
+
+/**
  * Props for the DashboardLayout component
  */
 export interface DashboardLayoutProps {
   /** Title displayed in drawer and app bar (can be i18n key or plain text) */
   title: string;
-  /** Menu items to display in navigation */
-  menuItems: DashboardMenuItem[];
+  /** Flat menu items shown at the top of the nav list */
+  menuItems?: DashboardMenuItem[];
+  /** Grouped/collapsible menu sections */
+  menuGroups?: DashboardMenuGroup[];
   /** Child components (typically from Outlet) */
   children?: React.ReactNode;
   /** ARIA label for navigation */
@@ -97,7 +114,8 @@ export interface DashboardLayoutProps {
  */
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   title,
-  menuItems,
+  menuItems = [],
+  menuGroups = [],
   children,
   ariaLabel = "dashboard navigation",
   translate = false,
@@ -106,9 +124,26 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const { user } = useUserAtom();
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: subscription } = useSubscription();
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
+
+  // Track which groups are open (auto-open if current route is inside the group)
+  const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
+    const initial: Record<string, boolean> = {};
+    menuGroups.forEach((group) => {
+      const isActive = group.items.some((item) =>
+        location.pathname.startsWith(item.path),
+      );
+      initial[group.label] = isActive;
+    });
+    return initial;
+  });
+
+  const toggleGroup = (label: string) => {
+    setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
+  };
 
   const handleThemeToggle = () => {
     setThemeMode(themeMode === "dark" ? "light" : "dark");
@@ -157,6 +192,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           },
         }}
       >
+        {/* Flat items */}
         {visibleMenuItems.map((item) => {
           const itemText = translate ? t(item.text) : item.text;
           return (
@@ -181,6 +217,65 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 <ListItemText primary={itemText} />
               </ListItemButton>
             </ListItem>
+          );
+        })}
+
+        {/* Grouped items */}
+        {menuGroups.map((group) => {
+          const visibleGroupItems = canShowMenuItem
+            ? group.items.filter(canShowMenuItem)
+            : group.items;
+          if (visibleGroupItems.length === 0) return null;
+          const isOpen = !!openGroups[group.label];
+          return (
+            <React.Fragment key={group.label}>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => toggleGroup(group.label)}
+                  aria-expanded={isOpen}
+                >
+                  <ListItemIcon>{group.icon}</ListItemIcon>
+                  <ListItemText primary={group.label} />
+                  {isOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                </ListItemButton>
+              </ListItem>
+              <Collapse in={isOpen} unmountOnExit>
+                <List disablePadding>
+                  {visibleGroupItems.map((item) => {
+                    const itemText = translate ? t(item.text) : item.text;
+                    return (
+                      <ListItem key={item.text} disablePadding>
+                        <ListItemButton
+                          component={NavLink}
+                          to={item.path}
+                          end={
+                            item.path.endsWith("/dashboard") ||
+                            item.path === "/admin"
+                          }
+                          sx={{
+                            pl: 4,
+                            "&.active": {
+                              bgcolor: "primary.dark",
+                              color: "primary.contrastText",
+                              "& .MuiListItemIcon-root": {
+                                color: "primary.contrastText",
+                              },
+                            },
+                          }}
+                          onClick={() => setMobileOpen(false)}
+                          aria-label={itemText}
+                        >
+                          <ListItemIcon sx={{ minWidth: 36 }}>
+                            {item.icon}
+                          </ListItemIcon>
+                          <ListItemText primary={itemText} />
+                        </ListItemButton>
+                      </ListItem>
+                    );
+                  })}
+                </List>
+              </Collapse>
+            </React.Fragment>
           );
         })}
       </List>

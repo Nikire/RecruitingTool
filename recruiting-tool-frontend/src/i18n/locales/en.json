@@ -1401,7 +1401,10 @@
     "company_profile": "Company Profile",
     "calendar": "Calendar",
     "meetings": "Meetings",
-    "interviews": "Interviews"
+    "interviews": "Interviews",
+    "group_recruitment": "Recruitment",
+    "group_scheduling": "Scheduling",
+    "group_settings": "Settings"
   },
   "company_profile": {
     "title": "Company Profile",
@@ -3503,7 +3506,9 @@
     "general_settings": "General Settings",
     "webhooks": "Webhooks & API Keys",
     "custom_plans": "Custom Plans",
-    "aria_label": "admin navigation"
+    "aria_label": "admin navigation",
+    "group_management": "Management",
+    "group_configuration": "Configuration"
   },
   "plan_features": {
     "job_positions": "Up to {{count}} active job positions",

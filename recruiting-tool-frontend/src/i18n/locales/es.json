@@ -1409,7 +1409,10 @@
     "company_profile": "Perfil de Empresa",
     "calendar": "Calendario",
     "meetings": "Reuniones",
-    "interviews": "Entrevistas"
+    "interviews": "Entrevistas",
+    "group_recruitment": "Reclutamiento",
+    "group_scheduling": "Programación",
+    "group_settings": "Configuración"
   },
   "company_profile": {
     "title": "Perfil de Empresa",
@@ -1473,7 +1476,9 @@
     "general_settings": "Configuración General",
     "webhooks": "Webhooks y Claves API",
     "custom_plans": "Planes Personalizados",
-    "aria_label": "navegación de administrador"
+    "aria_label": "navegación de administrador",
+    "group_management": "Gestión",
+    "group_configuration": "Configuración"
   },
   "language": {
     "select_language": "Seleccionar Idioma",

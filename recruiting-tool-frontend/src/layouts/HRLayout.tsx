@@ -11,7 +11,12 @@ import EventNoteIcon from "@mui/icons-material/EventNote";
 import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BusinessIcon from "@mui/icons-material/Business";
-import { DashboardLayout, DashboardMenuItem } from "../components/layout";
+import SettingsIcon from "@mui/icons-material/Settings";
+import {
+  DashboardLayout,
+  DashboardMenuItem,
+  DashboardMenuGroup,
+} from "../components/layout";
 import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
@@ -30,31 +35,12 @@ const HRLayout: React.FC = () => {
     requiresCompanyOwner?: boolean;
   }
 
-  const menuItems: ExtendedMenuItem[] = [
+  // Standalone items (always visible at top)
+  const flatItems: DashboardMenuItem[] = [
     {
       text: t("hr_layout.dashboard"),
       icon: <DashboardIcon />,
       path: "/hr/dashboard",
-    },
-    {
-      text: t("hr_layout.applications"),
-      icon: <AssignmentIcon />,
-      path: "/hr/applications",
-    },
-    {
-      text: t("hr_layout.candidates"),
-      icon: <GroupIcon />,
-      path: "/hr/candidates",
-    },
-    {
-      text: t("hr_layout.job_positions"),
-      icon: <WorkIcon />,
-      path: "/hr/job-positions",
-    },
-    {
-      text: t("hr_layout.hiring_processes"),
-      icon: <AccountTreeIcon />,
-      path: "/hr/hiring-processes",
     },
     {
       text: t("hr_layout.analytics"),
@@ -66,43 +52,86 @@ const HRLayout: React.FC = () => {
       icon: <EmailIcon />,
       path: "/hr/email-templates",
     },
+  ];
+
+  // Grouped sections
+  const menuGroups: DashboardMenuGroup[] = [
     {
-      text: t("hr_layout.calendar"),
-      icon: <CalendarMonthIcon />,
-      path: "/settings/calendar",
+      label: t("hr_layout.group_recruitment"),
+      icon: <WorkIcon />,
+      items: [
+        {
+          text: t("hr_layout.applications"),
+          icon: <AssignmentIcon />,
+          path: "/hr/applications",
+        },
+        {
+          text: t("hr_layout.candidates"),
+          icon: <GroupIcon />,
+          path: "/hr/candidates",
+        },
+        {
+          text: t("hr_layout.job_positions"),
+          icon: <WorkIcon />,
+          path: "/hr/job-positions",
+        },
+        {
+          text: t("hr_layout.hiring_processes"),
+          icon: <AccountTreeIcon />,
+          path: "/hr/hiring-processes",
+        },
+      ],
     },
     {
-      text: t("hr_layout.meetings"),
+      label: t("hr_layout.group_scheduling"),
       icon: <EventIcon />,
-      path: "/hr/calendar",
+      items: [
+        {
+          text: t("hr_layout.meetings"),
+          icon: <EventIcon />,
+          path: "/hr/calendar",
+        },
+        {
+          text: t("hr_layout.interviews"),
+          icon: <EventNoteIcon />,
+          path: "/hr/interviews",
+        },
+      ],
     },
     {
-      text: t("hr_layout.interviews"),
-      icon: <EventNoteIcon />,
-      path: "/hr/interviews",
-    },
-    {
-      text: t("hr_layout.team"),
-      icon: <PeopleIcon />,
-      path: "/settings/team",
-    },
-    {
-      text: t("hr_layout.billing"),
-      icon: <ReceiptIcon />,
-      path: "/hr/billing",
-      requiresCompanyOwner: true,
-    },
-    {
-      text: t("hr_layout.company_profile"),
-      icon: <BusinessIcon />,
-      path: "/hr/settings/company",
-      requiresCompanyOwner: true,
+      label: t("hr_layout.group_settings"),
+      icon: <SettingsIcon />,
+      items: [
+        {
+          text: t("hr_layout.calendar"),
+          icon: <CalendarMonthIcon />,
+          path: "/settings/calendar",
+        },
+        {
+          text: t("hr_layout.team"),
+          icon: <PeopleIcon />,
+          path: "/settings/team",
+        },
+        {
+          text: t("hr_layout.billing"),
+          icon: <ReceiptIcon />,
+          path: "/hr/billing",
+          requiresCompanyOwner: true,
+        } as ExtendedMenuItem,
+        {
+          text: t("hr_layout.company_profile"),
+          icon: <BusinessIcon />,
+          path: "/hr/settings/company",
+          requiresCompanyOwner: true,
+        } as ExtendedMenuItem,
+      ],
     },
   ];
 
-  // Filter menu items based on company owner status
-  const canShowMenuItem = (item: ExtendedMenuItem) => {
-    if (item.requiresCompanyOwner && !isCompanyOwner) {
+  // Filter items based on company owner status
+  const canShowMenuItem = (item: DashboardMenuItem) => {
+    const extended = item as ExtendedMenuItem;
+    if (extended.requiresCompanyOwner && !isCompanyOwner) {
       return false;
     }
     return true;
@@ -111,7 +140,8 @@ const HRLayout: React.FC = () => {
   return (
     <DashboardLayout
       title={t("hr_layout.title")}
-      menuItems={menuItems}
+      menuItems={flatItems}
+      menuGroups={menuGroups}
       ariaLabel={t("hr_layout.aria_label")}
       canShowMenuItem={canShowMenuItem}
     />
