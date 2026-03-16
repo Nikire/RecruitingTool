@@ -257,7 +257,12 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             placeholder={t("interviews.notes_placeholder")}
             inputProps={{ maxLength: 1000 }}
           />
-          <Stack direction="row" spacing={1} justifyContent="flex-end" sx={{ mt: 1 }}>
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent="flex-end"
+            sx={{ mt: 1 }}
+          >
             <Button
               size="small"
               color="inherit"
