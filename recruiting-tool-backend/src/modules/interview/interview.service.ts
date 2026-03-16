@@ -8,6 +8,8 @@ import {
   AvailabilityCheckResponseDto,
   ConflictDto,
   AlternativeSlotDto,
+  GetCalendarInterviewsDto,
+  CalendarInterviewResponseDto,
 } from './dto/interview.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { InterviewMapper } from './entities/interview.entity';
@@ -1142,6 +1144,89 @@ export class InterviewService {
     }
 
     return alternatives;
+  }
+
+  /**
+   * Return all company interviews that fall within a date range.
+   * Optionally filtered to specific organizers by memberUids.
+   * Scoped to the requesting user's company. Max 500 results.
+   */
+  async getCalendar(dto: GetCalendarInterviewsDto, companyId: number | null): Promise<CalendarInterviewResponseDto[]> {
+    const { startDate, endDate, memberUids } = dto;
+
+    // Parse optional comma-separated organizer UIDs
+    const organizerUidList: string[] | undefined =
+      memberUids && memberUids.trim().length > 0
+        ? memberUids
+            .split(',')
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : undefined;
+
+    // Resolve organizer UIDs to internal IDs when a filter is requested
+    let organizerIdList: number[] | undefined;
+    if (organizerUidList && organizerUidList.length > 0) {
+      const organizers = await this.databaseService.user.findMany({
+        where: { uid: { in: organizerUidList } },
+        select: { id: true },
+      });
+      organizerIdList = organizers.map((u) => u.id);
+    }
+
+    const interviews = await this.databaseService.interview.findMany({
+      where: {
+        deletedAt: null,
+        scheduledDate: {
+          gte: new Date(startDate),
+          lte: new Date(endDate),
+        },
+        ...(organizerIdList !== undefined && { organizerId: { in: organizerIdList } }),
+        // companyId null = SUPER_ADMIN, no company filter applied
+        ...(companyId !== null && {
+          stage: {
+            hiringProcess: {
+              companyId,
+            },
+          },
+        }),
+      },
+      include: {
+        organizer: true,
+        stage: {
+          include: {
+            hiringProcess: {
+              include: {
+                candidate: {
+                  select: { uid: true, name: true, email: true },
+                },
+                jobPosition: {
+                  select: { uid: true, title: true },
+                },
+              },
+            },
+          },
+        },
+      },
+      orderBy: [{ scheduledDate: 'asc' }, { scheduledTime: 'asc' }],
+      take: 500,
+    });
+
+    return interviews.map((interview) => {
+      const hp = interview.stage.hiringProcess;
+      return {
+        uid: interview.uid,
+        scheduledDate: interview.scheduledDate ? interview.scheduledDate.toISOString() : null,
+        scheduledTime: interview.scheduledTime,
+        duration: interview.duration,
+        meetingLink: interview.meetingLink,
+        status: interview.status,
+        notes: interview.notes,
+        candidate: hp?.candidate ? { uid: hp.candidate.uid, name: hp.candidate.name, email: hp.candidate.email ?? null } : { uid: '', name: 'Unknown', email: null },
+        jobPosition: hp?.jobPosition ? { uid: hp.jobPosition.uid, title: hp.jobPosition.title } : { uid: '', title: 'Unknown' },
+        stage: { uid: interview.stage.uid, title: interview.stage.title },
+        organizer: interview.organizer ? { uid: interview.organizer.uid, name: interview.organizer.name, profilePicture: interview.organizer.profilePicture ?? null } : null,
+      };
+    });
   }
 
   /**

@@ -2,6 +2,109 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, IsNotEmpty, IsOptional, IsEnum, IsInt, Min, IsDateString, IsArray, IsBoolean } from 'class-validator';
 import { InterviewStatus } from '@prisma/client';
 
+// ---------------------------------------------------------------------------
+// Calendar query / response DTOs (Issue #336)
+// ---------------------------------------------------------------------------
+
+export class GetCalendarInterviewsDto {
+  @ApiProperty({
+    description: 'Start of the date range (ISO 8601)',
+    example: '2026-03-01T00:00:00.000Z',
+  })
+  @IsDateString()
+  @IsNotEmpty()
+  startDate: string;
+
+  @ApiProperty({
+    description: 'End of the date range (ISO 8601)',
+    example: '2026-03-31T23:59:59.000Z',
+  })
+  @IsDateString()
+  @IsNotEmpty()
+  endDate: string;
+
+  @ApiPropertyOptional({
+    description: 'Comma-separated HR member UIDs to filter by organizer',
+    example: '123e4567-e89b-12d3-a456-426614174002,223e4567-e89b-12d3-a456-426614174003',
+  })
+  @IsOptional()
+  @IsString()
+  memberUids?: string;
+}
+
+export class CalendarInterviewCandidateDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174010' })
+  uid: string;
+
+  @ApiProperty({ example: 'Alice Smith' })
+  name: string;
+
+  @ApiProperty({ example: 'alice@example.com', nullable: true })
+  email: string | null;
+}
+
+export class CalendarInterviewJobPositionDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174020' })
+  uid: string;
+
+  @ApiProperty({ example: 'Senior Software Engineer' })
+  title: string;
+}
+
+export class CalendarInterviewStageDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174030' })
+  uid: string;
+
+  @ApiProperty({ example: 'Technical Interview' })
+  title: string;
+}
+
+export class CalendarInterviewOrganizerDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174002' })
+  uid: string;
+
+  @ApiProperty({ example: 'Jane HR' })
+  name: string;
+
+  @ApiProperty({ example: 'https://example.com/avatar.jpg', nullable: true })
+  profilePicture: string | null;
+}
+
+export class CalendarInterviewResponseDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ example: '2026-03-15T00:00:00.000Z', nullable: true })
+  scheduledDate: string | null;
+
+  @ApiProperty({ example: '14:00', nullable: true })
+  scheduledTime: string | null;
+
+  @ApiProperty({ example: 60, nullable: true })
+  duration: number | null;
+
+  @ApiProperty({ example: 'https://meet.google.com/abc-def', nullable: true })
+  meetingLink: string | null;
+
+  @ApiProperty({ enum: InterviewStatus, example: InterviewStatus.SCHEDULED })
+  status: InterviewStatus;
+
+  @ApiProperty({ example: 'Bring portfolio', nullable: true })
+  notes: string | null;
+
+  @ApiProperty({ type: CalendarInterviewCandidateDto })
+  candidate: CalendarInterviewCandidateDto;
+
+  @ApiProperty({ type: CalendarInterviewJobPositionDto })
+  jobPosition: CalendarInterviewJobPositionDto;
+
+  @ApiProperty({ type: CalendarInterviewStageDto })
+  stage: CalendarInterviewStageDto;
+
+  @ApiPropertyOptional({ type: CalendarInterviewOrganizerDto, nullable: true })
+  organizer: CalendarInterviewOrganizerDto | null;
+}
+
 export class CreateInterviewDto {
   @ApiProperty({
     description: 'The UID of the stage for this interview',

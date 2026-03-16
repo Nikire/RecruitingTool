@@ -1,5 +1,5 @@
-import { Controller, Get, Post, Put, Delete, Body, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
+import { Controller, Get, Post, Put, Patch, Delete, Body, Param, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiQuery } from '@nestjs/swagger';
 import { InterviewService } from './interview.service';
 import {
   CreateInterviewDto,
@@ -10,11 +10,14 @@ import {
   InterviewRescheduleHistoryDto,
   CheckAvailabilityDto,
   AvailabilityCheckResponseDto,
+  GetCalendarInterviewsDto,
+  CalendarInterviewResponseDto,
 } from './dto/interview.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType, User } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { UserResponseDto } from '../users/dto/users.dto';
+import { getUserCompanyId } from 'src/utils/company-access.helper';
 
 @ApiTags('Interview')
 @ApiBearerAuth()
@@ -29,6 +32,24 @@ export class InterviewController {
   @ApiResponse({ status: 404, description: 'Stage not found' })
   async create(@Body() createInterviewDto: CreateInterviewDto, @CurrentUser() user: UserResponseDto): Promise<InterviewResponseDto> {
     return this.interviewService.create(createInterviewDto, user.uid);
+  }
+
+  @Get('calendar')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({
+    summary: 'Get company interviews within a date range',
+    description:
+      "Returns all interviews scheduled within the given date range for the requesting user's company. " +
+      'Optionally filtered to specific HR organizers via comma-separated memberUids. Max 500 results per request.',
+  })
+  @ApiQuery({ name: 'startDate', required: true, description: 'Start of date range (ISO 8601)', example: '2026-03-01T00:00:00.000Z' })
+  @ApiQuery({ name: 'endDate', required: true, description: 'End of date range (ISO 8601)', example: '2026-03-31T23:59:59.000Z' })
+  @ApiQuery({ name: 'memberUids', required: false, description: 'Comma-separated HR member UIDs to filter by organizer' })
+  @ApiResponse({ status: 200, description: 'List of calendar interviews', type: [CalendarInterviewResponseDto] })
+  @ApiResponse({ status: 400, description: 'Invalid date parameters' })
+  async getCalendar(@Query() query: GetCalendarInterviewsDto, @CurrentUser() user: User): Promise<CalendarInterviewResponseDto[]> {
+    const companyId = getUserCompanyId(user);
+    return this.interviewService.getCalendar(query, companyId);
   }
 
   @Get(':uid')
@@ -51,10 +72,22 @@ export class InterviewController {
 
   @Put(':uid')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
-  @ApiOperation({ summary: 'Update an interview' })
+  @ApiOperation({ summary: 'Update an interview (full update)' })
   @ApiResponse({ status: 200, description: 'Interview updated successfully', type: InterviewResponseDto })
   @ApiResponse({ status: 404, description: 'Interview not found' })
   async update(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto, @CurrentUser() user: any): Promise<InterviewResponseDto> {
+    return this.interviewService.update(uid, updateInterviewDto, user);
+  }
+
+  @Patch(':uid')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({
+    summary: 'Partially update an interview',
+    description: 'Updates one or more fields of an interview. Accepts scheduledDate, scheduledTime, duration, meetingLink, notes.',
+  })
+  @ApiResponse({ status: 200, description: 'Interview updated successfully', type: InterviewResponseDto })
+  @ApiResponse({ status: 404, description: 'Interview not found' })
+  async patch(@Param('uid') uid: string, @Body() updateInterviewDto: UpdateInterviewDto, @CurrentUser() user: any): Promise<InterviewResponseDto> {
     return this.interviewService.update(uid, updateInterviewDto, user);
   }
 
@@ -141,8 +174,11 @@ export class InterviewController {
 
   @Delete(':uid')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
-  @ApiOperation({ summary: 'Delete an interview' })
-  @ApiResponse({ status: 200, description: 'Interview deleted successfully' })
+  @ApiOperation({
+    summary: 'Delete (soft-delete) an interview',
+    description: 'Soft-deletes the interview by setting deletedAt. The interview is no longer returned in queries but is preserved for audit purposes.',
+  })
+  @ApiResponse({ status: 200, description: 'Interview deleted successfully', schema: { example: { message: 'Interview soft deleted successfully' } } })
   @ApiResponse({ status: 404, description: 'Interview not found' })
   async remove(@Param('uid') uid: string, @CurrentUser() user: User): Promise<{ message: string }> {
     return this.interviewService.remove(uid, user);
