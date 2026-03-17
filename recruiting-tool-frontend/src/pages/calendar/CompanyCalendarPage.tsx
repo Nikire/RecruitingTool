@@ -52,7 +52,8 @@ const CompanyCalendarPage: React.FC = () => {
     d.setHours(0, 0, 0, 0);
     return d;
   });
-  const [selectedUids, setSelectedUids] = useState<string[]>([]);
+  // null = show all; [] = show nobody (all deselected); string[] = show these members
+  const [selectedUids, setSelectedUids] = useState<string[] | null>(null);
   const [popoverAnchor, setPopoverAnchor] = useState<HTMLElement | null>(null);
   const [selectedInterview, setSelectedInterview] =
     useState<CalendarInterview | null>(null);
@@ -82,10 +83,20 @@ const CompanyCalendarPage: React.FC = () => {
   }, [view, currentDate]);
 
   // ─── Data fetching ────────────────────────────────────────────────────────
-  const memberUidsParam = selectedUids.length > 0 ? selectedUids : undefined;
+  // null → no filter (show all); [] → nobody selected, skip fetch; string[] → filter by these uids
+  const memberUidsParam =
+    selectedUids === null
+      ? undefined
+      : selectedUids.length > 0
+        ? selectedUids
+        : undefined;
+  const skipFetch = selectedUids !== null && selectedUids.length === 0;
 
-  const { data: interviews = [], isLoading: interviewsLoading } =
+  const { data: rawInterviews = [], isLoading: interviewsLoading } =
     useCompanyCalendarInterviews(startDate, endDate, memberUidsParam);
+
+  // When all members are deselected (selectedUids === []), show empty calendar
+  const interviews = skipFetch ? [] : rawInterviews;
 
   const { data: usersResponse, isLoading: usersLoading } = useListUsers({
     page: 1,
@@ -117,15 +128,13 @@ const CompanyCalendarPage: React.FC = () => {
   const handleToggleMember = useCallback(
     (uid: string) => {
       setSelectedUids((prev) => {
-        if (prev.length === 0) {
-          // currently "show all" — switch to showing everyone EXCEPT this one
-          return usersData.map((u) => u.uid).filter((id) => id !== uid);
+        // null means "show all" — clicking one deselects everyone else, leaving only others
+        const effective = prev === null ? usersData.map((u) => u.uid) : prev;
+        if (effective.includes(uid)) {
+          // deselect this member; may result in [] meaning nobody selected
+          return effective.filter((id) => id !== uid);
         }
-        if (prev.includes(uid)) {
-          const next = prev.filter((id) => id !== uid);
-          return next.length === 0 ? [] : next;
-        }
-        return [...prev, uid];
+        return [...effective, uid];
       });
     },
     [usersData],
@@ -136,7 +145,7 @@ const CompanyCalendarPage: React.FC = () => {
   }, [user]);
 
   const handleShowAll = useCallback(() => {
-    setSelectedUids([]);
+    setSelectedUids(null);
   }, []);
 
   // ─── Interview chip click ─────────────────────────────────────────────────
@@ -724,9 +733,6 @@ const CompanyCalendarPage: React.FC = () => {
     );
   };
 
-  // ─── Empty state ──────────────────────────────────────────────────────────
-  const isEmpty = !interviewsLoading && interviews.length === 0;
-
   // ─── Render ───────────────────────────────────────────────────────────────
   return (
     <Box
@@ -817,26 +823,9 @@ const CompanyCalendarPage: React.FC = () => {
             overflow: "hidden",
           }}
         >
-          {isEmpty ? (
-            <Box
-              sx={{
-                flex: 1,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Typography variant="body1" color="text.secondary">
-                {t("calendar.no_interviews")}
-              </Typography>
-            </Box>
-          ) : (
-            <>
-              {view === "month" && renderMonthView()}
-              {view === "week" && renderWeekView()}
-              {view === "day" && renderDayView()}
-            </>
-          )}
+          {view === "month" && renderMonthView()}
+          {view === "week" && renderWeekView()}
+          {view === "day" && renderDayView()}
         </Box>
       </Box>
 

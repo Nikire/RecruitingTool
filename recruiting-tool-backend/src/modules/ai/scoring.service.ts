@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Prisma, QuotaType } from '@prisma/client';
+import { Prisma, QuotaType, SubscriptionPlan } from '@prisma/client';
 import { DatabaseService } from '../shared/modules/database/database.service';
+import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { CompareCandidatesResponseDto, CandidateComparisonSummary, ComparisonAnalysis } from './dto/candidate-comparison.dto';
 import { SseService } from '../sse/sse.service';
@@ -492,10 +493,10 @@ Return a JSON object with this exact structure:
 
   /**
    * Check AI quota for a single candidate scoring operation.
-   * If no quota record exists for the company, the operation is allowed.
+   * If no quota record exists for the company, creates one based on the company's current plan limits.
    */
   private async checkSingleScoringQuota(companyId: number): Promise<void> {
-    const quota = await this.databaseService.aIQuota.findUnique({
+    let quota = await this.databaseService.aIQuota.findUnique({
       where: {
         companyId_quotaType: {
           companyId,
@@ -505,7 +506,41 @@ Return a JSON object with this exact structure:
     });
 
     if (!quota) {
-      this.logger.warn(`No AI quota record found for company ${companyId} and type CANDIDATE_SCORING. Allowing operation.`);
+      // Look up the company's plan to determine the correct limit
+      const company = await this.databaseService.company.findUnique({
+        where: { id: companyId },
+        include: { subscription: true },
+      });
+
+      const plan = company?.subscription?.plan ?? SubscriptionPlan.FREE;
+      const limits = PLAN_LIMITS[plan];
+      const creditLimit = limits.aiScoringCreditsPerMonth;
+
+      // -1 means unlimited — no quota enforcement needed
+      if (creditLimit === -1) {
+        return;
+      }
+
+      // Create the quota record so subsequent calls can track usage
+      const resetDate = new Date();
+      resetDate.setMonth(resetDate.getMonth() + 1, 1);
+      resetDate.setHours(0, 0, 0, 0);
+
+      quota = await this.databaseService.aIQuota.create({
+        data: {
+          companyId,
+          quotaType: QuotaType.CANDIDATE_SCORING,
+          limit: creditLimit,
+          used: 0,
+          resetDate,
+        },
+      });
+
+      this.logger.log(`Created AI quota record for company ${companyId} (plan: ${plan}, limit: ${creditLimit})`);
+    }
+
+    // -1 means unlimited
+    if (quota.limit === -1) {
       return;
     }
 

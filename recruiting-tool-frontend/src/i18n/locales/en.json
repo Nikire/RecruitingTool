@@ -933,7 +933,8 @@
     "duration_min_error": "Duration must be at least {{min}} minute",
     "create_google_meet_event": "Create Google Meet event automatically",
     "connect_google_calendar_hint": "Connect Google Calendar in Calendar Settings to auto-generate Meet links",
-    "google_event_summary": "Interview"
+    "google_event_summary": "Interview",
+    "time_not_set": "Not set"
   },
   "update_hiring_process": {
     "title": "Update Hiring Process",

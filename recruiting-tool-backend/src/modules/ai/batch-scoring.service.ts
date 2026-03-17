@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ScoringService } from './scoring.service';
+import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import {
   BatchScoreRequestDto,
   BatchScoreStatusDto,
@@ -11,7 +12,7 @@ import {
   BatchScoreSummaryDto,
 } from './dto/batch-scoring.dto';
 import { CandidateScoreResponseDto } from './dto/candidate-scoring.dto';
-import { BatchStatus, QuotaType } from '@prisma/client';
+import { BatchStatus, QuotaType, SubscriptionPlan } from '@prisma/client';
 
 @Injectable()
 export class BatchScoringService {
@@ -417,10 +418,11 @@ export class BatchScoringService {
   }
 
   /**
-   * Check AI quota before processing
+   * Check AI quota before processing.
+   * If no quota record exists, creates one from the company's plan limits and enforces it.
    */
   private async checkAndConsumeQuota(companyId: number, quotaType: QuotaType, count: number): Promise<void> {
-    const quota = await this.databaseService.aIQuota.findUnique({
+    let quota = await this.databaseService.aIQuota.findUnique({
       where: {
         companyId_quotaType: {
           companyId,
@@ -430,7 +432,40 @@ export class BatchScoringService {
     });
 
     if (!quota) {
-      this.logger.warn(`No AI quota found for company ${companyId} and type ${quotaType}. Allowing operation.`);
+      // Determine limit from the company's current plan
+      const company = await this.databaseService.company.findUnique({
+        where: { id: companyId },
+        include: { subscription: true },
+      });
+
+      const plan = company?.subscription?.plan ?? SubscriptionPlan.FREE;
+      const limits = PLAN_LIMITS[plan];
+      const creditLimit = limits.aiScoringCreditsPerMonth;
+
+      // -1 means unlimited — skip enforcement
+      if (creditLimit === -1) {
+        return;
+      }
+
+      const resetDate = new Date();
+      resetDate.setMonth(resetDate.getMonth() + 1, 1);
+      resetDate.setHours(0, 0, 0, 0);
+
+      quota = await this.databaseService.aIQuota.create({
+        data: {
+          companyId,
+          quotaType,
+          limit: creditLimit,
+          used: 0,
+          resetDate,
+        },
+      });
+
+      this.logger.log(`Created AI quota record for company ${companyId} (plan: ${plan}, limit: ${creditLimit})`);
+    }
+
+    // -1 means unlimited
+    if (quota.limit === -1) {
       return;
     }
 

@@ -15,6 +15,7 @@ import { HiringProcessService } from '../hiring-process/hiring-process.service';
 import { StagesService } from '../hiring-process/modules/stages/stages.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import { CacheService } from '../cache/cache.service';
+import { QuotaService } from '../quota/quota.service';
 import { Prisma, User } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
@@ -28,6 +29,7 @@ export class JobPositionService {
     private readonly stagesService: StagesService,
     private readonly auditLogService: AuditLogService,
     private readonly cacheService: CacheService,
+    private readonly quotaService: QuotaService,
   ) {}
 
   async find(where: Prisma.JobPositionWhereInput): Promise<Array<JobPositionResponseDto>> {
@@ -175,6 +177,9 @@ export class JobPositionService {
       if (!user.companyId) {
         throw new NotFoundException(`User ${creatorUid} does not belong to a company`);
       }
+
+      // Enforce job position quota for the company's plan
+      await this.quotaService.checkQuota(user.companyId, 'jobPositions');
 
       const newJobPosition = await this.databaseService.jobPosition.create({
         data: {

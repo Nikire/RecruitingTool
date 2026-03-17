@@ -340,10 +340,12 @@ export class StripeService {
         throw new BadRequestException('No Stripe customer found. Please subscribe to a plan first.');
       }
 
-      // Create billing portal session
+      // Create billing portal session — use provided returnUrl or fall back to frontend subscription page
+      const returnUrl = dto.returnUrl || `${this.configService.get<string>('FRONTEND_URL', 'http://localhost:5173')}/profile/subscription`;
+
       const session = await this.stripe!.billingPortal.sessions.create({
         customer: company.subscription.stripeCustomerId,
-        return_url: dto.returnUrl,
+        return_url: returnUrl,
       });
 
       this.logger.log(`Created billing portal session for company ${company.uid}`);

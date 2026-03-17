@@ -262,7 +262,7 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
           </Typography>
         </DialogTitle>
 
-        <DialogContent>
+        <DialogContent dividers sx={{ overflowY: "auto" }}>
           {/* Existing Stages Section */}
           {orderedStages.length > 0 && (
             <Box sx={{ mb: 4 }}>
@@ -356,18 +356,33 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "space-between",
+                                gap: 1,
+                                minWidth: 0,
                               }}
                             >
                               <Typography
                                 variant="h6"
                                 component="div"
-                                sx={{ fontWeight: 600 }}
+                                sx={{
+                                  fontWeight: 600,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  minWidth: 0,
+                                  flex: 1,
+                                }}
                               >
                                 {index + 1}. {stage.title}
                               </Typography>
 
                               {/* Edit / Delete buttons */}
-                              <Box sx={{ display: "flex", gap: 0.5 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: 0.5,
+                                  flexShrink: 0,
+                                }}
+                              >
                                 <IconButton
                                   size="small"
                                   onClick={() => {

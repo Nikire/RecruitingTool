@@ -32,7 +32,9 @@ export const subscriptionApi = {
   },
 
   getBillingPortal: async (): Promise<BillingPortalResponse> => {
-    const response = await api.post("/stripe/billing-portal");
+    const response = await api.post("/stripe/billing-portal", {
+      returnUrl: window.location.href,
+    });
     return response.data;
   },
 

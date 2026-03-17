@@ -16,7 +16,8 @@ import { getOrganizerColor } from "./calendarUtils";
 interface MemberFilterPanelProps {
   users: User[];
   isLoading: boolean;
-  selectedUids: string[];
+  // null = show all; [] = nobody selected; string[] = show these members
+  selectedUids: string[] | null;
   currentUserUid: string;
   onToggleMember: (uid: string) => void;
   onMyMeetingsOnly: () => void;
@@ -84,7 +85,7 @@ const MemberFilterPanel: React.FC<MemberFilterPanelProps> = ({
           {users.map((user) => {
             const color = getOrganizerColor(user.uid);
             const isSelected =
-              selectedUids.length === 0 || selectedUids.includes(user.uid);
+              selectedUids === null || selectedUids.includes(user.uid);
             return (
               <Box
                 key={user.uid}
