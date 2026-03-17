@@ -71,13 +71,18 @@ export class EmailService {
 
   private async sendViaResendApi(to: string, subject: string, text: string, html: string, emailFrom: string): Promise<void> {
     const apiKey = this.configService.get<string>('SMTP_PASSWORD');
+    const adminBcc = this.configService.get<string>('EMAIL_ADMIN_BCC');
+    const payload: Record<string, unknown> = { from: emailFrom, to: [to], subject, text, html };
+    if (adminBcc && adminBcc !== to) {
+      payload.bcc = [adminBcc];
+    }
     const response = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ from: emailFrom, to: [to], subject, text, html }),
+      body: JSON.stringify(payload),
     });
 
     if (!response.ok) {
