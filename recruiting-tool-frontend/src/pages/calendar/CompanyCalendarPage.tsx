@@ -96,7 +96,10 @@ const CompanyCalendarPage: React.FC = () => {
     useCompanyCalendarInterviews(startDate, endDate, memberUidsParam);
 
   // When all members are deselected (selectedUids === []), show empty calendar
-  const interviews = skipFetch ? [] : rawInterviews;
+  const interviews = useMemo(
+    () => (skipFetch ? [] : rawInterviews),
+    [skipFetch, rawInterviews],
+  );
 
   const { data: usersResponse, isLoading: usersLoading } = useListUsers({
     page: 1,
