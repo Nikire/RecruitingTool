@@ -24,6 +24,7 @@ model Company {
   instagramUrl       String?
   linkedinUrl        String?
   location           String?
+  timezone           String?
   twitterUrl         String?
   website            String?
   aiQuotas           AIQuota[]

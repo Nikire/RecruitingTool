@@ -22,7 +22,6 @@ import {
   TimePicker,
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { format } from "date-fns";
 import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -86,12 +85,14 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         ? new Date(interview.scheduledDate)
         : null;
 
-      // Parse HH:mm string into a Date object so TimePicker can display it
+      // Parse HH:mm string into a Date object so TimePicker can display it.
+      // Use setUTCHours so the picker shows the stored time correctly regardless
+      // of the browser's local timezone offset.
       let timeValue: Date | null = null;
       if (interview.scheduledTime) {
         const [hours, minutes] = interview.scheduledTime.split(":").map(Number);
         const d = new Date();
-        d.setHours(hours, minutes, 0, 0);
+        d.setUTCHours(hours, minutes, 0, 0);
         timeValue = d;
       }
 
@@ -130,7 +131,11 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
           ? formatDateOnly(data.scheduledDate)
           : undefined,
         scheduledTime: data.scheduledTime
-          ? format(data.scheduledTime, "HH:mm")
+          ? (() => {
+              const h = data.scheduledTime!.getUTCHours();
+              const m = data.scheduledTime!.getUTCMinutes();
+              return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+            })()
           : undefined,
         duration: data.duration || undefined,
         meetingLink: data.meetingLink || undefined,
@@ -213,18 +218,26 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                   name="scheduledTime"
                   control={control}
                   render={({ field }) => (
-                    <TimePicker
-                      label={t("schedule_interview.interview_time")}
-                      value={field.value}
-                      onChange={(newValue) => field.onChange(newValue)}
-                      slotProps={{
-                        textField: {
-                          fullWidth: true,
-                          error: !!errors.scheduledTime,
-                          helperText: errors.scheduledTime?.message,
-                        },
-                      }}
-                    />
+                    <>
+                      <TimePicker
+                        label={t("schedule_interview.interview_time")}
+                        value={field.value}
+                        onChange={(newValue) => field.onChange(newValue)}
+                        slotProps={{
+                          textField: {
+                            fullWidth: true,
+                            error: !!errors.scheduledTime,
+                            helperText: errors.scheduledTime?.message,
+                          },
+                        }}
+                      />
+                      <FormHelperText sx={{ mt: 0.5, ml: 1.75 }}>
+                        {t("schedule_interview.timezone_info", {
+                          timezone:
+                            Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        })}
+                      </FormHelperText>
+                    </>
                   )}
                 />
               </Grid>

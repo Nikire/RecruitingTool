@@ -49,11 +49,12 @@ export class AdminUserService implements OnApplicationBootstrap {
 
     if (!admin) return;
 
-    // Ensure admin is linked to Borderless, is COMPANY_OWNER, and email is verified
+    // Ensure admin is linked to Borderless, is COMPANY_OWNER, and email is verified.
+    // Also re-link if admin is currently assigned to a DIFFERENT company (not just when null).
     const needsUpdate = admin.companyId !== company.id || !admin.emailVerified || !admin.roles.includes(RolesType.COMPANY_OWNER);
 
     if (needsUpdate) {
-      this.logger.log('Configuring admin user with Borderless company...');
+      this.logger.log(`Configuring admin user with Borderless company (previous companyId: ${admin.companyId ?? 'none'})...`);
       const roles = Array.from(new Set([...admin.roles, RolesType.COMPANY_OWNER]));
       await this.db.user.update({
         where: { id: admin.id },
@@ -63,8 +64,9 @@ export class AdminUserService implements OnApplicationBootstrap {
           roles,
         },
       });
+      this.logger.log(`Admin user configured: ${admin.email}, companyId set to ${company.id} (Borderless uid: ${company.uid})`);
     } else {
-      this.logger.log(`Admin user ready: ${admin.email}`);
+      this.logger.log(`Admin user ready: ${admin.email} (companyId: ${admin.companyId})`);
     }
   }
 }

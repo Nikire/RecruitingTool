@@ -22,6 +22,7 @@ export interface CompanyProfile {
   instagramUrl?: string;
   careersEnabled: boolean;
   careersHeadline?: string;
+  timezone?: string;
 }
 
 export interface UpdateCompanyProfileDto {
@@ -37,6 +38,7 @@ export interface UpdateCompanyProfileDto {
   instagramUrl?: string;
   careersEnabled?: boolean;
   careersHeadline?: string;
+  timezone?: string;
 }
 
 export interface CreateCompanyDto {

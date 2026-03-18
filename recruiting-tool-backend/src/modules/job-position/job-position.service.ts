@@ -18,7 +18,7 @@ import { CacheService } from '../cache/cache.service';
 import { QuotaService } from '../quota/quota.service';
 import { Prisma, User } from '@prisma/client';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
-import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
+import { getUserCompanyId, isSuperAdminRole, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 
 export class JobPositionService {
@@ -174,12 +174,24 @@ export class JobPositionService {
         throw new EntityNotFoundException('User', creatorUid);
       }
 
-      if (!user.companyId) {
-        throw new NotFoundException(`User ${creatorUid} does not belong to a company`);
+      let targetCompanyId = user.companyId;
+      if (!targetCompanyId) {
+        if (isSuperAdminRole(user)) {
+          // SUPER_ADMIN: use Borderless company as default
+          const borderlessCompany = await this.databaseService.company.findFirst({
+            where: { name: 'Borderless' },
+          });
+          if (!borderlessCompany) {
+            throw new NotFoundException('Default company not found. Please ensure the Borderless company exists.');
+          }
+          targetCompanyId = borderlessCompany.id;
+        } else {
+          throw new NotFoundException(`User ${creatorUid} does not belong to a company`);
+        }
       }
 
       // Enforce job position quota for the company's plan
-      await this.quotaService.checkQuota(user.companyId, 'jobPositions');
+      await this.quotaService.checkQuota(targetCompanyId, 'jobPositions');
 
       const newJobPosition = await this.databaseService.jobPosition.create({
         data: {
@@ -209,7 +221,7 @@ export class JobPositionService {
           tags: createJobPositionDto.tags || [],
           isHighlighted: createJobPositionDto.isHighlighted ?? false,
           createdBy: { connect: { uid: creatorUid } },
-          company: { connect: { id: user.companyId } },
+          company: { connect: { id: targetCompanyId } },
         },
         include: includeJobPosition,
       });

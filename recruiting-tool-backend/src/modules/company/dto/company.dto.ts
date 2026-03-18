@@ -116,6 +116,12 @@ export class UpdateCompanyProfileDto {
   @IsString()
   @MaxLength(300)
   careersHeadline?: string;
+
+  @ApiProperty({ description: 'IANA timezone for the company', example: 'America/Argentina/Buenos_Aires', required: false })
+  @IsOptional()
+  @IsString()
+  @MaxLength(100)
+  timezone?: string;
 }
 
 export class CompanyResponseDto {
@@ -180,6 +186,9 @@ export class CompanyProfileResponseDto {
 
   @ApiProperty({ description: 'Careers page headline', required: false })
   careersHeadline?: string;
+
+  @ApiProperty({ description: 'IANA timezone for the company', required: false })
+  timezone?: string;
 }
 
 export class PublicCompanyResponseDto {

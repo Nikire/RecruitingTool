@@ -941,7 +941,8 @@
     "connect_google_calendar_hint": "Connect Google Calendar in Calendar Settings to auto-generate Meet links",
     "google_event_summary": "Interview",
     "calendar_event_auto_created": "A Google Calendar event will be created automatically when you schedule this interview.",
-    "time_not_set": "Not set"
+    "time_not_set": "Not set",
+    "timezone_info": "Times are shown in your local timezone ({{timezone}})"
   },
   "update_hiring_process": {
     "title": "Update Hiring Process",
@@ -1466,7 +1467,9 @@
     "industry_transportation": "Transportation & Logistics",
     "industry_energy": "Energy",
     "industry_agriculture": "Agriculture",
-    "industry_other": "Other"
+    "industry_other": "Other",
+    "timezone": "Company Timezone",
+    "timezone_helper": "Used to display meeting and interview times consistently for your team."
   },
   "language": {
     "select_language": "Select Language",

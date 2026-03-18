@@ -47,6 +47,7 @@ export function CompanyProfileMapper(company: Company) {
     instagramUrl: company.instagramUrl ?? undefined,
     careersEnabled: company.careersEnabled,
     careersHeadline: company.careersHeadline ?? undefined,
+    timezone: company.timezone ?? undefined,
   };
 }
 

@@ -949,7 +949,8 @@
     "connect_google_calendar_hint": "Conecta Google Calendar en Configuración de Calendario para generar enlaces de Meet automáticamente",
     "google_event_summary": "Entrevista",
     "calendar_event_auto_created": "Se creará un evento de Google Calendar automáticamente cuando programe esta entrevista.",
-    "time_not_set": "Sin establecer"
+    "time_not_set": "Sin establecer",
+    "timezone_info": "Los horarios se muestran en su zona horaria local ({{timezone}})"
   },
   "update_hiring_process": {
     "title": "Actualizar Proceso de Contratación",
@@ -1474,7 +1475,9 @@
     "industry_transportation": "Transporte y Logística",
     "industry_energy": "Energía",
     "industry_agriculture": "Agricultura",
-    "industry_other": "Otro"
+    "industry_other": "Otro",
+    "timezone": "Zona Horaria de la Empresa",
+    "timezone_helper": "Se usa para mostrar las horas de reuniones y entrevistas de forma consistente para tu equipo."
   },
   "admin_layout": {
     "title": "Panel de Administración",

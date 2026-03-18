@@ -16,6 +16,7 @@ import {
   FormControlLabel,
   alpha,
   Skeleton,
+  FormHelperText,
 } from "@mui/material";
 import {
   Business as BusinessIcon,
@@ -72,6 +73,30 @@ const COMPANY_SIZE_OPTIONS = [
   "1000+",
 ] as const;
 
+const COMMON_TIMEZONES = [
+  "UTC",
+  "America/New_York",
+  "America/Chicago",
+  "America/Denver",
+  "America/Los_Angeles",
+  "America/Argentina/Buenos_Aires",
+  "America/Sao_Paulo",
+  "America/Mexico_City",
+  "Europe/London",
+  "Europe/Paris",
+  "Europe/Madrid",
+  "Europe/Berlin",
+  "Europe/Rome",
+  "Europe/Moscow",
+  "Asia/Dubai",
+  "Asia/Kolkata",
+  "Asia/Singapore",
+  "Asia/Tokyo",
+  "Asia/Shanghai",
+  "Australia/Sydney",
+  "Pacific/Auckland",
+];
+
 const CompanyProfilePage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
@@ -108,6 +133,7 @@ const CompanyProfilePage: React.FC = () => {
       instagramUrl: "",
       careersEnabled: true,
       careersHeadline: "",
+      timezone: "",
     },
   });
 
@@ -126,6 +152,7 @@ const CompanyProfilePage: React.FC = () => {
         instagramUrl: profile.instagramUrl || "",
         careersEnabled: profile.careersEnabled ?? true,
         careersHeadline: profile.careersHeadline || "",
+        timezone: profile.timezone || "",
       });
     }
   }, [profile, reset]);
@@ -497,6 +524,37 @@ const CompanyProfilePage: React.FC = () => {
                         ),
                       }}
                       {...register("location")}
+                    />
+                  </Grid>
+
+                  <Grid size={{ xs: 12, sm: 6 }}>
+                    <Controller
+                      name="timezone"
+                      control={control}
+                      render={({ field }) => (
+                        <FormControl fullWidth disabled={!isAdmin}>
+                          <InputLabel>
+                            {t("company_profile.timezone")}
+                          </InputLabel>
+                          <Select
+                            label={t("company_profile.timezone")}
+                            {...field}
+                            value={field.value || ""}
+                          >
+                            <MenuItem value="">
+                              <em>{t("company_profile.select_none")}</em>
+                            </MenuItem>
+                            {COMMON_TIMEZONES.map((tz) => (
+                              <MenuItem key={tz} value={tz}>
+                                {tz}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <FormHelperText>
+                            {t("company_profile.timezone_helper")}
+                          </FormHelperText>
+                        </FormControl>
+                      )}
                     />
                   </Grid>
                 </Grid>

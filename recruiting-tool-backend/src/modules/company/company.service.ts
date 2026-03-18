@@ -504,6 +504,7 @@ export class CompanyService {
           ...(dto.instagramUrl !== undefined && { instagramUrl: dto.instagramUrl }),
           ...(dto.careersEnabled !== undefined && { careersEnabled: dto.careersEnabled }),
           ...(dto.careersHeadline !== undefined && { careersHeadline: dto.careersHeadline }),
+          ...(dto.timezone !== undefined && { timezone: dto.timezone }),
         },
       });
 
