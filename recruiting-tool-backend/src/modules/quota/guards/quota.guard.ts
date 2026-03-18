@@ -2,6 +2,7 @@ import { Injectable, CanActivate, ExecutionContext, HttpException, HttpStatus } 
 import { Reflector } from '@nestjs/core';
 import { QuotaService } from '../quota.service';
 import { QuotaResource } from '../config/plan-limits.config';
+import { isSuperAdminRole } from 'src/utils/company-access.helper';
 
 export const QUOTA_KEY = 'quota';
 
@@ -22,7 +23,16 @@ export class QuotaGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
-    if (!user || !user.companyId) {
+    if (!user) {
+      throw new HttpException('User must be associated with a company', HttpStatus.PAYMENT_REQUIRED);
+    }
+
+    // SUPER_ADMIN bypasses quota guards (unlimited access)
+    if (isSuperAdminRole(user)) {
+      return true;
+    }
+
+    if (!user.companyId) {
       throw new HttpException('User must be associated with a company', HttpStatus.PAYMENT_REQUIRED);
     }
 
