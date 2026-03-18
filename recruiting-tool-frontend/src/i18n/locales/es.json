@@ -3577,6 +3577,7 @@
     "last_updated": "Última actualización"
   },
   "stage_note": {
+    "dialog_title": "Nota de etapa",
     "add_note": "Agregar nota",
     "edit_note": "Editar nota",
     "note_placeholder": "Escribe tus notas de evaluación para esta etapa...",

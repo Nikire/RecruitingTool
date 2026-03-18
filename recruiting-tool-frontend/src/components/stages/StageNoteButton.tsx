@@ -1,6 +1,16 @@
 import React, { useState } from "react";
-import { Box, Collapse, IconButton, Tooltip, Typography } from "@mui/material";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Tooltip,
+  Typography,
+  Divider,
+} from "@mui/material";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
 import { StageEvalNote } from "../../types/stage.types";
 import StageNotePanel from "./StageNotePanel";
@@ -8,12 +18,14 @@ import StageNotePanel from "./StageNotePanel";
 interface StageNoteButtonProps {
   hiringProcessUid: string;
   stageUid: string;
+  stageTitle?: string;
   existingNote?: StageEvalNote | null;
 }
 
 const StageNoteButton: React.FC<StageNoteButtonProps> = ({
   hiringProcessUid,
   stageUid,
+  stageTitle,
   existingNote,
 }) => {
   const { t } = useTranslation();
@@ -24,18 +36,16 @@ const StageNoteButton: React.FC<StageNoteButtonProps> = ({
     ? t("stage_note.edit_note")
     : t("stage_note.add_note");
 
-  const handleToggle = (e: React.MouseEvent) => {
-    // Stop propagation so clicking the button doesn't expand/collapse the accordion
+  const handleOpen = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setOpen((prev) => !prev);
+    setOpen(true);
   };
 
+  const handleClose = () => setOpen(false);
+
   return (
-    <Box
-      onClick={(e) => e.stopPropagation()}
-      sx={{ display: "flex", flexDirection: "column", alignItems: "flex-end" }}
-    >
-      {/* Trigger button row */}
+    <Box onClick={(e) => e.stopPropagation()}>
+      {/* Trigger button */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
         {hasNote && existingNote.rating > 0 && (
           <Typography
@@ -49,7 +59,7 @@ const StageNoteButton: React.FC<StageNoteButtonProps> = ({
         <Tooltip title={tooltipTitle}>
           <IconButton
             size="small"
-            onClick={handleToggle}
+            onClick={handleOpen}
             color={hasNote ? "primary" : "default"}
             aria-label={tooltipTitle}
           >
@@ -61,17 +71,49 @@ const StageNoteButton: React.FC<StageNoteButtonProps> = ({
         </Tooltip>
       </Box>
 
-      {/* Inline panel */}
-      <Collapse in={open} timeout="auto" unmountOnExit>
-        <Box sx={{ mt: 1, minWidth: 320, maxWidth: 480 }}>
+      {/* Notes Dialog */}
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        maxWidth="sm"
+        fullWidth
+        onClick={(e) => e.stopPropagation()}
+      >
+        <DialogTitle sx={{ p: 2, pb: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "flex-start",
+              justifyContent: "space-between",
+            }}
+          >
+            <Box>
+              <Typography variant="subtitle1" fontWeight={600}>
+                {t("stage_note.dialog_title")}
+              </Typography>
+              {stageTitle && (
+                <Typography variant="body2" color="text.secondary">
+                  {stageTitle}
+                </Typography>
+              )}
+            </Box>
+            <IconButton size="small" onClick={handleClose} sx={{ mt: -0.5 }}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </Box>
+        </DialogTitle>
+
+        <Divider />
+
+        <DialogContent sx={{ p: 2 }}>
           <StageNotePanel
             hiringProcessUid={hiringProcessUid}
             stageUid={stageUid}
             existingNote={existingNote}
-            onClose={() => setOpen(false)}
+            onClose={handleClose}
           />
-        </Box>
-      </Collapse>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 };

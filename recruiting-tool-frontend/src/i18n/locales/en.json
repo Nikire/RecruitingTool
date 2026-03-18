@@ -3569,6 +3569,7 @@
     "last_updated": "Last updated"
   },
   "stage_note": {
+    "dialog_title": "Stage Note",
     "add_note": "Add note",
     "edit_note": "Edit note",
     "note_placeholder": "Write your evaluation notes for this stage...",
