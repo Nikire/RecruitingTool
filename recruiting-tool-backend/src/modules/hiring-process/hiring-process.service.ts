@@ -335,6 +335,38 @@ export class HiringProcessService {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           data: { status: 'ARCHIVED' as any },
         });
+
+        // Cascade-cancel active/pending stages belonging to this hiring process
+        const activeStages = await this.databaseService.stage.findMany({
+          where: {
+            hiringProcessId: existingHiringProcess.id,
+            status: { in: ['OPEN', 'CURRENT'] as any[] },
+            deletedAt: null,
+          },
+          select: { id: true },
+        });
+
+        if (activeStages.length > 0) {
+          const activeStageIds = activeStages.map((s) => s.id);
+
+          // Cancel the active/current stages
+          await this.databaseService.stage.updateMany({
+            where: { id: { in: activeStageIds } },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: { status: 'CANCELLED' as any },
+          });
+
+          // Cancel any SCHEDULED or PENDING interviews attached to those stages
+          await this.databaseService.interview.updateMany({
+            where: {
+              stageId: { in: activeStageIds },
+              status: { in: ['SCHEDULED', 'PENDING'] as any[] },
+              deletedAt: null,
+            },
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            data: { status: 'CANCELLED' as any },
+          });
+        }
       }
 
       // Send notifications if status changed

@@ -383,6 +383,8 @@
     "select_existing": "Seleccionar Existente",
     "create_new": "Crear Nuevo",
     "no_candidate": "Sin candidato asignado",
+    "stages_count": "{{count}} etapa",
+    "stages_count_plural": "{{count}} etapas",
     "delete_message": "¿Estás seguro de que quieres eliminar este proceso de contratación? Esto también eliminará todas las etapas asociadas.",
     "group": {
       "toggle_label": "Agrupar por Posición",
@@ -942,6 +944,7 @@
     "create_google_meet_event": "Crear evento de Google Meet automáticamente",
     "connect_google_calendar_hint": "Conecta Google Calendar en Configuración de Calendario para generar enlaces de Meet automáticamente",
     "google_event_summary": "Entrevista",
+    "calendar_event_auto_created": "Se creará un evento de Google Calendar automáticamente cuando programe esta entrevista.",
     "time_not_set": "Sin establecer"
   },
   "update_hiring_process": {
@@ -1360,7 +1363,10 @@
     "name": "Nombre",
     "email": "Correo Electrónico",
     "recruitment_stages": "Etapas de Reclutamiento",
-    "progress_stage": "Avanzar Etapa"
+    "progress_stage": "Avanzar Etapa",
+    "change_status": "Cambiar Estado",
+    "status_updated": "Estado del proceso de contratación actualizado exitosamente",
+    "status_update_failed": "Error al actualizar el estado del proceso de contratación"
   },
   "job_position_detail": {
     "table_title": "Título",

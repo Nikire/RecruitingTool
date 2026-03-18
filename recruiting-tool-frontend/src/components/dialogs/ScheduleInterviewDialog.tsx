@@ -8,8 +8,6 @@ import {
   Box,
   Grid,
   CircularProgress,
-  FormControlLabel,
-  Checkbox,
   Typography,
   Alert,
   Select,
@@ -21,18 +19,14 @@ import {
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useForm, Controller } from "react-hook-form";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   useCreateInterview,
   useUpdateInterview,
 } from "../../hooks/api/useInterview";
 import { Interview } from "../../types/interview.types";
-import { addMinutes } from "date-fns";
-import {
-  useCalendarConnectionStatus,
-  useCreateCalendarEvent,
-} from "../../hooks/api/useGoogleCalendar";
+import { useCalendarConnectionStatus } from "../../hooks/api/useGoogleCalendar";
 
 interface ScheduleInterviewDialogProps {
   open: boolean;
@@ -62,7 +56,6 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   onClose,
   stageUid,
   interview,
-  candidate,
 }) => {
   const { t } = useTranslation();
   const isEditMode = !!interview;
@@ -71,15 +64,11 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
 
   const { data: calendarStatus } = useCalendarConnectionStatus();
   const isCalendarConnected = calendarStatus?.connected ?? false;
-  const createCalendarEvent = useCreateCalendarEvent();
-
-  const [createGoogleMeetEvent, setCreateGoogleMeetEvent] = useState(true);
 
   const {
     control,
     handleSubmit,
     reset,
-    setValue,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
@@ -118,67 +107,25 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     }
   }, [interview, reset]);
 
-  const buildCalendarStartTime = (
-    date: Date | null,
-    time: string,
-  ): Date | null => {
-    if (!date) return null;
-    const start = new Date(date);
-    if (time) {
-      const [hours, minutes] = time.split(":").map(Number);
-      start.setHours(hours, minutes, 0, 0);
-    } else {
-      start.setHours(0, 0, 0, 0);
-    }
-    return start;
-  };
-
   const onSubmit = async (data: FormData) => {
     try {
-      let resolvedMeetingLink = data.meetingLink;
-
-      // If calendar is connected and user wants a Google Meet event, create it first
-      if (isCalendarConnected && createGoogleMeetEvent) {
-        const startDateTime = buildCalendarStartTime(
-          data.scheduledDate,
-          data.scheduledTime,
-        );
-
-        if (startDateTime) {
-          const durationMinutes = data.duration || 60;
-          const endDateTime = addMinutes(startDateTime, durationMinutes);
-          const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-          const calendarResponse = await createCalendarEvent.mutateAsync({
-            summary: candidate
-              ? `${t("schedule_interview.google_event_summary")} - ${candidate.name}`
-              : t("schedule_interview.google_event_summary"),
-            description: data.notes || undefined,
-            startTime: startDateTime.toISOString(),
-            endTime: endDateTime.toISOString(),
-            timeZone,
-            createMeetLink: true,
-            sendUpdates: true,
-            attendees: candidate
-              ? [{ email: candidate.email, displayName: candidate.name }]
-              : undefined,
-          });
-
-          if (calendarResponse.meetLink) {
-            resolvedMeetingLink = calendarResponse.meetLink;
-            setValue("meetingLink", calendarResponse.meetLink);
-          }
-        }
-      }
+      // Format date as YYYY-MM-DD (date-only, no time component) to avoid
+      // timezone offset shifting the date when the backend parses the ISO string.
+      const formatDateOnly = (d: Date): string => {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, "0");
+        const day = String(d.getDate()).padStart(2, "0");
+        return `${year}-${month}-${day}`;
+      };
 
       const payload = {
         stageUid,
         scheduledDate: data.scheduledDate
-          ? data.scheduledDate.toISOString()
+          ? formatDateOnly(data.scheduledDate)
           : undefined,
         scheduledTime: data.scheduledTime || undefined,
         duration: data.duration || undefined,
-        meetingLink: resolvedMeetingLink || undefined,
+        meetingLink: data.meetingLink || undefined,
         notes: data.notes || undefined,
       };
 
@@ -208,10 +155,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     onClose();
   };
 
-  const isSubmitting =
-    createMutation.isPending ||
-    updateMutation.isPending ||
-    createCalendarEvent.isPending;
+  const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -319,22 +263,11 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
               {/* Google Calendar integration section */}
               {isCalendarConnected ? (
                 <Grid size={{ xs: 12 }}>
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={createGoogleMeetEvent}
-                        onChange={(e) =>
-                          setCreateGoogleMeetEvent(e.target.checked)
-                        }
-                        color="primary"
-                      />
-                    }
-                    label={
-                      <Typography variant="body2">
-                        {t("schedule_interview.create_google_meet_event")}
-                      </Typography>
-                    }
-                  />
+                  <Alert severity="success" variant="outlined" sx={{ py: 0.5 }}>
+                    <Typography variant="body2">
+                      {t("schedule_interview.calendar_event_auto_created")}
+                    </Typography>
+                  </Alert>
                 </Grid>
               ) : (
                 <Grid size={{ xs: 12 }}>

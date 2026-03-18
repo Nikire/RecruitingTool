@@ -173,6 +173,8 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
         serverPagination={true}
         dataGridProps={{
           checkboxSelection: !!onSelectionChange,
+          // Keep selections when navigating between pages
+          keepNonExistentRowsSelected: true,
           // MUI X DataGrid v8: GridRowSelectionModel is { type: 'include' | 'exclude', ids: Set<GridRowId> }
           rowSelectionModel: {
             type: "include",

@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Chip } from "@mui/material";
+import { Box, Typography, Button, Chip, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
   useListHiringProcesses,
@@ -72,19 +72,8 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
       ),
     },
     {
-      field: "company",
-      headerName: t("companies.title"),
-      width: 150,
-      valueGetter: (value: { name?: string }) => value?.name || t("common.n_a"),
-      mobileRender: (process) => (
-        <Typography variant="body2" color="textSecondary">
-          {t("companies.title")}: {process.company?.name || t("common.n_a")}
-        </Typography>
-      ),
-    },
-    {
       field: "status",
-      headerName: t("status.pending"),
+      headerName: t("hiring_processes.group.column_status"),
       width: 130,
       renderCell: (params) => (
         <CellRow centered>
@@ -108,11 +97,29 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
       field: "stages",
       headerName: t("stages.title"),
       width: 120,
-      valueGetter: (value: unknown[]) =>
-        `${value?.length || 0} ${t("stages.title").toLowerCase()}`,
+      renderCell: (params) => {
+        const stages = params.row.stages ?? [];
+        const count = stages.length;
+        const tooltipContent =
+          count > 0
+            ? stages.map((s: { title: string }) => s.title).join(" → ")
+            : t("stages.no_stages");
+        return (
+          <Tooltip title={tooltipContent} arrow placement="top">
+            <Typography
+              variant="body2"
+              sx={{ cursor: count > 0 ? "help" : "default" }}
+            >
+              {t("hiring_processes.stages_count", { count })}
+            </Typography>
+          </Tooltip>
+        );
+      },
       mobileRender: (process) => (
         <Typography variant="body2" color="textSecondary">
-          {`${process.stages?.length || 0} ${t("stages.title").toLowerCase()}`}
+          {t("hiring_processes.stages_count", {
+            count: process.stages?.length || 0,
+          })}
         </Typography>
       ),
     },

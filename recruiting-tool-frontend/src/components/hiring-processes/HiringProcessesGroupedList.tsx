@@ -10,6 +10,7 @@ import {
   Divider,
   Skeleton,
   Alert,
+  Tooltip,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -176,18 +177,28 @@ const ProcessRow: React.FC<{
         )}
       </Box>
 
-      {/* Company */}
-      <Box sx={{ flex: "0 1 140px", minWidth: 0 }}>
-        <Typography variant="body2" color="text.secondary" noWrap>
-          {process.company?.name || t("common.n_a")}
-        </Typography>
-      </Box>
-
       {/* Stages */}
-      <Box sx={{ flex: "0 0 80px" }}>
-        <Typography variant="body2" color="text.secondary" noWrap>
-          {`${process.stages?.length || 0} ${t("stages.title").toLowerCase()}`}
-        </Typography>
+      <Box sx={{ flex: "0 0 100px" }}>
+        <Tooltip
+          title={
+            process.stages?.length > 0
+              ? process.stages.map((s) => s.title).join(" → ")
+              : t("stages.no_stages")
+          }
+          arrow
+          placement="top"
+        >
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            noWrap
+            sx={{ cursor: process.stages?.length > 0 ? "help" : "default" }}
+          >
+            {t("hiring_processes.stages_count", {
+              count: process.stages?.length || 0,
+            })}
+          </Typography>
+        </Tooltip>
       </Box>
 
       {/* Status */}
@@ -437,15 +448,7 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             variant="caption"
             color="text.secondary"
             fontWeight={600}
-            sx={{ flex: "0 1 140px", textTransform: "uppercase" }}
-          >
-            {t("companies.title")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "0 0 80px", textTransform: "uppercase" }}
+            sx={{ flex: "0 0 100px", textTransform: "uppercase" }}
           >
             {t("stages.title")}
           </Typography>

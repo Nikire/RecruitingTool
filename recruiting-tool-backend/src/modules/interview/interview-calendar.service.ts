@@ -248,13 +248,21 @@ export class InterviewCalendarService {
   }
 
   /**
-   * Combine date and time strings into ISO datetime
+   * Combine date and time strings into ISO datetime.
+   * Treats the provided time as the wall-clock time (no timezone conversion):
+   * extracts the calendar date from the Date object and appends the HH:mm
+   * portion, then returns a UTC ISO string so Google Calendar receives the
+   * exact time the user selected.
    */
   private combineDateTime(date: Date | string, time: string): string {
     const dateObj = date instanceof Date ? date : new Date(date);
+    // Extract UTC date parts to avoid local-timezone offsets
+    const year = dateObj.getUTCFullYear();
+    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getUTCDate()).padStart(2, '0');
     const [hours, minutes] = time.split(':');
-    dateObj.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-    return dateObj.toISOString();
+    // Build an ISO string treating the time as UTC (no offset shift)
+    return `${year}-${month}-${day}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00.000Z`;
   }
 
   /**

@@ -1,36 +1,77 @@
-import {
-  Divider,
-  Typography,
-  Box,
-  Chip,
-  Paper,
-  Button,
-  Alert,
-} from "@mui/material";
+import { Divider, Typography, Box, Paper, Button, Alert } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import WarningIcon from "@mui/icons-material/Warning";
 import StagesTimeline from "../../components/stages/StagesTimeline/StagesTimeline";
-import { useHiringProcesses } from "../../hooks/api/useHiringProcess";
-import { HiringProcess } from "../../types/hiringProcess.types";
+import {
+  useHiringProcesses,
+  useUpdateHiringProcess,
+} from "../../hooks/api/useHiringProcess";
+import {
+  HiringProcess,
+  HiringProcessStatus,
+} from "../../types/hiringProcess.types";
 import { useState } from "react";
 import StageProgressionDialog from "../../components/dialogs/StageProgressionDialog";
 import LoadingSpinner from "../../components/common/LoadingSpinner";
 import ErrorMessage from "../../components/common/ErrorMessage";
-import { getHiringProcessStatusColor } from "../../utils/statusColors";
+import StatusBadgeEditor, {
+  StatusOption,
+} from "../../components/common/StatusBadgeEditor";
+import { toast } from "react-hot-toast";
+
+const HIRING_PROCESS_STATUS_OPTIONS: StatusOption[] = [
+  { value: "OPEN", labelKey: "hiring_process_status.open", color: "success" },
+  {
+    value: "IN_PROGRESS",
+    labelKey: "hiring_process_status.in_progress",
+    color: "primary",
+  },
+  {
+    value: "CLOSED",
+    labelKey: "hiring_process_status.closed",
+    color: "default",
+  },
+  {
+    value: "CANCELLED",
+    labelKey: "hiring_process_status.cancelled",
+    color: "warning",
+  },
+  {
+    value: "REJECTED",
+    labelKey: "hiring_process_status.rejected",
+    color: "error",
+  },
+];
 
 const HiringProcessPage: React.FC = () => {
   const { t } = useTranslation();
   const { uid } = useParams<{ uid: string }>();
   const navigate = useNavigate();
   const [stageProgressionOpen, setStageProgressionOpen] = useState(false);
+  const updateMutation = useUpdateHiringProcess();
   const {
     data: hiringProcessData,
     isLoading: isHiringProcessLoading,
     error,
   } = useHiringProcesses(uid);
+
+  const handleStatusChange = (newStatus: string) => {
+    if (!uid) return;
+    updateMutation.mutate(
+      { uid, data: { status: newStatus as HiringProcessStatus } },
+      {
+        onSuccess: () => {
+          toast.success(t("hiring_process_page.status_updated"));
+        },
+        onError: () => {
+          toast.error(t("hiring_process_page.status_update_failed"));
+        },
+      },
+    );
+  };
 
   if (isHiringProcessLoading) {
     return <LoadingSpinner />;
@@ -77,10 +118,14 @@ const HiringProcessPage: React.FC = () => {
               {hiringProcess.title}
             </Typography>
           </Box>
-          <Chip
-            label={hiringProcess.status}
-            color={getHiringProcessStatusColor(hiringProcess.status)}
+          <StatusBadgeEditor
+            currentStatus={hiringProcess.status}
+            statusOptions={HIRING_PROCESS_STATUS_OPTIONS}
+            onChange={handleStatusChange}
+            disabled={updateMutation.isPending}
             size="medium"
+            label={t("hiring_process_page.change_status")}
+            ariaLabel={t("status_editor.change_hiring_process_status")}
           />
         </Box>
 

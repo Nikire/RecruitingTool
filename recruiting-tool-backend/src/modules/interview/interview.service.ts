@@ -216,25 +216,6 @@ export class InterviewService {
     return InterviewMapper(interview);
   }
 
-  /**
-   * Combine date and time strings into ISO datetime
-   */
-  private combineDateTime(date: string, time: string): string {
-    const dateObj = new Date(date);
-    const [hours, minutes] = time.split(':');
-    dateObj.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-    return dateObj.toISOString();
-  }
-
-  /**
-   * Calculate end time by adding duration minutes
-   */
-  private calculateEndTime(startTime: string, durationMinutes: number): string {
-    const endDate = new Date(startTime);
-    endDate.setMinutes(endDate.getMinutes() + durationMinutes);
-    return endDate.toISOString();
-  }
-
   async findOne(uid: string, user?: User): Promise<InterviewResponseDto> {
     const interview = await this.databaseService.interview.findFirst({
       where: { uid, deletedAt: null },
