@@ -28,7 +28,7 @@ export interface StageFormData {
   title: string;
   type: StageType;
   description: string;
-  estimatedTime?: number;
+  estimatedTime: number;
 }
 
 /**
@@ -53,7 +53,7 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
       title: "",
       type: "INTERVIEW",
       description: "",
-      estimatedTime: undefined,
+      estimatedTime: 60,
     },
   });
 
@@ -172,6 +172,7 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
             name="estimatedTime"
             control={control}
             rules={{
+              required: t("add_stage.time_required"),
               min: {
                 value: 1,
                 message: t("add_stage.time_min", { min: 1 }),
@@ -189,15 +190,12 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
                 fullWidth
                 margin="normal"
                 error={!!errors.estimatedTime}
-                helperText={
-                  errors.estimatedTime?.message ||
-                  t("add_stage.estimated_time_helper")
-                }
+                helperText={errors.estimatedTime?.message}
                 onChange={(e) => {
                   const value = e.target.value;
                   field.onChange(value ? parseInt(value) : undefined);
                 }}
-                value={field.value || ""}
+                value={field.value ?? ""}
               />
             )}
           />

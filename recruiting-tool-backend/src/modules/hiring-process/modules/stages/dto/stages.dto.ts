@@ -27,10 +27,9 @@ export class CreateStageDto {
   @IsNotEmpty()
   jobPositionUid?: string;
 
-  @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60, required: false })
-  @IsOptional()
+  @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60 })
   @IsNumber()
-  estimatedTime?: number;
+  estimatedTime: number;
 
   @ApiProperty({ description: 'The UID of the hiring process (required for hiring process specific stages)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   @IsOptional()
@@ -120,8 +119,8 @@ export class StageResponseDto {
   @ApiProperty({ description: 'The status of the stage', example: StageStatus.DONE, enum: StageStatus })
   status: StageStatus;
 
-  @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60, required: false })
-  estimatedTime?: number;
+  @ApiProperty({ description: 'The estimated time to complete the stage in minutes', example: 60 })
+  estimatedTime: number;
 
   @ApiProperty({ description: 'The UID of the job position (if this is a template stage)', example: '123e4567-e89b-12d3-a456-426614174001', required: false })
   jobPositionUid?: string;

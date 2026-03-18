@@ -5,7 +5,7 @@ export interface Stage {
   description: string;
   position: number;
   status: StageStatus;
-  estimatedTime?: number;
+  estimatedTime: number;
   jobPositionUid?: string;
   hiringProcessUid?: string;
   note?: StageEvalNote | null;
@@ -16,7 +16,7 @@ export interface CreateStageDto {
   type: StageType;
   description: string;
   position: number;
-  estimatedTime?: number;
+  estimatedTime: number;
   jobPositionUid?: string;
   hiringProcessUid?: string;
 }

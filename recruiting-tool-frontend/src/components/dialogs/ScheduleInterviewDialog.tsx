@@ -10,10 +10,6 @@ import {
   CircularProgress,
   Typography,
   Alert,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
   FormHelperText,
 } from "@mui/material";
 import {
@@ -31,6 +27,7 @@ import {
 } from "../../hooks/api/useInterview";
 import { Interview } from "../../types/interview.types";
 import { useCalendarConnectionStatus } from "../../hooks/api/useGoogleCalendar";
+import { useStage } from "../../hooks/api/useStages";
 
 interface ScheduleInterviewDialogProps {
   open: boolean;
@@ -40,12 +37,9 @@ interface ScheduleInterviewDialogProps {
   candidate?: { name: string; email: string };
 }
 
-const durationOptions = [15, 30, 45, 60, 90, 120];
-
 interface FormData {
   scheduledDate: Date | null;
   scheduledTime: Date | null;
-  duration: number;
   meetingLink: string;
   notes: string;
 }
@@ -61,6 +55,8 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   const createMutation = useCreateInterview();
   const updateMutation = useUpdateInterview();
 
+  const { data: stageData } = useStage(stageUid);
+
   const { data: calendarStatus } = useCalendarConnectionStatus();
   const isCalendarConnected = calendarStatus?.connected ?? false;
 
@@ -73,7 +69,6 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     defaultValues: {
       scheduledDate: null,
       scheduledTime: null,
-      duration: 60,
       meetingLink: "",
       notes: "",
     },
@@ -99,7 +94,6 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
       reset({
         scheduledDate: dateValue,
         scheduledTime: timeValue,
-        duration: interview.duration || 60,
         meetingLink: interview.meetingLink || "",
         notes: interview.notes || "",
       });
@@ -107,7 +101,6 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
       reset({
         scheduledDate: null,
         scheduledTime: null,
-        duration: 60,
         meetingLink: "",
         notes: "",
       });
@@ -125,6 +118,8 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         return `${year}-${month}-${day}`;
       };
 
+      const stageDuration = stageData?.estimatedTime ?? undefined;
+
       const payload = {
         stageUid,
         scheduledDate: data.scheduledDate
@@ -137,7 +132,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
               return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
             })()
           : undefined,
-        duration: data.duration || undefined,
+        duration: stageDuration,
         meetingLink: data.meetingLink || undefined,
         notes: data.notes || undefined,
       };
@@ -148,7 +143,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
           data: {
             scheduledDate: payload.scheduledDate,
             scheduledTime: payload.scheduledTime,
-            duration: payload.duration,
+            ...(stageDuration !== undefined && { duration: stageDuration }),
             meetingLink: payload.meetingLink,
             notes: payload.notes,
           },
@@ -238,37 +233,6 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                         })}
                       </FormHelperText>
                     </>
-                  )}
-                />
-              </Grid>
-
-              <Grid size={{ xs: 12 }}>
-                <Controller
-                  name="duration"
-                  control={control}
-                  render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.duration}>
-                      <InputLabel id="duration-label">
-                        {t("schedule_interview.duration")}
-                      </InputLabel>
-                      <Select
-                        labelId="duration-label"
-                        label={t("schedule_interview.duration")}
-                        value={field.value}
-                        onChange={(e) => field.onChange(Number(e.target.value))}
-                      >
-                        {durationOptions.map((mins) => (
-                          <MenuItem key={mins} value={mins}>
-                            {t("interviews.duration_minutes", { count: mins })}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.duration && (
-                        <FormHelperText>
-                          {errors.duration.message}
-                        </FormHelperText>
-                      )}
-                    </FormControl>
                   )}
                 />
               </Grid>
