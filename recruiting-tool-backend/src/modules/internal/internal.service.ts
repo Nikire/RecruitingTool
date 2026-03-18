@@ -6,7 +6,7 @@ import { BatchSummaryDto } from './dto/batch-summary.dto';
 @Injectable()
 export class InternalService {
   private readonly logger = new Logger(InternalService.name);
-  private readonly developerEmail = 'erikpastuszek@gmail.com';
+  private readonly developerEmail = 'admin@borderlessats.com';
 
   constructor(
     private readonly emailService: EmailService,
