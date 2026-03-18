@@ -1,8 +1,8 @@
 * {
-	margin: 0px;
-	padding: 0px;
-	box-sizing: border-box;
-	font-family: 'Roboto', sans-serif;
+  margin: 0px;
+  padding: 0px;
+  box-sizing: border-box;
+  font-family: "Roboto", sans-serif;
 }
 
 /*
@@ -25,7 +25,22 @@
  * vertical misalignment of the selection overlay.
  */
 .w-md-editor-text-input {
-	font-size: 14px !important;
-	line-height: 18px !important;
+  font-size: 14px !important;
+  line-height: 18px !important;
 }
 
+/* Global scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.4);
+}

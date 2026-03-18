@@ -214,6 +214,9 @@
       "CAREER_PAGE": "Career Page",
       "JOB_BOARD": "Job Board"
     },
+    "bulk_archive": "Archive Selected",
+    "bulk_archive_hint": "Archive all selected candidates (soft delete)",
+    "selected_count": "{{count}} candidate(s) selected",
     "compare_selected": "Compare Selected",
     "compare_candidates_title": "AI Candidate Comparison",
     "compare_candidates_hint": "Compare {{count}} candidates against a job position using AI analysis",
@@ -606,6 +609,7 @@
     "duration_1hr": "1 hour",
     "duration_1_5hr": "1.5 hours",
     "duration_2hr": "2 hours",
+    "duration_minutes": "{{count}} min",
     "type": "Interview Type",
     "type_phone": "Phone",
     "type_video": "Video Call",
@@ -1358,7 +1362,10 @@
     "progress_stage": "Progress Stage",
     "change_status": "Change Status",
     "status_updated": "Hiring process status updated successfully",
-    "status_update_failed": "Failed to update hiring process status"
+    "status_update_failed": "Failed to update hiring process status",
+    "mark_as_hired": "Mark as Hired",
+    "mark_as_hired_confirm": "Are you sure you want to mark this candidate as hired? This will close the hiring process.",
+    "marked_as_hired_success": "Candidate marked as hired successfully"
   },
   "job_position_detail": {
     "table_title": "Title",
@@ -2291,6 +2298,8 @@
       "title": "Usage & Quota",
       "users": "Users",
       "job_positions": "Job Positions",
+      "candidates_per_position": "Candidates per Job Position",
+      "per_position_limit": "Up to {{limit}} per position",
       "storage": "Storage",
       "ai_scoring_credits": "AI Scoring Credits",
       "features": "Available Features",

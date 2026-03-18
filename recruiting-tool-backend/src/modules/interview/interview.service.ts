@@ -92,7 +92,9 @@ export class InterviewService {
         stage: {
           connect: { id: stage.id },
         },
-        scheduledDate: scheduledDate ? new Date(scheduledDate) : null,
+        // Append T12:00:00 so the date is parsed as local noon rather than UTC
+        // midnight, preventing timezone offset from shifting the stored date.
+        scheduledDate: scheduledDate ? new Date(scheduledDate + 'T12:00:00') : null,
         scheduledTime,
         duration,
         status,
@@ -325,7 +327,7 @@ export class InterviewService {
     const interview = await this.databaseService.interview.update({
       where: { uid },
       data: {
-        ...(scheduledDate !== undefined && { scheduledDate: scheduledDate ? new Date(scheduledDate) : null }),
+        ...(scheduledDate !== undefined && { scheduledDate: scheduledDate ? new Date(scheduledDate + 'T12:00:00') : null }),
         ...(scheduledTime !== undefined && { scheduledTime }),
         ...(duration !== undefined && { duration }),
         ...(meetingLink !== undefined && { meetingLink }),
@@ -757,7 +759,7 @@ export class InterviewService {
         interview: { connect: { id: existingInterview.id } },
         oldScheduledDate: existingInterview.scheduledDate,
         oldScheduledTime: existingInterview.scheduledTime,
-        newScheduledDate: new Date(newScheduledDate),
+        newScheduledDate: new Date(newScheduledDate + 'T12:00:00'),
         newScheduledTime,
         reason: reason || null,
         rescheduledBy: { connect: { id: rescheduledBy.id } },
@@ -771,7 +773,7 @@ export class InterviewService {
     const updatedInterview = await this.databaseService.interview.update({
       where: { uid },
       data: {
-        scheduledDate: new Date(newScheduledDate),
+        scheduledDate: new Date(newScheduledDate + 'T12:00:00'),
         scheduledTime: newScheduledTime,
         ...(duration !== undefined && { duration }),
         ...(meetingLink !== undefined && { meetingLink }),

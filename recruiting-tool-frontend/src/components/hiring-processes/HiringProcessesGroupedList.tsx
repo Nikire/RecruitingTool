@@ -10,7 +10,6 @@ import {
   Divider,
   Skeleton,
   Alert,
-  Tooltip,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -175,30 +174,6 @@ const ProcessRow: React.FC<{
             {t("hiring_processes.no_candidate")}
           </Typography>
         )}
-      </Box>
-
-      {/* Stages */}
-      <Box sx={{ flex: "0 0 100px" }}>
-        <Tooltip
-          title={
-            process.stages?.length > 0
-              ? process.stages.map((s) => s.title).join(" → ")
-              : t("stages.no_stages")
-          }
-          arrow
-          placement="top"
-        >
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            noWrap
-            sx={{ cursor: process.stages?.length > 0 ? "help" : "default" }}
-          >
-            {t("hiring_processes.stages_count", {
-              count: process.stages?.length || 0,
-            })}
-          </Typography>
-        </Tooltip>
       </Box>
 
       {/* Status */}
@@ -443,14 +418,6 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             sx={{ flex: "1 1 160px", textTransform: "uppercase" }}
           >
             {t("candidates.title")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "0 0 100px", textTransform: "uppercase" }}
-          >
-            {t("stages.title")}
           </Typography>
           <Typography
             variant="caption"

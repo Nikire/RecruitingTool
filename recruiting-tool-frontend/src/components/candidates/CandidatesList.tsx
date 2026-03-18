@@ -1,7 +1,15 @@
 import { GridRenderCellParams, GridRowSelectionModel } from "@mui/x-data-grid";
-import { Box, Typography, IconButton } from "@mui/material";
+import {
+  Box,
+  Typography,
+  IconButton,
+  Toolbar,
+  Button,
+  Tooltip,
+} from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import ArchiveIcon from "@mui/icons-material/Archive";
 import { useTranslation } from "react-i18next";
 import {
   useListCandidates,
@@ -57,6 +65,20 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
 
   const handleDeleteClick = (candidate: Candidate) => {
     deleteConfirm.confirmDelete(candidate);
+  };
+
+  const handleBulkArchive = async () => {
+    if (!selectedCandidates || selectedCandidates.length === 0) return;
+    for (const uid of selectedCandidates) {
+      try {
+        await deleteMutation.mutateAsync(uid);
+      } catch {
+        // individual errors are handled by mutation onError
+      }
+    }
+    if (onSelectionChange) {
+      onSelectionChange([]);
+    }
   };
 
   // Define columns for DataTable
@@ -154,8 +176,39 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
       : []),
   ];
 
+  const hasSelection = !!selectedCandidates && selectedCandidates.length > 0;
+
   return (
     <>
+      {hasSelection && (
+        <Toolbar
+          sx={{
+            bgcolor: "primary.50",
+            borderRadius: 1,
+            mb: 1,
+            gap: 1,
+            flexWrap: "wrap",
+          }}
+        >
+          <Typography variant="body2" sx={{ flex: 1 }}>
+            {t("candidates.selected_count", {
+              count: selectedCandidates!.length,
+            })}
+          </Typography>
+          <Tooltip title={t("candidates.bulk_archive_hint")}>
+            <Button
+              size="small"
+              variant="outlined"
+              color="warning"
+              startIcon={<ArchiveIcon />}
+              onClick={handleBulkArchive}
+              disabled={deleteMutation.isPending}
+            >
+              {t("candidates.bulk_archive")}
+            </Button>
+          </Tooltip>
+        </Toolbar>
+      )}
       <DataTable
         data={candidates}
         columns={columns}
@@ -181,10 +234,27 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
             ids: new Set(selectedCandidates || []),
           } as GridRowSelectionModel,
           onRowSelectionModelChange: (newSelection: GridRowSelectionModel) => {
-            if (onSelectionChange) {
-              // v8: extract ids from the Set and convert to string[]
-              const ids = Array.from(newSelection.ids).map(String);
-              onSelectionChange(ids);
+            if (!onSelectionChange) return;
+            if (newSelection.type === "exclude") {
+              // "Select all" on the current page: add all visible row IDs
+              // that are not in the exclusion set
+              const visibleIds = candidates.map((c) => c.uid);
+              const excluded = newSelection.ids;
+              const allSelected = [
+                ...(selectedCandidates || []),
+                ...visibleIds.filter((id) => !excluded.has(id)),
+              ];
+              // Deduplicate
+              onSelectionChange([...new Set(allSelected)]);
+            } else {
+              // "include" model: replace with the new set, preserving
+              // previously-selected rows from other pages
+              const newIds = new Set(Array.from(newSelection.ids).map(String));
+              const visibleIds = new Set(candidates.map((c) => c.uid));
+              const previousFromOtherPages = (selectedCandidates || []).filter(
+                (uid) => !visibleIds.has(uid),
+              );
+              onSelectionChange([...previousFromOtherPages, ...newIds]);
             }
           },
         }}

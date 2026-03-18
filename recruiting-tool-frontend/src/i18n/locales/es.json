@@ -214,6 +214,9 @@
       "CAREER_PAGE": "Página de Carreras",
       "JOB_BOARD": "Portal de Empleo"
     },
+    "bulk_archive": "Archivar Seleccionados",
+    "bulk_archive_hint": "Archivar todos los candidatos seleccionados (eliminación suave)",
+    "selected_count": "{{count}} candidato(s) seleccionado(s)",
     "compare_selected": "Comparar Seleccionados",
     "compare_candidates_title": "Comparación de Candidatos con IA",
     "compare_candidates_hint": "Compara {{count}} candidatos contra una posición de trabajo usando análisis de IA",
@@ -606,6 +609,7 @@
     "duration_1hr": "1 hora",
     "duration_1_5hr": "1.5 horas",
     "duration_2hr": "2 horas",
+    "duration_minutes": "{{count}} min",
     "type": "Tipo de Entrevista",
     "type_phone": "Teléfono",
     "type_video": "Videollamada",
@@ -1366,7 +1370,10 @@
     "progress_stage": "Avanzar Etapa",
     "change_status": "Cambiar Estado",
     "status_updated": "Estado del proceso de contratación actualizado exitosamente",
-    "status_update_failed": "Error al actualizar el estado del proceso de contratación"
+    "status_update_failed": "Error al actualizar el estado del proceso de contratación",
+    "mark_as_hired": "Marcar como Contratado",
+    "mark_as_hired_confirm": "¿Estás seguro de que deseas marcar a este candidato como contratado? Esto cerrará el proceso de contratación.",
+    "marked_as_hired_success": "Candidato marcado como contratado exitosamente"
   },
   "job_position_detail": {
     "table_title": "Título",
@@ -2317,6 +2324,8 @@
       "title": "Uso y Cuota",
       "users": "Usuarios",
       "job_positions": "Posiciones de Trabajo",
+      "candidates_per_position": "Candidatos por Posición de Trabajo",
+      "per_position_limit": "Hasta {{limit}} por posición",
       "storage": "Almacenamiento",
       "ai_scoring_credits": "Créditos de Puntuación IA",
       "features": "Funciones Disponibles",

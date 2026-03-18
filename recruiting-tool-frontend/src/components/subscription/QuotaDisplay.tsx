@@ -48,10 +48,10 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
 
   const formatStorageSize = (mb: number): string => {
     if (mb === -1) return t("subscription.quota.unlimited");
-    if (mb >= 1024) {
-      return `${(mb / 1024).toFixed(1)} GB`;
+    if (mb >= 1000) {
+      return `${Math.round(mb / 1000)} GB`;
     }
-    return `${mb.toFixed(1)} MB`;
+    return `${Math.round(mb)} MB`;
   };
 
   // Get quota data with safe defaults
@@ -59,6 +59,10 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
   const jobPositionsQuota = getQuotaByResource(
     quotaStatus.quotas,
     "jobPositions",
+  );
+  const candidatesPerPositionQuota = getQuotaByResource(
+    quotaStatus.quotas,
+    "candidatesPerPosition",
   );
   const storageQuota = getQuotaByResource(quotaStatus.quotas, "storage");
   const aiCreditsQuota = getQuotaByResource(
@@ -162,6 +166,34 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
               >
                 {jobPositionsQuota.used} /{" "}
                 {formatLimit(jobPositionsQuota.limit)}
+              </Typography>
+            </Box>
+          </Box>
+        )}
+
+        {/* Candidates per Position Quota */}
+        {candidatesPerPositionQuota && (
+          <Box sx={{ mb: 3 }}>
+            <Typography variant="subtitle2" gutterBottom>
+              {t("subscription.quota.candidates_per_position")}
+            </Typography>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
+              <Box sx={{ flexGrow: 1 }}>
+                <LinearProgress
+                  variant="determinate"
+                  value={0}
+                  color="success"
+                  sx={{ height: 8, borderRadius: 1 }}
+                />
+              </Box>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ minWidth: 80, textAlign: "right" }}
+              >
+                {t("subscription.quota.per_position_limit", {
+                  limit: formatLimit(candidatesPerPositionQuota.limit),
+                })}
               </Typography>
             </Box>
           </Box>

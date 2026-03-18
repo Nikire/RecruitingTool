@@ -256,12 +256,14 @@ export class InterviewCalendarService {
    */
   private combineDateTime(date: Date | string, time: string): string {
     const dateObj = date instanceof Date ? date : new Date(date);
-    // Extract UTC date parts to avoid local-timezone offsets
-    const year = dateObj.getUTCFullYear();
-    const month = String(dateObj.getUTCMonth() + 1).padStart(2, '0');
-    const day = String(dateObj.getUTCDate()).padStart(2, '0');
+    // Use local date parts so the calendar event is created on the correct
+    // calendar date regardless of server timezone. The scheduledDate is stored
+    // as local noon (T12:00:00) to prevent midnight UTC crossing.
+    const year = dateObj.getFullYear();
+    const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const day = String(dateObj.getDate()).padStart(2, '0');
     const [hours, minutes] = time.split(':');
-    // Build an ISO string treating the time as UTC (no offset shift)
+    // Build an ISO string treating the time as UTC (the user's chosen HH:mm)
     return `${year}-${month}-${day}T${hours.padStart(2, '0')}:${minutes.padStart(2, '0')}:00.000Z`;
   }
 

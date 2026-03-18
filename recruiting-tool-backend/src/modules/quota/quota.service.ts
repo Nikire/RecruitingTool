@@ -44,8 +44,10 @@ export class QuotaService {
 
     // Build quota usage array
     // aiScoringCredits shows 0 used until per-month tracking is implemented
+    // candidatesPerPosition shows the plan limit (usage is per job position, not global)
     const quotas: QuotaUsageDto[] = [
       this.buildQuotaUsage('jobPositions', jobPositionsCount, limits.maxJobPositions),
+      this.buildQuotaUsage('candidatesPerPosition', 0, limits.maxCandidatesPerPosition),
       this.buildQuotaUsage('users', usersCount, limits.maxUsers),
       this.buildQuotaUsage('storage', totalStorageMB, limits.maxStorageMB),
       this.buildQuotaUsage('aiScoringCredits', 0, limits.aiScoringCreditsPerMonth),

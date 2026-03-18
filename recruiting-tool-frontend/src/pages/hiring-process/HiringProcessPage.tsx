@@ -1,9 +1,22 @@
-import { Divider, Typography, Box, Paper, Button, Alert } from "@mui/material";
+import {
+  Divider,
+  Typography,
+  Box,
+  Paper,
+  Button,
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import SkipNextIcon from "@mui/icons-material/SkipNext";
 import WarningIcon from "@mui/icons-material/Warning";
+import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StagesTimeline from "../../components/stages/StagesTimeline/StagesTimeline";
 import {
   useHiringProcesses,
@@ -51,6 +64,7 @@ const HiringProcessPage: React.FC = () => {
   const { uid } = useParams<{ uid: string }>();
   const navigate = useNavigate();
   const [stageProgressionOpen, setStageProgressionOpen] = useState(false);
+  const [markAsHiredOpen, setMarkAsHiredOpen] = useState(false);
   const updateMutation = useUpdateHiringProcess();
   const {
     data: hiringProcessData,
@@ -68,6 +82,23 @@ const HiringProcessPage: React.FC = () => {
         },
         onError: () => {
           toast.error(t("hiring_process_page.status_update_failed"));
+        },
+      },
+    );
+  };
+
+  const handleMarkAsHired = () => {
+    if (!uid) return;
+    updateMutation.mutate(
+      { uid, data: { status: "CLOSED" as HiringProcessStatus } },
+      {
+        onSuccess: () => {
+          toast.success(t("hiring_process_page.marked_as_hired_success"));
+          setMarkAsHiredOpen(false);
+        },
+        onError: () => {
+          toast.error(t("hiring_process_page.status_update_failed"));
+          setMarkAsHiredOpen(false);
         },
       },
     );
@@ -118,15 +149,32 @@ const HiringProcessPage: React.FC = () => {
               {hiringProcess.title}
             </Typography>
           </Box>
-          <StatusBadgeEditor
-            currentStatus={hiringProcess.status}
-            statusOptions={HIRING_PROCESS_STATUS_OPTIONS}
-            onChange={handleStatusChange}
-            disabled={updateMutation.isPending}
-            size="medium"
-            label={t("hiring_process_page.change_status")}
-            ariaLabel={t("status_editor.change_hiring_process_status")}
-          />
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            {hiringProcess.candidate &&
+              hiringProcess.status !== "CLOSED" &&
+              hiringProcess.status !== "CANCELLED" &&
+              hiringProcess.status !== "REJECTED" && (
+                <Button
+                  variant="contained"
+                  color="success"
+                  startIcon={<CheckCircleIcon />}
+                  onClick={() => setMarkAsHiredOpen(true)}
+                  disabled={updateMutation.isPending}
+                  size="small"
+                >
+                  {t("hiring_process_page.mark_as_hired")}
+                </Button>
+              )}
+            <StatusBadgeEditor
+              currentStatus={hiringProcess.status}
+              statusOptions={HIRING_PROCESS_STATUS_OPTIONS}
+              onChange={handleStatusChange}
+              disabled={updateMutation.isPending}
+              size="medium"
+              label={t("hiring_process_page.change_status")}
+              ariaLabel={t("status_editor.change_hiring_process_status")}
+            />
+          </Box>
         </Box>
 
         {!hiringProcess.candidate && (
@@ -257,6 +305,37 @@ const HiringProcessPage: React.FC = () => {
           }
         />
       )}
+
+      {/* Mark as Hired confirmation dialog */}
+      <Dialog
+        open={markAsHiredOpen}
+        onClose={() => setMarkAsHiredOpen(false)}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>{t("hiring_process_page.mark_as_hired")}</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {t("hiring_process_page.mark_as_hired_confirm")}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setMarkAsHiredOpen(false)}
+            disabled={updateMutation.isPending}
+          >
+            {t("common.cancel")}
+          </Button>
+          <Button
+            onClick={handleMarkAsHired}
+            variant="contained"
+            color="success"
+            disabled={updateMutation.isPending}
+          >
+            {t("hiring_process_page.mark_as_hired")}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

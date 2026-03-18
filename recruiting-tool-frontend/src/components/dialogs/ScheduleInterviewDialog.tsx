@@ -16,8 +16,13 @@ import {
   FormControl,
   FormHelperText,
 } from "@mui/material";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import {
+  LocalizationProvider,
+  DatePicker,
+  TimePicker,
+} from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { format } from "date-fns";
 import { useForm, Controller } from "react-hook-form";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -36,16 +41,11 @@ interface ScheduleInterviewDialogProps {
   candidate?: { name: string; email: string };
 }
 
-// Time options in 30-minute increments from 06:00 to 22:00
-const timeOptions = Array.from({ length: 33 }, (_, i) => {
-  const hour = Math.floor(i / 2) + 6;
-  const minute = i % 2 === 0 ? "00" : "30";
-  return `${hour.toString().padStart(2, "0")}:${minute}`;
-});
+const durationOptions = [15, 30, 45, 60, 90, 120];
 
 interface FormData {
   scheduledDate: Date | null;
-  scheduledTime: string;
+  scheduledTime: Date | null;
   duration: number;
   meetingLink: string;
   notes: string;
@@ -73,7 +73,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   } = useForm<FormData>({
     defaultValues: {
       scheduledDate: null,
-      scheduledTime: "",
+      scheduledTime: null,
       duration: 60,
       meetingLink: "",
       notes: "",
@@ -86,8 +86,14 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         ? new Date(interview.scheduledDate)
         : null;
 
-      // Use the HH:mm string directly; snap to nearest valid option or keep as-is
-      const timeValue = interview.scheduledTime ?? "";
+      // Parse HH:mm string into a Date object so TimePicker can display it
+      let timeValue: Date | null = null;
+      if (interview.scheduledTime) {
+        const [hours, minutes] = interview.scheduledTime.split(":").map(Number);
+        const d = new Date();
+        d.setHours(hours, minutes, 0, 0);
+        timeValue = d;
+      }
 
       reset({
         scheduledDate: dateValue,
@@ -99,7 +105,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     } else {
       reset({
         scheduledDate: null,
-        scheduledTime: "",
+        scheduledTime: null,
         duration: 60,
         meetingLink: "",
         notes: "",
@@ -123,7 +129,9 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         scheduledDate: data.scheduledDate
           ? formatDateOnly(data.scheduledDate)
           : undefined,
-        scheduledTime: data.scheduledTime || undefined,
+        scheduledTime: data.scheduledTime
+          ? format(data.scheduledTime, "HH:mm")
+          : undefined,
         duration: data.duration || undefined,
         meetingLink: data.meetingLink || undefined,
         notes: data.notes || undefined,
@@ -205,32 +213,18 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                   name="scheduledTime"
                   control={control}
                   render={({ field }) => (
-                    <FormControl fullWidth error={!!errors.scheduledTime}>
-                      <InputLabel id="scheduled-time-label">
-                        {t("schedule_interview.interview_time")}
-                      </InputLabel>
-                      <Select
-                        labelId="scheduled-time-label"
-                        label={t("schedule_interview.interview_time")}
-                        value={field.value}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        displayEmpty
-                      >
-                        <MenuItem value="">
-                          <em>{t("schedule_interview.time_not_set")}</em>
-                        </MenuItem>
-                        {timeOptions.map((time) => (
-                          <MenuItem key={time} value={time}>
-                            {time}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                      {errors.scheduledTime && (
-                        <FormHelperText>
-                          {errors.scheduledTime.message}
-                        </FormHelperText>
-                      )}
-                    </FormControl>
+                    <TimePicker
+                      label={t("schedule_interview.interview_time")}
+                      value={field.value}
+                      onChange={(newValue) => field.onChange(newValue)}
+                      slotProps={{
+                        textField: {
+                          fullWidth: true,
+                          error: !!errors.scheduledTime,
+                          helperText: errors.scheduledTime?.message,
+                        },
+                      }}
+                    />
                   )}
                 />
               </Grid>
@@ -239,23 +233,29 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                 <Controller
                   name="duration"
                   control={control}
-                  rules={{
-                    min: {
-                      value: 1,
-                      message: t("schedule_interview.duration_min_error", {
-                        min: 1,
-                      }),
-                    },
-                  }}
                   render={({ field }) => (
-                    <TextField
-                      {...field}
-                      label={t("schedule_interview.duration")}
-                      type="number"
-                      fullWidth
-                      error={!!errors.duration}
-                      helperText={errors.duration?.message}
-                    />
+                    <FormControl fullWidth error={!!errors.duration}>
+                      <InputLabel id="duration-label">
+                        {t("schedule_interview.duration")}
+                      </InputLabel>
+                      <Select
+                        labelId="duration-label"
+                        label={t("schedule_interview.duration")}
+                        value={field.value}
+                        onChange={(e) => field.onChange(Number(e.target.value))}
+                      >
+                        {durationOptions.map((mins) => (
+                          <MenuItem key={mins} value={mins}>
+                            {t("interviews.duration_minutes", { count: mins })}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                      {errors.duration && (
+                        <FormHelperText>
+                          {errors.duration.message}
+                        </FormHelperText>
+                      )}
+                    </FormControl>
                   )}
                 />
               </Grid>
