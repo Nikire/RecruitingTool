@@ -23,8 +23,9 @@ export class QuotaGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const user = request.user;
 
+    // If user is not yet resolved (auth guard hasn't run), skip — auth guard handles it
     if (!user) {
-      throw new HttpException('User must be associated with a company', HttpStatus.PAYMENT_REQUIRED);
+      return true;
     }
 
     // SUPER_ADMIN bypasses quota guards (unlimited access)
