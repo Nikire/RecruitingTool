@@ -1744,6 +1744,31 @@
     "job_positions_desc": "View all job positions across companies"
   },
   "admin": {
+    "ai_quota": {
+      "title": "AI Quota Management",
+      "description": "View and configure AI scoring quotas per company",
+      "select_company": "Select a company",
+      "search_company": "Search company...",
+      "no_company_selected": "Select a company to view their AI quotas",
+      "no_quotas": "No AI quotas found for this company",
+      "columns": {
+        "quota_type": "Quota Type",
+        "used": "Used / Limit",
+        "remaining": "Remaining",
+        "reset_date": "Reset Date",
+        "actions": "Actions"
+      },
+      "edit_dialog": {
+        "title": "Edit AI Quota Limit",
+        "description": "Set the monthly limit for {{quotaType}} quota",
+        "new_limit": "New Limit",
+        "confirm": "Save",
+        "unlimited_hint": "Set to -1 for unlimited"
+      },
+      "usage_label": "{{used}} / {{limit}}",
+      "updated_success": "Quota limit updated successfully",
+      "load_error": "Failed to load AI quotas"
+    },
     "subscriptions": {
       "title": "Subscriptions Management",
       "table_title": "All Subscriptions",
@@ -3531,6 +3556,7 @@
     "general_settings": "General Settings",
     "webhooks": "Webhooks & API Keys",
     "custom_plans": "Custom Plans",
+    "ai_quota": "AI Quota",
     "aria_label": "admin navigation",
     "group_management": "Management",
     "group_configuration": "Configuration"

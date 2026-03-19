@@ -1499,6 +1499,7 @@
     "general_settings": "Configuración General",
     "webhooks": "Webhooks y Claves API",
     "custom_plans": "Planes Personalizados",
+    "ai_quota": "Cuota de IA",
     "aria_label": "navegación de administrador",
     "group_management": "Gestión",
     "group_configuration": "Configuración"
@@ -1770,6 +1771,31 @@
     "job_positions_desc": "Ver todas las posiciones de trabajo en todas las empresas"
   },
   "admin": {
+    "ai_quota": {
+      "title": "Gestión de Cuotas de IA",
+      "description": "Ver y configurar cuotas de puntuación de IA por empresa",
+      "select_company": "Seleccionar empresa",
+      "search_company": "Buscar empresa...",
+      "no_company_selected": "Selecciona una empresa para ver sus cuotas de IA",
+      "no_quotas": "No se encontraron cuotas de IA para esta empresa",
+      "columns": {
+        "quota_type": "Tipo de Cuota",
+        "used": "Usado / Límite",
+        "remaining": "Restante",
+        "reset_date": "Fecha de Reinicio",
+        "actions": "Acciones"
+      },
+      "edit_dialog": {
+        "title": "Editar Límite de Cuota de IA",
+        "description": "Establece el límite mensual para la cuota {{quotaType}}",
+        "new_limit": "Nuevo Límite",
+        "confirm": "Guardar",
+        "unlimited_hint": "Establece -1 para ilimitado"
+      },
+      "usage_label": "{{used}} / {{limit}}",
+      "updated_success": "Límite de cuota actualizado correctamente",
+      "load_error": "Error al cargar las cuotas de IA"
+    },
     "subscriptions": {
       "title": "Gestión de Suscripciones",
       "table_title": "Todas las Suscripciones",

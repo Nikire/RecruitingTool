@@ -11,6 +11,7 @@ import DisplaySettingsOutlinedIcon from "@mui/icons-material/DisplaySettingsOutl
 import WebhookOutlinedIcon from "@mui/icons-material/WebhookOutlined";
 import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOutlined";
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
+import PsychologyIcon from "@mui/icons-material/Psychology";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -110,6 +111,12 @@ const AdminLayout: React.FC = () => {
           text: t("admin_layout.custom_plans"),
           icon: <WorkspacePremiumOutlinedIcon />,
           path: "/admin/custom-plans",
+          requiresSuperAdmin: true,
+        },
+        {
+          text: t("admin_layout.ai_quota"),
+          icon: <PsychologyIcon />,
+          path: "/admin/ai-quota",
           requiresSuperAdmin: true,
         },
         {
