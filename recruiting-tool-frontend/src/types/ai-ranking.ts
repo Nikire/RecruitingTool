@@ -142,6 +142,17 @@ export interface ComparisonAnalysis {
 }
 
 /**
+ * Wrapper response returned by GET /ai/rankings/:jobPositionUid
+ * The backend wraps the array inside this envelope.
+ */
+export interface RankingsResponseDto {
+  jobPositionUid: string;
+  jobPositionTitle: string;
+  totalCandidates: number;
+  rankedCandidates: RankedCandidateDto[];
+}
+
+/**
  * Complete comparison response from API
  */
 export interface CompareCandidatesResponse {

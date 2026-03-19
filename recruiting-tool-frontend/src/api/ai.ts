@@ -3,6 +3,7 @@ import {
   CompareCandidatesRequest,
   CompareCandidatesResponse,
   RankedCandidateDto,
+  RankingsResponseDto,
   CandidateScoreResponseDto,
 } from "../types/ai-ranking";
 
@@ -24,15 +25,16 @@ export const compareCandidates = async (
 };
 
 /**
- * Get AI rankings for all candidates of a job position
+ * Get AI rankings for all candidates of a job position.
+ * The backend returns a wrapper object; we extract the rankedCandidates array.
  */
 export const getRankings = async (
   jobPositionUid: string,
 ): Promise<RankedCandidateDto[]> => {
-  const response = await api.get<RankedCandidateDto[]>(
+  const response = await api.get<RankingsResponseDto>(
     `/ai/rankings/${jobPositionUid}`,
   );
-  return response.data;
+  return response.data.rankedCandidates;
 };
 
 /**
