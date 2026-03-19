@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import {
   Box,
-  Dialog,
-  DialogContent,
-  DialogTitle,
+  Popover,
   IconButton,
   Tooltip,
   Typography,
@@ -29,23 +27,24 @@ const StageNoteButton: React.FC<StageNoteButtonProps> = ({
   existingNote,
 }) => {
   const { t } = useTranslation();
-  const [open, setOpen] = useState(false);
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
 
   const hasNote = !!existingNote;
   const tooltipTitle = hasNote
     ? t("stage_note.edit_note")
     : t("stage_note.add_note");
 
-  const handleOpen = (e: React.MouseEvent) => {
+  const handleOpen = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
-    setOpen(true);
+    setAnchorEl(e.currentTarget);
   };
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => setAnchorEl(null);
+
+  const open = Boolean(anchorEl);
 
   return (
     <Box onClick={(e) => e.stopPropagation()}>
-      {/* Trigger button */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
         {hasNote && existingNote.rating > 0 && (
           <Typography
@@ -71,15 +70,20 @@ const StageNoteButton: React.FC<StageNoteButtonProps> = ({
         </Tooltip>
       </Box>
 
-      {/* Notes Dialog */}
-      <Dialog
+      <Popover
         open={open}
+        anchorEl={anchorEl}
         onClose={handleClose}
-        maxWidth="sm"
-        fullWidth
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
         onClick={(e) => e.stopPropagation()}
+        slotProps={{
+          paper: {
+            sx: { width: 420, maxWidth: "calc(100vw - 32px)", p: 0 },
+          },
+        }}
       >
-        <DialogTitle sx={{ p: 2, pb: 1 }}>
+        <Box sx={{ p: 2, pb: 1 }}>
           <Box
             sx={{
               display: "flex",
@@ -101,19 +105,19 @@ const StageNoteButton: React.FC<StageNoteButtonProps> = ({
               <CloseIcon fontSize="small" />
             </IconButton>
           </Box>
-        </DialogTitle>
+        </Box>
 
         <Divider />
 
-        <DialogContent sx={{ p: 2 }}>
+        <Box sx={{ p: 2 }}>
           <StageNotePanel
             hiringProcessUid={hiringProcessUid}
             stageUid={stageUid}
             existingNote={existingNote}
             onClose={handleClose}
           />
-        </DialogContent>
-      </Dialog>
+        </Box>
+      </Popover>
     </Box>
   );
 };
