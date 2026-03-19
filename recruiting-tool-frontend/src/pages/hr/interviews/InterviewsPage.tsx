@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import EditNoteIcon from "@mui/icons-material/EditNote";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -23,6 +24,7 @@ import {
   useCompanyCalendarInterviews,
   useUpdateInterviewNotes,
 } from "../../../hooks/api/useCalendarInterviews";
+import { useCandidateStageNotes } from "../../../hooks/api/useStageNotes";
 import PageHeader from "../../../components/common/PageHeader";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -104,8 +106,13 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
 }) => {
   const { t } = useTranslation();
   const [notesOpen, setNotesOpen] = useState(false);
+  const [stageNotesOpen, setStageNotesOpen] = useState(false);
   const [draft, setDraft] = useState(interview.notes ?? "");
   const { mutate: saveNotes, isPending } = useUpdateInterviewNotes();
+  const { data: stageNotes, isLoading: stageNotesLoading } =
+    useCandidateStageNotes(
+      stageNotesOpen ? interview.candidate?.uid : undefined,
+    );
 
   const hasNotes = !!interview.notes;
 
@@ -237,10 +244,105 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
                 <EditNoteIcon fontSize="small" />
               </IconButton>
             </Tooltip>
+            <Tooltip
+              title={
+                stageNotesOpen
+                  ? t("calendar.hide_notes")
+                  : t("calendar.see_all_notes")
+              }
+            >
+              <IconButton
+                size="small"
+                color={stageNotesOpen ? "primary" : "default"}
+                onClick={() => setStageNotesOpen((prev) => !prev)}
+                aria-label={t("calendar.see_all_notes")}
+              >
+                <AssignmentIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
           </Stack>
         </Stack>
 
-        {/* Notes panel */}
+        {/* Stage eval notes panel */}
+        <Collapse in={stageNotesOpen} unmountOnExit>
+          <Divider sx={{ mt: 1.5, mb: 1.5 }} />
+          <Typography variant="subtitle2" gutterBottom>
+            {t("calendar.stage_eval_notes")}
+          </Typography>
+          {stageNotesLoading && (
+            <Stack spacing={1}>
+              <Skeleton variant="rounded" height={56} />
+              <Skeleton variant="rounded" height={56} />
+            </Stack>
+          )}
+          {!stageNotesLoading && (!stageNotes || stageNotes.length === 0) && (
+            <Typography variant="body2" color="text.secondary">
+              {t("calendar.no_stage_notes")}
+            </Typography>
+          )}
+          {!stageNotesLoading && stageNotes && stageNotes.length > 0 && (
+            <Stack spacing={1}>
+              {stageNotes.map((note) => (
+                <Box
+                  key={note.uid}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.default",
+                  }}
+                >
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="flex-start"
+                    sx={{ mb: 0.5 }}
+                  >
+                    <Box>
+                      <Typography variant="body2" fontWeight={600}>
+                        {note.stageTitle}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {note.hiringProcessTitle}
+                      </Typography>
+                    </Box>
+                    {note.rating > 0 && (
+                      <Typography
+                        variant="body2"
+                        color="primary"
+                        fontWeight={600}
+                      >
+                        {"★ " + note.rating}
+                      </Typography>
+                    )}
+                  </Stack>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {note.content}
+                  </Typography>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{ mt: 0.5, display: "block" }}
+                  >
+                    {note.author.name} ·{" "}
+                    {new Date(note.createdAt).toLocaleDateString()}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
+          )}
+        </Collapse>
+
+        {/* Interview notes panel */}
         <Collapse in={notesOpen} unmountOnExit>
           <Divider sx={{ mt: 1.5, mb: 1.5 }} />
           <Typography variant="subtitle2" gutterBottom>
