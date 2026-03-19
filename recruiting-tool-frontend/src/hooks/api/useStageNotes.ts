@@ -1,9 +1,22 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { upsertStageEvalNote, deleteStageEvalNote } from "../../api/stageNotes";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import {
+  getCandidateStageNotes,
+  upsertStageEvalNote,
+  deleteStageEvalNote,
+} from "../../api/stageNotes";
 import { UpsertStageEvalNoteDto } from "../../types/stage.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const HIRING_PROCESS_KEY = "hiringProcess";
+const CANDIDATE_STAGE_NOTES_KEY = "candidateStageNotes";
+
+export function useCandidateStageNotes(candidateUid: string | undefined) {
+  return useQuery({
+    queryKey: [CANDIDATE_STAGE_NOTES_KEY, candidateUid],
+    queryFn: () => getCandidateStageNotes(candidateUid!),
+    enabled: !!candidateUid,
+  });
+}
 
 export function useUpsertStageNote() {
   const queryClient = useQueryClient();

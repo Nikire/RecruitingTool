@@ -14,12 +14,15 @@ import {
   TextField,
   Link,
   Stack,
+  Skeleton,
 } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EditCalendarIcon from "@mui/icons-material/EditCalendar";
 import CancelIcon from "@mui/icons-material/Cancel";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import NotesIcon from "@mui/icons-material/Notes";
+import StarIcon from "@mui/icons-material/Star";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import {
@@ -27,6 +30,7 @@ import {
   useRescheduleInterview,
   useCancelCalendarInterview,
 } from "../../hooks/api/useCalendarInterviews";
+import { useCandidateStageNotes } from "../../hooks/api/useStageNotes";
 
 interface InterviewDetailPopoverProps {
   interview: CalendarInterview | null;
@@ -44,9 +48,14 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
   const [cancelOpen, setCancelOpen] = useState(false);
   const [newDate, setNewDate] = useState("");
   const [newTime, setNewTime] = useState("");
+  const [showNotes, setShowNotes] = useState(false);
 
   const reschedule = useRescheduleInterview();
   const cancel = useCancelCalendarInterview();
+  const { data: stageNotes, isLoading: stageNotesLoading } =
+    useCandidateStageNotes(
+      showNotes ? (interview?.candidate?.uid ?? undefined) : undefined,
+    );
 
   const open = Boolean(anchorEl) && interview !== null;
 
@@ -278,14 +287,121 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
 
         <Divider />
 
+        {showNotes && (
+          <Box sx={{ px: 2, pt: 1.5, pb: 1 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              display="block"
+              sx={{ mb: 1 }}
+            >
+              {t("calendar.stage_eval_notes")}
+            </Typography>
+            {stageNotesLoading ? (
+              <Stack spacing={1}>
+                <Skeleton variant="rounded" height={56} />
+                <Skeleton variant="rounded" height={56} />
+              </Stack>
+            ) : !stageNotes || stageNotes.length === 0 ? (
+              <Typography
+                variant="body2"
+                color="text.disabled"
+                sx={{ pb: 0.5 }}
+              >
+                {t("calendar.no_stage_notes")}
+              </Typography>
+            ) : (
+              <Stack spacing={1}>
+                {stageNotes.map((note) => (
+                  <Box
+                    key={note.uid}
+                    sx={{
+                      border: 1,
+                      borderColor: "divider",
+                      borderRadius: 1,
+                      p: 1,
+                      bgcolor: "background.default",
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        mb: 0.5,
+                      }}
+                    >
+                      <Typography variant="caption" fontWeight={600}>
+                        {note.stageTitle}
+                      </Typography>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 0.25,
+                        }}
+                      >
+                        <StarIcon
+                          sx={{ fontSize: 13, color: "warning.main" }}
+                        />
+                        <Typography variant="caption" color="text.secondary">
+                          {note.rating}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography
+                      variant="caption"
+                      color="text.secondary"
+                      display="block"
+                      sx={{ mb: 0.5 }}
+                    >
+                      {note.hiringProcessTitle}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        fontSize: "0.75rem",
+                        display: "-webkit-box",
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                        mb: 0.5,
+                      }}
+                    >
+                      {note.content}
+                    </Typography>
+                    <Typography variant="caption" color="text.disabled">
+                      {note.author.name} &middot;{" "}
+                      {new Date(note.createdAt).toLocaleDateString()}
+                    </Typography>
+                  </Box>
+                ))}
+              </Stack>
+            )}
+          </Box>
+        )}
+
+        <Divider />
+
         <Box
           sx={{
             p: 1.5,
             display: "flex",
             gap: 1,
             justifyContent: "flex-end",
+            flexWrap: "wrap",
           }}
         >
+          <Button
+            size="small"
+            startIcon={<NotesIcon />}
+            onClick={() => setShowNotes((prev) => !prev)}
+            variant="outlined"
+            color="inherit"
+          >
+            {showNotes ? t("calendar.hide_notes") : t("calendar.see_all_notes")}
+          </Button>
           {interview.meetingLink && (
             <Button
               size="small"

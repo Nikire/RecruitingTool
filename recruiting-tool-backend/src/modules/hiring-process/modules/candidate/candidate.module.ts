@@ -8,6 +8,7 @@ import { EmailModule } from 'src/modules/email/email.module';
 import { StorageModule } from 'src/modules/storage/storage.module';
 import { AuditLogModule } from 'src/modules/audit-log/audit-log.module';
 import { NotificationsModule } from 'src/modules/notifications/notifications.module';
+import { StageNotesModule } from 'src/modules/stage-notes/stage-notes.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { NotificationsModule } from 'src/modules/notifications/notifications.mod
     StorageModule,
     AuditLogModule,
     NotificationsModule,
+    StageNotesModule,
     MulterModule.register({
       limits: {
         fileSize: 5 * 1024 * 1024, // 5MB max file size

@@ -18,6 +18,8 @@ import { DatabaseService } from 'src/modules/shared/modules/database/database.se
 import { User } from '@prisma/client';
 import { CandidateJourneyResponseDto } from '../stages/dto/stage-time-tracking.dto';
 import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
+import { StageNotesService } from 'src/modules/stage-notes/stage-notes.service';
+import { CandidateStageNotesResponseDto } from 'src/modules/stage-notes/dto/stage-note.dto';
 
 @ApiTags('Candidate')
 @ApiBearerAuth()
@@ -33,6 +35,7 @@ export class CandidateController {
     private readonly candidateActivityService: CandidateActivityService,
     private readonly candidateImportService: CandidateImportService,
     private readonly databaseService: DatabaseService,
+    private readonly stageNotesService: StageNotesService,
   ) {}
 
   @Post()
@@ -227,6 +230,19 @@ export class CandidateController {
   @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
   getCandidateActivities(@Param('uid') uid: string): Promise<CandidateActivityResponseDto[]> {
     return this.candidateActivityService.getCandidateActivities(uid);
+  }
+
+  // Stage Eval Notes for candidate endpoint
+  @Get(':candidateUid/stage-eval-notes')
+  @ApiOperation({ summary: 'Get all stage evaluation notes for a candidate' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all stage evaluation notes for the candidate across all hiring processes',
+    type: [CandidateStageNotesResponseDto],
+  })
+  @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
+  getCandidateStageEvalNotes(@Param('candidateUid') candidateUid: string): Promise<CandidateStageNotesResponseDto[]> {
+    return this.stageNotesService.findByCandidateUid(candidateUid);
   }
 
   // Bulk Import endpoints

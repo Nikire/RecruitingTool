@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsInt, IsNotEmpty, IsString, Max, MaxLength, Min, MinLength } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export class UpsertStageNoteDto {
   @ApiProperty({
@@ -83,5 +84,45 @@ export class StageNoteResponseDto {
     description: 'Date when the note was last updated',
     example: '2024-01-15T10:30:00Z',
   })
+  updatedAt: Date;
+}
+
+export class CandidateStageNotesResponseDto {
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174001' })
+  uid: string;
+
+  @ApiProperty({ example: 'Candidate demonstrated strong problem-solving skills.' })
+  content: string;
+
+  @ApiProperty({ example: 4 })
+  rating: number;
+
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174002' })
+  stageUid: string;
+
+  @ApiProperty({ example: 'Technical Interview' })
+  stageTitle: string;
+
+  @ApiProperty({ example: '123e4567-e89b-12d3-a456-426614174003' })
+  hiringProcessUid: string;
+
+  @ApiProperty({ example: 'Senior Frontend Developer' })
+  hiringProcessTitle: string;
+
+  @ApiProperty({
+    example: { uid: '123e4567-e89b-12d3-a456-426614174004', name: 'Alice Johnson', email: 'alice@example.com' },
+  })
+  author: {
+    uid: string;
+    name: string;
+    email: string;
+  };
+
+  @ApiProperty({ example: '2024-01-15T10:30:00Z' })
+  @Type(() => Date)
+  createdAt: Date;
+
+  @ApiProperty({ example: '2024-01-15T10:30:00Z' })
+  @Type(() => Date)
   updatedAt: Date;
 }

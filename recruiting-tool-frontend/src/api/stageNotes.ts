@@ -1,5 +1,9 @@
 import axiosInstance from "./axios";
-import { StageEvalNote, UpsertStageEvalNoteDto } from "../types/stage.types";
+import {
+  CandidateStageNote,
+  StageEvalNote,
+  UpsertStageEvalNoteDto,
+} from "../types/stage.types";
 
 export const upsertStageEvalNote = async (
   hiringProcessUid: string,
@@ -31,3 +35,10 @@ export const deleteStageEvalNote = async (
     `/hiring-process/${hiringProcessUid}/stages/${stageUid}/note`,
   );
 };
+
+export const getCandidateStageNotes = (
+  candidateUid: string,
+): Promise<CandidateStageNote[]> =>
+  axiosInstance
+    .get(`/candidate/${candidateUid}/stage-eval-notes`)
+    .then((r) => r.data);

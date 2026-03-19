@@ -106,3 +106,21 @@ export interface UpsertStageEvalNoteDto {
   content: string;
   rating: number;
 }
+
+// Candidate stage evaluation notes (all notes across hiring processes)
+export interface CandidateStageNote {
+  uid: string;
+  content: string;
+  rating: number;
+  stageUid: string;
+  stageTitle: string;
+  hiringProcessUid: string;
+  hiringProcessTitle: string;
+  author: {
+    uid: string;
+    name: string;
+    email: string;
+  };
+  createdAt: string;
+  updatedAt: string;
+}

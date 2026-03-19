@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { UpsertStageNoteDto, StageNoteResponseDto } from './dto/stage-note.dto';
+import { UpsertStageNoteDto, StageNoteResponseDto, CandidateStageNotesResponseDto } from './dto/stage-note.dto';
 
 @Injectable()
 export class StageNotesService {
@@ -134,6 +134,42 @@ export class StageNotesService {
     });
 
     return { message: 'Stage note deleted successfully' };
+  }
+
+  /**
+   * Get all stage evaluation notes for a candidate (across all hiring processes and stages).
+   */
+  async findByCandidateUid(candidateUid: string): Promise<CandidateStageNotesResponseDto[]> {
+    const notes = await this.databaseService.stageNote.findMany({
+      where: {
+        hiringProcess: {
+          candidate: { uid: candidateUid },
+        },
+      },
+      include: {
+        stage: { select: { uid: true, title: true } },
+        hiringProcess: { select: { uid: true, title: true } },
+        author: { select: { uid: true, name: true, email: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    return notes.map((note) => ({
+      uid: note.uid,
+      content: note.content,
+      rating: note.rating,
+      stageUid: note.stage.uid,
+      stageTitle: note.stage.title,
+      hiringProcessUid: note.hiringProcess.uid,
+      hiringProcessTitle: note.hiringProcess.title,
+      author: {
+        uid: note.author.uid,
+        name: note.author.name,
+        email: note.author.email,
+      },
+      createdAt: note.createdAt,
+      updatedAt: note.updatedAt,
+    }));
   }
 
   private mapToResponseDto(note: {

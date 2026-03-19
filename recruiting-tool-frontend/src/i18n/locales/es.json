@@ -3752,6 +3752,10 @@
     "save_reschedule": "Guardar",
     "reschedule_title": "Reprogramar Entrevista",
     "all_day": "Todo el día",
-    "interview_with": "Entrevista con {{name}}"
+    "interview_with": "Entrevista con {{name}}",
+    "see_all_notes": "Ver todas las notas",
+    "hide_notes": "Ocultar notas",
+    "no_stage_notes": "Sin notas de evaluación todavía",
+    "stage_eval_notes": "Notas de Evaluación"
   }
 }
