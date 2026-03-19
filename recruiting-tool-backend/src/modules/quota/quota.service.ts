@@ -1,6 +1,6 @@
 import { Injectable, Logger, HttpException, HttpStatus, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { SubscriptionPlan } from '@prisma/client';
+import { QuotaType, SubscriptionPlan } from '@prisma/client';
 import { PLAN_LIMITS, QuotaResource } from './config/plan-limits.config';
 import { QuotaStatusDto, QuotaUsageDto, FeatureAccessDto, PlanLimitsResponseDto } from './dto/quota.dto';
 
@@ -36,21 +36,21 @@ export class QuotaService {
     const limits = PLAN_LIMITS[plan];
 
     // Get current usage
-    const [jobPositionsCount, usersCount, totalStorageMB] = await Promise.all([
+    const [jobPositionsCount, usersCount, totalStorageMB, aiScoringUsed] = await Promise.all([
       this.getJobPositionsCount(companyId),
       this.getUsersCount(companyId),
       this.getStorageUsageMB(companyId),
+      this.getAIScoringUsed(companyId),
     ]);
 
     // Build quota usage array
-    // aiScoringCredits shows 0 used until per-month tracking is implemented
     // candidatesPerPosition shows the plan limit (usage is per job position, not global)
     const quotas: QuotaUsageDto[] = [
       this.buildQuotaUsage('jobPositions', jobPositionsCount, limits.maxJobPositions),
       this.buildQuotaUsage('candidatesPerPosition', 0, limits.maxCandidatesPerPosition),
       this.buildQuotaUsage('users', usersCount, limits.maxUsers),
       this.buildQuotaUsage('storage', totalStorageMB, limits.maxStorageMB),
-      this.buildQuotaUsage('aiScoringCredits', 0, limits.aiScoringCreditsPerMonth),
+      this.buildQuotaUsage('aiScoringCredits', aiScoringUsed, limits.aiScoringCreditsPerMonth),
     ];
 
     // Build feature access array
@@ -274,6 +274,18 @@ export class QuotaService {
         deletedAt: null,
       },
     });
+  }
+
+  private async getAIScoringUsed(companyId: number): Promise<number> {
+    const quota = await this.databaseService.aIQuota.findUnique({
+      where: {
+        companyId_quotaType: {
+          companyId,
+          quotaType: QuotaType.CANDIDATE_SCORING,
+        },
+      },
+    });
+    return quota?.used ?? 0;
   }
 
   private async getUsersCount(companyId: number): Promise<number> {
