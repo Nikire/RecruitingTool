@@ -230,6 +230,9 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
             <MenuItem value={EmailTemplateType.APPLICATION_RECEIVED}>
               {t("email_template.type_application_received")}
             </MenuItem>
+            <MenuItem value={EmailTemplateType.APPLICATION_UNDER_REVIEW}>
+              {t("email_template.type_application_under_review")}
+            </MenuItem>
             <MenuItem value={EmailTemplateType.APPLICATION_REJECTED}>
               {t("email_template.type_application_rejected")}
             </MenuItem>

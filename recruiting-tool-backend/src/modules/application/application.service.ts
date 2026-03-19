@@ -4,13 +4,14 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
 import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { ApplicationStatus, StageStatus, User, NotificationType, Prisma } from '@prisma/client';
+import { ApplicationStatus, EmailTemplateType, StageStatus, User, NotificationType, Prisma } from '@prisma/client';
 import { EmailService } from '../email/email.service';
 import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { SseService } from '../sse/sse.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { EmailTemplatesService } from '../email-templates/email-templates.service';
 
 @Injectable()
 export class ApplicationService {
@@ -23,6 +24,7 @@ export class ApplicationService {
     private configService: ConfigService,
     private auditLogService: AuditLogService,
     private notificationsService: NotificationsService,
+    private emailTemplatesService: EmailTemplatesService,
   ) {}
 
   async create(createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
@@ -273,6 +275,7 @@ export class ApplicationService {
           updatedApplication.uid,
           oldStatus,
           updateApplicationDto.status,
+          application.jobPosition.companyId,
         );
 
         // Create notification for HR users about application status change
@@ -315,6 +318,24 @@ export class ApplicationService {
     }
   }
 
+  /**
+   * Map application status to the corresponding EmailTemplateType string for DB template lookup.
+   * Returns the string key of the enum value so the lookup works even before Prisma client regeneration.
+   */
+  private statusToTemplateType(status: ApplicationStatus): string | null {
+    switch (status) {
+      case ApplicationStatus.REVIEWED:
+        // APPLICATION_UNDER_REVIEW is a new enum value — use string to avoid Prisma client version mismatch
+        return 'APPLICATION_UNDER_REVIEW';
+      case ApplicationStatus.ACCEPTED:
+        return EmailTemplateType.APPLICATION_SHORTLISTED;
+      case ApplicationStatus.REJECTED:
+        return EmailTemplateType.APPLICATION_REJECTED;
+      default:
+        return null;
+    }
+  }
+
   private async sendStatusChangeEmail(
     email: string,
     name: string,
@@ -322,20 +343,49 @@ export class ApplicationService {
     applicationUid: string,
     oldStatus: ApplicationStatus,
     newStatus: ApplicationStatus,
+    companyId?: number,
   ): Promise<void> {
     try {
+      // Attempt to use a company-specific editable DB template first
+      if (companyId) {
+        const templateType = this.statusToTemplateType(newStatus);
+        if (templateType) {
+          const companyTemplate = await this.emailTemplatesService.findByTypeAndCompany(templateType, companyId).catch(() => null);
+          if (companyTemplate) {
+            // Fetch the company name for template variables
+            let companyName = '';
+            try {
+              const company = await this.databaseService.company.findUnique({ where: { id: companyId } });
+              companyName = company?.name ?? '';
+            } catch {
+              // non-critical — continue without company name
+            }
+
+            await this.emailService.sendEmailFromTemplate(email, name, companyTemplate.uid, {
+              candidateName: name,
+              positionTitle: jobTitle,
+              companyName,
+              applicationUid,
+            });
+            this.logger.log(`Sent ${newStatus} status email via company template ${companyTemplate.uid} to ${email} for application ${applicationUid}`);
+            return;
+          }
+        }
+      }
+
+      // Fall back to hardcoded templates
       switch (newStatus) {
         case ApplicationStatus.REVIEWED:
           await this.emailService.sendApplicationUnderReview(email, name, jobTitle, applicationUid);
-          this.logger.log(`Sent REVIEWED status email to ${email} for application ${applicationUid}`);
+          this.logger.log(`Sent REVIEWED status email (hardcoded) to ${email} for application ${applicationUid}`);
           break;
         case ApplicationStatus.ACCEPTED:
           await this.emailService.sendApplicationAcceptance(email, name, jobTitle);
-          this.logger.log(`Sent ACCEPTED status email to ${email} for application ${applicationUid}`);
+          this.logger.log(`Sent ACCEPTED status email (hardcoded) to ${email} for application ${applicationUid}`);
           break;
         case ApplicationStatus.REJECTED:
           await this.emailService.sendApplicationRejection(email, name, jobTitle, applicationUid);
-          this.logger.log(`Sent REJECTED status email to ${email} for application ${applicationUid}`);
+          this.logger.log(`Sent REJECTED status email (hardcoded) to ${email} for application ${applicationUid}`);
           break;
         default:
           this.logger.debug(`No email sent for status change to ${newStatus} for application ${applicationUid}`);

@@ -749,7 +749,13 @@
     "table_default": "Default",
     "table_created_by": "Created By",
     "table_created_at": "Created At",
-    "table_actions": "Actions"
+    "table_actions": "Actions",
+    "trigger_info_title": "Automatic email triggers — these template types are sent automatically when a status changes:",
+    "trigger_APPLICATION_RECEIVED": "APPLICATION_RECEIVED — sent when a candidate submits an application",
+    "trigger_APPLICATION_UNDER_REVIEW": "APPLICATION_UNDER_REVIEW — sent when status changes to Reviewed",
+    "trigger_APPLICATION_SHORTLISTED": "APPLICATION_SHORTLISTED — sent when status changes to Accepted",
+    "trigger_APPLICATION_REJECTED": "APPLICATION_REJECTED — sent when status changes to Rejected",
+    "trigger_INTERVIEW_INVITATION": "INTERVIEW_INVITATION — sent when an interview is scheduled"
   },
   "forms": {
     "custom_questions": "Custom Questions",
@@ -855,6 +861,7 @@
     "type_helper": "Select the type for automated email selection (optional)",
     "type_none": "None (Custom)",
     "type_application_received": "Application Received",
+    "type_application_under_review": "Application Under Review",
     "type_application_rejected": "Application Rejected",
     "type_application_shortlisted": "Application Shortlisted",
     "type_interview_invitation": "Interview Invitation",
@@ -3749,5 +3756,19 @@
     "hide_notes": "Hide notes",
     "no_stage_notes": "No evaluation notes yet",
     "stage_eval_notes": "Evaluation Notes"
+  },
+  "ai_scoring": {
+    "score": "Score",
+    "analyze": "Analyze",
+    "re_analyze": "Re-analyze",
+    "not_scored": "Not scored",
+    "scored_success": "Candidate scored successfully",
+    "scored_error": "Failed to score candidate",
+    "avg_score": "Avg",
+    "scored_count": "{{scored}}/{{total}} scored",
+    "sort_by_score": "Sort by score",
+    "skills": "Skills",
+    "experience": "Experience",
+    "education": "Education"
   }
 }

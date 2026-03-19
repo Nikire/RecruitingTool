@@ -259,4 +259,51 @@ export class EmailTemplatesService {
 
     return EmailTemplateMapper(emailTemplate);
   }
+
+  /**
+   * Find email template by type for a specific company (using internal company ID)
+   * Returns null instead of throwing when no template is found.
+   * Used internally for automated status-change email selection.
+   */
+  async findByTypeAndCompany(type: string, companyId: number): Promise<EmailTemplateResponseDto | null> {
+    const emailTemplate = await this.databaseService.emailTemplate.findFirst({
+      where: {
+        companyId,
+        type: type as any,
+        isDefault: true,
+      },
+      include: {
+        company: true,
+        createdBy: true,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+
+    if (!emailTemplate) {
+      // Fall back to any template of this type (not just default)
+      const fallback = await this.databaseService.emailTemplate.findFirst({
+        where: {
+          companyId,
+          type: type as any,
+        },
+        include: {
+          company: true,
+          createdBy: true,
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      if (!fallback) {
+        return null;
+      }
+
+      return EmailTemplateMapper(fallback);
+    }
+
+    return EmailTemplateMapper(emailTemplate);
+  }
 }

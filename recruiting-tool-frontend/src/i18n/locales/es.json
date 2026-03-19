@@ -757,7 +757,13 @@
       "application_confirmation": "Confirmación de Aplicación",
       "status_update": "Actualización de Estado",
       "interview_reminder": "Recordatorio de Entrevista"
-    }
+    },
+    "trigger_info_title": "Disparadores automáticos de correo — estos tipos de plantilla se envían automáticamente cuando cambia el estado:",
+    "trigger_APPLICATION_RECEIVED": "APPLICATION_RECEIVED — se envía cuando un candidato presenta una solicitud",
+    "trigger_APPLICATION_UNDER_REVIEW": "APPLICATION_UNDER_REVIEW — se envía cuando el estado cambia a En revisión",
+    "trigger_APPLICATION_SHORTLISTED": "APPLICATION_SHORTLISTED — se envía cuando el estado cambia a Aceptado",
+    "trigger_APPLICATION_REJECTED": "APPLICATION_REJECTED — se envía cuando el estado cambia a Rechazado",
+    "trigger_INTERVIEW_INVITATION": "INTERVIEW_INVITATION — se envía cuando se programa una entrevista"
   },
   "forms": {
     "custom_questions": "Preguntas Personalizadas",
@@ -863,6 +869,7 @@
     "type_helper": "Selecciona el tipo para la selección automática de correos (opcional)",
     "type_none": "Ninguno (Personalizado)",
     "type_application_received": "Solicitud Recibida",
+    "type_application_under_review": "Solicitud en revisión",
     "type_application_rejected": "Solicitud Rechazada",
     "type_application_shortlisted": "Solicitud Preseleccionada",
     "type_interview_invitation": "Invitación a Entrevista",
@@ -3757,5 +3764,19 @@
     "hide_notes": "Ocultar notas",
     "no_stage_notes": "Sin notas de evaluación todavía",
     "stage_eval_notes": "Notas de Evaluación"
+  },
+  "ai_scoring": {
+    "score": "Puntuación",
+    "analyze": "Analizar",
+    "re_analyze": "Re-analizar",
+    "not_scored": "Sin puntuación",
+    "scored_success": "Candidato puntuado exitosamente",
+    "scored_error": "Error al puntuar el candidato",
+    "avg_score": "Prom",
+    "scored_count": "{{scored}}/{{total}} puntuados",
+    "sort_by_score": "Ordenar por puntuación",
+    "skills": "Habilidades",
+    "experience": "Experiencia",
+    "education": "Educación"
   }
 }

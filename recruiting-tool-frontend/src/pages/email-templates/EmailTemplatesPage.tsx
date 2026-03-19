@@ -1,4 +1,4 @@
-import { Box, Chip, Paper } from "@mui/material";
+import { Alert, Box, Chip, Paper, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import AddIcon from "@mui/icons-material/Add";
@@ -50,6 +50,8 @@ const EmailTemplatesPage: React.FC = () => {
     switch (type) {
       case EmailTemplateType.APPLICATION_RECEIVED:
         return "info";
+      case EmailTemplateType.APPLICATION_UNDER_REVIEW:
+        return "warning";
       case EmailTemplateType.APPLICATION_REJECTED:
         return "error";
       case EmailTemplateType.APPLICATION_SHORTLISTED:
@@ -73,6 +75,8 @@ const EmailTemplatesPage: React.FC = () => {
     switch (type) {
       case EmailTemplateType.APPLICATION_RECEIVED:
         return t("email_template.type_application_received");
+      case EmailTemplateType.APPLICATION_UNDER_REVIEW:
+        return t("email_template.type_application_under_review");
       case EmailTemplateType.APPLICATION_REJECTED:
         return t("email_template.type_application_rejected");
       case EmailTemplateType.APPLICATION_SHORTLISTED:
@@ -213,6 +217,39 @@ const EmailTemplatesPage: React.FC = () => {
             : undefined
         }
       />
+
+      <Alert severity="info" sx={{ mb: 2 }}>
+        <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+          {t("email_templates.trigger_info_title")}
+        </Typography>
+        <ul style={{ margin: 0, paddingLeft: 20 }}>
+          <li>
+            <Typography variant="body2">
+              {t("email_templates.trigger_APPLICATION_RECEIVED")}
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body2">
+              {t("email_templates.trigger_APPLICATION_UNDER_REVIEW")}
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body2">
+              {t("email_templates.trigger_APPLICATION_SHORTLISTED")}
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body2">
+              {t("email_templates.trigger_APPLICATION_REJECTED")}
+            </Typography>
+          </li>
+          <li>
+            <Typography variant="body2">
+              {t("email_templates.trigger_INTERVIEW_INVITATION")}
+            </Typography>
+          </li>
+        </ul>
+      </Alert>
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <SearchBar

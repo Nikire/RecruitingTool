@@ -65,6 +65,44 @@ export function getScoreTierColor(
 }
 
 /**
+ * Ranked candidate returned by GET /ai/rankings/:jobPositionUid
+ */
+export interface RankedCandidateDto {
+  candidateUid: string;
+  candidateName: string;
+  candidateEmail: string;
+  overallScore: number;
+  skillsScore: number;
+  experienceScore: number;
+  educationScore: number;
+  rank: number;
+  scoreUid: string;
+  scoredAt: string;
+}
+
+/**
+ * Score response returned by POST /ai/score-candidate
+ */
+export interface CandidateScoreResponseDto {
+  uid: string;
+  candidateUid: string;
+  jobPositionUid: string;
+  overallScore: number;
+  skillsScore: number;
+  experienceScore: number;
+  educationScore: number;
+  analysis: {
+    skillsAnalysis?: string;
+    experienceAnalysis?: string;
+    educationAnalysis?: string;
+    recommendation?: string;
+    strengths?: string[];
+    concerns?: string[];
+  };
+  scoredAt: string;
+}
+
+/**
  * Candidate Comparison Types (AI Feature #243)
  */
 

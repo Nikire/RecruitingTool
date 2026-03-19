@@ -10,25 +10,44 @@ import {
   Divider,
   Skeleton,
   Alert,
+  CircularProgress,
+  Tooltip,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import SortIcon from "@mui/icons-material/Sort";
 import { useTranslation } from "react-i18next";
 import {
   useListHiringProcesses,
   useDeleteHiringProcess,
 } from "../../hooks/api/useHiringProcess";
+import { useRankings, useScoreCandidate } from "../../hooks/api/useAi";
 import { HiringProcess } from "../../types/hiringProcess.types";
+import {
+  RankedCandidateDto,
+  getScoreTier,
+  getScoreTierColor,
+} from "../../types/ai-ranking";
 import { useNavigate } from "react-router-dom";
 import UpdateHiringProcessDialog from "../dialogs/UpdateHiringProcessDialog";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
-import { canManageResources } from "../../utils/permissions";
+import { canManageResources, hasAnyRole } from "../../utils/permissions";
 import { getHiringProcessStatusColor } from "../../utils/statusColors";
 import { useDialog } from "../../hooks/useDialog";
 import { useConfirmDelete } from "../../hooks/useConfirmDelete";
 import { ActionsCell } from "../tables";
+import { UserRoles } from "../../types/user.types";
+
+const AI_SCORING_ROLES = [
+  UserRoles.HR_MANAGER,
+  UserRoles.COMPANY_OWNER,
+  UserRoles.ADMIN,
+  UserRoles.SUPER_ADMIN,
+];
 
 interface HiringProcessesGroupedListProps {
   page: number;
@@ -45,12 +64,124 @@ interface JobPositionGroup {
   processes: HiringProcess[];
 }
 
+// Score chip shown on each process row
+const ScoreChip: React.FC<{
+  score: RankedCandidateDto | undefined;
+  isScoring: boolean;
+  canScore: boolean;
+  jobPositionUid: string | null;
+  candidateUid: string | undefined;
+  onScore: (candidateUid: string, jobPositionUid: string) => void;
+}> = ({
+  score,
+  isScoring,
+  canScore,
+  jobPositionUid,
+  candidateUid,
+  onScore,
+}) => {
+  const { t } = useTranslation();
+
+  if (!jobPositionUid || !candidateUid) return null;
+
+  const handleScore = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onScore(candidateUid, jobPositionUid);
+  };
+
+  if (isScoring) {
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <CircularProgress size={16} />
+      </Box>
+    );
+  }
+
+  if (score) {
+    const tier = getScoreTier(score.overallScore);
+    const color = getScoreTierColor(tier);
+    return (
+      <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+        <Tooltip
+          title={`${t("ai_scoring.skills")}: ${score.skillsScore} | ${t("ai_scoring.experience")}: ${score.experienceScore} | ${t("ai_scoring.education")}: ${score.educationScore}`}
+        >
+          <Chip
+            label={score.overallScore}
+            color={color}
+            size="small"
+            sx={{ fontWeight: 600, minWidth: 40, cursor: "default" }}
+          />
+        </Tooltip>
+        {canScore && (
+          <Tooltip title={t("ai_scoring.re_analyze")}>
+            <IconButton
+              size="small"
+              onClick={handleScore}
+              sx={{ p: 0.25 }}
+              aria-label={t("ai_scoring.re_analyze")}
+            >
+              <RefreshIcon sx={{ fontSize: 14 }} />
+            </IconButton>
+          </Tooltip>
+        )}
+      </Box>
+    );
+  }
+
+  if (canScore) {
+    return (
+      <Tooltip title={t("ai_scoring.analyze")}>
+        <IconButton
+          size="small"
+          onClick={handleScore}
+          color="primary"
+          aria-label={t("ai_scoring.analyze")}
+        >
+          <AutoAwesomeIcon sx={{ fontSize: 16 }} />
+        </IconButton>
+      </Tooltip>
+    );
+  }
+
+  return (
+    <Typography variant="caption" color="text.disabled">
+      {t("ai_scoring.not_scored")}
+    </Typography>
+  );
+};
+
 const GroupHeader: React.FC<{
   group: JobPositionGroup;
   isExpanded: boolean;
   onToggle: () => void;
-}> = ({ group, isExpanded, onToggle }) => {
+  scoreMap: Map<string, RankedCandidateDto>;
+  isSortedByScore: boolean;
+  onToggleSortByScore: () => void;
+}> = ({
+  group,
+  isExpanded,
+  onToggle,
+  scoreMap,
+  isSortedByScore,
+  onToggleSortByScore,
+}) => {
   const { t } = useTranslation();
+
+  const scoredCount = group.processes.filter(
+    (p) => p.candidate?.uid && scoreMap.has(p.candidate.uid),
+  ).length;
+  const totalCount = group.processes.length;
+
+  const avgScore = useMemo(() => {
+    if (scoredCount === 0) return null;
+    const scores = group.processes
+      .map((p) =>
+        p.candidate?.uid ? scoreMap.get(p.candidate.uid) : undefined,
+      )
+      .filter((s): s is RankedCandidateDto => !!s)
+      .map((s) => s.overallScore);
+    return Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+  }, [group.processes, scoreMap, scoredCount]);
 
   return (
     <Box
@@ -83,6 +214,30 @@ const GroupHeader: React.FC<{
       <Typography variant="subtitle1" fontWeight={600} sx={{ flexGrow: 1 }}>
         {group.jobPositionTitle}
       </Typography>
+
+      {/* Scored count chip */}
+      {group.jobPositionUid && (
+        <Chip
+          label={t("ai_scoring.scored_count", {
+            scored: scoredCount,
+            total: totalCount,
+          })}
+          size="small"
+          variant="outlined"
+          sx={{ fontWeight: 500, fontSize: "0.7rem" }}
+        />
+      )}
+
+      {/* Average score chip */}
+      {avgScore !== null && (
+        <Chip
+          label={`${t("ai_scoring.avg_score")}: ${avgScore}`}
+          size="small"
+          color={getScoreTierColor(getScoreTier(avgScore))}
+          sx={{ fontWeight: 600 }}
+        />
+      )}
+
       <Chip
         label={t("hiring_processes.group.count", {
           count: group.processes.length,
@@ -92,6 +247,25 @@ const GroupHeader: React.FC<{
         variant="outlined"
         sx={{ fontWeight: 500 }}
       />
+
+      {/* Sort by score toggle */}
+      {group.jobPositionUid && scoredCount > 0 && (
+        <Tooltip title={t("ai_scoring.sort_by_score")}>
+          <IconButton
+            size="small"
+            color={isSortedByScore ? "primary" : "default"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSortByScore();
+            }}
+            aria-label={t("ai_scoring.sort_by_score")}
+            aria-pressed={isSortedByScore}
+          >
+            <SortIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Tooltip>
+      )}
+
       <IconButton
         size="small"
         aria-label={
@@ -113,10 +287,26 @@ const GroupHeader: React.FC<{
 const ProcessRow: React.FC<{
   process: HiringProcess;
   canManage: boolean;
+  canScore: boolean;
+  score: RankedCandidateDto | undefined;
+  jobPositionUid: string | null;
+  isScoringThisCandidate: boolean;
   onView: (process: HiringProcess) => void;
   onEdit: (process: HiringProcess) => void;
   onDelete: (process: HiringProcess) => void;
-}> = ({ process, canManage, onView, onEdit, onDelete }) => {
+  onScore: (candidateUid: string, jobPositionUid: string) => void;
+}> = ({
+  process,
+  canManage,
+  canScore,
+  score,
+  jobPositionUid,
+  isScoringThisCandidate,
+  onView,
+  onEdit,
+  onDelete,
+  onScore,
+}) => {
   const { t } = useTranslation();
 
   return (
@@ -185,6 +375,18 @@ const ProcessRow: React.FC<{
         />
       </Box>
 
+      {/* AI Score */}
+      <Box sx={{ flex: "0 0 80px", display: "flex", alignItems: "center" }}>
+        <ScoreChip
+          score={score}
+          isScoring={isScoringThisCandidate}
+          canScore={canScore}
+          jobPositionUid={jobPositionUid}
+          candidateUid={process.candidate?.uid}
+          onScore={onScore}
+        />
+      </Box>
+
       {/* Actions */}
       <Box
         sx={{
@@ -219,11 +421,49 @@ const ProcessRow: React.FC<{
 const GroupSection: React.FC<{
   group: JobPositionGroup;
   canManage: boolean;
+  canScore: boolean;
+  scoringCandidateUid: string | null;
   onView: (process: HiringProcess) => void;
   onEdit: (process: HiringProcess) => void;
   onDelete: (process: HiringProcess) => void;
-}> = ({ group, canManage, onView, onEdit, onDelete }) => {
+  onScore: (candidateUid: string, jobPositionUid: string) => void;
+}> = ({
+  group,
+  canManage,
+  canScore,
+  scoringCandidateUid,
+  onView,
+  onEdit,
+  onDelete,
+  onScore,
+}) => {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isSortedByScore, setIsSortedByScore] = useState(false);
+
+  const { data: rankings } = useRankings(group.jobPositionUid ?? undefined);
+
+  const scoreMap = useMemo<Map<string, RankedCandidateDto>>(() => {
+    const map = new Map<string, RankedCandidateDto>();
+    if (rankings) {
+      for (const r of rankings) {
+        map.set(r.candidateUid, r);
+      }
+    }
+    return map;
+  }, [rankings]);
+
+  const sortedProcesses = useMemo(() => {
+    if (!isSortedByScore) return group.processes;
+    return [...group.processes].sort((a, b) => {
+      const scoreA = a.candidate?.uid
+        ? (scoreMap.get(a.candidate.uid)?.overallScore ?? -1)
+        : -1;
+      const scoreB = b.candidate?.uid
+        ? (scoreMap.get(b.candidate.uid)?.overallScore ?? -1)
+        : -1;
+      return scoreB - scoreA;
+    });
+  }, [group.processes, isSortedByScore, scoreMap]);
 
   return (
     <Paper
@@ -238,18 +478,32 @@ const GroupSection: React.FC<{
         group={group}
         isExpanded={isExpanded}
         onToggle={() => setIsExpanded((prev) => !prev)}
+        scoreMap={scoreMap}
+        isSortedByScore={isSortedByScore}
+        onToggleSortByScore={() => setIsSortedByScore((prev) => !prev)}
       />
       <Divider />
       <Collapse in={isExpanded} timeout="auto" unmountOnExit={false}>
         <Box>
-          {group.processes.map((process) => (
+          {sortedProcesses.map((process) => (
             <ProcessRow
               key={process.uid}
               process={process}
               canManage={canManage}
+              canScore={canScore}
+              score={
+                process.candidate?.uid
+                  ? scoreMap.get(process.candidate.uid)
+                  : undefined
+              }
+              jobPositionUid={group.jobPositionUid}
+              isScoringThisCandidate={
+                scoringCandidateUid === process.candidate?.uid
+              }
               onView={onView}
               onEdit={onEdit}
               onDelete={onDelete}
+              onScore={onScore}
             />
           ))}
         </Box>
@@ -268,10 +522,16 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   const navigate = useNavigate();
   const { user } = useUserAtom();
   const canManage = canManageResources(user);
+  const canScore = hasAnyRole(user, AI_SCORING_ROLES);
 
   const updateDialog = useDialog<HiringProcess>();
   const deleteMutation = useDeleteHiringProcess();
   const deleteConfirm = useConfirmDelete<HiringProcess>(deleteMutation);
+
+  const scoreCandidate = useScoreCandidate();
+  const [scoringCandidateUid, setScoringCandidateUid] = useState<string | null>(
+    null,
+  );
 
   const { data, isLoading, error } = useListHiringProcesses({
     page,
@@ -315,6 +575,16 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
 
   const handleViewClick = (process: HiringProcess) => {
     navigate(`/hiring-process/${process.uid}`);
+  };
+
+  const handleScore = (candidateUid: string, jobPositionUid: string) => {
+    setScoringCandidateUid(candidateUid);
+    scoreCandidate.mutate(
+      { candidateUid, jobPositionUid },
+      {
+        onSettled: () => setScoringCandidateUid(null),
+      },
+    );
   };
 
   if (isLoading) {
@@ -427,6 +697,14 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
           >
             {t("hiring_processes.group.column_status")}
           </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ flex: "0 0 80px", textTransform: "uppercase" }}
+          >
+            {t("ai_scoring.score")}
+          </Typography>
           <Box sx={{ flex: "0 0 auto", minWidth: 110 }} />
         </Box>
 
@@ -435,9 +713,12 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             key={group.jobPositionUid ?? "__no_position__"}
             group={group}
             canManage={canManage}
+            canScore={canScore}
+            scoringCandidateUid={scoringCandidateUid}
             onView={handleViewClick}
             onEdit={(process) => updateDialog.openWith(process)}
             onDelete={(process) => deleteConfirm.confirmDelete(process)}
+            onScore={handleScore}
           />
         ))}
       </Box>

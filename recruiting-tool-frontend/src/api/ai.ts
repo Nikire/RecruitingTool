@@ -2,6 +2,8 @@ import api from "./axios";
 import {
   CompareCandidatesRequest,
   CompareCandidatesResponse,
+  RankedCandidateDto,
+  CandidateScoreResponseDto,
 } from "../types/ai-ranking";
 
 /**
@@ -16,6 +18,32 @@ export const compareCandidates = async (
 ): Promise<CompareCandidatesResponse> => {
   const response = await api.post<CompareCandidatesResponse>(
     "/ai/compare-candidates",
+    data,
+  );
+  return response.data;
+};
+
+/**
+ * Get AI rankings for all candidates of a job position
+ */
+export const getRankings = async (
+  jobPositionUid: string,
+): Promise<RankedCandidateDto[]> => {
+  const response = await api.get<RankedCandidateDto[]>(
+    `/ai/rankings/${jobPositionUid}`,
+  );
+  return response.data;
+};
+
+/**
+ * Score a candidate for a job position using AI
+ */
+export const scoreCandidate = async (data: {
+  candidateUid: string;
+  jobPositionUid: string;
+}): Promise<CandidateScoreResponseDto> => {
+  const response = await api.post<CandidateScoreResponseDto>(
+    "/ai/score-candidate",
     data,
   );
   return response.data;
