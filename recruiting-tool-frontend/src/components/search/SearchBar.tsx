@@ -13,7 +13,7 @@ interface SearchBarProps {
 
 const SearchBar: React.FC<SearchBarProps> = ({
   onSearch,
-  placeholder = "Search...",
+  placeholder,
   debounceMs = 300,
   value = "",
   containerSx,
@@ -56,7 +56,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
       <TextField
         fullWidth
         size="small"
-        placeholder={placeholder}
+        placeholder={placeholder ?? t("common.search_placeholder")}
         value={localValue}
         onChange={handleChange}
         inputProps={{

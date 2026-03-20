@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as filesApi from "../../api/files";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 /**
  * Hook to fetch files (optionally filter by candidate)
@@ -58,10 +59,11 @@ export function useUploadFile() {
  * Hook to upload an image file
  */
 export function useUploadImage() {
+  const { t } = useTranslation();
   return useMutation({
     mutationFn: filesApi.uploadImage,
     onSuccess: () => {
-      toast.success("Image uploaded successfully");
+      toast.success(t("files.image_uploaded"));
     },
     onError: (error: unknown) => {
       const errorMessage =
@@ -76,11 +78,12 @@ export function useUploadImage() {
  * Hook to download a file
  */
 export function useDownloadFile() {
+  const { t } = useTranslation();
   return useMutation({
     mutationFn: ({ uid, filename }: { uid: string; filename: string }) =>
       filesApi.downloadFile(uid, filename),
     onSuccess: () => {
-      toast.success("File downloaded successfully");
+      toast.success(t("files.file_downloaded"));
     },
     onError: (error: unknown) => {
       const errorMessage =
@@ -96,13 +99,14 @@ export function useDownloadFile() {
  */
 export function useDeleteFile() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: filesApi.deleteFile,
     onSuccess: () => {
       // Invalidate all file queries
       queryClient.invalidateQueries({ queryKey: ["files"] });
-      toast.success("File deleted successfully");
+      toast.success(t("files.file_deleted"));
     },
     onError: (error: unknown) => {
       const errorMessage =

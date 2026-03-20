@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 import { NormalizedError } from "../types/api.types";
 import { showErrorToast } from "../utils/toast";
+import i18n from "i18next";
 
 /**
  * Hook for consistent API error handling across the application
@@ -149,7 +150,7 @@ function normalizeErrorObject(
   // If error has request but no response (network error)
   const errorWithRequest = error as { request?: unknown };
   if (errorWithRequest.request) {
-    normalized.message = "Network error - unable to reach server";
+    normalized.message = i18n.t("errors.network_error");
     normalized.statusCode = 0;
     return normalized;
   }

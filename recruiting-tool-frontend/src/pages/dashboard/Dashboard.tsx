@@ -31,14 +31,16 @@ const Dashboard: React.FC = () => {
           mb: 3,
         }}
       >
-        <Typography variant="h4">Job Positions Dashboard</Typography>
+        <Typography variant="h4">
+          {t("dashboard.job_positions_title")}
+        </Typography>
         {canManage && (
           <Button
             variant="contained"
             startIcon={<AddIcon />}
             onClick={createDialog.open}
           >
-            Create Job Position
+            {t("dashboard.create_position")}
           </Button>
         )}
       </Box>

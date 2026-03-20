@@ -5,6 +5,7 @@ import {
   CandidateImportResult,
 } from "../../types/candidate-import.types";
 import toast from "react-hot-toast";
+import i18n from "i18next";
 
 /**
  * Preview CSV import without creating candidates
@@ -101,7 +102,7 @@ export const downloadCandidateImportTemplate = async () => {
     link.remove();
     window.URL.revokeObjectURL(url);
 
-    toast.success("Template downloaded successfully");
+    toast.success(i18n.t("files.template_downloaded"));
   } catch (error: unknown) {
     const errorMessage =
       (error as { response?: { data?: { message?: string } } })?.response?.data

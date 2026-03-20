@@ -16,6 +16,7 @@ import {
   BookingTokenResponse,
 } from "../../types/timeSlots.types";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 // ==================== PROTECTED HOOKS (HR/ADMIN) ====================
 
@@ -35,6 +36,7 @@ export const useTimeSlotsByInterview = (interviewUid: string | null) => {
  */
 export const useGenerateTimeSlots = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation<TimeSlotResponse[], Error, GenerateTimeSlotsRequest>({
     mutationFn: generateTimeSlots,
@@ -42,7 +44,7 @@ export const useGenerateTimeSlots = () => {
       queryClient.invalidateQueries({
         queryKey: ["timeSlots", "interview", variables.interviewUid],
       });
-      toast.success("Time slots generated successfully");
+      toast.success(t("time_slots.generated"));
     },
     onError: (error) => {
       toast.error(error.message || "Failed to generate time slots");
@@ -55,6 +57,7 @@ export const useGenerateTimeSlots = () => {
  */
 export const useGenerateCustomTimeSlots = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation<TimeSlotResponse[], Error, GenerateCustomTimeSlotsRequest>(
     {
@@ -63,7 +66,7 @@ export const useGenerateCustomTimeSlots = () => {
         queryClient.invalidateQueries({
           queryKey: ["timeSlots", "interview", variables.interviewUid],
         });
-        toast.success("Custom time slots generated successfully");
+        toast.success(t("time_slots.custom_generated"));
       },
       onError: (error) => {
         toast.error(error.message || "Failed to generate custom time slots");
@@ -76,10 +79,11 @@ export const useGenerateCustomTimeSlots = () => {
  * Generate booking token for interview
  */
 export const useGenerateBookingToken = () => {
+  const { t } = useTranslation();
   return useMutation<BookingTokenResponse, Error, string>({
     mutationFn: generateBookingToken,
     onSuccess: () => {
-      toast.success("Booking token generated successfully");
+      toast.success(t("time_slots.booking_token_generated"));
     },
     onError: (error) => {
       toast.error(error.message || "Failed to generate booking token");
@@ -92,6 +96,7 @@ export const useGenerateBookingToken = () => {
  */
 export const useCancelSlotSelection = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation<void, Error, string>({
     mutationFn: cancelSlotSelection,
@@ -102,7 +107,7 @@ export const useCancelSlotSelection = () => {
       queryClient.invalidateQueries({
         queryKey: ["interviews"],
       });
-      toast.success("Time slot selection cancelled");
+      toast.success(t("time_slots.selection_cancelled"));
     },
     onError: (error) => {
       toast.error(error.message || "Failed to cancel slot selection");
@@ -129,6 +134,7 @@ export const useAvailableSlots = (token: string | null) => {
  */
 export const useSelectTimeSlot = () => {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation<
     TimeSlotResponse,
@@ -140,7 +146,7 @@ export const useSelectTimeSlot = () => {
       queryClient.invalidateQueries({
         queryKey: ["timeSlots", "available", variables.token],
       });
-      toast.success("Interview time slot selected successfully!");
+      toast.success(t("time_slots.interview_selected"));
     },
     onError: (error) => {
       toast.error(error.message || "Failed to select time slot");

@@ -159,7 +159,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                     <Avatar
                       src={logoPreview}
-                      alt="Company Logo"
+                      alt={t("common.company_logo_alt")}
                       sx={{ width: 80, height: 80 }}
                       variant="rounded"
                     />

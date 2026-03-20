@@ -172,7 +172,7 @@ const DeletedRecordsPage: React.FC = () => {
         <Tabs
           value={tabValue}
           onChange={handleTabChange}
-          aria-label="deleted records tabs"
+          aria-label={t("deleted_records.tabs_aria_label")}
         >
           <Tab label={t("deleted_records.tabs.candidates")} />
           <Tab label={t("deleted_records.tabs.job_positions")} />

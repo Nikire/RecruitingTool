@@ -603,7 +603,7 @@ const CompanyProfilePage: React.FC = () => {
 
                   <Grid size={{ xs: 12, sm: 4 }}>
                     <TextField
-                      label="Twitter / X"
+                      label={t("company_profile.field_twitter")}
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://twitter.com/..."

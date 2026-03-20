@@ -58,7 +58,9 @@
     "go_to_dashboard": "Go to Dashboard",
     "coming_soon": "Coming soon! This feature is under development.",
     "not_available": "N/A",
-    "not_applicable": "N/A"
+    "not_applicable": "N/A",
+    "search_placeholder": "Search...",
+    "company_logo_alt": "Company Logo"
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -130,6 +132,7 @@
     "interview_delete_failed": "Failed to delete interview",
     "interview_reschedule_failed": "Failed to reschedule interview",
     "comparison_failed": "Failed to compare candidates. Please try again.",
+    "network_error": "Network error - unable to reach server",
     "boundary": {
       "title": "Something went wrong",
       "message": "An unexpected error occurred. Please try reloading the page or go back to the home page.",
@@ -664,7 +667,11 @@
     "download": "Download",
     "delete": "Delete File",
     "no_files": "No files uploaded",
-    "select_file": "Select a file to upload"
+    "select_file": "Select a file to upload",
+    "image_uploaded": "Image uploaded successfully",
+    "file_downloaded": "File downloaded successfully",
+    "file_deleted": "File deleted successfully",
+    "template_downloaded": "Template downloaded successfully"
   },
   "profile": {
     "title": "Profile",
@@ -1007,6 +1014,7 @@
   },
   "dashboard": {
     "title": "HR Dashboard",
+    "job_positions_title": "Job Positions Dashboard",
     "recent_applications": "Recent Applications",
     "quick_actions": "Quick Actions",
     "view_all": "View All",
@@ -1028,6 +1036,13 @@
       "currently_open": "{{count}} currently open",
       "applications_need_attention": "Applications need attention"
     }
+  },
+  "time_slots": {
+    "generated": "Time slots generated successfully",
+    "custom_generated": "Custom time slots generated successfully",
+    "booking_token_generated": "Booking token generated successfully",
+    "selection_cancelled": "Time slot selection cancelled",
+    "interview_selected": "Interview time slot selected successfully"
   },
   "notes": {
     "save_candidate_first": "Please save the candidate first before adding notes.",
@@ -1475,7 +1490,8 @@
     "industry_agriculture": "Agriculture",
     "industry_other": "Other",
     "timezone": "Company Timezone",
-    "timezone_helper": "Used to display meeting and interview times consistently for your team."
+    "timezone_helper": "Used to display meeting and interview times consistently for your team.",
+    "field_twitter": "Twitter / X"
   },
   "language": {
     "select_language": "Select Language",
@@ -2218,6 +2234,7 @@
   },
   "deleted_records": {
     "page_title": "Deleted Records",
+    "tabs_aria_label": "deleted records tabs",
     "page_description": "View and manage soft-deleted records. You can restore accidentally deleted items or permanently purge them for GDPR compliance.",
     "no_records": "No deleted records found",
     "tabs": {
