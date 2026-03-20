@@ -64,6 +64,7 @@ import GeneralSettingsPage from "./pages/admin/GeneralSettingsPage";
 import WebhooksPage from "./pages/admin/WebhooksPage";
 import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import AIQuotaPage from "./pages/admin/AIQuotaPage";
+import DocsPage from "./pages/admin/DocsPage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Auth0CallbackHandler from "./components/auth/Auth0CallbackHandler";
@@ -301,6 +302,7 @@ function App() {
               <Route path="/admin/webhooks" element={<WebhooksPage />} />
               <Route path="/admin/custom-plans" element={<CustomPlansPage />} />
               <Route path="/admin/ai-quota" element={<AIQuotaPage />} />
+              <Route path="/admin/docs" element={<DocsPage />} />
             </Route>
           </Route>
         </Route>

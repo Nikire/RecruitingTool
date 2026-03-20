@@ -1516,6 +1516,7 @@
     "webhooks": "Webhooks y Claves API",
     "custom_plans": "Planes Personalizados",
     "ai_quota": "Cuota de IA",
+    "docs": "Documentación",
     "aria_label": "navegación de administrador",
     "group_management": "Gestión",
     "group_configuration": "Configuración"
@@ -3821,5 +3822,27 @@
     "skills": "Habilidades",
     "experience": "Experiencia",
     "education": "Educación"
+  },
+  "docs": {
+    "title": "Documentación",
+    "description": "Guía de referencia de la plataforma para super admins",
+    "toggle_sidebar": "Alternar navegación",
+    "sections": {
+      "overview": "Descripción General",
+      "roles": "Roles y Permisos",
+      "candidates": "Candidatos",
+      "job_positions": "Posiciones de Trabajo",
+      "hiring_processes": "Procesos de Contratación",
+      "applications": "Aplicaciones",
+      "interviews": "Entrevistas",
+      "calendar": "Calendario",
+      "ai_scoring": "Puntuación con IA",
+      "email_templates": "Plantillas de Email",
+      "analytics": "Analíticas",
+      "team_management": "Gestión de Equipo",
+      "subscription": "Suscripción y Facturación",
+      "admin_panel": "Panel de Administración",
+      "integrations": "Integraciones"
+    }
   }
 }

@@ -3574,6 +3574,7 @@
     "webhooks": "Webhooks & API Keys",
     "custom_plans": "Custom Plans",
     "ai_quota": "AI Quota",
+    "docs": "Documentation",
     "aria_label": "admin navigation",
     "group_management": "Management",
     "group_configuration": "Configuration"
@@ -3813,5 +3814,27 @@
     "skills": "Skills",
     "experience": "Experience",
     "education": "Education"
+  },
+  "docs": {
+    "title": "Documentation",
+    "description": "Platform reference guide for super admins",
+    "toggle_sidebar": "Toggle navigation",
+    "sections": {
+      "overview": "Overview",
+      "roles": "Roles & Permissions",
+      "candidates": "Candidates",
+      "job_positions": "Job Positions",
+      "hiring_processes": "Hiring Processes",
+      "applications": "Applications",
+      "interviews": "Interviews",
+      "calendar": "Calendar",
+      "ai_scoring": "AI Scoring",
+      "email_templates": "Email Templates",
+      "analytics": "Analytics",
+      "team_management": "Team Management",
+      "subscription": "Subscription & Billing",
+      "admin_panel": "Admin Panel",
+      "integrations": "Integrations"
+    }
   }
 }
