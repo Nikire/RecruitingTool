@@ -1,42 +1,42 @@
-# Job Positions
+# Posiciones de Trabajo
 
-**Route:** `/hr/job-positions`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Ruta:** `/hr/job-positions`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-Job Positions represent open roles in your company. They are the foundation for the entire hiring workflow — applications and hiring processes are always linked to a job position.
+Las Posiciones de Trabajo representan los roles abiertos en tu empresa. Son la base de todo el flujo de contratación — las solicitudes y los procesos de contratación siempre están vinculados a una posición de trabajo.
 
-## Statuses
+## Estados
 
-| Status | Meaning |
+| Estado | Significado |
 |--------|---------|
-| `OPEN` | Active — visible on careers page, accepts applications |
-| `CLOSED` | No longer accepting new candidates |
-| `CANCELLED` | Cancelled position — archived |
+| `OPEN` | Activo — visible en la página de empleo, acepta solicitudes |
+| `CLOSED` | Ya no acepta nuevos candidatos |
+| `CANCELLED` | Posición cancelada — archivada |
 
-## Stages (Hiring Pipeline Template)
+## Etapas (Plantilla del Pipeline de Contratación)
 
-Each job position has a **stages template** — an ordered list of steps a candidate goes through. Examples:
-- Phone Screen
-- Technical Interview
-- Final Interview
-- Offer
+Cada posición de trabajo tiene una **plantilla de etapas** — una lista ordenada de pasos por los que pasa un candidato. Ejemplos:
+- Llamada de selección
+- Entrevista técnica
+- Entrevista final
+- Oferta
 
-When you create a hiring process for a candidate, these stages are **copied** to that process. Each candidate has their own independent copy of the stages.
+Cuando creas un proceso de contratación para un candidato, estas etapas se **copian** a ese proceso. Cada candidato tiene su propia copia independiente de las etapas.
 
-### Stage Fields
-- **Title** — Name of the stage
-- **Type** — Category (Interview, Assessment, etc.)
-- **Estimated Time** — Duration in days
-- **Position** — Order in the pipeline
+### Campos de Etapa
+- **Título** — Nombre de la etapa
+- **Tipo** — Categoría (Entrevista, Evaluación, etc.)
+- **Tiempo estimado** — Duración en días
+- **Posición** — Orden en el pipeline
 
-## Careers Page
+## Página de Empleo
 
-Job positions with status `OPEN` and visibility set to public are automatically listed at `/careers`. Candidates can apply directly from there.
+Las posiciones de trabajo con estado `OPEN` y visibilidad pública se listan automáticamente en `/careers`. Los candidatos pueden postularse directamente desde allí.
 
-## Detail Page
+## Página de Detalle
 
-Clicking on a job position opens the detail page (`/hr/job-positions/:uid`) which shows:
-- All active hiring processes for this position
-- Candidate pipeline with current stage
-- AI rankings for all candidates
-- Stage-by-stage conversion metrics
+Al hacer clic en una posición de trabajo se abre la página de detalle (`/hr/job-positions/:uid`) que muestra:
+- Todos los procesos de contratación activos para esta posición
+- Pipeline de candidatos con la etapa actual
+- Rankings de IA para todos los candidatos
+- Métricas de conversión por etapa

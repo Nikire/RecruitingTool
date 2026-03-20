@@ -1,45 +1,45 @@
-# Team Management
+# Gestión de Equipo
 
-**Route:** `/settings/team`
-**Access:** HR_MANAGER, COMPANY_OWNER, COMPANY_ADMIN, ADMIN, SUPER_ADMIN
+**Ruta:** `/settings/team`
+**Acceso:** HR_MANAGER, COMPANY_OWNER, COMPANY_ADMIN, ADMIN, SUPER_ADMIN
 
-Team Management lets you invite and manage the people who have access to your company's Borderless workspace.
+La Gestión de Equipo te permite invitar y administrar a las personas que tienen acceso al espacio de trabajo de Borderless de tu empresa.
 
-## Inviting a Team Member
+## Invitar a un Miembro del Equipo
 
-1. Go to **Settings → Team**
-2. Click **"Invite Team Member"**
-3. Enter their email address
-4. Select their role (HR, HR_MANAGER, RECRUITER, COMPANY_ADMIN)
-5. Send the invitation
+1. Ve a **Configuración → Equipo**
+2. Haz clic en **"Invitar Miembro del Equipo"**
+3. Ingresa su dirección de correo electrónico
+4. Selecciona su rol (HR, HR_MANAGER, RECRUITER, COMPANY_ADMIN)
+5. Envía la invitación
 
-The invitee receives an email with a link to accept. If they don't have an account, they'll be prompted to register first.
+El invitado recibe un correo con un enlace para aceptar. Si no tiene una cuenta, se le pedirá que se registre primero.
 
-## Roles You Can Assign
+## Roles que Puedes Asignar
 
-| Role | Best For |
+| Rol | Ideal Para |
 |------|---------|
-| `HR` | Day-to-day recruiting — candidates, interviews, hiring processes |
-| `HR_MANAGER` | Senior HR — team management + all HR features |
-| `RECRUITER` | Sourcing specialists — same as HR |
-| `COMPANY_ADMIN` | Company admins — billing + company settings + HR features |
+| `HR` | Reclutamiento diario — candidatos, entrevistas, procesos de contratación |
+| `HR_MANAGER` | RRHH senior — gestión de equipo + todas las funciones de RRHH |
+| `RECRUITER` | Especialistas en sourcing — igual que HR |
+| `COMPANY_ADMIN` | Administradores de empresa — facturación + configuración de empresa + funciones de RRHH |
 
-## Managing Existing Members
+## Gestión de Miembros Existentes
 
-- **View** all active team members and their roles
-- **Update role** — change a member's role
-- **Deactivate** — remove access (member is soft-deleted, not permanently removed)
+- **Ver** todos los miembros activos del equipo y sus roles
+- **Actualizar rol** — cambiar el rol de un miembro
+- **Desactivar** — retirar acceso (el miembro se elimina de forma lógica, no permanentemente)
 
-## Invitation Status
+## Estado de Invitación
 
-| Status | Meaning |
+| Estado | Significado |
 |--------|---------|
-| `PENDING` | Invitation sent, not yet accepted |
-| `ACCEPTED` | Member has joined |
-| `EXPIRED` | Invitation link expired (24 hours) |
+| `PENDING` | Invitación enviada, aún no aceptada |
+| `ACCEPTED` | El miembro se ha unido |
+| `EXPIRED` | El enlace de invitación ha expirado (24 horas) |
 
-## Access Control
+## Control de Acceso
 
-- `HR_MANAGER` can invite/manage `HR`, `RECRUITER`
-- `COMPANY_OWNER` / `COMPANY_ADMIN` can manage all roles including `HR_MANAGER`
-- Only `ADMIN` / `SUPER_ADMIN` can deactivate users permanently
+- `HR_MANAGER` puede invitar/gestionar a `HR`, `RECRUITER`
+- `COMPANY_OWNER` / `COMPANY_ADMIN` puede gestionar todos los roles incluyendo `HR_MANAGER`
+- Solo `ADMIN` / `SUPER_ADMIN` pueden desactivar usuarios de forma permanente

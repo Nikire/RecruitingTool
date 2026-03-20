@@ -1,45 +1,45 @@
-# Interviews
+# Entrevistas
 
-**Route:** `/hr/interviews`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Ruta:** `/hr/interviews`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-The Interviews page shows all scheduled interviews across your company. You can also access interview scheduling from within a hiring process stage.
+La página de Entrevistas muestra todas las entrevistas programadas en tu empresa. También puedes acceder a la programación de entrevistas desde dentro de una etapa de proceso de contratación.
 
-## Interview Statuses
+## Estados de Entrevista
 
-| Status | Meaning |
+| Estado | Significado |
 |--------|---------|
-| `PENDING` | Created but not confirmed |
-| `SCHEDULED` | Confirmed, waiting to happen |
-| `COMPLETED` | Interview has taken place |
-| `CANCELLED` | Interview was cancelled |
+| `PENDING` | Creada pero no confirmada |
+| `SCHEDULED` | Confirmada, esperando que ocurra |
+| `COMPLETED` | La entrevista ya tuvo lugar |
+| `CANCELLED` | La entrevista fue cancelada |
 
-## Scheduling an Interview
+## Programar una Entrevista
 
-1. Open a hiring process
-2. Go to the current stage
-3. Click **"Schedule Interview"**
-4. Fill in: date, time, duration, meeting link (optional), notes
-5. Assign interviewers from your team
-6. Save — email notification sent to candidate
+1. Abre un proceso de contratación
+2. Ve a la etapa actual
+3. Haz clic en **"Programar Entrevista"**
+4. Completa: fecha, hora, duración, enlace de reunión (opcional), notas
+5. Asigna entrevistadores de tu equipo
+6. Guarda — se envía notificación por correo al candidato
 
-## Google Calendar Integration
+## Integración con Google Calendar
 
-If you've connected Google Calendar (`/settings/calendar`):
-- Interviews automatically create a Google Calendar event
-- A Google Meet link is auto-generated and added to the event
-- Updates/cancellations sync back to Google Calendar
+Si has conectado Google Calendar (`/settings/calendar`):
+- Las entrevistas crean automáticamente un evento en Google Calendar
+- Se genera y agrega automáticamente un enlace de Google Meet al evento
+- Las actualizaciones y cancelaciones se sincronizan con Google Calendar
 
-## Email Notifications
+## Notificaciones por Correo
 
-- **On schedule:** Candidate receives confirmation email with details
-- **On cancellation:** Candidate receives cancellation notification
-- **Reminders:** Automated reminders sent 24 hours before (via cron job)
+- **Al programar:** El candidato recibe un correo de confirmación con los detalles
+- **Al cancelar:** El candidato recibe una notificación de cancelación
+- **Recordatorios:** Se envían recordatorios automáticos 24 horas antes (mediante cron job)
 
-## Interview Notes
+## Notas de Entrevista
 
-From the Interviews page, you can see all stage notes for a candidate by clicking the **notes icon** next to an interview. This shows all evaluation notes across all stages.
+Desde la página de Entrevistas, puedes ver todas las notas de etapa de un candidato haciendo clic en el **ícono de notas** junto a una entrevista. Esto muestra todas las notas de evaluación de todas las etapas.
 
-## Reschedule / Cancel
+## Reprogramar / Cancelar
 
-Use the action buttons on each interview card to reschedule or cancel. The candidate is notified automatically.
+Usa los botones de acción en cada tarjeta de entrevista para reprogramar o cancelar. El candidato es notificado automáticamente.

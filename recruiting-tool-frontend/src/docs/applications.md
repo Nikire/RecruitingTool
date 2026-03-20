@@ -1,45 +1,45 @@
-# Applications
+# Solicitudes
 
-**Route:** `/hr/applications`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Ruta:** `/hr/applications`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-Applications are submissions from candidates who apply via the **public careers page** (`/careers`). They are separate from internal hiring processes — an application is the entry point before you decide to create a formal hiring process.
+Las Solicitudes son envíos de candidatos que se postulan a través de la **página pública de empleo** (`/careers`). Son independientes de los procesos de contratación internos — una solicitud es el punto de entrada antes de decidir crear un proceso de contratación formal.
 
-## Application Lifecycle
+## Ciclo de Vida de una Solicitud
 
 ```
 PENDING → REVIEWED → ACCEPTED
                    ↘ REJECTED
 ```
 
-| Status | Meaning |
+| Estado | Significado |
 |--------|---------|
-| `PENDING` | Just submitted, not yet reviewed |
-| `REVIEWED` | HR has opened and reviewed it |
-| `ACCEPTED` | Candidate accepted — usually creates a hiring process |
-| `REJECTED` | Candidate rejected |
+| `PENDING` | Recién enviada, aún no revisada |
+| `REVIEWED` | RRHH la ha abierto y revisado |
+| `ACCEPTED` | Candidato aceptado — normalmente crea un proceso de contratación |
+| `REJECTED` | Candidato rechazado |
 
-## What HR Can Do
+## Qué Puede Hacer RRHH
 
-- **View all applications** with filters (status, position, date)
-- **Download resume** if the applicant uploaded one
-- **Add internal notes** — only visible to HR team
-- **Update status** — PENDING → REVIEWED → ACCEPTED/REJECTED
-- **Send status email** to applicant when status changes
-- **Create a hiring process** directly from an accepted application
+- **Ver todas las solicitudes** con filtros (estado, posición, fecha)
+- **Descargar el currículum** si el solicitante subió uno
+- **Agregar notas internas** — solo visibles para el equipo de RRHH
+- **Actualizar el estado** — PENDING → REVIEWED → ACCEPTED/REJECTED
+- **Enviar correo de estado** al solicitante cuando cambia el estado
+- **Crear un proceso de contratación** directamente desde una solicitud aceptada
 
-## Auto-Emails
+## Correos Automáticos
 
-When an application is submitted:
-1. **Confirmation email** — sent to applicant
-2. **HR notification email** — sent to HR team
+Cuando se envía una solicitud:
+1. **Correo de confirmación** — enviado al solicitante
+2. **Correo de notificación a RRHH** — enviado al equipo de RRHH
 
-When status changes:
-- `ACCEPTED` — email sent to applicant
-- `REJECTED` — email sent to applicant
+Cuando cambia el estado:
+- `ACCEPTED` — se envía correo al solicitante
+- `REJECTED` — se envía correo al solicitante
 
-> Email content uses the company's email templates if configured, otherwise falls back to default templates.
+> El contenido del correo usa las plantillas de correo de la empresa si están configuradas; de lo contrario, usa las plantillas predeterminadas del sistema.
 
-## Check Status Page
+## Página de Consulta de Estado
 
-Candidates can check their application status at `/check-status` using their email and application reference — no login required.
+Los candidatos pueden consultar el estado de su solicitud en `/check-status` usando su email y referencia de solicitud — sin necesidad de iniciar sesión.

@@ -1,51 +1,51 @@
-# Hiring Processes
+# Procesos de Contratación
 
-**Route:** `/hr/hiring-processes`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Ruta:** `/hr/hiring-processes`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-A Hiring Process represents the evaluation of a **specific candidate** for a **specific job position**. It's the core workflow object that tracks where a candidate is in the pipeline.
+Un Proceso de Contratación representa la evaluación de un **candidato específico** para una **posición de trabajo específica**. Es el objeto central del flujo de trabajo que rastrea en qué punto del pipeline se encuentra un candidato.
 
-## How It Works
+## Cómo Funciona
 
-1. You create a hiring process linking a **candidate** + **job position**
-2. The system copies the job position's stage template and creates individual stage instances
-3. The first stage is set to `CURRENT`
-4. You progress the candidate through stages as they advance
-5. The process ends with status `CLOSED` (hired), `REJECTED`, or `CANCELLED`
+1. Creas un proceso de contratación vinculando un **candidato** + **posición de trabajo**
+2. El sistema copia la plantilla de etapas de la posición y crea instancias individuales de cada etapa
+3. La primera etapa se establece como `CURRENT`
+4. Avanzas al candidato por las etapas a medida que progresa
+5. El proceso termina con el estado `CLOSED` (contratado), `REJECTED` o `CANCELLED`
 
-> **Constraint:** Only one active hiring process per candidate per job position.
+> **Restricción:** Solo puede haber un proceso de contratación activo por candidato por posición de trabajo.
 
-## Statuses
+## Estados
 
-| Status | Meaning |
+| Estado | Significado |
 |--------|---------|
-| `OPEN` | Just created, not started |
-| `IN_PROGRESS` | Actively being evaluated |
-| `CLOSED` | Candidate hired/process completed |
-| `REJECTED` | Candidate rejected |
-| `CANCELLED` | Process cancelled |
+| `OPEN` | Recién creado, sin iniciar |
+| `IN_PROGRESS` | En evaluación activa |
+| `CLOSED` | Candidato contratado / proceso completado |
+| `REJECTED` | Candidato rechazado |
+| `CANCELLED` | Proceso cancelado |
 
-## Stage Statuses
+## Estados de Etapa
 
-| Status | Meaning |
+| Estado | Significado |
 |--------|---------|
-| `CURRENT` | Active stage the candidate is in |
-| `DONE` | Stage completed |
-| `CANCELLED` | Stage skipped/cancelled |
+| `CURRENT` | Etapa activa en la que se encuentra el candidato |
+| `DONE` | Etapa completada |
+| `CANCELLED` | Etapa omitida / cancelada |
 
-## Stage Actions
+## Acciones de Etapa
 
-From a hiring process, you can:
-- **Schedule an interview** for the current stage
-- **Add a stage note** — rate and describe the candidate's performance
-- **Advance to next stage** — mark current stage as DONE, move to next
-- **Reject the candidate** — end the process
+Desde un proceso de contratación, puedes:
+- **Programar una entrevista** para la etapa actual
+- **Agregar una nota de etapa** — califica y describe el desempeño del candidato
+- **Avanzar a la siguiente etapa** — marcar la etapa actual como DONE y pasar a la siguiente
+- **Rechazar al candidato** — finalizar el proceso
 
-## AI Scoring in Hiring Processes
+## Puntuación con IA en Procesos de Contratación
 
-The grouped list view shows AI scores per candidate (if scored). You can:
-- **Analyze** — Score a candidate for the first time
-- **Re-analyze** — Re-score an already-scored candidate
-- Sort candidates by score to prioritize
+La vista de lista agrupada muestra las puntuaciones de IA por candidato (si han sido puntuados). Puedes:
+- **Analizar** — Puntuar a un candidato por primera vez
+- **Re-analizar** — Volver a puntuar a un candidato ya puntuado
+- Ordenar candidatos por puntuación para priorizar
 
-> Only HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN can trigger scoring.
+> Solo HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN pueden activar la puntuación.

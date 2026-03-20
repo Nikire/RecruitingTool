@@ -35,6 +35,7 @@ import {
   MenuOpen as MenuOpenIcon,
 } from "@mui/icons-material";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { useTranslation } from "react-i18next";
 
 // Import all markdown files as raw strings
@@ -321,7 +322,7 @@ const DocsPage: React.FC = () => {
           flex: 1,
           overflow: "auto",
           p: { xs: 2, sm: 3, md: 4 },
-          bgcolor: "grey.50",
+          bgcolor: "background.default",
         }}
       >
         <Paper
@@ -400,22 +401,22 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
         "& code": {
           fontFamily: "monospace",
           fontSize: "0.8125rem",
-          bgcolor: "grey.100",
-          color: "primary.dark",
+          bgcolor: "action.hover",
+          color: "primary.main",
           px: 0.75,
           py: 0.25,
           borderRadius: 0.5,
           border: "1px solid",
-          borderColor: "grey.200",
+          borderColor: "divider",
         },
         "& pre": {
-          bgcolor: "grey.100",
+          bgcolor: "action.hover",
           borderRadius: 1,
           p: 2,
           overflow: "auto",
           mb: 2,
           border: "1px solid",
-          borderColor: "grey.200",
+          borderColor: "divider",
           "& code": {
             bgcolor: "transparent",
             border: "none",
@@ -430,7 +431,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
           ml: 0,
           pl: 2,
           py: 0.5,
-          bgcolor: "primary.50",
+          bgcolor: "action.hover",
           borderRadius: "0 4px 4px 0",
           mb: 2,
           "& p": {
@@ -445,7 +446,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
           mb: 2,
           fontSize: "0.875rem",
           "& thead": {
-            bgcolor: "grey.100",
+            bgcolor: "action.hover",
             "& th": {
               p: 1.25,
               textAlign: "left",
@@ -463,7 +464,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
           "& tbody": {
             "& tr": {
               "&:nth-of-type(even)": {
-                bgcolor: "grey.50",
+                bgcolor: "action.selected",
               },
               "&:hover": {
                 bgcolor: "action.hover",
@@ -501,7 +502,7 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
         },
       }}
     >
-      <ReactMarkdown>{content}</ReactMarkdown>
+      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
     </Box>
   );
 };

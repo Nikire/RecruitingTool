@@ -1,37 +1,37 @@
-# Calendar
+# Calendario
 
-**Route:** `/hr/calendar`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Ruta:** `/hr/calendar`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-The Calendar page shows all upcoming interviews for your company in a monthly/weekly/daily view.
+La página de Calendario muestra todas las entrevistas próximas de tu empresa en una vista mensual, semanal o diaria.
 
-## Features
+## Funcionalidades
 
-- **Monthly / Weekly / Daily views** — switch between calendar views
-- **Team member filter** — filter interviews by interviewer
-- **Interview details** — click any interview chip to see full details
-- **Stage notes panel** — see candidate notes directly from the calendar
-- **Quick actions** — reschedule or cancel from the popover
+- **Vistas mensual / semanal / diaria** — cambia entre vistas de calendario
+- **Filtro por miembro del equipo** — filtra entrevistas por entrevistador
+- **Detalles de entrevista** — haz clic en cualquier chip de entrevista para ver todos los detalles
+- **Panel de notas de etapa** — ve las notas del candidato directamente desde el calendario
+- **Acciones rápidas** — reprogramar o cancelar desde el popover
 
-## Interview Detail Popover
+## Popover de Detalle de Entrevista
 
-Clicking an interview chip opens a popover with:
-- Candidate name and position
-- Interview date, time, duration
-- Meeting link (if set)
-- Interviewers
-- **"See all notes"** toggle — shows all stage evaluation notes for the candidate
+Al hacer clic en un chip de entrevista se abre un popover con:
+- Nombre del candidato y posición
+- Fecha, hora y duración de la entrevista
+- Enlace de reunión (si está configurado)
+- Entrevistadores
+- Toggle **"Ver todas las notas"** — muestra todas las notas de evaluación de etapa del candidato
 
-## Google Calendar Setup
+## Configuración de Google Calendar
 
-To connect your personal Google Calendar:
-1. Go to **Settings → Calendar** (`/settings/calendar`)
-2. Click **"Connect Google Calendar"**
-3. Authorize Borderless to access your calendar
-4. Interviews will now auto-create events in your Google Calendar
+Para conectar tu Google Calendar personal:
+1. Ve a **Configuración → Calendario** (`/settings/calendar`)
+2. Haz clic en **"Conectar Google Calendar"**
+3. Autoriza a Borderless para acceder a tu calendario
+4. Las entrevistas crearán automáticamente eventos en tu Google Calendar
 
-> Each user connects their own Google Calendar individually. Team calendar is a read-only aggregate view in the app.
+> Cada usuario conecta su propio Google Calendar de forma individual. El calendario de equipo es una vista agregada de solo lectura en la aplicación.
 
-## Self-Service Interview Booking
+## Reserva de Entrevista por el Candidato
 
-For certain stages, HR can generate a **booking token** for the candidate. The candidate receives a link (`/book-interview/:token`) where they can pick from available time slots — no login required.
+Para ciertas etapas, RRHH puede generar un **token de reserva** para el candidato. El candidato recibe un enlace (`/book-interview/:token`) donde puede elegir entre los horarios disponibles — sin necesidad de iniciar sesión.

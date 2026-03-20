@@ -1,44 +1,44 @@
-# Analytics
+# Analíticas
 
-**Route:** `/hr/analytics`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
-**Plan Required:** Professional or Enterprise
+**Ruta:** `/hr/analytics`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Plan Requerido:** Professional o Enterprise
 
-The Analytics dashboard provides insights into your recruiting performance over time.
+El panel de Analíticas proporciona información sobre el rendimiento de tu reclutamiento a lo largo del tiempo.
 
-## Available Metrics
+## Métricas Disponibles
 
-### Hiring Funnel
-Tracks how many candidates move through each stage:
-- Applications received
-- Candidates in pipeline
-- Interviews scheduled
-- Offers made
-- Hires
+### Embudo de Contratación
+Rastrea cuántos candidatos avanzan por cada etapa:
+- Solicitudes recibidas
+- Candidatos en pipeline
+- Entrevistas programadas
+- Ofertas realizadas
+- Contrataciones
 
-### Time-to-Hire
-Average number of days from application to hire, broken down by:
-- Job position
-- Department
-- Date range
+### Tiempo Hasta la Contratación
+Número promedio de días desde la solicitud hasta la contratación, desglosado por:
+- Posición de trabajo
+- Departamento
+- Rango de fechas
 
-### Source Effectiveness
-Where your best candidates come from (careers page, direct entry, etc.)
+### Efectividad de la Fuente
+De dónde provienen tus mejores candidatos (página de empleo, ingreso directo, etc.)
 
-### Stage Conversion Rates
-What percentage of candidates advance from each stage to the next. Helps identify bottleneck stages.
+### Tasas de Conversión por Etapa
+Qué porcentaje de candidatos avanza de cada etapa a la siguiente. Ayuda a identificar etapas con cuellos de botella.
 
-### Pipeline Overview
-Real-time view of how many candidates are in each stage across all active positions.
+### Resumen del Pipeline
+Vista en tiempo real de cuántos candidatos están en cada etapa en todas las posiciones activas.
 
-## Filters
+## Filtros
 
-- **Date range** — Filter all metrics by time period
-- **Job position** — Filter by specific position
-- **Department** — Filter by team/department
+- **Rango de fechas** — Filtra todas las métricas por período de tiempo
+- **Posición de trabajo** — Filtra por posición específica
+- **Departamento** — Filtra por equipo/departamento
 
-## Caching
+## Caché
 
-Analytics data is cached for **10 minutes** to ensure performance. If you need the latest data, refresh the page after the cache window.
+Los datos de analíticas se almacenan en caché durante **10 minutos** para garantizar el rendimiento. Si necesitas los datos más recientes, recarga la página después de que expire el caché.
 
-> Analytics require at least some hiring activity to show meaningful data.
+> Las analíticas requieren al menos algo de actividad de contratación para mostrar datos significativos.

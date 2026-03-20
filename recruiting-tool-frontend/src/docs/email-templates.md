@@ -1,47 +1,47 @@
-# Email Templates
+# Plantillas de Correo
 
-**Route:** `/hr/email-templates`
-**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Ruta:** `/hr/email-templates`
+**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-Email Templates let you customize the automated emails Borderless sends to candidates.
+Las Plantillas de Correo te permiten personalizar los correos automáticos que Borderless envía a los candidatos.
 
-## Available Template Types
+## Tipos de Plantillas Disponibles
 
-| Type | When Sent |
+| Tipo | Cuándo se Envía |
 |------|----------|
-| `APPLICATION_RECEIVED` | When a candidate applies via careers page |
-| `APPLICATION_UNDER_REVIEW` | When application status changes to REVIEWED |
-| `APPLICATION_ACCEPTED` | When application is accepted |
-| `APPLICATION_REJECTED` | When application is rejected |
-| `INTERVIEW_SCHEDULED` | When an interview is scheduled |
-| `INTERVIEW_CANCELLED` | When an interview is cancelled |
-| `INTERVIEW_REMINDER` | Sent 24 hours before interview |
+| `APPLICATION_RECEIVED` | Cuando un candidato se postula a través de la página de empleo |
+| `APPLICATION_UNDER_REVIEW` | Cuando el estado de la solicitud cambia a REVIEWED |
+| `APPLICATION_ACCEPTED` | Cuando la solicitud es aceptada |
+| `APPLICATION_REJECTED` | Cuando la solicitud es rechazada |
+| `INTERVIEW_SCHEDULED` | Cuando se programa una entrevista |
+| `INTERVIEW_CANCELLED` | Cuando se cancela una entrevista |
+| `INTERVIEW_REMINDER` | Enviado 24 horas antes de la entrevista |
 
-## Template Variables
+## Variables de Plantilla
 
-Use these **Handlebars variables** in your templates:
+Usa estas **variables de Handlebars** en tus plantillas:
 
-| Variable | Description |
+| Variable | Descripción |
 |----------|-------------|
-| `{{candidateName}}` | Candidate's full name |
-| `{{positionTitle}}` | Job position title |
-| `{{companyName}}` | Your company name |
-| `{{interviewDate}}` | Interview date |
-| `{{interviewTime}}` | Interview time |
-| `{{meetingLink}}` | Video conference link |
-| `{{interviewerName}}` | Name of the interviewer |
+| `{{candidateName}}` | Nombre completo del candidato |
+| `{{positionTitle}}` | Título de la posición de trabajo |
+| `{{companyName}}` | Nombre de tu empresa |
+| `{{interviewDate}}` | Fecha de la entrevista |
+| `{{interviewTime}}` | Hora de la entrevista |
+| `{{meetingLink}}` | Enlace de videoconferencia |
+| `{{interviewerName}}` | Nombre del entrevistador |
 
-## How It Works
+## Cómo Funciona
 
-1. Create a template for a specific type
-2. Borderless checks for your company's custom template first
-3. If none exists — falls back to the default system template
-4. Templates are rendered with Handlebars before sending
+1. Crea una plantilla para un tipo específico
+2. Borderless verifica primero si existe una plantilla personalizada de tu empresa
+3. Si no existe — usa la plantilla predeterminada del sistema como alternativa
+4. Las plantillas se renderizan con Handlebars antes de enviar
 
-## Preview
+## Vista Previa
 
-Each template has a **Preview** button that shows how the email will look with sample data filled in.
+Cada plantilla tiene un botón de **Vista Previa** que muestra cómo se verá el correo con datos de muestra rellenados.
 
-## Plain Text vs HTML
+## Texto Sin Formato vs. HTML
 
-Templates support both plain text and basic HTML formatting. Keep HTML simple for maximum email client compatibility.
+Las plantillas admiten tanto texto sin formato como formato HTML básico. Mantén el HTML simple para mayor compatibilidad con los clientes de correo.
