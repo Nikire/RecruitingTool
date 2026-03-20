@@ -11,7 +11,7 @@ export const upsertStageEvalNote = async (
   data: UpsertStageEvalNoteDto,
 ): Promise<StageEvalNote> => {
   const response = await axiosInstance.put(
-    `/hiring-process/${hiringProcessUid}/stages/${stageUid}/note`,
+    `/hiring-processes/${hiringProcessUid}/stages/${stageUid}/note`,
     data,
   );
   return response.data;
@@ -22,7 +22,7 @@ export const getStageEvalNote = async (
   stageUid: string,
 ): Promise<StageEvalNote> => {
   const response = await axiosInstance.get(
-    `/hiring-process/${hiringProcessUid}/stages/${stageUid}/note`,
+    `/hiring-processes/${hiringProcessUid}/stages/${stageUid}/note`,
   );
   return response.data;
 };
@@ -32,7 +32,7 @@ export const deleteStageEvalNote = async (
   stageUid: string,
 ): Promise<void> => {
   await axiosInstance.delete(
-    `/hiring-process/${hiringProcessUid}/stages/${stageUid}/note`,
+    `/hiring-processes/${hiringProcessUid}/stages/${stageUid}/note`,
   );
 };
 
