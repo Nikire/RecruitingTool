@@ -33,6 +33,7 @@ import {
   Security as SecurityIcon,
   Menu as MenuIcon,
   MenuOpen as MenuOpenIcon,
+  AutoAwesome as AutoAwesomeIcon,
 } from "@mui/icons-material";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -54,6 +55,7 @@ import teamManagementMd from "../../docs/team-management.md?raw";
 import subscriptionMd from "../../docs/subscription.md?raw";
 import adminPanelMd from "../../docs/admin-panel.md?raw";
 import integrationsMd from "../../docs/integrations.md?raw";
+import whyBorderlessMd from "../../docs/why-borderless.md?raw";
 
 const SIDEBAR_WIDTH = 260;
 
@@ -80,6 +82,7 @@ const docContent: Record<string, string> = {
   subscription: subscriptionMd,
   "admin-panel": adminPanelMd,
   integrations: integrationsMd,
+  "why-borderless": whyBorderlessMd,
 };
 
 const DocsPage: React.FC = () => {
@@ -179,6 +182,12 @@ const DocsPage: React.FC = () => {
       labelKey: "docs.sections.integrations",
       icon: <ExtensionIcon />,
       file: "integrations",
+    },
+    {
+      id: "why-borderless",
+      labelKey: "docs.sections.why_borderless",
+      icon: <AutoAwesomeIcon />,
+      file: "why-borderless",
     },
   ];
 
