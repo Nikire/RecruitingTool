@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, Query, UseInterceptors } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query, UseInterceptors } from '@nestjs/common';
 import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
 import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiBearerAuth, ApiResponse } from '@nestjs/swagger';
 import { StagesService } from './stages.service';
@@ -34,6 +34,16 @@ export class StagesController {
   @ApiBody({ type: Array<CreateStageDto> })
   bulkCreate(@Body() bulkCreateStagesDto: Array<CreateStageDto>) {
     return this.stagesService.bulkCreateStages(bulkCreateStagesDto);
+  }
+
+  @Patch('reorder')
+  @ApiOperation({ summary: 'Atomically reorder stages by setting all positions in one transaction' })
+  @ApiBody({
+    schema: { type: 'object', properties: { stages: { type: 'array', items: { type: 'object', properties: { uid: { type: 'string' }, position: { type: 'number' } } } } } },
+  })
+  async reorderStages(@Body() body: { stages: { uid: string; position: number }[] }) {
+    await this.stagesService.reorderStages(body.stages);
+    return { message: 'Stages reordered successfully' };
   }
 
   @Get('list')

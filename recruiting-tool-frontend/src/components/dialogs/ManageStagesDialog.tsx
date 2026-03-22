@@ -20,6 +20,7 @@ import {
   useBulkCreateStages,
   useUpdateStage,
   useDeleteStage,
+  useReorderStages,
 } from "../../hooks/api/useStages";
 import {
   Stage,
@@ -111,13 +112,15 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
     isError: isUpdateError,
   } = useUpdateStage();
 
+  const { mutate: reorderStages, isPending: isReordering } = useReorderStages();
+
   const {
     mutate: deleteStage,
     isPending: isDeleting,
     isError: isDeleteError,
   } = useDeleteStage();
 
-  const isSaving = isCreating || isUpdating || isDeleting;
+  const isSaving = isCreating || isUpdating || isDeleting || isReordering;
 
   // Sync local ordered stages when existingStages prop changes
   useEffect(() => {
@@ -203,24 +206,17 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
   const handleSavePositions = () => {
     if (pendingPositionUpdates.size === 0) return;
 
-    const stagesToUpdate = orderedStages.filter((s) =>
-      pendingPositionUpdates.has(s.uid),
-    );
+    // Send all position changes in a single atomic request to avoid race conditions
+    // and the null-hiringProcessId scope bug when updating individually.
+    const stagesToUpdate = orderedStages.map((s) => ({
+      uid: s.uid,
+      position: s.position,
+    }));
 
-    let remaining = stagesToUpdate.length;
-
-    stagesToUpdate.forEach((stage) => {
-      updateStage(
-        { uid: stage.uid, data: { position: stage.position } },
-        {
-          onSuccess: () => {
-            remaining -= 1;
-            if (remaining === 0) {
-              setPendingPositionUpdates(new Set());
-            }
-          },
-        },
-      );
+    reorderStages(stagesToUpdate, {
+      onSuccess: () => {
+        setPendingPositionUpdates(new Set());
+      },
     });
   };
 

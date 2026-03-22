@@ -43,6 +43,12 @@ export const deleteStage = async (uid: string): Promise<void> => {
   await axiosInstance.delete(`/stages/${uid}`);
 };
 
+export const reorderStages = async (
+  stages: { uid: string; position: number }[],
+): Promise<void> => {
+  await axiosInstance.patch("/stages/reorder", { stages });
+};
+
 // Stage Notes API functions
 export const getStageNotes = async (stageUid: string): Promise<StageNote[]> => {
   const response = await axiosInstance.get(`/stages/${stageUid}/notes`);

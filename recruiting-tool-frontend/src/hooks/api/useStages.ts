@@ -10,6 +10,7 @@ import {
   createStageNote,
   updateStageNote,
   deleteStageNote,
+  reorderStages,
 } from "../../api/stages";
 import {
   Stage,
@@ -90,6 +91,22 @@ export function useUpdateStage() {
     },
     onError: (error) => {
       showErrorToast(error, "Failed to update stage");
+    },
+  });
+}
+
+export function useReorderStages() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (stages: { uid: string; position: number }[]) =>
+      reorderStages(stages),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["jobPositions"] });
+      queryClient.invalidateQueries({ queryKey: [STAGES_KEY] });
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to reorder stages");
     },
   });
 }

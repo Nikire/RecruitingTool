@@ -158,25 +158,29 @@ export class StagesService {
     }
 
     const { position, ...updateData } = updateStageDto;
-    const hiringProcessId = stage.hiringProcessId;
 
     if (position !== undefined && position !== stage.position) {
+      // Scope the position shift to the same parent (hiringProcess OR jobPosition).
+      // Without this, when hiringProcessId is null the filter matches ALL job-position
+      // stages across every company, corrupting positions globally.
+      const scopeFilter = stage.hiringProcessId !== null ? { hiringProcessId: stage.hiringProcessId } : { jobPositionId: stage.jobPositionId };
+
       await this.databaseService.$transaction(async (tx) => {
         if (position < stage.position) {
           await tx.stage.updateMany({
             where: {
-              hiringProcessId,
+              ...scopeFilter,
               position: { gte: position, lt: stage.position },
-              deletedAt: null, // Exclude soft-deleted stages from position adjustment
+              deletedAt: null,
             },
             data: { position: { increment: 1 } },
           });
         } else {
           await tx.stage.updateMany({
             where: {
-              hiringProcessId,
+              ...scopeFilter,
               position: { gt: stage.position, lte: position },
-              deletedAt: null, // Exclude soft-deleted stages from position adjustment
+              deletedAt: null,
             },
             data: { position: { decrement: 1 } },
           });
@@ -233,6 +237,32 @@ export class StagesService {
     });
 
     return { message: `Stage ${uid} deleted successfully` };
+  }
+
+  /**
+   * Atomically reorder stages by setting their positions in a single transaction.
+   * Uses temporary negative positions first to avoid unique-constraint violations
+   * mid-transaction when swapping existing positions.
+   */
+  async reorderStages(items: { uid: string; position: number }[]): Promise<void> {
+    if (items.length === 0) return;
+
+    await this.databaseService.$transaction(async (tx) => {
+      // Step 1: move all to safe negative temp positions (-(pos+1)) to free up slots
+      for (const item of items) {
+        await tx.stage.update({
+          where: { uid: item.uid },
+          data: { position: -(item.position + 1) },
+        });
+      }
+      // Step 2: assign final positions
+      for (const item of items) {
+        await tx.stage.update({
+          where: { uid: item.uid },
+          data: { position: item.position },
+        });
+      }
+    });
   }
 
   async bulkCreateStages(stages: CreateStageDto[]) {
