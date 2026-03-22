@@ -10,6 +10,7 @@ import { StageMetricsResponseDto } from './dto/stage-time-tracking.dto';
 import { SseService } from 'src/modules/sse/sse.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
 import { getUserCompanyId } from 'src/utils/company-access.helper';
+import { EmailService } from 'src/modules/email/email.service';
 
 @Injectable()
 export class StagesService {
@@ -19,6 +20,7 @@ export class StagesService {
     private readonly databaseService: DatabaseService,
     private readonly sseService: SseService,
     private readonly notificationsService: NotificationsService,
+    private readonly emailService: EmailService,
   ) {}
   async create(createStageDto: CreateStageDto) {
     const { jobPositionUid, title, type, description, estimatedTime } = createStageDto;
@@ -426,6 +428,22 @@ export class StagesService {
               this.logger.error(`Failed to create notification for candidate ${candidateUser.uid}: ${notifError.message}`);
             }
           }
+
+          // Send email to candidate
+          if (hiringProcess.candidate.email) {
+            try {
+              await this.emailService.sendStageAdvancement(hiringProcess.candidate.email, {
+                candidateName: hiringProcess.candidate.name,
+                jobPosition: jobPosition.title,
+                companyName: jobPosition.company?.name,
+                previousStage: currentStage.title,
+                newStage: nextStage.title,
+                hiringProcessUid: hiringProcess.uid,
+              });
+            } catch (emailError) {
+              this.logger.error(`Failed to send stage advancement email to ${hiringProcess.candidate.email}: ${emailError.message}`);
+            }
+          }
         } catch (notifError) {
           this.logger.error(`Failed to send stage progression notifications: ${notifError.message}`);
         }
@@ -576,6 +594,22 @@ export class StagesService {
               });
             } catch (notifError) {
               this.logger.error(`Failed to create notification for candidate ${candidateUser.uid}: ${notifError.message}`);
+            }
+          }
+
+          // Send email to candidate
+          if (hiringProcess.candidate.email) {
+            try {
+              await this.emailService.sendStageAdvancement(hiringProcess.candidate.email, {
+                candidateName: hiringProcess.candidate.name,
+                jobPosition: jobPosition.title,
+                companyName: jobPosition.company?.name,
+                previousStage: currentStage?.title,
+                newStage: targetStage.title,
+                hiringProcessUid: hiringProcess.uid,
+              });
+            } catch (emailError) {
+              this.logger.error(`Failed to send stage change email to ${hiringProcess.candidate.email}: ${emailError.message}`);
             }
           }
         } catch (notifError) {

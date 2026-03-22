@@ -22,6 +22,8 @@ import {
   WelcomeData,
   teamInvitationTemplate,
   TeamInvitationData,
+  stageAdvancementTemplate,
+  StageAdvancementData,
 } from './templates';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -516,6 +518,12 @@ If you did not create an account, please ignore this email.
     const { subject, text, html } = teamInvitationTemplate(data);
     await this.sendEmail(recipientEmail, subject, text, html, 'TEAM_INVITATION');
     this.logger.log(`Team invitation sent to ${recipientEmail} for ${data.companyName}`);
+  }
+
+  async sendStageAdvancement(candidateEmail: string, data: StageAdvancementData): Promise<void> {
+    const { subject, text, html } = stageAdvancementTemplate(data);
+    await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
+    this.logger.log(`Stage advancement email sent to ${candidateEmail} — moved to "${data.newStage}" for ${data.jobPosition}`);
   }
 
   /**

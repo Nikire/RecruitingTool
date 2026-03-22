@@ -9,3 +9,4 @@ export * from './application-status-update.template';
 export * from './password-reset.template';
 export * from './welcome.template';
 export * from './team-invitation.template';
+export * from './stage-advancement.template';
