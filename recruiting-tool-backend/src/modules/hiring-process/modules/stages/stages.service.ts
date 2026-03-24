@@ -224,7 +224,11 @@ export class StagesService {
     const deletedPosition = stageToDelete.position;
 
     await this.databaseService.$transaction(async (tx) => {
-      await tx.stage.delete({ where: { uid } });
+      // Soft delete: set deletedAt instead of hard delete
+      await tx.stage.update({
+        where: { uid },
+        data: { deletedAt: new Date() },
+      });
 
       await tx.stage.updateMany({
         where: {
@@ -724,7 +728,7 @@ export class StagesService {
     }
 
     const notes = await this.databaseService.stageNote.findMany({
-      where: { stageId: stage.id },
+      where: { stageId: stage.id, deletedAt: null },
       include: {
         author: true,
         stage: true,
@@ -794,9 +798,9 @@ export class StagesService {
   }
 
   async deleteNote(noteUid: string, authorUserId: number): Promise<{ message: string }> {
-    // First fetch the note to verify ownership
-    const existingNote = await this.databaseService.stageNote.findUnique({
-      where: { uid: noteUid },
+    // First fetch the note to verify ownership (only non-deleted notes)
+    const existingNote = await this.databaseService.stageNote.findFirst({
+      where: { uid: noteUid, deletedAt: null },
     });
 
     if (!existingNote) {
@@ -808,8 +812,10 @@ export class StagesService {
       throw new EntityNotFoundException('Note', noteUid);
     }
 
-    await this.databaseService.stageNote.delete({
+    // Soft delete: set deletedAt instead of hard delete
+    await this.databaseService.stageNote.update({
       where: { uid: noteUid },
+      data: { deletedAt: new Date() },
     });
 
     return { message: 'Note deleted successfully' };

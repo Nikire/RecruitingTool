@@ -59,6 +59,7 @@ export class AnalyticsService {
       const companyId = await this.getCompanyIdForFilter(queryDto, user);
 
       const where: any = {
+        deletedAt: null,
         createdAt: {
           gte: startDate,
           lte: endDate,
@@ -145,6 +146,7 @@ export class AnalyticsService {
       const companyId = await this.getCompanyIdForFilter(queryDto, user);
 
       const where: any = {
+        deletedAt: null,
         createdAt: {
           gte: startDate,
           lte: endDate,
@@ -226,6 +228,7 @@ export class AnalyticsService {
       const totalApplicationsThisMonth = await this.databaseService.hiringProcess.count({
         where: {
           ...where,
+          deletedAt: null,
           createdAt: {
             gte: firstDayOfMonth,
             lte: lastDayOfMonth,
@@ -237,6 +240,7 @@ export class AnalyticsService {
       const totalHiredThisMonth = await this.databaseService.hiringProcess.count({
         where: {
           ...where,
+          deletedAt: null,
           status: HiringProcessStatus.CLOSED,
           updatedAt: {
             gte: firstDayOfMonth,
@@ -249,6 +253,7 @@ export class AnalyticsService {
       const totalActiveProcesses = await this.databaseService.hiringProcess.count({
         where: {
           ...where,
+          deletedAt: null,
           status: {
             in: [HiringProcessStatus.OPEN, HiringProcessStatus.IN_PROGRESS],
           },
@@ -258,6 +263,7 @@ export class AnalyticsService {
       // Candidates by source (in the specified date range)
       const candidates = await this.databaseService.candidate.findMany({
         where: {
+          deletedAt: null,
           createdAt: {
             gte: startDate,
             lte: endDate,
@@ -329,6 +335,7 @@ export class AnalyticsService {
       // Get all candidates in date range
       const candidates = await this.databaseService.candidate.findMany({
         where: {
+          deletedAt: null,
           createdAt: {
             gte: startDate,
             lte: endDate,
@@ -336,7 +343,7 @@ export class AnalyticsService {
         },
         include: {
           hiringProcesses: {
-            where: companyId !== null ? { companyId } : {},
+            where: companyId !== null ? { companyId, deletedAt: null } : { deletedAt: null },
             include: {
               stages: true,
             },
@@ -415,6 +422,7 @@ export class AnalyticsService {
       const companyId = await this.getCompanyIdForFilter(queryDto, user);
 
       const where: any = {
+        deletedAt: null,
         createdAt: {
           gte: startDate,
           lte: endDate,
@@ -518,6 +526,7 @@ export class AnalyticsService {
       const companyId = await this.getCompanyIdForFilter(queryDto, user);
 
       const where: any = {
+        deletedAt: null,
         status: HiringProcessStatus.CLOSED,
         updatedAt: {
           gte: startDate,
@@ -639,6 +648,7 @@ export class AnalyticsService {
       // Get all candidates in date range
       const candidates = await this.databaseService.candidate.findMany({
         where: {
+          deletedAt: null,
           createdAt: {
             gte: startDate,
             lte: endDate,
@@ -646,7 +656,7 @@ export class AnalyticsService {
         },
         include: {
           hiringProcesses: {
-            where: companyId !== null ? { companyId } : {},
+            where: companyId !== null ? { companyId, deletedAt: null } : { deletedAt: null },
           },
           scores: {
             include: {
@@ -738,6 +748,7 @@ export class AnalyticsService {
       const companyId = await this.getCompanyIdForFilter(queryDto, user);
 
       const where: any = {
+        deletedAt: null,
         createdAt: {
           gte: startDate,
           lte: endDate,
@@ -752,7 +763,9 @@ export class AnalyticsService {
       const hiringProcesses = await this.databaseService.hiringProcess.findMany({
         where,
         include: {
-          stages: true,
+          stages: {
+            where: { deletedAt: null },
+          },
         },
       });
 

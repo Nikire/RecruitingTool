@@ -25,10 +25,11 @@ export class StageNotesService {
 
   /**
    * Resolve hiring process UID to internal numeric ID.
+   * Excludes soft-deleted hiring processes.
    */
   private async resolveHiringProcessId(hiringProcessUid: string): Promise<{ id: number; uid: string }> {
-    const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-      where: { uid: hiringProcessUid },
+    const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+      where: { uid: hiringProcessUid, deletedAt: null },
       select: { id: true, uid: true },
     });
 
@@ -42,6 +43,7 @@ export class StageNotesService {
   /**
    * Upsert (create or update) a note for a specific stage within a hiring process.
    * One note per stage per hiring process — enforced by DB unique constraint.
+   * If a soft-deleted note exists for this stage/process, it is restored and updated.
    */
   async upsert(hiringProcessUid: string, stageUid: string, dto: UpsertStageNoteDto, authorId: number): Promise<StageNoteResponseDto> {
     const hiringProcess = await this.resolveHiringProcessId(hiringProcessUid);
@@ -60,11 +62,13 @@ export class StageNotesService {
         stageId,
         hiringProcessId: hiringProcess.id,
         authorId,
+        deletedAt: null,
       },
       update: {
         content: dto.content,
         rating: dto.rating,
         authorId,
+        deletedAt: null, // Restore if previously soft-deleted
       },
       include: {
         author: true,
@@ -77,18 +81,17 @@ export class StageNotesService {
   }
 
   /**
-   * Get the note for a specific stage within a hiring process.
+   * Get the note for a specific stage within a hiring process (excludes soft-deleted notes).
    */
   async findOne(hiringProcessUid: string, stageUid: string): Promise<StageNoteResponseDto> {
     const hiringProcess = await this.resolveHiringProcessId(hiringProcessUid);
     const stageId = await this.resolveStageId(stageUid, hiringProcess.id);
 
-    const note = await this.databaseService.stageNote.findUnique({
+    const note = await this.databaseService.stageNote.findFirst({
       where: {
-        stageId_hiringProcessId: {
-          stageId,
-          hiringProcessId: hiringProcess.id,
-        },
+        stageId,
+        hiringProcessId: hiringProcess.id,
+        deletedAt: null,
       },
       include: {
         author: true,
@@ -105,18 +108,17 @@ export class StageNotesService {
   }
 
   /**
-   * Delete the note for a specific stage within a hiring process.
+   * Delete the note for a specific stage within a hiring process (soft delete).
    */
   async remove(hiringProcessUid: string, stageUid: string): Promise<{ message: string }> {
     const hiringProcess = await this.resolveHiringProcessId(hiringProcessUid);
     const stageId = await this.resolveStageId(stageUid, hiringProcess.id);
 
-    const existing = await this.databaseService.stageNote.findUnique({
+    const existing = await this.databaseService.stageNote.findFirst({
       where: {
-        stageId_hiringProcessId: {
-          stageId,
-          hiringProcessId: hiringProcess.id,
-        },
+        stageId,
+        hiringProcessId: hiringProcess.id,
+        deletedAt: null,
       },
     });
 
@@ -124,13 +126,10 @@ export class StageNotesService {
       throw new NotFoundException(`No note found for stage ${stageUid} in hiring process ${hiringProcessUid}`);
     }
 
-    await this.databaseService.stageNote.delete({
-      where: {
-        stageId_hiringProcessId: {
-          stageId,
-          hiringProcessId: hiringProcess.id,
-        },
-      },
+    // Soft delete: set deletedAt instead of hard delete
+    await this.databaseService.stageNote.update({
+      where: { uid: existing.uid },
+      data: { deletedAt: new Date() },
     });
 
     return { message: 'Stage note deleted successfully' };
@@ -138,10 +137,12 @@ export class StageNotesService {
 
   /**
    * Get all stage evaluation notes for a candidate (across all hiring processes and stages).
+   * Excludes soft-deleted notes.
    */
   async findByCandidateUid(candidateUid: string): Promise<CandidateStageNotesResponseDto[]> {
     const notes = await this.databaseService.stageNote.findMany({
       where: {
+        deletedAt: null,
         hiringProcess: {
           candidate: { uid: candidateUid },
         },

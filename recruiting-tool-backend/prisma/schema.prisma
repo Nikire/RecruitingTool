@@ -281,6 +281,7 @@ model HiringProcess {
   codeExpiresAt  DateTime?
   lastAccessedAt DateTime?
   accessCount    Int                 @default(0)
+  deletedAt      DateTime?
   candidate      Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id])
   company        Company             @relation(fields: [companyId], references: [id])
   jobPosition    JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
@@ -292,6 +293,7 @@ model HiringProcess {
   @@index([uid])
   @@index([accessCode])
   @@index([codeExpiresAt])
+  @@index([deletedAt])
 }
 
 model Stage {
@@ -329,6 +331,7 @@ model StageNote {
   updatedAt       DateTime      @updatedAt
   hiringProcessId Int
   rating          Int
+  deletedAt       DateTime?
   author          User          @relation("StageNoteAuthor", fields: [authorId], references: [id])
   hiringProcess   HiringProcess @relation("HiringProcessStageNotes", fields: [hiringProcessId], references: [id], onDelete: Cascade)
   stage           Stage         @relation("StageNotes", fields: [stageId], references: [id], onDelete: Cascade)
@@ -339,6 +342,7 @@ model StageNote {
   @@index([authorId])
   @@index([uid])
   @@index([createdAt])
+  @@index([deletedAt])
 }
 
 model FileUpload {

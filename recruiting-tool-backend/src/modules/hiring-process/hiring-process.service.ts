@@ -188,6 +188,9 @@ export class HiringProcessService {
           }
         : {};
 
+      // Exclude soft-deleted records
+      where.deletedAt = null;
+
       // Add status filter
       if (status) {
         where.status = status;
@@ -279,7 +282,7 @@ export class HiringProcessService {
       const limit = Number(filterDto.limit) || 10;
       const { search, status } = filterDto;
 
-      const where: any = {};
+      const where: any = { deletedAt: null };
 
       if (search) {
         where.OR = [{ title: { contains: search, mode: 'insensitive' as const } }];
@@ -347,7 +350,7 @@ export class HiringProcessService {
 
   async findAll(hiringProcessFindDto: HiringProcessFindDto, user: User): Promise<Array<HiringProcessResponseDto>> {
     try {
-      const where: any = hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid } } : {};
+      const where: any = hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid }, deletedAt: null } : { deletedAt: null };
 
       // Add company filter for HR and USER roles
       const userCompanyId = getUserCompanyId(user);
@@ -370,8 +373,8 @@ export class HiringProcessService {
 
   async findOne(uid: string, user?: User): Promise<HiringProcessResponseDto> {
     try {
-      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid },
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid, deletedAt: null },
         include: includeHiringProcess,
       });
 
@@ -399,9 +402,9 @@ export class HiringProcessService {
         throw new EntityNotFoundException('Hiring process', uid);
       }
 
-      // Verify company access before update
-      const existingHiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid },
+      // Verify company access before update (exclude soft-deleted)
+      const existingHiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid, deletedAt: null },
         include: {
           candidate: true,
           jobPosition: true,
@@ -591,9 +594,9 @@ export class HiringProcessService {
 
   async remove(uid: string, user: User): Promise<MessageResponseDto> {
     try {
-      // Verify company access before delete
-      const existingHiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid },
+      // Verify company access before soft delete (exclude already soft-deleted)
+      const existingHiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid, deletedAt: null },
       });
 
       if (!existingHiringProcess) {
@@ -602,8 +605,10 @@ export class HiringProcessService {
 
       verifyCompanyAccess(user, existingHiringProcess.companyId);
 
-      await this.databaseService.hiringProcess.delete({
+      // Soft delete: set deletedAt instead of hard delete
+      await this.databaseService.hiringProcess.update({
         where: { uid },
+        data: { deletedAt: new Date() },
       });
 
       return { message: `Hiring Process deleted successfully` };
@@ -617,9 +622,9 @@ export class HiringProcessService {
 
   async progressToNextStage(hiringProcessUid: string, user: User) {
     try {
-      // Verify company access before progressing stage
-      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid: hiringProcessUid },
+      // Verify company access before progressing stage (exclude soft-deleted)
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid: hiringProcessUid, deletedAt: null },
       });
 
       if (!hiringProcess) {
@@ -639,9 +644,9 @@ export class HiringProcessService {
 
   async moveToSpecificStage(hiringProcessUid: string, targetStageUid: string, user: User) {
     try {
-      // Verify company access before moving to specific stage
-      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid: hiringProcessUid },
+      // Verify company access before moving to specific stage (exclude soft-deleted)
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid: hiringProcessUid, deletedAt: null },
       });
 
       if (!hiringProcess) {
@@ -665,9 +670,9 @@ export class HiringProcessService {
    */
   async generateAccessCode(hiringProcessUid: string, user: User) {
     try {
-      // Verify hiring process exists and user has access
-      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid: hiringProcessUid },
+      // Verify hiring process exists and user has access (exclude soft-deleted)
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid: hiringProcessUid, deletedAt: null },
       });
 
       if (!hiringProcess) {
@@ -708,8 +713,8 @@ export class HiringProcessService {
    */
   async getStatusByAccessCode(accessCode: string) {
     try {
-      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { accessCode },
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { accessCode, deletedAt: null },
         include: {
           candidate: true,
           jobPosition: true,
