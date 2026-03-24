@@ -404,7 +404,8 @@
       "expand_icon": "Expandir grupo",
       "collapse_icon": "Contraer grupo",
       "column_title": "Título del Proceso",
-      "column_status": "Estado"
+      "column_status": "Estado",
+      "positions_per_page": "Posiciones por página"
     }
   },
   "companies": {
@@ -1183,7 +1184,8 @@
       "expand": "Expandir grupo {{title}}",
       "collapse": "Contraer grupo {{title}}",
       "expand_icon": "Expandir grupo",
-      "collapse_icon": "Contraer grupo"
+      "collapse_icon": "Contraer grupo",
+      "positions_per_page": "Posiciones por página"
     }
   },
   "email_templates_page": {
@@ -1377,6 +1379,26 @@
   "companies_page": {
     "title": "Gestión de Empresas",
     "create_dialog_title": "Crear Nueva Empresa"
+  },
+  "hiring_process_tracking": {
+    "page_title": "Estado de tu Solicitud",
+    "page_subtitle": "Sigue el progreso de tu solicitud de empleo en tiempo real.",
+    "loading": "Cargando el estado de tu solicitud...",
+    "not_found_title": "Solicitud No Encontrada",
+    "not_found_message": "No pudimos encontrar una solicitud con este enlace. El enlace puede ser inválido o el proceso puede haber sido eliminado.",
+    "error_title": "Algo Salió Mal",
+    "error_message": "No pudimos cargar el estado de tu solicitud. Por favor, inténtalo más tarde o contacta a la empresa.",
+    "candidate_label": "Candidato",
+    "company_label": "Empresa",
+    "position_label": "Puesto",
+    "last_updated": "Última actualización:",
+    "recruitment_stages": "Etapas de Selección",
+    "no_stages": "Aún no se han definido etapas para este proceso.",
+    "current_stage_badge": "Etapa actual",
+    "process_closed_message": "¡Felicitaciones! Este proceso de contratación se ha completado exitosamente.",
+    "process_cancelled_message": "Este proceso de contratación ha sido cancelado.",
+    "process_rejected_message": "Gracias por tu interés. Lamentablemente, no podremos avanzar con tu candidatura en este momento.",
+    "privacy_notice": "Esta página muestra una vista de solo lectura del estado de tu solicitud. No se muestra ningún dato personal más allá de tu nombre."
   },
   "hiring_process_page": {
     "no_data_found": "No se encontraron datos",

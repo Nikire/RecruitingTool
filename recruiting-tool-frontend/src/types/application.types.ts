@@ -50,6 +50,26 @@ export interface ApplicationFilterDto {
   limit?: number;
 }
 
+export interface ApplicationGroupedFilterDto {
+  status?: ApplicationStatus;
+  page?: number;
+  limit?: number;
+}
+
+export interface ApplicationGroup {
+  jobPositionUid: string | null;
+  jobPositionTitle: string;
+  applications: Application[];
+}
+
+export interface PaginatedApplicationGroupsResponse {
+  data: ApplicationGroup[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export interface PublicJobPosition {
   uid: string;
   title: string;

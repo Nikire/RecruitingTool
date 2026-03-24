@@ -5,6 +5,7 @@ import { CandidateMapper } from '../modules/candidate/entities/candidate.entity'
 export const includeHiringProcess = {
   candidate: true,
   stages: {
+    orderBy: { position: 'asc' as const },
     include: {
       notes: {
         include: {

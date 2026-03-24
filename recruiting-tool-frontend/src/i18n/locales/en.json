@@ -404,7 +404,8 @@
       "expand_icon": "Expand group",
       "collapse_icon": "Collapse group",
       "column_title": "Process Title",
-      "column_status": "Status"
+      "column_status": "Status",
+      "positions_per_page": "Positions per page"
     }
   },
   "companies": {
@@ -1175,7 +1176,8 @@
       "expand": "Expand group {{title}}",
       "collapse": "Collapse group {{title}}",
       "expand_icon": "Expand group",
-      "collapse_icon": "Collapse group"
+      "collapse_icon": "Collapse group",
+      "positions_per_page": "Positions per page"
     }
   },
   "email_templates_page": {
@@ -1369,6 +1371,26 @@
   "companies_page": {
     "title": "Company Management",
     "create_dialog_title": "Create New Company"
+  },
+  "hiring_process_tracking": {
+    "page_title": "Application Status",
+    "page_subtitle": "Track the progress of your job application in real time.",
+    "loading": "Loading your application status...",
+    "not_found_title": "Application Not Found",
+    "not_found_message": "We could not find an application with this link. The link may be invalid or the process may have been removed.",
+    "error_title": "Something Went Wrong",
+    "error_message": "We were unable to load your application status. Please try again later or contact the company.",
+    "candidate_label": "Candidate",
+    "company_label": "Company",
+    "position_label": "Position",
+    "last_updated": "Last updated:",
+    "recruitment_stages": "Recruitment Stages",
+    "no_stages": "No stages have been defined for this process yet.",
+    "current_stage_badge": "Current stage",
+    "process_closed_message": "Congratulations! This hiring process has been completed successfully.",
+    "process_cancelled_message": "This hiring process has been cancelled.",
+    "process_rejected_message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application at this time.",
+    "privacy_notice": "This page shows a read-only view of your application status. No personal data beyond your name is displayed."
   },
   "hiring_process_page": {
     "no_data_found": "No data found",

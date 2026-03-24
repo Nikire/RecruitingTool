@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import {
   Box,
   Typography,
@@ -10,15 +10,16 @@ import {
   Divider,
   Skeleton,
   Alert,
+  TablePagination,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import { useTranslation } from "react-i18next";
-import { useApplications } from "../../hooks/api/useApplications";
+import { useApplicationsGrouped } from "../../hooks/api/useApplications";
 import {
   Application,
-  ApplicationFilterDto,
+  ApplicationGroup,
   ApplicationStatus,
 } from "../../types/application.types";
 import ApplicationDetailDialog from "../dialogs/ApplicationDetailDialog";
@@ -28,17 +29,11 @@ interface ApplicationsGroupedListProps {
   statusFilter?: ApplicationStatus;
 }
 
-interface JobPositionGroup {
-  jobPositionUid: string | null;
-  jobPositionTitle: string;
-  applications: Application[];
-}
-
 // ---------------------------------------------------------------------------
 // GroupHeader
 // ---------------------------------------------------------------------------
 const GroupHeader: React.FC<{
-  group: JobPositionGroup;
+  group: ApplicationGroup;
   isExpanded: boolean;
   onToggle: () => void;
 }> = ({ group, isExpanded, onToggle }) => {
@@ -198,7 +193,7 @@ const ApplicationRow: React.FC<{
 // GroupSection
 // ---------------------------------------------------------------------------
 const GroupSection: React.FC<{
-  group: JobPositionGroup;
+  group: ApplicationGroup;
   onView: (application: Application) => void;
 }> = ({ group, onView }) => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -241,12 +236,14 @@ const ApplicationsGroupedList: React.FC<ApplicationsGroupedListProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const filters = useMemo<ApplicationFilterDto | undefined>(
-    () => (statusFilter ? { status: statusFilter } : undefined),
-    [statusFilter],
-  );
+  const [page, setPage] = useState(0); // TablePagination is 0-indexed
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  const { data: rawApplications, isLoading, error } = useApplications(filters);
+  const { data, isLoading, error } = useApplicationsGrouped({
+    status: statusFilter,
+    page: page + 1, // backend is 1-indexed
+    limit: rowsPerPage,
+  });
 
   const [selectedApplication, setSelectedApplication] =
     useState<Application | null>(null);
@@ -262,33 +259,16 @@ const ApplicationsGroupedList: React.FC<ApplicationsGroupedListProps> = ({
     setSelectedApplication(null);
   };
 
-  const applications = useMemo(() => rawApplications ?? [], [rawApplications]);
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
 
-  const groups = useMemo<JobPositionGroup[]>(() => {
-    const groupMap = new Map<string, JobPositionGroup>();
-
-    for (const application of applications) {
-      const key = application.jobPositionUid ?? "__no_position__";
-      const title =
-        application.jobPositionTitle ?? t("applications_page.no_position");
-
-      if (!groupMap.has(key)) {
-        groupMap.set(key, {
-          jobPositionUid: application.jobPositionUid ?? null,
-          jobPositionTitle: title,
-          applications: [],
-        });
-      }
-      groupMap.get(key)!.applications.push(application);
-    }
-
-    // Sort: named positions alphabetically first, then the "no position" group last
-    return Array.from(groupMap.values()).sort((a, b) => {
-      if (a.jobPositionUid === null) return 1;
-      if (b.jobPositionUid === null) return -1;
-      return a.jobPositionTitle.localeCompare(b.jobPositionTitle);
-    });
-  }, [applications, t]);
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
+  };
 
   // ---- Loading state -------------------------------------------------------
   if (isLoading) {
@@ -344,8 +324,11 @@ const ApplicationsGroupedList: React.FC<ApplicationsGroupedListProps> = ({
     );
   }
 
+  const groups = data?.data ?? [];
+  const total = data?.total ?? 0;
+
   // ---- Empty state ---------------------------------------------------------
-  if (applications.length === 0) {
+  if (total === 0 && !isLoading) {
     return (
       <Box
         sx={{
@@ -426,6 +409,26 @@ const ApplicationsGroupedList: React.FC<ApplicationsGroupedListProps> = ({
           />
         ))}
       </Box>
+
+      {/* Pagination */}
+      {total > 0 && (
+        <Paper variant="outlined" sx={{ mt: 1 }}>
+          <TablePagination
+            component="div"
+            count={total}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            labelRowsPerPage={t("applications_page.group.positions_per_page")}
+            labelDisplayedRows={({ from, to, count }) =>
+              t("pagination.showing", { start: from, end: to, total: count })
+            }
+            aria-label={t("aria.pagination_controls")}
+          />
+        </Paper>
+      )}
 
       <ApplicationDetailDialog
         open={dialogOpen}

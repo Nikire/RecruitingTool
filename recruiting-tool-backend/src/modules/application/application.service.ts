@@ -2,7 +2,15 @@ import { Injectable, NotFoundException, BadRequestException, ConflictException, 
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ApplicationMapper, includeApplication } from './entities/application.entity';
-import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
+import {
+  ApplicationResponseDto,
+  CreateApplicationDto,
+  UpdateApplicationDto,
+  ApplicationFilterDto,
+  ApplicationGroupedFilterDto,
+  ApplicationGroupedResponseDto,
+  PaginatedApplicationGroupsResponseDto,
+} from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { ApplicationStatus, EmailTemplateType, StageStatus, User, NotificationType, Prisma } from '@prisma/client';
 import { EmailService } from '../email/email.service';
@@ -199,6 +207,75 @@ export class ApplicationService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to find all: ${error.message}`);
+    }
+  }
+
+  async findAllGrouped(filterDto: ApplicationGroupedFilterDto, user: User): Promise<PaginatedApplicationGroupsResponseDto> {
+    try {
+      const page = Number(filterDto.page) || 1;
+      const limit = Number(filterDto.limit) || 10;
+
+      const where: any = { deletedAt: null };
+
+      if (filterDto.status) {
+        where.status = filterDto.status;
+      }
+
+      // Add company filter for HR and USER roles
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        where.jobPosition = {
+          companyId: userCompanyId,
+        };
+      }
+
+      // Fetch all matching applications (we need to group by job position)
+      const allApplications = await this.databaseService.application.findMany({
+        where,
+        include: includeApplication,
+        orderBy: { appliedAt: 'desc' },
+      });
+
+      // Group by job position
+      const groupMap = new Map<string, ApplicationGroupedResponseDto>();
+      for (const application of allApplications) {
+        const key = (application as any).jobPosition?.uid ?? '__no_position__';
+        const title = (application as any).jobPosition?.title ?? 'No Job Position';
+
+        if (!groupMap.has(key)) {
+          groupMap.set(key, {
+            jobPositionUid: (application as any).jobPosition?.uid ?? null,
+            jobPositionTitle: title,
+            applications: [],
+          });
+        }
+        groupMap.get(key)!.applications.push(ApplicationMapper(application));
+      }
+
+      // Sort groups: named positions alphabetically first, then "no position" last
+      const allGroups = Array.from(groupMap.values()).sort((a, b) => {
+        if (a.jobPositionUid === null) return 1;
+        if (b.jobPositionUid === null) return -1;
+        return a.jobPositionTitle.localeCompare(b.jobPositionTitle);
+      });
+
+      const total = allGroups.length;
+      const totalPages = Math.ceil(total / limit);
+      const skip = (page - 1) * limit;
+      const paginatedGroups = allGroups.slice(skip, skip + limit);
+
+      return {
+        data: paginatedGroups,
+        total,
+        page,
+        limit,
+        totalPages,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to find grouped: ${error.message}`);
     }
   }
 

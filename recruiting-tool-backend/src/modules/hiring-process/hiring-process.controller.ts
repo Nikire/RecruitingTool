@@ -1,6 +1,14 @@
 import { Controller, Get, Post, Body, Param, Delete, Put, Query } from '@nestjs/common';
 import { HiringProcessService } from './hiring-process.service';
-import { CreateHiringProcessDto, UpdateHiringProcessDto, HiringProcessResponseDto, HiringProcessFindDto, AccessCodeResponseDto } from './dto/hiring-process.dto';
+import {
+  CreateHiringProcessDto,
+  UpdateHiringProcessDto,
+  HiringProcessResponseDto,
+  HiringProcessFindDto,
+  AccessCodeResponseDto,
+  HiringProcessGroupedFilterDto,
+  PaginatedHiringProcessGroupsResponseDto,
+} from './dto/hiring-process.dto';
 import { HiringProcessFilterDto } from './dto/hiring-process-filter.dto';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { User } from '@prisma/client';
@@ -41,6 +49,18 @@ export class HiringProcessController {
   })
   list(@Query() filterDto: HiringProcessFilterDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<HiringProcessResponseDto>> {
     return this.hiringProcessService.list(filterDto, currentUser);
+  }
+
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])
+  @Get('list-grouped')
+  @ApiOperation({ summary: 'Get hiring processes grouped by job position with pagination' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns paginated job position groups, each with all their hiring processes',
+    type: PaginatedHiringProcessGroupsResponseDto,
+  })
+  listGrouped(@Query() filterDto: HiringProcessGroupedFilterDto, @CurrentUser() currentUser: User): Promise<PaginatedHiringProcessGroupsResponseDto> {
+    return this.hiringProcessService.listGrouped(filterDto, currentUser);
   }
 
   @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN', 'USER'])

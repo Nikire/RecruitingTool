@@ -135,14 +135,7 @@ const HiringProcessesPage: React.FC = () => {
       </Box>
 
       {groupByPosition ? (
-        <HiringProcessesGroupedList
-          page={page}
-          limit={limit}
-          search={search}
-          status={status}
-          onPageChange={handlePageChange}
-          onLimitChange={handleLimitChange}
-        />
+        <HiringProcessesGroupedList search={search} status={status} />
       ) : (
         <HiringProcessesList
           page={page}

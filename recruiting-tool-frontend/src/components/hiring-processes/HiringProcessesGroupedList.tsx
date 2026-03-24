@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Box,
   Typography,
@@ -12,6 +12,7 @@ import {
   Alert,
   CircularProgress,
   Tooltip,
+  TablePagination,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
@@ -21,11 +22,14 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SortIcon from "@mui/icons-material/Sort";
 import { useTranslation } from "react-i18next";
 import {
-  useListHiringProcesses,
+  useListHiringProcessesGrouped,
   useDeleteHiringProcess,
 } from "../../hooks/api/useHiringProcess";
 import { useRankings, useScoreCandidate } from "../../hooks/api/useAi";
-import { HiringProcess } from "../../types/hiringProcess.types";
+import {
+  HiringProcess,
+  HiringProcessGroup,
+} from "../../types/hiringProcess.types";
 import {
   RankedCandidateDto,
   getScoreTier,
@@ -50,18 +54,8 @@ const AI_SCORING_ROLES = [
 ];
 
 interface HiringProcessesGroupedListProps {
-  page: number;
-  limit: number;
   search: string;
   status?: string;
-  onPageChange: (page: number) => void;
-  onLimitChange: (limit: number) => void;
-}
-
-interface JobPositionGroup {
-  jobPositionUid: string | null;
-  jobPositionTitle: string;
-  processes: HiringProcess[];
 }
 
 // Score chip shown on each process row
@@ -151,7 +145,7 @@ const ScoreChip: React.FC<{
 };
 
 const GroupHeader: React.FC<{
-  group: JobPositionGroup;
+  group: HiringProcessGroup;
   isExpanded: boolean;
   onToggle: () => void;
   scoreMap: Map<string, RankedCandidateDto>;
@@ -419,7 +413,7 @@ const ProcessRow: React.FC<{
 };
 
 const GroupSection: React.FC<{
-  group: JobPositionGroup;
+  group: HiringProcessGroup;
   canManage: boolean;
   canScore: boolean;
   scoringCandidateUid: string | null;
@@ -513,8 +507,6 @@ const GroupSection: React.FC<{
 };
 
 const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
-  page,
-  limit,
   search,
   status,
 }) => {
@@ -523,6 +515,14 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   const { user } = useUserAtom();
   const canManage = canManageResources(user);
   const canScore = hasAnyRole(user, AI_SCORING_ROLES);
+
+  const [page, setPage] = useState(0); // TablePagination is 0-indexed
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+
+  // Reset to page 1 when search or status filters change
+  useEffect(() => {
+    setPage(0);
+  }, [search, status]);
 
   const updateDialog = useDialog<HiringProcess>();
   const deleteMutation = useDeleteHiringProcess();
@@ -533,45 +533,12 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
     null,
   );
 
-  const { data, isLoading, error } = useListHiringProcesses({
-    page,
-    limit,
+  const { data, isLoading, error } = useListHiringProcessesGrouped({
+    page: page + 1, // backend is 1-indexed
+    limit: rowsPerPage,
     search,
     status,
-    sortBy: "createdAt",
-    sortOrder: "desc",
   });
-
-  const processes = useMemo(
-    () => (data?.data as HiringProcess[] | undefined) ?? [],
-    [data?.data],
-  );
-
-  const groups = useMemo<JobPositionGroup[]>(() => {
-    const groupMap = new Map<string, JobPositionGroup>();
-
-    for (const process of processes) {
-      const key = process.jobPosition?.uid ?? "__no_position__";
-      const title =
-        process.jobPosition?.title ?? t("hiring_processes.group.no_position");
-
-      if (!groupMap.has(key)) {
-        groupMap.set(key, {
-          jobPositionUid: process.jobPosition?.uid ?? null,
-          jobPositionTitle: title,
-          processes: [],
-        });
-      }
-      groupMap.get(key)!.processes.push(process);
-    }
-
-    // Sort groups: named positions first (alphabetically), then the "no position" group
-    return Array.from(groupMap.values()).sort((a, b) => {
-      if (a.jobPositionUid === null) return 1;
-      if (b.jobPositionUid === null) return -1;
-      return a.jobPositionTitle.localeCompare(b.jobPositionTitle);
-    });
-  }, [processes, t]);
 
   const handleViewClick = (process: HiringProcess) => {
     navigate(`/hiring-process/${process.uid}`);
@@ -585,6 +552,17 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
         onSettled: () => setScoringCandidateUid(null),
       },
     );
+  };
+
+  const handleChangePage = (_: unknown, newPage: number) => {
+    setPage(newPage);
+  };
+
+  const handleChangeRowsPerPage = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setRowsPerPage(parseInt(event.target.value, 10));
+    setPage(0);
   };
 
   if (isLoading) {
@@ -640,7 +618,10 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
     );
   }
 
-  if (processes.length === 0) {
+  const groups = data?.data ?? [];
+  const total = data?.total ?? 0;
+
+  if (total === 0 && !isLoading) {
     return (
       <Box
         sx={{
@@ -722,6 +703,26 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
           />
         ))}
       </Box>
+
+      {/* Pagination */}
+      {total > 0 && (
+        <Paper variant="outlined" sx={{ mt: 1 }}>
+          <TablePagination
+            component="div"
+            count={total}
+            page={page}
+            onPageChange={handleChangePage}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+            rowsPerPageOptions={[5, 10, 25, 50]}
+            labelRowsPerPage={t("hiring_processes.group.positions_per_page")}
+            labelDisplayedRows={({ from, to, count }) =>
+              t("pagination.showing", { start: from, end: to, total: count })
+            }
+            aria-label={t("aria.pagination_controls")}
+          />
+        </Paper>
+      )}
 
       <UpdateHiringProcessDialog
         open={updateDialog.isOpen}

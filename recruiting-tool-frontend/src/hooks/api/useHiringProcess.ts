@@ -9,11 +9,13 @@ import {
   deleteHiringProcess,
   getHiringProcesses,
   listHiringProcesses,
+  listHiringProcessesGrouped,
   updateHiringProcess,
   progressStage,
   moveToStage,
 } from "../../api/hiringProcess";
 import { PaginationParams } from "../../types/pagination.types";
+import { HiringProcessGroupedFilterDto } from "../../types/hiringProcess.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 const HIRING_PROCESS_KEY = "hiringProcess";
@@ -31,6 +33,15 @@ export function useListHiringProcesses(
   return useQuery({
     queryKey: [HIRING_PROCESS_KEY, "list", params],
     queryFn: () => listHiringProcesses(params),
+  });
+}
+
+export function useListHiringProcessesGrouped(
+  params: HiringProcessGroupedFilterDto,
+) {
+  return useQuery({
+    queryKey: [HIRING_PROCESS_KEY, "list-grouped", params],
+    queryFn: () => listHiringProcessesGrouped(params),
   });
 }
 

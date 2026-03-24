@@ -40,6 +40,7 @@ function isPublicRoute(): boolean {
     "/register",
     "/book-interview",
     "/booking-confirmed",
+    "/hiring-process",
   ];
   return publicRoutes.some((route) => currentPath.startsWith(route));
 }
@@ -67,7 +68,9 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 api.interceptors.request.use((config) => {
   // Skip authentication for public endpoints
   const isPublicEndpoint =
-    config.url?.includes("/public/") || config.url?.includes("-public");
+    config.url?.includes("/public/") ||
+    config.url?.includes("-public") ||
+    config.url?.match(/\/hiring-process\/[^/]+\/public$/);
   if (isPublicEndpoint) {
     return config; // Don't add Authorization header for public endpoints
   }
@@ -95,7 +98,8 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
   // Don't redirect to login for public endpoint failures
   const isPublicEndpoint =
     originalRequest?.url?.includes("/public/") ||
-    originalRequest?.url?.includes("-public");
+    originalRequest?.url?.includes("-public") ||
+    originalRequest?.url?.match(/\/hiring-process\/[^/]+\/public$/);
   if (isPublicEndpoint) {
     console.warn(
       "[AUTH] Public endpoint error, not redirecting to login:",

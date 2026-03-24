@@ -27,6 +27,27 @@ export interface CreateHiringProcessDto {
   jobPositionUid: string;
 }
 
+export interface HiringProcessGroupedFilterDto {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface HiringProcessGroup {
+  jobPositionUid: string | null;
+  jobPositionTitle: string;
+  processes: HiringProcess[];
+}
+
+export interface PaginatedHiringProcessGroupsResponse {
+  data: HiringProcessGroup[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}
+
 export const HIRING_PROCESS_STATUS = {
   OPEN: "OPEN",
   CLOSED: "CLOSED",

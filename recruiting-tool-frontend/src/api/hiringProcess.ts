@@ -1,6 +1,8 @@
 import {
   HiringProcess,
   CreateHiringProcessDto,
+  HiringProcessGroupedFilterDto,
+  PaginatedHiringProcessGroupsResponse,
 } from "../types/hiringProcess.types";
 import { MessageResponse } from "../types/responses";
 import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
@@ -24,6 +26,18 @@ export function listHiringProcesses(
   }
   return api
     .get("/hiring-process/list", { params: filteredParams })
+    .then((res) => res.data);
+}
+
+export function listHiringProcessesGrouped(
+  params: HiringProcessGroupedFilterDto,
+): Promise<PaginatedHiringProcessGroupsResponse> {
+  const filteredParams = { ...params };
+  if (filteredParams.status === "all" || filteredParams.status === "") {
+    delete filteredParams.status;
+  }
+  return api
+    .get("/hiring-process/list-grouped", { params: filteredParams })
     .then((res) => res.data);
 }
 
@@ -73,6 +87,24 @@ export interface PublicStatusResponse {
   lastUpdated: Date;
 }
 
+export interface PublicStage {
+  uid: string;
+  title: string;
+  type: string;
+  position: number;
+  status: "COMPLETED" | "CURRENT" | "PENDING";
+}
+
+export interface PublicHiringProcessTracking {
+  uid: string;
+  candidateName: string;
+  positionTitle: string;
+  companyName: string;
+  status: string;
+  stages: PublicStage[];
+  lastUpdated: Date;
+}
+
 export function generateAccessCode(uid: string): Promise<AccessCodeResponse> {
   return api
     .post(`/hiring-process/${uid}/generate-access-code`)
@@ -83,4 +115,10 @@ export function getStatusByAccessCode(
   accessCode: string,
 ): Promise<PublicStatusResponse> {
   return api.get(`/public/status/${accessCode}`).then((res) => res.data);
+}
+
+export function getPublicHiringProcessTracking(
+  uid: string,
+): Promise<PublicHiringProcessTracking> {
+  return api.get(`/hiring-process/${uid}/public`).then((res) => res.data);
 }

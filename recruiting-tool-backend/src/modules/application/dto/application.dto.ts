@@ -138,3 +138,46 @@ export class ApplicationFilterDto {
   @IsOptional()
   limit?: number;
 }
+
+export class ApplicationGroupedFilterDto {
+  @ApiProperty({ description: 'Filter by status', enum: ApplicationStatus, required: false })
+  @IsOptional()
+  @IsEnum(ApplicationStatus)
+  status?: ApplicationStatus;
+
+  @ApiProperty({ description: 'Page number (1-indexed), paginates job position groups', example: 1, required: false })
+  @IsOptional()
+  page?: number;
+
+  @ApiProperty({ description: 'Number of job position groups per page', example: 10, required: false })
+  @IsOptional()
+  limit?: number;
+}
+
+export class ApplicationGroupedResponseDto {
+  @ApiProperty({ description: 'Job position UID (null for applications without a position)', nullable: true })
+  jobPositionUid: string | null;
+
+  @ApiProperty({ description: 'Job position title' })
+  jobPositionTitle: string;
+
+  @ApiProperty({ description: 'All applications for this job position', type: [ApplicationResponseDto] })
+  applications: ApplicationResponseDto[];
+}
+
+export class PaginatedApplicationGroupsResponseDto {
+  @ApiProperty({ type: [ApplicationGroupedResponseDto] })
+  data: ApplicationGroupedResponseDto[];
+
+  @ApiProperty()
+  total: number;
+
+  @ApiProperty()
+  page: number;
+
+  @ApiProperty()
+  limit: number;
+
+  @ApiProperty()
+  totalPages: number;
+}

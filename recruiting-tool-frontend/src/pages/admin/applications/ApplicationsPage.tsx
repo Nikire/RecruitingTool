@@ -131,7 +131,10 @@ const ApplicationsPage: React.FC = () => {
       </Box>
 
       {groupByPosition ? (
-        <ApplicationsGroupedList statusFilter={statusFilter || undefined} />
+        <ApplicationsGroupedList
+          key={statusFilter}
+          statusFilter={statusFilter || undefined}
+        />
       ) : (
         <ApplicationsTable statusFilter={statusFilter || undefined} />
       )}

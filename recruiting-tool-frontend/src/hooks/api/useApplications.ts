@@ -4,12 +4,14 @@ import {
   deleteApplication,
   getApplication,
   getApplications,
+  getApplicationsGrouped,
   getPublicJobPositions,
   updateApplication,
   acceptApplication,
 } from "../../api/applications";
 import {
   ApplicationFilterDto,
+  ApplicationGroupedFilterDto,
   CreateApplicationDto,
   UpdateApplicationDto,
 } from "../../types/application.types";
@@ -29,6 +31,13 @@ export function useApplications(filters?: ApplicationFilterDto) {
   return useQuery({
     queryKey: [APPLICATIONS_KEY, filters],
     queryFn: () => getApplications(filters),
+  });
+}
+
+export function useApplicationsGrouped(filters?: ApplicationGroupedFilterDto) {
+  return useQuery({
+    queryKey: [APPLICATIONS_KEY, "grouped", filters],
+    queryFn: () => getApplicationsGrouped(filters),
   });
 }
 

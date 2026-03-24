@@ -1,7 +1,14 @@
 import { Body, Controller, Delete, Get, Param, Post, Put, Query } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse, ApiTags, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { ApplicationService } from './application.service';
-import { ApplicationResponseDto, CreateApplicationDto, UpdateApplicationDto, ApplicationFilterDto } from './dto/application.dto';
+import {
+  ApplicationResponseDto,
+  CreateApplicationDto,
+  UpdateApplicationDto,
+  ApplicationFilterDto,
+  ApplicationGroupedFilterDto,
+  PaginatedApplicationGroupsResponseDto,
+} from './dto/application.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -27,6 +34,18 @@ export class ApplicationController {
   @ApiBody({ type: CreateApplicationDto })
   create(@Body() createApplicationDto: CreateApplicationDto): Promise<ApplicationResponseDto> {
     return this.applicationService.create(createApplicationDto);
+  }
+
+  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
+  @Get('grouped')
+  @ApiOperation({ summary: 'Get applications grouped by job position with pagination (HR/ADMIN only)' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns paginated job position groups, each with all their applications',
+    type: PaginatedApplicationGroupsResponseDto,
+  })
+  findAllGrouped(@Query() filterDto: ApplicationGroupedFilterDto, @CurrentUser() currentUser: User): Promise<PaginatedApplicationGroupsResponseDto> {
+    return this.applicationService.findAllGrouped(filterDto, currentUser);
   }
 
   @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])

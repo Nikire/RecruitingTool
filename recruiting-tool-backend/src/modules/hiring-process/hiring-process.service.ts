@@ -1,5 +1,14 @@
 import { forwardRef, Inject, Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
-import { CreateHiringProcessDto, HiringProcessFindDto, HiringProcessResponseDto, UpdateHiringProcessDto } from './dto/hiring-process.dto';
+import {
+  CreateHiringProcessDto,
+  HiringProcessFindDto,
+  HiringProcessResponseDto,
+  UpdateHiringProcessDto,
+  PublicHiringProcessTrackingDto,
+  HiringProcessGroupedFilterDto,
+  HiringProcessGroupedResponseDto,
+  PaginatedHiringProcessGroupsResponseDto,
+} from './dto/hiring-process.dto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { HiringProcessOneMapper, includeHiringProcess } from './entities/hiring-process.entity';
 import { MessageResponseDto } from 'src/dto/responses.dto';
@@ -246,6 +255,78 @@ export class HiringProcessService {
     }
   }
 
+  async listGrouped(filterDto: HiringProcessGroupedFilterDto, user: User): Promise<PaginatedHiringProcessGroupsResponseDto> {
+    try {
+      const page = Number(filterDto.page) || 1;
+      const limit = Number(filterDto.limit) || 10;
+      const { search, status } = filterDto;
+
+      const where: any = {};
+
+      if (search) {
+        where.OR = [{ title: { contains: search, mode: 'insensitive' as const } }];
+      }
+
+      if (status) {
+        where.status = status;
+      }
+
+      // Add company filter for HR and USER roles
+      const userCompanyId = getUserCompanyId(user);
+      if (userCompanyId !== null) {
+        where.companyId = userCompanyId;
+      }
+
+      // Fetch all matching hiring processes to group by job position
+      const allProcesses = await this.databaseService.hiringProcess.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        include: includeHiringProcess,
+      });
+
+      // Group by job position
+      const groupMap = new Map<string, HiringProcessGroupedResponseDto>();
+      for (const process of allProcesses) {
+        const key = process.jobPosition?.uid ?? '__no_position__';
+        const title = process.jobPosition?.title ?? 'No Job Position';
+
+        if (!groupMap.has(key)) {
+          groupMap.set(key, {
+            jobPositionUid: process.jobPosition?.uid ?? null,
+            jobPositionTitle: title,
+            processes: [],
+          });
+        }
+        groupMap.get(key)!.processes.push(HiringProcessOneMapper(process));
+      }
+
+      // Sort groups: named positions alphabetically first, then "no position" last
+      const allGroups = Array.from(groupMap.values()).sort((a, b) => {
+        if (a.jobPositionUid === null) return 1;
+        if (b.jobPositionUid === null) return -1;
+        return a.jobPositionTitle.localeCompare(b.jobPositionTitle);
+      });
+
+      const total = allGroups.length;
+      const totalPages = Math.ceil(total / limit);
+      const skip = (page - 1) * limit;
+      const paginatedGroups = allGroups.slice(skip, skip + limit);
+
+      return {
+        data: paginatedGroups,
+        total,
+        page,
+        limit,
+        totalPages,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to list grouped: ${error.message}`);
+    }
+  }
+
   async findAll(hiringProcessFindDto: HiringProcessFindDto, user: User): Promise<Array<HiringProcessResponseDto>> {
     try {
       const where: any = hiringProcessFindDto.candidateUid ? { candidate: { uid: hiringProcessFindDto.candidateUid } } : {};
@@ -366,6 +447,28 @@ export class HiringProcessService {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             data: { status: 'CANCELLED' as any },
           });
+        }
+      }
+
+      // Auto-close the job position when a hiring process is marked as CLOSED (hired)
+      if (updateHiringProcessDto.status === 'CLOSED' && existingHiringProcess.jobPositionId) {
+        try {
+          const jobPosition = await this.databaseService.jobPosition.findUnique({
+            where: { id: existingHiringProcess.jobPositionId },
+          });
+
+          if (jobPosition && jobPosition.status !== 'CLOSED') {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            await this.databaseService.jobPosition.update({
+              where: { id: existingHiringProcess.jobPositionId },
+              // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              data: { status: 'CLOSED' as any },
+            });
+            this.logger.log(`Auto-closed job position ${jobPosition.uid} because hiring process ${uid} was marked as hired (CLOSED)`);
+          }
+        } catch (autoCloseError) {
+          // Log but don't fail the hiring process update
+          this.logger.error(`Failed to auto-close job position for hiring process ${uid}: ${autoCloseError.message}`);
         }
       }
 
@@ -637,6 +740,69 @@ export class HiringProcessService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to retrieve status: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get public tracking view of a hiring process by UID (NO auth required)
+   * Returns candidate-facing read-only information: name, position, company, and ordered stages.
+   */
+  async getPublicTracking(uid: string): Promise<PublicHiringProcessTrackingDto> {
+    try {
+      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
+        where: { uid },
+        include: {
+          candidate: true,
+          jobPosition: true,
+          company: true,
+          stages: {
+            where: { deletedAt: null },
+            orderBy: { position: 'asc' },
+          },
+        },
+      });
+
+      if (!hiringProcess) {
+        throw new NotFoundException('Hiring process not found');
+      }
+
+      // Map each stage to a candidate-facing status:
+      //   DONE / CANCELLED → COMPLETED
+      //   CURRENT          → CURRENT
+      //   OPEN             → PENDING
+      const stages = hiringProcess.stages.map((stage) => {
+        let publicStatus: 'COMPLETED' | 'CURRENT' | 'PENDING';
+        if (stage.status === 'DONE' || stage.status === 'CANCELLED') {
+          publicStatus = 'COMPLETED';
+        } else if (stage.status === 'CURRENT') {
+          publicStatus = 'CURRENT';
+        } else {
+          publicStatus = 'PENDING';
+        }
+
+        return {
+          uid: stage.uid,
+          title: stage.title,
+          type: stage.type,
+          position: stage.position,
+          status: publicStatus,
+        };
+      });
+
+      return {
+        uid: hiringProcess.uid,
+        candidateName: hiringProcess.candidate?.name || '',
+        positionTitle: hiringProcess.jobPosition?.title || '',
+        companyName: hiringProcess.company?.name || '',
+        status: hiringProcess.status,
+        stages,
+        lastUpdated: hiringProcess.updatedAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to retrieve public tracking: ${error.message}`);
     }
   }
 

@@ -121,6 +121,9 @@ const HiringProcessPage: React.FC = () => {
   }
 
   const hiringProcess = hiringProcessData as HiringProcess;
+  const sortedStages = hiringProcess.stages
+    ? [...hiringProcess.stages].sort((a, b) => a.position - b.position)
+    : [];
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -286,9 +289,9 @@ const HiringProcessPage: React.FC = () => {
         )}
       </Box>
 
-      {hiringProcess.stages && (
+      {sortedStages.length > 0 && (
         <StagesTimeline
-          stages={hiringProcess.stages}
+          stages={sortedStages}
           hiringProcessUid={uid!}
           candidate={hiringProcess.candidate}
         />
@@ -299,9 +302,9 @@ const HiringProcessPage: React.FC = () => {
           open={stageProgressionOpen}
           onClose={() => setStageProgressionOpen(false)}
           hiringProcessUid={uid}
-          stages={hiringProcess.stages || []}
+          stages={sortedStages}
           currentStageUid={
-            hiringProcess.stages?.find((s) => s.status === "CURRENT")?.uid
+            sortedStages.find((s) => s.status === "CURRENT")?.uid
           }
         />
       )}

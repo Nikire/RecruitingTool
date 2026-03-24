@@ -272,6 +272,7 @@ export class QuotaService {
       where: {
         companyId,
         deletedAt: null,
+        status: { not: 'CLOSED' as any },
       },
     });
   }

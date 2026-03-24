@@ -3,6 +3,8 @@ import {
   CreateApplicationDto,
   UpdateApplicationDto,
   ApplicationFilterDto,
+  ApplicationGroupedFilterDto,
+  PaginatedApplicationGroupsResponse,
   PublicJobPosition,
 } from "../types/application.types";
 import { MessageResponse } from "../types/responses";
@@ -22,6 +24,14 @@ export function getApplications(
   filters?: ApplicationFilterDto,
 ): Promise<Application[]> {
   return api.get("/applications", { params: filters }).then((res) => res.data);
+}
+
+export function getApplicationsGrouped(
+  filters?: ApplicationGroupedFilterDto,
+): Promise<PaginatedApplicationGroupsResponse> {
+  return api
+    .get("/applications/grouped", { params: filters })
+    .then((res) => res.data);
 }
 
 export function getApplication(uid: string): Promise<Application> {
