@@ -70,6 +70,11 @@ import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Auth0CallbackHandler from "./components/auth/Auth0CallbackHandler";
 
+const HiringProcessRoute = () => {
+  const token = localStorage.getItem("authToken");
+  return token ? <HiringProcessPage /> : <HiringProcessTrackingPage />;
+};
+
 function App() {
   return (
     <>
@@ -129,13 +134,7 @@ function App() {
           <Route element={<DocumentContainer />}>
             <Route
               path="/hiring-process/:uid"
-              element={
-                localStorage.getItem("authToken") ? (
-                  <HiringProcessPage />
-                ) : (
-                  <HiringProcessTrackingPage />
-                )
-              }
+              element={<HiringProcessRoute />}
             />
           </Route>
 

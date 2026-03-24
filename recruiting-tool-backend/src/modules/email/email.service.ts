@@ -580,6 +580,54 @@ If you received this, your email configuration is working correctly.
   }
 
   /**
+   * Send hiring process access code to the candidate
+   * Called when a new hiring process is created
+   */
+  async sendHiringProcessAccessCode(
+    candidateEmail: string,
+    candidateName: string,
+    accessCode: string,
+    hiringProcessUid: string,
+    positionTitle: string,
+    companyName: string,
+  ): Promise<void> {
+    const trackingUrl = `https://borderlessats.com/hiring-process/${hiringProcessUid}`;
+    const subject = `Your application tracking code - ${positionTitle}`;
+    const text = `
+Dear ${candidateName},
+
+You have been added to a hiring process for the position: ${positionTitle} at ${companyName}.
+
+Use the following access code to track your application status:
+
+Access Code: ${accessCode}
+
+Track your application here: ${trackingUrl}
+
+This code is valid for 90 days. Please keep it safe.
+
+Best regards,
+The Borderless Team
+    `.trim();
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <h2 style="color: #1976d2;">Your Application Tracking Code</h2>
+        <p>Dear ${candidateName},</p>
+        <p>You have been added to a hiring process for the position: <strong>${positionTitle}</strong> at <strong>${companyName}</strong>.</p>
+        <p>Use the following access code to track your application status:</p>
+        <div style="font-size:28px;font-weight:bold;letter-spacing:6px;text-align:center;padding:20px;background:#f5f5f5;border-radius:8px;margin:16px 0;">${accessCode}</div>
+        <p><a href="${trackingUrl}" style="color:#1976d2;">Track your application status here</a></p>
+        <p style="color:#888;font-size:12px;">This code is valid for 90 days. Please keep it safe — you will need it to access your application status page.</p>
+        <br/>
+        <p>Best regards,<br/>The Borderless Team</p>
+      </div>
+    `;
+
+    this.logger.log(`Sending hiring process access code to ${candidateEmail} for process ${hiringProcessUid}`);
+    await this.sendEmail(candidateEmail, subject, text, html, 'HIRING_PROCESS_ACCESS_CODE', hiringProcessUid);
+  }
+
+  /**
    * Check if email service is properly configured
    * Used by health check endpoints to verify email service availability
    * @returns boolean - true if email service is configured

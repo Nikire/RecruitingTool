@@ -1390,7 +1390,13 @@
     "process_closed_message": "Congratulations! This hiring process has been completed successfully.",
     "process_cancelled_message": "This hiring process has been cancelled.",
     "process_rejected_message": "Thank you for your interest. Unfortunately, we will not be moving forward with your application at this time.",
-    "privacy_notice": "This page shows a read-only view of your application status. No personal data beyond your name is displayed."
+    "privacy_notice": "This page shows a read-only view of your application status. No personal data beyond your name is displayed.",
+    "access_required": "Access Code Required",
+    "enter_code": "Please enter your access code to view your application status.",
+    "code_hint": "Check your email for the access code that was sent when your hiring process was created.",
+    "code_label": "Access Code",
+    "unlock": "Unlock",
+    "invalid_code": "Invalid or expired access code. Please check your email."
   },
   "hiring_process_page": {
     "no_data_found": "No data found",

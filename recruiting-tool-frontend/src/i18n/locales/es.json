@@ -1398,7 +1398,13 @@
     "process_closed_message": "¡Felicitaciones! Este proceso de contratación se ha completado exitosamente.",
     "process_cancelled_message": "Este proceso de contratación ha sido cancelado.",
     "process_rejected_message": "Gracias por tu interés. Lamentablemente, no podremos avanzar con tu candidatura en este momento.",
-    "privacy_notice": "Esta página muestra una vista de solo lectura del estado de tu solicitud. No se muestra ningún dato personal más allá de tu nombre."
+    "privacy_notice": "Esta página muestra una vista de solo lectura del estado de tu solicitud. No se muestra ningún dato personal más allá de tu nombre.",
+    "access_required": "Código de Acceso Requerido",
+    "enter_code": "Por favor, ingresa tu código de acceso para ver el estado de tu solicitud.",
+    "code_hint": "Revisa tu correo electrónico para encontrar el código de acceso que fue enviado cuando se creó tu proceso de contratación.",
+    "code_label": "Código de Acceso",
+    "unlock": "Desbloquear",
+    "invalid_code": "Código de acceso inválido o expirado. Por favor, revisa tu correo electrónico."
   },
   "hiring_process_page": {
     "no_data_found": "No se encontraron datos",

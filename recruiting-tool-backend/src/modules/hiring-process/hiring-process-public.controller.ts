@@ -1,5 +1,5 @@
-import { Controller, Get, Param } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiTooManyRequestsResponse } from '@nestjs/swagger';
+import { Controller, Get, Param, Query } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { HiringProcessService } from './hiring-process.service';
 import { PublicStatusResponseDto, PublicHiringProcessTrackingDto } from './dto/hiring-process.dto';
@@ -31,11 +31,15 @@ export class HiringProcessPublicController {
 
   @Get('hiring-process/:uid/public')
   @Throttle({ default: { limit: 30, ttl: 60000 } }) // 30 requests per minute per IP
-  @ApiOperation({ summary: 'Get hiring process tracking view by UID (Public - No auth required)' })
+  @ApiOperation({ summary: 'Get hiring process tracking view by UID (Public - No auth required, access code needed)' })
   @ApiResponse({
     status: 200,
     description: 'Returns hiring process tracking information for the candidate',
     type: PublicHiringProcessTrackingDto,
+  })
+  @ApiResponse({
+    status: 401,
+    description: 'Invalid or expired access code',
   })
   @ApiResponse({
     status: 404,
@@ -45,7 +49,8 @@ export class HiringProcessPublicController {
     description: 'Too many requests. Maximum 30 requests per minute per IP.',
   })
   @ApiParam({ name: 'uid', required: true, description: 'UID of the hiring process', example: '123e4567-e89b-12d3-a456-426614174000' })
-  getPublicTracking(@Param('uid') uid: string): Promise<PublicHiringProcessTrackingDto> {
-    return this.hiringProcessService.getPublicTracking(uid);
+  @ApiQuery({ name: 'code', required: true, description: 'Access code emailed to the candidate', example: 'A1B2C3D4' })
+  getPublicTracking(@Param('uid') uid: string, @Query('code') code: string): Promise<PublicHiringProcessTrackingDto> {
+    return this.hiringProcessService.getPublicTracking(uid, code ?? '');
   }
 }

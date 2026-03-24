@@ -119,6 +119,9 @@ export function getStatusByAccessCode(
 
 export function getPublicHiringProcessTracking(
   uid: string,
+  code: string,
 ): Promise<PublicHiringProcessTracking> {
-  return api.get(`/hiring-process/${uid}/public`).then((res) => res.data);
+  return api
+    .get(`/hiring-process/${uid}/public`, { params: { code } })
+    .then((res) => res.data);
 }

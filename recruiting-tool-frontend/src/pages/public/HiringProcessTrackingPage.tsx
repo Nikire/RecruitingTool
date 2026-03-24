@@ -1,3 +1,4 @@
+import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
@@ -16,6 +17,9 @@ import {
   CircularProgress,
   Divider,
   useTheme,
+  TextField,
+  Button,
+  InputAdornment,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -25,6 +29,7 @@ import WorkIcon from "@mui/icons-material/Work";
 import BusinessIcon from "@mui/icons-material/Business";
 import PersonIcon from "@mui/icons-material/Person";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import LockIcon from "@mui/icons-material/Lock";
 import {
   getPublicHiringProcessTracking,
   PublicStage,
@@ -115,21 +120,70 @@ function getStatusChipProps(status: string): {
   }
 }
 
+const STORAGE_KEY_PREFIX = "hp_access_";
+
 const HiringProcessTrackingPage: React.FC = () => {
   const { t } = useTranslation();
   const { uid } = useParams<{ uid: string }>();
   const theme = useTheme();
 
+  const storageKey = uid ? `${STORAGE_KEY_PREFIX}${uid}` : null;
+
+  const [submittedCode, setSubmittedCode] = useState<string>(() => {
+    if (!storageKey) return "";
+    return localStorage.getItem(storageKey) ?? "";
+  });
+
+  const [codeInput, setCodeInput] = useState("");
+  const [codeError, setCodeError] = useState(false);
+
   const {
     data: tracking,
     isLoading,
     error,
+    refetch,
   } = useQuery({
-    queryKey: ["public-hiring-process-tracking", uid],
-    queryFn: () => getPublicHiringProcessTracking(uid!),
-    enabled: !!uid,
+    queryKey: ["public-hiring-process-tracking", uid, submittedCode],
+    queryFn: () => getPublicHiringProcessTracking(uid!, submittedCode),
+    enabled: !!uid && !!submittedCode,
     retry: false,
   });
+
+  const isUnauthorized =
+    !submittedCode ||
+    (error as { response?: { status?: number } } | null)?.response?.status ===
+      401;
+
+  const handleUnlock = () => {
+    const normalized = codeInput.trim().toUpperCase();
+    if (!normalized) return;
+    setCodeError(false);
+    if (storageKey) {
+      localStorage.setItem(storageKey, normalized);
+    }
+    setSubmittedCode(normalized);
+    refetch();
+  };
+
+  const handleCodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setCodeInput(e.target.value.toUpperCase());
+    setCodeError(false);
+  };
+
+  // When error changes, detect 401 and mark codeError
+  React.useEffect(() => {
+    if (
+      (error as { response?: { status?: number } } | null)?.response?.status ===
+      401
+    ) {
+      setCodeError(true);
+      // Clear the stored code so user must re-enter
+      if (storageKey) {
+        localStorage.removeItem(storageKey);
+      }
+      setSubmittedCode("");
+    }
+  }, [error, storageKey]);
 
   if (isLoading) {
     return (
@@ -146,6 +200,71 @@ const HiringProcessTrackingPage: React.FC = () => {
           {t("hiring_process_tracking.loading")}
         </Typography>
       </Box>
+    );
+  }
+
+  // Show access code entry form when no code has been submitted or code was invalid
+  if (isUnauthorized) {
+    return (
+      <Container maxWidth="sm" sx={{ py: { xs: 4, md: 8 } }}>
+        <Box textAlign="center" mb={4}>
+          <LockIcon sx={{ fontSize: 56, color: "primary.main", mb: 2 }} />
+          <Typography variant="h5" fontWeight={700} gutterBottom>
+            {t("hiring_process_tracking.access_required")}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {t("hiring_process_tracking.enter_code")}
+          </Typography>
+        </Box>
+
+        <Paper elevation={2} sx={{ p: { xs: 3, md: 4 }, borderRadius: 2 }}>
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            {t("hiring_process_tracking.code_hint")}
+          </Typography>
+
+          <TextField
+            fullWidth
+            label={t("hiring_process_tracking.code_label")}
+            value={codeInput}
+            onChange={handleCodeInputChange}
+            error={codeError}
+            helperText={
+              codeError ? t("hiring_process_tracking.invalid_code") : undefined
+            }
+            inputProps={{
+              maxLength: 8,
+              style: {
+                textTransform: "uppercase",
+                letterSpacing: "0.3em",
+                fontSize: "1.25rem",
+                fontWeight: 600,
+                textAlign: "center",
+              },
+            }}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <LockIcon color="action" />
+                </InputAdornment>
+              ),
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleUnlock();
+            }}
+            sx={{ mb: 3 }}
+          />
+
+          <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={handleUnlock}
+            disabled={!codeInput.trim()}
+          >
+            {t("hiring_process_tracking.unlock")}
+          </Button>
+        </Paper>
+      </Container>
     );
   }
 

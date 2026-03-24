@@ -1,4 +1,4 @@
-import { forwardRef, Inject, Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
+import { forwardRef, Inject, Injectable, NotFoundException, HttpException, InternalServerErrorException, Logger, UnauthorizedException } from '@nestjs/common';
 import {
   CreateHiringProcessDto,
   HiringProcessFindDto,
@@ -21,6 +21,7 @@ import { getUserCompanyId, verifyCompanyAccess } from 'src/utils/company-access.
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { QuotaService } from '../quota/quota.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { EmailService } from '../email/email.service';
 
 @Injectable()
 export class HiringProcessService {
@@ -33,6 +34,7 @@ export class HiringProcessService {
     private readonly stagesService: StagesService,
     private readonly quotaService: QuotaService,
     private readonly notificationsService: NotificationsService,
+    private readonly emailService: EmailService,
   ) {}
 
   async create(createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
@@ -88,6 +90,22 @@ export class HiringProcessService {
         // Note: jobPositionUid is intentionally omitted - stages belong to hiring process only
       }));
       await this.stagesService.bulkCreateStages(copiedStages);
+
+      // Auto-generate access code for candidate tracking (valid 90 days)
+      const accessCode = this.generateRandomCode(8);
+      const codeExpiresAt = new Date();
+      codeExpiresAt.setDate(codeExpiresAt.getDate() + 90);
+      await this.databaseService.hiringProcess.update({
+        where: { uid: newHiringProcess.uid },
+        data: { accessCode, codeExpiresAt },
+      });
+
+      // Send tracking code email to the candidate
+      try {
+        await this.emailService.sendHiringProcessAccessCode(candidate.email, candidate.name, accessCode, newHiringProcess.uid, jobPosition.title, company.name);
+      } catch (emailError) {
+        this.logger.error(`Failed to send access code email to candidate ${candidate.email}: ${emailError.message}`);
+      }
 
       // Notify HR users about new hiring process started
       try {
@@ -745,9 +763,10 @@ export class HiringProcessService {
 
   /**
    * Get public tracking view of a hiring process by UID (NO auth required)
+   * Requires an access code that was emailed to the candidate on process creation.
    * Returns candidate-facing read-only information: name, position, company, and ordered stages.
    */
-  async getPublicTracking(uid: string): Promise<PublicHiringProcessTrackingDto> {
+  async getPublicTracking(uid: string, accessCode: string): Promise<PublicHiringProcessTrackingDto> {
     try {
       const hiringProcess = await this.databaseService.hiringProcess.findUnique({
         where: { uid },
@@ -764,6 +783,16 @@ export class HiringProcessService {
 
       if (!hiringProcess) {
         throw new NotFoundException('Hiring process not found');
+      }
+
+      // Validate access code
+      if (!hiringProcess.accessCode || hiringProcess.accessCode !== accessCode) {
+        throw new UnauthorizedException('Invalid access code');
+      }
+
+      // Check if code is expired
+      if (hiringProcess.codeExpiresAt && hiringProcess.codeExpiresAt < new Date()) {
+        throw new UnauthorizedException('Access code has expired');
       }
 
       // Map each stage to a candidate-facing status:
