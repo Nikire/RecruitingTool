@@ -8,6 +8,7 @@ import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
 // Home component is now unused - LandingPage is the root page
 import LandingPage from "./pages/landing/LandingPage";
 import HiringProcessTrackingPage from "./pages/public/HiringProcessTrackingPage";
+import HiringProcessPage from "./pages/hiring-process/HiringProcessPage";
 import { ProtectedRoute } from "./lib/ProtectedRoute/ProtectedRoute";
 import { RoleGuard } from "./lib/RoleGuard";
 import { UserRoles } from "./types/user.types";
@@ -128,7 +129,13 @@ function App() {
           <Route element={<DocumentContainer />}>
             <Route
               path="/hiring-process/:uid"
-              element={<HiringProcessTrackingPage />}
+              element={
+                localStorage.getItem("authToken") ? (
+                  <HiringProcessPage />
+                ) : (
+                  <HiringProcessTrackingPage />
+                )
+              }
             />
           </Route>
 
