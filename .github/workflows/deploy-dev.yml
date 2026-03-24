@@ -30,9 +30,12 @@ jobs:
             echo "==> Disk usage before cleanup..."
             df -h /
 
-            echo "==> Freeing up disk space (aggressive cleanup)..."
-            docker system prune -f --volumes || true
-            docker image prune -af || true
+            echo "==> Freeing up disk space (safe cleanup - keeps images and volumes)..."
+            docker container prune -f || true
+            docker builder prune -f || true
+
+            echo "==> Pre-pulling base images to ensure they are available for builds..."
+            docker pull node:20-alpine || true
 
             echo "==> Disk usage after cleanup..."
             df -h /
@@ -40,7 +43,7 @@ jobs:
             echo "==> Resolving any failed Prisma migrations on DB..."
             DB_USER=$(docker exec borderless-db-1 sh -c 'echo $POSTGRES_USER' 2>/dev/null || echo "postgres")
             docker exec borderless-db-1 psql -U "$DB_USER" -d recruiting_tool_db -c \
-              "DELETE FROM _prisma_migrations WHERE migration_name LIKE '20260226%' AND finished_at IS NULL AND rolled_back_at IS NULL; DELETE FROM \"StageNote\";" \
+              "DELETE FROM _prisma_migrations WHERE migration_name LIKE '20260226%' AND finished_at IS NULL AND rolled_back_at IS NULL;" \
               2>/dev/null || echo "==> DB fix skipped (container not ready or no failed migrations)"
 
             echo "==> Ensuring SELinux allows nginx → Docker connections..."
