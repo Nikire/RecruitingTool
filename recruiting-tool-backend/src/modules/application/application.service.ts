@@ -597,6 +597,27 @@ export class ApplicationService {
         include: includeApplication,
       });
 
+      // Generate access code for the public hiring process tracking page and send to candidate
+      try {
+        const accessCode = this.generateRandomCode(8);
+        const codeExpiresAt = new Date();
+        codeExpiresAt.setDate(codeExpiresAt.getDate() + 90);
+        await this.databaseService.hiringProcess.update({
+          where: { id: hiringProcess.id },
+          data: { accessCode, codeExpiresAt },
+        });
+        await this.emailService.sendHiringProcessAccessCode(
+          application.applicantEmail,
+          application.applicantName,
+          accessCode,
+          hiringProcess.uid,
+          application.jobPosition.title,
+          company.name,
+        );
+      } catch (error) {
+        this.logger.error(`Failed to generate access code or send tracking email for hiring process ${hiringProcess.uid}:`, error);
+      }
+
       // Send acceptance email to applicant
       try {
         await this.emailService.sendApplicationAcceptance(application.applicantEmail, application.applicantName, application.jobPosition.title);
@@ -612,5 +633,10 @@ export class ApplicationService {
       }
       throw new InternalServerErrorException(`Failed to accept application: ${error.message}`);
     }
+  }
+
+  private generateRandomCode(length: number): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
   }
 }
