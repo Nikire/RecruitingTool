@@ -773,8 +773,8 @@ export class HiringProcessService {
    */
   async getPublicTracking(uid: string, accessCode: string): Promise<PublicHiringProcessTrackingDto> {
     try {
-      const hiringProcess = await this.databaseService.hiringProcess.findUnique({
-        where: { uid },
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: { uid, deletedAt: null },
         include: {
           candidate: true,
           jobPosition: true,
