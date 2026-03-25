@@ -6,9 +6,10 @@ import { GeminiService } from './gemini.service';
 import { AiController } from './ai.controller';
 import { SharedModule } from '../shared/shared.module';
 import { SseModule } from '../sse/sse.module';
+import { StorageModule } from '../storage/storage.module';
 
 @Module({
-  imports: [SharedModule, SseModule],
+  imports: [SharedModule, SseModule, StorageModule],
   controllers: [AiController],
   providers: [AiService, ScoringService, BatchScoringService, GeminiService],
   exports: [AiService, ScoringService, BatchScoringService, GeminiService],

@@ -1,12 +1,29 @@
 import { Injectable, NotFoundException, InternalServerErrorException, Logger, BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma, QuotaType, SubscriptionPlan } from '@prisma/client';
+import { Readable } from 'stream';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { CompareCandidatesResponseDto, CandidateComparisonSummary, ComparisonAnalysis } from './dto/candidate-comparison.dto';
 import { SseService } from '../sse/sse.service';
 import { GeminiService } from './gemini.service';
+import { StorageService } from '../storage/storage.service';
+import { AiService } from './ai.service';
+
+// Lazy load pdf-parse to avoid DOMMatrix issues in Node.js
+type PdfParseResult = { text: string; numpages: number; info: unknown };
+type PdfParseFn = (buffer: Buffer) => Promise<PdfParseResult>;
+let pdfParseFn: PdfParseFn | null = null;
+
+const loadPdfParse = async (): Promise<PdfParseFn> => {
+  if (!pdfParseFn) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const pdfParseModule = await import('pdf-parse');
+    pdfParseFn = pdfParseModule.default as unknown as PdfParseFn;
+  }
+  return pdfParseFn;
+};
 
 @Injectable()
 export class ScoringService {
@@ -17,6 +34,8 @@ export class ScoringService {
     private databaseService: DatabaseService,
     private sseService: SseService,
     private geminiService: GeminiService,
+    private storageService: StorageService,
+    private aiService: AiService,
   ) {
     if (this.geminiService.isConfigured()) {
       this.logger.log('Scoring Service initialized with Gemini AI');
@@ -41,7 +60,7 @@ export class ScoringService {
     try {
       this.logger.log(`Starting candidate scoring: ${candidateUid} for job ${jobPositionUid}`);
 
-      // Fetch candidate details
+      // Fetch candidate details with files and notes
       const candidate = await this.databaseService.candidate.findUnique({
         where: { uid: candidateUid },
         include: {
@@ -71,6 +90,32 @@ export class ScoringService {
         throw new NotFoundException(`Job Position with UID ${jobPositionUid} not found`);
       }
 
+      // Fetch hiring process with stages, notes, and time logs for this candidate + job
+      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
+        where: {
+          candidateId: candidate.id,
+          jobPositionId: jobPosition.id,
+        },
+        include: {
+          stages: {
+            where: { deletedAt: null },
+            orderBy: { position: 'asc' },
+            include: {
+              notes: {
+                where: { deletedAt: null },
+                include: {
+                  author: { select: { name: true } },
+                },
+              },
+              timeLogs: {
+                orderBy: { enteredAt: 'asc' },
+              },
+            },
+          },
+          company: true,
+        },
+      });
+
       // Check if score already exists (update existing or create new)
       const existingScore = await this.databaseService.candidateScore.findUnique({
         where: {
@@ -81,8 +126,11 @@ export class ScoringService {
         },
       });
 
+      // Extract resume text from candidate files
+      const resumeText = await this.extractCandidateResumeText(candidate.files);
+
       // Generate AI scoring
-      const { scores, analysis } = await this.generateAIScoring(candidate, jobPosition);
+      const { scores, analysis } = await this.generateAIScoring(candidate, jobPosition, hiringProcess, resumeText);
 
       // Save or update the score
       let savedScore;
@@ -119,16 +167,6 @@ export class ScoringService {
       }
 
       // Emit SSE event for score updated
-      const hiringProcess = await this.databaseService.hiringProcess.findFirst({
-        where: {
-          candidateId: candidate.id,
-          jobPositionId: jobPosition.id,
-        },
-        include: {
-          company: true,
-        },
-      });
-
       if (hiringProcess) {
         this.sseService.emitScoreUpdated(
           candidate.uid,
@@ -288,7 +326,7 @@ export class ScoringService {
         throw new NotFoundException(`Job Position with UID ${jobPositionUid} not found`);
       }
 
-      // Fetch all candidates
+      // Fetch all candidates with files
       const candidates = await this.databaseService.candidate.findMany({
         where: {
           uid: {
@@ -318,9 +356,13 @@ export class ScoringService {
             orderBy: { position: 'asc' },
             include: {
               notes: {
+                where: { deletedAt: null },
                 include: {
                   author: { select: { name: true } },
                 },
+              },
+              timeLogs: {
+                orderBy: { enteredAt: 'asc' },
               },
             },
           },
@@ -330,8 +372,15 @@ export class ScoringService {
       // Build a lookup map: candidateId → hiring process with stages + notes
       const hiringProcessByCandidateId = new Map(hiringProcesses.map((hp) => [hp.candidateId, hp]));
 
+      // Extract resume text for each candidate
+      const resumeTextByCandidateId = new Map<number, string>();
+      for (const candidate of candidates) {
+        const text = await this.extractCandidateResumeText(candidate.files);
+        resumeTextByCandidateId.set(candidate.id, text);
+      }
+
       // Generate AI comparison
-      const aiComparison = await this.generateAIComparison(candidates, jobPosition, hiringProcessByCandidateId);
+      const aiComparison = await this.generateAIComparison(candidates, jobPosition, hiringProcessByCandidateId, resumeTextByCandidateId);
 
       // Build response
       const candidatesComparison: CandidateComparisonSummary[] = aiComparison.candidates.map((candidate, index) => ({
@@ -366,11 +415,235 @@ export class ScoringService {
   }
 
   /**
+   * Extract resume/CV text from a candidate's uploaded files.
+   * Tries each file in order and returns the text of the first successfully parsed one.
+   * Falls back to "No resume available" if no files exist or none can be parsed.
+   */
+  private async extractCandidateResumeText(files: { s3Key: string; mimetype: string; originalName: string }[]): Promise<string> {
+    if (!files || files.length === 0) {
+      return 'No resume available';
+    }
+
+    // Prefer PDF/DOCX/DOC/TXT files (resume-like)
+    const resumeFiles = files.filter((f) => {
+      const mime = f.mimetype.toLowerCase();
+      const name = f.originalName.toLowerCase();
+      return (
+        mime.includes('pdf') ||
+        mime.includes('word') ||
+        mime.includes('document') ||
+        mime.includes('text') ||
+        name.endsWith('.pdf') ||
+        name.endsWith('.docx') ||
+        name.endsWith('.doc') ||
+        name.endsWith('.txt')
+      );
+    });
+
+    const filesToTry = resumeFiles.length > 0 ? resumeFiles : files;
+
+    for (const file of filesToTry) {
+      try {
+        const stream = await this.storageService.downloadFile(file.s3Key);
+        const buffer = await this.streamToBuffer(stream);
+
+        const mime = file.mimetype.toLowerCase();
+        const name = file.originalName.toLowerCase();
+
+        let text = '';
+        if (mime.includes('pdf') || name.endsWith('.pdf')) {
+          text = await this.extractTextFromPdf(buffer);
+        } else if (mime.includes('word') || mime.includes('document') || name.endsWith('.docx') || name.endsWith('.doc')) {
+          text = await this.extractTextFromDocx(buffer);
+        } else if (mime.includes('text') || name.endsWith('.txt')) {
+          text = buffer.toString('utf-8');
+        } else {
+          // Try PDF parser as fallback
+          try {
+            text = await this.extractTextFromPdf(buffer);
+          } catch {
+            continue;
+          }
+        }
+
+        if (text && text.trim().length > 0) {
+          this.logger.log(`Successfully extracted resume text from file: ${file.originalName} (${text.length} chars)`);
+          return text.trim();
+        }
+      } catch (err) {
+        this.logger.warn(`Could not extract text from file ${file.originalName}: ${err.message}`);
+      }
+    }
+
+    return 'No resume text could be extracted';
+  }
+
+  /**
+   * Convert a Readable stream to a Buffer
+   */
+  private streamToBuffer(stream: Readable): Promise<Buffer> {
+    return new Promise((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', reject);
+    });
+  }
+
+  /**
+   * Extract text from a PDF buffer
+   */
+  private async extractTextFromPdf(buffer: Buffer): Promise<string> {
+    const parsePdf = await loadPdfParse();
+    const data = await parsePdf(buffer);
+    return data.text;
+  }
+
+  /**
+   * Extract text from a DOCX buffer
+   */
+  private async extractTextFromDocx(buffer: Buffer): Promise<string> {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const mammoth = require('mammoth');
+    const result = await mammoth.extractRawText({ buffer });
+    return result.value;
+  }
+
+  /**
+   * Build a human-readable stages history section for the AI prompt.
+   * Includes stage status, duration from time logs, and all HR notes with ratings.
+   */
+  private buildStagesHistorySection(stages: any[]): string {
+    if (!stages || stages.length === 0) {
+      return 'No stage history available.';
+    }
+
+    return stages
+      .map((stage, idx) => {
+        const lines: string[] = [];
+        lines.push(`Stage ${idx + 1}: ${stage.title} (${stage.type})`);
+        lines.push(`  Status: ${stage.status}`);
+
+        // Duration from time logs
+        if (stage.timeLogs && stage.timeLogs.length > 0) {
+          const firstLog = stage.timeLogs[0];
+          const lastLog = stage.timeLogs[stage.timeLogs.length - 1];
+          const enteredAt = firstLog.enteredAt ? new Date(firstLog.enteredAt).toISOString().slice(0, 10) : null;
+          const exitedAt = lastLog.exitedAt ? new Date(lastLog.exitedAt).toISOString().slice(0, 10) : null;
+
+          // Sum durations if available (duration is stored in minutes)
+          const totalDurationMinutes = stage.timeLogs.reduce((sum: number, log: any) => sum + (log.duration || 0), 0);
+
+          if (enteredAt) {
+            lines.push(`  Entered: ${enteredAt}`);
+          }
+          if (exitedAt) {
+            lines.push(`  Exited: ${exitedAt}`);
+          }
+          if (totalDurationMinutes > 0) {
+            const days = Math.floor(totalDurationMinutes / (60 * 24));
+            const hours = Math.floor((totalDurationMinutes % (60 * 24)) / 60);
+            if (days > 0) {
+              lines.push(`  Time in stage: ${days} day(s)${hours > 0 ? ` ${hours} hour(s)` : ''}`);
+            } else {
+              lines.push(`  Time in stage: ${hours} hour(s)`);
+            }
+          }
+        }
+
+        // Notes with star ratings
+        if (stage.notes && stage.notes.length > 0) {
+          lines.push('  HR Evaluator Notes:');
+          for (const note of stage.notes) {
+            const stars = '★'.repeat(note.rating || 0) + '☆'.repeat(5 - (note.rating || 0));
+            const author = note.author?.name || 'Unknown';
+            const date = new Date(note.createdAt).toISOString().slice(0, 10);
+            lines.push(`    ${stars} [${author}, ${date}]: ${note.content}`);
+          }
+        } else {
+          lines.push('  No notes for this stage.');
+        }
+
+        return lines.join('\n');
+      })
+      .join('\n\n');
+  }
+
+  /**
+   * Build full job position details section for the AI prompt.
+   */
+  private buildJobPositionSection(jobPosition: any): string {
+    const lines: string[] = [];
+    lines.push(`Title: ${jobPosition.title}`);
+
+    if (jobPosition.description) {
+      lines.push(`Description: ${jobPosition.description}`);
+    }
+
+    if (jobPosition.requirements && jobPosition.requirements.length > 0) {
+      lines.push(`Requirements:\n${jobPosition.requirements.map((r: string) => `  - ${r}`).join('\n')}`);
+    }
+
+    if (jobPosition.responsibilities && jobPosition.responsibilities.length > 0) {
+      lines.push(`Responsibilities:\n${jobPosition.responsibilities.map((r: string) => `  - ${r}`).join('\n')}`);
+    }
+
+    if (jobPosition.skills && jobPosition.skills.length > 0) {
+      lines.push(`Required Skills: ${jobPosition.skills.join(', ')}`);
+    }
+
+    if (jobPosition.experienceLevel) {
+      lines.push(`Experience Level: ${jobPosition.experienceLevel}`);
+    }
+
+    if (jobPosition.educationLevel) {
+      lines.push(`Education Level: ${jobPosition.educationLevel}`);
+    }
+
+    if (jobPosition.jobType) {
+      lines.push(`Job Type: ${jobPosition.jobType}`);
+    }
+
+    if (jobPosition.workLocation) {
+      lines.push(`Work Location: ${jobPosition.workLocation}`);
+    }
+
+    const locationParts = [jobPosition.city, jobPosition.state, jobPosition.country].filter(Boolean);
+    if (locationParts.length > 0) {
+      lines.push(`Location: ${locationParts.join(', ')}`);
+    }
+
+    if (jobPosition.salaryMin || jobPosition.salaryMax) {
+      const currency = jobPosition.salaryCurrency || 'USD';
+      const period = jobPosition.salaryPeriod || '';
+      const salaryRange =
+        jobPosition.salaryMin && jobPosition.salaryMax
+          ? `${currency} ${jobPosition.salaryMin.toLocaleString()} - ${jobPosition.salaryMax.toLocaleString()} ${period}`
+          : jobPosition.salaryMin
+            ? `${currency} ${jobPosition.salaryMin.toLocaleString()}+ ${period}`
+            : `Up to ${currency} ${jobPosition.salaryMax?.toLocaleString()} ${period}`;
+      lines.push(`Salary: ${salaryRange}`);
+    }
+
+    if (jobPosition.benefits && jobPosition.benefits.length > 0) {
+      lines.push(`Benefits: ${jobPosition.benefits.join(', ')}`);
+    }
+
+    if (jobPosition.tags && jobPosition.tags.length > 0) {
+      lines.push(`Tags: ${jobPosition.tags.join(', ')}`);
+    }
+
+    return lines.join('\n');
+  }
+
+  /**
    * Generate AI-powered scoring using Gemini
    */
   private async generateAIScoring(
     candidate: any,
     jobPosition: any,
+    hiringProcess: any,
+    resumeText: string,
   ): Promise<{
     scores: {
       overall: number;
@@ -380,34 +653,50 @@ export class ScoringService {
     };
     analysis: ScoreAnalysisDto;
   }> {
-    const systemInstruction = `You are an expert HR recruiter and candidate evaluator. Your task is to analyze candidates against job position requirements and provide objective, detailed scoring and analysis. Always return valid JSON that matches the requested schema exactly. Be fair and thorough in your evaluation.`;
+    const systemInstruction = `You are an expert HR recruiter and candidate evaluator. Your task is to analyze candidates against job position requirements and provide objective, detailed scoring and analysis. You have access to the candidate's full resume, their hiring stage history, and HR evaluator notes. Always return valid JSON that matches the requested schema exactly. Be fair and thorough in your evaluation. Scores range from 0 to 100 where 0 means completely incompatible and 100 means perfect match.`;
 
-    const prompt = `Analyze the following candidate against the job position requirements and provide a detailed scoring and analysis.
+    const jobPositionSection = this.buildJobPositionSection(jobPosition);
+    const stagesSection = hiringProcess ? this.buildStagesHistorySection(hiringProcess.stages) : 'No hiring process found for this candidate.';
 
-**Job Position:**
-Title: ${jobPosition.title}
-Description: ${jobPosition.description || 'No description provided'}
+    const prompt = `You are an expert HR evaluator. Score this candidate's compatibility with the job position on a scale from 0 to 100 across three dimensions.
 
-**Candidate:**
-Name: ${candidate.name}
-Email: ${candidate.email}
-Source: ${candidate.source || 'Unknown'}
-Additional Info: ${candidate.sourceDetails || 'No additional info'}
+## JOB POSITION
+${jobPositionSection}
+
+## CANDIDATE RESUME / CV
+${resumeText}
+
+## HIRING PROCESS STAGES HISTORY
+${stagesSection}
+
+## SCORING CRITERIA
+Score each dimension from 0 to 100:
+- 0-20: Very poor fit — major gaps in required skills/experience/education
+- 21-40: Poor fit — significant mismatches with requirements
+- 41-60: Moderate fit — meets some requirements but has notable gaps
+- 61-80: Good fit — meets most requirements with only minor gaps
+- 81-100: Excellent fit — strong match across all criteria
+
+When HR evaluator notes are present with star ratings (1-5 stars):
+- Notes with 4-5 stars should positively influence the overall score
+- Notes with 1-2 stars should negatively influence the overall score
+- Notes with 3 stars are neutral
+- More time spent in a stage (without progression) may indicate difficulty
 
 Please provide a comprehensive evaluation with the following structure:
 
-1. **Skills Score (0-100)**: Rate the candidate's technical and professional skills match for this position.
-2. **Experience Score (0-100)**: Rate the candidate's relevant work experience and background.
+1. **Skills Score (0-100)**: Rate the candidate's technical and professional skills match for this position based on their resume and HR notes.
+2. **Experience Score (0-100)**: Rate the candidate's relevant work experience, progression through hiring stages, and evaluator observations.
 3. **Education Score (0-100)**: Rate the candidate's educational qualifications and certifications.
-4. **Overall Score (0-100)**: Calculate a weighted overall score (40% skills, 35% experience, 25% education).
+4. **Overall Score (0-100)**: Calculate a weighted overall score (40% skills, 35% experience, 25% education), adjusted by HR evaluator notes and ratings.
 
 Additionally, provide detailed analysis:
 - **Skills Analysis**: What skills does the candidate have that match or don't match the position?
-- **Experience Analysis**: How does their experience align with job requirements?
+- **Experience Analysis**: How does their experience align with job requirements, and how did they perform through hiring stages?
 - **Education Analysis**: Does their educational background fit the position?
-- **Recommendation**: Overall assessment and recommendation (Strongly Recommend, Recommend, Consider, Not Recommended)
-- **Strengths**: List 3-5 key strengths
-- **Concerns**: List any gaps or concerns
+- **Recommendation**: Overall assessment (Strongly Recommend, Recommend, Consider, Not Recommended)
+- **Strengths**: List 3-5 key strengths derived from the resume and stage history
+- **Concerns**: List any gaps or concerns from the resume and evaluator feedback
 
 Return a JSON object with this exact structure:
 {
@@ -422,8 +711,8 @@ Return a JSON object with this exact structure:
     "experienceAnalysis": "string",
     "educationAnalysis": "string",
     "recommendation": "string",
-    "strengths": ["string", "string", ...],
-    "concerns": ["string", "string", ...]
+    "strengths": ["string", "string"],
+    "concerns": ["string", "string"]
   }
 }`;
 
@@ -447,7 +736,7 @@ Return a JSON object with this exact structure:
     try {
       const { data } = await this.geminiService.generateJsonContent<AIScoreResponse>(prompt, systemInstruction);
 
-      // Validate and normalize scores (ensure they're within 0-100 range)
+      // Validate and normalize scores (ensure they're within 0-100 range, no minimum clamping)
       const normalizeScore = (score: number): number => Math.max(0, Math.min(100, Math.round(score)));
 
       return {
@@ -578,58 +867,53 @@ Return a JSON object with this exact structure:
     candidates: any[],
     jobPosition: any,
     hiringProcessByCandidateId: Map<number | null, any>,
+    resumeTextByCandidateId: Map<number, string>,
   ): Promise<{
     candidates: CandidateComparisonSummary[];
     analysis: ComparisonAnalysis;
   }> {
-    const systemInstruction = `You are an expert HR recruiter specialized in candidate comparison and evaluation. Your task is to compare multiple candidates for a job position and provide objective, detailed analysis. Always return valid JSON that matches the requested schema exactly. Be thorough, fair, and highlight both strengths and weaknesses for each candidate.`;
+    const systemInstruction = `You are an expert HR recruiter specialized in candidate comparison and evaluation. Your task is to compare multiple candidates for a job position and provide objective, detailed analysis. You have access to each candidate's full resume, hiring stage history, and HR evaluator notes. Always return valid JSON that matches the requested schema exactly. Be thorough, fair, and highlight both strengths and weaknesses for each candidate. Scores range from 0 to 100 where 0 means completely incompatible and 100 means perfect match.`;
 
-    // Build candidate profiles for the prompt, including HR evaluator stage notes
+    const jobPositionSection = this.buildJobPositionSection(jobPosition);
+
+    // Build candidate profiles for the prompt, including resume text and HR evaluator stage notes
     const candidateProfiles = candidates
       .map((candidate, index) => {
         const hiringProcess = hiringProcessByCandidateId.get(candidate.id);
+        const resumeText = resumeTextByCandidateId.get(candidate.id) || 'No resume available';
 
-        // Build stage notes section if any stages have notes
-        let stageNotesSection = '';
-        if (hiringProcess?.stages?.length) {
-          const stagesWithNotes = hiringProcess.stages.filter((s: any) => s.notes?.length > 0);
-          if (stagesWithNotes.length > 0) {
-            const noteLines = stagesWithNotes.map((stage: any) => {
-              const note = stage.notes[0]; // One note per stage
-              const ratingStr = note.rating ? ` (Rating: ${note.rating}/5)` : '';
-              return `  - ${stage.title}: "${note.content}"${ratingStr}`;
-            });
-            stageNotesSection = `\n- HR Evaluator Notes:\n${noteLines.join('\n')}`;
-          }
-        }
+        // Build stages section
+        const stagesSection = hiringProcess ? this.buildStagesHistorySection(hiringProcess.stages) : 'No hiring process found.';
 
         return `
-**Candidate ${index + 1}: ${candidate.name}**
-- Email: ${candidate.email}
-- Source: ${candidate.source || 'Unknown'}
-- Additional Info: ${candidate.sourceDetails || 'No additional info'}
-- Number of files: ${candidate.files?.length || 0}
-- Number of general notes: ${candidate.notes?.length || 0}${stageNotesSection}
+**Candidate ${index + 1}: ${candidate.name}** (UID: ${candidate.uid})
+Email: ${candidate.email}
+Source: ${candidate.source || 'Unknown'}
+
+Resume / CV:
+${resumeText.length > 3000 ? resumeText.substring(0, 3000) + '\n[Resume truncated for brevity]' : resumeText}
+
+Hiring Stage History:
+${stagesSection}
 `;
       })
-      .join('\n');
+      .join('\n---\n');
 
     const prompt = `Compare the following candidates for the job position and provide a comprehensive comparative analysis.
 
-**Job Position:**
-Title: ${jobPosition.title}
-Description: ${jobPosition.description || 'No description provided'}
+## JOB POSITION
+${jobPositionSection}
 
-**Candidates to Compare:**
+## CANDIDATES TO COMPARE
 ${candidateProfiles}
 
-IMPORTANT: When a candidate has "HR Evaluator Notes" listed above, these are assessments from the hiring team recorded at specific recruitment stages. Each note may include a 1-5 star rating reflecting the evaluator's overall impression at that stage. Factor these evaluator assessments meaningfully into your scoring and analysis — positive notes with high ratings should boost the candidate's scores, while negative notes or low ratings should lower them relative to other candidates.
+IMPORTANT: When a candidate has "HR Evaluator Notes" listed above, these are assessments from the hiring team recorded at specific recruitment stages. Each note includes a 1-5 star rating (★ = 1 star, ★★★★★ = 5 stars) reflecting the evaluator's overall impression at that stage. Factor these evaluator assessments meaningfully into your scoring and analysis — positive notes with high ratings should boost the candidate's scores, while negative notes or low ratings should lower them relative to other candidates. Also consider the time candidates spent in each stage.
 
 Please provide a detailed comparison with the following structure:
 
 1. For each candidate, provide:
-   - **Skills Score (0-100)**: Rate the candidate's technical and professional skills match
-   - **Experience Score (0-100)**: Rate the candidate's relevant work experience
+   - **Skills Score (0-100)**: Rate the candidate's technical and professional skills match based on resume and HR notes
+   - **Experience Score (0-100)**: Rate the candidate's relevant work experience and hiring stage performance
    - **Education Score (0-100)**: Rate the candidate's educational qualifications
    - **Overall Score (0-100)**: Calculate weighted overall (40% skills, 35% experience, 25% education). Adjust scores to reflect HR evaluator notes and ratings if present.
    - **Strengths**: List 3-5 key strengths specific to this candidate (include evaluator observations if relevant)
@@ -645,23 +929,22 @@ Return a JSON object with this exact structure (candidates MUST be sorted by ove
 {
   "candidates": [
     {
-      "candidateUid": "string (use actual UID)",
+      "candidateUid": "string (use actual UID from the profile above)",
       "candidateName": "string",
       "overallScore": number,
       "skillsScore": number,
       "experienceScore": number,
       "educationScore": number,
-      "strengths": ["string", ...],
-      "weaknesses": ["string", ...]
-    },
-    ...
+      "strengths": ["string"],
+      "weaknesses": ["string"]
+    }
   ],
   "analysis": {
     "summary": "string",
     "topCandidateUid": "string (UID of highest scoring candidate)",
     "topCandidateName": "string",
     "recommendationReason": "string",
-    "keyDifferentiators": ["string", ...],
+    "keyDifferentiators": ["string"],
     "finalRecommendation": "string"
   }
 }`;
@@ -690,7 +973,7 @@ Return a JSON object with this exact structure (candidates MUST be sorted by ove
     try {
       const { data } = await this.geminiService.generateJsonContent<AIComparisonResponse>(prompt, systemInstruction);
 
-      // Validate and normalize scores
+      // Validate and normalize scores (0-100, no minimum clamping)
       const normalizeScore = (score: number): number => Math.max(0, Math.min(100, Math.round(score)));
 
       // Sort candidates by overall score descending
