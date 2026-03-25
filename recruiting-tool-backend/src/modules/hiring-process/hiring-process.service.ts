@@ -771,7 +771,7 @@ export class HiringProcessService {
    * Requires an access code that was emailed to the candidate on process creation.
    * Returns candidate-facing read-only information: name, position, company, and ordered stages.
    */
-  async getPublicTracking(uid: string, accessCode: string): Promise<PublicHiringProcessTrackingDto> {
+  async getPublicTracking(uid: string, accessCode: string, authHeader?: string): Promise<PublicHiringProcessTrackingDto> {
     try {
       const hiringProcess = await this.databaseService.hiringProcess.findFirst({
         where: { uid, deletedAt: null },
@@ -790,14 +790,31 @@ export class HiringProcessService {
         throw new NotFoundException('Hiring process not found');
       }
 
-      // Validate access code
-      if (!hiringProcess.accessCode || hiringProcess.accessCode !== accessCode) {
-        throw new UnauthorizedException('Invalid access code');
+      // Email-match bypass: if the caller is authenticated and their email matches
+      // the candidate's email, grant access without requiring the access code.
+      let bypassCodeCheck = false;
+      if (authHeader?.startsWith('Bearer ')) {
+        try {
+          const payload = JSON.parse(Buffer.from(authHeader.slice(7).split('.')[1], 'base64').toString('utf8'));
+          const callerEmail: string | undefined = payload.email || payload.sub;
+          if (callerEmail && hiringProcess.candidate?.email && callerEmail.toLowerCase() === hiringProcess.candidate.email.toLowerCase()) {
+            bypassCodeCheck = true;
+          }
+        } catch {
+          // Malformed token — fall through to code check
+        }
       }
 
-      // Check if code is expired
-      if (hiringProcess.codeExpiresAt && hiringProcess.codeExpiresAt < new Date()) {
-        throw new UnauthorizedException('Access code has expired');
+      if (!bypassCodeCheck) {
+        // Validate access code
+        if (!hiringProcess.accessCode || hiringProcess.accessCode !== accessCode) {
+          throw new UnauthorizedException('Invalid access code');
+        }
+
+        // Check if code is expired
+        if (hiringProcess.codeExpiresAt && hiringProcess.codeExpiresAt < new Date()) {
+          throw new UnauthorizedException('Access code has expired');
+        }
       }
 
       // Map each stage to a candidate-facing status:

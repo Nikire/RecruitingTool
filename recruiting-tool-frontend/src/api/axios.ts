@@ -66,13 +66,19 @@ const processQueue = (error: Error | null, token: string | null = null) => {
 
 // Request interceptor - adds JWT token to requests
 api.interceptors.request.use((config) => {
-  // Skip authentication for public endpoints
-  const isPublicEndpoint =
-    config.url?.includes("/public/") ||
-    config.url?.includes("-public") ||
-    config.url?.match(/\/hiring-process\/[^/]+\/public$/);
-  if (isPublicEndpoint) {
-    return config; // Don't add Authorization header for public endpoints
+  // The hiring-process public tracking endpoint is semi-public:
+  // it still accepts an auth token (for email-match bypass) but won't require it.
+  const isHiringProcessPublic = config.url?.match(
+    /\/hiring-process\/[^/]+\/public$/,
+  );
+
+  // Fully public endpoints — skip auth header entirely
+  const isFullyPublicEndpoint =
+    !isHiringProcessPublic &&
+    (config.url?.includes("/public/") || config.url?.includes("-public"));
+
+  if (isFullyPublicEndpoint) {
+    return config;
   }
 
   const token = localStorage.getItem("authToken");

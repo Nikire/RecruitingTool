@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Headers, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { HiringProcessService } from './hiring-process.service';
@@ -50,7 +50,7 @@ export class HiringProcessPublicController {
   })
   @ApiParam({ name: 'uid', required: true, description: 'UID of the hiring process', example: '123e4567-e89b-12d3-a456-426614174000' })
   @ApiQuery({ name: 'code', required: true, description: 'Access code emailed to the candidate', example: 'A1B2C3D4' })
-  getPublicTracking(@Param('uid') uid: string, @Query('code') code: string): Promise<PublicHiringProcessTrackingDto> {
-    return this.hiringProcessService.getPublicTracking(uid, code ?? '');
+  getPublicTracking(@Param('uid') uid: string, @Query('code') code: string, @Headers('authorization') authHeader?: string): Promise<PublicHiringProcessTrackingDto> {
+    return this.hiringProcessService.getPublicTracking(uid, code ?? '', authHeader);
   }
 }

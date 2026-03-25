@@ -69,10 +69,33 @@ import DocsPage from "./pages/admin/DocsPage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Auth0CallbackHandler from "./components/auth/Auth0CallbackHandler";
+import { useAuthMe } from "./hooks/api/useAuth";
+
+const HR_ROLES = [
+  UserRoles.HR,
+  UserRoles.HR_MANAGER,
+  UserRoles.RECRUITER,
+  UserRoles.COMPANY_OWNER,
+  UserRoles.COMPANY_ADMIN,
+  UserRoles.ADMIN,
+  UserRoles.SUPER_ADMIN,
+];
 
 const HiringProcessRoute = () => {
   const token = localStorage.getItem("authToken");
-  return token ? <HiringProcessPage /> : <HiringProcessTrackingPage />;
+  const { user, isLoading } = useAuthMe();
+
+  // While resolving auth with a token, avoid a flash to the wrong view
+  if (token && isLoading) return null;
+
+  // HR / company staff → full HR management view
+  if (user && HR_ROLES.some((role) => user.roles?.includes(role))) {
+    return <HiringProcessPage />;
+  }
+
+  // Candidate with account or unauthenticated → tracking page
+  // (tracking page handles email-match bypass and code lock internally)
+  return <HiringProcessTrackingPage />;
 };
 
 function App() {
