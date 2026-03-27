@@ -180,7 +180,7 @@ const ErrorBoundaryUI = ({
               {t("errors.boundary.reload")}
             </Button>
             <Button
-              variant="outlined"
+              variant="contained"
               color="primary"
               startIcon={<HomeIcon />}
               onClick={onGoHome}

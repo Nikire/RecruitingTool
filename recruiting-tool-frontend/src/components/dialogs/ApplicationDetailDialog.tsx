@@ -377,7 +377,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
             <Button
               onClick={handleDeleteClick}
               color="error"
-              variant="outlined"
+              variant="contained"
               startIcon={<DeleteIcon />}
               disabled={isDeleting || isUpdating || isAccepting}
             >

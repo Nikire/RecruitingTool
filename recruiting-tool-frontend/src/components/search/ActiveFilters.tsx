@@ -84,7 +84,7 @@ const ActiveFilters: React.FC<ActiveFiltersProps> = ({
             {t("search.results_count", { count: resultsCount })}
           </Typography>
         )}
-        <Button size="small" onClick={onClearAll} variant="outlined">
+        <Button size="small" onClick={onClearAll} variant="contained">
           {t("search.clear_all")}
         </Button>
       </Box>

@@ -200,7 +200,7 @@ const EmailTemplatesPage: React.FC = () => {
                             `email_template.type_${template.type.toLowerCase()}`,
                           )}
                           size="small"
-                          variant="outlined"
+                          variant="filled"
                           color={
                             template.type ===
                             EmailTemplateType.APPLICATION_RECEIVED

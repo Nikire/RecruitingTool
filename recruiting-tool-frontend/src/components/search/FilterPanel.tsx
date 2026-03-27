@@ -409,7 +409,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           borderColor: "divider",
         }}
       >
-        <Button variant="outlined" onClick={onReset} fullWidth>
+        <Button variant="contained" onClick={onReset} fullWidth>
           {t("search.reset_filters")}
         </Button>
         <Button variant="contained" onClick={onApply} fullWidth>

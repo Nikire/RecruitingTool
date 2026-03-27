@@ -99,7 +99,7 @@ const CustomQuestionsList: React.FC<CustomQuestionsListProps> = ({
                   label={t("custom_questions.required_chip")}
                   size="small"
                   color="primary"
-                  variant="outlined"
+                  variant="filled"
                 />
               )}
             </Box>
@@ -128,7 +128,7 @@ const CustomQuestionsList: React.FC<CustomQuestionsListProps> = ({
                     key={optIndex}
                     label={option}
                     size="small"
-                    variant="outlined"
+                    variant="filled"
                   />
                 ))}
               </Box>

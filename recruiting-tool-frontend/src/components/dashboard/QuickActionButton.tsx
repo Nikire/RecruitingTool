@@ -63,7 +63,7 @@ const QuickActionButton: React.FC<QuickActionButtonProps> = ({
   return (
     <Grid size={{ xs: xs, sm: sm, md: md }}>
       <Button
-        variant="outlined"
+        variant="contained"
         fullWidth
         startIcon={icon}
         onClick={onClick}

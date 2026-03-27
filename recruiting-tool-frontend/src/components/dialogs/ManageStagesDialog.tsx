@@ -469,7 +469,7 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
                   }}
                 >
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     size="small"
                     onClick={handleSavePositions}
                     disabled={isUpdating}

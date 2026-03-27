@@ -203,7 +203,7 @@ const HRJobPositionDetailPage: React.FC = () => {
             {canManage && (
               <>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   startIcon={<EditIcon />}
                   onClick={() => updateDialog.openWith(jobPosition)}
                   sx={{ flex: { xs: 1, sm: "none" } }}
@@ -211,7 +211,7 @@ const HRJobPositionDetailPage: React.FC = () => {
                   {t("common.edit")}
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   startIcon={<SettingsIcon />}
                   onClick={() => manageStagesDialog.openWith(jobPosition)}
                   sx={{ flex: { xs: 1, sm: "none" } }}
@@ -219,7 +219,7 @@ const HRJobPositionDetailPage: React.FC = () => {
                   {t("job_positions.manage_stages")}
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   color="error"
                   startIcon={<DeleteIcon />}
                   onClick={() => deleteConfirm.confirmDelete(jobPosition)}
@@ -372,7 +372,7 @@ const HRJobPositionDetailPage: React.FC = () => {
                   <TableCell>
                     <Button
                       size="small"
-                      variant="outlined"
+                      variant="contained"
                       onClick={() => navigate(`/hiring-process/${process.uid}`)}
                     >
                       {t("job_positions.view_details")}

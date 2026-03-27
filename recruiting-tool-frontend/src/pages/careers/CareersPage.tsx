@@ -267,7 +267,7 @@ const CareersPage: React.FC = () => {
                 <Chip
                   label={selectedCompany.industry}
                   size="small"
-                  variant="outlined"
+                  variant="filled"
                   sx={{ mb: 1, fontSize: "0.75rem" }}
                 />
               )}
@@ -293,7 +293,7 @@ const CareersPage: React.FC = () => {
               {/* Website button */}
               {selectedCompany.website && (
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
                   href={selectedCompany.website}
@@ -339,7 +339,7 @@ const CareersPage: React.FC = () => {
         {isMobile && (
           <Box sx={{ mb: 3 }}>
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={<FilterListIcon />}
               onClick={() => setFilterDrawerOpen(true)}
               fullWidth

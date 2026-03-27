@@ -77,7 +77,7 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {t("registration_wizard.role_info.resume_helper")}
         </Typography>
-        <Button variant="outlined" component="label" size="medium">
+        <Button variant="contained" component="label" size="medium">
           {t("registration_wizard.role_info.choose_file")}
           <input
             type="file"

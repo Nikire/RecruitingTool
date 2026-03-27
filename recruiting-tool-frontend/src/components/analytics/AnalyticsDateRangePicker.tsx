@@ -173,7 +173,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
             label={value.label}
             size="small"
             color="primary"
-            variant="outlined"
+            variant="filled"
             sx={{ fontWeight: 600, borderRadius: 1.5 }}
           />
         </Box>
@@ -182,7 +182,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
         <Box display="flex" flexWrap="wrap" gap={1} alignItems="center">
           <ButtonGroup
             size="small"
-            variant="outlined"
+            variant="contained"
             sx={{
               flexWrap: "wrap",
               "& .MuiButtonGroup-firstButton, & .MuiButtonGroup-middleButton": {
@@ -197,7 +197,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
                 variant={
                   value.preset === key && !isCustomMode
                     ? "contained"
-                    : "outlined"
+                    : "contained"
                 }
                 sx={{
                   borderRadius: "8px !important",
@@ -223,7 +223,7 @@ const AnalyticsDateRangePicker: React.FC<AnalyticsDateRangePickerProps> = ({
             size="small"
             startIcon={<TuneIcon fontSize="small" />}
             onClick={handleCustomClick}
-            variant={isCustomMode ? "contained" : "outlined"}
+            variant={isCustomMode ? "contained" : "contained"}
             sx={{
               borderRadius: 2,
               fontWeight: isCustomMode ? 700 : 400,

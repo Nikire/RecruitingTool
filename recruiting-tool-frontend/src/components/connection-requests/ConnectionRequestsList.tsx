@@ -225,7 +225,7 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
                       {t("common.approve")}
                     </Button>
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       color="error"
                       startIcon={<DenyIcon />}
                       onClick={() => handleDenyClick(request)}

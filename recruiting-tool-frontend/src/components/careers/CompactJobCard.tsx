@@ -389,7 +389,7 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
               icon={<WorkIcon sx={{ fontSize: 14 }} />}
               label={getJobTypeLabel()}
               size="small"
-              variant="outlined"
+              variant="filled"
               sx={{
                 fontSize: "0.7rem",
                 height: 24,
@@ -401,7 +401,7 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
               <Chip
                 label={experienceLevelLabel}
                 size="small"
-                variant="outlined"
+                variant="filled"
                 color="secondary"
                 sx={{ fontSize: "0.7rem", height: 24 }}
               />
@@ -424,7 +424,7 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
                 label={salaryText}
                 size="small"
                 color="success"
-                variant="outlined"
+                variant="filled"
                 sx={{ fontSize: "0.7rem", height: 24 }}
               />
             </Box>
@@ -444,7 +444,7 @@ const CompactJobCard: React.FC<CompactJobCardProps> = React.memo(
                   key={index}
                   label={tag}
                   size="small"
-                  variant="outlined"
+                  variant="filled"
                   sx={{
                     fontSize: "0.65rem",
                     height: 20,

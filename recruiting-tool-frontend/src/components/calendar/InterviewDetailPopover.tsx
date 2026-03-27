@@ -397,7 +397,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
             size="small"
             startIcon={<NotesIcon />}
             onClick={() => setShowNotes((prev) => !prev)}
-            variant="outlined"
+            variant="contained"
             color="inherit"
           >
             {showNotes ? t("calendar.hide_notes") : t("calendar.see_all_notes")}
@@ -407,7 +407,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
               size="small"
               startIcon={<ContentCopyIcon />}
               onClick={handleCopyLink}
-              variant="outlined"
+              variant="contained"
             >
               {t("calendar.copy_meet_link")}
             </Button>
@@ -416,7 +416,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
             size="small"
             startIcon={<EditCalendarIcon />}
             onClick={handleRescheduleOpen}
-            variant="outlined"
+            variant="contained"
             color="primary"
           >
             {t("calendar.reschedule")}
@@ -425,7 +425,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
             size="small"
             startIcon={<CancelIcon />}
             onClick={() => setCancelOpen(true)}
-            variant="outlined"
+            variant="contained"
             color="error"
           >
             {t("calendar.cancel_interview")}

@@ -103,7 +103,7 @@ const JobPositionCardView: React.FC<{
           )}
           <Chip
             label={`${jobPosition.stages?.length || 0} ${t("stages.title")}`}
-            variant="outlined"
+            variant="filled"
             size="small"
             sx={{ fontSize: "0.85rem" }}
           />
@@ -148,7 +148,7 @@ const JobPositionCardView: React.FC<{
           <Button
             fullWidth
             size="small"
-            variant="outlined"
+            variant="contained"
             onClick={() => onViewDetails(jobPosition.uid)}
             sx={{
               minHeight: 44,

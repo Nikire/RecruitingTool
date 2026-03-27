@@ -194,7 +194,7 @@ const StageDurationTable: React.FC<StageDurationTableProps> = ({
                           <Chip
                             label={t("analytics.bottleneck")}
                             color="error"
-                            variant="outlined"
+                            variant="filled"
                             size="small"
                           />
                         )}

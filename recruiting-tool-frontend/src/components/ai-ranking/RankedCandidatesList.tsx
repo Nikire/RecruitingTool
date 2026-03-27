@@ -345,7 +345,7 @@ const RankedCandidatesList: React.FC<RankedCandidatesListProps> = ({
                       <TableCell align="right">
                         <Button
                           size="small"
-                          variant="outlined"
+                          variant="contained"
                           startIcon={<PersonIcon />}
                           onClick={() =>
                             onViewProfile?.(candidate.candidateUid)

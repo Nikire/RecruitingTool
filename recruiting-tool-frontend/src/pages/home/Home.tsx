@@ -155,7 +155,7 @@ const Home: React.FC = () => {
                   {t("home.hero.cta_primary")}
                 </Button>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="large"
                   onClick={() => navigate("/careers")}
                   sx={{

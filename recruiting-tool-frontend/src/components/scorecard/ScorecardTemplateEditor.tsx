@@ -525,7 +525,7 @@ const ScorecardTemplateEditor: React.FC<ScorecardTemplateEditorProps> = ({
 
           {/* Add Category Button */}
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<AddIcon />}
             onClick={addCategory}
             fullWidth

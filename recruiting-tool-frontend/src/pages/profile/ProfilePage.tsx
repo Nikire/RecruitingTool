@@ -174,7 +174,7 @@ const ProfilePage: React.FC = () => {
         <Typography variant="h4">{t("profile_page.my_profile")}</Typography>
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<RefreshIcon />}
             onClick={handleReset}
             disabled={!isDirty || isPending}
@@ -318,7 +318,7 @@ const ProfilePage: React.FC = () => {
                   {!user.emailVerified && (
                     <Button
                       size="small"
-                      variant="outlined"
+                      variant="contained"
                       color="warning"
                       disabled={isResendingVerification}
                       onClick={() =>
@@ -381,7 +381,7 @@ const ProfilePage: React.FC = () => {
                     label={t("profile_page.linkedin_no_email_notice")}
                     color="info"
                     size="small"
-                    variant="outlined"
+                    variant="filled"
                     sx={{
                       fontSize: "0.7rem",
                       height: "auto",
@@ -519,7 +519,7 @@ const ProfilePage: React.FC = () => {
                             )}
                             color="primary"
                             size="small"
-                            variant="outlined"
+                            variant="filled"
                           />
                           <Chip
                             label={t(
@@ -533,7 +533,7 @@ const ProfilePage: React.FC = () => {
                         </Box>
                         <Button
                           size="small"
-                          variant="outlined"
+                          variant="contained"
                           endIcon={<OpenInNewIcon sx={{ fontSize: 14 }} />}
                           onClick={() => navigate("/profile/subscription")}
                           sx={{ mt: 0.5, width: "100%" }}
@@ -814,7 +814,7 @@ const ProfilePage: React.FC = () => {
                 </Box>
                 <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="error"
                     size="medium"
                     startIcon={<EmailIcon />}
@@ -829,7 +829,7 @@ const ProfilePage: React.FC = () => {
                     {t("profile_page.change_email")}
                   </Button>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     color="error"
                     size="medium"
                     startIcon={<LockIcon />}

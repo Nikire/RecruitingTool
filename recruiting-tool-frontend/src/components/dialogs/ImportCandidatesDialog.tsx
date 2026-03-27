@@ -114,7 +114,7 @@ const ImportCandidatesDialog: React.FC<ImportCandidatesDialogProps> = ({
         {/* Download Template */}
         <Box sx={{ mb: 3 }}>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<DownloadIcon />}
             onClick={handleDownloadTemplate}
             fullWidth

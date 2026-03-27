@@ -191,12 +191,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
                     sx={{ mt: 1, display: "flex", gap: 0.5, flexWrap: "wrap" }}
                   >
                     {question.options.map((opt, i) => (
-                      <Chip
-                        key={i}
-                        label={opt}
-                        size="small"
-                        variant="outlined"
-                      />
+                      <Chip key={i} label={opt} size="small" variant="filled" />
                     ))}
                   </Box>
                 )}
@@ -308,7 +303,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
                     <Chip
                       label={option}
                       onDelete={() => handleRemoveOption(i)}
-                      variant="outlined"
+                      variant="filled"
                       sx={{ flex: 1 }}
                     />
                   </Box>

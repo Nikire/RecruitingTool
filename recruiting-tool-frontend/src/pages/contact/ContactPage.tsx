@@ -96,7 +96,7 @@ const ContactPage = () => {
       description: t("contact.method_email_description"),
       action: (
         <Button
-          variant="outlined"
+          variant="contained"
           size="small"
           href={`mailto:${t("app.support_email")}`}
           sx={{
@@ -317,7 +317,7 @@ const ContactPage = () => {
                   {t("contact.success_message")}
                 </Typography>
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="large"
                   onClick={handleSendAnother}
                   sx={{

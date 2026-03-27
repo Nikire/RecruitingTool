@@ -148,7 +148,7 @@ const AIQuotaPage: React.FC = () => {
           label={params.value}
           color="primary"
           size="small"
-          variant="outlined"
+          variant="filled"
           icon={<PsychologyIcon />}
         />
       ),

@@ -181,7 +181,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
           </Typography>
           <Box sx={{ display: "flex", gap: 1 }}>
             <Button
-              variant="outlined"
+              variant="contained"
               size="small"
               onClick={handleCancel}
               disabled={isPending}
@@ -202,7 +202,7 @@ const ProfilePictureUpload: React.FC<ProfilePictureUploadProps> = ({
       ) : (
         <Box sx={{ display: "flex", gap: 1 }}>
           <Button
-            variant="outlined"
+            variant="contained"
             size="small"
             startIcon={<PhotoCameraIcon />}
             onClick={handleButtonClick}

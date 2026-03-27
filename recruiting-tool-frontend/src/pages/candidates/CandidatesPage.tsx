@@ -100,7 +100,7 @@ const CandidatesPage: React.FC = () => {
             <>
               {selectedCandidates.length >= 2 && (
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   startIcon={<CompareArrowsIcon />}
                   onClick={compareDialog.open}
                   disabled={

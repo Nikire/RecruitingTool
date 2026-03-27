@@ -416,7 +416,7 @@ const CompanyDetailPage: React.FC = () => {
         </Typography>
         <Stack direction="row" spacing={1}>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<SwapHorizIcon />}
             onClick={() => setTransferDialogOpen(true)}
             disabled={users.length < 2}

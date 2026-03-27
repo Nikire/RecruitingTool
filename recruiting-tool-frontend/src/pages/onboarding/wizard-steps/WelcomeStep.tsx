@@ -149,7 +149,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
             <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 fullWidth
-                variant="outlined"
+                variant="contained"
                 href="https://docs.borderlessats.com"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -160,7 +160,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
             <Grid size={{ xs: 12, sm: 6 }}>
               <Button
                 fullWidth
-                variant="outlined"
+                variant="contained"
                 href="https://support.borderlessats.com"
                 target="_blank"
                 rel="noopener noreferrer"

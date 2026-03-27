@@ -275,7 +275,7 @@ const CalendarSettingsPage = () => {
                         {t("calendar_settings.connected_message")}
                       </Alert>
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         color="error"
                         startIcon={<LinkOffIcon />}
                         onClick={handleDisconnect}

@@ -190,7 +190,7 @@ const PublicJobCard: React.FC<PublicJobCardProps> = ({
               icon={<BusinessIcon sx={{ fontSize: 16 }} />}
               label={t(JOB_TYPE_I18N_KEYS[jobPosition.jobType])}
               size="small"
-              variant="outlined"
+              variant="filled"
               sx={{
                 borderColor: "divider",
                 "& .MuiChip-icon": { color: "text.secondary" },
@@ -203,7 +203,7 @@ const PublicJobCard: React.FC<PublicJobCardProps> = ({
                 icon={<LocationOnIcon sx={{ fontSize: 16 }} />}
                 label={t(WORK_LOCATION_I18N_KEYS[jobPosition.workLocation])}
                 size="small"
-                variant="outlined"
+                variant="filled"
                 sx={{
                   borderColor: "divider",
                   "& .MuiChip-icon": { color: "text.secondary" },
@@ -224,7 +224,7 @@ const PublicJobCard: React.FC<PublicJobCardProps> = ({
                       : `${t("careersJob.up_to")} ${jobPosition.salaryCurrency || "USD"} ${(jobPosition.salaryMax! / 1000).toFixed(0)}k`
                 }
                 size="small"
-                variant="outlined"
+                variant="filled"
                 color="success"
                 sx={{
                   "& .MuiChip-icon": { color: "success.main" },

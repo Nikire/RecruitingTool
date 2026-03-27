@@ -27,7 +27,7 @@ const EmptyState: React.FC<EmptyStateProps> = ({ message, icon, action }) => {
         {t(message)}
       </Typography>
       {action && (
-        <Button variant="outlined" onClick={action.onClick} sx={{ mt: 2 }}>
+        <Button variant="contained" onClick={action.onClick} sx={{ mt: 2 }}>
           {t(action.label)}
         </Button>
       )}

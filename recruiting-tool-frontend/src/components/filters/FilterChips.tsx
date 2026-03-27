@@ -64,7 +64,7 @@ const FilterChips: React.FC<FilterChipsProps> = ({ filters, onClearAll }) => {
             onDelete={filter.onRemove}
             size="small"
             color="primary"
-            variant="outlined"
+            variant="filled"
             sx={{
               maxWidth: { xs: "100%", sm: "300px" },
             }}
@@ -76,7 +76,7 @@ const FilterChips: React.FC<FilterChipsProps> = ({ filters, onClearAll }) => {
             onClick={onClearAll}
             size="small"
             color="default"
-            variant="outlined"
+            variant="filled"
             sx={{
               fontWeight: 600,
               cursor: "pointer",

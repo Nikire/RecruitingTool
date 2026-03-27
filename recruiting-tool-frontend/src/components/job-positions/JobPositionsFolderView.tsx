@@ -122,7 +122,7 @@ const JobPositionsFolderView: React.FC<JobPositionsFolderViewProps> = ({
                         label={`Open: ${jp.statusCounts.OPEN}`}
                         size="small"
                         color="info"
-                        variant="outlined"
+                        variant="filled"
                       />
                     )}
                     {jp.statusCounts.IN_PROGRESS > 0 && (
@@ -132,7 +132,7 @@ const JobPositionsFolderView: React.FC<JobPositionsFolderViewProps> = ({
                         })}
                         size="small"
                         color="primary"
-                        variant="outlined"
+                        variant="filled"
                       />
                     )}
                     {jp.statusCounts.CLOSED > 0 && (
@@ -140,7 +140,7 @@ const JobPositionsFolderView: React.FC<JobPositionsFolderViewProps> = ({
                         label={`Closed: ${jp.statusCounts.CLOSED}`}
                         size="small"
                         color="success"
-                        variant="outlined"
+                        variant="filled"
                       />
                     )}
                   </Box>

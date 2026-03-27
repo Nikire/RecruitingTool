@@ -373,13 +373,13 @@ const TeamManagementPage: React.FC = () => {
                           ).toLocaleDateString(),
                         })}
                         size="small"
-                        variant="outlined"
+                        variant="filled"
                         color="warning"
                       />
                       {canManage && (
                         <Button
                           size="small"
-                          variant="outlined"
+                          variant="contained"
                           color="error"
                           startIcon={<CancelIcon />}
                           onClick={() => handleCancelInvitation(invitation.uid)}
@@ -490,7 +490,7 @@ const TeamManagementPage: React.FC = () => {
                           {t("team.approve")}
                         </Button>
                         <Button
-                          variant="outlined"
+                          variant="contained"
                           color="error"
                           size="medium"
                           startIcon={<CancelIcon />}

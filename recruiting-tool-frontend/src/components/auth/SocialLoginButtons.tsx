@@ -84,7 +84,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
       >
         {/* Google Login Button */}
         <Button
-          variant="outlined"
+          variant="contained"
           fullWidth
           onClick={handleGoogleLogin}
           disabled={isLoading}
@@ -108,7 +108,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
 
         {/* LinkedIn Login Button */}
         <Button
-          variant="outlined"
+          variant="contained"
           fullWidth
           onClick={handleLinkedInLogin}
           disabled={isLoading}

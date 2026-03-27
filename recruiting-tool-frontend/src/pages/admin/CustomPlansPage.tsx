@@ -539,7 +539,7 @@ const StripeLinks: React.FC<StripeLinksProps> = ({ plan }) => {
                 : t("custom_plans.env_live")
             }
             color={plan.stripeIsTestMode ? "warning" : "info"}
-            variant="outlined"
+            variant="filled"
             size="small"
             sx={{ fontSize: "0.65rem", height: 20 }}
           />
@@ -555,7 +555,7 @@ const StripeLinks: React.FC<StripeLinksProps> = ({ plan }) => {
               icon={<DashboardIcon sx={{ fontSize: "14px !important" }} />}
               label={t("custom_plans.stripe_dashboard_short")}
               size="small"
-              variant="outlined"
+              variant="filled"
               color="primary"
               component="a"
               href={`${dashboardBase}/products/${plan.stripeProductId}`}
@@ -935,7 +935,7 @@ const CustomPlansPage: React.FC = () => {
                       label={t("custom_plans.custom_badge")}
                       size="small"
                       color="secondary"
-                      variant="outlined"
+                      variant="filled"
                       sx={{ mt: 0.5, fontSize: "0.7rem", height: 20 }}
                     />
                   </TableCell>

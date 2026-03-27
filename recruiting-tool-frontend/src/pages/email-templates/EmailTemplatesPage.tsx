@@ -149,7 +149,7 @@ const EmailTemplatesPage: React.FC = () => {
             label={getTypeLabel(params.value)}
             size="small"
             color={getTypeChipColor(params.value)}
-            variant="outlined"
+            variant="filled"
           />
         </CellRow>
       ),

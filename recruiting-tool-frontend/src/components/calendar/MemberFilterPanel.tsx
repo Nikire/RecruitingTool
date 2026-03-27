@@ -55,7 +55,7 @@ const MemberFilterPanel: React.FC<MemberFilterPanelProps> = ({
       <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
         <Button
           size="small"
-          variant="outlined"
+          variant="contained"
           onClick={onMyMeetingsOnly}
           sx={{ fontSize: "0.7rem", py: 0.25, px: 1 }}
         >

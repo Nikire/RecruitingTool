@@ -112,7 +112,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
           <Chip
             label={t("job_position_card.full_time")}
             size="small"
-            variant="outlined"
+            variant="filled"
           />
         </Box>
 

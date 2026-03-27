@@ -424,7 +424,7 @@ const LandingPage = () => {
                       {t("landing.hero.cta_start_now")}
                     </Button>
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       size="large"
                       onClick={() => scrollToSection("features")}
                       sx={{

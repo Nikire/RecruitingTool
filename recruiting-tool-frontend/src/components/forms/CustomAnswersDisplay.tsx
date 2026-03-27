@@ -51,7 +51,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
         return (
           <Chip
             label={String(answer)}
-            variant="outlined"
+            variant="filled"
             color="primary"
             size="small"
           />
@@ -65,7 +65,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
                 <Chip
                   key={String(item)}
                   label={String(item)}
-                  variant="outlined"
+                  variant="filled"
                   color="primary"
                   size="small"
                 />
@@ -73,7 +73,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
             ) : (
               <Chip
                 label={String(answer)}
-                variant="outlined"
+                variant="filled"
                 color="primary"
                 size="small"
               />
@@ -119,7 +119,7 @@ export const CustomAnswersDisplay: React.FC<CustomAnswersDisplayProps> = ({
                   label={t("custom_questions.required_chip")}
                   size="small"
                   color="primary"
-                  variant="outlined"
+                  variant="filled"
                 />
               )}
             </Box>

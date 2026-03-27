@@ -304,7 +304,7 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
               sx={{ display: "flex", alignItems: "center" }}
             >
               <Button
-                variant="outlined"
+                variant="contained"
                 onClick={handleClearFilters}
                 startIcon={<ClearIcon />}
                 fullWidth

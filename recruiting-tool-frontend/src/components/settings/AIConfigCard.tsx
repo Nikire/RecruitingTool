@@ -151,7 +151,7 @@ const AIConfigCard: React.FC<AIConfigCardProps> = ({
           <Chip
             label={aiSettings?.tier ?? t("common.n_a")}
             size="small"
-            variant="outlined"
+            variant="filled"
             sx={{ fontFamily: "monospace" }}
           />
         </Box>
@@ -165,7 +165,7 @@ const AIConfigCard: React.FC<AIConfigCardProps> = ({
         <Box>
           <Button
             size="small"
-            variant="outlined"
+            variant="contained"
             color="secondary"
             endIcon={<OpenInNewIcon fontSize="small" />}
             onClick={() => navigate("/admin/feature-flags")}

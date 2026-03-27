@@ -282,7 +282,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
                   size="small"
                   sx={{ mb: 1 }}
                   color="primary"
-                  variant="outlined"
+                  variant="filled"
                 />
               ))}
             </Stack>

@@ -97,7 +97,7 @@ const AnalyticsPage: React.FC = () => {
 
         {/* Refresh button — top-right */}
         <Button
-          variant="outlined"
+          variant="contained"
           onClick={handleRefresh}
           disabled={isLoading}
           startIcon={

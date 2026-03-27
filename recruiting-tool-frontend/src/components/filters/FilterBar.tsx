@@ -181,7 +181,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
         {/* Advanced Filters Toggle */}
         {hasAdvancedFilters && (
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<FilterListIcon />}
             endIcon={
               showAdvancedFilters ? <ExpandLessIcon /> : <ExpandMoreIcon />
@@ -274,7 +274,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
                 }}
               >
                 <Button
-                  variant="outlined"
+                  variant="contained"
                   size="small"
                   onClick={handleClearAll}
                   disabled={!hasActiveFilters}

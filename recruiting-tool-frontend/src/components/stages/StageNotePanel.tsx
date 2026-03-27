@@ -151,7 +151,7 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
       {/* Action buttons */}
       <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
         <Button
-          variant="outlined"
+          variant="contained"
           size="small"
           startIcon={
             isDeleting ? <CircularProgress size={14} /> : <DeleteOutlineIcon />

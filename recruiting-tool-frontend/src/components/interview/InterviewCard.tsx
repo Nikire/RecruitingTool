@@ -244,7 +244,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                 <Divider sx={{ my: 1 }} />
                 <Box>
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     size="small"
                     startIcon={<LinkIcon />}
                     href={interview.meetingLink}

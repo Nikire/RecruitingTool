@@ -198,7 +198,7 @@ const CandidatesList: React.FC<CandidatesListProps> = ({
           <Tooltip title={t("candidates.bulk_archive_hint")}>
             <Button
               size="small"
-              variant="outlined"
+              variant="contained"
               color="warning"
               startIcon={<ArchiveIcon />}
               onClick={handleBulkArchive}

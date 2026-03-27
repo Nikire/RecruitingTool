@@ -165,7 +165,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
                     />
                     <Box>
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         component="label"
                         startIcon={<UploadIcon />}
                         size="small"
@@ -181,7 +181,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
                       </Button>
                       <br />
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         color="error"
                         startIcon={<DeleteIcon />}
                         onClick={handleRemoveLogo}
@@ -193,7 +193,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
                   </Box>
                 ) : (
                   <Button
-                    variant="outlined"
+                    variant="contained"
                     component="label"
                     startIcon={<UploadIcon />}
                   >

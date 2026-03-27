@@ -98,7 +98,7 @@ const WebhooksPage: React.FC = () => {
                     label={t("webhooks.coming_soon")}
                     size="small"
                     color="default"
-                    variant="outlined"
+                    variant="filled"
                     sx={{ fontWeight: 500 }}
                   />
                 </Box>
@@ -177,7 +177,7 @@ const WebhooksPage: React.FC = () => {
                     label={t("webhooks.coming_soon")}
                     size="small"
                     color="default"
-                    variant="outlined"
+                    variant="filled"
                     sx={{ fontWeight: 500 }}
                   />
                 </Box>

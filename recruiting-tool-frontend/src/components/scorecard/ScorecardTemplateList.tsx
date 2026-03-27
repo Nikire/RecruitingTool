@@ -153,7 +153,7 @@ const ScorecardTemplateList: React.FC<ScorecardTemplateListProps> = ({
                       })}
                       size="small"
                       color="primary"
-                      variant="outlined"
+                      variant="filled"
                     />
                     <Chip
                       label={t("scorecard.criteria_count", {
@@ -161,7 +161,7 @@ const ScorecardTemplateList: React.FC<ScorecardTemplateListProps> = ({
                       })}
                       size="small"
                       color="secondary"
-                      variant="outlined"
+                      variant="filled"
                     />
                   </Box>
 

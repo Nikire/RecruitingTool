@@ -144,7 +144,7 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({
             {t("unauthorized.go_home")}
           </Button>
           <Button
-            variant="outlined"
+            variant="contained"
             startIcon={<ContactIcon />}
             onClick={handleRequestAccess}
           >

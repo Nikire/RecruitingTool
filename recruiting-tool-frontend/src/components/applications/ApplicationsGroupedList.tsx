@@ -76,7 +76,7 @@ const GroupHeader: React.FC<{
         })}
         size="small"
         color="primary"
-        variant="outlined"
+        variant="filled"
         sx={{ fontWeight: 500 }}
       />
       <IconButton
@@ -176,7 +176,7 @@ const ApplicationRow: React.FC<{
       >
         <Button
           size="small"
-          variant="outlined"
+          variant="contained"
           onClick={(e) => {
             e.stopPropagation();
             onView(application);

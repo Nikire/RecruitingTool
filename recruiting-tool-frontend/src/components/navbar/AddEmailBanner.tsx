@@ -33,7 +33,7 @@ const AddEmailBanner: React.FC = () => {
           <Button
             color="warning"
             size="small"
-            variant="outlined"
+            variant="contained"
             onClick={() => setDialogOpen(true)}
             sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
           >

@@ -347,7 +347,7 @@ const JobPositionDetailPage: React.FC = () => {
                       <TableCell>
                         <Button
                           size="small"
-                          variant="outlined"
+                          variant="contained"
                           onClick={() =>
                             navigate(`/hiring-process/${process.uid}`)
                           }

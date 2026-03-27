@@ -320,7 +320,7 @@ const CompanyProfilePage: React.FC = () => {
                       style={{ display: "none" }}
                     />
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       size="small"
                       startIcon={<PhotoCameraIcon />}
                       onClick={() => fileInputRef.current?.click()}

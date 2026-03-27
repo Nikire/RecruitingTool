@@ -222,7 +222,7 @@ const NotificationsPage: React.FC = () => {
           {/* Mark All as Read Button */}
           {unreadCount > 0 && (
             <Button
-              variant="outlined"
+              variant="contained"
               startIcon={
                 isMarkingAll ? <CircularProgress size={16} /> : <DoneAllIcon />
               }
@@ -388,7 +388,7 @@ const NotificationsPage: React.FC = () => {
                           </Button>
                           <Button
                             size="small"
-                            variant="outlined"
+                            variant="contained"
                             color="error"
                             startIcon={<CloseIcon />}
                             onClick={(e) =>

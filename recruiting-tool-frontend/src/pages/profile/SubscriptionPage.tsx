@@ -387,7 +387,7 @@ const SubscriptionPage: React.FC = () => {
                     sx={{ width: "100%" }}
                   >
                     <Button
-                      variant="outlined"
+                      variant="contained"
                       onClick={handleManageBilling}
                       disabled={isOpeningPortal}
                       startIcon={
@@ -400,7 +400,7 @@ const SubscriptionPage: React.FC = () => {
 
                     {showCancelButton && (
                       <Button
-                        variant="outlined"
+                        variant="contained"
                         color="error"
                         onClick={() => setCancelDialogOpen(true)}
                         disabled={isCanceling}

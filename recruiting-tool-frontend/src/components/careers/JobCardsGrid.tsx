@@ -83,7 +83,7 @@ const JobCardsGrid: React.FC<JobCardsGridProps> = memo(
           <Typography color="text.secondary" sx={{ mb: 3 }}>
             {t("careers.try_different_keywords")}
           </Typography>
-          <Button variant="outlined" onClick={onClearFilters}>
+          <Button variant="contained" onClick={onClearFilters}>
             {t("careersFilters.clear_all")}
           </Button>
         </Box>

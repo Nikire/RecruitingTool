@@ -29,7 +29,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
         </Typography>
       )}
       {retry && (
-        <Button variant="outlined" color="error" onClick={retry}>
+        <Button variant="contained" color="error" onClick={retry}>
           {t("common.retry")}
         </Button>
       )}

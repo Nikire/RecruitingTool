@@ -228,7 +228,7 @@ const FeatureFlagsPage: React.FC = () => {
                   </Typography>
                   <Chip
                     label={featureKey}
-                    variant="outlined"
+                    variant="filled"
                     size="small"
                     sx={{
                       mt: 0.5,

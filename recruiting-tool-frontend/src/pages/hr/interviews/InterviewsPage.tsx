@@ -211,7 +211,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             />
             {interview.meetingLink && (
               <Button
-                variant="outlined"
+                variant="contained"
                 size="small"
                 endIcon={<OpenInNewIcon fontSize="small" />}
                 href={interview.meetingLink}

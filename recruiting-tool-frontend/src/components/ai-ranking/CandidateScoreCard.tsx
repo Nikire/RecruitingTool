@@ -224,7 +224,7 @@ const CandidateScoreCard: React.FC<CandidateScoreCardProps> = ({
       <CardActions sx={{ pt: 0, px: 2, pb: 2 }}>
         <Button
           size="small"
-          variant="outlined"
+          variant="contained"
           startIcon={<PersonIcon />}
           onClick={() => onViewProfile?.(score.candidateUid)}
           fullWidth

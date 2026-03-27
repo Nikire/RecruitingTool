@@ -79,7 +79,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       mobileRender: (company: Company) => (
         <Chip
           label={`${company.userCount || 0} ${t("users.title")}`}
-          variant="outlined"
+          variant="filled"
           size="small"
           sx={{ fontSize: "0.85rem", mb: 1 }}
         />
@@ -95,7 +95,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       mobileRender: (company: Company) => (
         <Chip
           label={`${company.jobPositionCount || 0} ${t("job_positions.title")}`}
-          variant="outlined"
+          variant="filled"
           size="small"
           sx={{ fontSize: "0.85rem", mb: 1 }}
         />

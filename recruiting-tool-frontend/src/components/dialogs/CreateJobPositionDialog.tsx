@@ -160,7 +160,7 @@ const ChipListInput: React.FC<ChipListInputProps> = ({
           onKeyDown={handleKeyDown}
         />
         <Button
-          variant="outlined"
+          variant="contained"
           size="small"
           onClick={handleAdd}
           startIcon={<AddIcon />}

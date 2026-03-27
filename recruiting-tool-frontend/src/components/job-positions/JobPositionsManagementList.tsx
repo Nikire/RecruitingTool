@@ -115,7 +115,7 @@ const JobPositionsManagementList: React.FC<JobPositionsManagementListProps> = ({
               count: params.row.hiringProcesses?.length || 0,
             })}
             color="primary"
-            variant="outlined"
+            variant="filled"
             size="small"
           />
         </CellRow>

@@ -187,7 +187,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
           <Button
             size="small"
-            variant="outlined"
+            variant="contained"
             onClick={(e) => {
               e.stopPropagation();
               handleViewClick(params.row);
@@ -208,7 +208,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
         <Box sx={{ display: "flex", gap: 1, mt: 2 }}>
           <Button
             size="small"
-            variant="outlined"
+            variant="contained"
             onClick={() => handleViewClick(process)}
           >
             {t("common.view")}

@@ -399,7 +399,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
               >
                 <Button
                   size="small"
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => handleMoveUp(index)}
                   disabled={index === 0}
                   sx={{ minWidth: 40, px: 0 }}
@@ -408,7 +408,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
                 </Button>
                 <Button
                   size="small"
-                  variant="outlined"
+                  variant="contained"
                   onClick={() => handleMoveDown(index)}
                   disabled={index === stages.length - 1}
                   sx={{ minWidth: 40, px: 0 }}

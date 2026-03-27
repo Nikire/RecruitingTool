@@ -190,7 +190,7 @@ const HRDashboard: React.FC = () => {
             {t("dashboard.recent_applications")}
           </Typography>
           <Button
-            variant="outlined"
+            variant="contained"
             onClick={() => navigate("/hr/applications")}
             sx={{
               width: { xs: "100%", sm: "auto" },

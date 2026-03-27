@@ -100,7 +100,7 @@ const GeneralSettingsPage: React.FC = () => {
                     label={t("general_settings.coming_soon_chip")}
                     size="small"
                     color="default"
-                    variant="outlined"
+                    variant="filled"
                     sx={{ ml: "auto", fontWeight: 500 }}
                   />
                 </Box>
@@ -158,7 +158,7 @@ const GeneralSettingsPage: React.FC = () => {
                     label={t("general_settings.coming_soon_chip")}
                     size="small"
                     color="default"
-                    variant="outlined"
+                    variant="filled"
                     sx={{ ml: "auto", fontWeight: 500 }}
                   />
                 </Box>
@@ -196,7 +196,7 @@ const GeneralSettingsPage: React.FC = () => {
                     <Chip
                       label={t("general_settings.coming_soon_chip")}
                       size="small"
-                      variant="outlined"
+                      variant="filled"
                       color="default"
                     />
                   </Box>
