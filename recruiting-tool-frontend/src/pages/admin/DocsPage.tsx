@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Box,
   Typography,
@@ -91,6 +91,7 @@ const DocsPage: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
 
   const sections: DocSection[] = [
     {
@@ -190,6 +191,12 @@ const DocsPage: React.FC = () => {
       file: "why-borderless",
     },
   ];
+
+  useEffect(() => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop = 0;
+    }
+  }, [activeSection]);
 
   const handleSectionSelect = (sectionId: string) => {
     setActiveSection(sectionId);
@@ -327,6 +334,7 @@ const DocsPage: React.FC = () => {
 
       {/* Main content area */}
       <Box
+        ref={contentRef}
         sx={{
           flex: 1,
           overflow: "auto",

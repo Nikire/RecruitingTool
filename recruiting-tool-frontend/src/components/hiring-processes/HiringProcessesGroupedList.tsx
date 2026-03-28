@@ -416,7 +416,7 @@ const GroupSection: React.FC<{
   group: HiringProcessGroup;
   canManage: boolean;
   canScore: boolean;
-  scoringCandidateUid: string | null;
+  scoringCandidateUids: Set<string>;
   onView: (process: HiringProcess) => void;
   onEdit: (process: HiringProcess) => void;
   onDelete: (process: HiringProcess) => void;
@@ -425,7 +425,7 @@ const GroupSection: React.FC<{
   group,
   canManage,
   canScore,
-  scoringCandidateUid,
+  scoringCandidateUids,
   onView,
   onEdit,
   onDelete,
@@ -492,7 +492,8 @@ const GroupSection: React.FC<{
               }
               jobPositionUid={group.jobPositionUid}
               isScoringThisCandidate={
-                scoringCandidateUid === process.candidate?.uid
+                !!process.candidate?.uid &&
+                scoringCandidateUids.has(process.candidate.uid)
               }
               onView={onView}
               onEdit={onEdit}
@@ -529,8 +530,8 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   const deleteConfirm = useConfirmDelete<HiringProcess>(deleteMutation);
 
   const scoreCandidate = useScoreCandidate();
-  const [scoringCandidateUid, setScoringCandidateUid] = useState<string | null>(
-    null,
+  const [scoringCandidateUids, setScoringCandidateUids] = useState<Set<string>>(
+    new Set(),
   );
 
   const { data, isLoading, error } = useListHiringProcessesGrouped({
@@ -545,11 +546,16 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   };
 
   const handleScore = (candidateUid: string, jobPositionUid: string) => {
-    setScoringCandidateUid(candidateUid);
+    setScoringCandidateUids((prev) => new Set(prev).add(candidateUid));
     scoreCandidate.mutate(
       { candidateUid, jobPositionUid },
       {
-        onSettled: () => setScoringCandidateUid(null),
+        onSettled: () =>
+          setScoringCandidateUids((prev) => {
+            const next = new Set(prev);
+            next.delete(candidateUid);
+            return next;
+          }),
       },
     );
   };
@@ -695,7 +701,7 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             group={group}
             canManage={canManage}
             canScore={canScore}
-            scoringCandidateUid={scoringCandidateUid}
+            scoringCandidateUids={scoringCandidateUids}
             onView={handleViewClick}
             onEdit={(process) => updateDialog.openWith(process)}
             onDelete={(process) => deleteConfirm.confirmDelete(process)}
