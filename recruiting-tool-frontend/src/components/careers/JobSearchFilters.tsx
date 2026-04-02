@@ -35,7 +35,7 @@ const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
   };
 
   return (
-    <Box sx={{ mb: 4 }}>
+    <Box>
       {/* Search bar */}
       <TextField
         fullWidth

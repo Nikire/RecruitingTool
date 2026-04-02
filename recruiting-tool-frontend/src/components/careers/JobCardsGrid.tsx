@@ -109,8 +109,8 @@ const JobCardsGrid: React.FC<JobCardsGridProps> = memo(
           ))}
         </Grid>
 
-        {/* Pagination — always show when there is more than one page */}
-        {totalPages > 1 && (
+        {/* Pagination — show whenever there are results */}
+        {totalPages > 0 && (
           <Box
             sx={{
               display: "flex",

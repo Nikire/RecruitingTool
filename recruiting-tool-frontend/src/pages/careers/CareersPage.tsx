@@ -16,7 +16,6 @@ import { useTranslation } from "react-i18next";
 import { usePublicJobPositions } from "../../hooks/api/useJobPositions";
 import { usePublicCompaniesWithJobs } from "../../hooks/api/useCompanies";
 import { PublicJobPositionFilters } from "../../api/jobPositions";
-import JobSearchFilters from "../../components/careers/JobSearchFilters";
 import { ApplyToJobDialog } from "../../components/dialogs/ApplyToJobDialog";
 import { useDialog } from "../../hooks/useDialog";
 import FilterListIcon from "@mui/icons-material/FilterList";
@@ -327,14 +326,6 @@ const CareersPage: React.FC = () => {
             </Typography>
           )}
         </Box>
-        {/* Search bar */}
-        <Box sx={{ mb: 4 }}>
-          <JobSearchFilters
-            search={filters.search}
-            onSearchChange={(value) => handleFilterChange("search", value)}
-          />
-        </Box>
-
         {/* Filter button for mobile */}
         {isMobile && (
           <Box sx={{ mb: 3 }}>
@@ -364,6 +355,8 @@ const CareersPage: React.FC = () => {
           {!isMobile && (
             <Box sx={{ width: 280, flexShrink: 0 }}>
               <FilterSidebar
+                search={filters.search}
+                onSearchChange={(value) => handleFilterChange("search", value)}
                 company={filters.company}
                 category={filters.category}
                 jobType={filters.jobType}
@@ -409,6 +402,8 @@ const CareersPage: React.FC = () => {
               </IconButton>
             </Box>
             <FilterSidebar
+              search={filters.search}
+              onSearchChange={(value) => handleFilterChange("search", value)}
               company={filters.company}
               category={filters.category}
               jobType={filters.jobType}

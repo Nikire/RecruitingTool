@@ -2620,7 +2620,7 @@
       "image_placeholder": "Hero Image",
       "coming_soon": "Product preview coming soon",
       "new_headline": "Break Hiring Barriers",
-      "new_subheadline": "Streamline recruiting with AI-powered screening, automated scheduling, and collaborative hiring. Built for teams of 1-200.",
+      "new_subheadline": "Streamline recruiting with AI-powered screening, automated scheduling, and collaborative hiring. Built for small and medium businesses and recruiting agencies.",
       "cta_start_free": "Start Free",
       "cta_start_now": "Start Now",
       "cta_view_pricing": "View Pricing",
@@ -2805,7 +2805,7 @@
     },
     "final_cta": {
       "title": "Ready to streamline your hiring?",
-      "subtitle": "Join hundreds of teams who are already hiring better with BorderLess",
+      "subtitle": "Be among the first to hire smarter with BorderLess",
       "button": "Start Free Today"
     },
     "product_preview": {

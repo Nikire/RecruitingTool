@@ -19,6 +19,7 @@ import Autocomplete from "@mui/material/Autocomplete";
 import { useTranslation } from "react-i18next";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import BusinessIcon from "@mui/icons-material/Business";
+import JobSearchFilters from "./JobSearchFilters";
 
 interface Company {
   uid: string;
@@ -27,6 +28,7 @@ interface Company {
 }
 
 interface FilterSidebarProps {
+  search: string;
   company: string;
   category: string;
   jobType: string;
@@ -39,6 +41,7 @@ interface FilterSidebarProps {
   minSalary: number;
   maxSalary: number;
   salaryStep: number;
+  onSearchChange: (value: string) => void;
   onFilterChange: (key: string, value: string) => void;
   onSalaryRangeChange: (event: Event, newValue: number | number[]) => void;
   onClearFilters: () => void;
@@ -47,6 +50,7 @@ interface FilterSidebarProps {
 
 const FilterSidebar: React.FC<FilterSidebarProps> = memo(
   ({
+    search,
     company,
     category,
     jobType,
@@ -59,6 +63,7 @@ const FilterSidebar: React.FC<FilterSidebarProps> = memo(
     minSalary,
     maxSalary,
     salaryStep,
+    onSearchChange,
     onFilterChange,
     onSalaryRangeChange,
     onClearFilters,
@@ -106,6 +111,9 @@ const FilterSidebar: React.FC<FilterSidebarProps> = memo(
         </Box>
 
         <Stack spacing={3}>
+          {/* Search */}
+          <JobSearchFilters search={search} onSearchChange={onSearchChange} />
+
           {/* Company Filter */}
           <Autocomplete<Company>
             options={companies}

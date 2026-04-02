@@ -2648,7 +2648,7 @@
       "image_placeholder": "Imagen Principal",
       "coming_soon": "Vista previa del producto próximamente",
       "new_headline": "Rompe las Barreras de Contratación",
-      "new_subheadline": "Optimiza el reclutamiento con filtrado por IA, programación automatizada y contratación colaborativa. Diseñado para equipos de 1 a 200.",
+      "new_subheadline": "Optimiza el reclutamiento con filtrado por IA, programación automatizada y contratación colaborativa. Diseñado para pequeñas y medianas empresas y agencias de reclutamiento.",
       "cta_start_free": "Comenzar Gratis",
       "cta_start_now": "Comenzar Ahora",
       "cta_view_pricing": "Ver Precios",
@@ -2833,7 +2833,7 @@
     },
     "final_cta": {
       "title": "¿Listo para optimizar tu contratación?",
-      "subtitle": "Únete a cientos de equipos que ya están contratando mejor con BorderLess",
+      "subtitle": "Sé de los primeros en contratar de forma más inteligente con BorderLess",
       "button": "Comenzar Gratis Hoy"
     },
     "product_preview": {
