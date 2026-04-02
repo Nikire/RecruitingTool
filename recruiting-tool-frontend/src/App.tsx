@@ -66,6 +66,7 @@ import WebhooksPage from "./pages/admin/WebhooksPage";
 import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import AIQuotaPage from "./pages/admin/AIQuotaPage";
 import DocsPage from "./pages/admin/DocsPage";
+import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Auth0CallbackHandler from "./components/auth/Auth0CallbackHandler";
@@ -227,6 +228,7 @@ function App() {
               />
               <Route path="/hr/calendar" element={<CompanyCalendarPage />} />
               <Route path="/hr/interviews" element={<InterviewsPage />} />
+              <Route path="/hr/guide" element={<HRGuidePage />} />
             </Route>
           </Route>
 

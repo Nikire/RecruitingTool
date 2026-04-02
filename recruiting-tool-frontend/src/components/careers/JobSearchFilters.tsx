@@ -45,7 +45,7 @@ const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon sx={{ color: "text.secondary", fontSize: 24 }} />
+              <SearchIcon sx={{ color: "text.secondary", fontSize: 18 }} />
             </InputAdornment>
           ),
           endAdornment: localSearch && (
@@ -78,8 +78,11 @@ const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
         }}
         sx={{
           "& .MuiInputBase-input": {
-            py: 2,
-            fontSize: "1.1rem",
+            py: 1.25,
+            fontSize: "0.875rem",
+          },
+          "& .MuiInputBase-input::placeholder": {
+            fontSize: "0.875rem",
           },
         }}
       />

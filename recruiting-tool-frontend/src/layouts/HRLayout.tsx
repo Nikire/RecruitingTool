@@ -12,6 +12,7 @@ import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BusinessIcon from "@mui/icons-material/Business";
 import SettingsIcon from "@mui/icons-material/Settings";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
 import {
   DashboardLayout,
   DashboardMenuItem,
@@ -51,6 +52,11 @@ const HRLayout: React.FC = () => {
       text: t("hr_layout.email_templates"),
       icon: <EmailIcon />,
       path: "/hr/email-templates",
+    },
+    {
+      text: t("hr_layout.guide"),
+      icon: <MenuBookIcon />,
+      path: "/hr/guide",
     },
   ];
 

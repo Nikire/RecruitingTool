@@ -1468,7 +1468,23 @@
     "interviews": "Interviews",
     "group_recruitment": "Recruitment",
     "group_scheduling": "Scheduling",
-    "group_settings": "Settings"
+    "group_settings": "Settings",
+    "guide": "User Guide"
+  },
+  "hrGuide": {
+    "title": "HR User Guide",
+    "description": "Learn how to use Borderless",
+    "toggle_sidebar": "Toggle menu",
+    "sections": {
+      "getting_started": "Getting Started",
+      "job_positions": "Job Positions",
+      "applications": "Applications",
+      "candidates": "Candidates",
+      "hiring_processes": "Hiring Processes",
+      "interviews": "Interviews & Calendar",
+      "analytics": "Analytics",
+      "team_settings": "Team & Settings"
+    }
   },
   "company_profile": {
     "title": "Company Profile",
