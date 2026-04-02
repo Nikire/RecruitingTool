@@ -2654,7 +2654,9 @@
       "cta_view_pricing": "Ver Precios",
       "cta_learn_more": "Saber Más",
       "cta_browse_jobs": "Ver Empleos",
-      "welcome_back": "¡Bienvenido de nuevo, {{name}}!"
+      "welcome_back": "¡Bienvenido de nuevo, {{name}}!",
+      "founding_teaser": "Programa de Empresas Fundadoras — Plazas limitadas disponibles",
+      "founding_subtitle": "Únete ahora y asegura un descuento permanente. Solo necesitamos tu feedback honesto a cambio."
     },
     "stats": {
       "candidates_processed": "Candidatos Procesados",

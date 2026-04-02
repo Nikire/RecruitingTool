@@ -2626,7 +2626,9 @@
       "cta_view_pricing": "View Pricing",
       "cta_learn_more": "Learn More",
       "cta_browse_jobs": "Browse Jobs",
-      "welcome_back": "Welcome back, {{name}}!"
+      "welcome_back": "Welcome back, {{name}}!",
+      "founding_teaser": "Founding Companies Program — Limited spots open",
+      "founding_subtitle": "Join now and lock in a permanent discount. We just need your honest feedback in return."
     },
     "stats": {
       "candidates_processed": "Candidates Processed",

@@ -295,6 +295,45 @@ const LandingPage = () => {
                   animation: `${fadeInUp} 0.8s ease-out`,
                 }}
               >
+                {/* Founding program teaser — amber pill */}
+                <Box
+                  component="button"
+                  onClick={() => scrollToSection("founding-program")}
+                  sx={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 1,
+                    mb: 3.5,
+                    px: 2,
+                    py: 0.75,
+                    borderRadius: 99,
+                    border: `1px solid ${alpha(theme.palette.warning.light, 0.5)}`,
+                    bgcolor: alpha(theme.palette.warning.main, 0.15),
+                    color: theme.palette.warning.light,
+                    cursor: "pointer",
+                    background: "none",
+                    transition: "all 0.2s ease",
+                    "&:hover": {
+                      bgcolor: alpha(theme.palette.warning.main, 0.25),
+                      transform: "translateY(-1px)",
+                    },
+                  }}
+                >
+                  <StarIcon sx={{ fontSize: 14 }} />
+                  <Typography
+                    variant="caption"
+                    sx={{
+                      fontWeight: 700,
+                      fontSize: "0.78rem",
+                      letterSpacing: "0.04em",
+                      color: "inherit",
+                    }}
+                  >
+                    {t("landing.hero.founding_teaser")}
+                  </Typography>
+                  <ArrowForwardIcon sx={{ fontSize: 13 }} />
+                </Box>
+
                 <Typography
                   variant="h1"
                   component="h1"
@@ -314,7 +353,7 @@ const LandingPage = () => {
                 <Typography
                   variant="h5"
                   sx={{
-                    mb: 6,
+                    mb: 3,
                     opacity: 0.92,
                     fontWeight: 400,
                     fontSize: { xs: "1.15rem", sm: "1.4rem" },
@@ -325,6 +364,20 @@ const LandingPage = () => {
                 >
                   {t("landing.hero.new_subheadline")}
                 </Typography>
+                {!isAuthenticated && (
+                  <Typography
+                    variant="body1"
+                    sx={{
+                      mb: 5,
+                      fontSize: { xs: "0.95rem", sm: "1.05rem" },
+                      lineHeight: 1.6,
+                      color: alpha(theme.palette.warning.light, 0.95),
+                      fontWeight: 500,
+                    }}
+                  >
+                    {t("landing.hero.founding_subtitle")}
+                  </Typography>
+                )}
                 {isAuthenticated ? (
                   // Logged-in state: Welcome message and context-aware CTA
                   <Box>
