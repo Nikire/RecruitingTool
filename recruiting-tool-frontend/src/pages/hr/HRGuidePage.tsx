@@ -31,14 +31,23 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useTranslation } from "react-i18next";
 
-import gettingStartedMd from "../../docs/hr-getting-started.md?raw";
-import jobPositionsMd from "../../docs/hr-job-positions.md?raw";
-import applicationsMd from "../../docs/hr-applications.md?raw";
-import candidatesMd from "../../docs/hr-candidates.md?raw";
-import hiringProcessesMd from "../../docs/hr-hiring-processes.md?raw";
-import interviewsMd from "../../docs/hr-interviews.md?raw";
-import analyticsMd from "../../docs/hr-analytics.md?raw";
-import teamSettingsMd from "../../docs/hr-team-settings.md?raw";
+import gettingStartedMdEn from "../../docs/hr-getting-started.md?raw";
+import jobPositionsMdEn from "../../docs/hr-job-positions.md?raw";
+import applicationsMdEn from "../../docs/hr-applications.md?raw";
+import candidatesMdEn from "../../docs/hr-candidates.md?raw";
+import hiringProcessesMdEn from "../../docs/hr-hiring-processes.md?raw";
+import interviewsMdEn from "../../docs/hr-interviews.md?raw";
+import analyticsMdEn from "../../docs/hr-analytics.md?raw";
+import teamSettingsMdEn from "../../docs/hr-team-settings.md?raw";
+
+import gettingStartedMdEs from "../../docs/hr-getting-started.es.md?raw";
+import jobPositionsMdEs from "../../docs/hr-job-positions.es.md?raw";
+import applicationsMdEs from "../../docs/hr-applications.es.md?raw";
+import candidatesMdEs from "../../docs/hr-candidates.es.md?raw";
+import hiringProcessesMdEs from "../../docs/hr-hiring-processes.es.md?raw";
+import interviewsMdEs from "../../docs/hr-interviews.es.md?raw";
+import analyticsMdEs from "../../docs/hr-analytics.es.md?raw";
+import teamSettingsMdEs from "../../docs/hr-team-settings.es.md?raw";
 
 const SIDEBAR_WIDTH = 240;
 
@@ -48,20 +57,34 @@ interface GuideSection {
   icon: React.ReactNode;
 }
 
-const guideContent: Record<string, string> = {
-  "getting-started": gettingStartedMd,
-  "job-positions": jobPositionsMd,
-  applications: applicationsMd,
-  candidates: candidatesMd,
-  "hiring-processes": hiringProcessesMd,
-  interviews: interviewsMd,
-  analytics: analyticsMd,
-  "team-settings": teamSettingsMd,
+const guideContentEn: Record<string, string> = {
+  "getting-started": gettingStartedMdEn,
+  "job-positions": jobPositionsMdEn,
+  applications: applicationsMdEn,
+  candidates: candidatesMdEn,
+  "hiring-processes": hiringProcessesMdEn,
+  interviews: interviewsMdEn,
+  analytics: analyticsMdEn,
+  "team-settings": teamSettingsMdEn,
+};
+
+const guideContentEs: Record<string, string> = {
+  "getting-started": gettingStartedMdEs,
+  "job-positions": jobPositionsMdEs,
+  applications: applicationsMdEs,
+  candidates: candidatesMdEs,
+  "hiring-processes": hiringProcessesMdEs,
+  interviews: interviewsMdEs,
+  analytics: analyticsMdEs,
+  "team-settings": teamSettingsMdEs,
 };
 
 const HRGuidePage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
+  const guideContent = i18n.language.startsWith("es")
+    ? guideContentEs
+    : guideContentEn;
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [activeSection, setActiveSection] = useState<string>("getting-started");
   const [mobileOpen, setMobileOpen] = useState(false);
