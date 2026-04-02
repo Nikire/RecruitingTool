@@ -67,6 +67,11 @@ const HRLayout: React.FC = () => {
       icon: <WorkIcon />,
       items: [
         {
+          text: t("hr_layout.job_positions"),
+          icon: <WorkIcon />,
+          path: "/hr/job-positions",
+        },
+        {
           text: t("hr_layout.applications"),
           icon: <AssignmentIcon />,
           path: "/hr/applications",
@@ -75,11 +80,6 @@ const HRLayout: React.FC = () => {
           text: t("hr_layout.candidates"),
           icon: <GroupIcon />,
           path: "/hr/candidates",
-        },
-        {
-          text: t("hr_layout.job_positions"),
-          icon: <WorkIcon />,
-          path: "/hr/job-positions",
         },
         {
           text: t("hr_layout.hiring_processes"),
