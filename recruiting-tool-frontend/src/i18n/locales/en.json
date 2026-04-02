@@ -2781,6 +2781,26 @@
       "security": "Security",
       "copyright": "© {{year}} BorderLess by EMP Employment Solutions. All rights reserved."
     },
+    "founding": {
+      "badge": "Founding Companies Program",
+      "title": "Be Among the First. Shape the Future of Hiring.",
+      "description": "We're opening Borderless to a limited group of companies who want to help us build the best recruiting platform out there. In exchange for your honest feedback, you'll get permanent benefits that regular users will never have access to.",
+      "perk_1": "Permanent discount — locked in forever, regardless of future pricing",
+      "perk_2": "Direct line to the product team — your feedback shapes what we build next",
+      "perk_3": "Priority support and onboarding assistance at no extra cost",
+      "perk_4": "Founding Member badge visible on your company profile",
+      "cta_primary": "Join the Program — Free",
+      "cta_secondary": "Talk to us first",
+      "card_title": "How It Works",
+      "card_description": "No long-term commitment. No credit card required to start. Just use the platform, tell us what you think, and help us make it better for everyone.",
+      "step_1_title": "Sign up and try Borderless free for 30 days",
+      "step_1_desc": "Full access to every feature — no restrictions during your trial.",
+      "step_2_title": "Share your feedback with us",
+      "step_2_desc": "A quick monthly check-in via email or call. What's working, what's not, what you'd love to see.",
+      "step_3_title": "Keep your founding discount forever",
+      "step_3_desc": "Once your trial ends, you lock in a permanent discount that follows your account indefinitely.",
+      "spots_label": "Limited spots available — founding program closes once filled"
+    },
     "final_cta": {
       "title": "Ready to streamline your hiring?",
       "subtitle": "Join hundreds of teams who are already hiring better with BorderLess",

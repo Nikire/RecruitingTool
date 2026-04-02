@@ -2809,6 +2809,26 @@
       "security": "Seguridad",
       "copyright": "© {{year}} BorderLess por EMP Employment Solutions. Todos los derechos reservados."
     },
+    "founding": {
+      "badge": "Programa de Empresas Fundadoras",
+      "title": "Sé de las primeras. Forma parte del futuro del reclutamiento.",
+      "description": "Abrimos Borderless a un grupo limitado de empresas que quieren ayudarnos a construir la mejor plataforma de reclutamiento. A cambio de tu feedback honesto, obtendrás beneficios permanentes que los usuarios regulares nunca tendrán.",
+      "perk_1": "Descuento permanente — garantizado para siempre, sin importar cambios de precios futuros",
+      "perk_2": "Contacto directo con el equipo de producto — tu feedback define lo que construimos",
+      "perk_3": "Soporte prioritario y asistencia de incorporación sin coste adicional",
+      "perk_4": "Insignia de Miembro Fundador visible en el perfil de tu empresa",
+      "cta_primary": "Unirte al Programa — Gratis",
+      "cta_secondary": "Habla con nosotros primero",
+      "card_title": "Cómo Funciona",
+      "card_description": "Sin compromisos a largo plazo. Sin tarjeta de crédito para empezar. Solo usa la plataforma, cuéntanos qué piensas y ayúdanos a mejorarla para todos.",
+      "step_1_title": "Regístrate y prueba Borderless gratis durante 30 días",
+      "step_1_desc": "Acceso completo a todas las funciones sin restricciones durante tu prueba.",
+      "step_2_title": "Comparte tu feedback con nosotros",
+      "step_2_desc": "Una breve revisión mensual por email o llamada. Qué funciona, qué no, qué te gustaría ver.",
+      "step_3_title": "Mantén tu descuento fundador para siempre",
+      "step_3_desc": "Al finalizar el período de prueba, fijas un descuento permanente vinculado a tu cuenta indefinidamente.",
+      "spots_label": "Plazas limitadas — el programa fundador cierra al completarse"
+    },
     "final_cta": {
       "title": "¿Listo para optimizar tu contratación?",
       "subtitle": "Únete a cientos de equipos que ya están contratando mejor con BorderLess",

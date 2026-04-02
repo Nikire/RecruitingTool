@@ -1243,6 +1243,300 @@ const LandingPage = () => {
         </Container>
       </Box>
 
+      {/* Founding Companies Program Section */}
+      <Box
+        id="founding-program"
+        sx={{
+          position: "relative",
+          py: { xs: 10, md: 14 },
+          overflow: "hidden",
+          background: `linear-gradient(160deg,
+            ${alpha(theme.palette.warning.light, 0.08)} 0%,
+            ${alpha(theme.palette.warning.main, 0.04)} 50%,
+            ${theme.palette.background.default} 100%)`,
+          borderTop: `1px solid ${alpha(theme.palette.warning.main, 0.18)}`,
+        }}
+      >
+        {/* Decorative blur */}
+        <Box
+          sx={{
+            position: "absolute",
+            top: "-10%",
+            left: "-5%",
+            width: 400,
+            height: 400,
+            borderRadius: "50%",
+            background: alpha(theme.palette.warning.main, 0.07),
+            filter: "blur(80px)",
+            pointerEvents: "none",
+          }}
+        />
+        <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
+          <Grid container spacing={{ xs: 6, md: 10 }} alignItems="center">
+            {/* Left: copy */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Chip
+                icon={<StarIcon sx={{ fontSize: 14 }} />}
+                label={t("landing.founding.badge")}
+                size="small"
+                sx={{
+                  mb: 3,
+                  fontWeight: 700,
+                  fontSize: "0.72rem",
+                  letterSpacing: "0.08em",
+                  textTransform: "uppercase",
+                  bgcolor: alpha(theme.palette.warning.main, 0.12),
+                  color: theme.palette.warning.dark,
+                  border: `1px solid ${alpha(theme.palette.warning.main, 0.3)}`,
+                  "& .MuiChip-icon": { color: theme.palette.warning.dark },
+                }}
+              />
+              <Typography
+                variant="h2"
+                component="h2"
+                sx={{
+                  fontWeight: 900,
+                  fontSize: { xs: "2rem", md: "2.75rem" },
+                  letterSpacing: "-0.02em",
+                  lineHeight: 1.15,
+                  mb: 2.5,
+                  color: "text.primary",
+                }}
+              >
+                {t("landing.founding.title")}
+              </Typography>
+              <Typography
+                variant="body1"
+                color="text.secondary"
+                sx={{
+                  fontSize: "1.05rem",
+                  lineHeight: 1.8,
+                  mb: 4,
+                  maxWidth: 500,
+                }}
+              >
+                {t("landing.founding.description")}
+              </Typography>
+
+              {/* What you get */}
+              <Stack spacing={2} sx={{ mb: 5 }}>
+                {[
+                  t("landing.founding.perk_1"),
+                  t("landing.founding.perk_2"),
+                  t("landing.founding.perk_3"),
+                  t("landing.founding.perk_4"),
+                ].map((perk, i) => (
+                  <Stack
+                    key={i}
+                    direction="row"
+                    spacing={1.5}
+                    alignItems="flex-start"
+                  >
+                    <CheckCircleIcon
+                      sx={{
+                        color: "warning.main",
+                        fontSize: 20,
+                        mt: 0.3,
+                        flexShrink: 0,
+                      }}
+                    />
+                    <Typography
+                      variant="body2"
+                      sx={{ fontSize: "0.95rem", lineHeight: 1.6 }}
+                    >
+                      {perk}
+                    </Typography>
+                  </Stack>
+                ))}
+              </Stack>
+
+              <Stack direction={{ xs: "column", sm: "row" }} spacing={2}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate("/register")}
+                  endIcon={<ArrowForwardIcon />}
+                  sx={{
+                    px: 4,
+                    py: 1.75,
+                    fontSize: "1rem",
+                    fontWeight: 700,
+                    borderRadius: 2.5,
+                    textTransform: "none",
+                    bgcolor: "warning.main",
+                    color: "warning.contrastText",
+                    boxShadow: `0 8px 24px ${alpha(theme.palette.warning.main, 0.35)}`,
+                    "&:hover": {
+                      bgcolor: "warning.dark",
+                      transform: "translateY(-2px)",
+                      boxShadow: `0 12px 32px ${alpha(theme.palette.warning.main, 0.45)}`,
+                    },
+                    transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                  }}
+                >
+                  {t("landing.founding.cta_primary")}
+                </Button>
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={() => navigate("/contact")}
+                  sx={{
+                    px: 4,
+                    py: 1.75,
+                    fontSize: "1rem",
+                    fontWeight: 600,
+                    borderRadius: 2.5,
+                    textTransform: "none",
+                    bgcolor: alpha(theme.palette.warning.main, 0.1),
+                    color: "warning.dark",
+                    border: `1px solid ${alpha(theme.palette.warning.main, 0.3)}`,
+                    boxShadow: "none",
+                    "&:hover": {
+                      bgcolor: alpha(theme.palette.warning.main, 0.18),
+                      boxShadow: "none",
+                    },
+                  }}
+                >
+                  {t("landing.founding.cta_secondary")}
+                </Button>
+              </Stack>
+            </Grid>
+
+            {/* Right: program card */}
+            <Grid size={{ xs: 12, md: 6 }}>
+              <Card
+                elevation={0}
+                sx={{
+                  border: `2px solid ${alpha(theme.palette.warning.main, 0.35)}`,
+                  borderRadius: 4,
+                  background: `linear-gradient(145deg, ${alpha(theme.palette.warning.light, 0.06)}, ${theme.palette.background.paper})`,
+                  p: { xs: 3, md: 4 },
+                  position: "relative",
+                  overflow: "hidden",
+                }}
+              >
+                {/* Corner accent */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    width: 100,
+                    height: 100,
+                    background: `linear-gradient(225deg, ${alpha(theme.palette.warning.main, 0.15)}, transparent)`,
+                    borderRadius: "0 16px 0 100%",
+                  }}
+                />
+                <Stack
+                  direction="row"
+                  alignItems="center"
+                  spacing={1.5}
+                  sx={{ mb: 3 }}
+                >
+                  <AutoAwesomeIcon
+                    sx={{ color: "warning.main", fontSize: 28 }}
+                  />
+                  <Typography
+                    variant="h5"
+                    fontWeight={800}
+                    sx={{ letterSpacing: "-0.01em" }}
+                  >
+                    {t("landing.founding.card_title")}
+                  </Typography>
+                </Stack>
+
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ mb: 4, lineHeight: 1.8 }}
+                >
+                  {t("landing.founding.card_description")}
+                </Typography>
+
+                <Stack spacing={2.5}>
+                  {[
+                    {
+                      label: t("landing.founding.step_1_title"),
+                      desc: t("landing.founding.step_1_desc"),
+                    },
+                    {
+                      label: t("landing.founding.step_2_title"),
+                      desc: t("landing.founding.step_2_desc"),
+                    },
+                    {
+                      label: t("landing.founding.step_3_title"),
+                      desc: t("landing.founding.step_3_desc"),
+                    },
+                  ].map((step, i) => (
+                    <Stack
+                      key={i}
+                      direction="row"
+                      spacing={2}
+                      alignItems="flex-start"
+                    >
+                      <Box
+                        sx={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: "50%",
+                          bgcolor: "warning.main",
+                          color: "warning.contrastText",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontWeight: 800,
+                          fontSize: "0.8rem",
+                          flexShrink: 0,
+                          mt: 0.2,
+                        }}
+                      >
+                        {i + 1}
+                      </Box>
+                      <Box>
+                        <Typography
+                          variant="body2"
+                          fontWeight={700}
+                          sx={{ mb: 0.3 }}
+                        >
+                          {step.label}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          color="text.secondary"
+                          sx={{ lineHeight: 1.6 }}
+                        >
+                          {step.desc}
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  ))}
+                </Stack>
+
+                <Box
+                  sx={{
+                    mt: 4,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: alpha(theme.palette.warning.main, 0.08),
+                    border: `1px solid ${alpha(theme.palette.warning.main, 0.2)}`,
+                    textAlign: "center",
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    color="warning.dark"
+                    fontWeight={700}
+                    sx={{ letterSpacing: "0.05em", textTransform: "uppercase" }}
+                  >
+                    {t("landing.founding.spots_label")}
+                  </Typography>
+                </Box>
+              </Card>
+            </Grid>
+          </Grid>
+        </Container>
+      </Box>
+
       {/* Final CTA Section */}
       <Box
         sx={{
