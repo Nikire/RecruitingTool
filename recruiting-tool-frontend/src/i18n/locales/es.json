@@ -2364,7 +2364,7 @@
       "free": {
         "name": "Prueba Gratuita",
         "price": "$0",
-        "description": "14 días de prueba para explorar la plataforma",
+        "description": "30 días de prueba para explorar la plataforma",
         "features": {
           "ats": "Sistema completo de seguimiento de candidatos",
           "email_templates": "Biblioteca de plantillas de email",
@@ -2727,7 +2727,7 @@
       "free": {
         "name": "Prueba Gratuita",
         "price": "$0",
-        "description": "14 días para explorar la plataforma completa",
+        "description": "30 días para explorar la plataforma completa",
         "features": {
           "ats": "Sistema completo de seguimiento de candidatos",
           "email_templates": "Biblioteca de plantillas de email",
@@ -3591,7 +3591,7 @@
     "faq_2_question": "¿Cómo funciona el precio?",
     "faq_2_answer": "Ofrecemos planes de suscripción flexibles según el tamaño de tu equipo y tus necesidades. Puedes comenzar con una prueba gratuita y actualizar en cualquier momento. Visita nuestra página de Precios para ver todos los detalles de cada plan.",
     "faq_3_question": "¿Hay una prueba gratuita?",
-    "faq_3_answer": "¡Sí! Puedes probar Borderless gratis durante 14 días sin necesidad de tarjeta de crédito. Durante la prueba tendrás acceso completo a todas las funciones para que puedas evaluar la plataforma antes de comprometerte.",
+    "faq_3_answer": "¡Sí! Puedes probar Borderless gratis durante 30 días sin necesidad de tarjeta de crédito. Durante la prueba tendrás acceso completo a todas las funciones para que puedas evaluar la plataforma antes de comprometerte.",
     "faq_4_question": "¿Cómo empiezo?",
     "faq_4_answer": "Comenzar es muy sencillo. Crea una cuenta gratuita, completa el perfil de tu empresa y publica tu primera posición de trabajo en minutos. Nuestra guía de incorporación te guiará en cada paso."
   },

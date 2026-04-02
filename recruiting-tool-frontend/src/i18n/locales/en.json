@@ -2336,7 +2336,7 @@
       "free": {
         "name": "Free Trial",
         "price": "$0",
-        "description": "14-day trial to explore the platform",
+        "description": "30-day trial to explore the platform",
         "features": {
           "ats": "Full applicant tracking system",
           "email_templates": "Email templates library",
@@ -2699,7 +2699,7 @@
       "free": {
         "name": "Free Trial",
         "price": "$0",
-        "description": "14 days to explore the full platform",
+        "description": "30 days to explore the full platform",
         "features": {
           "ats": "Full applicant tracking system",
           "email_templates": "Email templates library",
@@ -3563,7 +3563,7 @@
     "faq_2_question": "How does pricing work?",
     "faq_2_answer": "We offer flexible subscription plans based on your team size and needs. You can start with a free trial and upgrade at any time. Visit our Pricing page for full details on features included in each plan.",
     "faq_3_question": "Is there a free trial?",
-    "faq_3_answer": "Yes! You can try Borderless free for 14 days with no credit card required. Full access to all features is included during the trial so you can evaluate the platform before committing.",
+    "faq_3_answer": "Yes! You can try Borderless free for 30 days with no credit card required. Full access to all features is included during the trial so you can evaluate the platform before committing.",
     "faq_4_question": "How do I get started?",
     "faq_4_answer": "Getting started is easy. Sign up for a free account, complete your company profile, and post your first job position in minutes. Our onboarding guide will walk you through each step."
   },

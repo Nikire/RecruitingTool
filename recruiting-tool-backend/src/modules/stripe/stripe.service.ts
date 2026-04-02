@@ -209,7 +209,7 @@ export class StripeService {
             companyId,
             status: SubscriptionStatus.TRIALING,
             plan: SubscriptionPlan.FREE,
-            trialEnd: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 days trial
+            trialEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days trial
           },
         });
       }
