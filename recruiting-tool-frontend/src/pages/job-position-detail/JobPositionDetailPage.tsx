@@ -15,10 +15,16 @@ import {
   TableRow,
   Card,
   CardContent,
+  Stack,
 } from "@mui/material";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import WorkIcon from "@mui/icons-material/Work";
+import LocationOnIcon from "@mui/icons-material/LocationOn";
+import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import SchoolIcon from "@mui/icons-material/School";
+import EventIcon from "@mui/icons-material/Event";
 import { usePublicJobPosition } from "../../hooks/api/useJobPositions";
-import { JobPosition } from "../../types/jobPosition.types";
+import { JobPosition, SalaryPeriod } from "../../types/jobPosition.types";
 import StatusLabel from "../../components/StatusLabel";
 import { HiringProcessStatus } from "../../types/hiringProcess.types";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
@@ -56,6 +62,78 @@ const getStatusColor = (
       return "default";
   }
 };
+
+const getJobTypeKey = (jobType: string): string => {
+  const map: Record<string, string> = {
+    FULL_TIME: "job_type.full_time",
+    PART_TIME: "job_type.part_time",
+    CONTRACT: "job_type.contract",
+    INTERNSHIP: "job_type.internship",
+    TEMPORARY: "job_type.temporary",
+    FREELANCE: "create_job_position.job_type_freelance",
+  };
+  return map[jobType] ?? jobType;
+};
+
+const getWorkLocationKey = (workLocation: string): string => {
+  const map: Record<string, string> = {
+    REMOTE: "work_location.remote",
+    HYBRID: "work_location.hybrid",
+    ON_SITE: "work_location.on_site",
+  };
+  return map[workLocation] ?? workLocation;
+};
+
+const getExperienceLevelKey = (experienceLevel: string): string => {
+  const map: Record<string, string> = {
+    ENTRY: "create_job_position.experience_entry",
+    MID: "create_job_position.experience_mid",
+    SENIOR: "create_job_position.experience_senior",
+    LEAD: "create_job_position.experience_lead",
+    EXECUTIVE: "create_job_position.experience_executive",
+  };
+  return map[experienceLevel] ?? experienceLevel;
+};
+
+const getSalaryPeriodKey = (period: SalaryPeriod): string => {
+  const map: Record<SalaryPeriod, string> = {
+    HOURLY: "job_position_detail.salary_period_hourly",
+    MONTHLY: "job_position_detail.salary_period_monthly",
+    YEARLY: "job_position_detail.salary_period_yearly",
+  };
+  return map[period] ?? period;
+};
+
+const SectionTitle: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => (
+  <Typography
+    variant="h6"
+    sx={{
+      mb: 1.5,
+      fontSize: { xs: "1rem", sm: "1.125rem" },
+      fontWeight: 600,
+    }}
+  >
+    {children}
+  </Typography>
+);
+
+const BulletList: React.FC<{ items: string[] }> = ({ items }) => (
+  <Box component="ul" sx={{ m: 0, pl: 2.5 }}>
+    {items.map((item, index) => (
+      <Box
+        component="li"
+        key={index}
+        sx={{ mb: 0.5, color: "text.secondary", lineHeight: 1.7 }}
+      >
+        <Typography variant="body2" component="span">
+          {item}
+        </Typography>
+      </Box>
+    ))}
+  </Box>
+);
 
 const JobPositionDetailPage: React.FC = () => {
   const { t } = useTranslation();
@@ -112,6 +190,58 @@ const JobPositionDetailPage: React.FC = () => {
       (process) => statusFilter === "ALL" || process.status === statusFilter,
     ) || [];
 
+  // Build location string
+  const locationParts = [
+    jobPosition.city,
+    jobPosition.state,
+    jobPosition.country,
+  ].filter(Boolean);
+  const locationString = locationParts.join(", ");
+
+  // Salary display
+  const hasSalary =
+    jobPosition.showSalary &&
+    (jobPosition.salaryMin != null || jobPosition.salaryMax != null);
+  const salaryPeriodLabel = jobPosition.salaryPeriod
+    ? t(getSalaryPeriodKey(jobPosition.salaryPeriod))
+    : "";
+  const salaryCurrency = jobPosition.salaryCurrency ?? "";
+
+  const getSalaryDisplay = () => {
+    if (!hasSalary) return null;
+    const { salaryMin, salaryMax } = jobPosition;
+    if (salaryMin != null && salaryMax != null) {
+      return t("job_position_detail.salary_range", {
+        min: salaryMin.toLocaleString(),
+        max: salaryMax.toLocaleString(),
+        currency: salaryCurrency,
+        period: salaryPeriodLabel,
+      });
+    }
+    if (salaryMin != null) {
+      return t("job_position_detail.salary_from", {
+        min: salaryMin.toLocaleString(),
+        currency: salaryCurrency,
+        period: salaryPeriodLabel,
+      });
+    }
+    if (salaryMax != null) {
+      return t("job_position_detail.salary_up_to", {
+        max: salaryMax.toLocaleString(),
+        currency: salaryCurrency,
+        period: salaryPeriodLabel,
+      });
+    }
+    return null;
+  };
+
+  const salaryDisplay = getSalaryDisplay();
+
+  // Application deadline
+  const deadlineDisplay = jobPosition.applicationDeadline
+    ? new Date(jobPosition.applicationDeadline).toLocaleDateString()
+    : null;
+
   return (
     <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
       <Button
@@ -134,12 +264,24 @@ const JobPositionDetailPage: React.FC = () => {
           }}
         >
           <Box>
-            <Typography
-              variant="h4"
-              sx={{ fontSize: { xs: "1.75rem", sm: "2.125rem" } }}
+            <Box
+              sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}
             >
-              {jobPosition.title}
-            </Typography>
+              <Typography
+                variant="h4"
+                sx={{ fontSize: { xs: "1.75rem", sm: "2.125rem" } }}
+              >
+                {jobPosition.title}
+              </Typography>
+              {jobPosition.isUrgent && (
+                <Chip
+                  label={t("job_position_detail.urgent_badge")}
+                  color="error"
+                  size="small"
+                  sx={{ fontWeight: 700 }}
+                />
+              )}
+            </Box>
             <Typography variant="subtitle1" color="textSecondary">
               {canManage
                 ? t("job_position_detail.hiring_overview")
@@ -167,6 +309,43 @@ const JobPositionDetailPage: React.FC = () => {
             )}
           </Box>
         </Box>
+
+        {/* Top chips: job type, work location, experience level */}
+        {(jobPosition.jobType ||
+          jobPosition.workLocation ||
+          jobPosition.experienceLevel) && (
+          <Stack
+            direction="row"
+            spacing={1}
+            flexWrap="wrap"
+            useFlexGap
+            sx={{ mb: 2 }}
+          >
+            {jobPosition.jobType && (
+              <Chip
+                icon={<WorkIcon />}
+                label={t(getJobTypeKey(jobPosition.jobType))}
+                variant="outlined"
+                size="small"
+              />
+            )}
+            {jobPosition.workLocation && (
+              <Chip
+                icon={<LocationOnIcon />}
+                label={t(getWorkLocationKey(jobPosition.workLocation))}
+                variant="outlined"
+                size="small"
+              />
+            )}
+            {jobPosition.experienceLevel && (
+              <Chip
+                label={t(getExperienceLevelKey(jobPosition.experienceLevel))}
+                variant="outlined"
+                size="small"
+              />
+            )}
+          </Stack>
+        )}
 
         <Divider sx={{ my: 2 }} />
 
@@ -232,6 +411,127 @@ const JobPositionDetailPage: React.FC = () => {
           >
             {jobPosition.description}
           </Typography>
+        </Paper>
+      )}
+
+      {/* Location section */}
+      {locationString && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <LocationOnIcon fontSize="small" color="action" />
+            <SectionTitle>
+              {t("job_position_detail.location_section")}
+            </SectionTitle>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            {locationString}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Salary section */}
+      {salaryDisplay && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <AttachMoneyIcon fontSize="small" color="action" />
+            <SectionTitle>
+              {t("job_position_detail.salary_section")}
+            </SectionTitle>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            {salaryDisplay}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Application Deadline */}
+      {deadlineDisplay && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <EventIcon fontSize="small" color="action" />
+            <SectionTitle>
+              {t("job_position_detail.deadline_section")}
+            </SectionTitle>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            {deadlineDisplay}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Skills */}
+      {jobPosition.skills && jobPosition.skills.length > 0 && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <SectionTitle>{t("job_position_detail.skills_section")}</SectionTitle>
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            {jobPosition.skills.map((skill) => (
+              <Chip
+                key={skill}
+                label={skill}
+                size="small"
+                color="primary"
+                variant="outlined"
+              />
+            ))}
+          </Stack>
+        </Paper>
+      )}
+
+      {/* Requirements */}
+      {jobPosition.requirements && jobPosition.requirements.length > 0 && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <SectionTitle>
+            {t("job_position_detail.requirements_section")}
+          </SectionTitle>
+          <BulletList items={jobPosition.requirements} />
+        </Paper>
+      )}
+
+      {/* Responsibilities */}
+      {jobPosition.responsibilities &&
+        jobPosition.responsibilities.length > 0 && (
+          <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+            <SectionTitle>
+              {t("job_position_detail.responsibilities_section")}
+            </SectionTitle>
+            <BulletList items={jobPosition.responsibilities} />
+          </Paper>
+        )}
+
+      {/* Benefits */}
+      {jobPosition.benefits && jobPosition.benefits.length > 0 && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <SectionTitle>
+            {t("job_position_detail.benefits_section")}
+          </SectionTitle>
+          <BulletList items={jobPosition.benefits} />
+        </Paper>
+      )}
+
+      {/* Education Level */}
+      {jobPosition.educationLevel && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}>
+            <SchoolIcon fontSize="small" color="action" />
+            <SectionTitle>
+              {t("job_position_detail.education_section")}
+            </SectionTitle>
+          </Box>
+          <Typography variant="body1" color="text.secondary">
+            {jobPosition.educationLevel}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Tags */}
+      {jobPosition.tags && jobPosition.tags.length > 0 && (
+        <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
+          <SectionTitle>{t("job_position_detail.tags_section")}</SectionTitle>
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            {jobPosition.tags.map((tag) => (
+              <Chip key={tag} label={tag} size="small" variant="outlined" />
+            ))}
+          </Stack>
         </Paper>
       )}
 

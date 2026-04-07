@@ -115,146 +115,147 @@ const QuotaDisplay: React.FC<QuotaDisplayProps> = ({
         {/* Users Quota */}
         {usersQuota && (
           <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("subscription.quota.users")}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={
-                    usersQuota.limit === -1 ? 0 : usersQuota.percentageUsed
-                  }
-                  color={getUsageColor(usersQuota.percentageUsed)}
-                  sx={{ height: 8, borderRadius: 1 }}
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ minWidth: 80, textAlign: "right" }}
-              >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="subtitle2">
+                {t("subscription.quota.users")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 {usersQuota.used} / {formatLimit(usersQuota.limit)}
               </Typography>
             </Box>
+            <LinearProgress
+              variant="determinate"
+              value={usersQuota.limit === -1 ? 0 : usersQuota.percentageUsed}
+              color={getUsageColor(usersQuota.percentageUsed)}
+              sx={{ height: 8, borderRadius: 1 }}
+            />
           </Box>
         )}
 
         {/* Job Positions Quota */}
         {jobPositionsQuota && (
           <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("subscription.quota.job_positions")}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={
-                    jobPositionsQuota.limit === -1
-                      ? 0
-                      : jobPositionsQuota.percentageUsed
-                  }
-                  color={getUsageColor(jobPositionsQuota.percentageUsed)}
-                  sx={{ height: 8, borderRadius: 1 }}
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ minWidth: 80, textAlign: "right" }}
-              >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="subtitle2">
+                {t("subscription.quota.job_positions")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 {jobPositionsQuota.used} /{" "}
                 {formatLimit(jobPositionsQuota.limit)}
               </Typography>
             </Box>
+            <LinearProgress
+              variant="determinate"
+              value={
+                jobPositionsQuota.limit === -1
+                  ? 0
+                  : jobPositionsQuota.percentageUsed
+              }
+              color={getUsageColor(jobPositionsQuota.percentageUsed)}
+              sx={{ height: 8, borderRadius: 1 }}
+            />
           </Box>
         )}
 
         {/* Candidates per Position Quota */}
         {candidatesPerPositionQuota && (
           <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("subscription.quota.candidates_per_position")}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={0}
-                  color="success"
-                  sx={{ height: 8, borderRadius: 1 }}
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ minWidth: 80, textAlign: "right" }}
-              >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="subtitle2">
+                {t("subscription.quota.candidates_per_position")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 {t("subscription.quota.per_position_limit", {
                   limit: formatLimit(candidatesPerPositionQuota.limit),
                 })}
               </Typography>
             </Box>
+            <LinearProgress
+              variant="determinate"
+              value={0}
+              color="success"
+              sx={{ height: 8, borderRadius: 1 }}
+            />
           </Box>
         )}
 
         {/* Storage Quota */}
         {storageQuota && (
           <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("subscription.quota.storage")}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={
-                    storageQuota.limit === -1 ? 0 : storageQuota.percentageUsed
-                  }
-                  color={getUsageColor(storageQuota.percentageUsed)}
-                  sx={{ height: 8, borderRadius: 1 }}
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ minWidth: 120, textAlign: "right" }}
-              >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="subtitle2">
+                {t("subscription.quota.storage")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 {formatStorageSize(storageQuota.used)} /{" "}
                 {formatStorageSize(storageQuota.limit)}
               </Typography>
             </Box>
+            <LinearProgress
+              variant="determinate"
+              value={
+                storageQuota.limit === -1 ? 0 : storageQuota.percentageUsed
+              }
+              color={getUsageColor(storageQuota.percentageUsed)}
+              sx={{ height: 8, borderRadius: 1 }}
+            />
           </Box>
         )}
 
         {/* AI Scoring Credits */}
         {aiCreditsQuota && aiCreditsQuota.limit !== 0 && (
           <Box sx={{ mb: 3 }}>
-            <Typography variant="subtitle2" gutterBottom>
-              {t("subscription.quota.ai_scoring_credits")}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 1 }}>
-              <Box sx={{ flexGrow: 1 }}>
-                <LinearProgress
-                  variant="determinate"
-                  value={
-                    aiCreditsQuota.limit === -1
-                      ? 0
-                      : aiCreditsQuota.percentageUsed
-                  }
-                  color={getUsageColor(aiCreditsQuota.percentageUsed)}
-                  sx={{ height: 8, borderRadius: 1 }}
-                />
-              </Box>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ minWidth: 80, textAlign: "right" }}
-              >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "baseline",
+                mb: 0.5,
+              }}
+            >
+              <Typography variant="subtitle2">
+                {t("subscription.quota.ai_scoring_credits")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
                 {aiCreditsQuota.used} / {formatLimit(aiCreditsQuota.limit)}
               </Typography>
             </Box>
+            <LinearProgress
+              variant="determinate"
+              value={
+                aiCreditsQuota.limit === -1 ? 0 : aiCreditsQuota.percentageUsed
+              }
+              color={getUsageColor(aiCreditsQuota.percentageUsed)}
+              sx={{ height: 8, borderRadius: 1 }}
+            />
           </Box>
         )}
 

@@ -964,7 +964,11 @@
     "google_event_summary": "Entrevista",
     "calendar_event_auto_created": "Se creará un evento de Google Calendar automáticamente cuando programe esta entrevista.",
     "time_not_set": "Sin establecer",
-    "timezone_info": "Los horarios se muestran en su zona horaria local ({{timezone}})"
+    "timezone_info": "Los horarios se muestran en su zona horaria local ({{timezone}})",
+    "duration_label": "Duración de la entrevista:",
+    "duration_minutes": "{{count}} min",
+    "duration_from_settings": "(desde configuración de calendario)",
+    "working_hours_hint": "Horario laboral para este día: {{start}} – {{end}}"
   },
   "update_hiring_process": {
     "title": "Actualizar Proceso de Contratación",
@@ -1450,7 +1454,23 @@
     "custom_questions": "Preguntas de Selección Personalizadas",
     "no_custom_questions": "No se han agregado preguntas de selección personalizadas a esta posición de trabajo. Los postulantes solo necesitarán proporcionar información estándar.",
     "hr_detail_title": "Gestión de Posición de Trabajo",
-    "access_denied_message": "No tiene permiso para acceder a esta posición de trabajo. Solo puede ver posiciones de trabajo de su propia empresa."
+    "access_denied_message": "No tiene permiso para acceder a esta posición de trabajo. Solo puede ver posiciones de trabajo de su propia empresa.",
+    "urgent_badge": "Urgente",
+    "location_section": "Ubicación",
+    "salary_section": "Salario",
+    "salary_range": "{{min}} – {{max}} {{currency}} / {{period}}",
+    "salary_from": "Desde {{min}} {{currency}} / {{period}}",
+    "salary_up_to": "Hasta {{max}} {{currency}} / {{period}}",
+    "salary_period_hourly": "hora",
+    "salary_period_monthly": "mes",
+    "salary_period_yearly": "año",
+    "deadline_section": "Fecha Límite de Aplicación",
+    "skills_section": "Habilidades",
+    "requirements_section": "Requisitos",
+    "responsibilities_section": "Responsabilidades",
+    "benefits_section": "Beneficios",
+    "education_section": "Nivel Educativo",
+    "tags_section": "Etiquetas"
   },
   "file_list": {
     "error_loading": "Error al cargar archivos. Por favor intente nuevamente más tarde.",

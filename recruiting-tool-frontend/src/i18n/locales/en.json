@@ -956,7 +956,11 @@
     "google_event_summary": "Interview",
     "calendar_event_auto_created": "A Google Calendar event will be created automatically when you schedule this interview.",
     "time_not_set": "Not set",
-    "timezone_info": "Times are shown in your local timezone ({{timezone}})"
+    "timezone_info": "Times are shown in your local timezone ({{timezone}})",
+    "duration_label": "Interview duration:",
+    "duration_minutes": "{{count}} min",
+    "duration_from_settings": "(from calendar settings)",
+    "working_hours_hint": "Working hours for this day: {{start}} – {{end}}"
   },
   "update_hiring_process": {
     "title": "Update Hiring Process",
@@ -1442,7 +1446,23 @@
     "custom_questions": "Custom Screening Questions",
     "no_custom_questions": "No custom screening questions have been added to this job position. Applicants will only need to provide standard information.",
     "hr_detail_title": "Job Position Management",
-    "access_denied_message": "You do not have permission to access this job position. You can only view job positions from your own company."
+    "access_denied_message": "You do not have permission to access this job position. You can only view job positions from your own company.",
+    "urgent_badge": "Urgent",
+    "location_section": "Location",
+    "salary_section": "Salary",
+    "salary_range": "{{min}} – {{max}} {{currency}} / {{period}}",
+    "salary_from": "From {{min}} {{currency}} / {{period}}",
+    "salary_up_to": "Up to {{max}} {{currency}} / {{period}}",
+    "salary_period_hourly": "hr",
+    "salary_period_monthly": "mo",
+    "salary_period_yearly": "yr",
+    "deadline_section": "Application Deadline",
+    "skills_section": "Skills",
+    "requirements_section": "Requirements",
+    "responsibilities_section": "Responsibilities",
+    "benefits_section": "Benefits",
+    "education_section": "Education Level",
+    "tags_section": "Tags"
   },
   "file_list": {
     "error_loading": "Failed to load files. Please try again later.",

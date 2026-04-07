@@ -11,6 +11,7 @@ import {
   Typography,
   Alert,
   FormHelperText,
+  Chip,
 } from "@mui/material";
 import {
   LocalizationProvider,
@@ -19,14 +20,18 @@ import {
 } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useForm, Controller } from "react-hook-form";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   useCreateInterview,
   useUpdateInterview,
 } from "../../hooks/api/useInterview";
 import { Interview } from "../../types/interview.types";
-import { useCalendarConnectionStatus } from "../../hooks/api/useGoogleCalendar";
+import {
+  useCalendarConnectionStatus,
+  useGetCalendarSettings,
+} from "../../hooks/api/useGoogleCalendar";
 import { useStage } from "../../hooks/api/useStages";
 
 interface ScheduleInterviewDialogProps {
@@ -44,6 +49,18 @@ interface FormData {
   notes: string;
 }
 
+const DAY_KEYS = [
+  "sunday",
+  "monday",
+  "tuesday",
+  "wednesday",
+  "thursday",
+  "friday",
+  "saturday",
+] as const;
+
+const DEFAULT_DURATION = 60;
+
 const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   open,
   onClose,
@@ -60,10 +77,13 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   const { data: calendarStatus } = useCalendarConnectionStatus();
   const isCalendarConnected = calendarStatus?.connected ?? false;
 
+  const { data: calendarSettings } = useGetCalendarSettings();
+
   const {
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<FormData>({
     defaultValues: {
@@ -73,6 +93,25 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
       notes: "",
     },
   });
+
+  const watchedDate = watch("scheduledDate");
+
+  // Effective duration: stage-specific value takes priority, then calendar
+  // settings default, then a hardcoded fallback of 60 min.
+  const effectiveDuration = useMemo(() => {
+    if (stageData?.estimatedTime != null) return stageData.estimatedTime;
+    if (calendarSettings?.defaultDuration != null)
+      return calendarSettings.defaultDuration;
+    return DEFAULT_DURATION;
+  }, [stageData?.estimatedTime, calendarSettings?.defaultDuration]);
+
+  // Working hours for the currently selected date (if any).
+  const workingHoursForDay = useMemo(() => {
+    if (!watchedDate || !calendarSettings?.workingHours) return null;
+    const dayKey = DAY_KEYS[watchedDate.getDay()];
+    const hours = calendarSettings.workingHours[dayKey];
+    return hours?.enabled ? hours : null;
+  }, [watchedDate, calendarSettings?.workingHours]);
 
   useEffect(() => {
     if (interview) {
@@ -118,8 +157,6 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         return `${year}-${month}-${day}`;
       };
 
-      const stageDuration = stageData?.estimatedTime ?? undefined;
-
       const payload = {
         stageUid,
         scheduledDate: data.scheduledDate
@@ -132,7 +169,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
               return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
             })()
           : undefined,
-        duration: stageDuration,
+        duration: effectiveDuration,
         meetingLink: data.meetingLink || undefined,
         notes: data.notes || undefined,
       };
@@ -143,7 +180,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
           data: {
             scheduledDate: payload.scheduledDate,
             scheduledTime: payload.scheduledTime,
-            ...(stageDuration !== undefined && { duration: stageDuration }),
+            duration: effectiveDuration,
             meetingLink: payload.meetingLink,
             notes: payload.notes,
           },
@@ -174,6 +211,28 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
       </DialogTitle>
       <DialogContent>
         <Box component="form" sx={{ mt: 2 }}>
+          {/* Duration indicator */}
+          <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
+            <AccessTimeIcon fontSize="small" color="action" />
+            <Typography variant="body2" color="text.secondary">
+              {t("schedule_interview.duration_label")}
+            </Typography>
+            <Chip
+              label={t("schedule_interview.duration_minutes", {
+                count: effectiveDuration,
+              })}
+              size="small"
+              color={stageData?.estimatedTime != null ? "primary" : "default"}
+              variant="outlined"
+            />
+            {stageData?.estimatedTime == null &&
+              calendarSettings?.defaultDuration != null && (
+                <Typography variant="caption" color="text.secondary">
+                  {t("schedule_interview.duration_from_settings")}
+                </Typography>
+              )}
+          </Box>
+
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
@@ -232,6 +291,14 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
                             Intl.DateTimeFormat().resolvedOptions().timeZone,
                         })}
                       </FormHelperText>
+                      {workingHoursForDay && (
+                        <FormHelperText sx={{ mt: 0.25, ml: 1.75 }}>
+                          {t("schedule_interview.working_hours_hint", {
+                            start: workingHoursForDay.startTime,
+                            end: workingHoursForDay.endTime,
+                          })}
+                        </FormHelperText>
+                      )}
                     </>
                   )}
                 />
