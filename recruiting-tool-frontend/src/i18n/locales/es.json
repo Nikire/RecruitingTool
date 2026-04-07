@@ -273,7 +273,18 @@
     "update_error": "Error al actualizar posición de trabajo",
     "delete_error": "Error al eliminar posición de trabajo",
     "edit_stages": "Editar Etapas",
-    "edit_stages_aria": "Editar etapas para {{item}}"
+    "edit_stages_aria": "Editar etapas para {{item}}",
+    "quota_usage": "{{used}} / {{limit}} Posiciones de Trabajo",
+    "quota_usage_unlimited": "{{used}} Posiciones de Trabajo (Ilimitadas)",
+    "list_header_title": "Título",
+    "list_header_department": "Departamento / Categoría",
+    "list_header_type_location": "Tipo / Ubicación",
+    "list_header_experience": "Experiencia",
+    "list_header_applications": "Solicitudes",
+    "list_header_created": "Creado",
+    "list_header_actions": "Acciones",
+    "list_no_department": "—",
+    "list_no_type": "—"
   },
   "create_job_position": {
     "section_job_details": "Detalles del Puesto",
@@ -348,7 +359,21 @@
     "grid_view": "Vista de cuadrícula",
     "list_view": "Vista de lista",
     "list_view_coming_soon": "Vista de lista próximamente",
-    "use_grid_view": "Por favor usa la vista de cuadrícula por ahora"
+    "use_grid_view": "Por favor usa la vista de cuadrícula por ahora",
+    "job_type_full_time": "Tiempo completo",
+    "job_type_part_time": "Medio tiempo",
+    "job_type_contract": "Contrato",
+    "job_type_freelance": "Freelance",
+    "job_type_internship": "Pasantía",
+    "job_type_temporary": "Temporal",
+    "work_location_remote": "Remoto",
+    "work_location_hybrid": "Híbrido",
+    "work_location_on_site": "Presencial",
+    "exp_entry": "Junior",
+    "exp_mid": "Intermedio",
+    "exp_senior": "Senior",
+    "exp_lead": "Líder",
+    "exp_executive": "Ejecutivo"
   },
   "job_position_filters": {
     "search_placeholder": "Buscar por título...",

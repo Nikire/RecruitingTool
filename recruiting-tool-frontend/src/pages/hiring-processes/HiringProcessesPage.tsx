@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button, Box, FormControlLabel, Switch, Tooltip } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useSearchParams } from "react-router-dom";
 import AddIcon from "@mui/icons-material/Add";
 import ViewAgendaOutlinedIcon from "@mui/icons-material/ViewAgendaOutlined";
 import { useAuthMe } from "../../hooks/api/useAuth";
@@ -25,6 +26,8 @@ const HiringProcessesPage: React.FC = () => {
   const [searchState, setSearchState] = useHiringProcessesSearch();
   const { page, limit, search, status } = searchState;
   const [groupByPosition, setGroupByPosition] = useState(true);
+  const [searchParams] = useSearchParams();
+  const highlightUid = searchParams.get("highlight") ?? undefined;
 
   const canManage = canManageResources(user);
 
@@ -135,7 +138,11 @@ const HiringProcessesPage: React.FC = () => {
       </Box>
 
       {groupByPosition ? (
-        <HiringProcessesGroupedList search={search} status={status} />
+        <HiringProcessesGroupedList
+          search={search}
+          status={status}
+          highlightUid={highlightUid}
+        />
       ) : (
         <HiringProcessesList
           page={page}

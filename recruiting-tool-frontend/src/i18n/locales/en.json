@@ -273,7 +273,18 @@
     "update_error": "Failed to update job position",
     "delete_error": "Failed to delete job position",
     "edit_stages": "Edit Stages",
-    "edit_stages_aria": "Edit stages for {{item}}"
+    "edit_stages_aria": "Edit stages for {{item}}",
+    "quota_usage": "{{used}} / {{limit}} Job Positions",
+    "quota_usage_unlimited": "{{used}} Job Positions (Unlimited)",
+    "list_header_title": "Title",
+    "list_header_department": "Department / Category",
+    "list_header_type_location": "Type / Location",
+    "list_header_experience": "Experience",
+    "list_header_applications": "Applications",
+    "list_header_created": "Created",
+    "list_header_actions": "Actions",
+    "list_no_department": "—",
+    "list_no_type": "—"
   },
   "create_job_position": {
     "section_job_details": "Job Details",
@@ -348,7 +359,21 @@
     "grid_view": "Grid view",
     "list_view": "List view",
     "list_view_coming_soon": "List view coming soon",
-    "use_grid_view": "Please use grid view for now"
+    "use_grid_view": "Please use grid view for now",
+    "job_type_full_time": "Full-time",
+    "job_type_part_time": "Part-time",
+    "job_type_contract": "Contract",
+    "job_type_freelance": "Freelance",
+    "job_type_internship": "Internship",
+    "job_type_temporary": "Temporary",
+    "work_location_remote": "Remote",
+    "work_location_hybrid": "Hybrid",
+    "work_location_on_site": "On-site",
+    "exp_entry": "Entry",
+    "exp_mid": "Mid",
+    "exp_senior": "Senior",
+    "exp_lead": "Lead",
+    "exp_executive": "Executive"
   },
   "job_position_filters": {
     "search_placeholder": "Search by job title...",

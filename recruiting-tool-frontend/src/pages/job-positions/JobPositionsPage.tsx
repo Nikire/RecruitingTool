@@ -2,12 +2,21 @@ import { useState } from "react";
 import {
   Box,
   Button,
+  Chip,
   Grid,
+  IconButton,
   Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TablePagination,
+  TableRow,
   ToggleButton,
   ToggleButtonGroup,
   Skeleton,
-  TablePagination,
+  Tooltip,
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -15,6 +24,9 @@ import AddIcon from "@mui/icons-material/Add";
 import GridViewIcon from "@mui/icons-material/GridView";
 import ViewListIcon from "@mui/icons-material/ViewList";
 import InboxIcon from "@mui/icons-material/Inbox";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import EditIcon from "@mui/icons-material/Edit";
+import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import { JobPosition } from "../../types/jobPosition.types";
 import ManageStagesDialog from "../../components/dialogs/ManageStagesDialog";
 import CreateJobPositionDialog from "../../components/dialogs/CreateJobPositionDialog";
@@ -29,9 +41,12 @@ import { useAuthMe } from "../../hooks/api/useAuth";
 import { canManageResources } from "../../utils/permissions";
 import { useDialog } from "../../hooks/useDialog";
 import { CenteredLoadingSpinner, PageHeader } from "../../components/common";
+import { useQuota } from "../../api/subscription";
+import { getQuotaByResource } from "../../types/subscription.types";
+import { formatRelativeTime } from "../../utils/dateFormatters";
 
 const JobPositionsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { user, isLoading: userLoading } = useAuthMe();
   const canManage = canManageResources(user);
@@ -64,6 +79,12 @@ const JobPositionsPage: React.FC = () => {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
+
+  // Fetch quota information for the plan usage display
+  const { data: quotaData } = useQuota();
+  const jobPositionQuota = quotaData
+    ? getQuotaByResource(quotaData.quotas, "jobPositions")
+    : undefined;
 
   // Fetch job positions with server-side pagination and filtering
   const { data, isLoading, error } = useListJobPositions({
@@ -257,7 +278,7 @@ const JobPositionsPage: React.FC = () => {
       {/* Filters */}
       <JobPositionFilters filters={filters} onChange={handleFilterChange} />
 
-      {/* Pagination Info */}
+      {/* Pagination Info + Quota Chip */}
       {!isLoading && totalCount > 0 && (
         <Box
           sx={{
@@ -265,11 +286,37 @@ const JobPositionsPage: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            flexWrap: "wrap",
+            gap: 1,
           }}
         >
           <Typography variant="body2" color="text.secondary">
             {getPaginationText()}
           </Typography>
+          {jobPositionQuota && (
+            <Chip
+              label={
+                jobPositionQuota.limit < 0
+                  ? t("job_positions.quota_usage_unlimited", {
+                      used: jobPositionQuota.used,
+                    })
+                  : t("job_positions.quota_usage", {
+                      used: jobPositionQuota.used,
+                      limit: jobPositionQuota.limit,
+                    })
+              }
+              size="small"
+              color={
+                jobPositionQuota.limit >= 0 && jobPositionQuota.isExceeded
+                  ? "error"
+                  : jobPositionQuota.limit >= 0 &&
+                      jobPositionQuota.percentageUsed >= 80
+                    ? "warning"
+                    : "default"
+              }
+              variant="outlined"
+            />
+          )}
         </Box>
       )}
 
@@ -332,16 +379,233 @@ const JobPositionsPage: React.FC = () => {
         </>
       )}
 
-      {/* List View - Fallback to showing grid message */}
+      {/* List View */}
       {!isLoading && jobPositions.length > 0 && viewMode === "list" && (
-        <Paper sx={{ p: 4, textAlign: "center" }}>
-          <Typography variant="body1" color="textSecondary">
-            {t("job_position_card.list_view_coming_soon")}
-          </Typography>
-          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
-            {t("job_position_card.use_grid_view")}
-          </Typography>
-        </Paper>
+        <>
+          <TableContainer component={Paper}>
+            <Table size="small" aria-label={t("job_positions.title")}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{t("job_positions.list_header_title")}</TableCell>
+                  <TableCell sx={{ display: { xs: "none", md: "table-cell" } }}>
+                    {t("job_positions.list_header_department")}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {t("job_positions.list_header_type_location")}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: "none", lg: "table-cell" } }}>
+                    {t("job_positions.list_header_experience")}
+                  </TableCell>
+                  <TableCell align="center">
+                    {t("job_positions.list_header_applications")}
+                  </TableCell>
+                  <TableCell sx={{ display: { xs: "none", sm: "table-cell" } }}>
+                    {t("job_positions.list_header_created")}
+                  </TableCell>
+                  <TableCell align="right">
+                    {t("job_positions.list_header_actions")}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {jobPositions.map((position: JobPosition) => {
+                  const applicantCount = position.hiringProcesses?.length ?? 0;
+                  const jobTypeKey = position.jobType
+                    ? `job_position_card.job_type_${position.jobType.toLowerCase()}`
+                    : null;
+                  const workLocationKey = position.workLocation
+                    ? `job_position_card.work_location_${position.workLocation.toLowerCase()}`
+                    : null;
+                  const expKey = position.experienceLevel
+                    ? `job_position_card.exp_${position.experienceLevel.toLowerCase()}`
+                    : null;
+                  const statusColor: "success" | "default" | "warning" =
+                    position.status === "OPEN"
+                      ? "success"
+                      : position.status === "CANCELLED"
+                        ? "warning"
+                        : "default";
+
+                  return (
+                    <TableRow
+                      key={position.uid}
+                      hover
+                      sx={{ cursor: "pointer" }}
+                      onClick={() => handleViewDetails(position)}
+                    >
+                      {/* Title + Status */}
+                      <TableCell>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 1,
+                            flexWrap: "wrap",
+                          }}
+                        >
+                          <Typography variant="body2" fontWeight={500}>
+                            {position.title}
+                          </Typography>
+                          <Chip
+                            label={t(`status.${position.status.toLowerCase()}`)}
+                            color={statusColor}
+                            size="small"
+                          />
+                        </Box>
+                      </TableCell>
+
+                      {/* Department / Category */}
+                      <TableCell
+                        sx={{ display: { xs: "none", md: "table-cell" } }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          {position.jobCategory ??
+                            t("job_positions.list_no_department")}
+                        </Typography>
+                      </TableCell>
+
+                      {/* Job Type / Work Location */}
+                      <TableCell
+                        sx={{ display: { xs: "none", sm: "table-cell" } }}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 0.5,
+                          }}
+                        >
+                          {jobTypeKey ? (
+                            <Typography variant="body2" color="text.secondary">
+                              {t(jobTypeKey)}
+                            </Typography>
+                          ) : (
+                            <Typography variant="body2" color="text.disabled">
+                              {t("job_positions.list_no_type")}
+                            </Typography>
+                          )}
+                          {workLocationKey && (
+                            <Typography variant="caption" color="text.disabled">
+                              {t(workLocationKey)}
+                            </Typography>
+                          )}
+                        </Box>
+                      </TableCell>
+
+                      {/* Experience Level */}
+                      <TableCell
+                        sx={{ display: { xs: "none", lg: "table-cell" } }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          {expKey ? t(expKey) : "—"}
+                        </Typography>
+                      </TableCell>
+
+                      {/* Application Count */}
+                      <TableCell align="center">
+                        <Typography variant="body2">
+                          {applicantCount}
+                        </Typography>
+                      </TableCell>
+
+                      {/* Created Date */}
+                      <TableCell
+                        sx={{ display: { xs: "none", sm: "table-cell" } }}
+                      >
+                        <Typography variant="body2" color="text.secondary">
+                          {position.createdAt
+                            ? formatRelativeTime(
+                                position.createdAt,
+                                i18n.language,
+                              )
+                            : "—"}
+                        </Typography>
+                      </TableCell>
+
+                      {/* Actions */}
+                      <TableCell
+                        align="right"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <Box
+                          sx={{
+                            display: "flex",
+                            gap: 0.5,
+                            justifyContent: "flex-end",
+                          }}
+                        >
+                          <Tooltip title={t("common.view")}>
+                            <IconButton
+                              size="small"
+                              color="primary"
+                              onClick={() => handleViewDetails(position)}
+                              aria-label={t("aria.view_item", {
+                                item: position.title,
+                              })}
+                            >
+                              <VisibilityIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          {canManage && (
+                            <Tooltip title={t("common.edit")}>
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => handleEdit(position)}
+                                aria-label={t("aria.edit_item", {
+                                  item: position.title,
+                                })}
+                              >
+                                <EditIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                          {canManage && (
+                            <Tooltip title={t("job_positions.edit_stages")}>
+                              <IconButton
+                                size="small"
+                                color="primary"
+                                onClick={() => handleManageStages(position)}
+                                aria-label={t(
+                                  "job_positions.edit_stages_aria",
+                                  { item: position.title },
+                                )}
+                              >
+                                <AccountTreeIcon fontSize="small" />
+                              </IconButton>
+                            </Tooltip>
+                          )}
+                        </Box>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          {/* Pagination Controls */}
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+            <TablePagination
+              component="div"
+              count={totalCount}
+              page={page}
+              onPageChange={handlePageChange}
+              rowsPerPage={pageSize}
+              onRowsPerPageChange={handlePageSizeChange}
+              rowsPerPageOptions={[10, 25, 50]}
+              labelRowsPerPage={t("job_positions.per_page")}
+              labelDisplayedRows={({ from, to, count }) =>
+                t("job_positions.pagination_info", { from, to, count })
+              }
+              sx={{
+                "& .MuiTablePagination-toolbar": {
+                  justifyContent: "center",
+                },
+              }}
+            />
+          </Box>
+        </>
       )}
 
       {/* Dialogs */}

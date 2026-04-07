@@ -1,10 +1,15 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, {
+  useState,
+  useMemo,
+  useEffect,
+  useRef,
+  useCallback,
+} from "react";
 import {
   Box,
   Typography,
   Button,
   Chip,
-  Collapse,
   IconButton,
   Paper,
   Divider,
@@ -13,9 +18,8 @@ import {
   CircularProgress,
   Tooltip,
   TablePagination,
+  keyframes,
 } from "@mui/material";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import RefreshIcon from "@mui/icons-material/Refresh";
@@ -56,6 +60,7 @@ const AI_SCORING_ROLES = [
 interface HiringProcessesGroupedListProps {
   search: string;
   status?: string;
+  highlightUid?: string;
 }
 
 // Score chip shown on each process row
@@ -146,19 +151,10 @@ const ScoreChip: React.FC<{
 
 const GroupHeader: React.FC<{
   group: HiringProcessGroup;
-  isExpanded: boolean;
-  onToggle: () => void;
   scoreMap: Map<string, RankedCandidateDto>;
   isSortedByScore: boolean;
   onToggleSortByScore: () => void;
-}> = ({
-  group,
-  isExpanded,
-  onToggle,
-  scoreMap,
-  isSortedByScore,
-  onToggleSortByScore,
-}) => {
+}> = ({ group, scoreMap, isSortedByScore, onToggleSortByScore }) => {
   const { t } = useTranslation();
 
   const scoredCount = group.processes.filter(
@@ -185,24 +181,7 @@ const GroupHeader: React.FC<{
         gap: 1.5,
         px: 2,
         py: 1.5,
-        cursor: "pointer",
-        userSelect: "none",
-        "&:hover": {
-          bgcolor: "action.hover",
-        },
       }}
-      onClick={onToggle}
-      role="button"
-      aria-expanded={isExpanded}
-      aria-label={
-        isExpanded
-          ? t("hiring_processes.group.collapse", {
-              title: group.jobPositionTitle,
-            })
-          : t("hiring_processes.group.expand", {
-              title: group.jobPositionTitle,
-            })
-      }
     >
       <WorkOutlineIcon sx={{ color: "primary.main", fontSize: 20 }} />
       <Typography variant="subtitle1" fontWeight={600} sx={{ flexGrow: 1 }}>
@@ -248,10 +227,7 @@ const GroupHeader: React.FC<{
           <IconButton
             size="small"
             color={isSortedByScore ? "primary" : "default"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onToggleSortByScore();
-            }}
+            onClick={onToggleSortByScore}
             aria-label={t("ai_scoring.sort_by_score")}
             aria-pressed={isSortedByScore}
           >
@@ -259,24 +235,15 @@ const GroupHeader: React.FC<{
           </IconButton>
         </Tooltip>
       )}
-
-      <IconButton
-        size="small"
-        aria-label={
-          isExpanded
-            ? t("hiring_processes.group.collapse_icon")
-            : t("hiring_processes.group.expand_icon")
-        }
-        onClick={(e) => {
-          e.stopPropagation();
-          onToggle();
-        }}
-      >
-        {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-      </IconButton>
     </Box>
   );
 };
+
+const highlightPulse = keyframes`
+  0%   { box-shadow: inset 0 0 0 2px #1976d2, background-color: rgba(25, 118, 210, 0.12); }
+  60%  { box-shadow: inset 0 0 0 2px #1976d2, background-color: rgba(25, 118, 210, 0.12); }
+  100% { box-shadow: inset 0 0 0 0px transparent, background-color: transparent; }
+`;
 
 const ProcessRow: React.FC<{
   process: HiringProcess;
@@ -285,6 +252,8 @@ const ProcessRow: React.FC<{
   score: RankedCandidateDto | undefined;
   jobPositionUid: string | null;
   isScoringThisCandidate: boolean;
+  isHighlighted: boolean;
+  rowRef?: React.Ref<HTMLDivElement>;
   onView: (process: HiringProcess) => void;
   onEdit: (process: HiringProcess) => void;
   onDelete: (process: HiringProcess) => void;
@@ -296,6 +265,8 @@ const ProcessRow: React.FC<{
   score,
   jobPositionUid,
   isScoringThisCandidate,
+  isHighlighted,
+  rowRef,
   onView,
   onEdit,
   onDelete,
@@ -305,6 +276,7 @@ const ProcessRow: React.FC<{
 
   return (
     <Box
+      ref={rowRef}
       sx={{
         display: "flex",
         alignItems: "center",
@@ -320,6 +292,9 @@ const ProcessRow: React.FC<{
         "&:hover": {
           bgcolor: "action.hover",
         },
+        ...(isHighlighted && {
+          animation: `${highlightPulse} 2s ease-out forwards`,
+        }),
       }}
     >
       {/* Title */}
@@ -417,6 +392,8 @@ const GroupSection: React.FC<{
   canManage: boolean;
   canScore: boolean;
   scoringCandidateUids: Set<string>;
+  highlightUid?: string;
+  onHighlightRef: (uid: string, el: HTMLDivElement | null) => void;
   onView: (process: HiringProcess) => void;
   onEdit: (process: HiringProcess) => void;
   onDelete: (process: HiringProcess) => void;
@@ -426,12 +403,13 @@ const GroupSection: React.FC<{
   canManage,
   canScore,
   scoringCandidateUids,
+  highlightUid,
+  onHighlightRef,
   onView,
   onEdit,
   onDelete,
   onScore,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
   const [isSortedByScore, setIsSortedByScore] = useState(false);
 
   const { data: rankings } = useRankings(group.jobPositionUid ?? undefined);
@@ -470,39 +448,41 @@ const GroupSection: React.FC<{
     >
       <GroupHeader
         group={group}
-        isExpanded={isExpanded}
-        onToggle={() => setIsExpanded((prev) => !prev)}
         scoreMap={scoreMap}
         isSortedByScore={isSortedByScore}
         onToggleSortByScore={() => setIsSortedByScore((prev) => !prev)}
       />
       <Divider />
-      <Collapse in={isExpanded} timeout="auto" unmountOnExit={false}>
-        <Box>
-          {sortedProcesses.map((process) => (
-            <ProcessRow
-              key={process.uid}
-              process={process}
-              canManage={canManage}
-              canScore={canScore}
-              score={
-                process.candidate?.uid
-                  ? scoreMap.get(process.candidate.uid)
-                  : undefined
-              }
-              jobPositionUid={group.jobPositionUid}
-              isScoringThisCandidate={
-                !!process.candidate?.uid &&
-                scoringCandidateUids.has(process.candidate.uid)
-              }
-              onView={onView}
-              onEdit={onEdit}
-              onDelete={onDelete}
-              onScore={onScore}
-            />
-          ))}
-        </Box>
-      </Collapse>
+      <Box>
+        {sortedProcesses.map((process) => (
+          <ProcessRow
+            key={process.uid}
+            process={process}
+            canManage={canManage}
+            canScore={canScore}
+            score={
+              process.candidate?.uid
+                ? scoreMap.get(process.candidate.uid)
+                : undefined
+            }
+            jobPositionUid={group.jobPositionUid}
+            isScoringThisCandidate={
+              !!process.candidate?.uid &&
+              scoringCandidateUids.has(process.candidate.uid)
+            }
+            isHighlighted={process.uid === highlightUid}
+            rowRef={
+              process.uid === highlightUid
+                ? (el) => onHighlightRef(process.uid, el)
+                : undefined
+            }
+            onView={onView}
+            onEdit={onEdit}
+            onDelete={onDelete}
+            onScore={onScore}
+          />
+        ))}
+      </Box>
     </Paper>
   );
 };
@@ -510,12 +490,25 @@ const GroupSection: React.FC<{
 const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   search,
   status,
+  highlightUid,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useUserAtom();
   const canManage = canManageResources(user);
   const canScore = hasAnyRole(user, AI_SCORING_ROLES);
+
+  // Ref callback map for highlighted rows — scroll once data arrives
+  const highlightElRef = useRef<HTMLDivElement | null>(null);
+
+  const handleHighlightRef = useCallback(
+    (_uid: string, el: HTMLDivElement | null) => {
+      if (el && highlightUid) {
+        highlightElRef.current = el;
+      }
+    },
+    [highlightUid],
+  );
 
   const [page, setPage] = useState(0); // TablePagination is 0-indexed
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -540,6 +533,21 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
     search,
     status,
   });
+
+  // Scroll to highlighted row once data loads and the ref is set
+  useEffect(() => {
+    if (!highlightUid || isLoading) return;
+    // Use a short timeout to allow the DOM to paint after data arrives
+    const timer = setTimeout(() => {
+      if (highlightElRef.current) {
+        highlightElRef.current.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+      }
+    }, 150);
+    return () => clearTimeout(timer);
+  }, [highlightUid, isLoading, data]);
 
   const handleViewClick = (process: HiringProcess) => {
     navigate(`/hiring-process/${process.uid}`);
@@ -702,6 +710,8 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             canManage={canManage}
             canScore={canScore}
             scoringCandidateUids={scoringCandidateUids}
+            highlightUid={highlightUid}
+            onHighlightRef={handleHighlightRef}
             onView={handleViewClick}
             onEdit={(process) => updateDialog.openWith(process)}
             onDelete={(process) => deleteConfirm.confirmDelete(process)}
