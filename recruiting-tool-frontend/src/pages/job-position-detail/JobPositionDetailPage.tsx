@@ -36,6 +36,8 @@ import {
 } from "../../components/common";
 import { StagesList, CustomQuestionsList } from "../../components/job-position";
 import { useTranslation } from "react-i18next";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const getStatusColor = (
   status: HiringProcessStatus,
@@ -285,8 +287,7 @@ const JobPositionDetailPage: React.FC = () => {
             <Typography variant="subtitle1" color="textSecondary">
               {canManage
                 ? t("job_position_detail.hiring_overview")
-                : jobPosition.description ||
-                  t("job_position_detail.job_posting")}
+                : t("job_position_detail.job_posting")}
             </Typography>
           </Box>
           <Box
@@ -401,16 +402,49 @@ const JobPositionDetailPage: React.FC = () => {
           >
             {t("job_position_detail.job_description")}
           </Typography>
-          <Typography
-            variant="body1"
+          <Box
             sx={{
-              whiteSpace: "pre-line",
-              lineHeight: 1.8,
-              color: "text.secondary",
+              "& h1, & h2, & h3, & h4, & h5, & h6": {
+                mt: 2,
+                mb: 1,
+                fontWeight: 600,
+                lineHeight: 1.3,
+              },
+              "& h1": { fontSize: "1.5rem" },
+              "& h2": { fontSize: "1.25rem" },
+              "& h3": { fontSize: "1.1rem" },
+              "& p": { mb: 1.5, lineHeight: 1.8, color: "text.secondary" },
+              "& ul, & ol": { pl: 2.5, mb: 1.5 },
+              "& li": { mb: 0.5, lineHeight: 1.7, color: "text.secondary" },
+              "& code": {
+                px: 0.75,
+                py: 0.25,
+                borderRadius: 1,
+                bgcolor: "action.hover",
+                fontFamily: "monospace",
+                fontSize: "0.875em",
+              },
+              "& pre": {
+                p: 2,
+                borderRadius: 1,
+                bgcolor: "action.hover",
+                overflow: "auto",
+              },
+              "& blockquote": {
+                ml: 0,
+                pl: 2,
+                borderLeft: "4px solid",
+                borderColor: "divider",
+                color: "text.secondary",
+              },
+              "& strong": { fontWeight: 600 },
+              "& a": { color: "primary.main" },
             }}
           >
-            {jobPosition.description}
-          </Typography>
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {jobPosition.description}
+            </ReactMarkdown>
+          </Box>
         </Paper>
       )}
 

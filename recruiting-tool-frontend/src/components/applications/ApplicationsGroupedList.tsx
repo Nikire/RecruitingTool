@@ -49,22 +49,11 @@ const GroupHeader: React.FC<{
         py: 1.5,
         cursor: "pointer",
         userSelect: "none",
-        "&:hover": {
-          bgcolor: "action.hover",
-        },
+        "&:hover": { bgcolor: "action.hover" },
       }}
       onClick={onToggle}
       role="button"
       aria-expanded={isExpanded}
-      aria-label={
-        isExpanded
-          ? t("applications_page.group.collapse", {
-              title: group.jobPositionTitle,
-            })
-          : t("applications_page.group.expand", {
-              title: group.jobPositionTitle,
-            })
-      }
     >
       <WorkOutlineIcon sx={{ color: "primary.main", fontSize: 20 }} />
       <Typography variant="subtitle1" fontWeight={600} sx={{ flexGrow: 1 }}>
@@ -81,11 +70,6 @@ const GroupHeader: React.FC<{
       />
       <IconButton
         size="small"
-        aria-label={
-          isExpanded
-            ? t("applications_page.group.collapse_icon")
-            : t("applications_page.group.expand_icon")
-        }
         onClick={(e) => {
           e.stopPropagation();
           onToggle();

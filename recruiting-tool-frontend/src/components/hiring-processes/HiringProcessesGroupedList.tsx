@@ -10,6 +10,7 @@ import {
   Typography,
   Button,
   Chip,
+  Collapse,
   IconButton,
   Paper,
   Divider,
@@ -24,6 +25,8 @@ import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import SortIcon from "@mui/icons-material/Sort";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import { useTranslation } from "react-i18next";
 import {
   useListHiringProcessesGrouped,
@@ -153,8 +156,17 @@ const GroupHeader: React.FC<{
   group: HiringProcessGroup;
   scoreMap: Map<string, RankedCandidateDto>;
   isSortedByScore: boolean;
+  isExpanded: boolean;
   onToggleSortByScore: () => void;
-}> = ({ group, scoreMap, isSortedByScore, onToggleSortByScore }) => {
+  onToggleExpand: () => void;
+}> = ({
+  group,
+  scoreMap,
+  isSortedByScore,
+  isExpanded,
+  onToggleSortByScore,
+  onToggleExpand,
+}) => {
   const { t } = useTranslation();
 
   const scoredCount = group.processes.filter(
@@ -181,7 +193,13 @@ const GroupHeader: React.FC<{
         gap: 1.5,
         px: 2,
         py: 1.5,
+        cursor: "pointer",
+        userSelect: "none",
+        "&:hover": { bgcolor: "action.hover" },
       }}
+      onClick={onToggleExpand}
+      role="button"
+      aria-expanded={isExpanded}
     >
       <WorkOutlineIcon sx={{ color: "primary.main", fontSize: 20 }} />
       <Typography variant="subtitle1" fontWeight={600} sx={{ flexGrow: 1 }}>
@@ -227,7 +245,10 @@ const GroupHeader: React.FC<{
           <IconButton
             size="small"
             color={isSortedByScore ? "primary" : "default"}
-            onClick={onToggleSortByScore}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleSortByScore();
+            }}
             aria-label={t("ai_scoring.sort_by_score")}
             aria-pressed={isSortedByScore}
           >
@@ -235,6 +256,17 @@ const GroupHeader: React.FC<{
           </IconButton>
         </Tooltip>
       )}
+
+      <IconButton
+        size="small"
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleExpand();
+        }}
+        aria-label={isExpanded ? t("common.collapse") : t("common.expand")}
+      >
+        {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+      </IconButton>
     </Box>
   );
 };
@@ -410,6 +442,7 @@ const GroupSection: React.FC<{
   onDelete,
   onScore,
 }) => {
+  const [isExpanded, setIsExpanded] = useState(true);
   const [isSortedByScore, setIsSortedByScore] = useState(false);
 
   const { data: rankings } = useRankings(group.jobPositionUid ?? undefined);
@@ -450,39 +483,43 @@ const GroupSection: React.FC<{
         group={group}
         scoreMap={scoreMap}
         isSortedByScore={isSortedByScore}
+        isExpanded={isExpanded}
         onToggleSortByScore={() => setIsSortedByScore((prev) => !prev)}
+        onToggleExpand={() => setIsExpanded((prev) => !prev)}
       />
       <Divider />
-      <Box>
-        {sortedProcesses.map((process) => (
-          <ProcessRow
-            key={process.uid}
-            process={process}
-            canManage={canManage}
-            canScore={canScore}
-            score={
-              process.candidate?.uid
-                ? scoreMap.get(process.candidate.uid)
-                : undefined
-            }
-            jobPositionUid={group.jobPositionUid}
-            isScoringThisCandidate={
-              !!process.candidate?.uid &&
-              scoringCandidateUids.has(process.candidate.uid)
-            }
-            isHighlighted={process.uid === highlightUid}
-            rowRef={
-              process.uid === highlightUid
-                ? (el) => onHighlightRef(process.uid, el)
-                : undefined
-            }
-            onView={onView}
-            onEdit={onEdit}
-            onDelete={onDelete}
-            onScore={onScore}
-          />
-        ))}
-      </Box>
+      <Collapse in={isExpanded} timeout="auto" unmountOnExit={false}>
+        <Box>
+          {sortedProcesses.map((process) => (
+            <ProcessRow
+              key={process.uid}
+              process={process}
+              canManage={canManage}
+              canScore={canScore}
+              score={
+                process.candidate?.uid
+                  ? scoreMap.get(process.candidate.uid)
+                  : undefined
+              }
+              jobPositionUid={group.jobPositionUid}
+              isScoringThisCandidate={
+                !!process.candidate?.uid &&
+                scoringCandidateUids.has(process.candidate.uid)
+              }
+              isHighlighted={process.uid === highlightUid}
+              rowRef={
+                process.uid === highlightUid
+                  ? (el) => onHighlightRef(process.uid, el)
+                  : undefined
+              }
+              onView={onView}
+              onEdit={onEdit}
+              onDelete={onDelete}
+              onScore={onScore}
+            />
+          ))}
+        </Box>
+      </Collapse>
     </Paper>
   );
 };
