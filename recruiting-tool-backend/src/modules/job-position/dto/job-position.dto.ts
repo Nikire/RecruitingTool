@@ -171,6 +171,11 @@ export class JobPositionResponseDto {
   @IsInt()
   applicationCount: number;
 
+  @ApiProperty({ description: 'The source channel where candidates are expected to come from', example: 'LinkedIn', required: false })
+  @IsOptional()
+  @IsString()
+  candidateSource?: string;
+
   @ApiProperty({ description: 'The company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
   companyUid: string;
 
@@ -333,6 +338,11 @@ export class CreateJobPositionDto {
   @IsBoolean()
   isHighlighted?: boolean;
 
+  @ApiProperty({ description: 'The source channel where candidates are expected to come from', example: 'LinkedIn', required: false })
+  @IsOptional()
+  @IsString()
+  candidateSource?: string;
+
   @ApiProperty({ description: 'The stages of the job position', type: [CreateStageDto] })
   stages?: Array<CreateStageDto>;
 }
@@ -476,6 +486,11 @@ export class UpdateJobPositionDto {
   @IsOptional()
   @IsBoolean()
   isHighlighted?: boolean;
+
+  @ApiProperty({ description: 'The source channel where candidates are expected to come from', example: 'LinkedIn', required: false })
+  @IsOptional()
+  @IsString()
+  candidateSource?: string;
 }
 
 export class PublicJobPositionResponseDto {
@@ -562,6 +577,9 @@ export class PublicJobPositionResponseDto {
 
   @ApiProperty({ description: 'Number of applications', example: 0, default: 0 })
   applicationCount: number;
+
+  @ApiProperty({ description: 'The source channel where candidates are expected to come from', example: 'LinkedIn', required: false })
+  candidateSource?: string;
 
   @ApiProperty({ description: 'The company name', example: 'Tech Corp' })
   companyName: string;

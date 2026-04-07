@@ -1,14 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Typography,
   CircularProgress,
   Box,
@@ -18,9 +14,11 @@ import {
   Divider,
   InputAdornment,
 } from "@mui/material";
+import Autocomplete from "@mui/material/Autocomplete";
 import AddIcon from "@mui/icons-material/Add";
 import PersonIcon from "@mui/icons-material/Person";
 import ErrorIcon from "@mui/icons-material/Error";
+import AttachFileIcon from "@mui/icons-material/AttachFile";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useCreateHiringProcess } from "../../hooks/api/useHiringProcess";
@@ -29,7 +27,9 @@ import {
   useCreateCandidate,
 } from "../../hooks/api/useCandidates";
 import { useJobPositions } from "../../hooks/api/useJobPositions";
+import { useUploadFile } from "../../hooks/api/useFiles";
 import { JobPosition } from "../../types/jobPosition.types";
+import { Candidate } from "../../types/candidate";
 import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../common/FormErrorSummary";
 
@@ -48,6 +48,9 @@ interface HiringProcessFormData {
   candidateEmail: string;
 }
 
+const ACCEPTED_CV_TYPES = ".pdf,.doc,.docx";
+const MAX_CV_SIZE_BYTES = 10 * 1024 * 1024; // 10 MB
+
 const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
   open,
   onClose,
@@ -55,6 +58,9 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
   const { t } = useTranslation();
   const validationRules = useValidationRules();
   const [candidateMode, setCandidateMode] = useState<CandidateMode>("existing");
+  const [cvFile, setCvFile] = useState<File | null>(null);
+  const [cvError, setCvError] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     control,
@@ -81,12 +87,28 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
   const { data: candidates, isLoading: loadingCandidates } = useCandidates();
   const { data: jobPositionsData, isLoading: loadingJobPositions } =
     useJobPositions();
+  const { mutateAsync: uploadFile, isPending: isUploadingCv } = useUploadFile();
 
   const jobPositions = jobPositionsData as JobPosition[] | undefined;
 
+  const handleCvFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setCvError(null);
+    if (!file) {
+      setCvFile(null);
+      return;
+    }
+    if (file.size > MAX_CV_SIZE_BYTES) {
+      setCvError(t("hiring_processes.cv_too_large"));
+      setCvFile(null);
+      return;
+    }
+    setCvFile(file);
+  };
+
   const onSubmit = (data: HiringProcessFormData) => {
     if (candidateMode === "new") {
-      // First create the candidate, then create the hiring process
+      // Step 1: create candidate
       createCandidate(
         {
           name: data.candidateName,
@@ -94,20 +116,29 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
         },
         {
           onSuccess: (newCandidate) => {
-            // Now create the hiring process with the new candidate
-            createHiringProcess(
-              {
-                candidateUid: newCandidate.uid,
-                jobPositionUid: data.jobPositionUid,
-              },
-              {
-                onSuccess: () => {
-                  reset();
-                  setCandidateMode("existing");
-                  onClose();
+            // Step 2: optionally upload CV and associate with new candidate
+            const afterUpload = () => {
+              // Step 3: create hiring process
+              createHiringProcess(
+                {
+                  candidateUid: newCandidate.uid,
+                  jobPositionUid: data.jobPositionUid,
                 },
-              },
-            );
+                {
+                  onSuccess: () => {
+                    handleClose();
+                  },
+                },
+              );
+            };
+
+            if (cvFile) {
+              uploadFile({ file: cvFile, candidateUid: newCandidate.uid })
+                .then(afterUpload)
+                .catch(afterUpload); // proceed even if upload fails
+            } else {
+              afterUpload();
+            }
           },
         },
       );
@@ -120,8 +151,7 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
         },
         {
           onSuccess: () => {
-            reset();
-            onClose();
+            handleClose();
           },
         },
       );
@@ -131,11 +161,14 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
   const handleClose = () => {
     reset();
     setCandidateMode("existing");
+    setCvFile(null);
+    setCvError(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
     onClose();
   };
 
   const isLoading = loadingCandidates || loadingJobPositions;
-  const isSubmitting = isPending || isCreatingCandidate;
+  const isSubmitting = isPending || isCreatingCandidate || isUploadingCv;
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -150,39 +183,38 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
             <>
               <FormErrorSummary errors={errors} />
 
-              <FormControl fullWidth margin="normal">
-                <InputLabel>{t("job_positions.title")}</InputLabel>
-                <Controller
-                  name="jobPositionUid"
-                  control={control}
-                  rules={{ required: t("validation.job_position_required") }}
-                  render={({ field }) => (
-                    <Select
-                      {...field}
-                      label={t("job_positions.title")}
-                      error={!!errors.jobPositionUid}
-                    >
-                      {jobPositions && jobPositions.length > 0 ? (
-                        jobPositions.map((jp) => (
-                          <MenuItem key={jp.uid} value={jp.uid}>
-                            {jp.title} ({t(`status.${jp.status.toLowerCase()}`)}
-                            )
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem disabled>
-                          {t("job_positions.no_positions")}
-                        </MenuItem>
-                      )}
-                    </Select>
-                  )}
-                />
-                {errors.jobPositionUid && (
-                  <Typography color="error" variant="caption">
-                    {errors.jobPositionUid.message}
-                  </Typography>
+              {/* Job Position — searchable Autocomplete */}
+              <Controller
+                name="jobPositionUid"
+                control={control}
+                rules={{ required: t("validation.job_position_required") }}
+                render={({ field: { onChange, value, ref } }) => (
+                  <Autocomplete<JobPosition>
+                    options={jobPositions ?? []}
+                    getOptionLabel={(option) =>
+                      `${option.title} (${t(`status.${option.status.toLowerCase()}`)})`
+                    }
+                    isOptionEqualToValue={(option, val) =>
+                      option.uid === val.uid
+                    }
+                    value={jobPositions?.find((jp) => jp.uid === value) ?? null}
+                    onChange={(_, selected) =>
+                      onChange(selected ? selected.uid : "")
+                    }
+                    noOptionsText={t("job_positions.no_positions")}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        inputRef={ref}
+                        label={t("job_positions.title")}
+                        margin="normal"
+                        error={!!errors.jobPositionUid}
+                        helperText={errors.jobPositionUid?.message}
+                      />
+                    )}
+                  />
                 )}
-              </FormControl>
+              />
 
               <Divider sx={{ my: 3 }} />
 
@@ -209,43 +241,43 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
               </Box>
 
               {candidateMode === "existing" ? (
-                <FormControl fullWidth margin="normal">
-                  <InputLabel>{t("candidates.title")}</InputLabel>
-                  <Controller
-                    name="candidateUid"
-                    control={control}
-                    rules={{
-                      required:
-                        candidateMode === "existing"
-                          ? t("validation.candidate_required")
-                          : false,
-                    }}
-                    render={({ field }) => (
-                      <Select
-                        {...field}
-                        label={t("candidates.title")}
-                        error={!!errors.candidateUid}
-                      >
-                        {candidates && candidates.length > 0 ? (
-                          candidates.map((candidate) => (
-                            <MenuItem key={candidate.uid} value={candidate.uid}>
-                              {candidate.name} ({candidate.email})
-                            </MenuItem>
-                          ))
-                        ) : (
-                          <MenuItem disabled>
-                            {t("candidates.no_candidates")}
-                          </MenuItem>
-                        )}
-                      </Select>
-                    )}
-                  />
-                  {errors.candidateUid && (
-                    <Typography color="error" variant="caption">
-                      {errors.candidateUid.message}
-                    </Typography>
+                /* Existing Candidate — searchable Autocomplete */
+                <Controller
+                  name="candidateUid"
+                  control={control}
+                  rules={{
+                    required:
+                      candidateMode === "existing"
+                        ? t("validation.candidate_required")
+                        : false,
+                  }}
+                  render={({ field: { onChange, value, ref } }) => (
+                    <Autocomplete<Candidate>
+                      options={candidates ?? []}
+                      getOptionLabel={(option) =>
+                        `${option.name} (${option.email})`
+                      }
+                      isOptionEqualToValue={(option, val) =>
+                        option.uid === val.uid
+                      }
+                      value={candidates?.find((c) => c.uid === value) ?? null}
+                      onChange={(_, selected) =>
+                        onChange(selected ? selected.uid : "")
+                      }
+                      noOptionsText={t("candidates.no_candidates")}
+                      renderInput={(params) => (
+                        <TextField
+                          {...params}
+                          inputRef={ref}
+                          label={t("candidates.title")}
+                          margin="normal"
+                          error={!!errors.candidateUid}
+                          helperText={errors.candidateUid?.message}
+                        />
+                      )}
+                    />
                   )}
-                </FormControl>
+                />
               ) : (
                 <Box>
                   <TextField
@@ -292,6 +324,49 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
                       ) : null,
                     }}
                   />
+
+                  {/* CV upload */}
+                  <Box sx={{ mt: 2 }}>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept={ACCEPTED_CV_TYPES}
+                      style={{ display: "none" }}
+                      onChange={handleCvFileChange}
+                    />
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<AttachFileIcon />}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      {t("hiring_processes.attach_cv")}
+                    </Button>
+                    {cvFile && (
+                      <Typography
+                        variant="caption"
+                        sx={{ ml: 1, verticalAlign: "middle" }}
+                      >
+                        {cvFile.name}
+                      </Typography>
+                    )}
+                    {cvError && (
+                      <Typography
+                        variant="caption"
+                        color="error"
+                        sx={{ display: "block", mt: 0.5 }}
+                      >
+                        {cvError}
+                      </Typography>
+                    )}
+                    <Typography
+                      variant="caption"
+                      color="textSecondary"
+                      sx={{ display: "block", mt: 0.5 }}
+                    >
+                      {t("hiring_processes.cv_hint")}
+                    </Typography>
+                  </Box>
                 </Box>
               )}
 

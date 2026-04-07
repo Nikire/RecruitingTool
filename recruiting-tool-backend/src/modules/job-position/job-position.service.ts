@@ -220,6 +220,7 @@ export class JobPositionService {
           showSalary: createJobPositionDto.showSalary ?? false,
           tags: createJobPositionDto.tags || [],
           isHighlighted: createJobPositionDto.isHighlighted ?? false,
+          candidateSource: createJobPositionDto.candidateSource,
           createdBy: { connect: { uid: creatorUid } },
           company: { connect: { id: targetCompanyId } },
         },
@@ -287,6 +288,7 @@ export class JobPositionService {
       if (updateJobPositionDto.showSalary !== undefined) updateData.showSalary = updateJobPositionDto.showSalary;
       if (updateJobPositionDto.tags !== undefined) updateData.tags = updateJobPositionDto.tags;
       if (updateJobPositionDto.isHighlighted !== undefined) updateData.isHighlighted = updateJobPositionDto.isHighlighted;
+      if (updateJobPositionDto.candidateSource !== undefined) updateData.candidateSource = updateJobPositionDto.candidateSource;
 
       const jobPosition = await this.databaseService.jobPosition.update({
         where: { uid },
@@ -511,6 +513,7 @@ export class JobPositionService {
         isHighlighted: jp.isHighlighted,
         viewCount: jp.viewCount,
         applicationCount: jp.applicationCount,
+        candidateSource: jp.candidateSource,
         companyName: jp.company?.name || 'Unknown Company',
         companyDescription: jp.company?.description,
         companyLogoUrl: jp.company?.logoUrl,
@@ -595,6 +598,7 @@ export class JobPositionService {
         isHighlighted: jobPosition.isHighlighted,
         viewCount: jobPosition.viewCount,
         applicationCount: jobPosition.applicationCount,
+        candidateSource: jobPosition.candidateSource,
         companyName: jobPosition.company?.name || 'Unknown Company',
         companyDescription: jobPosition.company?.description,
         companyLogoUrl: jobPosition.company?.logoUrl,

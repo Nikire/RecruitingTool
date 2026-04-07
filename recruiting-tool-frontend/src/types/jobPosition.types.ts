@@ -50,6 +50,7 @@ export interface JobPosition {
   tags?: string[];
   viewCount?: number;
   applicationCount?: number;
+  candidateSource?: string;
 }
 
 export type JobType =

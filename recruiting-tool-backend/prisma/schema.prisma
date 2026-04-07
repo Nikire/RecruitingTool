@@ -241,6 +241,7 @@ model JobPosition {
   state               String?
   tags                String[]          @default([])
   viewCount           Int               @default(0)
+  candidateSource     String?
   applications        Application[]
   batchScoringJobs    BatchScoringJob[] @relation("BatchScoringJobs")
   candidateScores     CandidateScore[]  @relation("JobPositionScores")

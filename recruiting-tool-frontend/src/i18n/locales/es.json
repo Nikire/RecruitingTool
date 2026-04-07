@@ -284,7 +284,15 @@
     "list_header_created": "Creado",
     "list_header_actions": "Acciones",
     "list_no_department": "—",
-    "list_no_type": "—"
+    "list_no_type": "—",
+    "candidate_source": "Fuente de Candidatos",
+    "candidate_source_placeholder": "ej. LinkedIn, Indeed...",
+    "source_linkedin": "LinkedIn",
+    "source_indeed": "Indeed",
+    "source_referral": "Referido",
+    "source_direct": "Postulación Directa",
+    "source_agency": "Agencia",
+    "source_other": "Otro"
   },
   "create_job_position": {
     "section_job_details": "Detalles del Puesto",
@@ -417,6 +425,9 @@
     "stages_count": "{{count}} etapa",
     "stages_count_plural": "{{count}} etapas",
     "delete_message": "¿Estás seguro de que quieres eliminar este proceso de contratación? Esto también eliminará todas las etapas asociadas.",
+    "attach_cv": "Adjuntar CV (opcional)",
+    "cv_hint": "Formatos aceptados: PDF, DOC, DOCX — máximo 10 MB",
+    "cv_too_large": "El archivo supera el límite de tamaño de 10 MB",
     "group": {
       "toggle_label": "Agrupar por Posición",
       "toggle_tooltip": "Agrupar procesos de contratación por posición de trabajo",

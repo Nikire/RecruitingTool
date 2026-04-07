@@ -57,6 +57,7 @@ interface JobPositionFormData {
   educationLevel?: string;
   workLocation?: WorkLocation | "";
   isUrgent?: boolean;
+  candidateSource?: string;
   // Location
   city?: string;
   state?: string;
@@ -107,6 +108,15 @@ const WORK_LOCATIONS: { value: WorkLocation; labelKey: string }[] = [
 ] as const;
 
 const SALARY_CURRENCIES = ["USD", "EUR", "GBP", "MXN", "ARS", "COP"];
+
+const CANDIDATE_SOURCES: { value: string; labelKey: string }[] = [
+  { value: "LinkedIn", labelKey: "job_positions.source_linkedin" },
+  { value: "Indeed", labelKey: "job_positions.source_indeed" },
+  { value: "Referral", labelKey: "job_positions.source_referral" },
+  { value: "Direct Apply", labelKey: "job_positions.source_direct" },
+  { value: "Agency", labelKey: "job_positions.source_agency" },
+  { value: "Other", labelKey: "job_positions.source_other" },
+] as const;
 
 const SALARY_PERIODS: { value: SalaryPeriod; labelKey: string }[] = [
   { value: "HOURLY", labelKey: "create_job_position.salary_period_hourly" },
@@ -217,6 +227,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
       educationLevel: "",
       workLocation: "",
       isUrgent: false,
+      candidateSource: "",
       city: "",
       state: "",
       country: "",
@@ -281,6 +292,8 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
       jobPositionData.educationLevel = data.educationLevel;
     if (data.workLocation) jobPositionData.workLocation = data.workLocation;
     if (data.isUrgent) jobPositionData.isUrgent = data.isUrgent;
+    if (data.candidateSource)
+      jobPositionData.candidateSource = data.candidateSource;
     if (data.city) jobPositionData.city = data.city;
     if (data.state) jobPositionData.state = data.state;
     if (data.country) jobPositionData.country = data.country;
@@ -518,6 +531,33 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
                       {t("create_job_position.is_urgent_hint")}
                     </Typography>
                   )}
+                </Grid>
+
+                <Grid size={{ xs: 12, sm: 6 }}>
+                  <Controller
+                    name="candidateSource"
+                    control={control}
+                    render={({ field }) => (
+                      <FormControl fullWidth size="small">
+                        <InputLabel>
+                          {t("job_positions.candidate_source")}
+                        </InputLabel>
+                        <Select
+                          {...field}
+                          label={t("job_positions.candidate_source")}
+                        >
+                          <MenuItem value="">
+                            <em>{t("create_job_position.select_none")}</em>
+                          </MenuItem>
+                          {CANDIDATE_SOURCES.map((opt) => (
+                            <MenuItem key={opt.value} value={opt.value}>
+                              {t(opt.labelKey)}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+                    )}
+                  />
                 </Grid>
               </Grid>
             </AccordionDetails>

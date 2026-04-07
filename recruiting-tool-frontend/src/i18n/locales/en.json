@@ -284,7 +284,15 @@
     "list_header_created": "Created",
     "list_header_actions": "Actions",
     "list_no_department": "—",
-    "list_no_type": "—"
+    "list_no_type": "—",
+    "candidate_source": "Candidate Source",
+    "candidate_source_placeholder": "e.g. LinkedIn, Indeed...",
+    "source_linkedin": "LinkedIn",
+    "source_indeed": "Indeed",
+    "source_referral": "Referral",
+    "source_direct": "Direct Apply",
+    "source_agency": "Agency",
+    "source_other": "Other"
   },
   "create_job_position": {
     "section_job_details": "Job Details",
@@ -417,6 +425,9 @@
     "stages_count": "{{count}} stage",
     "stages_count_plural": "{{count}} stages",
     "delete_message": "Are you sure you want to delete this hiring process? This will also delete all associated stages.",
+    "attach_cv": "Attach CV (optional)",
+    "cv_hint": "Accepted formats: PDF, DOC, DOCX — max 10 MB",
+    "cv_too_large": "File exceeds the 10 MB size limit",
     "group": {
       "toggle_label": "Group by Position",
       "toggle_tooltip": "Group hiring processes by job position",
