@@ -3734,11 +3734,11 @@
     "candidates_per_position_value": "Hasta {{count}} candidatos por posición"
   },
   "app": {
-    "contact_email": "noreply@borderlessats.com",
-    "support_email": "noreply@borderlessats.com",
-    "privacy_email": "privacy@borderlessats.com",
-    "security_email": "security@borderlessats.com",
-    "legal_email": "legal@borderlessats.com"
+    "contact_email": "info@borderlessats.com",
+    "support_email": "info@borderlessats.com",
+    "privacy_email": "info@borderlessats.com",
+    "security_email": "info@borderlessats.com",
+    "legal_email": "info@borderlessats.com"
   },
   "plan_limits": {
     "title": "Gestión de Límites de Plan",
