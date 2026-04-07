@@ -32,7 +32,8 @@ export class UsersService {
           companyId = company.id;
         }
 
-        const { roles, companyUid: _companyUid, ...userData } = createUserDto;
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { roles, companyUid, ...userData } = createUserDto;
         const newUser = await this.databaseService.user.create({
           data: {
             ...userData,
