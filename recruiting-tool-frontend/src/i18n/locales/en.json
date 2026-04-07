@@ -3681,6 +3681,13 @@
     "loading_error": "Failed to load contact messages",
     "unread_count": "{{count}} unread"
   },
+  "contact_messages": {
+    "detail_title": "Contact Message",
+    "from": "From",
+    "received": "Received",
+    "message_body": "Message",
+    "company_label": "Company"
+  },
   "admin_layout": {
     "title": "Admin Panel",
     "dashboard": "Dashboard",

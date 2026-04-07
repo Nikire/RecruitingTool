@@ -3709,6 +3709,13 @@
     "loading_error": "Error al cargar los mensajes de contacto",
     "unread_count": "{{count}} no leídos"
   },
+  "contact_messages": {
+    "detail_title": "Mensaje de Contacto",
+    "from": "De",
+    "received": "Recibido",
+    "message_body": "Mensaje",
+    "company_label": "Empresa"
+  },
   "plan_features": {
     "job_positions": "Hasta {{count}} posiciones activas",
     "job_positions_unlimited": "Posiciones activas ilimitadas",

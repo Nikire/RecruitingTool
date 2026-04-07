@@ -14,6 +14,7 @@ import {
 import { useTranslation } from "react-i18next";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import EmailIcon from "@mui/icons-material/Email";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 import { DateCell } from "../../components/tables";
 import { ContactMessage } from "../../types/contact-message.types";
@@ -21,6 +22,7 @@ import {
   useContactMessages,
   useMarkContactMessageAsRead,
 } from "../../hooks/api/useContactMessages";
+import ContactMessageDetailDialog from "../../components/dialogs/ContactMessageDetailDialog";
 
 const ContactMessagesPage = () => {
   const { t } = useTranslation();
@@ -32,11 +34,25 @@ const ContactMessagesPage = () => {
   const { mutate: markAsRead, isPending: isMarkingAsRead } =
     useMarkContactMessageAsRead();
 
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(
+    null,
+  );
+  const [detailOpen, setDetailOpen] = useState(false);
+
   const messages = data?.data ?? [];
   const totalRows = data?.total ?? 0;
 
   const handleMarkAsRead = (uid: string) => {
     markAsRead(uid);
+  };
+
+  const handleViewMessage = (msg: ContactMessage) => {
+    setSelectedMessage(msg);
+    setDetailOpen(true);
+  };
+
+  const handleDetailClose = () => {
+    setDetailOpen(false);
   };
 
   const columns: DataTableColumn<ContactMessage>[] = [
@@ -134,35 +150,57 @@ const ContactMessagesPage = () => {
     {
       field: "actions",
       headerName: t("admin_contact.table_actions"),
-      width: 80,
+      width: 110,
       sortable: false,
-      renderCell: (params: GridRenderCellParams) =>
-        !params.row.isRead ? (
-          <Tooltip title={t("admin_contact.mark_as_read")}>
-            <span>
-              <IconButton
-                size="small"
-                color="primary"
-                disabled={isMarkingAsRead}
-                onClick={() => handleMarkAsRead(params.row.uid)}
-                aria-label={t("admin_contact.mark_as_read")}
-              >
-                <MarkEmailReadIcon fontSize="small" />
-              </IconButton>
-            </span>
+      renderCell: (params: GridRenderCellParams) => (
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <Tooltip title={t("common.view")}>
+            <IconButton
+              size="small"
+              onClick={() => handleViewMessage(params.row as ContactMessage)}
+              aria-label={t("common.view")}
+            >
+              <OpenInNewIcon fontSize="small" />
+            </IconButton>
           </Tooltip>
-        ) : null,
-      mobileRender: (msg: ContactMessage) =>
-        !msg.isRead ? (
+          {!params.row.isRead && (
+            <Tooltip title={t("admin_contact.mark_as_read")}>
+              <span>
+                <IconButton
+                  size="small"
+                  color="primary"
+                  disabled={isMarkingAsRead}
+                  onClick={() => handleMarkAsRead(params.row.uid)}
+                  aria-label={t("admin_contact.mark_as_read")}
+                >
+                  <MarkEmailReadIcon fontSize="small" />
+                </IconButton>
+              </span>
+            </Tooltip>
+          )}
+        </Stack>
+      ),
+      mobileRender: (msg: ContactMessage) => (
+        <Stack direction="row" spacing={0.5} alignItems="center">
           <IconButton
             size="small"
-            color="primary"
-            disabled={isMarkingAsRead}
-            onClick={() => handleMarkAsRead(msg.uid)}
+            onClick={() => handleViewMessage(msg)}
+            aria-label={t("common.view")}
           >
-            <MarkEmailReadIcon fontSize="small" />
+            <OpenInNewIcon fontSize="small" />
           </IconButton>
-        ) : null,
+          {!msg.isRead && (
+            <IconButton
+              size="small"
+              color="primary"
+              disabled={isMarkingAsRead}
+              onClick={() => handleMarkAsRead(msg.uid)}
+            >
+              <MarkEmailReadIcon fontSize="small" />
+            </IconButton>
+          )}
+        </Stack>
+      ),
     },
   ];
 
@@ -245,6 +283,12 @@ const ContactMessagesPage = () => {
           }}
         />
       </Paper>
+
+      <ContactMessageDetailDialog
+        open={detailOpen}
+        onClose={handleDetailClose}
+        message={selectedMessage}
+      />
     </Box>
   );
 };
