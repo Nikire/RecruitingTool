@@ -1344,6 +1344,15 @@
     "resend_success": "Correo de verificación enviado. Por favor revisa tu bandeja de entrada.",
     "resend_error": "No se pudo reenviar el correo de verificación. Por favor inténtalo de nuevo más tarde."
   },
+  "verify_email": {
+    "title": "Verifica tu correo electrónico",
+    "description": "Enviamos un enlace de verificación a {{email}}. Revisa tu bandeja de entrada y haz clic en el enlace para activar tu cuenta.",
+    "resend_button": "Reenviar correo de verificación",
+    "resend_success": "¡Correo de verificación enviado! Revisa tu bandeja de entrada.",
+    "resend_error": "No se pudo enviar el correo de verificación. Inténtalo de nuevo.",
+    "logout": "Cerrar sesión",
+    "already_verified": "¿Ya verificaste? Intenta refrescar la página."
+  },
   "registration_wizard": {
     "steps": {
       "role_selection": "Elige tu Rol",

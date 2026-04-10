@@ -1336,6 +1336,15 @@
     "resend_success": "Verification email sent. Please check your inbox.",
     "resend_error": "Failed to resend verification email. Please try again later."
   },
+  "verify_email": {
+    "title": "Verify Your Email",
+    "description": "We sent a verification link to {{email}}. Please check your inbox and click the link to activate your account.",
+    "resend_button": "Resend Verification Email",
+    "resend_success": "Verification email sent! Please check your inbox.",
+    "resend_error": "Failed to send verification email. Please try again.",
+    "logout": "Logout",
+    "already_verified": "Already verified? Try refreshing the page."
+  },
   "registration_wizard": {
     "steps": {
       "role_selection": "Choose Your Role",

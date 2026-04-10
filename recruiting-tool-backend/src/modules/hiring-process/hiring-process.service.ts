@@ -408,6 +408,7 @@ export class HiringProcessService {
         include: {
           candidate: true,
           jobPosition: true,
+          company: true,
         },
       });
 
@@ -580,6 +581,20 @@ export class HiringProcessService {
           }
         } catch (notifError) {
           this.logger.error(`Failed to send status change notifications: ${notifError.message}`);
+        }
+      }
+
+      // Send hired notification email to candidate when status is CLOSED (hired)
+      if (updateHiringProcessDto.status === 'CLOSED' && existingHiringProcess.candidate?.email) {
+        try {
+          await this.emailService.sendHiredNotification(existingHiringProcess.candidate.email, {
+            candidateName: existingHiringProcess.candidate.name,
+            jobPosition: existingHiringProcess.jobPosition?.title ?? 'the position',
+            companyName: existingHiringProcess.company?.name,
+            hiringProcessUid: uid,
+          });
+        } catch (emailError) {
+          this.logger.error(`Failed to send hired notification email to ${existingHiringProcess.candidate.email}: ${emailError.message}`);
         }
       }
 

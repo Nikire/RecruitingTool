@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Param, Delete, Put, Patch, Query, Request,
 import { UsersService } from './users.service';
 import { CreateUserDto, UserResponseDto, UpdateUserDto, UserActivityLogResponseDto, UpdateProfileDto } from './dto/users.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
+import { User } from '@prisma/client';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -65,8 +67,8 @@ export class UsersController {
     status: 200,
     description: 'Returns paginated users list',
   })
-  list(@Query() paginationDto: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
-    return this.usersService.list(paginationDto);
+  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<UserResponseDto>> {
+    return this.usersService.list(paginationDto, currentUser);
   }
 
   @Get(':uid')

@@ -5,6 +5,7 @@ import Logout from "./pages/auth/Logout";
 import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/auth/ResetPasswordPage";
 import VerifyEmailPage from "./pages/auth/VerifyEmailPage";
+import PendingEmailVerificationPage from "./pages/auth/PendingEmailVerificationPage";
 // Home component is now unused - LandingPage is the root page
 import LandingPage from "./pages/landing/LandingPage";
 import HiringProcessTrackingPage from "./pages/public/HiringProcessTrackingPage";
@@ -163,6 +164,11 @@ function App() {
           </Route>
 
           <Route element={<ProtectedRoute />}>
+            {/* Email verification gate — accessible to logged-in but unverified users */}
+            <Route
+              path="/pending-email-verification"
+              element={<PendingEmailVerificationPage />}
+            />
             <Route path="/onboarding" element={<OnboardingWizard />} />
             <Route path="/onboarding/hr" element={<HROnboardingWizard />} />
             <Route

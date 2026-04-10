@@ -24,6 +24,8 @@ import {
   TeamInvitationData,
   stageAdvancementTemplate,
   StageAdvancementData,
+  hiredNotificationTemplate,
+  HiredNotificationData,
 } from './templates';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -524,6 +526,15 @@ If you did not create an account, please ignore this email.
     const { subject, text, html } = stageAdvancementTemplate(data);
     await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
     this.logger.log(`Stage advancement email sent to ${candidateEmail} — moved to "${data.newStage}" for ${data.jobPosition}`);
+  }
+
+  /**
+   * Send hired notification email to candidate when hiring process is marked as CLOSED (hired)
+   */
+  async sendHiredNotification(candidateEmail: string, data: HiredNotificationData): Promise<void> {
+    const { subject, text, html } = hiredNotificationTemplate(data);
+    await this.sendEmail(candidateEmail, subject, text, html, 'HIRED_NOTIFICATION', data.hiringProcessUid);
+    this.logger.log(`Hired notification email sent to ${candidateEmail} for position "${data.jobPosition}"`);
   }
 
   /**

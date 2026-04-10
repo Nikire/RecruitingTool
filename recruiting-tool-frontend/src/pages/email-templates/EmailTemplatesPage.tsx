@@ -94,7 +94,7 @@ const EmailTemplatesPage: React.FC = () => {
     }
   };
 
-  const { data: templates, isLoading } = useEmailTemplates();
+  const { data: templates, isLoading } = useEmailTemplates(user?.companyUid);
   const { mutate: deleteTemplate, isPending: isDeleting } =
     useDeleteEmailTemplate();
 

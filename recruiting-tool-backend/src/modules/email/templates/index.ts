@@ -10,3 +10,4 @@ export * from './password-reset.template';
 export * from './welcome.template';
 export * from './team-invitation.template';
 export * from './stage-advancement.template';
+export * from './hired-notification.template';

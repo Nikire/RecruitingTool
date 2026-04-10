@@ -9,6 +9,7 @@ import { UserActivityService } from 'src/modules/users/services/user-activity.se
 import { DatabaseService } from '../database/database.service';
 import * as crypto from 'crypto';
 import { EmailService } from 'src/modules/email/email.service';
+import { EmailTemplateType } from '@prisma/client';
 
 @Injectable()
 export class AuthService {
@@ -87,6 +88,24 @@ export class AuthService {
       await this.emailService.sendVerificationEmail(email, verificationLink);
     } catch {
       // Do not reveal email sending failures to the caller
+    }
+
+    // If registering as COMPANY_OWNER, auto-create default email templates for the new company
+    if (isCompanyOwner && finalCompanyUid) {
+      try {
+        const newCompanyRecord = await this.databaseService.company.findUnique({
+          where: { uid: finalCompanyUid },
+        });
+        const newUserRecord = await this.databaseService.user.findUnique({
+          where: { uid: user.uid },
+          select: { id: true },
+        });
+        if (newCompanyRecord && newUserRecord) {
+          await this.createDefaultEmailTemplates(newCompanyRecord.id, newUserRecord.id);
+        }
+      } catch {
+        // Non-blocking — do not fail registration if template creation fails
+      }
     }
 
     const { token, refreshToken } = await this.login({ email, password });
@@ -913,6 +932,103 @@ export class AuthService {
     await this.revokeAllUserTokens(userId);
 
     return { message: 'Password updated successfully' };
+  }
+
+  /**
+   * Create default email templates for a newly registered company
+   * Called automatically when a COMPANY_OWNER registers
+   */
+  private async createDefaultEmailTemplates(companyId: number, createdById: number): Promise<void> {
+    const defaults: Array<{ type: EmailTemplateType; name: string; subject: string; body: string }> = [
+      {
+        type: EmailTemplateType.APPLICATION_RECEIVED,
+        name: 'Application Received',
+        subject: 'We received your application for {{jobTitle}}',
+        body: `<p>Dear {{candidateName}},</p>
+<p>Thank you for applying for the <strong>{{jobTitle}}</strong> position at {{companyName}}. We have received your application and our team will review it shortly.</p>
+<p>We will be in touch with you soon.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.APPLICATION_UNDER_REVIEW,
+        name: 'Application Under Review',
+        subject: 'Your application for {{jobTitle}} is under review',
+        body: `<p>Dear {{candidateName}},</p>
+<p>We wanted to let you know that your application for the <strong>{{jobTitle}}</strong> position is currently being reviewed by our hiring team.</p>
+<p>We appreciate your patience and will update you as soon as we have news.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.APPLICATION_REJECTED,
+        name: 'Application Not Selected',
+        subject: 'Update on your application for {{jobTitle}}',
+        body: `<p>Dear {{candidateName}},</p>
+<p>Thank you for your interest in the <strong>{{jobTitle}}</strong> position at {{companyName}} and for the time you invested in the application process.</p>
+<p>After careful consideration, we have decided to move forward with other candidates whose experience more closely matches our current needs. We encourage you to apply for future openings that align with your background.</p>
+<p>We wish you the best in your job search.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.APPLICATION_SHORTLISTED,
+        name: 'Application Shortlisted',
+        subject: 'Congratulations! You have been shortlisted for {{jobTitle}}',
+        body: `<p>Dear {{candidateName}},</p>
+<p>We are pleased to inform you that your application for the <strong>{{jobTitle}}</strong> position has been shortlisted. You are among the top candidates we are considering.</p>
+<p>Our team will be in contact with you shortly to discuss the next steps.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.INTERVIEW_INVITATION,
+        name: 'Interview Invitation',
+        subject: 'Interview Invitation for {{jobTitle}} at {{companyName}}',
+        body: `<p>Dear {{candidateName}},</p>
+<p>We would like to invite you for an interview for the <strong>{{jobTitle}}</strong> position at {{companyName}}.</p>
+<p><strong>Date:</strong> {{interviewDate}}<br/><strong>Time:</strong> {{interviewTime}}</p>
+<p>Please confirm your availability by replying to this email. If you have any questions, do not hesitate to reach out.</p>
+<p>We look forward to meeting you.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.INTERVIEW_REMINDER,
+        name: 'Interview Reminder',
+        subject: 'Reminder: Your interview for {{jobTitle}} is coming up',
+        body: `<p>Dear {{candidateName}},</p>
+<p>This is a friendly reminder that your interview for the <strong>{{jobTitle}}</strong> position at {{companyName}} is scheduled for:</p>
+<p><strong>Date:</strong> {{interviewDate}}<br/><strong>Time:</strong> {{interviewTime}}</p>
+<p>If you need to reschedule or have any questions, please contact us as soon as possible.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.OFFER_LETTER,
+        name: 'Offer Letter',
+        subject: 'Job Offer: {{jobTitle}} at {{companyName}}',
+        body: `<p>Dear {{candidateName}},</p>
+<p>We are delighted to offer you the position of <strong>{{jobTitle}}</strong> at {{companyName}}. We were impressed by your skills and experience, and we believe you will be a valuable addition to our team.</p>
+<p>Please review the attached offer details and let us know if you have any questions. We look forward to welcoming you to the team.</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+      {
+        type: EmailTemplateType.CUSTOM,
+        name: 'Custom Template',
+        subject: '{{subject}}',
+        body: `<p>Dear {{candidateName}},</p>
+<p>{{message}}</p>
+<p>Best regards,<br/>{{hrName}}<br/>{{companyName}}</p>`,
+      },
+    ];
+
+    await this.databaseService.emailTemplate.createMany({
+      data: defaults.map((template) => ({
+        name: template.name,
+        subject: template.subject,
+        body: template.body,
+        type: template.type,
+        companyId,
+        createdById,
+        isDefault: true,
+      })),
+      skipDuplicates: true,
+    });
   }
 
   /**

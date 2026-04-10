@@ -8,6 +8,8 @@ import { StorageService } from '../storage/storage.service';
 import * as bycrypt from 'bcryptjs';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { UserActivityService } from './services/user-activity.service';
+import { User } from '@prisma/client';
+import { getUserCompanyId } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class UsersService {
@@ -99,17 +101,22 @@ export class UsersService {
     }
   }
 
-  async list(paginationDto: PaginationDto): Promise<PaginatedResponse<UserResponseDto>> {
+  async list(paginationDto: PaginationDto, currentUser: User): Promise<PaginatedResponse<UserResponseDto>> {
     try {
       const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
       const skip = (page - 1) * pageSize;
 
+      // Filter by company for non-SUPER_ADMIN users
+      const companyId = getUserCompanyId(currentUser);
+      const companyFilter = companyId !== null ? { companyId } : {};
+
       // Build where clause for search
       const where = search
         ? {
+            ...companyFilter,
             OR: [{ name: { contains: search, mode: 'insensitive' as const } }, { email: { contains: search, mode: 'insensitive' as const } }],
           }
-        : {};
+        : { ...companyFilter };
 
       // Get total count
       const total = await this.databaseService.user.count({ where });
