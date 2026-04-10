@@ -29,6 +29,7 @@ model Company {
   website            String?
   aiQuotas           AIQuota[]
   aiUsageLogs        AIUsageLog[]
+  candidates         Candidate[]         @relation("CandidateCompany")
   invitations        CompanyInvitation[] @relation("CompanyInvitations")
   connectionRequests ConnectionRequest[]
   customPlans        CustomPlan[]        @relation("CompanyCustomPlan")
@@ -175,6 +176,8 @@ model Candidate {
   utmSource       String?
   utmMedium       String?
   utmCampaign     String?
+  companyId       Int?
+  company         Company?            @relation("CandidateCompany", fields: [companyId], references: [id], onDelete: SetNull)
   activities      CandidateActivity[] @relation("CandidateActivities")
   notes           CandidateNote[]     @relation("CandidateNotes")
   scores          CandidateScore[]    @relation("CandidateScores")
@@ -183,6 +186,7 @@ model Candidate {
   stageTimeLogs   StageTimeLog[]      @relation("CandidateStageTimeLogs")
 
   @@index([source])
+  @@index([companyId])
   @@index([deletedAt])
   @@index([createdAt])
   @@index([uid])

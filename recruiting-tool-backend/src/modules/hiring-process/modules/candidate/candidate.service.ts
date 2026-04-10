@@ -30,8 +30,10 @@ export class CandidateService {
     private notificationsService: NotificationsService,
   ) {}
 
-  async create(createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
+  async create(createCandidateDto: CreateCandidateDto, user?: User): Promise<CandidateResponseDto> {
     try {
+      const companyId = user ? getUserCompanyId(user) : null;
+
       const candidate = await this.databaseService.candidate.create({
         data: {
           name: createCandidateDto.name,
@@ -42,6 +44,7 @@ export class CandidateService {
           utmSource: createCandidateDto.utmSource,
           utmMedium: createCandidateDto.utmMedium,
           utmCampaign: createCandidateDto.utmCampaign,
+          ...(companyId !== null && { companyId }),
         },
       });
 
@@ -305,16 +308,31 @@ export class CandidateService {
         where.hiringProcesses.some.status = status;
       }
 
-      // Add company filter for HR and USER roles (filter by hiring processes company)
+      // Add company filter for HR and USER roles
+      // A candidate belongs to the company if they have a hiring process for that company
+      // OR if they were directly created by that company (standalone candidate without a hiring process yet)
       const userCompanyId = getUserCompanyId(user);
       if (userCompanyId !== null) {
-        if (!where.hiringProcesses) {
-          where.hiringProcesses = {};
+        // Build the hiring process company filter, preserving any existing status filter
+        const hiringProcessFilter: any = { companyId: userCompanyId };
+        if (where.hiringProcesses?.some?.status) {
+          hiringProcessFilter.status = where.hiringProcesses.some.status;
         }
-        if (!where.hiringProcesses.some) {
-          where.hiringProcesses.some = {};
+        // Remove the previously-set hiringProcesses block and replace with an OR condition
+        delete where.hiringProcesses;
+        const companyOrFilter = {
+          OR: [{ hiringProcesses: { some: hiringProcessFilter } }, { companyId: userCompanyId }],
+        };
+        // Merge OR into existing where — if there's already an OR (search), wrap both inside AND
+        if (where.OR) {
+          const existingOr = where.OR;
+          delete where.OR;
+          Object.assign(where, {
+            AND: [{ OR: existingOr }, companyOrFilter],
+          });
+        } else {
+          Object.assign(where, companyOrFilter);
         }
-        where.hiringProcesses.some.companyId = userCompanyId;
       }
 
       // Get total count
@@ -354,14 +372,14 @@ export class CandidateService {
     try {
       const where: any = { deletedAt: null };
 
-      // Add company filter for HR and USER roles (filter by hiring processes company)
+      // Add company filter for HR and USER roles
+      // A candidate belongs to the company if they have a hiring process for that company
+      // OR if they were directly created by that company
       const userCompanyId = getUserCompanyId(user);
       if (userCompanyId !== null) {
-        where.hiringProcesses = {
-          some: {
-            companyId: userCompanyId,
-          },
-        };
+        Object.assign(where, {
+          OR: [{ hiringProcesses: { some: { companyId: userCompanyId } } }, { companyId: userCompanyId }],
+        });
       }
 
       const candidates = await this.databaseService.candidate.findMany({

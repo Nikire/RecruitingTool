@@ -46,8 +46,8 @@ export class CandidateController {
     type: CandidateResponseDto,
   })
   @ApiBody({ type: CreateCandidateDto })
-  create(@Body() createCandidateDto: CreateCandidateDto): Promise<CandidateResponseDto> {
-    return this.candidateService.create(createCandidateDto);
+  create(@Body() createCandidateDto: CreateCandidateDto, @CurrentUser() currentUser: User): Promise<CandidateResponseDto> {
+    return this.candidateService.create(createCandidateDto, currentUser);
   }
 
   @Post('manual')
