@@ -64,6 +64,9 @@ export class CandidateService {
       if (error instanceof HttpException) {
         throw error;
       }
+      if (error?.code === 'P2002') {
+        throw new ConflictException('A candidate with this email already exists');
+      }
       throw new InternalServerErrorException(`Failed to create: ${error.message}`);
     }
   }
