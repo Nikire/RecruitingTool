@@ -272,6 +272,7 @@ export class CompanyRolesService {
       isActive: user.isActive,
       position: user.position,
       department: user.department,
+      profilePicture: user.profilePicture ?? undefined,
       lastLoginAt: user.lastLoginAt?.toISOString(),
       createdAt: user.createdAt.toISOString(),
     };

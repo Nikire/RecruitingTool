@@ -62,6 +62,9 @@ export class CompanyMemberResponseDto {
   @ApiProperty({ description: 'Last login timestamp', required: false })
   lastLoginAt?: string;
 
+  @ApiProperty({ description: 'Profile picture URL', required: false })
+  profilePicture?: string;
+
   @ApiProperty({ description: 'When the user joined the company' })
   createdAt: string;
 }
