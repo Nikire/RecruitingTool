@@ -83,8 +83,8 @@ export class CompanyController {
   @Auth(['SUPER_ADMIN'])
   @ApiOperation({ summary: 'Create a new company (SUPER_ADMIN only)' })
   @ApiResponse({ status: 201, description: 'Company created successfully', type: CompanyResponseDto })
-  create(@Body() createCompanyDto: CreateCompanyDto): Promise<CompanyResponseDto> {
-    return this.companyService.create(createCompanyDto);
+  create(@Body() createCompanyDto: CreateCompanyDto, @CurrentUser() currentUser: any): Promise<CompanyResponseDto> {
+    return this.companyService.create(createCompanyDto, currentUser?.id);
   }
 
   @Get('list')

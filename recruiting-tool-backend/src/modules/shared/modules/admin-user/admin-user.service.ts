@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { RolesType } from '@prisma/client';
 import { UsersService } from 'src/modules/users/users.service';
 import { DatabaseService } from '../database/database.service';
+import { EmailTemplatesService } from 'src/modules/email-templates/email-templates.service';
 
 @Injectable()
 export class AdminUserService implements OnApplicationBootstrap {
@@ -12,6 +13,7 @@ export class AdminUserService implements OnApplicationBootstrap {
     private usersService: UsersService,
     private configService: ConfigService,
     private db: DatabaseService,
+    private emailTemplatesService: EmailTemplatesService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -67,6 +69,14 @@ export class AdminUserService implements OnApplicationBootstrap {
       this.logger.log(`Admin user configured: ${admin.email}, companyId set to ${company.id} (Borderless uid: ${company.uid})`);
     } else {
       this.logger.log(`Admin user ready: ${admin.email} (companyId: ${admin.companyId})`);
+    }
+
+    // Ensure default email templates exist for the Borderless company (idempotent via skipDuplicates)
+    try {
+      await this.emailTemplatesService.createDefaultTemplatesForCompany(company.id, admin.id);
+      this.logger.log(`Default email templates ensured for Borderless company (id: ${company.id})`);
+    } catch (templateError) {
+      this.logger.warn(`Failed to create default email templates for Borderless company: ${templateError.message}`);
     }
   }
 }

@@ -17,6 +17,7 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CacheService } from '../cache/cache.service';
 import { FilesService } from '../storage/files.service';
+import { EmailTemplatesService } from '../email-templates/email-templates.service';
 
 @Injectable()
 export class CompanyService {
@@ -24,9 +25,10 @@ export class CompanyService {
     private databaseService: DatabaseService,
     private cacheService: CacheService,
     private filesService: FilesService,
+    private emailTemplatesService: EmailTemplatesService,
   ) {}
 
-  async create(createCompanyDto: CreateCompanyDto): Promise<CompanyResponseDto> {
+  async create(createCompanyDto: CreateCompanyDto, createdByUserId?: number): Promise<CompanyResponseDto> {
     try {
       const newCompany = await this.databaseService.company.create({
         data: {
@@ -38,6 +40,15 @@ export class CompanyService {
 
       // Invalidate companies cache after creation
       await this.cacheService.invalidate('company');
+
+      // Create default email templates for the new company (non-blocking)
+      if (createdByUserId) {
+        try {
+          await this.emailTemplatesService.createDefaultTemplatesForCompany(newCompany.id, createdByUserId);
+        } catch (templateError) {
+          // Don't block company creation if template creation fails
+        }
+      }
 
       return CompanyMapper(newCompany);
     } catch (error) {

@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { EmailTemplatesController } from './email-templates.controller';
 import { EmailTemplatesService } from './email-templates.service';
-import { SharedModule } from '../shared/shared.module';
+import { DatabaseModule } from '../shared/modules/database/database.module';
+import { CacheModule } from '../cache/cache.module';
 
 @Module({
-  imports: [SharedModule],
+  imports: [DatabaseModule, CacheModule],
   controllers: [EmailTemplatesController],
   providers: [EmailTemplatesService],
   exports: [EmailTemplatesService],
