@@ -17,7 +17,7 @@ import {
   Divider,
   MenuItem,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Visibility } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -339,20 +339,6 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
   const isPending = isCreating || isUpdating;
   const isEditMode = !!template;
 
-  const watchedType = watch("type");
-
-  // Auto-fill name/subject/body when a type is selected in create mode and body is empty
-  useEffect(() => {
-    if (isEditMode) return;
-    if (!watchedType || !(watchedType in DEFAULT_TEMPLATES)) return;
-    const currentBody = getValues("body");
-    if (currentBody && currentBody.trim() !== "") return;
-    const defaults = DEFAULT_TEMPLATES[watchedType as EmailTemplateType];
-    setValue("name", defaults.name, { shouldValidate: false });
-    setValue("subject", defaults.subject, { shouldValidate: false });
-    setValue("body", defaults.body, { shouldValidate: false });
-  }, [watchedType, isEditMode, setValue, getValues]);
-
   const onSubmit = (data: EmailTemplateFormData) => {
     if (!user?.company?.uid) {
       return;
@@ -488,6 +474,23 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
                 fullWidth
                 margin="normal"
                 {...field}
+                onChange={(e) => {
+                  field.onChange(e);
+                  if (!isEditMode) {
+                    const selected = e.target.value as EmailTemplateType;
+                    if (selected && selected in DEFAULT_TEMPLATES) {
+                      const currentBody = getValues("body");
+                      if (!currentBody || currentBody.trim() === "") {
+                        const defaults = DEFAULT_TEMPLATES[selected];
+                        setValue("name", defaults.name, { shouldDirty: true });
+                        setValue("subject", defaults.subject, {
+                          shouldDirty: true,
+                        });
+                        setValue("body", defaults.body, { shouldDirty: true });
+                      }
+                    }
+                  }
+                }}
                 error={!!errors.type}
                 helperText={
                   errors.type?.message || t("email_template.type_helper")

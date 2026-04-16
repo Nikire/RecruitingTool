@@ -11,6 +11,7 @@ import {
   CreateEmailTemplateDto,
   UpdateEmailTemplateDto,
   PreviewEmailTemplateDto,
+  EmailTemplate,
 } from "../../types/emailTemplate.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
@@ -72,7 +73,12 @@ export function useDeleteEmailTemplate() {
 
   return useMutation({
     mutationFn: (uid: string) => deleteEmailTemplate(uid),
-    onSuccess: () => {
+    onSuccess: (_, uid) => {
+      queryClient.setQueriesData(
+        { queryKey: [EMAIL_TEMPLATES_KEY] },
+        (old: EmailTemplate[] | undefined) =>
+          old?.filter((t) => t.uid !== uid) ?? [],
+      );
       queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
       showSuccessToast("Email template deleted successfully!");
     },

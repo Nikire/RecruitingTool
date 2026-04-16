@@ -15,7 +15,7 @@ import {
   useEmailTemplates,
   useDeleteEmailTemplate,
 } from "../../hooks/api/useEmailTemplates";
-import EmailTemplateDialog from "../../components/dialogs/EmailTemplateDialog";
+import EmailTemplateDialog from "../../components/email-templates/EmailTemplateDialog";
 import EmailTemplatePreviewDialog from "../../components/dialogs/EmailTemplatePreviewDialog";
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import { canManageResources } from "../../utils/permissions";
