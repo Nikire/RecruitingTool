@@ -15,3 +15,5 @@ export type { TestConnectionButtonProps } from "./TestConnectionButton";
 
 export { default as AIConfigCard } from "./AIConfigCard";
 export type { AIConfigCardProps, AISettings } from "./AIConfigCard";
+
+export { default as AIScoringWeightsCard } from "./AIScoringWeightsCard";

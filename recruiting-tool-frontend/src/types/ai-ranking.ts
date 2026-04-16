@@ -163,3 +163,20 @@ export interface CompareCandidatesResponse {
   comparisonAnalysis: ComparisonAnalysis;
   comparedAt: string; // ISO timestamp
 }
+
+/**
+ * Company AI scoring weights configuration
+ */
+export interface ScoringWeightsResponse {
+  uid: string;
+  skillsWeight: number;
+  experienceWeight: number;
+  educationWeight: number;
+  updatedAt: string;
+}
+
+export interface UpdateScoringWeightsPayload {
+  skillsWeight: number;
+  experienceWeight: number;
+  educationWeight: number;
+}

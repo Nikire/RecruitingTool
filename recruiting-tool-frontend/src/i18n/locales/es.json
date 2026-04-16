@@ -3947,6 +3947,18 @@
     "no_stage_notes": "Sin notas de evaluación todavía",
     "stage_eval_notes": "Notas de Evaluación"
   },
+  "aiScoringWeights": {
+    "title": "Ponderaciones de Puntuación IA",
+    "description": "Configura cuánto contribuye cada dimensión a la puntuación general de IA. Los valores deben sumar 100.",
+    "skills": "Habilidades",
+    "experience": "Experiencia",
+    "education": "Educación",
+    "total": "Total",
+    "totalMustBe100": "Las ponderaciones deben sumar 100",
+    "save": "Guardar Ponderaciones",
+    "saveSuccess": "Ponderaciones actualizadas correctamente",
+    "saveError": "Error al actualizar las ponderaciones"
+  },
   "ai_scoring": {
     "score": "Puntuación",
     "analyze": "Analizar",

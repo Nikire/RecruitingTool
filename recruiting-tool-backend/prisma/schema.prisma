@@ -9,14 +9,14 @@ datasource db {
 }
 
 model Company {
-  id                 Int                 @id @default(autoincrement())
-  uid                String              @unique @default(uuid()) @db.Uuid
+  id                 Int                    @id @default(autoincrement())
+  uid                String                 @unique @default(uuid()) @db.Uuid
   name               String
   description        String?
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+  createdAt          DateTime               @default(now())
+  updatedAt          DateTime               @updatedAt
   logoUrl            String?
-  careersEnabled     Boolean             @default(true)
+  careersEnabled     Boolean                @default(true)
   careersHeadline    String?
   companySize        String?
   foundedYear        Int?
@@ -29,15 +29,16 @@ model Company {
   website            String?
   aiQuotas           AIQuota[]
   aiUsageLogs        AIUsageLog[]
-  candidates         Candidate[]         @relation("CandidateCompany")
-  invitations        CompanyInvitation[] @relation("CompanyInvitations")
+  candidates         Candidate[]            @relation("CandidateCompany")
+  invitations        CompanyInvitation[]    @relation("CompanyInvitations")
   connectionRequests ConnectionRequest[]
-  customPlans        CustomPlan[]        @relation("CompanyCustomPlan")
+  customPlans        CustomPlan[]           @relation("CompanyCustomPlan")
   emailTemplates     EmailTemplate[]
-  feedback           Feedback[]          @relation("CompanyFeedback")
+  feedback           Feedback[]             @relation("CompanyFeedback")
   hiringProcesses    HiringProcess[]
   jobPositions       JobPosition[]
   scorecardTemplates ScorecardTemplate[]
+  scoringWeights     CompanyScoringWeights? @relation("CompanyScoringWeights")
   subscription       Subscription?
   users              User[]
 
@@ -764,6 +765,21 @@ model CandidateScore {
   @@index([jobPositionId])
   @@index([overallScore])
   @@index([candidateId])
+  @@index([uid])
+}
+
+model CompanyScoringWeights {
+  id               Int      @id @default(autoincrement())
+  uid              String   @unique @default(uuid()) @db.Uuid
+  companyId        Int      @unique
+  skillsWeight     Int      @default(40)
+  experienceWeight Int      @default(35)
+  educationWeight  Int      @default(25)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  company          Company  @relation("CompanyScoringWeights", fields: [companyId], references: [id])
+
+  @@index([companyId])
   @@index([uid])
 }
 

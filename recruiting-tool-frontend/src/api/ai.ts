@@ -5,6 +5,8 @@ import {
   RankedCandidateDto,
   RankingsResponseDto,
   CandidateScoreResponseDto,
+  ScoringWeightsResponse,
+  UpdateScoringWeightsPayload,
 } from "../types/ai-ranking";
 
 /**
@@ -50,3 +52,19 @@ export const scoreCandidate = async (data: {
   );
   return response.data;
 };
+
+/**
+ * Get the company AI scoring weights
+ */
+export const getScoringWeights = (): Promise<ScoringWeightsResponse> =>
+  api.get<ScoringWeightsResponse>("/ai/scoring-weights").then((r) => r.data);
+
+/**
+ * Update the company AI scoring weights (must sum to 100)
+ */
+export const updateScoringWeights = (
+  data: UpdateScoringWeightsPayload,
+): Promise<ScoringWeightsResponse> =>
+  api
+    .put<ScoringWeightsResponse>("/ai/scoring-weights", data)
+    .then((r) => r.data);

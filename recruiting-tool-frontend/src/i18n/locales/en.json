@@ -3939,6 +3939,18 @@
     "no_stage_notes": "No evaluation notes yet",
     "stage_eval_notes": "Evaluation Notes"
   },
+  "aiScoringWeights": {
+    "title": "AI Scoring Weights",
+    "description": "Configure how much each dimension contributes to the overall AI score. Values must sum to 100.",
+    "skills": "Skills",
+    "experience": "Experience",
+    "education": "Education",
+    "total": "Total",
+    "totalMustBe100": "Weights must sum to 100",
+    "save": "Save Weights",
+    "saveSuccess": "Scoring weights updated successfully",
+    "saveError": "Failed to update scoring weights"
+  },
   "ai_scoring": {
     "score": "Score",
     "analyze": "Analyze",

@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Get, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Post, Body, Get, Param, Delete, Put, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiParam, ApiTooManyRequestsResponse } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { AiService } from './ai.service';
@@ -8,6 +8,7 @@ import { ParseResumeRequestDto, ParseResumeResponseDto } from './dto/parse-resum
 import { ScoreCandidateDto, CandidateScoreResponseDto, RankedCandidatesResponseDto } from './dto/candidate-scoring.dto';
 import { CompareCandidatesDto, CompareCandidatesResponseDto } from './dto/candidate-comparison.dto';
 import { BatchScoreRequestDto, BatchScoreResponseDto, BatchScoreStatusDto, BatchScoreResultDto } from './dto/batch-scoring.dto';
+import { UpdateScoringWeightsDto, ScoringWeightsResponseDto } from './dto/scoring-weights.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
@@ -358,5 +359,26 @@ export class AiController {
   })
   async cancelBatch(@Param('batchId') batchId: string): Promise<{ message: string }> {
     return this.batchScoringService.cancelBatch(batchId);
+  }
+
+  @Get('scoring-weights')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Get company AI scoring weights' })
+  @ApiResponse({ status: 200, description: 'Scoring weights retrieved successfully', type: ScoringWeightsResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Valid JWT token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required' })
+  async getScoringWeights(@CurrentUser() user: any): Promise<ScoringWeightsResponseDto> {
+    return this.scoringService.getScoringWeights(user.companyId);
+  }
+
+  @Put('scoring-weights')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Update company AI scoring weights (must sum to 100)' })
+  @ApiResponse({ status: 200, description: 'Scoring weights updated successfully', type: ScoringWeightsResponseDto })
+  @ApiResponse({ status: 400, description: 'Weights do not sum to 100' })
+  @ApiResponse({ status: 401, description: 'Unauthorized - Valid JWT token required' })
+  @ApiResponse({ status: 403, description: 'Forbidden - HR, ADMIN, or SUPER_ADMIN role required' })
+  async updateScoringWeights(@CurrentUser() user: any, @Body() dto: UpdateScoringWeightsDto): Promise<ScoringWeightsResponseDto> {
+    return this.scoringService.updateScoringWeights(user.companyId, dto);
   }
 }

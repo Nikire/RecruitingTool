@@ -6,6 +6,7 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { CandidateScoreResponseDto, RankedCandidatesResponseDto, RankedCandidateDto, ScoreAnalysisDto } from './dto/candidate-scoring.dto';
 import { CompareCandidatesResponseDto, CandidateComparisonSummary, ComparisonAnalysis } from './dto/candidate-comparison.dto';
+import { UpdateScoringWeightsDto, ScoringWeightsResponseDto } from './dto/scoring-weights.dto';
 import { SseService } from '../sse/sse.service';
 import { GeminiService } from './gemini.service';
 import { StorageService } from '../storage/storage.service';
@@ -129,8 +130,11 @@ export class ScoringService {
       // Extract resume text from candidate files
       const resumeText = await this.extractCandidateResumeText(candidate.files);
 
+      // Fetch company scoring weights (create defaults if not set)
+      const weights = await this.getScoringWeights(jobPosition.companyId);
+
       // Generate AI scoring
-      const { scores, analysis } = await this.generateAIScoring(candidate, jobPosition, hiringProcess, resumeText);
+      const { scores, analysis } = await this.generateAIScoring(candidate, jobPosition, hiringProcess, resumeText, weights);
 
       // Save or update the score
       let savedScore;
@@ -644,6 +648,7 @@ export class ScoringService {
     jobPosition: any,
     hiringProcess: any,
     resumeText: string,
+    weights: { skillsWeight: number; experienceWeight: number; educationWeight: number },
   ): Promise<{
     scores: {
       overall: number;
@@ -670,8 +675,9 @@ ${resumeText}
 ${stagesSection}
 
 ## SCORING CRITERIA
-Score each dimension from 0 to 100:
-- 0-20: Very poor fit — major gaps in required skills/experience/education
+Score each dimension from 0 to 100. 0 is a valid score for completely incompatible candidates:
+- 0: No compatibility whatsoever
+- 1-20: Very poor fit — major gaps in required skills/experience/education
 - 21-40: Poor fit — significant mismatches with requirements
 - 41-60: Moderate fit — meets some requirements but has notable gaps
 - 61-80: Good fit — meets most requirements with only minor gaps
@@ -688,7 +694,7 @@ Please provide a comprehensive evaluation with the following structure:
 1. **Skills Score (0-100)**: Rate the candidate's technical and professional skills match for this position based on their resume and HR notes.
 2. **Experience Score (0-100)**: Rate the candidate's relevant work experience, progression through hiring stages, and evaluator observations.
 3. **Education Score (0-100)**: Rate the candidate's educational qualifications and certifications.
-4. **Overall Score (0-100)**: Calculate a weighted overall score (40% skills, 35% experience, 25% education), adjusted by HR evaluator notes and ratings.
+4. **Overall Score (0-100)**: Calculate a weighted overall score (${weights.skillsWeight}% skills, ${weights.experienceWeight}% experience, ${weights.educationWeight}% education), adjusted by HR evaluator notes and ratings. Important: scores CAN be 0 if the candidate is completely incompatible. Do not use 10 as a floor — a score of 0 means zero compatibility.
 
 Additionally, provide detailed analysis:
 - **Skills Analysis**: What skills does the candidate have that match or don't match the position?
@@ -777,6 +783,48 @@ Return a JSON object with this exact structure:
       scoredAt: score.scoredAt,
       createdAt: score.createdAt,
       updatedAt: score.updatedAt,
+    };
+  }
+
+  /**
+   * Get or create scoring weights for a company.
+   * Defaults: 40% skills, 35% experience, 25% education.
+   */
+  async getScoringWeights(companyId: number): Promise<ScoringWeightsResponseDto> {
+    let weights = await this.databaseService.companyScoringWeights.findUnique({ where: { companyId } });
+    if (!weights) {
+      weights = await this.databaseService.companyScoringWeights.create({
+        data: { companyId, skillsWeight: 40, experienceWeight: 35, educationWeight: 25 },
+      });
+    }
+    return {
+      uid: weights.uid,
+      skillsWeight: weights.skillsWeight,
+      experienceWeight: weights.experienceWeight,
+      educationWeight: weights.educationWeight,
+      updatedAt: weights.updatedAt,
+    };
+  }
+
+  /**
+   * Update scoring weights for a company. Weights must sum to 100.
+   */
+  async updateScoringWeights(companyId: number, dto: UpdateScoringWeightsDto): Promise<ScoringWeightsResponseDto> {
+    const total = dto.skillsWeight + dto.experienceWeight + dto.educationWeight;
+    if (total !== 100) {
+      throw new BadRequestException(`Weights must sum to 100. Current sum: ${total}`);
+    }
+    const weights = await this.databaseService.companyScoringWeights.upsert({
+      where: { companyId },
+      create: { companyId, ...dto },
+      update: dto,
+    });
+    return {
+      uid: weights.uid,
+      skillsWeight: weights.skillsWeight,
+      experienceWeight: weights.experienceWeight,
+      educationWeight: weights.educationWeight,
+      updatedAt: weights.updatedAt,
     };
   }
 

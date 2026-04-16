@@ -6,6 +6,8 @@ import {
   CompareCandidatesResponse,
   RankedCandidateDto,
   CandidateScoreResponseDto,
+  ScoringWeightsResponse,
+  UpdateScoringWeightsPayload,
 } from "../../types/ai-ranking";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
@@ -66,6 +68,42 @@ export const useScoreCandidate = () => {
     },
     onError: (error) => {
       showErrorToast(error, t("ai_scoring.scored_error"));
+    },
+  });
+};
+
+const AI_SCORING_WEIGHTS_KEY = ["ai", "scoring-weights"] as const;
+
+/**
+ * Hook to fetch the company AI scoring weights
+ */
+export const useGetScoringWeights = () => {
+  return useQuery<ScoringWeightsResponse, Error>({
+    queryKey: AI_SCORING_WEIGHTS_KEY,
+    queryFn: aiApi.getScoringWeights,
+    staleTime: 5 * 60 * 1000,
+  });
+};
+
+/**
+ * Hook to update the company AI scoring weights
+ */
+export const useUpdateScoringWeights = () => {
+  const { t } = useTranslation();
+  const queryClient = useQueryClient();
+
+  return useMutation<
+    ScoringWeightsResponse,
+    Error,
+    UpdateScoringWeightsPayload
+  >({
+    mutationFn: aiApi.updateScoringWeights,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: AI_SCORING_WEIGHTS_KEY });
+      showSuccessToast(t("aiScoringWeights.saveSuccess"));
+    },
+    onError: (error) => {
+      showErrorToast(error, t("aiScoringWeights.saveError"));
     },
   });
 };
