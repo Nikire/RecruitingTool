@@ -97,7 +97,7 @@ const OverviewStatsRow: React.FC<OverviewStatsRowProps> = ({ dateRange }) => {
     },
     {
       title: t("analytics.conversion_rate"),
-      value: `${Math.round((data?.conversionMetrics?.overallConversionRate ?? 0) * 100)}%`,
+      value: `${Math.round(data?.conversionMetrics?.overallConversionRate ?? 0)}%`,
       icon: <TrendingUpIcon />,
       color: theme.palette.secondary.main,
     },

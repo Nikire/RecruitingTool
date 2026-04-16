@@ -68,8 +68,7 @@ const CustomTooltip = ({
           {t("analytics.count")}: {item.count}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          {t("analytics.conversion_rate")}:{" "}
-          {(item.conversionRate * 100).toFixed(1)}%
+          {t("analytics.conversion_rate")}: {item.conversionRate.toFixed(1)}%
         </Typography>
       </Box>
     );
@@ -275,7 +274,7 @@ const SourcesDonutChart: React.FC<SourcesDonutChartProps> = ({ dateRange }) => {
                     color="text.secondary"
                     sx={{ textAlign: "right", minWidth: 70 }}
                   >
-                    {(item.conversionRate * 100).toFixed(1)}%
+                    {item.conversionRate.toFixed(1)}%
                   </Typography>
                 </Box>
               ))}
