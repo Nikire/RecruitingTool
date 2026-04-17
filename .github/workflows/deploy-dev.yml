@@ -84,29 +84,20 @@ jobs:
             echo "==> Deployment complete."
 
       - name: Send deployment notification email
-        if: always()
+        if: success()
         env:
-          JOB_STATUS: ${{ job.status }}
           COMMIT_SHA: ${{ github.sha }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
           ACTOR: ${{ github.actor }}
           INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY || 'changeme' }}
         run: |
-          if [ "$JOB_STATUS" = "success" ]; then
-            EMOJI="✅"
-          else
-            EMOJI="❌"
-          fi
-
           PAYLOAD=$(jq -n \
-            --arg batch "$EMOJI EC2 Deployment – ${JOB_STATUS^^}" \
             --arg sha "${COMMIT_SHA:0:7}" \
             --arg msg "$COMMIT_MSG" \
             --arg actor "$ACTOR" \
-            --arg status "${JOB_STATUS^^}" \
             '{
-              batchName: $batch,
-              issues: [{ number: 0, title: ("[\($sha)] \($msg)"), status: $status }],
+              batchName: "✅ EC2 Deployment – SUCCESS",
+              issues: [{ number: 0, title: ("[\($sha)] \($msg)"), status: "DEPLOYED" }],
               testingChecklist: [
                 "Frontend loads at https://borderlessats.com",
                 "Backend health at https://api.borderlessats.com/api/health/liveness",
@@ -120,4 +111,4 @@ jobs:
             -H "x-api-key: $INTERNAL_API_KEY" \
             -d "$PAYLOAD" \
           && echo "📧 Deployment notification sent." \
-          || echo "⚠️ Notification failed (API may still be starting)"
+          || echo "⚠️ Notification failed"
