@@ -177,6 +177,7 @@
     "name_label": "Candidate Name",
     "email_label": "Email",
     "phone_label": "Phone Number",
+    "created_by_label": "Created By",
     "linkedin_label": "LinkedIn Profile",
     "notes_label": "Notes",
     "files_tab": "Files",

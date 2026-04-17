@@ -106,6 +106,7 @@ model User {
   refreshTokens              RefreshToken[]          @relation("UserRefreshTokens")
   scorecardEvaluations       Scorecard[]             @relation("ScorecardEvaluations")
   stageNotes                 StageNote[]             @relation("StageNoteAuthor")
+  createdCandidates          Candidate[]             @relation("CandidateCreatedBy")
   company                    Company?                @relation(fields: [companyId], references: [id], onDelete: Restrict)
   activityLogs               UserActivityLog[]       @relation("UserActivityLogs")
 
@@ -178,7 +179,9 @@ model Candidate {
   utmMedium       String?
   utmCampaign     String?
   companyId       Int?
+  createdByUserId Int?
   company         Company?            @relation("CandidateCompany", fields: [companyId], references: [id], onDelete: SetNull)
+  createdByUser   User?               @relation("CandidateCreatedBy", fields: [createdByUserId], references: [id], onDelete: SetNull)
   activities      CandidateActivity[] @relation("CandidateActivities")
   notes           CandidateNote[]     @relation("CandidateNotes")
   scores          CandidateScore[]    @relation("CandidateScores")
@@ -191,6 +194,7 @@ model Candidate {
   @@index([deletedAt])
   @@index([createdAt])
   @@index([uid])
+  @@index([createdByUserId])
   @@map("Candidate")
 }
 

@@ -1,6 +1,8 @@
-import { Candidate } from '@prisma/client';
+import { Candidate, User } from '@prisma/client';
 
-export function CandidateMapper(candidate: Candidate) {
+type CandidateWithCreator = Candidate & { createdByUser?: User | null };
+
+export function CandidateMapper(candidate: CandidateWithCreator) {
   return {
     uid: candidate.uid,
     name: candidate.name,
@@ -11,5 +13,7 @@ export function CandidateMapper(candidate: Candidate) {
     utmSource: candidate.utmSource,
     utmMedium: candidate.utmMedium,
     utmCampaign: candidate.utmCampaign,
+    createdAt: candidate.createdAt,
+    createdByName: candidate.createdByUser?.name ?? null,
   };
 }

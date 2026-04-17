@@ -248,6 +248,12 @@ export class CandidateResponseDto {
   })
   utmCampaign?: string;
 
+  @ApiProperty({ description: 'When the candidate was created', required: false })
+  createdAt?: Date;
+
+  @ApiProperty({ description: 'Name of the user who manually created this candidate, null if self-applied', required: false, nullable: true })
+  createdByName?: string | null;
+
   @ApiProperty({ description: 'Hiring process related to this Candidate' })
   hiringProcess?: HiringProcessResponseDto;
 }

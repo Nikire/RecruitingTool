@@ -5,6 +5,7 @@ export interface Candidate {
   phone?: string;
   createdAt?: string;
   updatedAt?: string;
+  createdByName?: string | null;
 }
 
 export interface CandidateNote {

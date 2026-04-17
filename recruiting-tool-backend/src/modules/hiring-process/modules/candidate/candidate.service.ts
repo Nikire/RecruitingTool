@@ -45,7 +45,9 @@ export class CandidateService {
           utmMedium: createCandidateDto.utmMedium,
           utmCampaign: createCandidateDto.utmCampaign,
           ...(companyId !== null && { companyId }),
+          ...(user?.id && { createdByUserId: user.id }),
         },
+        include: { createdByUser: true },
       });
 
       // Log candidate creation activity
@@ -133,7 +135,9 @@ export class CandidateService {
           email,
           source: ApplicationSource.MANUAL,
           sourceDetails: sourceDetails || 'Manual entry by HR',
+          createdByUserId: user.id,
         },
+        include: { createdByUser: true },
       });
 
       // Auto-create hiring process
@@ -344,7 +348,7 @@ export class CandidateService {
         skip,
         take: pageSize,
         orderBy: { [sortBy]: sortOrder },
-        include: { hiringProcesses: true },
+        include: { hiringProcesses: true, createdByUser: true },
       });
 
       const totalPages = Math.ceil(total / pageSize);
