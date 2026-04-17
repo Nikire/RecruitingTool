@@ -1206,7 +1206,7 @@ export class InterviewService {
         notes: interview.notes,
         candidate: hp?.candidate ? { uid: hp.candidate.uid, name: hp.candidate.name, email: hp.candidate.email ?? null } : { uid: '', name: 'Unknown', email: null },
         jobPosition: hp?.jobPosition ? { uid: hp.jobPosition.uid, title: hp.jobPosition.title } : { uid: '', title: 'Unknown' },
-        stage: { uid: interview.stage.uid, title: interview.stage.title },
+        stage: { uid: interview.stage.uid, title: interview.stage.title, position: interview.stage.position },
         organizer: interview.organizer ? { uid: interview.organizer.uid, name: interview.organizer.name, profilePicture: interview.organizer.profilePicture ?? null } : null,
       };
     });

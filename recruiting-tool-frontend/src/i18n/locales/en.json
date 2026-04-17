@@ -441,8 +441,12 @@
       "collapse_icon": "Collapse group",
       "column_title": "Process Title",
       "column_status": "Status",
+      "column_stage": "Current Stage",
       "positions_per_page": "Positions per page"
-    }
+    },
+    "stage_notes_btn": "Stage notes",
+    "no_stage_notes": "No stage notes yet",
+    "no_current_stage": "No active stage"
   },
   "companies": {
     "title": "Companies",

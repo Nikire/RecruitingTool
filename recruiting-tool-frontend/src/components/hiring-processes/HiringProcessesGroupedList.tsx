@@ -27,6 +27,7 @@ import RefreshIcon from "@mui/icons-material/Refresh";
 import SortIcon from "@mui/icons-material/Sort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import NoteAltIcon from "@mui/icons-material/NoteAlt";
 import { useTranslation } from "react-i18next";
 import {
   useListHiringProcessesGrouped,
@@ -305,117 +306,242 @@ const ProcessRow: React.FC<{
   onScore,
 }) => {
   const { t } = useTranslation();
+  const [notesOpen, setNotesOpen] = useState(false);
+
+  const currentStage = process.stages.find((s) => s.status === "CURRENT");
+  const stagesWithNotes = process.stages.filter((s) => s.note != null);
+  const hasNotes = stagesWithNotes.length > 0;
 
   return (
-    <Box
-      ref={rowRef}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        gap: 2,
-        px: 3,
-        py: 1.5,
-        borderBottom: "1px solid",
-        borderColor: "divider",
-        flexWrap: { xs: "wrap", md: "nowrap" },
-        "&:last-child": {
-          borderBottom: "none",
-        },
-        "&:hover": {
-          bgcolor: "action.hover",
-        },
-        ...(isHighlighted && {
-          animation: `${highlightPulse} 2s ease-out forwards`,
-        }),
-      }}
-    >
-      {/* Title */}
-      <Box sx={{ flex: "1 1 180px", minWidth: 0 }}>
-        <Typography
-          variant="body2"
-          fontWeight={500}
-          noWrap
-          title={process.title}
-        >
-          {process.title}
-        </Typography>
-      </Box>
-
-      {/* Candidate */}
-      <Box sx={{ flex: "1 1 160px", minWidth: 0 }}>
-        {process.candidate ? (
-          <Box>
-            <Typography variant="body2" noWrap title={process.candidate.name}>
-              {process.candidate.name}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              noWrap
-              title={process.candidate.email}
-            >
-              {process.candidate.email}
-            </Typography>
-          </Box>
-        ) : (
-          <Typography
-            variant="caption"
-            sx={{ color: "error.main", fontWeight: 500 }}
-          >
-            {t("hiring_processes.no_candidate")}
-          </Typography>
-        )}
-      </Box>
-
-      {/* Status */}
-      <Box sx={{ flex: "0 0 110px" }}>
-        <Chip
-          label={t(`status.${process.status.toLowerCase()}`)}
-          color={getHiringProcessStatusColor(process.status)}
-          size="small"
-        />
-      </Box>
-
-      {/* AI Score */}
-      <Box sx={{ flex: "0 0 80px", display: "flex", alignItems: "center" }}>
-        <ScoreChip
-          score={score}
-          isScoring={isScoringThisCandidate}
-          canScore={canScore}
-          jobPositionUid={jobPositionUid}
-          candidateUid={process.candidate?.uid}
-          onScore={onScore}
-        />
-      </Box>
-
-      {/* Actions */}
+    <>
       <Box
+        ref={rowRef}
         sx={{
-          flex: "0 0 auto",
           display: "flex",
-          gap: 0.5,
           alignItems: "center",
+          gap: 2,
+          px: 3,
+          py: 1.5,
+          borderBottom: notesOpen ? "none" : "1px solid",
+          borderColor: "divider",
+          flexWrap: { xs: "wrap", md: "nowrap" },
+          "&:last-child": {
+            borderBottom: "none",
+          },
+          "&:hover": {
+            bgcolor: "action.hover",
+          },
+          ...(isHighlighted && {
+            animation: `${highlightPulse} 2s ease-out forwards`,
+          }),
         }}
       >
-        <Button
-          size="small"
-          variant="contained"
-          onClick={(e) => {
-            e.stopPropagation();
-            onView(process);
+        {/* Title */}
+        <Box sx={{ flex: "1 1 160px", minWidth: 0 }}>
+          <Typography
+            variant="body2"
+            fontWeight={500}
+            noWrap
+            title={process.title}
+          >
+            {process.title}
+          </Typography>
+        </Box>
+
+        {/* Candidate */}
+        <Box sx={{ flex: "1 1 140px", minWidth: 0 }}>
+          {process.candidate ? (
+            <Box>
+              <Typography variant="body2" noWrap title={process.candidate.name}>
+                {process.candidate.name}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                noWrap
+                title={process.candidate.email}
+              >
+                {process.candidate.email}
+              </Typography>
+            </Box>
+          ) : (
+            <Typography
+              variant="caption"
+              sx={{ color: "error.main", fontWeight: 500 }}
+            >
+              {t("hiring_processes.no_candidate")}
+            </Typography>
+          )}
+        </Box>
+
+        {/* Status */}
+        <Box sx={{ flex: "0 0 100px" }}>
+          <Chip
+            label={t(`status.${process.status.toLowerCase()}`)}
+            color={getHiringProcessStatusColor(process.status)}
+            size="small"
+          />
+        </Box>
+
+        {/* Current Stage */}
+        <Box sx={{ flex: "1 1 160px", minWidth: 0 }}>
+          {currentStage ? (
+            <Chip
+              label={`(${currentStage.position}) ${currentStage.title}`}
+              size="small"
+              variant="outlined"
+              color="info"
+              sx={{ maxWidth: "100%", fontWeight: 500 }}
+            />
+          ) : (
+            <Typography variant="caption" color="text.disabled">
+              {t("hiring_processes.no_current_stage")}
+            </Typography>
+          )}
+        </Box>
+
+        {/* AI Score */}
+        <Box sx={{ flex: "0 0 80px", display: "flex", alignItems: "center" }}>
+          <ScoreChip
+            score={score}
+            isScoring={isScoringThisCandidate}
+            canScore={canScore}
+            jobPositionUid={jobPositionUid}
+            candidateUid={process.candidate?.uid}
+            onScore={onScore}
+          />
+        </Box>
+
+        {/* Actions */}
+        <Box
+          sx={{
+            flex: "0 0 auto",
+            display: "flex",
+            gap: 0.5,
+            alignItems: "center",
           }}
         >
-          {t("common.view")}
-        </Button>
-        {canManage && (
-          <ActionsCell
-            onEdit={() => onEdit(process)}
-            onDelete={() => onDelete(process)}
-            showView={false}
-          />
-        )}
+          <Tooltip title={t("hiring_processes.stage_notes_btn")}>
+            <IconButton
+              size="small"
+              color={notesOpen ? "primary" : hasNotes ? "default" : "default"}
+              onClick={(e) => {
+                e.stopPropagation();
+                setNotesOpen((prev) => !prev);
+              }}
+              aria-label={t("hiring_processes.stage_notes_btn")}
+            >
+              <NoteAltIcon
+                sx={{
+                  fontSize: 18,
+                  color: hasNotes
+                    ? notesOpen
+                      ? "primary.main"
+                      : "text.secondary"
+                    : "text.disabled",
+                }}
+              />
+            </IconButton>
+          </Tooltip>
+          <Button
+            size="small"
+            variant="contained"
+            onClick={(e) => {
+              e.stopPropagation();
+              onView(process);
+            }}
+          >
+            {t("common.view")}
+          </Button>
+          {canManage && (
+            <ActionsCell
+              onEdit={() => onEdit(process)}
+              onDelete={() => onDelete(process)}
+              showView={false}
+            />
+          )}
+        </Box>
       </Box>
-    </Box>
+
+      {/* Stage notes panel */}
+      <Collapse in={notesOpen} timeout="auto" unmountOnExit>
+        <Box
+          sx={{
+            px: 3,
+            py: 1.5,
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            bgcolor: "action.hover",
+          }}
+        >
+          <Typography
+            variant="caption"
+            fontWeight={600}
+            color="text.secondary"
+            sx={{ textTransform: "uppercase", mb: 1, display: "block" }}
+          >
+            {t("hiring_processes.stage_notes_btn")}
+          </Typography>
+          {stagesWithNotes.length === 0 ? (
+            <Typography variant="body2" color="text.disabled">
+              {t("hiring_processes.no_stage_notes")}
+            </Typography>
+          ) : (
+            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+              {stagesWithNotes.map((stage) => (
+                <Box
+                  key={stage.uid}
+                  sx={{
+                    p: 1.5,
+                    borderRadius: 1,
+                    border: "1px solid",
+                    borderColor: "divider",
+                    bgcolor: "background.paper",
+                    minWidth: 200,
+                    maxWidth: 340,
+                    flex: "1 1 200px",
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      mb: 0.5,
+                    }}
+                  >
+                    <Typography variant="caption" fontWeight={600}>
+                      ({stage.position}) {stage.title}
+                    </Typography>
+                    {stage.note && stage.note.rating > 0 && (
+                      <Typography
+                        variant="caption"
+                        color="primary"
+                        fontWeight={600}
+                      >
+                        {"★ " + stage.note.rating}
+                      </Typography>
+                    )}
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 3,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {stage.note?.content}
+                  </Typography>
+                </Box>
+              ))}
+            </Box>
+          )}
+        </Box>
+      </Collapse>
+    </>
   );
 };
 
@@ -709,7 +835,7 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             variant="caption"
             color="text.secondary"
             fontWeight={600}
-            sx={{ flex: "1 1 180px", textTransform: "uppercase" }}
+            sx={{ flex: "1 1 160px", textTransform: "uppercase" }}
           >
             {t("hiring_processes.group.column_title")}
           </Typography>
@@ -717,7 +843,7 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             variant="caption"
             color="text.secondary"
             fontWeight={600}
-            sx={{ flex: "1 1 160px", textTransform: "uppercase" }}
+            sx={{ flex: "1 1 140px", textTransform: "uppercase" }}
           >
             {t("candidates.title")}
           </Typography>
@@ -725,9 +851,17 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
             variant="caption"
             color="text.secondary"
             fontWeight={600}
-            sx={{ flex: "0 0 110px", textTransform: "uppercase" }}
+            sx={{ flex: "0 0 100px", textTransform: "uppercase" }}
           >
             {t("hiring_processes.group.column_status")}
+          </Typography>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ flex: "1 1 160px", textTransform: "uppercase" }}
+          >
+            {t("hiring_processes.group.column_stage")}
           </Typography>
           <Typography
             variant="caption"
@@ -737,7 +871,7 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
           >
             {t("ai_scoring.score")}
           </Typography>
-          <Box sx={{ flex: "0 0 auto", minWidth: 110 }} />
+          <Box sx={{ flex: "0 0 auto", minWidth: 130 }} />
         </Box>
 
         {groups.map((group) => (

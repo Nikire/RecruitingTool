@@ -163,7 +163,10 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
               )}
               {interview.stage?.title && (
                 <Typography variant="body2" color="text.secondary">
-                  · {t("interviews.stage")}: {interview.stage.title}
+                  · {t("interviews.stage")}:{" "}
+                  {interview.stage.position != null
+                    ? `(${interview.stage.position}) ${interview.stage.title}`
+                    : interview.stage.title}
                 </Typography>
               )}
             </Stack>

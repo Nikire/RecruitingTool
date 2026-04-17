@@ -441,8 +441,12 @@
       "collapse_icon": "Contraer grupo",
       "column_title": "Título del Proceso",
       "column_status": "Estado",
+      "column_stage": "Etapa Actual",
       "positions_per_page": "Posiciones por página"
-    }
+    },
+    "stage_notes_btn": "Notas de etapa",
+    "no_stage_notes": "Sin notas de etapa aún",
+    "no_current_stage": "Sin etapa activa"
   },
   "companies": {
     "title": "Empresas",

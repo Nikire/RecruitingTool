@@ -26,6 +26,7 @@ export interface CalendarInterviewJobPosition {
 export interface CalendarInterviewStage {
   uid: string;
   title: string;
+  position?: number;
 }
 
 export interface CalendarInterview {
