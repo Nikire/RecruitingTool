@@ -480,7 +480,7 @@ export class TimeSlotsService {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + tokenExpiresInDays);
 
-    const bookingToken = await this.prisma.interviewBookingToken.create({
+    await this.prisma.interviewBookingToken.create({
       data: {
         token,
         interviewId: interview.id,
