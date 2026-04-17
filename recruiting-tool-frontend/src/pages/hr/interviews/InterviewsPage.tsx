@@ -155,19 +155,30 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             </Typography>
 
             {/* Job position + stage */}
-            <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
+            <Stack
+              direction="row"
+              spacing={1}
+              flexWrap="wrap"
+              alignItems="center"
+              sx={{ mt: 0.5 }}
+            >
               {interview.jobPosition?.title && (
                 <Typography variant="body2" color="text.secondary">
                   {t("interviews.job_position")}: {interview.jobPosition.title}
                 </Typography>
               )}
               {interview.stage?.title && (
-                <Typography variant="body2" color="text.secondary">
-                  · {t("interviews.stage")}:{" "}
-                  {interview.stage.position != null
-                    ? `(${interview.stage.position}) ${interview.stage.title}`
-                    : interview.stage.title}
-                </Typography>
+                <Chip
+                  label={
+                    interview.stage.position != null
+                      ? `(${interview.stage.position}) ${interview.stage.title}`
+                      : interview.stage.title
+                  }
+                  size="small"
+                  variant="outlined"
+                  color="info"
+                  sx={{ fontWeight: 500 }}
+                />
               )}
             </Stack>
 
