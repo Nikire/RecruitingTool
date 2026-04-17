@@ -852,6 +852,8 @@ export class HiringProcessService {
           type: stage.type,
           position: stage.position,
           status: publicStatus,
+          description: stage.description ?? undefined,
+          estimatedTime: stage.estimatedTime ?? undefined,
         };
       });
 

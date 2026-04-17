@@ -1449,7 +1449,19 @@
     "code_hint": "Check your email for the access code that was sent when your hiring process was created.",
     "code_label": "Access Code",
     "unlock": "Unlock",
-    "invalid_code": "Invalid or expired access code. Please check your email."
+    "invalid_code": "Invalid or expired access code. Please check your email.",
+    "current_stage_title": "Your Current Stage",
+    "current_stage_motivational": "You're making great progress — prepare well for this stage!",
+    "estimated_duration": "Estimated duration",
+    "minutes": "minutes",
+    "process_overview_title": "Full Process Overview",
+    "process_overview_subtitle": "Here's what the full recruitment process looks like so you can prepare ahead.",
+    "stage_type_INTERVIEW": "Interview",
+    "stage_type_TECHNICAL_INTERVIEW": "Technical Interview",
+    "stage_type_FINAL_INTERVIEW": "Final Interview",
+    "stage_type_OFFER": "Offer",
+    "stage_type_OTHER": "Other",
+    "no_description": "No additional details provided for this stage."
   },
   "hiring_process_page": {
     "no_data_found": "No data found",

@@ -30,6 +30,8 @@ import BusinessIcon from "@mui/icons-material/Business";
 import PersonIcon from "@mui/icons-material/Person";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import LockIcon from "@mui/icons-material/Lock";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import FormatListNumberedIcon from "@mui/icons-material/FormatListNumbered";
 import {
   getPublicHiringProcessTracking,
   PublicStage,
@@ -508,6 +510,188 @@ const HiringProcessTrackingPage: React.FC = () => {
           </Alert>
         )}
       </Paper>
+
+      {/* Current Stage Detail card */}
+      {currentStageIndex !== -1 && !isTerminal && (
+        <Paper
+          elevation={2}
+          sx={{ p: { xs: 3, md: 4 }, mt: 4, borderRadius: 2 }}
+        >
+          <Box display="flex" alignItems="center" gap={1} mb={3}>
+            <RadioButtonCheckedIcon color="primary" />
+            <Typography variant="h6" fontWeight={600}>
+              {t("hiring_process_tracking.current_stage_title")}
+            </Typography>
+          </Box>
+
+          <Box
+            display="flex"
+            alignItems="center"
+            gap={2}
+            flexWrap="wrap"
+            mb={2}
+          >
+            <Typography variant="h5" fontWeight={700}>
+              {stages[currentStageIndex].title}
+            </Typography>
+            <Chip
+              label={t(
+                `hiring_process_tracking.stage_type_${stages[currentStageIndex].type}`,
+                stages[currentStageIndex].type,
+              )}
+              color="primary"
+              size="small"
+              variant="outlined"
+            />
+          </Box>
+
+          <Typography variant="body1" color="text.secondary" mb={2}>
+            {stages[currentStageIndex].description
+              ? stages[currentStageIndex].description
+              : t("hiring_process_tracking.no_description")}
+          </Typography>
+
+          {stages[currentStageIndex].estimatedTime != null && (
+            <Box display="flex" alignItems="center" gap={1} mb={2}>
+              <AccessTimeIcon fontSize="small" color="action" />
+              <Typography variant="body2" color="text.secondary">
+                {t("hiring_process_tracking.estimated_duration")}:{" "}
+                <strong>
+                  {stages[currentStageIndex].estimatedTime}{" "}
+                  {t("hiring_process_tracking.minutes")}
+                </strong>
+              </Typography>
+            </Box>
+          )}
+
+          <Alert severity="success" icon={false} sx={{ mt: 2 }}>
+            {t("hiring_process_tracking.current_stage_motivational")}
+          </Alert>
+        </Paper>
+      )}
+
+      {/* Process Overview */}
+      {stages.length > 0 && (
+        <Paper
+          elevation={2}
+          sx={{ p: { xs: 3, md: 4 }, mt: 4, borderRadius: 2 }}
+        >
+          <Box display="flex" alignItems="center" gap={1} mb={1}>
+            <FormatListNumberedIcon color="action" />
+            <Typography variant="h6" fontWeight={600}>
+              {t("hiring_process_tracking.process_overview_title")}
+            </Typography>
+          </Box>
+
+          <Typography variant="body2" color="text.secondary" mb={3}>
+            {t("hiring_process_tracking.process_overview_subtitle")}
+          </Typography>
+
+          {stages.map((stage: PublicStage, index: number) => {
+            const isCompleted = stage.status === "COMPLETED";
+            const isCurrent = stage.status === "CURRENT";
+
+            const circleColor = isCompleted
+              ? theme.palette.success.main
+              : isCurrent
+                ? theme.palette.primary.main
+                : theme.palette.action.disabled;
+
+            return (
+              <React.Fragment key={stage.uid}>
+                <Box display="flex" gap={2} py={2} alignItems="flex-start">
+                  {/* Step number circle */}
+                  <Box
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      backgroundColor: circleColor,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                    }}
+                  >
+                    <Typography
+                      variant="caption"
+                      fontWeight={700}
+                      sx={{ color: "#fff", lineHeight: 1 }}
+                    >
+                      {index + 1}
+                    </Typography>
+                  </Box>
+
+                  {/* Stage details */}
+                  <Box flex={1} minWidth={0}>
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      gap={1}
+                      flexWrap="wrap"
+                      mb={0.5}
+                    >
+                      <Typography
+                        variant="body1"
+                        fontWeight={isCurrent ? 700 : 500}
+                        color={
+                          isCurrent
+                            ? "primary.main"
+                            : isCompleted
+                              ? "success.main"
+                              : "text.primary"
+                        }
+                      >
+                        {stage.title}
+                      </Typography>
+                      <Chip
+                        label={t(
+                          `hiring_process_tracking.stage_type_${stage.type}`,
+                          stage.type,
+                        )}
+                        size="small"
+                        variant="outlined"
+                        color={
+                          isCurrent
+                            ? "primary"
+                            : isCompleted
+                              ? "success"
+                              : "default"
+                        }
+                      />
+                    </Box>
+
+                    {stage.description && (
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        mb={0.5}
+                      >
+                        {stage.description}
+                      </Typography>
+                    )}
+
+                    {stage.estimatedTime != null && (
+                      <Box display="flex" alignItems="center" gap={0.5}>
+                        <AccessTimeIcon
+                          sx={{ fontSize: 14, color: "text.disabled" }}
+                        />
+                        <Typography variant="caption" color="text.disabled">
+                          {t("hiring_process_tracking.estimated_duration")}:{" "}
+                          {stage.estimatedTime}{" "}
+                          {t("hiring_process_tracking.minutes")}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                </Box>
+
+                {index < stages.length - 1 && <Divider />}
+              </React.Fragment>
+            );
+          })}
+        </Paper>
+      )}
 
       {/* Privacy notice */}
       <Alert severity="info" sx={{ mt: 3 }}>

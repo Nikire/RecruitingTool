@@ -93,6 +93,8 @@ export interface PublicStage {
   type: string;
   position: number;
   status: "COMPLETED" | "CURRENT" | "PENDING";
+  description?: string;
+  estimatedTime?: number;
 }
 
 export interface PublicHiringProcessTracking {

@@ -172,6 +172,12 @@ export class PublicStageDto {
 
   @ApiProperty({ description: 'Stage status from candidate perspective: COMPLETED | CURRENT | PENDING', example: 'CURRENT' })
   status: 'COMPLETED' | 'CURRENT' | 'PENDING';
+
+  @ApiProperty({ description: 'Stage description', required: false })
+  description?: string;
+
+  @ApiProperty({ description: 'Estimated duration in minutes', required: false })
+  estimatedTime?: number;
 }
 
 export class PublicHiringProcessTrackingDto {

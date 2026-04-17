@@ -1457,7 +1457,19 @@
     "code_hint": "Revisa tu correo electrónico para encontrar el código de acceso que fue enviado cuando se creó tu proceso de contratación.",
     "code_label": "Código de Acceso",
     "unlock": "Desbloquear",
-    "invalid_code": "Código de acceso inválido o expirado. Por favor, revisa tu correo electrónico."
+    "invalid_code": "Código de acceso inválido o expirado. Por favor, revisa tu correo electrónico.",
+    "current_stage_title": "Tu Etapa Actual",
+    "current_stage_motivational": "¡Vas muy bien — prepárate bien para esta etapa!",
+    "estimated_duration": "Duración estimada",
+    "minutes": "minutos",
+    "process_overview_title": "Visión General del Proceso",
+    "process_overview_subtitle": "Así es como se ve el proceso de selección completo para que puedas prepararte con anticipación.",
+    "stage_type_INTERVIEW": "Entrevista",
+    "stage_type_TECHNICAL_INTERVIEW": "Entrevista Técnica",
+    "stage_type_FINAL_INTERVIEW": "Entrevista Final",
+    "stage_type_OFFER": "Oferta",
+    "stage_type_OTHER": "Otro",
+    "no_description": "No se proporcionaron detalles adicionales para esta etapa."
   },
   "hiring_process_page": {
     "no_data_found": "No se encontraron datos",
