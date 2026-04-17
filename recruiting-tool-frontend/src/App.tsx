@@ -60,6 +60,7 @@ import PrivacyPolicyPage from "./pages/legal/PrivacyPolicyPage";
 import SecurityPolicyPage from "./pages/legal/SecurityPolicyPage";
 import ContactPage from "./pages/contact/ContactPage";
 import ContactMessagesPage from "./pages/admin/ContactMessagesPage";
+import AdminEmailLogsPage from "./pages/admin/AdminEmailLogsPage";
 import PlanLimitsPage from "./pages/admin/PlanLimitsPage";
 import FeatureFlagsPage from "./pages/admin/FeatureFlagsPage";
 import GeneralSettingsPage from "./pages/admin/GeneralSettingsPage";
@@ -340,6 +341,10 @@ function App() {
               <Route path="/admin/custom-plans" element={<CustomPlansPage />} />
               <Route path="/admin/ai-quota" element={<AIQuotaPage />} />
               <Route path="/admin/docs" element={<DocsPage />} />
+              <Route
+                path="/admin/email-logs"
+                element={<AdminEmailLogsPage />}
+              />
             </Route>
           </Route>
         </Route>

@@ -4,6 +4,7 @@ import {
   UpdateSystemSettingsDto,
   TestEmailResponse,
   EmailStatsResponse,
+  PaginatedEmailLogs,
 } from "../types/systemSettings.types";
 
 /**
@@ -35,4 +36,19 @@ export function testEmailConnection(): Promise<TestEmailResponse> {
  */
 export function getEmailStats(): Promise<EmailStatsResponse> {
   return api.get("/admin/system-settings/email-stats").then((res) => res.data);
+}
+
+/**
+ * Fetch paginated email logs (SUPER_ADMIN only)
+ */
+export function getEmailLogs(params: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  emailType?: string;
+  search?: string;
+}): Promise<PaginatedEmailLogs> {
+  return api
+    .get("/admin/system-settings/email-logs", { params })
+    .then((res) => res.data);
 }

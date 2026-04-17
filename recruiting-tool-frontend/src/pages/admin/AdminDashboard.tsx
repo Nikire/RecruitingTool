@@ -5,6 +5,7 @@ import {
   Subscriptions as SubscriptionsIcon,
   RestoreFromTrash as RestoreFromTrashIcon,
   Email as EmailIcon,
+  ForwardToInbox as ForwardToInboxIcon,
   Tune as TuneIcon,
   FlagOutlined as FlagOutlinedIcon,
   DisplaySettingsOutlined as DisplaySettingsOutlinedIcon,
@@ -59,6 +60,13 @@ const AdminDashboard: React.FC = () => {
       color: "#0288d1",
       description: t("admin_dashboard.contact_messages_desc"),
       path: "/admin/contact-messages",
+    },
+    {
+      title: t("admin_layout.email_logs"),
+      icon: <ForwardToInboxIcon />,
+      color: "#6a1b9a",
+      description: t("admin_dashboard.email_logs_desc"),
+      path: "/admin/email-logs",
     },
   ];
 

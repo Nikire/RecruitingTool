@@ -156,3 +156,40 @@ export class EmailStatsResponseDto {
   @ApiProperty({ description: 'All-time aggregate email statistics', type: EmailStatsAllTimeDto })
   allTime: EmailStatsAllTimeDto;
 }
+
+export class EmailLogItemDto {
+  @ApiProperty({ description: 'Email log UID', example: 'abc123' })
+  uid: string;
+
+  @ApiProperty({ description: 'Recipient email address', example: 'candidate@example.com' })
+  recipientEmail: string;
+
+  @ApiProperty({ description: 'Email subject', example: 'Your application has been received' })
+  subject: string;
+
+  @ApiProperty({ description: 'Delivery status', example: 'SENT', enum: ['SENT', 'FAILED'] })
+  status: string;
+
+  @ApiProperty({ description: 'Email type identifier', example: 'APPLICATION_CONFIRMATION' })
+  emailType: string;
+
+  @ApiProperty({ description: 'Date the email was sent (ISO string)', example: '2026-04-17T10:00:00.000Z' })
+  sentAt: string;
+}
+
+export class PaginatedEmailLogsDto {
+  @ApiProperty({ description: 'Array of email log items', type: [EmailLogItemDto] })
+  data: EmailLogItemDto[];
+
+  @ApiProperty({ description: 'Total number of matching records', example: 150 })
+  total: number;
+
+  @ApiProperty({ description: 'Current page number', example: 1 })
+  page: number;
+
+  @ApiProperty({ description: 'Page size', example: 20 })
+  limit: number;
+
+  @ApiProperty({ description: 'Total number of pages', example: 8 })
+  totalPages: number;
+}

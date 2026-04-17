@@ -5,6 +5,7 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import RestoreFromTrashIcon from "@mui/icons-material/RestoreFromTrash";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import EmailIcon from "@mui/icons-material/Email";
+import ForwardToInboxIcon from "@mui/icons-material/ForwardToInbox";
 import TuneIcon from "@mui/icons-material/Tune";
 import FlagOutlinedIcon from "@mui/icons-material/FlagOutlined";
 import DisplaySettingsOutlinedIcon from "@mui/icons-material/DisplaySettingsOutlined";
@@ -77,6 +78,12 @@ const AdminLayout: React.FC = () => {
           icon: <EmailIcon />,
           path: "/admin/contact-messages",
           requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.email_logs"),
+          icon: <ForwardToInboxIcon />,
+          path: "/admin/email-logs",
+          requiresSuperAdmin: true,
         },
       ],
     },

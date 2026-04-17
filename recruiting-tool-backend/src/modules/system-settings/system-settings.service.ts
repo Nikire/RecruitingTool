@@ -2,7 +2,15 @@ import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
-import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto, EmailStatsResponseDto, EmailStatsPeriodDto } from './dto/system-settings.dto';
+import {
+  SystemSettingsResponseDto,
+  UpdateSystemSettingsDto,
+  TestEmailResponseDto,
+  EmailStatsResponseDto,
+  EmailStatsPeriodDto,
+  EmailLogItemDto,
+  PaginatedEmailLogsDto,
+} from './dto/system-settings.dto';
 
 const APP_VERSION = '1.0.0';
 const APPLICATION_EMAILS_KEY = 'email.applicationEmailsEnabled';
@@ -137,6 +145,59 @@ export class SystemSettingsService {
         sent: allTimeSent,
         failed: allTimeFailed,
       },
+    };
+  }
+
+  async getEmailLogs(page: number, limit: number, status?: string, emailType?: string, search?: string): Promise<PaginatedEmailLogsDto> {
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+
+    if (status) {
+      where.status = status;
+    }
+
+    if (emailType) {
+      where.emailType = { contains: emailType, mode: 'insensitive' };
+    }
+
+    if (search) {
+      where.OR = [{ recipientEmail: { contains: search, mode: 'insensitive' } }, { subject: { contains: search, mode: 'insensitive' } }];
+    }
+
+    const [records, total] = await Promise.all([
+      this.databaseService.emailLog.findMany({
+        where,
+        orderBy: { sentAt: 'desc' },
+        skip,
+        take: limit,
+        select: {
+          uid: true,
+          recipientEmail: true,
+          subject: true,
+          status: true,
+          emailType: true,
+          sentAt: true,
+        },
+      }),
+      this.databaseService.emailLog.count({ where }),
+    ]);
+
+    const data: EmailLogItemDto[] = records.map((r) => ({
+      uid: r.uid,
+      recipientEmail: r.recipientEmail,
+      subject: r.subject,
+      status: r.status,
+      emailType: r.emailType,
+      sentAt: r.sentAt.toISOString(),
+    }));
+
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
     };
   }
 

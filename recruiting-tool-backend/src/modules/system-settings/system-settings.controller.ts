@@ -1,9 +1,9 @@
-import { Controller, Get, Patch, Post, Body } from '@nestjs/common';
+import { Controller, Get, Patch, Post, Body, Query } from '@nestjs/common';
 import { SystemSettingsService } from './system-settings.service';
-import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto, EmailStatsResponseDto } from './dto/system-settings.dto';
+import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto, EmailStatsResponseDto, PaginatedEmailLogsDto } from './dto/system-settings.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
 
 @ApiTags('System Settings')
 @ApiBearerAuth()
@@ -51,6 +51,30 @@ export class SystemSettingsController {
   @ApiResponse({ status: 200, type: EmailStatsResponseDto })
   getEmailStats(): Promise<EmailStatsResponseDto> {
     return this.systemSettingsService.getEmailStats();
+  }
+
+  @Get('email-logs')
+  @ApiOperation({ summary: 'Get paginated email logs - SUPER_ADMIN role required' })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'limit', required: false, type: Number, example: 20 })
+  @ApiQuery({ name: 'status', required: false, type: String, enum: ['SENT', 'FAILED'] })
+  @ApiQuery({ name: 'emailType', required: false, type: String })
+  @ApiQuery({ name: 'search', required: false, type: String })
+  @ApiResponse({ status: 200, type: PaginatedEmailLogsDto })
+  getEmailLogs(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('status') status?: string,
+    @Query('emailType') emailType?: string,
+    @Query('search') search?: string,
+  ): Promise<PaginatedEmailLogsDto> {
+    return this.systemSettingsService.getEmailLogs(
+      page ? parseInt(page, 10) : 1,
+      limit ? parseInt(limit, 10) : 20,
+      status || undefined,
+      emailType || undefined,
+      search || undefined,
+    );
   }
 
   @Post('test-email')

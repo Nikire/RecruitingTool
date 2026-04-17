@@ -109,3 +109,20 @@ export interface EmailStatsResponse {
   lastMonth: EmailStatsPeriod;
   allTime: { total: number; sent: number; failed: number };
 }
+
+export interface EmailLogItem {
+  uid: string;
+  recipientEmail: string;
+  subject: string;
+  status: string;
+  emailType: string;
+  sentAt: string;
+}
+
+export interface PaginatedEmailLogs {
+  data: EmailLogItem[];
+  total: number;
+  page: number;
+  limit: number;
+  totalPages: number;
+}

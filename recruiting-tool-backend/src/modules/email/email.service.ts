@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { PrismaClient, NotificationType } from '@prisma/client';
+import { NotificationType } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import * as Handlebars from 'handlebars';
 import {
@@ -34,7 +34,6 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 export class EmailService {
   private readonly logger = new Logger(EmailService.name);
   private transporter: nodemailer.Transporter;
-  private prisma = new PrismaClient();
 
   // Email type to notification type mapping
   private readonly emailToNotificationTypeMap: Record<string, NotificationType> = {
@@ -357,7 +356,7 @@ ${text}
 
     // Log the email to database
     try {
-      await this.prisma.emailLog.create({
+      await this.databaseService.emailLog.create({
         data: {
           recipientEmail: to,
           recipientName: 'Unknown',
@@ -543,7 +542,7 @@ If you did not create an account, please ignore this email.
    */
   async sendEmailFromTemplate(recipientEmail: string, recipientName: string, templateUid: string, variables: Record<string, any>, relatedEntityId?: string): Promise<void> {
     // Fetch the email template from database
-    const emailTemplate = await this.prisma.emailTemplate.findUnique({
+    const emailTemplate = await this.databaseService.emailTemplate.findUnique({
       where: { uid: templateUid },
     });
 

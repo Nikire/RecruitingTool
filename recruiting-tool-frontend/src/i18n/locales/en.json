@@ -1884,6 +1884,7 @@
     "subscriptions_desc": "View and manage company subscriptions",
     "deleted_records_desc": "Restore or permanently delete archived records",
     "contact_messages_desc": "Review messages sent from the contact form",
+    "email_logs_desc": "Browse the full history of emails sent by the platform",
     "plan_limits_desc": "Configure feature limits per subscription plan",
     "feature_flags_desc": "Enable or disable features across the platform",
     "general_settings_desc": "Global platform settings and branding",
@@ -3741,6 +3742,7 @@
     "deleted_records": "Deleted Records",
     "settings": "Settings",
     "contact_messages": "Contact Messages",
+    "email_logs": "Email Logs",
     "plan_limits": "Plan Limits",
     "feature_flags": "Feature Flags",
     "general_settings": "General Settings",
@@ -3751,6 +3753,21 @@
     "aria_label": "admin navigation",
     "group_management": "Management",
     "group_configuration": "Configuration"
+  },
+  "admin_email_logs": {
+    "title": "Email Logs",
+    "subtitle": "Full history of all emails sent by the platform",
+    "col_status": "Status",
+    "col_type": "Type",
+    "col_recipient": "Recipient",
+    "col_subject": "Subject",
+    "col_sent_at": "Sent At",
+    "filter_search": "Search email or subject...",
+    "filter_status": "Status",
+    "filter_type": "Email type...",
+    "status_all": "All statuses",
+    "no_logs": "No emails found",
+    "rows_per_page": "Emails per page"
   },
   "plan_features": {
     "job_positions": "Up to {{count}} active job positions",

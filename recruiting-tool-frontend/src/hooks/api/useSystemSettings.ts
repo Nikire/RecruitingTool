@@ -5,6 +5,7 @@ import {
   updateSystemSettings,
   testEmailConnection,
   getEmailStats,
+  getEmailLogs,
 } from "../../api/systemSettings";
 import { UpdateSystemSettingsDto } from "../../types/systemSettings.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -50,6 +51,23 @@ export function useEmailStats() {
     queryKey: ["emailStats"],
     queryFn: getEmailStats,
     staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+}
+
+/**
+ * Hook for fetching paginated email logs (SUPER_ADMIN only)
+ */
+export function useEmailLogs(params: {
+  page?: number;
+  limit?: number;
+  status?: string;
+  emailType?: string;
+  search?: string;
+}) {
+  return useQuery({
+    queryKey: ["emailLogs", params],
+    queryFn: () => getEmailLogs(params),
+    staleTime: 60 * 1000, // 1 minute
   });
 }
 
