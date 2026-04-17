@@ -40,13 +40,7 @@ const StyledDataGrid = styled(DataGrid)(({ theme }) => ({
   // Ensure cell content is vertically centered
   "& .MuiDataGrid-cell": {
     display: "flex",
-    alignItems: "stretch", // Let children fill the cell height
-  },
-  // Direct children of cells should fill the cell completely
-  // Individual components (CellRow, CellColumn) handle their own alignment
-  "& .MuiDataGrid-cell > *": {
-    height: "100%",
-    width: "100%",
+    alignItems: "center",
   },
 }));
 

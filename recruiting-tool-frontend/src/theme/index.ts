@@ -124,6 +124,13 @@ const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
         },
       },
     } as Record<string, unknown>),
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          verticalAlign: "middle",
+        },
+      },
+    },
     MuiTypography: {
       defaultProps: {
         variantMapping: {
