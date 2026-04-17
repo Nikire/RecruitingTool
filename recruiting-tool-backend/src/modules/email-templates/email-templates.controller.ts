@@ -41,6 +41,17 @@ export class EmailTemplatesController {
     return this.emailTemplatesService.findAll(companyUid);
   }
 
+  @Post('create-defaults')
+  @ApiOperation({ summary: 'Create all default email templates for the current user company' })
+  @ApiResponse({
+    status: 201,
+    description: 'Default templates created successfully',
+    type: MessageResponseDto,
+  })
+  createDefaults(@CurrentUser() user: any): Promise<MessageResponseDto> {
+    return this.emailTemplatesService.createDefaults(user.companyId, user.id);
+  }
+
   @Get(':uid')
   @ApiOperation({ summary: 'Get an email template by UID' })
   @ApiResponse({

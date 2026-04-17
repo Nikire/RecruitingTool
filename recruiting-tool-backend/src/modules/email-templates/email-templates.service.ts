@@ -262,6 +262,17 @@ export class EmailTemplatesService {
   }
 
   /**
+   * Public endpoint handler: create default templates for the authenticated user's company.
+   */
+  async createDefaults(companyId: number | null, userId: number): Promise<MessageResponseDto> {
+    if (!companyId) {
+      throw new BadRequestException('User does not belong to a company');
+    }
+    await this.createDefaultTemplatesForCompany(companyId, userId);
+    return { message: 'Default email templates created successfully' };
+  }
+
+  /**
    * Create default email templates for a company.
    * Skips templates whose name+companyId already exist (idempotent).
    * @param companyId  Internal numeric company ID

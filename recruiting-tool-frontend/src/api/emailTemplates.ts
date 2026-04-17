@@ -40,6 +40,10 @@ export const deleteEmailTemplate = async (uid: string): Promise<void> => {
   await axiosInstance.delete(`/email-templates/${uid}`);
 };
 
+export const createDefaultEmailTemplates = async (): Promise<void> => {
+  await axiosInstance.post("/email-templates/create-defaults");
+};
+
 export const previewEmailTemplate = async (
   uid: string,
   data?: PreviewEmailTemplateDto,

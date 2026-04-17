@@ -1,7 +1,16 @@
-import { Alert, Box, Chip, Paper, Typography } from "@mui/material";
+import {
+  Alert,
+  Box,
+  Button,
+  Chip,
+  CircularProgress,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import AddIcon from "@mui/icons-material/Add";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import { GridColDef } from "@mui/x-data-grid";
 import {
   EnhancedDataGrid,
@@ -14,6 +23,7 @@ import { useDialog } from "../../hooks/useDialog";
 import {
   useEmailTemplates,
   useDeleteEmailTemplate,
+  useCreateDefaultEmailTemplates,
 } from "../../hooks/api/useEmailTemplates";
 import EmailTemplateDialog from "../../components/email-templates/EmailTemplateDialog";
 import EmailTemplatePreviewDialog from "../../components/dialogs/EmailTemplatePreviewDialog";
@@ -97,6 +107,8 @@ const EmailTemplatesPage: React.FC = () => {
   const { data: templates, isLoading } = useEmailTemplates(user?.companyUid);
   const { mutate: deleteTemplate, isPending: isDeleting } =
     useDeleteEmailTemplate();
+  const { mutate: createDefaults, isPending: isCreatingDefaults } =
+    useCreateDefaultEmailTemplates();
 
   const canManage = canManageResources(user);
 
@@ -259,20 +271,70 @@ const EmailTemplatesPage: React.FC = () => {
         />
       </Paper>
 
-      <Box sx={{ height: 600, width: "100%" }}>
-        <EnhancedDataGrid
-          rows={filteredTemplates}
-          columns={columns}
-          loading={isLoading}
-          pageSizeOptions={[10, 25, 50, 100]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 25 } },
+      {!isLoading && templates?.length === 0 ? (
+        <Paper
+          sx={{
+            p: 6,
+            textAlign: "center",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 2,
           }}
-          disableRowSelectionOnClick
-          getRowId={(row) => row.uid}
-          onboardingKey="email-templates"
-        />
-      </Box>
+        >
+          <AutoAwesomeIcon sx={{ fontSize: 48, color: "text.disabled" }} />
+          <Typography variant="h6" color="text.secondary">
+            {t("email_templates.empty_title")}
+          </Typography>
+          <Typography variant="body2" color="text.disabled" maxWidth={420}>
+            {t("email_templates.empty_description")}
+          </Typography>
+          <Box sx={{ display: "flex", gap: 2, mt: 1 }}>
+            {canManage && (
+              <Button
+                variant="outlined"
+                startIcon={
+                  isCreatingDefaults ? (
+                    <CircularProgress size={18} />
+                  ) : (
+                    <AutoAwesomeIcon />
+                  )
+                }
+                onClick={() => createDefaults()}
+                disabled={isCreatingDefaults}
+              >
+                {isCreatingDefaults
+                  ? t("email_templates.creating_defaults")
+                  : t("email_templates.create_defaults")}
+              </Button>
+            )}
+            {canManage && (
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={() => createDialog.open()}
+              >
+                {t("email_templates.create_template")}
+              </Button>
+            )}
+          </Box>
+        </Paper>
+      ) : (
+        <Box sx={{ height: 600, width: "100%" }}>
+          <EnhancedDataGrid
+            rows={filteredTemplates}
+            columns={columns}
+            loading={isLoading}
+            pageSizeOptions={[10, 25, 50, 100]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 25 } },
+            }}
+            disableRowSelectionOnClick
+            getRowId={(row) => row.uid}
+            onboardingKey="email-templates"
+          />
+        </Box>
+      )}
 
       {/* Create/Update Dialog */}
       <EmailTemplateDialog

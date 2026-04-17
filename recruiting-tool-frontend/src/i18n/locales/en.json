@@ -799,7 +799,11 @@
     "trigger_APPLICATION_UNDER_REVIEW": "APPLICATION_UNDER_REVIEW — sent when status changes to Reviewed",
     "trigger_APPLICATION_SHORTLISTED": "APPLICATION_SHORTLISTED — sent when status changes to Accepted",
     "trigger_APPLICATION_REJECTED": "APPLICATION_REJECTED — sent when status changes to Rejected",
-    "trigger_INTERVIEW_INVITATION": "INTERVIEW_INVITATION — sent when an interview is scheduled"
+    "trigger_INTERVIEW_INVITATION": "INTERVIEW_INVITATION — sent when an interview is scheduled",
+    "empty_title": "No email templates yet",
+    "empty_description": "Get started by creating your first template, or generate all default templates at once.",
+    "create_defaults": "Create Default Templates",
+    "creating_defaults": "Creating..."
   },
   "forms": {
     "custom_questions": "Custom Questions",

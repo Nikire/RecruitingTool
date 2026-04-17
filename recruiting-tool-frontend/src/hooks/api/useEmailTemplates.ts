@@ -6,6 +6,7 @@ import {
   updateEmailTemplate,
   deleteEmailTemplate,
   previewEmailTemplate,
+  createDefaultEmailTemplates,
 } from "../../api/emailTemplates";
 import {
   CreateEmailTemplateDto,
@@ -84,6 +85,21 @@ export function useDeleteEmailTemplate() {
     },
     onError: (error) => {
       showErrorToast(error, "Failed to delete email template");
+    },
+  });
+}
+
+export function useCreateDefaultEmailTemplates() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => createDefaultEmailTemplates(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
+      showSuccessToast("Default email templates created successfully!");
+    },
+    onError: (error) => {
+      showErrorToast(error, "Failed to create default templates");
     },
   });
 }
