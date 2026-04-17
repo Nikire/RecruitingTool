@@ -821,65 +821,94 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
     <>
       <Box sx={{ mt: 2 }}>
         {/* Column headers (desktop only) */}
-        <Box
+        <Paper
+          variant="outlined"
           sx={{
-            display: { xs: "none", md: "flex" },
-            alignItems: "center",
-            gap: 2,
-            px: 3,
-            py: 1,
+            display: { xs: "none", md: "block" },
             mb: 1,
+            borderRadius: 2,
+            overflow: "hidden",
           }}
         >
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "1 1 160px", textTransform: "uppercase" }}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
+              px: 3,
+              py: 1,
+            }}
           >
-            {t("hiring_processes.group.column_title")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "1 1 140px", textTransform: "uppercase" }}
-          >
-            {t("candidates.title")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "0 0 100px", textTransform: "uppercase" }}
-          >
-            {t("hiring_processes.group.column_status")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "1 1 160px", textTransform: "uppercase" }}
-          >
-            {t("hiring_processes.group.column_stage")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "0 0 80px", textTransform: "uppercase" }}
-          >
-            {t("ai_scoring.score")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.secondary"
-            fontWeight={600}
-            sx={{ flex: "0 0 160px", textTransform: "uppercase" }}
-          >
-            {t("common.actions")}
-          </Typography>
-        </Box>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                flex: "1 1 160px",
+                minWidth: 0,
+                textTransform: "uppercase",
+              }}
+            >
+              {t("hiring_processes.group.column_title")}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                flex: "1 1 140px",
+                minWidth: 0,
+                textTransform: "uppercase",
+              }}
+            >
+              {t("candidates.title")}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                flex: "0 0 100px",
+                minWidth: 0,
+                textTransform: "uppercase",
+              }}
+            >
+              {t("hiring_processes.group.column_status")}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                flex: "1 1 160px",
+                minWidth: 0,
+                textTransform: "uppercase",
+              }}
+            >
+              {t("hiring_processes.group.column_stage")}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{ flex: "0 0 80px", minWidth: 0, textTransform: "uppercase" }}
+            >
+              {t("ai_scoring.score")}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              fontWeight={600}
+              sx={{
+                flex: "0 0 160px",
+                minWidth: 0,
+                textTransform: "uppercase",
+              }}
+            >
+              {t("common.actions")}
+            </Typography>
+          </Box>
+        </Paper>
 
         {groups.map((group) => (
           <GroupSection
