@@ -23,7 +23,6 @@ import {
   StatusIndicator,
   TestConnectionButton,
   AIConfigCard,
-  AIScoringWeightsCard,
 } from "../../components/settings";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
@@ -213,11 +212,6 @@ const SystemSettingsPage: React.FC = () => {
         {/* AI Configuration */}
         <Grid size={{ xs: 12, md: 6 }}>
           <AIConfigCard aiSettings={settings.ai} isLoading={false} />
-        </Grid>
-
-        {/* AI Scoring Weights */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <AIScoringWeightsCard />
         </Grid>
 
         {/* Storage Configuration */}

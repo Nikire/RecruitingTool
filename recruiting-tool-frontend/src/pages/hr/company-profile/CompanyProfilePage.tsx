@@ -43,6 +43,7 @@ import {
 import { UpdateCompanyProfileDto } from "../../../types/company.types";
 import { showSuccessToast, showErrorToast } from "../../../utils/toast";
 import { PageHeader } from "../../../components/common";
+import { AIScoringWeightsCard } from "../../../components/settings";
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
 import { hasRole } from "../../../utils/permissions";
 import { UserRoles } from "../../../types/user.types";
@@ -759,6 +760,11 @@ const CompanyProfilePage: React.FC = () => {
             </Grid>
           )}
         </Grid>
+      </Box>
+
+      {/* AI Scoring Weights */}
+      <Box sx={{ mt: 3 }}>
+        <AIScoringWeightsCard />
       </Box>
     </Box>
   );

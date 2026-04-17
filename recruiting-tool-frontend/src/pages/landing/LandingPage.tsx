@@ -691,7 +691,8 @@ const LandingPage = () => {
                     p: 4.5,
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "flex-start",
+                    alignItems: "center",
+                    textAlign: "center",
                   }}
                 >
                   <Box
@@ -701,7 +702,6 @@ const LandingPage = () => {
                       borderRadius: 2.5,
                       background: feature.gradient,
                       display: "flex",
-                      alignSelf: "center",
                       alignItems: "center",
                       justifyContent: "center",
                       mb: 3.5,
