@@ -1,5 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, Query, UseInterceptors } from '@nestjs/common';
-import { CacheInterceptor, CacheTTL } from '@nestjs/cache-manager';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiParam, ApiQuery, ApiBody, ApiUnauthorizedResponse, ApiNotFoundResponse } from '@nestjs/swagger';
 import { EmailTemplatesService } from './email-templates.service';
 import { CreateEmailTemplateDto, UpdateEmailTemplateDto, EmailTemplateResponseDto, PreviewEmailTemplateDto, PreviewEmailTemplateResponseDto } from './dto/email-template.dto';
@@ -31,8 +30,6 @@ export class EmailTemplatesController {
   }
 
   @Get()
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000) // Cache for 5 minutes - templates rarely change
   @ApiOperation({ summary: 'Get all email templates' })
   @ApiResponse({
     status: 200,
@@ -45,8 +42,6 @@ export class EmailTemplatesController {
   }
 
   @Get(':uid')
-  @UseInterceptors(CacheInterceptor)
-  @CacheTTL(300000) // Cache for 5 minutes
   @ApiOperation({ summary: 'Get an email template by UID' })
   @ApiResponse({
     status: 200,
