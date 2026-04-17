@@ -188,7 +188,7 @@ const SourceEffectivenessTable: React.FC<SourceEffectivenessTableProps> = ({
                     </TableCell>
                     <TableCell align="right">
                       <Typography variant="body2" fontWeight={600}>
-                        {(row.successRate * 100).toFixed(1)}%
+                        {row.successRate.toFixed(1)}%
                       </Typography>
                     </TableCell>
                     <TableCell align="right">
