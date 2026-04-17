@@ -180,7 +180,7 @@ const GroupSection: React.FC<{
   group: ApplicationGroup;
   onView: (application: Application) => void;
 }> = ({ group, onView }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
 
   return (
     <Paper
