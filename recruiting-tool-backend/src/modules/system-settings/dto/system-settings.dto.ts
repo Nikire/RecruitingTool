@@ -109,3 +109,50 @@ export class TestEmailResponseDto {
   @ApiProperty({ description: 'Result message', example: 'Test email sent to admin@example.com' })
   message: string;
 }
+
+export class EmailStatsByTypeDto {
+  @ApiProperty({ description: 'Email type identifier', example: 'INTERVIEW_SCHEDULED' })
+  emailType: string;
+
+  @ApiProperty({ description: 'Number of emails of this type', example: 12 })
+  count: number;
+}
+
+export class EmailStatsPeriodDto {
+  @ApiProperty({ description: 'Human-readable period label', example: 'April 2026' })
+  label: string;
+
+  @ApiProperty({ description: 'Total emails in this period', example: 45 })
+  total: number;
+
+  @ApiProperty({ description: 'Successfully sent emails', example: 43 })
+  sent: number;
+
+  @ApiProperty({ description: 'Failed email attempts', example: 2 })
+  failed: number;
+
+  @ApiProperty({ description: 'Breakdown by email type, sorted by count descending', type: [EmailStatsByTypeDto] })
+  byType: EmailStatsByTypeDto[];
+}
+
+export class EmailStatsAllTimeDto {
+  @ApiProperty({ description: 'Total all-time emails', example: 300 })
+  total: number;
+
+  @ApiProperty({ description: 'Total all-time sent emails', example: 290 })
+  sent: number;
+
+  @ApiProperty({ description: 'Total all-time failed emails', example: 10 })
+  failed: number;
+}
+
+export class EmailStatsResponseDto {
+  @ApiProperty({ description: 'Email statistics for the current calendar month', type: EmailStatsPeriodDto })
+  currentMonth: EmailStatsPeriodDto;
+
+  @ApiProperty({ description: 'Email statistics for the previous calendar month', type: EmailStatsPeriodDto })
+  lastMonth: EmailStatsPeriodDto;
+
+  @ApiProperty({ description: 'All-time aggregate email statistics', type: EmailStatsAllTimeDto })
+  allTime: EmailStatsAllTimeDto;
+}

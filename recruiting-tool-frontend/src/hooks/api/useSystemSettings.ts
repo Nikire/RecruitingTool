@@ -4,6 +4,7 @@ import {
   getSystemSettings,
   updateSystemSettings,
   testEmailConnection,
+  getEmailStats,
 } from "../../api/systemSettings";
 import { UpdateSystemSettingsDto } from "../../types/systemSettings.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -38,6 +39,17 @@ export function useUpdateSystemSettings() {
     onError: (error) => {
       showErrorToast(error, t("settings.update_error"));
     },
+  });
+}
+
+/**
+ * Hook for fetching email sending statistics (SUPER_ADMIN only)
+ */
+export function useEmailStats() {
+  return useQuery({
+    queryKey: ["emailStats"],
+    queryFn: getEmailStats,
+    staleTime: 5 * 60 * 1000, // 5 minutes
   });
 }
 

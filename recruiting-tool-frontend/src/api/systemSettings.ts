@@ -3,6 +3,7 @@ import {
   SystemSettingsResponse,
   UpdateSystemSettingsDto,
   TestEmailResponse,
+  EmailStatsResponse,
 } from "../types/systemSettings.types";
 
 /**
@@ -27,4 +28,11 @@ export function updateSystemSettings(
  */
 export function testEmailConnection(): Promise<TestEmailResponse> {
   return api.post("/admin/system-settings/test-email").then((res) => res.data);
+}
+
+/**
+ * Fetch email sending statistics (SUPER_ADMIN only)
+ */
+export function getEmailStats(): Promise<EmailStatsResponse> {
+  return api.get("/admin/system-settings/email-stats").then((res) => res.data);
 }

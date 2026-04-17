@@ -7,6 +7,7 @@ import {
   Switch,
   FormControlLabel,
   Skeleton,
+  Divider,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,6 +16,7 @@ import {
   Speed as SpeedIcon,
   Backup as BackupIcon,
   Info as InfoIcon,
+  BarChart as BarChartIcon,
 } from "@mui/icons-material";
 import {
   SettingsCard,
@@ -32,6 +34,7 @@ import {
   useSystemSettings,
   useUpdateSystemSettings,
   useTestEmailConnection,
+  useEmailStats,
 } from "../../hooks/api/useSystemSettings";
 
 /**
@@ -56,6 +59,7 @@ const SystemSettingsPage: React.FC = () => {
   const { data: settings, isLoading, isError } = useSystemSettings();
   const updateSettings = useUpdateSystemSettings();
   const testEmail = useTestEmailConnection();
+  const { data: emailStats, isLoading: isLoadingEmailStats } = useEmailStats();
 
   // Permission check - SUPER_ADMIN only
   const isSuperAdmin = user?.roles?.includes(UserRoles.SUPER_ADMIN);
@@ -370,6 +374,172 @@ const SystemSettingsPage: React.FC = () => {
                 </Typography>
               </Box>
             </Stack>
+          </SettingsCard>
+        </Grid>
+
+        {/* Email Statistics */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <SettingsCard
+            icon={<BarChartIcon />}
+            title={t("settings.email_stats")}
+            iconColor="info.main"
+          >
+            {isLoadingEmailStats ? (
+              <Stack spacing={1.5}>
+                <Skeleton
+                  variant="rectangular"
+                  height={24}
+                  sx={{ borderRadius: 1 }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={40}
+                  sx={{ borderRadius: 1 }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={16}
+                  sx={{ borderRadius: 1 }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={16}
+                  sx={{ borderRadius: 1 }}
+                />
+                <Skeleton
+                  variant="rectangular"
+                  height={16}
+                  sx={{ borderRadius: 1 }}
+                />
+              </Stack>
+            ) : emailStats ? (
+              <Stack spacing={2}>
+                {/* Current month subtitle */}
+                <Typography variant="body2" color="text.secondary">
+                  {emailStats.currentMonth.label}
+                </Typography>
+
+                {/* This month counters */}
+                {emailStats.currentMonth.total === 0 ? (
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    fontStyle="italic"
+                  >
+                    {t("settings.email_stats_no_data")}
+                  </Typography>
+                ) : (
+                  <Box sx={{ display: "flex", flexDirection: "row", gap: 3 }}>
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography variant="h5" fontWeight="bold">
+                        {emailStats.currentMonth.total}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("settings.email_stats_total")}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography
+                        variant="h5"
+                        fontWeight="bold"
+                        color="success.main"
+                      >
+                        {emailStats.currentMonth.sent}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("settings.email_stats_sent")}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: "center" }}>
+                      <Typography
+                        variant="h5"
+                        fontWeight="bold"
+                        color={
+                          emailStats.currentMonth.failed > 0
+                            ? "error.main"
+                            : "text.disabled"
+                        }
+                      >
+                        {emailStats.currentMonth.failed}
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        {t("settings.email_stats_failed")}
+                      </Typography>
+                    </Box>
+                  </Box>
+                )}
+
+                {/* By type breakdown */}
+                {emailStats.currentMonth.byType.length > 0 && (
+                  <>
+                    <Divider />
+                    <Box>
+                      <Typography
+                        variant="body2"
+                        color="text.secondary"
+                        gutterBottom
+                      >
+                        {t("settings.email_stats_by_type")}
+                      </Typography>
+                      <Stack spacing={0.75}>
+                        {emailStats.currentMonth.byType
+                          .slice(0, 5)
+                          .map((item) => (
+                            <Box
+                              key={item.emailType}
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  fontFamily: "monospace",
+                                  fontSize: "0.7rem",
+                                  color: "text.secondary",
+                                  flexShrink: 1,
+                                  overflow: "hidden",
+                                  textOverflow: "ellipsis",
+                                  whiteSpace: "nowrap",
+                                  mr: 1,
+                                }}
+                              >
+                                {item.emailType}
+                              </Typography>
+                              <Chip
+                                label={item.count}
+                                size="small"
+                                color="info"
+                                sx={{
+                                  height: 20,
+                                  fontSize: "0.7rem",
+                                  flexShrink: 0,
+                                }}
+                              />
+                            </Box>
+                          ))}
+                      </Stack>
+                    </Box>
+                  </>
+                )}
+
+                <Divider />
+
+                {/* Last month summary */}
+                <Typography variant="caption" color="text.secondary">
+                  {t("settings.email_stats_last_month")}:{" "}
+                  <strong>{emailStats.lastMonth.label}</strong> &mdash;{" "}
+                  {emailStats.lastMonth.total}{" "}
+                  {t("settings.email_stats_total").toLowerCase()} (
+                  {emailStats.lastMonth.sent}{" "}
+                  {t("settings.email_stats_sent").toLowerCase()},{" "}
+                  {emailStats.lastMonth.failed}{" "}
+                  {t("settings.email_stats_failed").toLowerCase()})
+                </Typography>
+              </Stack>
+            ) : null}
           </SettingsCard>
         </Grid>
 

@@ -1,6 +1,6 @@
 import { Controller, Get, Patch, Post, Body } from '@nestjs/common';
 import { SystemSettingsService } from './system-settings.service';
-import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto } from './dto/system-settings.dto';
+import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto, EmailStatsResponseDto } from './dto/system-settings.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
@@ -44,6 +44,13 @@ export class SystemSettingsController {
   })
   updateSettings(@Body() dto: UpdateSystemSettingsDto): Promise<SystemSettingsResponseDto> {
     return this.systemSettingsService.updateSettings(dto);
+  }
+
+  @Get('email-stats')
+  @ApiOperation({ summary: 'Get email statistics - SUPER_ADMIN role required' })
+  @ApiResponse({ status: 200, type: EmailStatsResponseDto })
+  getEmailStats(): Promise<EmailStatsResponseDto> {
+    return this.systemSettingsService.getEmailStats();
   }
 
   @Post('test-email')

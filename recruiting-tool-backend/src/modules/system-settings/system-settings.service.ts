@@ -2,7 +2,7 @@ import { Injectable, Logger, InternalServerErrorException } from '@nestjs/common
 import { ConfigService } from '@nestjs/config';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
-import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto } from './dto/system-settings.dto';
+import { SystemSettingsResponseDto, UpdateSystemSettingsDto, TestEmailResponseDto, EmailStatsResponseDto, EmailStatsPeriodDto } from './dto/system-settings.dto';
 
 const APP_VERSION = '1.0.0';
 const APPLICATION_EMAILS_KEY = 'email.applicationEmailsEnabled';
@@ -79,6 +79,65 @@ export class SystemSettingsService {
     }
 
     return this.getSettings();
+  }
+
+  async getEmailStats(): Promise<EmailStatsResponseDto> {
+    const now = new Date();
+
+    // Current month boundaries
+    const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+    const currentMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
+    // Last month boundaries
+    const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+    const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const buildPeriod = async (start: Date, end: Date, label: string): Promise<EmailStatsPeriodDto> => {
+      const rows = await this.databaseService.emailLog.groupBy({
+        by: ['status', 'emailType'],
+        _count: { id: true },
+        where: { sentAt: { gte: start, lt: end } },
+      });
+
+      const sent = rows.filter((r) => r.status === 'SENT').reduce((acc, r) => acc + r._count.id, 0);
+      const failed = rows.filter((r) => r.status === 'FAILED').reduce((acc, r) => acc + r._count.id, 0);
+
+      // Aggregate by type across all statuses
+      const typeMap = new Map<string, number>();
+      for (const row of rows) {
+        typeMap.set(row.emailType, (typeMap.get(row.emailType) ?? 0) + row._count.id);
+      }
+
+      const byType = Array.from(typeMap.entries())
+        .map(([emailType, count]) => ({ emailType, count }))
+        .sort((a, b) => b.count - a.count);
+
+      return { label, total: sent + failed, sent, failed, byType };
+    };
+
+    const [currentMonth, lastMonth] = await Promise.all([
+      buildPeriod(currentMonthStart, currentMonthEnd, currentMonthStart.toLocaleString('en-US', { month: 'long', year: 'numeric' })),
+      buildPeriod(lastMonthStart, lastMonthEnd, lastMonthStart.toLocaleString('en-US', { month: 'long', year: 'numeric' })),
+    ]);
+
+    // All-time totals
+    const allTimeRows = await this.databaseService.emailLog.groupBy({
+      by: ['status'],
+      _count: { id: true },
+    });
+
+    const allTimeSent = allTimeRows.find((r) => r.status === 'SENT')?._count.id ?? 0;
+    const allTimeFailed = allTimeRows.find((r) => r.status === 'FAILED')?._count.id ?? 0;
+
+    return {
+      currentMonth,
+      lastMonth,
+      allTime: {
+        total: allTimeSent + allTimeFailed,
+        sent: allTimeSent,
+        failed: allTimeFailed,
+      },
+    };
   }
 
   async testEmailConnection(superAdminEmail: string): Promise<TestEmailResponseDto> {

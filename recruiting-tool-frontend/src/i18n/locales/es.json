@@ -2332,7 +2332,17 @@
     "backup_retention_label": "Período de Retención",
     "backup_last_backup": "Última Copia de Seguridad",
     "backup_never": "Nunca",
-    "backup_env_note": "Las copias de seguridad se gestionan mediante variables de entorno. Los cambios requieren reiniciar el servidor."
+    "backup_env_note": "Las copias de seguridad se gestionan mediante variables de entorno. Los cambios requieren reiniciar el servidor.",
+    "email_stats": "Estadísticas de Correo",
+    "email_stats_subtitle": "Enviados vía Resend en este período",
+    "email_stats_current_month": "Este Mes",
+    "email_stats_last_month": "Mes Anterior",
+    "email_stats_total": "Total",
+    "email_stats_sent": "Enviados",
+    "email_stats_failed": "Fallidos",
+    "email_stats_by_type": "Por Tipo",
+    "email_stats_all_time": "Total Histórico",
+    "email_stats_no_data": "No se enviaron correos este mes"
   },
   "booking": {
     "title": "Reserva Tu Entrevista",

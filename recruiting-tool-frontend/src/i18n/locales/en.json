@@ -2304,7 +2304,17 @@
     "backup_retention_label": "Retention Period",
     "backup_last_backup": "Last Backup",
     "backup_never": "Never",
-    "backup_env_note": "Backup is managed via environment variables. Changes require a server restart."
+    "backup_env_note": "Backup is managed via environment variables. Changes require a server restart.",
+    "email_stats": "Email Statistics",
+    "email_stats_subtitle": "Sent via Resend this period",
+    "email_stats_current_month": "This Month",
+    "email_stats_last_month": "Last Month",
+    "email_stats_total": "Total",
+    "email_stats_sent": "Sent",
+    "email_stats_failed": "Failed",
+    "email_stats_by_type": "By Type",
+    "email_stats_all_time": "All Time",
+    "email_stats_no_data": "No emails sent this month"
   },
   "booking": {
     "title": "Book Your Interview",

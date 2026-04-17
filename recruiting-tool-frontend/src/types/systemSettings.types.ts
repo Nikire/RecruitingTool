@@ -83,3 +83,29 @@ export interface TestEmailResponse {
   /** Result message */
   message: string;
 }
+
+export interface EmailStatsByType {
+  /** Email type identifier, e.g. "INTERVIEW_SCHEDULED" */
+  emailType: string;
+  /** Number of emails of this type */
+  count: number;
+}
+
+export interface EmailStatsPeriod {
+  /** Human-readable period label, e.g. "April 2026" */
+  label: string;
+  /** Total emails in this period */
+  total: number;
+  /** Successfully sent emails */
+  sent: number;
+  /** Failed email attempts */
+  failed: number;
+  /** Breakdown by email type, sorted by count descending */
+  byType: EmailStatsByType[];
+}
+
+export interface EmailStatsResponse {
+  currentMonth: EmailStatsPeriod;
+  lastMonth: EmailStatsPeriod;
+  allTime: { total: number; sent: number; failed: number };
+}
