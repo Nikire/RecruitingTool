@@ -442,7 +442,7 @@ const GroupSection: React.FC<{
   onDelete,
   onScore,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [isSortedByScore, setIsSortedByScore] = useState(false);
 
   const { data: rankings } = useRankings(group.jobPositionUid ?? undefined);
