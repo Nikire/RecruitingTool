@@ -415,7 +415,7 @@ const ProcessRow: React.FC<{
         {/* Actions */}
         <Box
           sx={{
-            flex: "0 0 auto",
+            flex: "0 0 160px",
             display: "flex",
             gap: 0.5,
             alignItems: "center",
@@ -871,7 +871,14 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
           >
             {t("ai_scoring.score")}
           </Typography>
-          <Box sx={{ flex: "0 0 auto", minWidth: 130 }} />
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            fontWeight={600}
+            sx={{ flex: "0 0 160px", textTransform: "uppercase" }}
+          >
+            {t("common.actions")}
+          </Typography>
         </Box>
 
         {groups.map((group) => (
