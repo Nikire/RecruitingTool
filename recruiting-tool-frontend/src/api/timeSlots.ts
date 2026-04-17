@@ -97,3 +97,46 @@ export const selectTimeSlot = async (
   );
   return response.data;
 };
+
+// ==================== NEW PROTECTED ENDPOINTS ====================
+
+export interface SendBookingLinkResponse {
+  bookingUrl: string;
+  expiresAt: string;
+  candidateEmail: string;
+  slotsGenerated: number;
+}
+
+/**
+ * Send booking link email to candidate for an interview (PROTECTED)
+ */
+export const sendBookingLink = async (
+  interviewUid: string,
+): Promise<SendBookingLinkResponse> => {
+  const response = await axios.post<SendBookingLinkResponse>(
+    `${TIME_SLOTS_BASE_URL}/send-booking-link/${interviewUid}`,
+  );
+  return response.data;
+};
+
+// ==================== NEW PUBLIC ENDPOINTS ====================
+
+export interface CalendarSettingsPublic {
+  workingDays: number[];
+  blockedDates: string[];
+  workingHoursStart: string;
+  workingHoursEnd: string;
+  advanceBookingDays: number;
+}
+
+/**
+ * Get calendar settings using booking token (PUBLIC - no auth required)
+ */
+export const getCalendarSettingsByToken = async (
+  token: string,
+): Promise<CalendarSettingsPublic> => {
+  const response = await axios.get<CalendarSettingsPublic>(
+    `${TIME_SLOTS_BASE_URL}/settings/${token}`,
+  );
+  return response.data;
+};

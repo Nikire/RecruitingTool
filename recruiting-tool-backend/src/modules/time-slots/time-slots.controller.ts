@@ -1,7 +1,15 @@
 import { Controller, Post, Get, Delete, Body, Param, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { TimeSlotsService } from './time-slots.service';
-import { GenerateTimeSlotsDto, GenerateCustomTimeSlotsDto, SelectTimeSlotDto, TimeSlotResponseDto, BookingTokenResponseDto } from './dto/time-slots.dto';
+import {
+  GenerateTimeSlotsDto,
+  GenerateCustomTimeSlotsDto,
+  SelectTimeSlotDto,
+  TimeSlotResponseDto,
+  BookingTokenResponseDto,
+  SendBookingLinkResponseDto,
+  CalendarSettingsPublicResponseDto,
+} from './dto/time-slots.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 
@@ -52,6 +60,21 @@ export class TimeSlotsController {
     return this.timeSlotsService.generateBookingToken(interviewUid);
   }
 
+  @Post('send-booking-link/:interviewUid')
+  @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
+  @ApiOperation({ summary: 'Auto-generate slots, create booking token, and send booking link to candidate' })
+  @ApiParam({ name: 'interviewUid', description: 'Interview UID' })
+  @ApiResponse({
+    status: 201,
+    description: 'Booking link sent successfully',
+    type: SendBookingLinkResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Interview not found' })
+  @ApiResponse({ status: 400, description: 'Hiring process or candidate not linked' })
+  async sendBookingLink(@Param('interviewUid') interviewUid: string): Promise<SendBookingLinkResponseDto> {
+    return this.timeSlotsService.sendBookingLink(interviewUid);
+  }
+
   @Get('interview/:interviewUid')
   @Auth([RolesType.HR, RolesType.ADMIN, RolesType.SUPER_ADMIN])
   @ApiOperation({ summary: 'Get all time slots for an interview (HR view)' })
@@ -94,6 +117,20 @@ export class TimeSlotsController {
   @ApiResponse({ status: 403, description: 'Token expired or already used' })
   async getAvailableSlots(@Param('token') token: string): Promise<TimeSlotResponseDto[]> {
     return this.timeSlotsService.getAvailableSlots(token);
+  }
+
+  @Get('settings/:token')
+  @ApiOperation({ summary: 'Get company calendar settings for a booking token (PUBLIC)' })
+  @ApiParam({ name: 'token', description: 'Booking token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Calendar settings retrieved successfully',
+    type: CalendarSettingsPublicResponseDto,
+  })
+  @ApiResponse({ status: 404, description: 'Invalid booking token' })
+  @ApiResponse({ status: 403, description: 'Token expired' })
+  async getSettingsByToken(@Param('token') token: string): Promise<CalendarSettingsPublicResponseDto> {
+    return this.timeSlotsService.getSettingsByToken(token);
   }
 
   @Post('select/:token')

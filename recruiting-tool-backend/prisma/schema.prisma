@@ -41,9 +41,29 @@ model Company {
   scoringWeights     CompanyScoringWeights? @relation("CompanyScoringWeights")
   subscription       Subscription?
   users              User[]
+  calendarSettings   CompanyCalendarSettings?
 
   @@index([uid])
   @@index([name])
+}
+
+model CompanyCalendarSettings {
+  id                     Int      @id @default(autoincrement())
+  uid                    String   @unique @default(uuid()) @db.Uuid
+  companyId              Int      @unique
+  company                Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isBookingEnabled       Boolean  @default(false)
+  workingDays            Json     @default("[1,2,3,4,5]")
+  workingHoursStart      String   @default("09:00")
+  workingHoursEnd        String   @default("18:00")
+  bufferMinutes          Int      @default(15)
+  defaultDurationMinutes Int      @default(60)
+  blockedDates           Json     @default("[]")
+  advanceBookingDays     Int      @default(30)
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+
+  @@index([companyId])
 }
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.

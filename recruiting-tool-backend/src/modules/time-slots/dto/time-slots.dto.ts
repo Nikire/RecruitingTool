@@ -125,6 +125,49 @@ export class TimeSlotResponseDto {
   createdAt: Date;
 }
 
+export class SendBookingLinkResponseDto {
+  @ApiProperty({
+    description: 'Booking page URL sent to the candidate',
+    example: 'http://localhost:3000/book-interview/bk_1234567890abcdef',
+  })
+  bookingUrl: string;
+
+  @ApiProperty({
+    description: 'When the booking link expires',
+    example: '2026-06-01T00:00:00.000Z',
+  })
+  expiresAt: Date;
+
+  @ApiProperty({
+    description: 'Email address of the candidate',
+    example: 'candidate@example.com',
+  })
+  candidateEmail: string;
+
+  @ApiProperty({
+    description: 'Number of time slots generated',
+    example: 42,
+  })
+  slotsGenerated: number;
+}
+
+export class CalendarSettingsPublicResponseDto {
+  @ApiProperty({ type: [Number], example: [1, 2, 3, 4, 5] })
+  workingDays: number[];
+
+  @ApiProperty({ type: [String], example: ['2026-12-25'] })
+  blockedDates: string[];
+
+  @ApiProperty({ example: '09:00' })
+  workingHoursStart: string;
+
+  @ApiProperty({ example: '18:00' })
+  workingHoursEnd: string;
+
+  @ApiProperty({ example: 30 })
+  advanceBookingDays: number;
+}
+
 export class BookingTokenResponseDto {
   @ApiProperty({
     description: 'The UID of the booking token',

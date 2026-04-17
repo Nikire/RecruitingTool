@@ -7,6 +7,14 @@ import {
   cancelSlotSelection,
   getAvailableSlots,
   selectTimeSlot,
+  sendBookingLink,
+  getCalendarSettingsByToken,
+  type SendBookingLinkResponse,
+  type CalendarSettingsPublic,
+} from "../../api/timeSlots";
+export type {
+  SendBookingLinkResponse,
+  CalendarSettingsPublic,
 } from "../../api/timeSlots";
 import {
   GenerateTimeSlotsRequest,
@@ -126,6 +134,43 @@ export const useAvailableSlots = (token: string | null) => {
     queryFn: () => getAvailableSlots(token!),
     enabled: !!token,
     retry: false, // Don't retry on 404/403
+  });
+};
+
+// ==================== NEW PROTECTED HOOKS ====================
+
+/**
+ * Send booking link to candidate for an interview
+ */
+export const useSendBookingLink = () => {
+  const { t } = useTranslation();
+  return useMutation<SendBookingLinkResponse, Error, string>({
+    mutationFn: sendBookingLink,
+    onError: (error) => {
+      // Check for 403 (booking system not enabled)
+      const axiosError = error as Error & {
+        response?: { status: number };
+      };
+      if (axiosError?.response?.status === 403) {
+        toast.error(t("booking_link.not_enabled"));
+      } else {
+        toast.error(error.message || t("booking_link.error"));
+      }
+    },
+  });
+};
+
+// ==================== NEW PUBLIC HOOKS ====================
+
+/**
+ * Get calendar settings using booking token (PUBLIC)
+ */
+export const useCalendarSettingsByToken = (token: string | null) => {
+  return useQuery<CalendarSettingsPublic>({
+    queryKey: ["calendarSettings", "token", token],
+    queryFn: () => getCalendarSettingsByToken(token!),
+    enabled: !!token,
+    retry: false,
   });
 };
 

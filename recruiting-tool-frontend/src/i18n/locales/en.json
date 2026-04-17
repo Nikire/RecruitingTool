@@ -2324,19 +2324,33 @@
     "email_stats_no_data": "No emails sent this month"
   },
   "booking": {
-    "title": "Book Your Interview",
-    "subtitle": "Select a time slot that works best for you",
+    "title": "Schedule Your Interview",
+    "subtitle": "Select a date and time that works for you",
     "loading_slots": "Loading available time slots...",
     "error_title": "Unable to Load Time Slots",
     "error_invalid_token": "The booking link is invalid or has expired. Please contact HR for assistance.",
     "no_slots_title": "No Available Time Slots",
     "no_slots_message": "There are currently no available time slots. Please contact HR for alternative scheduling options.",
-    "confirm_selection": "Confirm Selection",
+    "confirm_selection": "Confirm Booking",
     "confirming": "Confirming your selection...",
     "confirmed_title": "Interview Scheduled!",
     "confirmed_message": "Your interview has been successfully scheduled. We look forward to meeting you!",
     "email_confirmation": "A confirmation email with interview details has been sent to your email address.",
-    "calendar_instructions": "Please check your email for calendar invite and meeting details."
+    "calendar_instructions": "Please check your email for calendar invite and meeting details.",
+    "select_date": "Select a date",
+    "select_time": "Select a time",
+    "no_slots_this_day": "No available slots for this day",
+    "available_times": "Available times",
+    "date_unavailable": "Unavailable"
+  },
+  "booking_link": {
+    "send_tooltip": "Send booking link to candidate",
+    "sent_to": "Booking link sent to",
+    "copy_link": "Copy link",
+    "copied": "Copied!",
+    "expires": "Expires",
+    "error": "Failed to send booking link",
+    "not_enabled": "Booking system is not enabled. Enable it in Company Settings → Calendar & Booking Settings."
   },
   "manual_candidate": {
     "create_title": "Add Candidate Manually",
@@ -4039,6 +4053,52 @@
       "admin_panel": "Admin Panel",
       "integrations": "Integrations",
       "why_borderless": "Why Borderless?"
+    }
+  },
+  "calendar_settings": {
+    "title": "Calendar & Booking Settings",
+    "booking_enabled": "Enable Booking System",
+    "booking_enabled_hint": "Allow candidates to self-schedule their interviews",
+    "booking_disabled_info": "Enable the booking system to allow candidates to schedule their own interviews",
+    "working_days": "Working Days",
+    "working_hours": "Working Hours",
+    "hours_from": "From",
+    "hours_to": "To",
+    "buffer_time": "Buffer Between Slots",
+    "default_duration": "Default Interview Duration",
+    "advance_booking": "Booking Window",
+    "advance_booking_unit": "days ahead",
+    "blocked_dates": "Blocked Dates",
+    "blocked_dates_hint": "Add holidays or days off",
+    "add_date": "Add",
+    "no_blocked_dates": "No blocked dates",
+    "save": "Save Settings",
+    "save_success": "Calendar settings saved",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun",
+    "min": "min",
+    "days": "days",
+    "buffer_options": {
+      "0": "No buffer",
+      "5": "5 min",
+      "10": "10 min",
+      "15": "15 min",
+      "30": "30 min",
+      "45": "45 min",
+      "60": "1 hour"
+    },
+    "duration_options": {
+      "15": "15 min",
+      "30": "30 min",
+      "45": "45 min",
+      "60": "1 hour",
+      "90": "1.5 hours",
+      "120": "2 hours"
     }
   }
 }

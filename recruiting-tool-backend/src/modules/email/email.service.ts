@@ -638,6 +638,142 @@ The Borderless Team
   }
 
   /**
+   * Send booking invitation to candidate with a link to self-schedule their interview
+   */
+  async sendBookingInvitation(candidateEmail: string, candidateName: string, bookingUrl: string, expiresAt: Date, jobTitle: string): Promise<void> {
+    const expiryDateStr = expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+
+    const subject = `Schedule Your Interview for ${jobTitle}`;
+    const text = `
+Dear ${candidateName},
+
+You have been invited to schedule your interview for the position of ${jobTitle}.
+
+Please use the link below to choose a time that works best for you:
+${bookingUrl}
+
+This link will expire on ${expiryDateStr}.
+
+Best regards,
+The Borderless Team
+    `.trim();
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h2 style="color: #1976d2;">You've Been Invited to Schedule Your Interview</h2>
+        <p>Dear ${candidateName},</p>
+        <p>Congratulations! You have been selected to move forward in our hiring process for the position of <strong>${jobTitle}</strong>.</p>
+        <p>Please click the button below to choose an interview time that works best for you.</p>
+        <div style="text-align: center; margin: 32px 0;">
+          <a href="${bookingUrl}"
+             style="background-color: #1976d2; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block;">
+            Book Your Interview
+          </a>
+        </div>
+        <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
+        <p style="color: #666; font-size: 12px; word-break: break-all;">${bookingUrl}</p>
+        <p style="color: #999; font-size: 12px;">This link will expire on ${expiryDateStr}. Please book your slot before then.</p>
+        <br/>
+        <p>Best regards,<br/>The Borderless Team</p>
+      </div>
+    `;
+
+    this.logger.log(`Sending booking invitation to ${candidateEmail} for ${jobTitle}`);
+    await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
+  }
+
+  /**
+   * Send booking confirmation to candidate after they self-schedule an interview
+   */
+  async sendBookingConfirmation(
+    candidateEmail: string,
+    candidateName: string,
+    scheduledDate: string,
+    scheduledTime: string,
+    durationMinutes: number,
+    jobTitle: string,
+    meetingLink?: string,
+  ): Promise<void> {
+    const subject = `Interview Confirmed: ${jobTitle}`;
+    const text = `
+Dear ${candidateName},
+
+Your interview for ${jobTitle} has been confirmed!
+
+Date: ${scheduledDate}
+Time: ${scheduledTime}
+Duration: ${durationMinutes} minutes${meetingLink ? `\nMeeting Link: ${meetingLink}` : ''}
+
+Please make sure to be available at the scheduled time.
+
+Best regards,
+The Borderless Team
+    `.trim();
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h2 style="color: #2e7d32;">Your Interview is Confirmed!</h2>
+        <p>Dear ${candidateName},</p>
+        <p>Great news — your interview for <strong>${jobTitle}</strong> has been successfully scheduled.</p>
+        <div style="background: #f5f5f5; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <p style="margin: 0 0 8px;"><strong>Date:</strong> ${scheduledDate}</p>
+          <p style="margin: 0 0 8px;"><strong>Time:</strong> ${scheduledTime}</p>
+          <p style="margin: 0 0 8px;"><strong>Duration:</strong> ${durationMinutes} minutes</p>
+          ${meetingLink ? `<p style="margin: 0;"><strong>Meeting Link:</strong> <a href="${meetingLink}" style="color: #1976d2;">${meetingLink}</a></p>` : ''}
+        </div>
+        <p>Please make sure to be available at the scheduled time. We look forward to speaking with you!</p>
+        <br/>
+        <p>Best regards,<br/>The Borderless Team</p>
+      </div>
+    `;
+
+    this.logger.log(`Sending booking confirmation to ${candidateEmail} for ${jobTitle}`);
+    await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
+  }
+
+  /**
+   * Send HR notification when a candidate books their interview slot
+   */
+  async sendHRBookingNotification(hrEmail: string, candidateName: string, scheduledDate: string, scheduledTime: string, jobTitle: string, appLink: string): Promise<void> {
+    const subject = `Interview Booked: ${candidateName} — ${jobTitle}`;
+    const text = `
+${candidateName} has booked their interview for ${jobTitle}.
+
+Date: ${scheduledDate}
+Time: ${scheduledTime}
+
+View details in the app: ${appLink}
+
+Best regards,
+The Borderless Team
+    `.trim();
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
+        <h2 style="color: #1976d2;">Interview Booked</h2>
+        <p><strong>${candidateName}</strong> has booked their interview for <strong>${jobTitle}</strong>.</p>
+        <div style="background: #f5f5f5; border-radius: 8px; padding: 20px; margin: 24px 0;">
+          <p style="margin: 0 0 8px;"><strong>Candidate:</strong> ${candidateName}</p>
+          <p style="margin: 0 0 8px;"><strong>Position:</strong> ${jobTitle}</p>
+          <p style="margin: 0 0 8px;"><strong>Date:</strong> ${scheduledDate}</p>
+          <p style="margin: 0;"><strong>Time:</strong> ${scheduledTime}</p>
+        </div>
+        <div style="text-align: center; margin: 24px 0;">
+          <a href="${appLink}"
+             style="background-color: #1976d2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; display: inline-block;">
+            View in App
+          </a>
+        </div>
+        <br/>
+        <p>Best regards,<br/>The Borderless Team</p>
+      </div>
+    `;
+
+    this.logger.log(`Sending HR booking notification to ${hrEmail} for ${candidateName}`);
+    await this.sendEmail(hrEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
+  }
+
+  /**
    * Check if email service is properly configured
    * Used by health check endpoints to verify email service availability
    * @returns boolean - true if email service is configured

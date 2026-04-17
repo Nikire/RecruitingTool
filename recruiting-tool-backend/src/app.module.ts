@@ -50,6 +50,7 @@ import { SystemSettingsModule } from './modules/system-settings/system-settings.
 import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { CustomPlansModule } from './modules/custom-plans/custom-plans.module';
+import { CompanyCalendarSettingsModule } from './modules/company-calendar-settings/company-calendar-settings.module';
 
 @Module({
   imports: [
@@ -111,6 +112,7 @@ import { CustomPlansModule } from './modules/custom-plans/custom-plans.module';
     PlanLimitsModule,
     FeatureFlagsModule,
     CustomPlansModule,
+    CompanyCalendarSettingsModule,
   ],
   controllers: [AppController],
   providers: [

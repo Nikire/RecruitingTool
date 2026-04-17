@@ -2353,19 +2353,33 @@
     "email_stats_no_data": "No se enviaron correos este mes"
   },
   "booking": {
-    "title": "Reserva Tu Entrevista",
-    "subtitle": "Selecciona el horario que mejor te convenga",
+    "title": "Programa Tu Entrevista",
+    "subtitle": "Selecciona una fecha y hora que te convengan",
     "loading_slots": "Cargando horarios disponibles...",
     "error_title": "No se Pueden Cargar los Horarios",
     "error_invalid_token": "El enlace de reserva es inválido o ha expirado. Por favor, contacta a Recursos Humanos para asistencia.",
     "no_slots_title": "No Hay Horarios Disponibles",
     "no_slots_message": "Actualmente no hay horarios disponibles. Por favor, contacta a Recursos Humanos para opciones de programación alternativas.",
-    "confirm_selection": "Confirmar Selección",
+    "confirm_selection": "Confirmar Reserva",
     "confirming": "Confirmando tu selección...",
     "confirmed_title": "¡Entrevista Programada!",
     "confirmed_message": "Tu entrevista ha sido programada exitosamente. ¡Esperamos verte pronto!",
     "email_confirmation": "Se ha enviado un correo de confirmación con los detalles de la entrevista a tu dirección de correo electrónico.",
-    "calendar_instructions": "Por favor, revisa tu correo para la invitación de calendario y detalles de la reunión."
+    "calendar_instructions": "Por favor, revisa tu correo para la invitación de calendario y detalles de la reunión.",
+    "select_date": "Selecciona una fecha",
+    "select_time": "Selecciona un horario",
+    "no_slots_this_day": "No hay horarios disponibles para este día",
+    "available_times": "Horarios disponibles",
+    "date_unavailable": "No disponible"
+  },
+  "booking_link": {
+    "send_tooltip": "Enviar enlace de reserva al candidato",
+    "sent_to": "Enlace de reserva enviado a",
+    "copy_link": "Copiar enlace",
+    "copied": "¡Copiado!",
+    "expires": "Expira",
+    "error": "Error al enviar el enlace de reserva",
+    "not_enabled": "El sistema de reservas no está habilitado. Actívalo en Configuración de Empresa → Configuración de Calendario y Reservas."
   },
   "manual_candidate": {
     "create_title": "Agregar Candidato Manualmente",
@@ -4047,6 +4061,52 @@
       "admin_panel": "Panel de Administración",
       "integrations": "Integraciones",
       "why_borderless": "¿Por qué Borderless?"
+    }
+  },
+  "calendar_settings": {
+    "title": "Calendario y Configuración de Reservas",
+    "booking_enabled": "Activar Sistema de Reservas",
+    "booking_enabled_hint": "Permite que los candidatos agenden sus propias entrevistas",
+    "booking_disabled_info": "Activa el sistema de reservas para que los candidatos puedan agendar sus propias entrevistas",
+    "working_days": "Días Laborales",
+    "working_hours": "Horario Laboral",
+    "hours_from": "Desde",
+    "hours_to": "Hasta",
+    "buffer_time": "Tiempo entre Entrevistas",
+    "default_duration": "Duración Predeterminada",
+    "advance_booking": "Ventana de Reserva",
+    "advance_booking_unit": "días de anticipación",
+    "blocked_dates": "Fechas Bloqueadas",
+    "blocked_dates_hint": "Agrega días festivos o días libres",
+    "add_date": "Agregar",
+    "no_blocked_dates": "Sin fechas bloqueadas",
+    "save": "Guardar Configuración",
+    "save_success": "Configuración de calendario guardada",
+    "mon": "Lun",
+    "tue": "Mar",
+    "wed": "Mié",
+    "thu": "Jue",
+    "fri": "Vie",
+    "sat": "Sáb",
+    "sun": "Dom",
+    "min": "min",
+    "days": "días",
+    "buffer_options": {
+      "0": "Sin pausa",
+      "5": "5 min",
+      "10": "10 min",
+      "15": "15 min",
+      "30": "30 min",
+      "45": "45 min",
+      "60": "1 hora"
+    },
+    "duration_options": {
+      "15": "15 min",
+      "30": "30 min",
+      "45": "45 min",
+      "60": "1 hora",
+      "90": "1.5 horas",
+      "120": "2 horas"
     }
   }
 }
