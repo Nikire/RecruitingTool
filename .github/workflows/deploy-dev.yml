@@ -96,17 +96,14 @@ jobs:
             --arg msg "$COMMIT_MSG" \
             --arg actor "$ACTOR" \
             '{
-              batchName: "✅ EC2 Deployment – SUCCESS",
-              issues: [{ number: 0, title: ("[\($sha)] \($msg)"), status: "DEPLOYED" }],
-              testingChecklist: [
-                "Frontend loads at https://borderlessats.com",
-                "Backend health at https://api.borderlessats.com/api/health/liveness",
-                "Spot-check recently pushed features"
-              ],
-              additionalNotes: ("Triggered by: \($actor)")
+              commitSha: $sha,
+              commitMessage: $msg,
+              actor: $actor,
+              environment: "development",
+              status: "success"
             }')
 
-          curl -sf -X POST https://api.borderlessats.com/api/internal/batch-summary \
+          curl -sf -X POST https://api.borderlessats.com/api/internal/deployment-notification \
             -H "Content-Type: application/json" \
             -H "x-api-key: $INTERNAL_API_KEY" \
             -d "$PAYLOAD" \
