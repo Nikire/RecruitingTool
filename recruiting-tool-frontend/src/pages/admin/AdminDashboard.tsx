@@ -1,9 +1,18 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Divider } from "@mui/material";
 import {
-  People as PeopleIcon,
   Business as BusinessIcon,
-  Work as WorkIcon,
-  Assignment as AssignmentIcon,
+  People as PeopleIcon,
+  Subscriptions as SubscriptionsIcon,
+  RestoreFromTrash as RestoreFromTrashIcon,
+  Email as EmailIcon,
+  Tune as TuneIcon,
+  FlagOutlined as FlagOutlinedIcon,
+  DisplaySettingsOutlined as DisplaySettingsOutlinedIcon,
+  WebhookOutlined as WebhookOutlinedIcon,
+  WorkspacePremiumOutlined as WorkspacePremiumOutlinedIcon,
+  Psychology as PsychologyIcon,
+  Settings as SettingsIcon,
+  Article as ArticleIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -15,117 +24,183 @@ const AdminDashboard: React.FC = () => {
   const { user } = useUserAtom();
   const navigate = useNavigate();
 
-  const stats = [
+  const managementItems = [
     {
-      title: t("admin_dashboard.candidate_management"),
-      icon: <PeopleIcon />,
-      color: "#1976d2",
-      description: t("admin_dashboard.candidate_management_desc"),
-      path: "/admin/candidates",
-    },
-    {
-      title: t("admin_dashboard.company_management"),
+      title: t("admin_layout.companies"),
       icon: <BusinessIcon />,
       color: "#2e7d32",
       description: t("admin_dashboard.company_management_desc"),
       path: "/admin/companies",
     },
     {
-      title: t("admin_dashboard.user_management"),
-      icon: <AssignmentIcon />,
-      color: "#ed6c02",
+      title: t("admin_layout.users"),
+      icon: <PeopleIcon />,
+      color: "#1976d2",
       description: t("admin_dashboard.user_management_desc"),
       path: "/admin/users",
     },
     {
-      title: t("admin_dashboard.job_positions"),
-      icon: <WorkIcon />,
+      title: t("admin_layout.subscriptions"),
+      icon: <SubscriptionsIcon />,
+      color: "#ed6c02",
+      description: t("admin_dashboard.subscriptions_desc"),
+      path: "/admin/subscriptions",
+    },
+    {
+      title: t("admin_layout.deleted_records"),
+      icon: <RestoreFromTrashIcon />,
+      color: "#d32f2f",
+      description: t("admin_dashboard.deleted_records_desc"),
+      path: "/admin/deleted-records",
+    },
+    {
+      title: t("admin_layout.contact_messages"),
+      icon: <EmailIcon />,
+      color: "#0288d1",
+      description: t("admin_dashboard.contact_messages_desc"),
+      path: "/admin/contact-messages",
+    },
+  ];
+
+  const configurationItems = [
+    {
+      title: t("admin_layout.plan_limits"),
+      icon: <TuneIcon />,
       color: "#9c27b0",
-      description: t("admin_dashboard.job_positions_desc"),
-      path: "/careers",
+      description: t("admin_dashboard.plan_limits_desc"),
+      path: "/admin/plan-limits",
+    },
+    {
+      title: t("admin_layout.feature_flags"),
+      icon: <FlagOutlinedIcon />,
+      color: "#f57c00",
+      description: t("admin_dashboard.feature_flags_desc"),
+      path: "/admin/feature-flags",
+    },
+    {
+      title: t("admin_layout.general_settings"),
+      icon: <DisplaySettingsOutlinedIcon />,
+      color: "#455a64",
+      description: t("admin_dashboard.general_settings_desc"),
+      path: "/admin/general-settings",
+    },
+    {
+      title: t("admin_layout.webhooks"),
+      icon: <WebhookOutlinedIcon />,
+      color: "#00838f",
+      description: t("admin_dashboard.webhooks_desc"),
+      path: "/admin/webhooks",
+    },
+    {
+      title: t("admin_layout.custom_plans"),
+      icon: <WorkspacePremiumOutlinedIcon />,
+      color: "#5e35b1",
+      description: t("admin_dashboard.custom_plans_desc"),
+      path: "/admin/custom-plans",
+    },
+    {
+      title: t("admin_layout.ai_quota"),
+      icon: <PsychologyIcon />,
+      color: "#e91e63",
+      description: t("admin_dashboard.ai_quota_desc"),
+      path: "/admin/ai-quota",
+    },
+    {
+      title: t("admin_layout.settings"),
+      icon: <SettingsIcon />,
+      color: "#37474f",
+      description: t("admin_dashboard.system_settings_desc"),
+      path: "/admin/settings",
+    },
+    {
+      title: t("admin_layout.docs"),
+      icon: <ArticleIcon />,
+      color: "#558b2f",
+      description: t("admin_dashboard.docs_desc"),
+      path: "/admin/docs",
     },
   ];
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        width: "100%",
-        py: { xs: 4, sm: 6 },
-      }}
-    >
-      {/* Header Section - Enhanced with better typography */}
-      <Box
-        sx={{
-          mb: { xs: 4, sm: 5 },
-          textAlign: "center",
-          maxWidth: 800,
-          px: { xs: 2, sm: 0 },
-        }}
-      >
+    <Box sx={{ width: "100%", py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 0 } }}>
+      {/* Header */}
+      <Box sx={{ mb: { xs: 4, sm: 5 } }}>
         <Typography
-          variant="h3"
+          variant="h4"
+          fontWeight={700}
           gutterBottom
-          sx={{
-            fontSize: { xs: "2rem", sm: "2.5rem", md: "3rem" },
-            fontWeight: 600,
-            color: "text.primary",
-            mb: 2,
-          }}
+          sx={{ fontSize: { xs: "1.75rem", sm: "2.25rem" } }}
         >
           {t("admin_dashboard.title")}
         </Typography>
-        <Typography
-          variant="body1"
-          color="text.secondary"
-          sx={{
-            fontSize: { xs: "0.95rem", sm: "1rem" },
-            lineHeight: 1.7,
-          }}
-        >
+        <Typography variant="body1" color="text.secondary">
           {t("admin_dashboard.welcome", { name: user?.name })}
         </Typography>
       </Box>
 
-      {/* Navigation Cards Grid - Enhanced with better spacing and responsive layout */}
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "1fr",
-            sm: "repeat(2, 1fr)",
-          },
-          gap: { xs: 2.5, sm: 3 },
-          width: "100%",
-          maxWidth: {
-            xs: "100%",
-            sm: "calc(300px * 2 + 24px)",
-          },
-          px: { xs: 2, sm: 0 },
-        }}
-      >
-        {stats.map((stat) => (
-          <Box
-            key={stat.title}
-            sx={{
-              minHeight: 140,
-            }}
-          >
-            <UnifiedStatCard
-              title={stat.title}
-              icon={stat.icon}
-              color={stat.color}
-              subtitle={stat.description}
-              onClick={() => navigate(stat.path)}
-              variant="navigation"
-            />
-          </Box>
+      {/* Management section */}
+      <SectionHeader label={t("admin_layout.group_management")} />
+      <CardGrid>
+        {managementItems.map((item) => (
+          <UnifiedStatCard
+            key={item.path}
+            title={item.title}
+            icon={item.icon}
+            color={item.color}
+            subtitle={item.description}
+            onClick={() => navigate(item.path)}
+            variant="navigation"
+          />
         ))}
-      </Box>
+      </CardGrid>
+
+      <Divider sx={{ my: 4 }} />
+
+      {/* Configuration section */}
+      <SectionHeader label={t("admin_layout.group_configuration")} />
+      <CardGrid>
+        {configurationItems.map((item) => (
+          <UnifiedStatCard
+            key={item.path}
+            title={item.title}
+            icon={item.icon}
+            color={item.color}
+            subtitle={item.description}
+            onClick={() => navigate(item.path)}
+            variant="navigation"
+          />
+        ))}
+      </CardGrid>
     </Box>
   );
 };
+
+const SectionHeader: React.FC<{ label: string }> = ({ label }) => (
+  <Typography
+    variant="overline"
+    fontWeight={700}
+    color="text.secondary"
+    sx={{ display: "block", mb: 2, letterSpacing: 1.2 }}
+  >
+    {label}
+  </Typography>
+);
+
+const CardGrid: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <Box
+    sx={{
+      display: "grid",
+      gridTemplateColumns: {
+        xs: "1fr",
+        sm: "repeat(2, 1fr)",
+        md: "repeat(3, 1fr)",
+      },
+      gap: 2.5,
+      mb: 1,
+    }}
+  >
+    {children}
+  </Box>
+);
 
 export default AdminDashboard;

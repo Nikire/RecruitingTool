@@ -1907,14 +1907,19 @@
   "admin_dashboard": {
     "title": "Panel de Administración",
     "welcome": "¡Bienvenido de nuevo, {{name}}! Gestiona tu sistema desde este centro de control.",
-    "candidate_management": "Gestión de Candidatos",
-    "candidate_management_desc": "Gestionar candidatos y sus aplicaciones",
-    "company_management": "Gestión de Empresas",
-    "company_management_desc": "Gestionar empresas y sus configuraciones",
-    "user_management": "Gestión de Usuarios",
+    "company_management_desc": "Gestionar empresas, configuraciones y miembros del equipo",
     "user_management_desc": "Gestionar cuentas de usuario, roles y permisos",
-    "job_positions": "Posiciones de Trabajo",
-    "job_positions_desc": "Ver todas las posiciones de trabajo en todas las empresas"
+    "subscriptions_desc": "Ver y gestionar las suscripciones de empresas",
+    "deleted_records_desc": "Restaurar o eliminar permanentemente registros archivados",
+    "contact_messages_desc": "Revisar mensajes enviados desde el formulario de contacto",
+    "plan_limits_desc": "Configurar los límites de funciones por plan de suscripción",
+    "feature_flags_desc": "Activar o desactivar funciones en toda la plataforma",
+    "general_settings_desc": "Configuración global de la plataforma y marca",
+    "webhooks_desc": "Gestionar webhooks salientes e integraciones de API",
+    "custom_plans_desc": "Crear y gestionar planes de suscripción personalizados",
+    "ai_quota_desc": "Establecer cuotas de puntuación de IA por empresa",
+    "system_settings_desc": "Configuración de correo, almacenamiento, límites y más",
+    "docs_desc": "Documentación interna de API y plataforma"
   },
   "admin": {
     "ai_quota": {

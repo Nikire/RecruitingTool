@@ -1879,14 +1879,19 @@
   "admin_dashboard": {
     "title": "Admin Dashboard",
     "welcome": "Welcome back, {{name}}! Manage your system from this central hub.",
-    "candidate_management": "Candidate Management",
-    "candidate_management_desc": "Manage candidates and their applications",
-    "company_management": "Company Management",
-    "company_management_desc": "Manage companies and their settings",
-    "user_management": "User Management",
+    "company_management_desc": "Manage companies, settings and team members",
     "user_management_desc": "Manage user accounts, roles, and permissions",
-    "job_positions": "Job Positions",
-    "job_positions_desc": "View all job positions across companies"
+    "subscriptions_desc": "View and manage company subscriptions",
+    "deleted_records_desc": "Restore or permanently delete archived records",
+    "contact_messages_desc": "Review messages sent from the contact form",
+    "plan_limits_desc": "Configure feature limits per subscription plan",
+    "feature_flags_desc": "Enable or disable features across the platform",
+    "general_settings_desc": "Global platform settings and branding",
+    "webhooks_desc": "Manage outgoing webhooks and API key integrations",
+    "custom_plans_desc": "Create and manage custom subscription plans",
+    "ai_quota_desc": "Set AI scoring quotas per company",
+    "system_settings_desc": "Email, storage, rate limiting and infrastructure config",
+    "docs_desc": "Internal API and platform documentation"
   },
   "admin": {
     "ai_quota": {
