@@ -213,198 +213,225 @@ const CompanyCalendarSettingsCard: React.FC = () => {
           </Alert>
         )}
 
-        {/* ── Working Days ── */}
-        <Box>
-          <Typography
-            variant="body2"
-            fontWeight={600}
-            color="text.secondary"
-            sx={{ mb: 1 }}
-          >
-            {t("calendar_settings.working_days")}
-          </Typography>
-          <ToggleButtonGroup
-            value={workingDays}
-            onChange={handleWorkingDaysChange}
-            aria-label={t("calendar_settings.working_days")}
-            size="small"
-            sx={{ flexWrap: "wrap", gap: 0.5 }}
-          >
-            {DAY_OPTIONS.map((day) => (
-              <ToggleButton
-                key={day.value}
-                value={day.value}
-                aria-label={t(day.labelKey)}
-                sx={{ minWidth: 48 }}
+        {isBookingEnabled && (
+          <>
+            {/* ── Working Days ── */}
+            <Box>
+              <Typography
+                variant="body2"
+                fontWeight={600}
+                color="text.secondary"
+                sx={{ mb: 1 }}
               >
-                {t(day.labelKey)}
-              </ToggleButton>
-            ))}
-          </ToggleButtonGroup>
-        </Box>
+                {t("calendar_settings.working_days")}
+              </Typography>
+              <ToggleButtonGroup
+                value={workingDays}
+                onChange={handleWorkingDaysChange}
+                aria-label={t("calendar_settings.working_days")}
+                size="small"
+                sx={{ flexWrap: "wrap", gap: 0.5 }}
+              >
+                {DAY_OPTIONS.map((day) => (
+                  <ToggleButton
+                    key={day.value}
+                    value={day.value}
+                    aria-label={t(day.labelKey)}
+                    sx={{ minWidth: 48 }}
+                  >
+                    {t(day.labelKey)}
+                  </ToggleButton>
+                ))}
+              </ToggleButtonGroup>
+            </Box>
 
-        {/* ── Working Hours ── */}
-        <Box>
-          <Typography
-            variant="body2"
-            fontWeight={600}
-            color="text.secondary"
-            sx={{ mb: 1 }}
-          >
-            {t("calendar_settings.working_hours")}
-          </Typography>
-          <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-            <TextField
-              label={t("calendar_settings.hours_from")}
-              type="time"
-              value={workingHoursStart}
-              onChange={(e) => setWorkingHoursStart(e.target.value)}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }}
-              sx={{ minWidth: 140 }}
-            />
-            <TextField
-              label={t("calendar_settings.hours_to")}
-              type="time"
-              value={workingHoursEnd}
-              onChange={(e) => setWorkingHoursEnd(e.target.value)}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              inputProps={{ step: 300 }}
-              sx={{ minWidth: 140 }}
-            />
-          </Box>
-        </Box>
+            {/* ── Working Hours ── */}
+            <Box>
+              <Typography
+                variant="body2"
+                fontWeight={600}
+                color="text.secondary"
+                sx={{ mb: 1 }}
+              >
+                {t("calendar_settings.working_hours")}
+              </Typography>
+              <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+                <TextField
+                  label={t("calendar_settings.hours_from")}
+                  type="time"
+                  value={workingHoursStart}
+                  onChange={(e) => setWorkingHoursStart(e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ step: 300 }}
+                  sx={{ minWidth: 140 }}
+                />
+                <TextField
+                  label={t("calendar_settings.hours_to")}
+                  type="time"
+                  value={workingHoursEnd}
+                  onChange={(e) => setWorkingHoursEnd(e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  inputProps={{ step: 300 }}
+                  sx={{ minWidth: 140 }}
+                />
+              </Box>
+            </Box>
 
-        {/* ── Buffer & Duration ── */}
-        <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-          <FormControl size="small" sx={{ minWidth: 180 }}>
-            <InputLabel>{t("calendar_settings.buffer_time")}</InputLabel>
-            <Select
-              value={bufferMinutes}
-              label={t("calendar_settings.buffer_time")}
-              onChange={handleBufferChange}
-            >
-              {BUFFER_OPTIONS.map((min) => (
-                <MenuItem key={min} value={min}>
-                  {bufferLabel(min)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+            {/* ── Buffer & Duration ── */}
+            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
+              <FormControl size="small" sx={{ minWidth: 180 }}>
+                <InputLabel>{t("calendar_settings.buffer_time")}</InputLabel>
+                <Select
+                  value={bufferMinutes}
+                  label={t("calendar_settings.buffer_time")}
+                  onChange={handleBufferChange}
+                >
+                  {BUFFER_OPTIONS.map((min) => (
+                    <MenuItem key={min} value={min}>
+                      {bufferLabel(min)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
 
-          <FormControl size="small" sx={{ minWidth: 200 }}>
-            <InputLabel>{t("calendar_settings.default_duration")}</InputLabel>
-            <Select
-              value={defaultDurationMinutes}
-              label={t("calendar_settings.default_duration")}
-              onChange={handleDurationChange}
-            >
-              {DURATION_OPTIONS.map((min) => (
-                <MenuItem key={min} value={min}>
-                  {durationLabel(min)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+              <FormControl size="small" sx={{ minWidth: 200 }}>
+                <InputLabel>
+                  {t("calendar_settings.default_duration")}
+                </InputLabel>
+                <Select
+                  value={defaultDurationMinutes}
+                  label={t("calendar_settings.default_duration")}
+                  onChange={handleDurationChange}
+                >
+                  {DURATION_OPTIONS.map((min) => (
+                    <MenuItem key={min} value={min}>
+                      {durationLabel(min)}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
 
-        {/* ── Advance Booking Window ── */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <TextField
-            label={t("calendar_settings.advance_booking")}
-            type="number"
-            value={advanceBookingDays}
-            onChange={(e) =>
-              setAdvanceBookingDays(
-                Math.min(365, Math.max(1, Number(e.target.value))),
-              )
-            }
-            size="small"
-            inputProps={{ min: 1, max: 365 }}
-            sx={{ width: 120 }}
-          />
-          <Typography variant="body2" color="text.secondary">
-            {t("calendar_settings.advance_booking_unit")}
-          </Typography>
-        </Box>
+            {/* ── Advance Booking Window ── */}
+            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+              <TextField
+                label={t("calendar_settings.advance_booking")}
+                type="number"
+                value={advanceBookingDays}
+                onChange={(e) =>
+                  setAdvanceBookingDays(
+                    Math.min(365, Math.max(1, Number(e.target.value))),
+                  )
+                }
+                size="small"
+                inputProps={{ min: 1, max: 365 }}
+                sx={{ width: 120 }}
+              />
+              <Typography variant="body2" color="text.secondary">
+                {t("calendar_settings.advance_booking_unit")}
+              </Typography>
+            </Box>
 
-        {/* ── Blocked Dates ── */}
-        <Box>
-          <Typography
-            variant="body2"
-            fontWeight={600}
-            color="text.secondary"
-            sx={{ mb: 0.5 }}
-          >
-            {t("calendar_settings.blocked_dates")}
-          </Typography>
-          <Typography
-            variant="caption"
-            color="text.disabled"
-            sx={{ display: "block", mb: 1 }}
-          >
-            {t("calendar_settings.blocked_dates_hint")}
-          </Typography>
+            {/* ── Blocked Dates ── */}
+            <Box>
+              <Typography
+                variant="body2"
+                fontWeight={600}
+                color="text.secondary"
+                sx={{ mb: 0.5 }}
+              >
+                {t("calendar_settings.blocked_dates")}
+              </Typography>
+              <Typography
+                variant="caption"
+                color="text.disabled"
+                sx={{ display: "block", mb: 1 }}
+              >
+                {t("calendar_settings.blocked_dates_hint")}
+              </Typography>
 
-          {/* Date picker + add button */}
-          <Box sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1.5 }}>
-            <TextField
-              type="date"
-              value={newDate}
-              onChange={(e) => setNewDate(e.target.value)}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-              sx={{ flex: 1, maxWidth: 220 }}
-            />
+              <Box
+                sx={{ display: "flex", gap: 1, alignItems: "center", mb: 1.5 }}
+              >
+                <TextField
+                  type="date"
+                  value={newDate}
+                  onChange={(e) => setNewDate(e.target.value)}
+                  size="small"
+                  InputLabelProps={{ shrink: true }}
+                  sx={{ flex: 1, maxWidth: 220 }}
+                />
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={handleAddDate}
+                  disabled={!newDate}
+                >
+                  {t("calendar_settings.add_date")}
+                </Button>
+              </Box>
+
+              {blockedDates.length === 0 ? (
+                <Typography variant="caption" color="text.disabled">
+                  {t("calendar_settings.no_blocked_dates")}
+                </Typography>
+              ) : (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+                  {blockedDates.map((date) => (
+                    <Chip
+                      key={date}
+                      label={formatDate(date)}
+                      onDelete={() => handleRemoveDate(date)}
+                      size="small"
+                      variant="outlined"
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
+
+            {/* ── Save button ── */}
+            <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
+              <Button
+                variant="contained"
+                startIcon={
+                  isPending ? (
+                    <CircularProgress size={16} color="inherit" />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
+                disabled={isPending}
+                onClick={handleSave}
+              >
+                {isPending ? t("common.saving") : t("calendar_settings.save")}
+              </Button>
+            </Box>
+          </>
+        )}
+
+        {/* Save toggle state even when disabled */}
+        {!isBookingEnabled && (
+          <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Button
               variant="outlined"
               size="small"
-              onClick={handleAddDate}
-              disabled={!newDate}
+              startIcon={
+                isPending ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  <SaveIcon />
+                )
+              }
+              disabled={isPending}
+              onClick={handleSave}
             >
-              {t("calendar_settings.add_date")}
+              {isPending ? t("common.saving") : t("calendar_settings.save")}
             </Button>
           </Box>
-
-          {/* Chips for existing blocked dates */}
-          {blockedDates.length === 0 ? (
-            <Typography variant="caption" color="text.disabled">
-              {t("calendar_settings.no_blocked_dates")}
-            </Typography>
-          ) : (
-            <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-              {blockedDates.map((date) => (
-                <Chip
-                  key={date}
-                  label={formatDate(date)}
-                  onDelete={() => handleRemoveDate(date)}
-                  size="small"
-                  variant="outlined"
-                />
-              ))}
-            </Box>
-          )}
-        </Box>
-
-        {/* ── Save button ── */}
-        <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-          <Button
-            variant="contained"
-            startIcon={
-              isPending ? (
-                <CircularProgress size={16} color="inherit" />
-              ) : (
-                <SaveIcon />
-              )
-            }
-            disabled={isPending}
-            onClick={handleSave}
-          >
-            {isPending ? t("common.saving") : t("calendar_settings.save")}
-          </Button>
-        </Box>
+        )}
       </Stack>
     </SettingsCard>
   );
