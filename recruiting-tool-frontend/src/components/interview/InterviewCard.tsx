@@ -310,16 +310,18 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
               </>
             )}
 
-            {/* Booking link — only when booking system is enabled and interview not yet completed/cancelled */}
-            {isBookingEnabled &&
-              interview.status !== InterviewStatus.COMPLETED &&
+            {/* Booking link — always visible on active interviews; disabled when booking system is off */}
+            {interview.status !== InterviewStatus.COMPLETED &&
               interview.status !== InterviewStatus.CANCELLED && (
                 <>
                   <Divider sx={{ my: 1 }} />
                   <Box>
                     <Tooltip
-                      title={t("booking_link.send_tooltip")}
-                      disableHoverListener={!isBookingEnabled}
+                      title={
+                        isBookingEnabled
+                          ? t("booking_link.send_tooltip")
+                          : t("booking_link.not_enabled")
+                      }
                     >
                       <span>
                         <Button
@@ -334,7 +336,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                             )
                           }
                           onClick={handleSendBookingLink}
-                          disabled={isSendingLink}
+                          disabled={isSendingLink || !isBookingEnabled}
                         >
                           {t("booking_link.send_to_candidate")}
                         </Button>
