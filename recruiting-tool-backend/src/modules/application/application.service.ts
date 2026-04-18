@@ -64,7 +64,7 @@ export class ApplicationService {
       }
 
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { jobPositionUid, resumeFileUid, ...applicationData } = createApplicationDto;
+      const { jobPositionUid, resumeFileUid, applicationSource, ...applicationData } = createApplicationDto;
 
       const application = await this.databaseService.application.create({
         data: {
@@ -72,7 +72,8 @@ export class ApplicationService {
           jobPositionId: jobPosition.id,
           resumeFileId,
           status: ApplicationStatus.PENDING,
-        },
+          ...(applicationSource ? { applicationSource } : {}),
+        } as any,
         include: includeApplication,
       });
 
@@ -549,7 +550,14 @@ export class ApplicationService {
           data: {
             name: application.applicantName,
             email: application.applicantEmail,
+            source: (application as any).applicationSource ?? undefined,
           },
+        });
+      } else if ((application as any).applicationSource && !candidate.source) {
+        // Update source if candidate exists but has no source yet
+        candidate = await this.databaseService.candidate.update({
+          where: { id: candidate.id },
+          data: { source: (application as any).applicationSource },
         });
       }
 

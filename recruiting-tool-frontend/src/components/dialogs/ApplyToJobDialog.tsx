@@ -10,6 +10,11 @@ import {
   Typography,
   Alert,
   CircularProgress,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  FormHelperText,
 } from "@mui/material";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import PersonIcon from "@mui/icons-material/Person";
@@ -28,6 +33,20 @@ interface ApplyToJobDialogProps {
   jobUid: string;
   jobTitle: string;
 }
+
+const APPLICATION_SOURCES: { value: string; labelKey: string }[] = [
+  { value: "WEBSITE", labelKey: "application.source_website" },
+  { value: "LINKEDIN", labelKey: "application.source_linkedin" },
+  { value: "INDEED", labelKey: "application.source_indeed" },
+  { value: "GLASSDOOR", labelKey: "application.source_glassdoor" },
+  { value: "REFERRAL", labelKey: "application.source_referral" },
+  { value: "JOB_FAIR", labelKey: "application.source_job_fair" },
+  { value: "UNIVERSITY", labelKey: "application.source_university" },
+  { value: "RECRUITER", labelKey: "application.source_recruiter" },
+  { value: "DIRECT_APPLY", labelKey: "application.source_direct" },
+  { value: "SOCIAL_MEDIA", labelKey: "application.source_social_media" },
+  { value: "OTHER", labelKey: "application.source_other" },
+];
 
 export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
   open,
@@ -48,6 +67,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
     applicantEmail: "",
     applicantPhone: "",
     coverLetter: "",
+    applicationSource: "",
   });
   const [customAnswers, setCustomAnswers] = useState<CustomAnswers>({});
   const [resumeFile, setResumeFile] = useState<File | null>(null);
@@ -160,6 +180,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
         applicantPhone: formData.applicantPhone,
         coverLetter: formData.coverLetter || undefined,
         resumeFileUid,
+        applicationSource: formData.applicationSource || undefined,
         customAnswers:
           Object.keys(customAnswers).length > 0 ? customAnswers : undefined,
       });
@@ -180,6 +201,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
       applicantEmail: "",
       applicantPhone: "",
       coverLetter: "",
+      applicationSource: "",
     });
     setCustomAnswers({});
     setResumeFile(null);
@@ -399,6 +421,35 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
                 },
               }}
             />
+
+            <FormControl fullWidth size="small">
+              <InputLabel id="application-source-label">
+                {t("application.source_question")}
+              </InputLabel>
+              <Select
+                labelId="application-source-label"
+                value={formData.applicationSource}
+                label={t("application.source_question")}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    applicationSource: e.target.value,
+                  }))
+                }
+              >
+                <MenuItem value="">
+                  <em>{t("application.source_none")}</em>
+                </MenuItem>
+                {APPLICATION_SOURCES.map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {t(opt.labelKey)}
+                  </MenuItem>
+                ))}
+              </Select>
+              <FormHelperText>
+                {t("application.source_question_hint")}
+              </FormHelperText>
+            </FormControl>
 
             {jobPosition?.customQuestions &&
               jobPosition.customQuestions.length > 0 && (

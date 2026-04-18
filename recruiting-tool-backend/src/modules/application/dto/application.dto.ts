@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ApplicationStatus } from '@prisma/client';
+import { ApplicationSource, ApplicationStatus } from '@prisma/client';
 import { IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsEnum, IsUUID, IsObject } from 'class-validator';
 
 export class ApplicationResponseDto {
@@ -98,6 +98,11 @@ export class CreateApplicationDto {
   @IsString()
   @MaxLength(5000)
   coverLetter?: string;
+
+  @ApiProperty({ description: 'Where the applicant heard about the position', enum: ApplicationSource, required: false })
+  @IsOptional()
+  @IsEnum(ApplicationSource)
+  applicationSource?: ApplicationSource;
 
   @ApiProperty({ description: 'Answers to custom screening questions', example: { q1: 'answer 1', q2: ['option 1', 'option 2'] }, required: false })
   @IsOptional()

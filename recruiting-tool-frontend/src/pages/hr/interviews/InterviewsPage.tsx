@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
-  Alert,
   Box,
   Button,
   Card,
   CardContent,
   Chip,
-  CircularProgress,
   Collapse,
   Divider,
   IconButton,
@@ -19,7 +17,6 @@ import {
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import LinkIcon from "@mui/icons-material/Link";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import {
@@ -28,10 +25,6 @@ import {
   useUpdateInterviewNotes,
 } from "../../../hooks/api/useCalendarInterviews";
 import { useCandidateStageNotes } from "../../../hooks/api/useStageNotes";
-import {
-  useSendBookingLink,
-  SendBookingLinkResponse,
-} from "../../../hooks/api/useTimeSlots";
 import PageHeader from "../../../components/common/PageHeader";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -115,38 +108,14 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
   const [notesOpen, setNotesOpen] = useState(false);
   const [stageNotesOpen, setStageNotesOpen] = useState(false);
   const [draft, setDraft] = useState(interview.notes ?? "");
-  const [bookingResult, setBookingResult] =
-    useState<SendBookingLinkResponse | null>(null);
-  const [showBookingResult, setShowBookingResult] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   const { mutate: saveNotes, isPending } = useUpdateInterviewNotes();
-  const { mutate: sendBookingLink, isPending: isSendingBookingLink } =
-    useSendBookingLink();
   const { data: stageNotes, isLoading: stageNotesLoading } =
     useCandidateStageNotes(
       stageNotesOpen ? interview.candidate?.uid : undefined,
     );
 
   const hasNotes = !!interview.notes;
-
-  const handleSendBookingLink = () => {
-    sendBookingLink(interview.uid, {
-      onSuccess: (data) => {
-        setBookingResult(data);
-        setShowBookingResult(true);
-        setCopied(false);
-      },
-    });
-  };
-
-  const handleCopyLink = () => {
-    if (!bookingResult) return;
-    navigator.clipboard.writeText(bookingResult.bookingUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   const handleSave = () => {
     saveNotes(
@@ -241,7 +210,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             )}
           </Box>
 
-          {/* Right: status chip + meeting link + notes toggle + booking link */}
+          {/* Right: status chip + meeting link + notes toggle */}
           <Stack
             direction="row"
             spacing={1}
@@ -267,23 +236,6 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
                 {t("interviews.join_meeting")}
               </Button>
             )}
-            <Tooltip title={t("booking_link.send_tooltip")}>
-              <span>
-                <IconButton
-                  size="small"
-                  color={showBookingResult ? "success" : "default"}
-                  onClick={handleSendBookingLink}
-                  disabled={isSendingBookingLink}
-                  aria-label={t("booking_link.send_tooltip")}
-                >
-                  {isSendingBookingLink ? (
-                    <CircularProgress size={16} />
-                  ) : (
-                    <LinkIcon fontSize="small" />
-                  )}
-                </IconButton>
-              </span>
-            </Tooltip>
             <Tooltip
               title={
                 hasNotes
@@ -325,39 +277,6 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             </Tooltip>
           </Stack>
         </Stack>
-
-        {/* Booking link success panel */}
-        {showBookingResult && bookingResult && (
-          <Alert
-            severity="success"
-            sx={{ mt: 1.5 }}
-            onClose={() => setShowBookingResult(false)}
-          >
-            <Typography variant="body2" sx={{ mb: 0.5 }}>
-              {t("booking_link.sent_to")} {bookingResult.candidateEmail}
-            </Typography>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Button
-                size="small"
-                variant="text"
-                startIcon={<LinkIcon fontSize="small" />}
-                onClick={handleCopyLink}
-                sx={{ textTransform: "none", p: 0, minWidth: "auto" }}
-              >
-                {copied
-                  ? t("booking_link.copied")
-                  : t("booking_link.copy_link")}
-              </Button>
-              <Typography variant="body2" color="text.secondary">
-                · {t("booking_link.expires")}:{" "}
-                {new Date(bookingResult.expiresAt).toLocaleDateString(
-                  undefined,
-                  { year: "numeric", month: "short", day: "numeric" },
-                )}
-              </Typography>
-            </Stack>
-          </Alert>
-        )}
 
         {/* Stage eval notes panel */}
         <Collapse in={stageNotesOpen} unmountOnExit>

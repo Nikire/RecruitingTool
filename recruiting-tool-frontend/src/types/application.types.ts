@@ -35,6 +35,7 @@ export interface CreateApplicationDto {
   applicantPhone: string;
   resumeFileUid?: string;
   coverLetter?: string;
+  applicationSource?: string;
   customAnswers?: Record<string, unknown>;
 }
 

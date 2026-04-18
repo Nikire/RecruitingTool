@@ -9,14 +9,14 @@ datasource db {
 }
 
 model Company {
-  id                 Int                    @id @default(autoincrement())
-  uid                String                 @unique @default(uuid()) @db.Uuid
+  id                 Int                      @id @default(autoincrement())
+  uid                String                   @unique @default(uuid()) @db.Uuid
   name               String
   description        String?
-  createdAt          DateTime               @default(now())
-  updatedAt          DateTime               @updatedAt
+  createdAt          DateTime                 @default(now())
+  updatedAt          DateTime                 @updatedAt
   logoUrl            String?
-  careersEnabled     Boolean                @default(true)
+  careersEnabled     Boolean                  @default(true)
   careersHeadline    String?
   companySize        String?
   foundedYear        Int?
@@ -29,16 +29,16 @@ model Company {
   website            String?
   aiQuotas           AIQuota[]
   aiUsageLogs        AIUsageLog[]
-  candidates         Candidate[]            @relation("CandidateCompany")
-  invitations        CompanyInvitation[]    @relation("CompanyInvitations")
+  candidates         Candidate[]              @relation("CandidateCompany")
+  invitations        CompanyInvitation[]      @relation("CompanyInvitations")
   connectionRequests ConnectionRequest[]
-  customPlans        CustomPlan[]           @relation("CompanyCustomPlan")
+  customPlans        CustomPlan[]             @relation("CompanyCustomPlan")
   emailTemplates     EmailTemplate[]
-  feedback           Feedback[]             @relation("CompanyFeedback")
+  feedback           Feedback[]               @relation("CompanyFeedback")
   hiringProcesses    HiringProcess[]
   jobPositions       JobPosition[]
   scorecardTemplates ScorecardTemplate[]
-  scoringWeights     CompanyScoringWeights? @relation("CompanyScoringWeights")
+  scoringWeights     CompanyScoringWeights?   @relation("CompanyScoringWeights")
   subscription       Subscription?
   users              User[]
   calendarSettings   CompanyCalendarSettings?
@@ -48,19 +48,19 @@ model Company {
 }
 
 model CompanyCalendarSettings {
-  id                     Int      @id @default(autoincrement())
-  uid                    String   @unique @default(uuid()) @db.Uuid
-  companyId              Int      @unique
-  company                Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  isBookingEnabled       Boolean  @default(false)
-  workingDays            Json     @default("[1,2,3,4,5]")
-  workingHoursStart      String   @default("09:00")
-  workingHoursEnd        String   @default("18:00")
-  bufferMinutes          Int      @default(15)
-  blockedDates           Json     @default("[]")
-  advanceBookingDays     Int      @default(30)
-  createdAt              DateTime @default(now())
-  updatedAt              DateTime @updatedAt
+  id                 Int      @id @default(autoincrement())
+  uid                String   @unique @default(uuid()) @db.Uuid
+  companyId          Int      @unique
+  company            Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isBookingEnabled   Boolean  @default(false)
+  workingDays        Json     @default("[1,2,3,4,5]")
+  workingHoursStart  String   @default("09:00")
+  workingHoursEnd    String   @default("18:00")
+  bufferMinutes      Int      @default(15)
+  blockedDates       Json     @default("[]")
+  advanceBookingDays Int      @default(30)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
   @@index([companyId])
 }
@@ -399,26 +399,27 @@ model FileUpload {
 
 /// This model contains an expression index which requires additional setup for migrations. Visit https://pris.ly/d/expression-indexes for more info.
 model Application {
-  id             Int               @id @default(autoincrement())
-  uid            String            @unique @default(uuid()) @db.Uuid
-  jobPositionId  Int?
-  applicantName  String
-  applicantEmail String
-  applicantPhone String
-  resumeFileId   Int?
-  coverLetter    String?
-  status         ApplicationStatus @default(PENDING)
-  appliedAt      DateTime          @default(now())
-  reviewedAt     DateTime?
-  reviewedById   Int?
-  notes          String?
-  createdAt      DateTime          @default(now())
-  updatedAt      DateTime          @updatedAt
-  customAnswers  Json?             @default("{}")
-  deletedAt      DateTime?
-  jobPosition    JobPosition?      @relation(fields: [jobPositionId], references: [id])
-  resumeFile     FileUpload?       @relation("ApplicationResume", fields: [resumeFileId], references: [id])
-  reviewedBy     User?             @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
+  id                Int                @id @default(autoincrement())
+  uid               String             @unique @default(uuid()) @db.Uuid
+  jobPositionId     Int?
+  applicantName     String
+  applicantEmail    String
+  applicantPhone    String
+  resumeFileId      Int?
+  coverLetter       String?
+  status            ApplicationStatus  @default(PENDING)
+  appliedAt         DateTime           @default(now())
+  reviewedAt        DateTime?
+  reviewedById      Int?
+  notes             String?
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  customAnswers     Json?              @default("{}")
+  deletedAt         DateTime?
+  applicationSource ApplicationSource?
+  jobPosition       JobPosition?       @relation(fields: [jobPositionId], references: [id])
+  resumeFile        FileUpload?        @relation("ApplicationResume", fields: [resumeFileId], references: [id])
+  reviewedBy        User?              @relation("ApplicationReviewer", fields: [reviewedById], references: [id])
 
   @@unique([jobPositionId, applicantEmail])
   @@index([deletedAt])

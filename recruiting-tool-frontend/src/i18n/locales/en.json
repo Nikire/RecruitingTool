@@ -873,6 +873,22 @@
     "autofill_error": "Failed to load profile data",
     "no_profile_data": "Please login to use auto-fill"
   },
+  "application": {
+    "source_question": "Where did you hear about us?",
+    "source_question_hint": "This helps us understand where our candidates discover us — completely optional.",
+    "source_none": "Prefer not to say",
+    "source_website": "Company Website",
+    "source_linkedin": "LinkedIn",
+    "source_indeed": "Indeed",
+    "source_glassdoor": "Glassdoor",
+    "source_referral": "Referral / Someone I know",
+    "source_job_fair": "Job Fair / Event",
+    "source_university": "University / Campus",
+    "source_recruiter": "Recruiter",
+    "source_direct": "Direct Application",
+    "source_social_media": "Social Media",
+    "source_other": "Other"
+  },
   "edit_profile": {
     "title": "Edit Profile",
     "subtitle": "Update your personal and professional information",
@@ -2345,6 +2361,7 @@
   },
   "booking_link": {
     "send_tooltip": "Send booking link to candidate",
+    "send_to_candidate": "Send Booking Link to Candidate",
     "sent_to": "Booking link sent to",
     "copy_link": "Copy link",
     "copied": "Copied!",

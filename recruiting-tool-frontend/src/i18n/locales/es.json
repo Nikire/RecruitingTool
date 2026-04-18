@@ -881,6 +881,22 @@
     "autofill_error": "Error al cargar datos del perfil",
     "no_profile_data": "Inicia sesión para usar el autocompletado"
   },
+  "application": {
+    "source_question": "¿Dónde nos encontraste?",
+    "source_question_hint": "Esto nos ayuda a entender cómo los candidatos nos descubren — completamente opcional.",
+    "source_none": "Prefiero no decirlo",
+    "source_website": "Sitio Web de la Empresa",
+    "source_linkedin": "LinkedIn",
+    "source_indeed": "Indeed",
+    "source_glassdoor": "Glassdoor",
+    "source_referral": "Referido / Alguien que conozco",
+    "source_job_fair": "Feria de Empleo / Evento",
+    "source_university": "Universidad / Campus",
+    "source_recruiter": "Reclutador",
+    "source_direct": "Solicitud Directa",
+    "source_social_media": "Redes Sociales",
+    "source_other": "Otro"
+  },
   "edit_profile": {
     "title": "Editar Perfil",
     "subtitle": "Actualiza tu información personal y profesional",
@@ -2374,6 +2390,7 @@
   },
   "booking_link": {
     "send_tooltip": "Enviar enlace de reserva al candidato",
+    "send_to_candidate": "Enviar Enlace de Reserva al Candidato",
     "sent_to": "Enlace de reserva enviado a",
     "copy_link": "Copiar enlace",
     "copied": "¡Copiado!",
