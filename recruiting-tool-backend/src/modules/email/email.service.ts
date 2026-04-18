@@ -26,6 +26,7 @@ import {
   StageAdvancementData,
   hiredNotificationTemplate,
   HiredNotificationData,
+  interviewBookedTemplate,
 } from './templates';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -695,38 +696,14 @@ The Borderless Team
     jobTitle: string,
     meetingLink?: string,
   ): Promise<void> {
-    const subject = `Interview Confirmed: ${jobTitle}`;
-    const text = `
-Dear ${candidateName},
-
-Your interview for ${jobTitle} has been confirmed!
-
-Date: ${scheduledDate}
-Time: ${scheduledTime}
-Duration: ${durationMinutes} minutes${meetingLink ? `\nMeeting Link: ${meetingLink}` : ''}
-
-Please make sure to be available at the scheduled time.
-
-Best regards,
-The Borderless Team
-    `.trim();
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h2 style="color: #2e7d32;">Your Interview is Confirmed!</h2>
-        <p>Dear ${candidateName},</p>
-        <p>Great news — your interview for <strong>${jobTitle}</strong> has been successfully scheduled.</p>
-        <div style="background: #f5f5f5; border-radius: 8px; padding: 20px; margin: 24px 0;">
-          <p style="margin: 0 0 8px;"><strong>Date:</strong> ${scheduledDate}</p>
-          <p style="margin: 0 0 8px;"><strong>Time:</strong> ${scheduledTime}</p>
-          <p style="margin: 0 0 8px;"><strong>Duration:</strong> ${durationMinutes} minutes</p>
-          ${meetingLink ? `<p style="margin: 0;"><strong>Meeting Link:</strong> <a href="${meetingLink}" style="color: #1976d2;">${meetingLink}</a></p>` : ''}
-        </div>
-        <p>Please make sure to be available at the scheduled time. We look forward to speaking with you!</p>
-        <br/>
-        <p>Best regards,<br/>The Borderless Team</p>
-      </div>
-    `;
+    const { subject, text, html } = interviewBookedTemplate({
+      candidateName,
+      jobTitle,
+      scheduledDate,
+      scheduledTime,
+      durationMinutes,
+      meetingLink,
+    });
 
     this.logger.log(`Sending booking confirmation to ${candidateEmail} for ${jobTitle}`);
     await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
@@ -735,7 +712,15 @@ The Borderless Team
   /**
    * Send HR notification when a candidate books their interview slot
    */
-  async sendHRBookingNotification(hrEmail: string, candidateName: string, scheduledDate: string, scheduledTime: string, jobTitle: string, appLink: string, hiringProcessUid?: string): Promise<void> {
+  async sendHRBookingNotification(
+    hrEmail: string,
+    candidateName: string,
+    scheduledDate: string,
+    scheduledTime: string,
+    jobTitle: string,
+    appLink: string,
+    hiringProcessUid?: string,
+  ): Promise<void> {
     const subject = `Interview Booked: ${candidateName} — ${jobTitle}`;
     const text = `
 ${candidateName} has booked their interview for ${jobTitle}.

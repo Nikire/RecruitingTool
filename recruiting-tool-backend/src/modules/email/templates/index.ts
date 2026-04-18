@@ -11,3 +11,4 @@ export * from './welcome.template';
 export * from './team-invitation.template';
 export * from './stage-advancement.template';
 export * from './hired-notification.template';
+export * from './interview-booked.template';

@@ -15,6 +15,6 @@ import { NotificationsModule } from '../notifications/notifications.module';
   imports: [DatabaseModule, EmailModule, GoogleCalendarModule, SseModule, AuditLogModule, NotificationsModule, CacheModule.register()],
   controllers: [InterviewController],
   providers: [InterviewService, InterviewCalendarService, InterviewReminderService],
-  exports: [InterviewService],
+  exports: [InterviewService, InterviewCalendarService],
 })
 export class InterviewModule {}

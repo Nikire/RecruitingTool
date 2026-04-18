@@ -11,12 +11,14 @@ import {
 import { randomBytes } from 'crypto';
 import { InterviewStatus } from '@prisma/client';
 import { EmailService } from '../email/email.service';
+import { InterviewCalendarService } from '../interview/interview-calendar.service';
 
 @Injectable()
 export class TimeSlotsService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly emailService: EmailService,
+    private readonly interviewCalendarService: InterviewCalendarService,
   ) {}
 
   /**
@@ -227,7 +229,7 @@ export class TimeSlotsService {
       where: { uid: dto.slotUid },
     });
 
-    // Send confirmation emails (fire and forget — never fail the booking)
+    // Create Google Calendar event + send confirmation emails (fire and forget)
     try {
       const interviewFull = await this.prisma.interview.findUnique({
         where: { id: bookingToken.interview.id },
@@ -254,16 +256,24 @@ export class TimeSlotsService {
         const durationMinutes = Math.round((slot.endTime.getTime() - slot.startTime.getTime()) / 60000);
         const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
 
+        // Create Google Calendar event and get Meet link
+        let meetingLink = interviewFull.meetingLink ?? undefined;
+        const calendarResult = await this.interviewCalendarService.createCalendarEvent(interviewFull as any, interviewFull.scheduledBy);
+        if (calendarResult) {
+          await this.prisma.interview.update({
+            where: { id: interviewFull.id },
+            data: {
+              calendarEventId: calendarResult.id,
+              ...(calendarResult.meetLink && { meetingLink: calendarResult.meetLink }),
+            },
+          });
+          if (calendarResult.meetLink) {
+            meetingLink = calendarResult.meetLink;
+          }
+        }
+
         if (candidate?.email) {
-          await this.emailService.sendBookingConfirmation(
-            candidate.email,
-            candidate.name,
-            scheduledDate,
-            scheduledTime,
-            durationMinutes,
-            jobTitle,
-            interviewFull.meetingLink ?? undefined,
-          );
+          await this.emailService.sendBookingConfirmation(candidate.email, candidate.name, scheduledDate, scheduledTime, durationMinutes, jobTitle, meetingLink);
         }
 
         const hrUser = interviewFull.scheduledBy;
@@ -275,7 +285,7 @@ export class TimeSlotsService {
       }
     } catch (err) {
       // Log but never propagate — the booking already succeeded
-      console.error('Failed to send booking confirmation emails:', err);
+      console.error('Failed to create calendar event or send booking emails:', err);
     }
 
     return this.mapToTimeSlotResponse(updatedSlot!);
