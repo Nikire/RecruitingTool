@@ -227,7 +227,8 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
         applicantName: user.name || "",
         applicantEmail: user.email || "",
         applicantPhone: user.phoneNumber || "",
-        coverLetter: formData.coverLetter, // Keep existing cover letter
+        coverLetter: formData.coverLetter,
+        applicationSource: formData.applicationSource,
       });
 
       showSuccessToast(t("apply_job.autofill_success"));
