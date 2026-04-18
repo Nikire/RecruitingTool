@@ -50,6 +50,7 @@ import {
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
 import { hasRole } from "../../../utils/permissions";
 import { UserRoles } from "../../../types/user.types";
+import { useCalendarConnectionStatus } from "../../../hooks/api/useGoogleCalendar";
 
 const INDUSTRY_OPTIONS = [
   "technology",
@@ -107,6 +108,10 @@ const CompanyProfilePage: React.FC = () => {
   const isAdmin =
     hasRole(user, UserRoles.COMPANY_OWNER) ||
     hasRole(user, UserRoles.COMPANY_ADMIN);
+
+  const { data: calendarConnectionStatus } = useCalendarConnectionStatus();
+  const isGoogleCalendarConnected =
+    calendarConnectionStatus?.connected ?? false;
 
   const { data: profile, isLoading } = useMyCompanyProfile();
   const { mutate: updateProfile, isPending: isSaving } =
@@ -772,7 +777,9 @@ const CompanyProfilePage: React.FC = () => {
 
       {/* Calendar & Booking Settings */}
       <Box sx={{ mt: 3 }}>
-        <CompanyCalendarSettingsCard />
+        <CompanyCalendarSettingsCard
+          isGoogleCalendarConnected={isGoogleCalendarConnected}
+        />
       </Box>
     </Box>
   );

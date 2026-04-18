@@ -21,6 +21,7 @@ import {
 import {
   CalendarMonth as CalendarMonthIcon,
   Save as SaveIcon,
+  LinkOff as LinkOffIcon,
 } from "@mui/icons-material";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
@@ -58,7 +59,13 @@ const BUFFER_OPTIONS = [0, 5, 10, 15, 30, 45, 60];
  * working days, working hours, buffer time, default duration, advance booking
  * window, and blocked dates.
  */
-const CompanyCalendarSettingsCard: React.FC = () => {
+interface CompanyCalendarSettingsCardProps {
+  isGoogleCalendarConnected: boolean;
+}
+
+const CompanyCalendarSettingsCard: React.FC<
+  CompanyCalendarSettingsCardProps
+> = ({ isGoogleCalendarConnected }) => {
   const { t } = useTranslation();
   const { data: settings, isLoading } = useGetCompanyCalendarSettings();
   const { mutate: updateSettings, isPending } =
@@ -150,13 +157,12 @@ const CompanyCalendarSettingsCard: React.FC = () => {
           onChange={(e) => setIsBookingEnabled(e.target.checked)}
           color="primary"
           size="small"
+          disabled={!isGoogleCalendarConnected}
         />
       }
       label={
         <Typography variant="body2" fontWeight={500}>
-          {isBookingEnabled
-            ? t("calendar_settings.booking_enabled")
-            : t("calendar_settings.booking_enabled")}
+          {t("calendar_settings.booking_enabled")}
         </Typography>
       }
       labelPlacement="start"
@@ -190,8 +196,20 @@ const CompanyCalendarSettingsCard: React.FC = () => {
       action={bookingToggle}
     >
       <Stack spacing={3}>
+        {/* Google Calendar not connected — block entire section */}
+        {!isGoogleCalendarConnected && (
+          <Alert severity="warning" icon={<LinkOffIcon />}>
+            <Typography variant="body2" fontWeight={600} gutterBottom>
+              {t("calendar_settings.requires_google_calendar_title")}
+            </Typography>
+            <Typography variant="body2">
+              {t("calendar_settings.requires_google_calendar_body")}
+            </Typography>
+          </Alert>
+        )}
+
         {/* Booking disabled info */}
-        {!isBookingEnabled && (
+        {isGoogleCalendarConnected && !isBookingEnabled && (
           <Alert severity="info" sx={{ py: 0.5 }}>
             <Typography variant="body2">
               {t("calendar_settings.booking_disabled_info")}
@@ -199,7 +217,7 @@ const CompanyCalendarSettingsCard: React.FC = () => {
           </Alert>
         )}
 
-        {isBookingEnabled && (
+        {isGoogleCalendarConnected && isBookingEnabled && (
           <>
             {/* ── Working Days ── */}
             <Box>
@@ -379,8 +397,8 @@ const CompanyCalendarSettingsCard: React.FC = () => {
           </>
         )}
 
-        {/* Save toggle state even when disabled */}
-        {!isBookingEnabled && (
+        {/* Save toggle state — only when Google Calendar is connected */}
+        {isGoogleCalendarConnected && !isBookingEnabled && (
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
             <Button
               variant="outlined"

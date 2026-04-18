@@ -3099,6 +3099,8 @@
     "booking_enabled": "Enable Booking System",
     "booking_enabled_hint": "Allow candidates to self-schedule their interviews",
     "booking_disabled_info": "Enable the booking system to allow candidates to schedule their own interviews",
+    "requires_google_calendar_title": "Google Calendar required",
+    "requires_google_calendar_body": "The automatic booking system needs a Google Calendar connection to create meeting links and check availability. Connect your Google Calendar above before enabling this feature.",
     "working_days": "Working Days",
     "hours_from": "From",
     "hours_to": "To",

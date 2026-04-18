@@ -17,6 +17,7 @@ export const getNotificationIcon = (type: NotificationType): ReactElement => {
   switch (type) {
     // Interview notifications
     case NotificationType.INTERVIEW_SCHEDULED:
+    case NotificationType.INTERVIEW_BOOKED_BY_CANDIDATE:
     case NotificationType.INTERVIEW_UPDATED:
     case NotificationType.INTERVIEW_CANCELLED:
     case NotificationType.INTERVIEW_REMINDER_24H:
@@ -83,6 +84,7 @@ export const getNotificationColor = (
   switch (type) {
     // Interview notifications - success/info
     case NotificationType.INTERVIEW_SCHEDULED:
+    case NotificationType.INTERVIEW_BOOKED_BY_CANDIDATE:
     case NotificationType.INTERVIEW_REMINDER_24H:
     case NotificationType.INTERVIEW_REMINDER_1H:
     case NotificationType.INTERVIEW_COMPLETED:
@@ -176,6 +178,13 @@ export const getNotificationNavigationPath = (
         return `/hr/applications?highlight=${metadata.applicationUid}`;
       }
       return "/hr/applications";
+
+    // Candidate self-scheduled interview — navigate to the hiring process
+    case NotificationType.INTERVIEW_BOOKED_BY_CANDIDATE:
+      if (metadata.relatedEntityId) {
+        return `/hiring-process/${metadata.relatedEntityId}`;
+      }
+      return "/hr/hiring-processes";
 
     // Interview notifications
     case NotificationType.INTERVIEW_SCHEDULED:

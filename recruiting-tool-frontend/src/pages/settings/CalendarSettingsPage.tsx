@@ -96,12 +96,7 @@ const CalendarSettingsPage = () => {
       </Box>
 
       <Grid container spacing={3}>
-        {/* Booking System Settings */}
-        <Grid size={{ xs: 12 }}>
-          <CompanyCalendarSettingsCard />
-        </Grid>
-
-        {/* Google Calendar Connection */}
+        {/* Google Calendar Connection — must be configured first */}
         <Grid size={{ xs: 12 }}>
           <SettingsCard
             icon={<EventIcon />}
@@ -184,6 +179,13 @@ const CalendarSettingsPage = () => {
               </Stack>
             )}
           </SettingsCard>
+        </Grid>
+
+        {/* Booking System Settings — requires Google Calendar */}
+        <Grid size={{ xs: 12 }}>
+          <CompanyCalendarSettingsCard
+            isGoogleCalendarConnected={isConnected}
+          />
         </Grid>
       </Grid>
     </Container>

@@ -269,7 +269,8 @@ export class TimeSlotsService {
         const hrUser = interviewFull.scheduledBy;
         if (hrUser?.email) {
           const appLink = `${frontendUrl}/hr/interviews/${interviewFull.uid}`;
-          await this.emailService.sendHRBookingNotification(hrUser.email, candidate?.name ?? 'Candidate', scheduledDate, scheduledTime, jobTitle, appLink);
+          const hiringProcessUid = interviewFull.stage.hiringProcess?.uid ?? undefined;
+          await this.emailService.sendHRBookingNotification(hrUser.email, candidate?.name ?? 'Candidate', scheduledDate, scheduledTime, jobTitle, appLink, hiringProcessUid);
         }
       }
     } catch (err) {

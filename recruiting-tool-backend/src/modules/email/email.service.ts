@@ -43,6 +43,7 @@ export class EmailService {
     APPLICATION_RECEIVED: NotificationType.APPLICATION_RECEIVED,
     STATUS_CHANGE: NotificationType.APPLICATION_STATUS,
     INTERVIEW_SCHEDULED: NotificationType.INTERVIEW_SCHEDULED,
+    INTERVIEW_BOOKED_BY_CANDIDATE: NotificationType.INTERVIEW_BOOKED_BY_CANDIDATE,
     INTERVIEW_CANCELLED: NotificationType.INTERVIEW_CANCELLED,
     INTERVIEW_REMINDER: NotificationType.INTERVIEW_REMINDER_24H,
     INTERVIEW_RESCHEDULED: NotificationType.INTERVIEW_RESCHEDULED,
@@ -734,7 +735,7 @@ The Borderless Team
   /**
    * Send HR notification when a candidate books their interview slot
    */
-  async sendHRBookingNotification(hrEmail: string, candidateName: string, scheduledDate: string, scheduledTime: string, jobTitle: string, appLink: string): Promise<void> {
+  async sendHRBookingNotification(hrEmail: string, candidateName: string, scheduledDate: string, scheduledTime: string, jobTitle: string, appLink: string, hiringProcessUid?: string): Promise<void> {
     const subject = `Interview Booked: ${candidateName} — ${jobTitle}`;
     const text = `
 ${candidateName} has booked their interview for ${jobTitle}.
@@ -770,7 +771,7 @@ The Borderless Team
     `;
 
     this.logger.log(`Sending HR booking notification to ${hrEmail} for ${candidateName}`);
-    await this.sendEmail(hrEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
+    await this.sendEmail(hrEmail, subject, text, html, 'INTERVIEW_BOOKED_BY_CANDIDATE', hiringProcessUid);
   }
 
   /**

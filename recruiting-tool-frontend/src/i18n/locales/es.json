@@ -3128,6 +3128,8 @@
     "booking_enabled": "Activar Sistema de Reservas",
     "booking_enabled_hint": "Permite que los candidatos agenden sus propias entrevistas",
     "booking_disabled_info": "Activa el sistema de reservas para que los candidatos puedan agendar sus propias entrevistas",
+    "requires_google_calendar_title": "Se requiere Google Calendar",
+    "requires_google_calendar_body": "El sistema de reservas automáticas necesita una conexión con Google Calendar para crear enlaces de reunión y verificar disponibilidad. Conecta tu Google Calendar arriba antes de activar esta función.",
     "working_days": "Días Laborales",
     "hours_from": "Desde",
     "hours_to": "Hasta",
