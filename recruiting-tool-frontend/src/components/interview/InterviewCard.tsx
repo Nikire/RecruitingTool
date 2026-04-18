@@ -1,11 +1,9 @@
 import {
-  Alert,
   Card,
   CardContent,
   Typography,
   Box,
   Chip,
-  CircularProgress,
   IconButton,
   Button,
   Tooltip,
@@ -22,7 +20,6 @@ import {
   AccessTime as TimeIcon,
   Schedule as DurationIcon,
   Person as PersonIcon,
-  EventAvailable as BookingIcon,
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
@@ -34,11 +31,6 @@ import {
   useDeleteInterview,
   useUpdateInterview,
 } from "../../hooks/api/useInterview";
-import {
-  useSendBookingLink,
-  type SendBookingLinkResponse,
-} from "../../hooks/api/useTimeSlots";
-import { useGetCompanyCalendarSettings } from "../../hooks/api/useCompanyCalendarSettings";
 
 interface InterviewCardProps {
   interview: Interview;
@@ -49,35 +41,10 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
   const { t } = useTranslation();
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
-  const [bookingResult, setBookingResult] =
-    useState<SendBookingLinkResponse | null>(null);
-  const [copied, setCopied] = useState(false);
 
   const cancelMutation = useCancelInterview();
   const deleteMutation = useDeleteInterview();
   const updateMutation = useUpdateInterview();
-  const { mutate: sendBookingLink, isPending: isSendingLink } =
-    useSendBookingLink();
-  const { data: calendarSettings } = useGetCompanyCalendarSettings();
-
-  const isBookingEnabled = calendarSettings?.isBookingEnabled ?? false;
-
-  const handleSendBookingLink = () => {
-    sendBookingLink(interview.uid, {
-      onSuccess: (data) => {
-        setBookingResult(data);
-        setCopied(false);
-      },
-    });
-  };
-
-  const handleCopyLink = () => {
-    if (!bookingResult) return;
-    navigator.clipboard.writeText(bookingResult.bookingUrl).then(() => {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    });
-  };
 
   const getStatusColor = (status: InterviewStatus) => {
     switch (status) {
@@ -309,66 +276,6 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                 </Box>
               </>
             )}
-
-            {/* Booking link — always visible on active interviews; disabled when booking system is off */}
-            {interview.status !== InterviewStatus.COMPLETED &&
-              interview.status !== InterviewStatus.CANCELLED && (
-                <>
-                  <Divider sx={{ my: 1 }} />
-                  <Box>
-                    <Tooltip
-                      title={
-                        isBookingEnabled
-                          ? t("booking_link.send_tooltip")
-                          : t("booking_link.not_enabled")
-                      }
-                    >
-                      <span>
-                        <Button
-                          variant="outlined"
-                          size="small"
-                          fullWidth
-                          startIcon={
-                            isSendingLink ? (
-                              <CircularProgress size={16} color="inherit" />
-                            ) : (
-                              <BookingIcon />
-                            )
-                          }
-                          onClick={handleSendBookingLink}
-                          disabled={isSendingLink || !isBookingEnabled}
-                        >
-                          {t("booking_link.send_to_candidate")}
-                        </Button>
-                      </span>
-                    </Tooltip>
-
-                    {bookingResult && (
-                      <Alert
-                        severity="success"
-                        sx={{ mt: 1 }}
-                        onClose={() => setBookingResult(null)}
-                      >
-                        <Typography variant="caption" display="block">
-                          {t("booking_link.sent_to")}{" "}
-                          {bookingResult.candidateEmail}
-                        </Typography>
-                        <Button
-                          size="small"
-                          variant="text"
-                          startIcon={<LinkIcon fontSize="small" />}
-                          onClick={handleCopyLink}
-                          sx={{ textTransform: "none", p: 0, minWidth: "auto" }}
-                        >
-                          {copied
-                            ? t("booking_link.copied")
-                            : t("booking_link.copy_link")}
-                        </Button>
-                      </Alert>
-                    )}
-                  </Box>
-                </>
-              )}
 
             <Divider sx={{ my: 1 }} />
             <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>

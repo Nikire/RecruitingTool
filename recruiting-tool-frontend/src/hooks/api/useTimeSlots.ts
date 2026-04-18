@@ -8,6 +8,7 @@ import {
   getAvailableSlots,
   selectTimeSlot,
   sendBookingLink,
+  sendStageBookingLink,
   getCalendarSettingsByToken,
   type SendBookingLinkResponse,
   type CalendarSettingsPublic,
@@ -151,6 +152,24 @@ export const useSendBookingLink = () => {
       const axiosError = error as Error & {
         response?: { status: number };
       };
+      if (axiosError?.response?.status === 403) {
+        toast.error(t("booking_link.not_enabled"));
+      } else {
+        toast.error(error.message || t("booking_link.error"));
+      }
+    },
+  });
+};
+
+/**
+ * Create a draft interview + send booking link for a stage (candidate self-schedules)
+ */
+export const useSendStageBookingLink = () => {
+  const { t } = useTranslation();
+  return useMutation<SendBookingLinkResponse, Error, string>({
+    mutationFn: sendStageBookingLink,
+    onError: (error) => {
+      const axiosError = error as Error & { response?: { status: number } };
       if (axiosError?.response?.status === 403) {
         toast.error(t("booking_link.not_enabled"));
       } else {

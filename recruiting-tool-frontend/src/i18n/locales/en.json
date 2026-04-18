@@ -2361,7 +2361,8 @@
   },
   "booking_link": {
     "send_tooltip": "Send booking link to candidate",
-    "send_to_candidate": "Send Booking Link to Candidate",
+    "send_stage_tooltip": "Let the candidate pick their own interview time. A draft interview is created and they will receive an email with a scheduling link.",
+    "send_to_candidate": "Send Booking Link",
     "sent_to": "Booking link sent to",
     "copy_link": "Copy link",
     "copied": "Copied!",

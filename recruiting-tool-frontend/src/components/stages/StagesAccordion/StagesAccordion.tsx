@@ -7,6 +7,8 @@ import {
   Button,
   Divider,
   CircularProgress,
+  Alert,
+  Tooltip,
 } from "@mui/material";
 import React, { useState } from "react";
 import {
@@ -15,6 +17,8 @@ import {
   Lock,
   KeyboardArrowDown,
   Event as EventIcon,
+  EventAvailable as BookingIcon,
+  Link as LinkIcon,
 } from "@mui/icons-material";
 import { Stage } from "../../../types/stage.types";
 import { AccordionHeaderWrapper } from "./StagesAccordion.styles";
@@ -26,6 +30,11 @@ import { canManageResources } from "../../../utils/permissions";
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
 import { useTranslation } from "react-i18next";
 import StageNoteButton from "../StageNoteButton";
+import {
+  useSendStageBookingLink,
+  type SendBookingLinkResponse,
+} from "../../../hooks/api/useTimeSlots";
+import { useGetCompanyCalendarSettings } from "../../../hooks/api/useCompanyCalendarSettings";
 
 type StagesAccordionProps = {
   stage: Stage;
@@ -46,11 +55,18 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
   const [editingInterview, setEditingInterview] = useState<Interview | null>(
     null,
   );
+  const [bookingResult, setBookingResult] =
+    useState<SendBookingLinkResponse | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const { data: interviews, isLoading: interviewsLoading } =
     useInterviewsByStage(stage.uid);
+  const { mutate: sendStageBookingLink, isPending: isSendingLink } =
+    useSendStageBookingLink();
+  const { data: calendarSettings } = useGetCompanyCalendarSettings();
 
   const canManage = canManageResources(user);
+  const isBookingEnabled = calendarSettings?.isBookingEnabled ?? false;
 
   const handleScheduleClick = () => {
     setEditingInterview(null);
@@ -65,6 +81,23 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
   const handleCloseDialog = () => {
     setScheduleDialogOpen(false);
     setEditingInterview(null);
+  };
+
+  const handleSendBookingLink = () => {
+    sendStageBookingLink(stage.uid, {
+      onSuccess: (data) => {
+        setBookingResult(data);
+        setCopied(false);
+      },
+    });
+  };
+
+  const handleCopyLink = () => {
+    if (!bookingResult) return;
+    navigator.clipboard.writeText(bookingResult.bookingUrl).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
   };
 
   return (
@@ -130,16 +163,62 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
                     {t("interviews.title")}
                   </Typography>
                   {canManage && (
-                    <Button
-                      variant="contained"
-                      size="small"
-                      startIcon={<EventIcon />}
-                      onClick={handleScheduleClick}
-                    >
-                      {t("interviews.schedule_interview")}
-                    </Button>
+                    <Box sx={{ display: "flex", gap: 1 }}>
+                      {isBookingEnabled && (
+                        <Tooltip title={t("booking_link.send_stage_tooltip")}>
+                          <span>
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              startIcon={
+                                isSendingLink ? (
+                                  <CircularProgress size={14} color="inherit" />
+                                ) : (
+                                  <BookingIcon />
+                                )
+                              }
+                              onClick={handleSendBookingLink}
+                              disabled={isSendingLink}
+                            >
+                              {t("booking_link.send_to_candidate")}
+                            </Button>
+                          </span>
+                        </Tooltip>
+                      )}
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<EventIcon />}
+                        onClick={handleScheduleClick}
+                      >
+                        {t("interviews.schedule_interview")}
+                      </Button>
+                    </Box>
                   )}
                 </Box>
+
+                {bookingResult && (
+                  <Alert
+                    severity="success"
+                    sx={{ mb: 2 }}
+                    onClose={() => setBookingResult(null)}
+                  >
+                    <Typography variant="caption" display="block">
+                      {t("booking_link.sent_to")} {bookingResult.candidateEmail}
+                    </Typography>
+                    <Button
+                      size="small"
+                      variant="text"
+                      startIcon={<LinkIcon fontSize="small" />}
+                      onClick={handleCopyLink}
+                      sx={{ textTransform: "none", p: 0, minWidth: "auto" }}
+                    >
+                      {copied
+                        ? t("booking_link.copied")
+                        : t("booking_link.copy_link")}
+                    </Button>
+                  </Alert>
+                )}
 
                 {interviewsLoading ? (
                   <Box

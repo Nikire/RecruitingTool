@@ -119,6 +119,19 @@ export const sendBookingLink = async (
   return response.data;
 };
 
+/**
+ * Create a draft interview + send booking link for a stage (PROTECTED)
+ * Candidate self-schedules, which converts the draft to a real SCHEDULED interview.
+ */
+export const sendStageBookingLink = async (
+  stageUid: string,
+): Promise<SendBookingLinkResponse> => {
+  const response = await axios.post<SendBookingLinkResponse>(
+    `${TIME_SLOTS_BASE_URL}/send-stage-booking-link/${stageUid}`,
+  );
+  return response.data;
+};
+
 // ==================== NEW PUBLIC ENDPOINTS ====================
 
 export interface CalendarSettingsPublic {

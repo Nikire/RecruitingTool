@@ -2390,7 +2390,8 @@
   },
   "booking_link": {
     "send_tooltip": "Enviar enlace de reserva al candidato",
-    "send_to_candidate": "Enviar Enlace de Reserva al Candidato",
+    "send_stage_tooltip": "Permite que el candidato elija su propio horario de entrevista. Se crea una entrevista en borrador y el candidato recibirá un email con el enlace de agendamiento.",
+    "send_to_candidate": "Enviar Enlace de Reserva",
     "sent_to": "Enlace de reserva enviado a",
     "copy_link": "Copiar enlace",
     "copied": "¡Copiado!",

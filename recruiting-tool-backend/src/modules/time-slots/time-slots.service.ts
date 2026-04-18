@@ -424,6 +424,86 @@ export class TimeSlotsService {
   /**
    * Send booking link to candidate — auto-generates slots, refreshes token, sends email
    */
+  async sendStageBookingLink(stageUid: string, scheduledById: number): Promise<SendBookingLinkResponseDto> {
+    const stage = await this.prisma.stage.findUnique({
+      where: { uid: stageUid },
+      include: {
+        hiringProcess: {
+          include: {
+            company: true,
+            candidate: true,
+            jobPosition: true,
+          },
+        },
+      },
+    });
+
+    if (!stage) {
+      throw new NotFoundException(`Stage with UID ${stageUid} not found`);
+    }
+
+    const hiringProcess = stage.hiringProcess;
+    if (!hiringProcess) {
+      throw new BadRequestException('Stage is not linked to a hiring process');
+    }
+
+    const company = hiringProcess.company;
+    const candidate = hiringProcess.candidate;
+    const jobPosition = hiringProcess.jobPosition;
+
+    if (!candidate) {
+      throw new BadRequestException('Hiring process has no candidate linked');
+    }
+
+    const settings = await this.prisma.companyCalendarSettings.findUnique({
+      where: { companyId: company.id },
+    });
+
+    if (!settings?.isBookingEnabled) {
+      throw new ForbiddenException('Booking system is not enabled for this company');
+    }
+
+    // Create a draft interview for the candidate to self-schedule
+    const draftInterview = await this.prisma.interview.create({
+      data: {
+        stage: { connect: { id: stage.id } },
+        status: InterviewStatus.PENDING,
+        duration: stage.estimatedTime ?? 60,
+        scheduledBy: { connect: { id: scheduledById } },
+      },
+    });
+
+    const slotsGenerated = await this.autoGenerateSlots(draftInterview.id, company.id);
+
+    // Invalidate existing unused tokens for this draft interview
+    await this.prisma.interviewBookingToken.deleteMany({
+      where: { interviewId: draftInterview.id, usedAt: null },
+    });
+
+    const advanceDays = settings?.advanceBookingDays ?? 30;
+    const tokenExpiresInDays = advanceDays + 7;
+
+    const token = `bk_${randomBytes(16).toString('hex')}`;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + tokenExpiresInDays);
+
+    await this.prisma.interviewBookingToken.create({
+      data: { token, interviewId: draftInterview.id, expiresAt },
+    });
+
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    const bookingUrl = `${frontendUrl}/book-interview/${token}`;
+    const jobTitle = jobPosition?.title ?? 'Position';
+
+    try {
+      await this.emailService.sendBookingInvitation(candidate.email, candidate.name, bookingUrl, expiresAt, jobTitle);
+    } catch (err) {
+      console.error('Failed to send booking invitation email:', err);
+    }
+
+    return { bookingUrl, expiresAt, candidateEmail: candidate.email, slotsGenerated };
+  }
+
   async sendBookingLink(interviewUid: string): Promise<SendBookingLinkResponseDto> {
     const interview = await this.prisma.interview.findUnique({
       where: { uid: interviewUid },
