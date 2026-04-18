@@ -24,7 +24,6 @@ export class CompanyCalendarSettingsService {
     if (dto.workingHoursStart !== undefined) data.workingHoursStart = dto.workingHoursStart;
     if (dto.workingHoursEnd !== undefined) data.workingHoursEnd = dto.workingHoursEnd;
     if (dto.bufferMinutes !== undefined) data.bufferMinutes = dto.bufferMinutes;
-    if (dto.defaultDurationMinutes !== undefined) data.defaultDurationMinutes = dto.defaultDurationMinutes;
     if (dto.blockedDates !== undefined) data.blockedDates = dto.blockedDates;
     if (dto.advanceBookingDays !== undefined) data.advanceBookingDays = dto.advanceBookingDays;
 
@@ -44,7 +43,6 @@ export class CompanyCalendarSettingsService {
     workingHoursStart: string;
     workingHoursEnd: string;
     bufferMinutes: number;
-    defaultDurationMinutes: number;
     blockedDates: unknown;
     advanceBookingDays: number;
   }): CompanyCalendarSettingsResponseDto {
@@ -55,7 +53,6 @@ export class CompanyCalendarSettingsService {
       workingHoursStart: settings.workingHoursStart,
       workingHoursEnd: settings.workingHoursEnd,
       bufferMinutes: settings.bufferMinutes,
-      defaultDurationMinutes: settings.defaultDurationMinutes,
       blockedDates: settings.blockedDates as string[],
       advanceBookingDays: settings.advanceBookingDays,
     };

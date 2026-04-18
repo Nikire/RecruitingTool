@@ -352,15 +352,16 @@ export class TimeSlotsService {
    * Auto-generate time slots using company calendar settings
    */
   async autoGenerateSlots(interviewId: number, companyId: number): Promise<number> {
-    const settings = await this.prisma.companyCalendarSettings.findUnique({
-      where: { companyId },
-    });
+    const [settings, interview] = await Promise.all([
+      this.prisma.companyCalendarSettings.findUnique({ where: { companyId } }),
+      this.prisma.interview.findUnique({ where: { id: interviewId }, select: { duration: true } }),
+    ]);
 
     const workingDays: number[] = settings ? (settings.workingDays as number[]) : [1, 2, 3, 4, 5];
     const workingHoursStart: string = settings?.workingHoursStart ?? '09:00';
     const workingHoursEnd: string = settings?.workingHoursEnd ?? '18:00';
     const bufferMinutes: number = settings?.bufferMinutes ?? 15;
-    const durationMinutes: number = settings?.defaultDurationMinutes ?? 60;
+    const durationMinutes: number = interview?.duration ?? 60;
     const advanceDays: number = settings?.advanceBookingDays ?? 30;
     const blockedDates: string[] = settings ? (settings.blockedDates as string[]) : [];
 

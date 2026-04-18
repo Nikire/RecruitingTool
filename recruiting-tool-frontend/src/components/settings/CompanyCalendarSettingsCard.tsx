@@ -48,7 +48,6 @@ const DAY_OPTIONS: DayOption[] = [
 ];
 
 const BUFFER_OPTIONS = [0, 5, 10, 15, 30, 45, 60];
-const DURATION_OPTIONS = [15, 30, 45, 60, 90, 120];
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -71,7 +70,6 @@ const CompanyCalendarSettingsCard: React.FC = () => {
   const [workingHoursStart, setWorkingHoursStart] = useState("09:00");
   const [workingHoursEnd, setWorkingHoursEnd] = useState("18:00");
   const [bufferMinutes, setBufferMinutes] = useState(15);
-  const [defaultDurationMinutes, setDefaultDurationMinutes] = useState(60);
   const [advanceBookingDays, setAdvanceBookingDays] = useState(30);
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [newDate, setNewDate] = useState("");
@@ -84,7 +82,6 @@ const CompanyCalendarSettingsCard: React.FC = () => {
       setWorkingHoursStart(settings.workingHoursStart);
       setWorkingHoursEnd(settings.workingHoursEnd);
       setBufferMinutes(settings.bufferMinutes);
-      setDefaultDurationMinutes(settings.defaultDurationMinutes);
       setAdvanceBookingDays(settings.advanceBookingDays);
       setBlockedDates(settings.blockedDates ?? []);
     }
@@ -101,10 +98,6 @@ const CompanyCalendarSettingsCard: React.FC = () => {
 
   const handleBufferChange = (event: SelectChangeEvent<number>) => {
     setBufferMinutes(Number(event.target.value));
-  };
-
-  const handleDurationChange = (event: SelectChangeEvent<number>) => {
-    setDefaultDurationMinutes(Number(event.target.value));
   };
 
   const handleAddDate = () => {
@@ -125,7 +118,6 @@ const CompanyCalendarSettingsCard: React.FC = () => {
       workingHoursStart,
       workingHoursEnd,
       bufferMinutes,
-      defaultDurationMinutes,
       advanceBookingDays,
       blockedDates,
     });
@@ -147,12 +139,6 @@ const CompanyCalendarSettingsCard: React.FC = () => {
     if (minutes === 0) return t("calendar_settings.buffer_options.0");
     const key = String(minutes) as "5" | "10" | "15" | "30" | "45" | "60";
     return t(`calendar_settings.buffer_options.${key}`);
-  };
-
-  // ── Duration option label ──────────────────────────────────────────────────
-  const durationLabel = (minutes: number) => {
-    const key = String(minutes) as "15" | "30" | "45" | "60" | "90" | "120";
-    return t(`calendar_settings.duration_options.${key}`);
   };
 
   // ── Booking toggle action for card header ─────────────────────────────────
@@ -279,40 +265,21 @@ const CompanyCalendarSettingsCard: React.FC = () => {
               </Box>
             </Box>
 
-            {/* ── Buffer & Duration ── */}
-            <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-              <FormControl size="small" sx={{ minWidth: 180 }}>
-                <InputLabel>{t("calendar_settings.buffer_time")}</InputLabel>
-                <Select
-                  value={bufferMinutes}
-                  label={t("calendar_settings.buffer_time")}
-                  onChange={handleBufferChange}
-                >
-                  {BUFFER_OPTIONS.map((min) => (
-                    <MenuItem key={min} value={min}>
-                      {bufferLabel(min)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-
-              <FormControl size="small" sx={{ minWidth: 200 }}>
-                <InputLabel>
-                  {t("calendar_settings.default_duration")}
-                </InputLabel>
-                <Select
-                  value={defaultDurationMinutes}
-                  label={t("calendar_settings.default_duration")}
-                  onChange={handleDurationChange}
-                >
-                  {DURATION_OPTIONS.map((min) => (
-                    <MenuItem key={min} value={min}>
-                      {durationLabel(min)}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
+            {/* ── Buffer Between Slots ── */}
+            <FormControl size="small" sx={{ minWidth: 180 }}>
+              <InputLabel>{t("calendar_settings.buffer_time")}</InputLabel>
+              <Select
+                value={bufferMinutes}
+                label={t("calendar_settings.buffer_time")}
+                onChange={handleBufferChange}
+              >
+                {BUFFER_OPTIONS.map((min) => (
+                  <MenuItem key={min} value={min}>
+                    {bufferLabel(min)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
 
             {/* ── Advance Booking Window ── */}
             <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>

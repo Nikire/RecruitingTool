@@ -30,13 +30,6 @@ export class UpdateCompanyCalendarSettingsDto {
   @Max(120)
   bufferMinutes?: number;
 
-  @ApiProperty({ required: false })
-  @IsOptional()
-  @IsInt()
-  @Min(15)
-  @Max(480)
-  defaultDurationMinutes?: number;
-
   @ApiProperty({ required: false, type: [String] })
   @IsOptional()
   @IsArray()
@@ -69,9 +62,6 @@ export class CompanyCalendarSettingsResponseDto {
 
   @ApiProperty()
   bufferMinutes: number;
-
-  @ApiProperty()
-  defaultDurationMinutes: number;
 
   @ApiProperty({ type: [String] })
   blockedDates: string[];

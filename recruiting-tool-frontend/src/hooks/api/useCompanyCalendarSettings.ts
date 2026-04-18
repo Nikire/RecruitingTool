@@ -15,7 +15,6 @@ export interface CompanyCalendarSettings {
   /** "HH:mm" e.g. "18:00" */
   workingHoursEnd: string;
   bufferMinutes: number;
-  defaultDurationMinutes: number;
   /** Array of "YYYY-MM-DD" strings */
   blockedDates: string[];
   advanceBookingDays: number;

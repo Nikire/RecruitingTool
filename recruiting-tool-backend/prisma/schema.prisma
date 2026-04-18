@@ -57,7 +57,6 @@ model CompanyCalendarSettings {
   workingHoursStart      String   @default("09:00")
   workingHoursEnd        String   @default("18:00")
   bufferMinutes          Int      @default(15)
-  defaultDurationMinutes Int      @default(60)
   blockedDates           Json     @default("[]")
   advanceBookingDays     Int      @default(30)
   createdAt              DateTime @default(now())
