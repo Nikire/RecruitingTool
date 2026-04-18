@@ -37,6 +37,8 @@ import DeletedRecordsPage from "./pages/admin/DeletedRecordsPage";
 import AdminSubscriptionsPage from "./pages/admin/AdminSubscriptionsPage";
 import BookInterviewPage from "./pages/booking/BookInterviewPage";
 import BookingConfirmedPage from "./pages/booking/BookingConfirmedPage";
+import BookDemoPage from "./pages/booking/BookDemoPage";
+import BookingDemoConfirmedPage from "./pages/booking/BookingDemoConfirmedPage";
 import ErrorBoundaryTest from "./pages/test/ErrorBoundaryTest";
 import HRJobPositionDetailPage from "./pages/hr/job-position-detail/HRJobPositionDetailPage";
 import SubscriptionPage from "./pages/profile/SubscriptionPage";
@@ -147,6 +149,11 @@ function App() {
           <Route
             path="/booking-confirmed/:token"
             element={<BookingConfirmedPage />}
+          />
+          <Route path="/book-demo/:token" element={<BookDemoPage />} />
+          <Route
+            path="/booking-confirmed-demo/:token"
+            element={<BookingDemoConfirmedPage />}
           />
 
           {/* OAuth popup close page */}

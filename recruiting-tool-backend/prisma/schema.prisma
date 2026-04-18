@@ -42,6 +42,7 @@ model Company {
   subscription       Subscription?
   users              User[]
   calendarSettings   CompanyCalendarSettings?
+  demoBookings       DemoBookingToken[]          @relation("DemoBookings")
 
   @@index([uid])
   @@index([name])
@@ -1358,4 +1359,35 @@ enum InvitationStatus {
   ACCEPTED
   EXPIRED
   CANCELLED
+}
+
+model DemoBookingToken {
+  id              Int            @id @default(autoincrement())
+  uid             String         @unique @default(uuid()) @db.Uuid
+  token           String         @unique
+  prospectEmail   String
+  prospectName    String?
+  prospectCompany String?
+  expiresAt       DateTime
+  usedAt          DateTime?
+  companyId       Int
+  company         Company        @relation("DemoBookings", fields: [companyId], references: [id], onDelete: Cascade)
+  slots           DemoTimeSlot[]
+  createdAt       DateTime       @default(now())
+
+  @@index([token])
+  @@index([companyId])
+}
+
+model DemoTimeSlot {
+  id          Int              @id @default(autoincrement())
+  uid         String           @unique @default(uuid()) @db.Uuid
+  tokenId     Int
+  token       DemoBookingToken @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+  startTime   DateTime
+  endTime     DateTime
+  isAvailable Boolean          @default(true)
+  selectedAt  DateTime?
+
+  @@index([tokenId])
 }

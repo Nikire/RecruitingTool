@@ -28,6 +28,7 @@ import SendIcon from "@mui/icons-material/Send";
 import { useCreateContactMessage } from "../../hooks/api/useContactMessages";
 import { CreateContactMessageDto } from "../../types/contact-message.types";
 import { useValidationRules } from "../../utils/validation";
+import BookDemoDialog from "../../components/contact/BookDemoDialog";
 
 const fadeInUp = keyframes`
   from {
@@ -53,6 +54,7 @@ const ContactPage = () => {
   const theme = useTheme();
   const [submitted, setSubmitted] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<string | false>(false);
+  const [bookDemoDialogOpen, setBookDemoDialogOpen] = useState(false);
   const validationRules = useValidationRules();
 
   const {
@@ -118,9 +120,7 @@ const ContactPage = () => {
         <Button
           variant="contained"
           size="small"
-          href="https://cal.com/borderless"
-          target="_blank"
-          rel="noopener noreferrer"
+          onClick={() => setBookDemoDialogOpen(true)}
           sx={{
             mt: "auto",
             borderRadius: 2,
@@ -171,421 +171,435 @@ const ContactPage = () => {
   ];
 
   return (
-    <Box sx={{ minHeight: "80vh", py: { xs: 5, md: 8 } }}>
-      <Container maxWidth="lg">
-        {/* Hero Section */}
-        <Box
-          sx={{
-            textAlign: "center",
-            mb: 8,
-            animation: `${fadeInUp} 0.6s ease-out`,
-          }}
-        >
-          <Typography
-            variant="h2"
-            component="h1"
-            gutterBottom
+    <>
+      <Box sx={{ minHeight: "80vh", py: { xs: 5, md: 8 } }}>
+        <Container maxWidth="lg">
+          {/* Hero Section */}
+          <Box
             sx={{
-              fontWeight: 900,
-              mb: 2,
-              fontSize: { xs: "2.25rem", md: "3rem" },
-              letterSpacing: "-0.02em",
+              textAlign: "center",
+              mb: 8,
+              animation: `${fadeInUp} 0.6s ease-out`,
             }}
           >
-            {t("contact.page_title")}
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{
-              maxWidth: 520,
-              mx: "auto",
-              lineHeight: 1.6,
-              fontWeight: 400,
-              fontSize: { xs: "1rem", md: "1.125rem" },
-            }}
-          >
-            {t("contact.page_subtitle")}
-          </Typography>
-        </Box>
+            <Typography
+              variant="h2"
+              component="h1"
+              gutterBottom
+              sx={{
+                fontWeight: 900,
+                mb: 2,
+                fontSize: { xs: "2.25rem", md: "3rem" },
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {t("contact.page_title")}
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{
+                maxWidth: 520,
+                mx: "auto",
+                lineHeight: 1.6,
+                fontWeight: 400,
+                fontSize: { xs: "1rem", md: "1.125rem" },
+              }}
+            >
+              {t("contact.page_subtitle")}
+            </Typography>
+          </Box>
 
-        {/* Contact Methods */}
-        <Box
-          sx={{
-            mb: 8,
-            animation: `${fadeInUp} 0.6s ease-out 0.1s both`,
-          }}
-        >
-          <Grid container spacing={3}>
-            {contactMethods.map((method, index) => (
-              <Grid key={index} size={{ xs: 12, sm: 4 }}>
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 3,
-                    height: "100%",
-                    borderRadius: 3,
-                    border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 1.5,
-                    transition: "all 0.25s ease",
-                    "&:hover": {
-                      borderColor: alpha(theme.palette.primary.main, 0.25),
-                      boxShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.08)}`,
-                      transform: "translateY(-2px)",
-                    },
-                  }}
-                >
-                  <Box
+          {/* Contact Methods */}
+          <Box
+            sx={{
+              mb: 8,
+              animation: `${fadeInUp} 0.6s ease-out 0.1s both`,
+            }}
+          >
+            <Grid container spacing={3}>
+              {contactMethods.map((method, index) => (
+                <Grid key={index} size={{ xs: 12, sm: 4 }}>
+                  <Paper
+                    elevation={0}
                     sx={{
-                      width: 56,
-                      height: 56,
-                      borderRadius: 2.5,
-                      bgcolor: alpha(theme.palette.primary.main, 0.08),
+                      p: 3,
+                      height: "100%",
+                      borderRadius: 3,
+                      border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      color: theme.palette.primary.main,
+                      flexDirection: "column",
+                      gap: 1.5,
+                      transition: "all 0.25s ease",
+                      "&:hover": {
+                        borderColor: alpha(theme.palette.primary.main, 0.25),
+                        boxShadow: `0 4px 20px ${alpha(theme.palette.primary.main, 0.08)}`,
+                        transform: "translateY(-2px)",
+                      },
                     }}
                   >
-                    {method.icon}
-                  </Box>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}
-                  >
-                    {method.title}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.6, flexGrow: 1 }}
-                  >
-                    {method.description}
-                  </Typography>
-                  {method.action}
-                </Paper>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+                    <Box
+                      sx={{
+                        width: 56,
+                        height: 56,
+                        borderRadius: 2.5,
+                        bgcolor: alpha(theme.palette.primary.main, 0.08),
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        color: theme.palette.primary.main,
+                      }}
+                    >
+                      {method.icon}
+                    </Box>
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}
+                    >
+                      {method.title}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ lineHeight: 1.6, flexGrow: 1 }}
+                    >
+                      {method.description}
+                    </Typography>
+                    {method.action}
+                  </Paper>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
 
-        {/* Contact Form */}
-        <Box
-          sx={{
-            mb: 8,
-            animation: `${fadeInUp} 0.6s ease-out 0.2s both`,
-          }}
-        >
-          <Paper
-            elevation={0}
+          {/* Contact Form */}
+          <Box
             sx={{
-              p: { xs: 3, md: 5 },
-              borderRadius: 4,
-              border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
-              bgcolor: "background.paper",
+              mb: 8,
+              animation: `${fadeInUp} 0.6s ease-out 0.2s both`,
             }}
           >
-            {submitted ? (
+            <Paper
+              elevation={0}
+              sx={{
+                p: { xs: 3, md: 5 },
+                borderRadius: 4,
+                border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
+                bgcolor: "background.paper",
+              }}
+            >
+              {submitted ? (
+                <Box
+                  sx={{
+                    textAlign: "center",
+                    py: 6,
+                    animation: `${fadeInUp} 0.5s ease-out`,
+                  }}
+                >
+                  <CheckCircleIcon
+                    sx={{
+                      fontSize: 72,
+                      color: theme.palette.success.main,
+                      mb: 2.5,
+                    }}
+                  />
+                  <Typography
+                    variant="h4"
+                    gutterBottom
+                    sx={{ fontWeight: 800, mb: 1.5 }}
+                  >
+                    {t("contact.success_title")}
+                  </Typography>
+                  <Typography
+                    variant="body1"
+                    color="text.secondary"
+                    sx={{ mb: 4, lineHeight: 1.7, fontSize: "1.05rem" }}
+                  >
+                    {t("contact.success_message")}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    onClick={handleSendAnother}
+                    sx={{
+                      borderRadius: 2,
+                      px: 4,
+                      py: 1.5,
+                      fontWeight: 700,
+                      textTransform: "none",
+                      fontSize: "1rem",
+                    }}
+                  >
+                    {t("contact.success_send_another")}
+                  </Button>
+                </Box>
+              ) : (
+                <>
+                  <Box sx={{ mb: 3.5 }}>
+                    <Typography
+                      variant="h5"
+                      sx={{
+                        fontWeight: 800,
+                        letterSpacing: "-0.01em",
+                        mb: 0.5,
+                      }}
+                    >
+                      {t("contact.form_section_title")}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {t("contact.form_section_subtitle")}
+                    </Typography>
+                  </Box>
+
+                  <form onSubmit={handleSubmit(onSubmit)}>
+                    <Grid container spacing={2.5}>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                          label={t("contact.form_name")}
+                          placeholder={t("contact.form_name_placeholder")}
+                          fullWidth
+                          {...register(
+                            "name",
+                            validationRules.combine(
+                              validationRules.required(t("contact.form_name")),
+                              validationRules.minLength(2),
+                              validationRules.maxLength(100),
+                            ),
+                          )}
+                          error={!!errors.name}
+                          helperText={errors.name?.message}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                          label={t("contact.form_email")}
+                          placeholder={t("contact.form_email_placeholder")}
+                          type="email"
+                          fullWidth
+                          {...register("email", validationRules.email())}
+                          error={!!errors.email}
+                          helperText={errors.email?.message}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                          label={t("contact.form_subject")}
+                          placeholder={t("contact.form_subject_placeholder")}
+                          fullWidth
+                          {...register(
+                            "subject",
+                            validationRules.combine(
+                              validationRules.required(
+                                t("contact.form_subject"),
+                              ),
+                              validationRules.maxLength(200),
+                            ),
+                          )}
+                          error={!!errors.subject}
+                          helperText={errors.subject?.message}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12, sm: 6 }}>
+                        <TextField
+                          label={t("contact.form_company")}
+                          placeholder={t("contact.form_company_placeholder")}
+                          fullWidth
+                          {...register(
+                            "company",
+                            validationRules.maxLength(200),
+                          )}
+                          error={!!errors.company}
+                          helperText={errors.company?.message}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12 }}>
+                        <TextField
+                          label={t("contact.form_message")}
+                          placeholder={t("contact.form_message_placeholder")}
+                          fullWidth
+                          multiline
+                          rows={4}
+                          {...register(
+                            "message",
+                            validationRules.combine(
+                              validationRules.required(
+                                t("contact.form_message"),
+                              ),
+                              validationRules.minLength(10),
+                              validationRules.maxLength(5000),
+                            ),
+                          )}
+                          error={!!errors.message}
+                          helperText={errors.message?.message}
+                        />
+                      </Grid>
+                      <Grid size={{ xs: 12 }}>
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          size="large"
+                          fullWidth
+                          disabled={isPending}
+                          endIcon={
+                            isPending ? (
+                              <CircularProgress size={18} color="inherit" />
+                            ) : (
+                              <SendIcon />
+                            )
+                          }
+                          sx={{
+                            py: 1.75,
+                            fontSize: "1rem",
+                            fontWeight: 700,
+                            borderRadius: 2.5,
+                            textTransform: "none",
+                            boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.25)}`,
+                            "&:hover": {
+                              transform: "translateY(-2px)",
+                              boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.35)}`,
+                            },
+                            transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                          }}
+                        >
+                          {isPending
+                            ? t("contact.form_submitting")
+                            : t("contact.form_submit")}
+                        </Button>
+                      </Grid>
+                    </Grid>
+                  </form>
+                </>
+              )}
+            </Paper>
+          </Box>
+
+          {/* FAQ Section */}
+          <Box sx={{ animation: `${fadeInUp} 0.6s ease-out 0.3s both` }}>
+            <Box sx={{ textAlign: "center", mb: 4 }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  fontWeight: 800,
+                  letterSpacing: "-0.02em",
+                  mb: 1,
+                  fontSize: { xs: "1.75rem", md: "2.25rem" },
+                }}
+              >
+                {t("contact.faq_title")}
+              </Typography>
+              <Typography variant="body1" color="text.secondary">
+                {t("contact.faq_subtitle")}
+              </Typography>
+            </Box>
+
+            <Box sx={{ maxWidth: 760, mx: "auto" }}>
+              {faqItems.map((item) => (
+                <Accordion
+                  key={item.id}
+                  expanded={expandedFaq === item.id}
+                  onChange={handleFaqChange(item.id)}
+                  elevation={0}
+                  disableGutters
+                  sx={{
+                    mb: 1.5,
+                    borderRadius: "12px !important",
+                    border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
+                    "&:before": { display: "none" },
+                    "&.Mui-expanded": {
+                      borderColor: alpha(theme.palette.primary.main, 0.2),
+                      boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.06)}`,
+                    },
+                    overflow: "hidden",
+                  }}
+                >
+                  <AccordionSummary
+                    expandIcon={
+                      <ExpandMoreIcon
+                        sx={{ color: theme.palette.primary.main }}
+                      />
+                    }
+                    sx={{
+                      px: 3,
+                      py: 0.5,
+                      "& .MuiAccordionSummary-content": { my: 1.5 },
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}
+                    >
+                      {item.question}
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{ lineHeight: 1.75 }}
+                    >
+                      {item.answer}
+                    </Typography>
+                  </AccordionDetails>
+                </Accordion>
+              ))}
+            </Box>
+
+            {/* Still have questions? CTA */}
+            <Alert
+              severity="info"
+              icon={<EmailIcon />}
+              sx={{
+                mt: 4,
+                maxWidth: 760,
+                mx: "auto",
+                borderRadius: 3,
+                "& .MuiAlert-message": { width: "100%" },
+              }}
+            >
               <Box
                 sx={{
-                  textAlign: "center",
-                  py: 6,
-                  animation: `${fadeInUp} 0.5s ease-out`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  flexWrap: "wrap",
+                  gap: 1.5,
                 }}
               >
-                <CheckCircleIcon
-                  sx={{
-                    fontSize: 72,
-                    color: theme.palette.success.main,
-                    mb: 2.5,
-                  }}
-                />
-                <Typography
-                  variant="h4"
-                  gutterBottom
-                  sx={{ fontWeight: 800, mb: 1.5 }}
-                >
-                  {t("contact.success_title")}
-                </Typography>
-                <Typography
-                  variant="body1"
-                  color="text.secondary"
-                  sx={{ mb: 4, lineHeight: 1.7, fontSize: "1.05rem" }}
-                >
-                  {t("contact.success_message")}
-                </Typography>
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleSendAnother}
-                  sx={{
-                    borderRadius: 2,
-                    px: 4,
-                    py: 1.5,
-                    fontWeight: 700,
-                    textTransform: "none",
-                    fontSize: "1rem",
-                  }}
-                >
-                  {t("contact.success_send_another")}
-                </Button>
-              </Box>
-            ) : (
-              <>
-                <Box sx={{ mb: 3.5 }}>
+                <Box>
                   <Typography
-                    variant="h5"
-                    sx={{
-                      fontWeight: 800,
-                      letterSpacing: "-0.01em",
-                      mb: 0.5,
-                    }}
+                    variant="subtitle2"
+                    sx={{ fontWeight: 700, mb: 0.25 }}
                   >
-                    {t("contact.form_section_title")}
+                    {t("contact.cta_title")}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {t("contact.form_section_subtitle")}
+                  <Typography variant="body2" sx={{ opacity: 0.85 }}>
+                    {t("contact.cta_subtitle")}
                   </Typography>
                 </Box>
-
-                <form onSubmit={handleSubmit(onSubmit)}>
-                  <Grid container spacing={2.5}>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                      <TextField
-                        label={t("contact.form_name")}
-                        placeholder={t("contact.form_name_placeholder")}
-                        fullWidth
-                        {...register(
-                          "name",
-                          validationRules.combine(
-                            validationRules.required(t("contact.form_name")),
-                            validationRules.minLength(2),
-                            validationRules.maxLength(100),
-                          ),
-                        )}
-                        error={!!errors.name}
-                        helperText={errors.name?.message}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                      <TextField
-                        label={t("contact.form_email")}
-                        placeholder={t("contact.form_email_placeholder")}
-                        type="email"
-                        fullWidth
-                        {...register("email", validationRules.email())}
-                        error={!!errors.email}
-                        helperText={errors.email?.message}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                      <TextField
-                        label={t("contact.form_subject")}
-                        placeholder={t("contact.form_subject_placeholder")}
-                        fullWidth
-                        {...register(
-                          "subject",
-                          validationRules.combine(
-                            validationRules.required(t("contact.form_subject")),
-                            validationRules.maxLength(200),
-                          ),
-                        )}
-                        error={!!errors.subject}
-                        helperText={errors.subject?.message}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12, sm: 6 }}>
-                      <TextField
-                        label={t("contact.form_company")}
-                        placeholder={t("contact.form_company_placeholder")}
-                        fullWidth
-                        {...register("company", validationRules.maxLength(200))}
-                        error={!!errors.company}
-                        helperText={errors.company?.message}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                      <TextField
-                        label={t("contact.form_message")}
-                        placeholder={t("contact.form_message_placeholder")}
-                        fullWidth
-                        multiline
-                        rows={4}
-                        {...register(
-                          "message",
-                          validationRules.combine(
-                            validationRules.required(t("contact.form_message")),
-                            validationRules.minLength(10),
-                            validationRules.maxLength(5000),
-                          ),
-                        )}
-                        error={!!errors.message}
-                        helperText={errors.message?.message}
-                      />
-                    </Grid>
-                    <Grid size={{ xs: 12 }}>
-                      <Button
-                        type="submit"
-                        variant="contained"
-                        size="large"
-                        fullWidth
-                        disabled={isPending}
-                        endIcon={
-                          isPending ? (
-                            <CircularProgress size={18} color="inherit" />
-                          ) : (
-                            <SendIcon />
-                          )
-                        }
-                        sx={{
-                          py: 1.75,
-                          fontSize: "1rem",
-                          fontWeight: 700,
-                          borderRadius: 2.5,
-                          textTransform: "none",
-                          boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.25)}`,
-                          "&:hover": {
-                            transform: "translateY(-2px)",
-                            boxShadow: `0 8px 24px ${alpha(theme.palette.primary.main, 0.35)}`,
-                          },
-                          transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                        }}
-                      >
-                        {isPending
-                          ? t("contact.form_submitting")
-                          : t("contact.form_submit")}
-                      </Button>
-                    </Grid>
-                  </Grid>
-                </form>
-              </>
-            )}
-          </Paper>
-        </Box>
-
-        {/* FAQ Section */}
-        <Box sx={{ animation: `${fadeInUp} 0.6s ease-out 0.3s both` }}>
-          <Box sx={{ textAlign: "center", mb: 4 }}>
-            <Typography
-              variant="h4"
-              sx={{
-                fontWeight: 800,
-                letterSpacing: "-0.02em",
-                mb: 1,
-                fontSize: { xs: "1.75rem", md: "2.25rem" },
-              }}
-            >
-              {t("contact.faq_title")}
-            </Typography>
-            <Typography variant="body1" color="text.secondary">
-              {t("contact.faq_subtitle")}
-            </Typography>
-          </Box>
-
-          <Box sx={{ maxWidth: 760, mx: "auto" }}>
-            {faqItems.map((item) => (
-              <Accordion
-                key={item.id}
-                expanded={expandedFaq === item.id}
-                onChange={handleFaqChange(item.id)}
-                elevation={0}
-                disableGutters
-                sx={{
-                  mb: 1.5,
-                  borderRadius: "12px !important",
-                  border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
-                  "&:before": { display: "none" },
-                  "&.Mui-expanded": {
-                    borderColor: alpha(theme.palette.primary.main, 0.2),
-                    boxShadow: `0 4px 16px ${alpha(theme.palette.primary.main, 0.06)}`,
-                  },
-                  overflow: "hidden",
-                }}
-              >
-                <AccordionSummary
-                  expandIcon={
-                    <ExpandMoreIcon
-                      sx={{ color: theme.palette.primary.main }}
-                    />
-                  }
+                <Button
+                  variant="contained"
+                  size="small"
+                  href={`mailto:${t("app.support_email")}`}
                   sx={{
-                    px: 3,
-                    py: 0.5,
-                    "& .MuiAccordionSummary-content": { my: 1.5 },
+                    borderRadius: 2,
+                    textTransform: "none",
+                    fontWeight: 600,
+                    flexShrink: 0,
                   }}
                 >
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}
-                  >
-                    {item.question}
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails sx={{ px: 3, pb: 3, pt: 0 }}>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ lineHeight: 1.75 }}
-                  >
-                    {item.answer}
-                  </Typography>
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </Box>
-
-          {/* Still have questions? CTA */}
-          <Alert
-            severity="info"
-            icon={<EmailIcon />}
-            sx={{
-              mt: 4,
-              maxWidth: 760,
-              mx: "auto",
-              borderRadius: 3,
-              "& .MuiAlert-message": { width: "100%" },
-            }}
-          >
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 1.5,
-              }}
-            >
-              <Box>
-                <Typography
-                  variant="subtitle2"
-                  sx={{ fontWeight: 700, mb: 0.25 }}
-                >
-                  {t("contact.cta_title")}
-                </Typography>
-                <Typography variant="body2" sx={{ opacity: 0.85 }}>
-                  {t("contact.cta_subtitle")}
-                </Typography>
+                  {t("contact.cta_button")}
+                </Button>
               </Box>
-              <Button
-                variant="contained"
-                size="small"
-                href={`mailto:${t("app.support_email")}`}
-                sx={{
-                  borderRadius: 2,
-                  textTransform: "none",
-                  fontWeight: 600,
-                  flexShrink: 0,
-                }}
-              >
-                {t("contact.cta_button")}
-              </Button>
-            </Box>
-          </Alert>
-        </Box>
-      </Container>
-    </Box>
+            </Alert>
+          </Box>
+        </Container>
+      </Box>
+
+      <BookDemoDialog
+        open={bookDemoDialogOpen}
+        onClose={() => setBookDemoDialogOpen(false)}
+      />
+    </>
   );
 };
 

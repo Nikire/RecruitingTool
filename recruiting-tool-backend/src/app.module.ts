@@ -51,6 +51,7 @@ import { PlanLimitsModule } from './modules/plan-limits/plan-limits.module';
 import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module';
 import { CustomPlansModule } from './modules/custom-plans/custom-plans.module';
 import { CompanyCalendarSettingsModule } from './modules/company-calendar-settings/company-calendar-settings.module';
+import { DemoBookingModule } from './modules/demo-booking/demo-booking.module';
 
 @Module({
   imports: [
@@ -113,6 +114,7 @@ import { CompanyCalendarSettingsModule } from './modules/company-calendar-settin
     FeatureFlagsModule,
     CustomPlansModule,
     CompanyCalendarSettingsModule,
+    DemoBookingModule,
   ],
   controllers: [AppController],
   providers: [

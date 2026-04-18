@@ -3807,7 +3807,19 @@
     "faq_3_question": "¿Hay una prueba gratuita?",
     "faq_3_answer": "¡Sí! Puedes probar Borderless gratis durante 30 días sin necesidad de tarjeta de crédito. Durante la prueba tendrás acceso completo a todas las funciones para que puedas evaluar la plataforma antes de comprometerte.",
     "faq_4_question": "¿Cómo empiezo?",
-    "faq_4_answer": "Comenzar es muy sencillo. Crea una cuenta gratuita, completa el perfil de tu empresa y publica tu primera posición de trabajo en minutos. Nuestra guía de incorporación te guiará en cada paso."
+    "faq_4_answer": "Comenzar es muy sencillo. Crea una cuenta gratuita, completa el perfil de tu empresa y publica tu primera posición de trabajo en minutos. Nuestra guía de incorporación te guiará en cada paso.",
+    "book_demo_dialog_title": "Reservar una Demo",
+    "book_demo_dialog_description": "Programa una demo personalizada con nuestro equipo. Ingresa tu correo y te enviaremos un enlace para elegir el horario que mejor te convenga.",
+    "book_demo_dialog_email_label": "Correo electrónico",
+    "book_demo_dialog_name_label": "Tu nombre",
+    "book_demo_dialog_company_label": "Nombre de la empresa",
+    "book_demo_dialog_submit": "Obtener enlace de reserva",
+    "book_demo_dialog_error": "No se pudo crear el enlace de reserva. Inténtalo de nuevo o contáctanos por correo.",
+    "book_demo_page_title": "Reservar una Demo",
+    "book_demo_page_subtitle": "Programa una reunión personalizada con el equipo de Borderless",
+    "book_demo_confirmed_title": "¡Demo Reservada!",
+    "book_demo_confirmed_subtitle": "Esperamos con ansias conocerte",
+    "book_demo_confirmed_message": "Tu demo ha sido confirmada. Revisa tu correo para ver los detalles de la reunión y la invitación al calendario."
   },
   "admin_contact": {
     "page_title": "Mensajes de Contacto",

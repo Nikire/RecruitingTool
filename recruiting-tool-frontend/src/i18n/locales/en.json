@@ -3778,7 +3778,19 @@
     "faq_3_question": "Is there a free trial?",
     "faq_3_answer": "Yes! You can try Borderless free for 30 days with no credit card required. Full access to all features is included during the trial so you can evaluate the platform before committing.",
     "faq_4_question": "How do I get started?",
-    "faq_4_answer": "Getting started is easy. Sign up for a free account, complete your company profile, and post your first job position in minutes. Our onboarding guide will walk you through each step."
+    "faq_4_answer": "Getting started is easy. Sign up for a free account, complete your company profile, and post your first job position in minutes. Our onboarding guide will walk you through each step.",
+    "book_demo_dialog_title": "Book a Demo",
+    "book_demo_dialog_description": "Schedule a personalized demo with our team. Enter your email and we'll send you a link to pick a time that works for you.",
+    "book_demo_dialog_email_label": "Email address",
+    "book_demo_dialog_name_label": "Your name",
+    "book_demo_dialog_company_label": "Company name",
+    "book_demo_dialog_submit": "Get Booking Link",
+    "book_demo_dialog_error": "Failed to create booking link. Please try again or contact us via email.",
+    "book_demo_page_title": "Book a Demo",
+    "book_demo_page_subtitle": "Schedule a personalized meeting with the Borderless team",
+    "book_demo_confirmed_title": "Demo Booked!",
+    "book_demo_confirmed_subtitle": "We look forward to meeting you",
+    "book_demo_confirmed_message": "Your demo has been confirmed. Check your email for the meeting details and calendar invite."
   },
   "admin_contact": {
     "page_title": "Contact Messages",
