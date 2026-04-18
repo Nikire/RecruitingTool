@@ -260,46 +260,6 @@ export class DemoBookingService {
   }
 
   private async sendDemoBookingLinkEmail(email: string, name: string, bookingUrl: string, expiresAt: Date): Promise<void> {
-    const expiryDateStr = expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-    const subject = 'Your Borderless Demo Booking Link';
-    const text = `
-Dear ${name},
-
-Thank you for your interest in Borderless ATS!
-
-Please use the link below to schedule your personalized demo:
-${bookingUrl}
-
-This link will expire on ${expiryDateStr}.
-
-Best regards,
-The Borderless Team
-    `.trim();
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h2 style="color: #1976d2;">Book Your Borderless Demo</h2>
-        <p>Dear ${name},</p>
-        <p>Thank you for your interest in <strong>Borderless ATS</strong>!</p>
-        <p>Please click the button below to choose a time for your personalized demo.</p>
-        <div style="text-align: center; margin: 32px 0;">
-          <a href="${bookingUrl}"
-             style="background-color: #1976d2; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block;">
-            Choose a Demo Time
-          </a>
-        </div>
-        <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
-        <p style="color: #666; font-size: 12px; word-break: break-all;">${bookingUrl}</p>
-        <p style="color: #999; font-size: 12px;">This link will expire on ${expiryDateStr}.</p>
-        <br/>
-        <p>Best regards,<br/>The Borderless Team</p>
-      </div>
-    `;
-
-    // Use the existing sendEmail pattern from EmailService via sendBookingInvitation-like approach
-    // We'll reuse sendBookingConfirmation approach but for the invitation step.
-    // Since we need a direct send, we'll call sendBookingInvitation with a fake job title.
     await this.emailService.sendBookingInvitation(email, name, bookingUrl, expiresAt, 'Borderless ATS Demo');
   }
 }
