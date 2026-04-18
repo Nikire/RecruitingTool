@@ -28,6 +28,7 @@ import ScheduleIcon from "@mui/icons-material/Schedule";
 import toast from "react-hot-toast";
 import SettingsCard from "../../components/settings/SettingsCard";
 import StatusIndicator from "../../components/settings/StatusIndicator";
+import CompanyCalendarSettingsCard from "../../components/settings/CompanyCalendarSettingsCard";
 import {
   useCalendarConnectionStatus,
   useGetAuthUrl,
@@ -227,6 +228,11 @@ const CalendarSettingsPage = () => {
       </Box>
 
       <Grid container spacing={3}>
+        {/* Booking System Settings */}
+        <Grid size={{ xs: 12 }}>
+          <CompanyCalendarSettingsCard />
+        </Grid>
+
         {/* Google Calendar Connection Card */}
         <Grid size={{ xs: 12 }}>
           <SettingsCard
