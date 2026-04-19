@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme } from "@mui/material";
 import MDEditor, { commands } from "@uiw/react-md-editor";
 import { useTranslation } from "react-i18next";
 
@@ -26,6 +26,8 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   placeholder,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const colorMode = theme.palette.mode;
 
   const handleChange = (val?: string) => {
     // Enforce max length if specified
@@ -58,7 +60,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           borderColor: error ? "error.main" : "transparent",
           borderRadius: 1,
         }}
-        data-color-mode="light"
+        data-color-mode={colorMode}
       >
         <MDEditor
           value={value}
