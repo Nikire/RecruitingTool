@@ -1,4 +1,5 @@
-import { Injectable, NotFoundException, BadRequestException } from '@nestjs/common';
+import { Injectable, NotFoundException, BadRequestException, ConflictException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { CreateEmailTemplateDto, UpdateEmailTemplateDto, EmailTemplateResponseDto } from './dto/email-template.dto';
 import { EmailTemplateMapper } from './entities/email-template.entity';
@@ -44,21 +45,29 @@ export class EmailTemplatesService {
       await this.unsetExistingDefaultForType(companyId, createDto.type);
     }
 
-    const emailTemplate = await this.databaseService.emailTemplate.create({
-      data: {
-        name: createDto.name,
-        subject: createDto.subject,
-        body: createDto.body,
-        type: createDto.type,
-        companyId: companyId,
-        createdById: userId,
-        isDefault: createDto.isDefault || false,
-      },
-      include: {
-        company: true,
-        createdBy: true,
-      },
-    });
+    let emailTemplate;
+    try {
+      emailTemplate = await this.databaseService.emailTemplate.create({
+        data: {
+          name: createDto.name,
+          subject: createDto.subject,
+          body: createDto.body,
+          type: createDto.type,
+          companyId: companyId,
+          createdById: userId,
+          isDefault: createDto.isDefault || false,
+        },
+        include: {
+          company: true,
+          createdBy: true,
+        },
+      });
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
+        throw new ConflictException(`A template named "${createDto.name}" already exists for this company. Please choose a different name.`);
+      }
+      throw error;
+    }
 
     // Invalidate email templates cache after creation
     await this.cacheService.invalidate('email-templates');
