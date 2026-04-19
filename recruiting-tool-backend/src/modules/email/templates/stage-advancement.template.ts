@@ -8,6 +8,7 @@ export interface StageAdvancementData {
   newStage: string;
   hiringProcessUid: string;
   companyId?: number;
+  hiringProcessUrl?: string;
 }
 
 export function stageAdvancementTemplate(data: StageAdvancementData): EmailTemplate {
@@ -22,6 +23,7 @@ Your application has moved to the next stage: ${data.newStage}.
 ${data.previousStage ? `\nPrevious stage: ${data.previousStage}` : ''}
 
 Our team will be in touch with you shortly with more details.
+${data.hiringProcessUrl ? `\nView your application: ${data.hiringProcessUrl}` : ''}
 
 Thank you for your interest in joining our team.
 
@@ -59,6 +61,14 @@ ${data.companyName ?? 'The Borderless Team'}
         <p style="${emailBaseStyles.text}">
           Our team will be in touch with you shortly with more details about this stage.
         </p>
+
+        ${
+          data.hiringProcessUrl
+            ? `<div style="text-align: center; margin: 30px 0;">
+          <a href="${data.hiringProcessUrl}" style="${emailBaseStyles.button}">View Your Application →</a>
+        </div>`
+            : ''
+        }
 
         <hr style="${emailBaseStyles.divider}">
 

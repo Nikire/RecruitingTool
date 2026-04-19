@@ -231,6 +231,7 @@ export class EmailTemplatesService {
       newStage: 'Technical Interview',
       previousStage: 'Phone Screen',
       status: 'Under Review',
+      hiringProcessUrl: 'https://app.borderlessats.com/hiring-process/sample-uid',
     };
 
     const renderedSubject = this.renderTemplate(emailTemplate.subject, sampleData);

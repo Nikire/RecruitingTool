@@ -790,6 +790,7 @@
     "variable_new_stage": "{{newStage}} - New hiring stage",
     "variable_previous_stage": "{{previousStage}} - Previous hiring stage",
     "variable_status": "{{status}} - Application status",
+    "variable_hiring_process_url": "{{hiringProcessUrl}} - Link to hiring process details",
     "insert_variable": "Insert Variable",
     "preview_with_sample": "Preview with Sample Data",
     "rendered_subject": "Rendered Subject",

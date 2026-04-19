@@ -790,6 +790,7 @@
     "variable_new_stage": "{{newStage}} - Nueva etapa",
     "variable_previous_stage": "{{previousStage}} - Etapa anterior",
     "variable_status": "{{status}} - Estado de la solicitud",
+    "variable_hiring_process_url": "{{hiringProcessUrl}} - Enlace al proceso de selección",
     "insert_variable": "Insertar Variable",
     "preview_with_sample": "Vista Previa con Datos de Muestra",
     "rendered_subject": "Asunto Renderizado",

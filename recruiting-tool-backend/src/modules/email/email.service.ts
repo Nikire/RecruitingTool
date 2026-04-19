@@ -625,6 +625,10 @@ If you did not create an account, please ignore this email.
   }
 
   async sendStageAdvancement(candidateEmail: string, data: StageAdvancementData): Promise<void> {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    const hiringProcessUrl = `${frontendUrl}/hiring-process/${data.hiringProcessUid}`;
+    const dataWithUrl: StageAdvancementData = { ...data, hiringProcessUrl };
+
     const companyTemplate = await this.findCompanyTemplate(data.companyId, EmailTemplateType.APPLICATION_STATUS_UPDATE);
     if (companyTemplate) {
       const vars = {
@@ -635,11 +639,12 @@ If you did not create an account, please ignore this email.
         newStage: data.newStage,
         previousStage: data.previousStage || '',
         status: data.newStage,
+        hiringProcessUrl,
       };
       const { subject, text, html } = this.renderTemplate(companyTemplate, vars);
       await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
     } else {
-      const { subject, text, html } = stageAdvancementTemplate(data);
+      const { subject, text, html } = stageAdvancementTemplate(dataWithUrl);
       await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
     }
     this.logger.log(`Stage advancement email sent to ${candidateEmail} — moved to "${data.newStage}" for ${data.jobPosition}`);

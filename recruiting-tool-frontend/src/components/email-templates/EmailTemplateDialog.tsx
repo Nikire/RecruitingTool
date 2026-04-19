@@ -185,6 +185,9 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, DefaultTemplateContent> = {
         </td></tr>
       </table>
       <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Our team will be in touch with you shortly with more details about this stage.</p>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="{{hiringProcessUrl}}" style="display:inline-block;background-color:#325CE7;color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:6px;font-weight:700;font-size:15px;">View Your Application →</a>
+      </div>
       <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Thank you for your interest in joining <strong>{{companyName}}</strong>.</p>
       ${SIGNATURE}`,
     ),
@@ -348,6 +351,10 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
     {
       key: "{{status}}",
       description: t("email_template.variable_status"),
+    },
+    {
+      key: "{{hiringProcessUrl}}",
+      description: t("email_template.variable_hiring_process_url"),
     },
   ];
 
