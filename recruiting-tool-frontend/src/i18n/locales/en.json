@@ -933,6 +933,7 @@
     "type_application_under_review": "Application Under Review",
     "type_application_rejected": "Application Rejected",
     "type_application_shortlisted": "Application Shortlisted",
+    "type_application_status_update": "Application Status Update",
     "type_interview_invitation": "Interview Invitation",
     "type_interview_reminder": "Interview Reminder",
     "type_offer_letter": "Offer Letter",

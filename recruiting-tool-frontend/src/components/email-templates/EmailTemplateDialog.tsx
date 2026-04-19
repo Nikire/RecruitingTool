@@ -167,6 +167,25 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, DefaultTemplateContent> = {
       ${SIGNATURE}`,
     ),
   },
+  [EmailTemplateType.APPLICATION_STATUS_UPDATE]: {
+    name: "Application Status Update",
+    subject: "Update on your application for {{jobTitle}}",
+    body: WRAPPER(
+      "linear-gradient(135deg,#325CE7 0%,#5b7ff0 100%)",
+      "Application Update",
+      `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{candidateName}}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">We have an update regarding your application for the <strong style="color:#325CE7;">{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;">
+        <tr><td style="background:#f8faff;padding:16px 20px;border-left:4px solid #325CE7;">
+          <p style="margin:0;font-size:13px;font-weight:600;color:#325CE7;text-transform:uppercase;letter-spacing:1px;">Status Update</p>
+          <p style="margin:8px 0 0;font-size:15px;color:#1e293b;font-weight:600;">{{status}}</p>
+        </td></tr>
+      </table>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">If you have any questions about this update, please don't hesitate to reach out to our team.</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Thank you for your interest in joining <strong>{{companyName}}</strong>.</p>
+      ${SIGNATURE}`,
+    ),
+  },
   [EmailTemplateType.INTERVIEW_INVITATION]: {
     name: "Interview Invitation",
     subject: "Interview invitation — {{jobTitle}} at {{companyName}}",
@@ -525,6 +544,9 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
                 </MenuItem>
                 <MenuItem value={EmailTemplateType.APPLICATION_SHORTLISTED}>
                   {t("email_template.type_application_shortlisted")}
+                </MenuItem>
+                <MenuItem value={EmailTemplateType.APPLICATION_STATUS_UPDATE}>
+                  {t("email_template.type_application_status_update")}
                 </MenuItem>
                 <MenuItem value={EmailTemplateType.INTERVIEW_INVITATION}>
                   {t("email_template.type_interview_invitation")}

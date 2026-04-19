@@ -539,7 +539,8 @@ ${text}
       ACCEPTED: EmailTemplateType.APPLICATION_SHORTLISTED,
     };
     const templateType = statusToTemplateType[data.status];
-    const customTemplate = templateType ? await this.findCompanyTemplate(companyId, templateType) : null;
+    const customTemplate =
+      (templateType ? await this.findCompanyTemplate(companyId, templateType) : null) ?? (await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_STATUS_UPDATE));
     if (customTemplate) {
       const { subject, text, html } = this.renderTemplate(customTemplate, data as unknown as Record<string, any>);
       await this.sendEmail(candidateEmail, subject, text, html, 'STATUS_CHANGE', data.applicationUid);

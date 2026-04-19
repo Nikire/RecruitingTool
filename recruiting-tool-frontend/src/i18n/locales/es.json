@@ -941,6 +941,7 @@
     "type_application_under_review": "Solicitud en revisión",
     "type_application_rejected": "Solicitud Rechazada",
     "type_application_shortlisted": "Solicitud Preseleccionada",
+    "type_application_status_update": "Actualización de Estado de Solicitud",
     "type_interview_invitation": "Invitación a Entrevista",
     "type_interview_reminder": "Recordatorio de Entrevista",
     "type_offer_letter": "Carta de Oferta",
