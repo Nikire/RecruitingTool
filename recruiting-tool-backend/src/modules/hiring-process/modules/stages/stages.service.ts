@@ -473,6 +473,7 @@ export class StagesService {
                 previousStage: currentStage.title,
                 newStage: nextStage.title,
                 hiringProcessUid: hiringProcess.uid,
+                companyId: jobPosition.companyId,
               });
             } catch (emailError) {
               this.logger.error(`Failed to send stage advancement email to ${hiringProcess.candidate.email}: ${emailError.message}`);
@@ -641,6 +642,7 @@ export class StagesService {
                 previousStage: currentStage?.title,
                 newStage: targetStage.title,
                 hiringProcessUid: hiringProcess.uid,
+                companyId: jobPosition.companyId,
               });
             } catch (emailError) {
               this.logger.error(`Failed to send stage change email to ${hiringProcess.candidate.email}: ${emailError.message}`);

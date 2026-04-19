@@ -7,6 +7,7 @@ export interface StageAdvancementData {
   previousStage?: string;
   newStage: string;
   hiringProcessUid: string;
+  companyId?: number;
 }
 
 export function stageAdvancementTemplate(data: StageAdvancementData): EmailTemplate {

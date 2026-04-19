@@ -66,6 +66,8 @@ const EmailTemplatesPage: React.FC = () => {
         return "error";
       case EmailTemplateType.APPLICATION_SHORTLISTED:
         return "success";
+      case EmailTemplateType.APPLICATION_STATUS_UPDATE:
+        return "info";
       case EmailTemplateType.INTERVIEW_INVITATION:
         return "primary";
       case EmailTemplateType.INTERVIEW_REMINDER:
@@ -91,6 +93,8 @@ const EmailTemplatesPage: React.FC = () => {
         return t("email_template.type_application_rejected");
       case EmailTemplateType.APPLICATION_SHORTLISTED:
         return t("email_template.type_application_shortlisted");
+      case EmailTemplateType.APPLICATION_STATUS_UPDATE:
+        return t("email_template.type_application_status_update");
       case EmailTemplateType.INTERVIEW_INVITATION:
         return t("email_template.type_interview_invitation");
       case EmailTemplateType.INTERVIEW_REMINDER:

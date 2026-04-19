@@ -625,8 +625,23 @@ If you did not create an account, please ignore this email.
   }
 
   async sendStageAdvancement(candidateEmail: string, data: StageAdvancementData): Promise<void> {
-    const { subject, text, html } = stageAdvancementTemplate(data);
-    await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
+    const companyTemplate = await this.findCompanyTemplate(data.companyId, EmailTemplateType.APPLICATION_STATUS_UPDATE);
+    if (companyTemplate) {
+      const vars = {
+        candidateName: data.candidateName,
+        jobTitle: data.jobPosition,
+        positionTitle: data.jobPosition,
+        companyName: data.companyName || companyTemplate.companyName || '',
+        newStage: data.newStage,
+        previousStage: data.previousStage || '',
+        status: data.newStage,
+      };
+      const { subject, text, html } = this.renderTemplate(companyTemplate, vars);
+      await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
+    } else {
+      const { subject, text, html } = stageAdvancementTemplate(data);
+      await this.sendEmail(candidateEmail, subject, text, html, 'STAGE_ADVANCEMENT', data.hiringProcessUid);
+    }
     this.logger.log(`Stage advancement email sent to ${candidateEmail} — moved to "${data.newStage}" for ${data.jobPosition}`);
   }
 

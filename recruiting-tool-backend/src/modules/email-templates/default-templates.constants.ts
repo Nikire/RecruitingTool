@@ -226,14 +226,17 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultTemplateContent[] = [
       'linear-gradient(135deg,#325CE7 0%,#5b7ff0 100%)',
       'Application Update',
       `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{candidateName}}</strong>,</p>
-      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">We have an update regarding your application for the <strong style="color:#325CE7;">{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>.</p>
-      <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;">
-        <tr><td style="background:#f8faff;padding:16px 20px;border-left:4px solid #325CE7;">
-          <p style="margin:0;font-size:13px;font-weight:600;color:#325CE7;text-transform:uppercase;letter-spacing:1px;">Status Update</p>
-          <p style="margin:8px 0 0;font-size:15px;color:#1e293b;font-weight:600;">{{status}}</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">We have an update on your application for the <strong style="color:#325CE7;">{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border-radius:10px;overflow:hidden;border:1px solid #bfdbfe;">
+        <tr><td style="background:#eff6ff;padding:12px 20px;border-bottom:1px solid #bfdbfe;">
+          <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#325CE7;">🎯 New Stage</p>
+        </td></tr>
+        <tr><td style="background:#ffffff;padding:20px;">
+          <p style="margin:0;font-size:17px;font-weight:700;color:#1e293b;">{{newStage}}</p>
+          {{#if previousStage}}<p style="margin:8px 0 0;font-size:13px;color:#94a3b8;">Previous stage: {{previousStage}}</p>{{/if}}
         </td></tr>
       </table>
-      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">If you have any questions about this update, please don't hesitate to reach out to our team.</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Our team will be in touch with you shortly with more details about this stage.</p>
       <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Thank you for your interest in joining <strong>{{companyName}}</strong>.</p>
       ${SIGNATURE}`,
     ),
