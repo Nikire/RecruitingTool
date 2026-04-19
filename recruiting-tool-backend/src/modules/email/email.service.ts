@@ -80,10 +80,7 @@ export class EmailService {
    * Look up a company-configured email template by type.
    * Returns subject + body strings (Handlebars) or null if none found.
    */
-  private async findCompanyTemplate(
-    companyId: number | undefined,
-    type: EmailTemplateType,
-  ): Promise<{ subject: string; body: string } | null> {
+  private async findCompanyTemplate(companyId: number | undefined, type: EmailTemplateType): Promise<{ subject: string; body: string } | null> {
     if (!companyId) return null;
     const template = await this.databaseService.emailTemplate.findFirst({
       where: { companyId, type },
@@ -96,10 +93,7 @@ export class EmailService {
    * Render a raw DB template (Handlebars subject + body) with variables.
    * Converts newlines to <br> for a basic HTML version.
    */
-  private renderTemplate(
-    template: { subject: string; body: string },
-    variables: Record<string, any>,
-  ): { subject: string; text: string; html: string } {
+  private renderTemplate(template: { subject: string; body: string }, variables: Record<string, any>): { subject: string; text: string; html: string } {
     const subject = Handlebars.compile(template.subject)(variables);
     const text = Handlebars.compile(template.body)(variables);
     const html = text.replace(/\n/g, '<br>');
@@ -270,14 +264,7 @@ Please log in to the admin panel to review this application.
     await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
   }
 
-  async sendApplicationRejection(
-    applicantEmail: string,
-    applicantName: string,
-    jobTitle: string,
-    applicationUid: string,
-    companyName?: string,
-    companyId?: number,
-  ): Promise<void> {
+  async sendApplicationRejection(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string, companyName?: string, companyId?: number): Promise<void> {
     const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
     if (!emailsEnabled) {
@@ -671,14 +658,7 @@ The Borderless Team
   /**
    * Send booking invitation to candidate with a link to self-schedule their interview
    */
-  async sendBookingInvitation(
-    candidateEmail: string,
-    candidateName: string,
-    bookingUrl: string,
-    expiresAt: Date,
-    jobTitle: string,
-    companyId?: number,
-  ): Promise<void> {
+  async sendBookingInvitation(candidateEmail: string, candidateName: string, bookingUrl: string, expiresAt: Date, jobTitle: string, companyId?: number): Promise<void> {
     this.logger.log(`Sending booking invitation to ${candidateEmail} for ${jobTitle}`);
 
     // Check for custom company template first

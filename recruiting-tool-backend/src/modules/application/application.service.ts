@@ -79,7 +79,14 @@ export class ApplicationService {
 
       // Send confirmation email to applicant
       try {
-        await this.emailService.sendApplicationConfirmation(application.applicantEmail, application.applicantName, jobPosition.title, application.uid, jobPosition.company?.name, jobPosition.company?.id);
+        await this.emailService.sendApplicationConfirmation(
+          application.applicantEmail,
+          application.applicantName,
+          jobPosition.title,
+          application.uid,
+          jobPosition.company?.name,
+          jobPosition.company?.id,
+        );
         this.logger.log(`Confirmation email sent to ${application.applicantEmail} for application ${application.uid}`);
       } catch (error) {
         this.logger.error(`Failed to send confirmation email for application ${application.uid}: ${error.message}`);
