@@ -337,6 +337,18 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       key: "{{interviewTime}}",
       description: t("email_template.variable_interview_time"),
     },
+    {
+      key: "{{newStage}}",
+      description: t("email_template.variable_new_stage"),
+    },
+    {
+      key: "{{previousStage}}",
+      description: t("email_template.variable_previous_stage"),
+    },
+    {
+      key: "{{status}}",
+      description: t("email_template.variable_status"),
+    },
   ];
 
   const {

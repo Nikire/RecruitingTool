@@ -221,10 +221,16 @@ export class EmailTemplatesService {
     const sampleData = variables || {
       candidateName: 'John Doe',
       positionTitle: 'Senior Software Engineer',
+      jobTitle: 'Senior Software Engineer',
       companyName: 'Tech Corp',
       hrName: 'Jane Smith',
+      interviewerName: 'Jane Smith',
       interviewDate: new Date().toLocaleDateString(),
       interviewTime: '10:00 AM',
+      meetingLink: 'https://meet.google.com/example',
+      newStage: 'Technical Interview',
+      previousStage: 'Phone Screen',
+      status: 'Under Review',
     };
 
     const renderedSubject = this.renderTemplate(emailTemplate.subject, sampleData);
