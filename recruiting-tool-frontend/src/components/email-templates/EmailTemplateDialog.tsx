@@ -17,7 +17,7 @@ import {
   Divider,
   MenuItem,
 } from "@mui/material";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Visibility } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -328,6 +328,16 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       isDefault: template?.isDefault || false,
     },
   });
+
+  useEffect(() => {
+    reset({
+      name: template?.name || "",
+      subject: template?.subject || "",
+      body: template?.body || "",
+      type: template?.type || "",
+      isDefault: template?.isDefault || false,
+    });
+  }, [template, reset]);
 
   const { mutate: createTemplate, isPending: isCreating } =
     useCreateEmailTemplate();
