@@ -81,7 +81,7 @@ ${data.hrName || 'The BorderLess Team - EMP Employment Solutions'}
         }
 
         <h2 style="${emailBaseStyles.subheader}">Previous Schedule</h2>
-        <table style="${emailBaseStyles.table}">
+        <table cellpadding="0" cellspacing="0" style="${emailBaseStyles.table}">
           <tr>
             <td style="${emailBaseStyles.tableCellBold}">Date</td>
             <td style="${emailBaseStyles.tableCell}; text-decoration: line-through;">${oldFormattedDate}</td>
@@ -93,7 +93,7 @@ ${data.hrName || 'The BorderLess Team - EMP Employment Solutions'}
         </table>
 
         <h2 style="${emailBaseStyles.subheader}">New Schedule</h2>
-        <table style="${emailBaseStyles.table}">
+        <table cellpadding="0" cellspacing="0" style="${emailBaseStyles.table}">
           <tr>
             <td style="${emailBaseStyles.tableCellBold}">Date</td>
             <td style="${emailBaseStyles.tableCell}; background-color: #e8f5e9;">${newFormattedDate}</td>

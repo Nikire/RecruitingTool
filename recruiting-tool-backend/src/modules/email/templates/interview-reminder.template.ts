@@ -65,7 +65,7 @@ The BorderLess Team - EMP Employment Solutions
 
         <h2 style="${emailBaseStyles.subheader}">Interview Details</h2>
 
-        <table style="${emailBaseStyles.table}">
+        <table cellpadding="0" cellspacing="0" style="${emailBaseStyles.table}">
           <tr>
             <td style="${emailBaseStyles.tableCellBold}">Date</td>
             <td style="${emailBaseStyles.tableCell}">${formattedDate}</td>

@@ -51,7 +51,7 @@ The BorderLess Team - EMP Employment Solutions
 
         <div style="background-color: #e3f2fd; border-radius: 8px; padding: 20px; margin: 20px 0;">
           <h2 style="${emailBaseStyles.subheader}; margin-top: 0;">Your Account Details</h2>
-          <table style="width: 100%;">
+          <table cellpadding="0" cellspacing="0" style="width: 100%; border-collapse: collapse; border-spacing: 0;">
             <tr>
               <td style="padding: 8px 0;"><strong>Email:</strong></td>
               <td style="padding: 8px 0;">${data.userEmail}</td>
