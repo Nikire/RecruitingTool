@@ -80,13 +80,14 @@ export class EmailService {
    * Look up a company-configured email template by type.
    * Returns subject + body strings (Handlebars) or null if none found.
    */
-  private async findCompanyTemplate(companyId: number | undefined, type: EmailTemplateType): Promise<{ subject: string; body: string } | null> {
+  private async findCompanyTemplate(companyId: number | undefined, type: EmailTemplateType): Promise<{ subject: string; body: string; companyName?: string } | null> {
     if (!companyId) return null;
     const template = await this.databaseService.emailTemplate.findFirst({
       where: { companyId, type },
-      orderBy: { isDefault: 'desc' }, // prefer default templates
+      include: { company: true },
+      orderBy: { isDefault: 'desc' },
     });
-    return template ? { subject: template.subject, body: template.body } : null;
+    return template ? { subject: template.subject, body: template.body, companyName: template.company?.name } : null;
   }
 
   /**
@@ -142,7 +143,7 @@ export class EmailService {
     // Check for custom company template first
     const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_RECEIVED);
     if (customTemplate) {
-      const vars = { candidateName: applicantName, jobTitle, applicationUid, companyName: companyName ?? '' };
+      const vars = { candidateName: applicantName, positionTitle: jobTitle, applicationUid, companyName: customTemplate.companyName ?? companyName ?? '' };
       const { subject, text, html } = this.renderTemplate(customTemplate, vars);
       await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_CONFIRMATION', applicationUid);
       return;
@@ -210,7 +211,7 @@ Please log in to the admin panel to review this application.
     // Check for custom company template first
     const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_SHORTLISTED);
     if (customTemplate) {
-      const vars = { candidateName: applicantName, jobTitle, applicationUid: applicationUid ?? '', companyName: companyName ?? '' };
+      const vars = { candidateName: applicantName, positionTitle: jobTitle, applicationUid: applicationUid ?? '', companyName: customTemplate.companyName ?? companyName ?? '' };
       const { subject, text, html } = this.renderTemplate(customTemplate, vars);
       await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_ACCEPTED', applicationUid);
       return;
@@ -247,7 +248,7 @@ Please log in to the admin panel to review this application.
     // Check for custom company template first
     const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_UNDER_REVIEW);
     if (customTemplate) {
-      const vars = { candidateName: applicantName, jobTitle, applicationUid, companyName: companyName ?? '' };
+      const vars = { candidateName: applicantName, positionTitle: jobTitle, applicationUid, companyName: customTemplate.companyName ?? companyName ?? '' };
       const { subject, text, html } = this.renderTemplate(customTemplate, vars);
       await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
       return;
@@ -277,7 +278,7 @@ Please log in to the admin panel to review this application.
     // Check for custom company template first
     const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_REJECTED);
     if (customTemplate) {
-      const vars = { candidateName: applicantName, jobTitle, applicationUid, companyName: companyName ?? '' };
+      const vars = { candidateName: applicantName, positionTitle: jobTitle, applicationUid, companyName: customTemplate.companyName ?? companyName ?? '' };
       const { subject, text, html } = this.renderTemplate(customTemplate, vars);
       await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
       return;
@@ -295,7 +296,26 @@ Please log in to the admin panel to review this application.
   }
 
   async sendInterviewScheduled(candidate: any, hr: any, interview: any): Promise<void> {
-    const vars = {
+    const customTemplate = await this.findCompanyTemplate(hr.companyId, EmailTemplateType.INTERVIEW_INVITATION);
+    if (customTemplate) {
+      const vars = {
+        candidateName: candidate.name,
+        positionTitle: interview.jobPosition || 'Position',
+        companyName: customTemplate.companyName || '',
+        interviewDate: interview.scheduledDate || '',
+        interviewTime: interview.scheduledTime || 'TBD',
+        interviewerName: hr.name || '',
+        meetingLink: interview.meetingLink || '',
+        location: interview.location || '',
+        duration: interview.duration || '',
+        notes: interview.notes || '',
+      };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_SCHEDULED', interview.uid);
+      return;
+    }
+
+    const templateData: InterviewScheduledData = {
       candidateName: candidate.name,
       jobPosition: interview.jobPosition || 'Position',
       date: interview.scheduledDate || new Date(),
@@ -303,47 +323,66 @@ Please log in to the admin panel to review this application.
       duration: interview.duration,
       location: interview.location,
       meetingLink: interview.meetingLink,
-      hrName: hr.name,
-      notes: interview.notes,
-    };
-
-    const customTemplate = await this.findCompanyTemplate(hr.companyId, EmailTemplateType.INTERVIEW_INVITATION);
-    if (customTemplate) {
-      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
-      await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_SCHEDULED', interview.uid);
-      return;
-    }
-
-    const { subject, text, html } = interviewScheduledTemplate({
-      ...vars,
       interviewers: hr.name ? [hr.name] : [],
-    } as InterviewScheduledData);
+      notes: interview.notes,
+      hrName: hr.name,
+    };
+    const { subject, text, html } = interviewScheduledTemplate(templateData);
     await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_SCHEDULED', interview.uid);
   }
 
   async sendInterviewCancelled(candidate: any, hr: any, interview: any, reason?: string): Promise<void> {
-    const vars = {
+    const customTemplate = await this.findCompanyTemplate(hr.companyId, EmailTemplateType.INTERVIEW_INVITATION);
+    if (customTemplate) {
+      const vars = {
+        candidateName: candidate.name,
+        positionTitle: interview.jobPosition || 'Position',
+        companyName: customTemplate.companyName || '',
+        interviewDate: interview.scheduledDate || '',
+        interviewTime: interview.scheduledTime || 'TBD',
+        interviewerName: hr.name || '',
+        meetingLink: interview.meetingLink || '',
+        reason: reason || '',
+      };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_CANCELLED', interview.uid);
+      return;
+    }
+
+    const templateData: InterviewCancelledData = {
       candidateName: candidate.name,
       jobPosition: interview.jobPosition || 'Position',
       date: interview.scheduledDate || new Date(),
       time: interview.scheduledTime || 'TBD',
       reason,
       hrName: hr.name,
+      willReschedule: true,
     };
-
-    const customTemplate = await this.findCompanyTemplate(hr.companyId, EmailTemplateType.INTERVIEW_INVITATION);
-    if (customTemplate) {
-      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
-      await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_CANCELLED', interview.uid);
-      return;
-    }
-
-    const { subject, text, html } = interviewCancelledTemplate({ ...vars, willReschedule: true } as InterviewCancelledData);
+    const { subject, text, html } = interviewCancelledTemplate(templateData);
     await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_CANCELLED', interview.uid);
   }
 
   async sendInterviewReminder(candidate: any, hr: any, interview: any, reminderType: 'tomorrow' | 'today' | '1hour' = 'tomorrow'): Promise<void> {
-    const vars = {
+    const customTemplate = await this.findCompanyTemplate(hr.companyId, EmailTemplateType.INTERVIEW_REMINDER);
+    if (customTemplate) {
+      const vars = {
+        candidateName: candidate.name,
+        positionTitle: interview.jobPosition || 'Position',
+        companyName: customTemplate.companyName || '',
+        interviewDate: interview.scheduledDate || '',
+        interviewTime: interview.scheduledTime || 'TBD',
+        interviewerName: hr.name || '',
+        meetingLink: interview.meetingLink || '',
+        location: interview.location || '',
+        duration: interview.duration || '',
+        reminderType,
+      };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_REMINDER', interview.uid);
+      return;
+    }
+
+    const templateData: InterviewReminderData = {
       candidateName: candidate.name,
       jobPosition: interview.jobPosition || 'Position',
       date: interview.scheduledDate || new Date(),
@@ -351,22 +390,11 @@ Please log in to the admin panel to review this application.
       duration: interview.duration,
       location: interview.location,
       meetingLink: interview.meetingLink,
-      hrName: hr.name,
+      interviewers: hr.name ? [hr.name] : [],
       notes: interview.notes,
       reminderType,
     };
-
-    const customTemplate = await this.findCompanyTemplate(hr.companyId, EmailTemplateType.INTERVIEW_REMINDER);
-    if (customTemplate) {
-      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
-      await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_REMINDER', interview.uid);
-      return;
-    }
-
-    const { subject, text, html } = interviewReminderTemplate({
-      ...vars,
-      interviewers: hr.name ? [hr.name] : [],
-    } as InterviewReminderData);
+    const { subject, text, html } = interviewReminderTemplate(templateData);
     await this.sendEmail(candidate.email, subject, text, html, 'INTERVIEW_REMINDER', interview.uid);
   }
 
@@ -717,7 +745,7 @@ The Borderless Team
     const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.INTERVIEW_INVITATION);
     if (customTemplate) {
       const expiryDateStr = expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-      const vars = { candidateName, jobTitle, bookingUrl, expiresAt: expiryDateStr };
+      const vars = { candidateName, positionTitle: jobTitle, bookingUrl, expiresAt: expiryDateStr, companyName: customTemplate.companyName ?? '' };
       const { subject, text, html } = this.renderTemplate(customTemplate, vars);
       await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
       return;
