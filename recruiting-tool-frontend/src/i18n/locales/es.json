@@ -948,7 +948,7 @@
     "variable_candidate_name": "Nombre del candidato",
     "variable_position_title": "Título de la posición",
     "variable_company_name": "Nombre de la empresa",
-    "variable_hr_name": "Nombre del reclutador de RR.HH.",
+    "variable_hr_name": "{{interviewerName}} - Nombre del entrevistador",
     "variable_interview_date": "Fecha de la entrevista",
     "variable_interview_time": "Hora de la entrevista",
     "name_required": "El nombre de la plantilla es obligatorio",
@@ -964,7 +964,8 @@
     "preview_info": "Así es como se verá el correo con datos de ejemplo. Las variables son reemplazadas con valores de muestra.",
     "preview_subject": "Asunto",
     "preview_body": "Cuerpo",
-    "hide_preview": "Ocultar Vista Previa"
+    "hide_preview": "Ocultar Vista Previa",
+    "variable_meeting_link": "{{meetingLink}} - Enlace de videollamada"
   },
   "add_stage": {
     "add_title": "Agregar Nueva Etapa",

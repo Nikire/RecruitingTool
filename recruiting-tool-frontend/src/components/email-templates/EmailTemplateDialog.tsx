@@ -299,7 +299,14 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       key: "{{companyName}}",
       description: t("email_template.variable_company_name"),
     },
-    { key: "{{hrName}}", description: t("email_template.variable_hr_name") },
+    {
+      key: "{{interviewerName}}",
+      description: t("email_template.variable_hr_name"),
+    },
+    {
+      key: "{{meetingLink}}",
+      description: t("email_template.variable_meeting_link"),
+    },
     {
       key: "{{interviewDate}}",
       description: t("email_template.variable_interview_date"),

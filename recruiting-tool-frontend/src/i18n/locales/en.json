@@ -940,7 +940,7 @@
     "variable_candidate_name": "Candidate name",
     "variable_position_title": "Position title",
     "variable_company_name": "Company name",
-    "variable_hr_name": "HR recruiter name",
+    "variable_hr_name": "{{interviewerName}} - Interviewer name",
     "variable_interview_date": "Interview date",
     "variable_interview_time": "Interview time",
     "name_required": "Template name is required",
@@ -956,7 +956,8 @@
     "preview_info": "This is how the email will look with sample data. Variables are replaced with example values.",
     "preview_subject": "Subject",
     "preview_body": "Body",
-    "hide_preview": "Hide Preview"
+    "hide_preview": "Hide Preview",
+    "variable_meeting_link": "{{meetingLink}} - Video call link"
   },
   "add_stage": {
     "add_title": "Add New Stage",
