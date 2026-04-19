@@ -507,7 +507,7 @@ export class TimeSlotsService {
     const jobTitle = jobPosition?.title ?? 'Position';
 
     try {
-      await this.emailService.sendBookingInvitation(candidate.email, candidate.name, bookingUrl, expiresAt, jobTitle);
+      await this.emailService.sendBookingInvitation(candidate.email, candidate.name, bookingUrl, expiresAt, jobTitle, company.id);
     } catch (err) {
       console.error('Failed to send booking invitation email:', err);
     }
@@ -586,7 +586,7 @@ export class TimeSlotsService {
 
     // Send invitation email to candidate
     try {
-      await this.emailService.sendBookingInvitation(candidate.email, candidate.name, bookingUrl, expiresAt, jobTitle);
+      await this.emailService.sendBookingInvitation(candidate.email, candidate.name, bookingUrl, expiresAt, jobTitle, company.id);
     } catch (err) {
       console.error('Failed to send booking invitation email:', err);
     }

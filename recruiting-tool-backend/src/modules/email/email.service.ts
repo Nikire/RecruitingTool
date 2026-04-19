@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { NotificationType } from '@prisma/client';
+import { EmailTemplateType, NotificationType } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import * as Handlebars from 'handlebars';
 import {
@@ -27,6 +27,8 @@ import {
   hiredNotificationTemplate,
   HiredNotificationData,
   interviewBookedTemplate,
+  bookingInvitationTemplate,
+  emailBaseStyles,
 } from './templates';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -74,6 +76,36 @@ export class EmailService {
     }
   }
 
+  /**
+   * Look up a company-configured email template by type.
+   * Returns subject + body strings (Handlebars) or null if none found.
+   */
+  private async findCompanyTemplate(
+    companyId: number | undefined,
+    type: EmailTemplateType,
+  ): Promise<{ subject: string; body: string } | null> {
+    if (!companyId) return null;
+    const template = await this.databaseService.emailTemplate.findFirst({
+      where: { companyId, type },
+      orderBy: { isDefault: 'desc' }, // prefer default templates
+    });
+    return template ? { subject: template.subject, body: template.body } : null;
+  }
+
+  /**
+   * Render a raw DB template (Handlebars subject + body) with variables.
+   * Converts newlines to <br> for a basic HTML version.
+   */
+  private renderTemplate(
+    template: { subject: string; body: string },
+    variables: Record<string, any>,
+  ): { subject: string; text: string; html: string } {
+    const subject = Handlebars.compile(template.subject)(variables);
+    const text = Handlebars.compile(template.body)(variables);
+    const html = text.replace(/\n/g, '<br>');
+    return { subject, text, html };
+  }
+
   private async sendViaResendApi(to: string, subject: string, text: string, html: string, emailFrom: string): Promise<void> {
     const apiKey = this.configService.get<string>('SMTP_PASSWORD');
     const adminBcc = this.configService.get<string>('EMAIL_ADMIN_BCC');
@@ -96,7 +128,14 @@ export class EmailService {
     }
   }
 
-  async sendApplicationConfirmation(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string, companyName?: string): Promise<void> {
+  async sendApplicationConfirmation(
+    applicantEmail: string,
+    applicantName: string,
+    jobTitle: string,
+    applicationUid: string,
+    companyName?: string,
+    companyId?: number,
+  ): Promise<void> {
     const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
     if (!emailsEnabled) {
@@ -104,35 +143,24 @@ export class EmailService {
       return;
     }
 
-    const teamName = companyName ? `${companyName} Team` : 'The Borderless Team';
-
-    const subject = `Application Received: ${jobTitle}`;
-    const text = `
-Dear ${applicantName},
-
-Thank you for applying for the position of ${jobTitle}${companyName ? ` at ${companyName}` : ''}.
-
-We have successfully received your application (Reference: ${applicationUid}).
-
-Our team will review your application and get back to you soon.
-
-Best regards,
-${teamName}
-    `.trim();
-
-    const html = `
-      <h2>Application Received</h2>
-      <p>Dear ${applicantName},</p>
-      <p>Thank you for applying for the position of <strong>${jobTitle}</strong>${companyName ? ` at <strong>${companyName}</strong>` : ''}.</p>
-      <p>We have successfully received your application.<br/>
-      Reference: <code>${applicationUid}</code></p>
-      <p>Our team will review your application and get back to you soon.</p>
-      <br/>
-      <p>Best regards,<br/>
-      ${teamName}</p>
-    `;
-
     this.logger.log(`Sending application confirmation email to ${applicantEmail} for ${jobTitle}`);
+
+    // Check for custom company template first
+    const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_RECEIVED);
+    if (customTemplate) {
+      const vars = { candidateName: applicantName, jobTitle, applicationUid, companyName: companyName ?? '' };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_CONFIRMATION', applicationUid);
+      return;
+    }
+
+    // Branded fallback
+    const { subject, text, html } = applicationReceivedTemplate({
+      candidateName: applicantName,
+      jobPosition: jobTitle,
+      companyName,
+      applicationUid,
+    });
     await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_CONFIRMATION', applicationUid);
   }
 
@@ -168,7 +196,14 @@ Please log in to the admin panel to review this application.
     await this.sendEmail(hrEmail, subject, text, html, 'HR_NOTIFICATION', applicationUid);
   }
 
-  async sendApplicationAcceptance(applicantEmail: string, applicantName: string, jobTitle: string): Promise<void> {
+  async sendApplicationAcceptance(
+    applicantEmail: string,
+    applicantName: string,
+    jobTitle: string,
+    applicationUid?: string,
+    companyName?: string,
+    companyId?: number,
+  ): Promise<void> {
     const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
     if (!emailsEnabled) {
@@ -176,33 +211,36 @@ Please log in to the admin panel to review this application.
       return;
     }
 
-    const subject = `Congratulations: Your Application for ${jobTitle} Has Been Accepted`;
-    const text = `
-Dear ${applicantName},
-
-Congratulations! We are pleased to inform you that your application for the position of ${jobTitle} has been accepted.
-
-Our team will be in touch with you shortly with next steps.
-
-Best regards,
-The Borderless Team
-    `.trim();
-
-    const html = `
-      <h2>Congratulations!</h2>
-      <p>Dear ${applicantName},</p>
-      <p>We are pleased to inform you that your application for the position of <strong>${jobTitle}</strong> has been <strong>accepted</strong>.</p>
-      <p>Our team will be in touch with you shortly with next steps.</p>
-      <br/>
-      <p>Best regards,<br/>
-      The Borderless Team</p>
-    `;
-
     this.logger.log(`Sending acceptance email to ${applicantEmail} for ${jobTitle}`);
-    await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_ACCEPTED');
+
+    // Check for custom company template first
+    const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_SHORTLISTED);
+    if (customTemplate) {
+      const vars = { candidateName: applicantName, jobTitle, applicationUid: applicationUid ?? '', companyName: companyName ?? '' };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_ACCEPTED', applicationUid);
+      return;
+    }
+
+    // Branded fallback
+    const { subject, text, html } = applicationStatusUpdateTemplate({
+      candidateName: applicantName,
+      jobPosition: jobTitle,
+      companyName,
+      applicationUid: applicationUid ?? '',
+      status: 'ACCEPTED',
+    });
+    await this.sendEmail(applicantEmail, subject, text, html, 'APPLICATION_ACCEPTED', applicationUid);
   }
 
-  async sendApplicationUnderReview(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string): Promise<void> {
+  async sendApplicationUnderReview(
+    applicantEmail: string,
+    applicantName: string,
+    jobTitle: string,
+    applicationUid: string,
+    companyName?: string,
+    companyId?: number,
+  ): Promise<void> {
     const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
     if (!emailsEnabled) {
@@ -210,37 +248,36 @@ The Borderless Team
       return;
     }
 
-    const subject = `Your Application for ${jobTitle} is Under Review`;
-    const text = `
-Dear ${applicantName},
-
-Thank you for applying to ${jobTitle}. We wanted to let you know that your application is now under review by our team.
-
-We appreciate your interest and patience. You will hear from us soon with an update on your application status.
-
-Reference: ${applicationUid}
-
-Best regards,
-The Borderless Team
-    `.trim();
-
-    const html = `
-      <h2>Application Under Review</h2>
-      <p>Dear ${applicantName},</p>
-      <p>Thank you for applying to <strong>${jobTitle}</strong>.</p>
-      <p>We wanted to let you know that your application is now <strong>under review</strong> by our team.</p>
-      <p>We appreciate your interest and patience. You will hear from us soon with an update on your application status.</p>
-      <p><small>Reference: <code>${applicationUid}</code></small></p>
-      <br/>
-      <p>Best regards,<br/>
-      The Borderless Team</p>
-    `;
-
     this.logger.log(`Sending review notification to ${applicantEmail} for ${jobTitle}`);
+
+    // Check for custom company template first
+    const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_UNDER_REVIEW);
+    if (customTemplate) {
+      const vars = { candidateName: applicantName, jobTitle, applicationUid, companyName: companyName ?? '' };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
+      return;
+    }
+
+    // Branded fallback
+    const { subject, text, html } = applicationStatusUpdateTemplate({
+      candidateName: applicantName,
+      jobPosition: jobTitle,
+      companyName,
+      applicationUid,
+      status: 'UNDER_REVIEW',
+    });
     await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
   }
 
-  async sendApplicationRejection(applicantEmail: string, applicantName: string, jobTitle: string, applicationUid: string): Promise<void> {
+  async sendApplicationRejection(
+    applicantEmail: string,
+    applicantName: string,
+    jobTitle: string,
+    applicationUid: string,
+    companyName?: string,
+    companyId?: number,
+  ): Promise<void> {
     const emailsEnabled = this.configService.get<string>('ENABLE_APPLICATION_EMAILS', 'true') === 'true';
 
     if (!emailsEnabled) {
@@ -248,33 +285,25 @@ The Borderless Team
       return;
     }
 
-    const subject = `Update on Your Application for ${jobTitle}`;
-    const text = `
-Dear ${applicantName},
-
-Thank you for applying to the position of ${jobTitle}. We have carefully reviewed your application and have decided to move forward with other candidates at this time.
-
-We appreciate the time you invested in our application process and encourage you to apply for other positions that may be a better match for your skills and experience.
-
-Reference: ${applicationUid}
-
-Best regards,
-The Borderless Team
-    `.trim();
-
-    const html = `
-      <h2>Application Update</h2>
-      <p>Dear ${applicantName},</p>
-      <p>Thank you for applying to the position of <strong>${jobTitle}</strong>.</p>
-      <p>We have carefully reviewed your application and have decided to move forward with other candidates at this time.</p>
-      <p>We appreciate the time you invested in our application process and encourage you to apply for other positions that may be a better match for your skills and experience.</p>
-      <p><small>Reference: <code>${applicationUid}</code></small></p>
-      <br/>
-      <p>Best regards,<br/>
-      The Borderless Team</p>
-    `;
-
     this.logger.log(`Sending rejection notification to ${applicantEmail} for ${jobTitle}`);
+
+    // Check for custom company template first
+    const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.APPLICATION_REJECTED);
+    if (customTemplate) {
+      const vars = { candidateName: applicantName, jobTitle, applicationUid, companyName: companyName ?? '' };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
+      return;
+    }
+
+    // Branded fallback
+    const { subject, text, html } = applicationStatusUpdateTemplate({
+      candidateName: applicantName,
+      jobPosition: jobTitle,
+      companyName,
+      applicationUid,
+      status: 'REJECTED',
+    });
     await this.sendEmail(applicantEmail, subject, text, html, 'STATUS_CHANGE', applicationUid);
   }
 
@@ -642,45 +671,28 @@ The Borderless Team
   /**
    * Send booking invitation to candidate with a link to self-schedule their interview
    */
-  async sendBookingInvitation(candidateEmail: string, candidateName: string, bookingUrl: string, expiresAt: Date, jobTitle: string): Promise<void> {
-    const expiryDateStr = expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
-
-    const subject = `Schedule Your Interview for ${jobTitle}`;
-    const text = `
-Dear ${candidateName},
-
-You have been invited to schedule your interview for the position of ${jobTitle}.
-
-Please use the link below to choose a time that works best for you:
-${bookingUrl}
-
-This link will expire on ${expiryDateStr}.
-
-Best regards,
-The Borderless Team
-    `.trim();
-
-    const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h2 style="color: #1976d2;">You've Been Invited to Schedule Your Interview</h2>
-        <p>Dear ${candidateName},</p>
-        <p>Congratulations! You have been selected to move forward in our hiring process for the position of <strong>${jobTitle}</strong>.</p>
-        <p>Please click the button below to choose an interview time that works best for you.</p>
-        <div style="text-align: center; margin: 32px 0;">
-          <a href="${bookingUrl}"
-             style="background-color: #1976d2; color: white; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-size: 16px; font-weight: bold; display: inline-block;">
-            Book Your Interview
-          </a>
-        </div>
-        <p style="color: #666; font-size: 14px;">Or copy and paste this link into your browser:</p>
-        <p style="color: #666; font-size: 12px; word-break: break-all;">${bookingUrl}</p>
-        <p style="color: #999; font-size: 12px;">This link will expire on ${expiryDateStr}. Please book your slot before then.</p>
-        <br/>
-        <p>Best regards,<br/>The Borderless Team</p>
-      </div>
-    `;
-
+  async sendBookingInvitation(
+    candidateEmail: string,
+    candidateName: string,
+    bookingUrl: string,
+    expiresAt: Date,
+    jobTitle: string,
+    companyId?: number,
+  ): Promise<void> {
     this.logger.log(`Sending booking invitation to ${candidateEmail} for ${jobTitle}`);
+
+    // Check for custom company template first
+    const customTemplate = await this.findCompanyTemplate(companyId, EmailTemplateType.INTERVIEW_INVITATION);
+    if (customTemplate) {
+      const expiryDateStr = expiresAt.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+      const vars = { candidateName, jobTitle, bookingUrl, expiresAt: expiryDateStr };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
+      return;
+    }
+
+    // Branded fallback
+    const { subject, text, html } = bookingInvitationTemplate({ candidateName, jobTitle, bookingUrl, expiresAt });
     await this.sendEmail(candidateEmail, subject, text, html, 'INTERVIEW_SCHEDULED');
   }
 
@@ -710,7 +722,8 @@ The Borderless Team
   }
 
   /**
-   * Send HR notification when a candidate books their interview slot
+   * Send HR notification when a candidate books their interview slot.
+   * This is an internal HR email — no DB template lookup is performed.
    */
   async sendHRBookingNotification(
     hrEmail: string,
@@ -735,23 +748,35 @@ The Borderless Team
     `.trim();
 
     const html = `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px;">
-        <h2 style="color: #1976d2;">Interview Booked</h2>
-        <p><strong>${candidateName}</strong> has booked their interview for <strong>${jobTitle}</strong>.</p>
-        <div style="background: #f5f5f5; border-radius: 8px; padding: 20px; margin: 24px 0;">
-          <p style="margin: 0 0 8px;"><strong>Candidate:</strong> ${candidateName}</p>
-          <p style="margin: 0 0 8px;"><strong>Position:</strong> ${jobTitle}</p>
-          <p style="margin: 0 0 8px;"><strong>Date:</strong> ${scheduledDate}</p>
-          <p style="margin: 0;"><strong>Time:</strong> ${scheduledTime}</p>
+      <div style="${emailBaseStyles.container}">
+        <div style="${emailBaseStyles.card}">
+          <h1 style="${emailBaseStyles.header}">Interview Booked</h1>
+          <p style="${emailBaseStyles.text}"><strong>${candidateName}</strong> has booked their interview for <strong>${jobTitle}</strong>.</p>
+          <table style="${emailBaseStyles.table}">
+            <tr>
+              <td style="${emailBaseStyles.tableCellBold}">Candidate</td>
+              <td style="${emailBaseStyles.tableCell}">${candidateName}</td>
+            </tr>
+            <tr>
+              <td style="${emailBaseStyles.tableCellBold}">Position</td>
+              <td style="${emailBaseStyles.tableCell}">${jobTitle}</td>
+            </tr>
+            <tr>
+              <td style="${emailBaseStyles.tableCellBold}">Date</td>
+              <td style="${emailBaseStyles.tableCell}">${scheduledDate}</td>
+            </tr>
+            <tr>
+              <td style="${emailBaseStyles.tableCellBold}">Time</td>
+              <td style="${emailBaseStyles.tableCell}">${scheduledTime}</td>
+            </tr>
+          </table>
+          <div style="text-align: center; margin: 24px 0;">
+            <a href="${appLink}" style="${emailBaseStyles.button}">View in App</a>
+          </div>
+          <div style="${emailBaseStyles.footer}">
+            <p>Best regards,<br>The Borderless Team</p>
+          </div>
         </div>
-        <div style="text-align: center; margin: 24px 0;">
-          <a href="${appLink}"
-             style="background-color: #1976d2; color: white; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-size: 14px; display: inline-block;">
-            View in App
-          </a>
-        </div>
-        <br/>
-        <p>Best regards,<br/>The Borderless Team</p>
       </div>
     `;
 

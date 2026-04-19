@@ -79,7 +79,7 @@ export class ApplicationService {
 
       // Send confirmation email to applicant
       try {
-        await this.emailService.sendApplicationConfirmation(application.applicantEmail, application.applicantName, jobPosition.title, application.uid, jobPosition.company?.name);
+        await this.emailService.sendApplicationConfirmation(application.applicantEmail, application.applicantName, jobPosition.title, application.uid, jobPosition.company?.name, jobPosition.company?.id);
         this.logger.log(`Confirmation email sent to ${application.applicantEmail} for application ${application.uid}`);
       } catch (error) {
         this.logger.error(`Failed to send confirmation email for application ${application.uid}: ${error.message}`);
@@ -451,19 +451,19 @@ export class ApplicationService {
         }
       }
 
-      // Fall back to hardcoded templates
+      // Fall back to branded templates (with optional DB template lookup inside each method)
       switch (newStatus) {
         case ApplicationStatus.REVIEWED:
-          await this.emailService.sendApplicationUnderReview(email, name, jobTitle, applicationUid);
-          this.logger.log(`Sent REVIEWED status email (hardcoded) to ${email} for application ${applicationUid}`);
+          await this.emailService.sendApplicationUnderReview(email, name, jobTitle, applicationUid, undefined, companyId);
+          this.logger.log(`Sent REVIEWED status email to ${email} for application ${applicationUid}`);
           break;
         case ApplicationStatus.ACCEPTED:
-          await this.emailService.sendApplicationAcceptance(email, name, jobTitle);
-          this.logger.log(`Sent ACCEPTED status email (hardcoded) to ${email} for application ${applicationUid}`);
+          await this.emailService.sendApplicationAcceptance(email, name, jobTitle, applicationUid, undefined, companyId);
+          this.logger.log(`Sent ACCEPTED status email to ${email} for application ${applicationUid}`);
           break;
         case ApplicationStatus.REJECTED:
-          await this.emailService.sendApplicationRejection(email, name, jobTitle, applicationUid);
-          this.logger.log(`Sent REJECTED status email (hardcoded) to ${email} for application ${applicationUid}`);
+          await this.emailService.sendApplicationRejection(email, name, jobTitle, applicationUid, undefined, companyId);
+          this.logger.log(`Sent REJECTED status email to ${email} for application ${applicationUid}`);
           break;
         default:
           this.logger.debug(`No email sent for status change to ${newStatus} for application ${applicationUid}`);
@@ -628,7 +628,14 @@ export class ApplicationService {
 
       // Send acceptance email to applicant
       try {
-        await this.emailService.sendApplicationAcceptance(application.applicantEmail, application.applicantName, application.jobPosition.title);
+        await this.emailService.sendApplicationAcceptance(
+          application.applicantEmail,
+          application.applicantName,
+          application.jobPosition.title,
+          applicationUid,
+          company.name,
+          company.id,
+        );
       } catch (error) {
         // Log error but don't fail the accept operation
         this.logger.error(`Failed to send acceptance email for application ${applicationUid}:`, error);
