@@ -97,7 +97,9 @@ export class EmailService {
   private renderTemplate(template: { subject: string; body: string }, variables: Record<string, any>): { subject: string; text: string; html: string } {
     const subject = Handlebars.compile(template.subject)(variables);
     const text = Handlebars.compile(template.body)(variables);
-    const html = text.replace(/\n/g, '<br>');
+    // If body is already HTML don't convert newlines — that would inject <br> between every <tr>/<td> tag
+    const isHtml = /<[a-z][\s\S]*>/i.test(template.body);
+    const html = isHtml ? text : text.replace(/\n/g, '<br>');
     return { subject, text, html };
   }
 
