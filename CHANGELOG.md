@@ -7,6 +7,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 0.11.0 - 2026-04-19
+
+### 🚀 Features
+
+#### Book-a-Demo Flow (Internal Booking System)
+- Replaced hardcoded `cal.com` link on the Contact page with a fully integrated demo booking flow
+- Prospects enter their email → receive a tokenized booking link → pick a time slot from the Borderless company calendar → get a confirmation email with Google Meet link
+- New backend: `DemoBookingModule` with `DemoBookingToken` and `DemoTimeSlot` Prisma models, controller, service, and DTOs
+- Google Meet auto-created on candidate booking; branded confirmation email sent to both prospect and HR
+- Files: `recruiting-tool-backend/src/modules/demo-booking/`, `recruiting-tool-frontend/src/pages/contact/ContactPage.tsx`
+
+#### Stage Types Expansion (4 → 18)
+- Expanded `StageType` enum from 4 to 18 values for comprehensive hiring pipeline coverage
+- New types: `SCREENING`, `PHONE_SCREEN`, `HR_INTERVIEW`, `PANEL_INTERVIEW`, `GROUP_INTERVIEW`, `ONSITE_INTERVIEW`, `CASE_STUDY`, `TAKE_HOME_ASSIGNMENT`, `SKILLS_ASSESSMENT`, `PORTFOLIO_REVIEW`, `CULTURE_FIT`, `BACKGROUND_CHECK`, `REFERENCE_CHECK`, `SALARY_NEGOTIATION`
+- Each type has a dedicated icon, label, and color in the frontend
+- Migration: `20260418130000_add_stage_types`
+- Files: `recruiting-tool-backend/prisma/schema.prisma`, `recruiting-tool-frontend/src/types/stage.types.ts`
+
+#### APPLICATION_STATUS_UPDATE Email Template Type
+- New `EmailTemplateType.APPLICATION_STATUS_UPDATE` allows HR teams to create a single generic status-change email template
+- The email service falls back to this type when no status-specific template (UNDER_REVIEW / REJECTED / SHORTLISTED) is found for the company
+- Default template included in `DEFAULT_EMAIL_TEMPLATES` — auto-created for new companies
+- Template variables: `{{candidateName}}`, `{{jobTitle}}`, `{{companyName}}`, `{{status}}`
+- Migration: `20260419000000_add_application_status_update_template_type`
+- Files: `prisma/schema.prisma`, `default-templates.constants.ts`, `email.service.ts`, `emailTemplate.types.ts`, `EmailTemplateDialog.tsx`
+
+### 🐛 Bug Fixes
+
+#### Email Templates — Company DB Templates Now Fully Honoured
+- All candidate-facing email methods (`sendInterviewScheduled`, `sendInterviewCancelled`, `sendInterviewReminder`, `sendInterviewRescheduled`, `sendApplicationReceivedV2`, `sendApplicationStatusUpdateV2`, `sendApplicationConfirmation`, `sendApplicationAcceptance`, `sendApplicationUnderReview`, `sendApplicationRejection`) now check for a company-configured DB template first and fall back to the branded built-in template
+- Previously, many methods were sending the hardcoded branded template even when the company had a custom template configured
+
+#### Email Variables Blank in Custom Templates
+- `buildInterviewVars()` helper introduced to pass both documented variable names (`interviewerName`, `interviewDate`, `positionTitle`) and legacy aliases (`hrName`, `date`, `jobTitle`) so existing saved templates keep working
+- `formatDateForTemplate()` helper converts raw `Date` objects to human-readable strings (e.g. "April 21, 2026") before passing to Handlebars — previously Handlebars received the full JS `Date.toString()` output
+
+#### Gmail Table Spacing
+- Added `cellpadding="0" cellspacing="0"` to all `<table>` elements in the 7 built-in email template files
+- Eliminates excessive vertical spacing Gmail was injecting between table rows
+
+#### Phantom `<tr><td><br></td></tr>` in Gmail
+- `renderTemplate()` now detects whether the template body is already HTML and skips the `\n → <br>` replacement
+- The replacement was being applied to HTML source, converting every newline between tags into a `<br>` inside an empty table row
+
+#### Email Template Edit Dialog Empty on Open
+- Added `useEffect(() => reset({ ... }), [template, reset])` to repopulate form fields when an existing template is opened for editing
+- `react-hook-form` `defaultValues` only evaluate at mount; the effect ensures reactive repopulation
+
+#### Email Template Variable Names in Dialog
+- Fixed chip `{{hrName}}` → `{{interviewerName}}`; added `{{meetingLink}}` chip to the variable picker
+
+#### MarkdownEditor Dark/Light Theme
+- `MarkdownEditor` component now reads the active MUI theme mode and sets `data-color-mode` accordingly so the editor matches the app theme
+
+---
+
 ## Version 0.10.2 - 2026-03-06
 
 ### Added

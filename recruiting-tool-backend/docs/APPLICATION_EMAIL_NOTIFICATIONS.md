@@ -131,29 +131,48 @@ Emails are sent via configured SMTP server.
 
 ## Email Templates
 
-All templates are defined in `email.service.ts`:
+All templates are defined in `email.service.ts`. Every method checks for a **company-configured DB template first** and falls back to the built-in branded template.
 
-### 1. sendApplicationConfirmation
-- Triggered on application creation
-- Includes company name for branding
-- Application reference UID for tracking
+### Template Priority (for all candidate-facing emails)
+1. **Company DB template** — looked up by `EmailTemplateType` and `companyId` (highest priority)
+2. **Built-in branded template** — Handlebars-rendered HTML using `emailBaseStyles`
 
-### 2. sendNewApplicationNotification
-- Triggered on application creation
-- Sent to HR team
-- Applicant name, position, reference UID
+### Available Template Types (EmailTemplateType enum)
+| Type | Purpose |
+|------|---------|
+| `APPLICATION_RECEIVED` | Confirmation sent when application is submitted |
+| `APPLICATION_UNDER_REVIEW` | Sent when status moves to REVIEWED |
+| `APPLICATION_REJECTED` | Sent when application is rejected |
+| `APPLICATION_SHORTLISTED` | Sent when application is accepted/shortlisted |
+| `APPLICATION_STATUS_UPDATE` | Generic fallback for any status change |
+| `INTERVIEW_INVITATION` | Sent when interview is scheduled |
+| `INTERVIEW_REMINDER` | Sent 24h before interview |
+| `OFFER_LETTER` | Job offer email |
+| `CUSTOM` | Ad-hoc custom emails |
 
-### 3. sendApplicationUnderReview
-- Triggered when status changes to REVIEWED
-- Reassures candidate application is being reviewed
+### Template Variables (Handlebars)
+| Variable | Description |
+|----------|-------------|
+| `{{candidateName}}` | Candidate's full name |
+| `{{jobTitle}}` | Job position title (also `{{positionTitle}}`) |
+| `{{companyName}}` | HR company name |
+| `{{interviewDate}}` | Formatted interview date (e.g. "April 21, 2026") |
+| `{{interviewTime}}` | Interview time string (also `{{time}}`) |
+| `{{interviewerName}}` | HR interviewer name (also `{{hrName}}`) |
+| `{{meetingLink}}` | Google Meet or video call URL |
+| `{{status}}` | Application status string |
 
-### 4. sendApplicationAcceptance
-- Triggered when status changes to ACCEPTED
-- Congratulations message with next steps
-
-### 5. sendApplicationRejection
-- Triggered when status changes to REJECTED
-- Professional rejection with encouragement
+### Email Service Methods
+1. **sendApplicationConfirmation** — triggered on application creation
+2. **sendNewApplicationNotification** — sent to HR team on new application
+3. **sendApplicationUnderReview** — triggered when status → REVIEWED
+4. **sendApplicationAcceptance** — triggered when status → ACCEPTED
+5. **sendApplicationRejection** — triggered when status → REJECTED
+6. **sendApplicationStatusUpdateV2** — generic status change; tries status-specific type first, then falls back to `APPLICATION_STATUS_UPDATE`
+7. **sendInterviewScheduled** — interview created by HR
+8. **sendInterviewCancelled** — interview cancelled
+9. **sendInterviewReminder** — 24h reminder before interview
+10. **sendInterviewRescheduled** — interview time changed
 
 ---
 
