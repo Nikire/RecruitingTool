@@ -272,6 +272,7 @@ const FilesPage: React.FC = () => {
         resource="storage"
         labelKey="files.storageUsage"
         unit=" MB"
+        precision={2}
       />
 
       {/* Toolbar */}

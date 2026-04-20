@@ -7,12 +7,14 @@ interface QuotaBannerProps {
   resource: string;
   labelKey: string;
   unit?: string;
+  precision?: number;
 }
 
 const QuotaBanner: React.FC<QuotaBannerProps> = ({
   resource,
   labelKey,
   unit = "",
+  precision = 0,
 }) => {
   const { t } = useTranslation();
   const { data: quotaData } = useQuota();
@@ -31,12 +33,13 @@ const QuotaBanner: React.FC<QuotaBannerProps> = ({
         ? "warning"
         : "error";
 
+  const fmt = (n: number) => n.toFixed(precision);
   const label = t(labelKey);
   const usageText = isUnlimited
-    ? t("quota_banner.unlimited", { used: quota.used, unit, label })
+    ? t("quota_banner.unlimited", { used: fmt(quota.used), unit, label })
     : t("quota_banner.used_of", {
-        used: quota.used,
-        limit: quota.limit,
+        used: fmt(quota.used),
+        limit: fmt(quota.limit),
         unit,
         label,
       });
