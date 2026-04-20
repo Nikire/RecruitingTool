@@ -4,6 +4,7 @@ import { randomBytes } from 'crypto';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { StorageService } from '../storage/storage.service';
 import { EmailService } from '../email/email.service';
+import { QuotaService } from '../quota/quota.service';
 import {
   SendAsyncInvitationDto,
   ReviewSubmissionDto,
@@ -23,6 +24,7 @@ export class AsyncStageService {
     private readonly storageService: StorageService,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly quotaService: QuotaService,
   ) {}
 
   // ─── Protected Methods (HR Endpoints) ────────────────────────────────────────
@@ -319,6 +321,15 @@ export class AsyncStageService {
 
     if (!textContent && (!files || files.length === 0)) {
       throw new BadRequestException('Submission must include text content or at least one file');
+    }
+
+    // Check storage quota before uploading (uses company from the stage's job position)
+    if (files && files.length > 0) {
+      const companyId = tokenRecord.stage.JobPosition?.companyId;
+      if (companyId) {
+        const totalBytes = files.reduce((sum, f) => sum + f.size, 0);
+        await this.quotaService.checkStorageQuota(companyId, totalBytes);
+      }
     }
 
     // Upload files to MinIO and create FileUpload records
