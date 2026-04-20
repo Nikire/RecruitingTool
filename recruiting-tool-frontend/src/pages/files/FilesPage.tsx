@@ -400,7 +400,14 @@ const FilesPage: React.FC = () => {
             ),
           }}
           sx={{
-            "& .MuiDataGrid-cell": { alignItems: "center" },
+            "& .MuiDataGrid-cell": {
+              display: "flex",
+              alignItems: "center",
+            },
+            "& .MuiDataGrid-cell--withRenderer": {
+              display: "flex",
+              alignItems: "center",
+            },
           }}
         />
       </Box>
