@@ -356,6 +356,18 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       key: "{{hiringProcessUrl}}",
       description: t("email_template.variable_hiring_process_url"),
     },
+    {
+      key: "{{submissionUrl}}",
+      description: t("email_template.variable_submission_url"),
+    },
+    {
+      key: "{{deadline}}",
+      description: t("email_template.variable_deadline"),
+    },
+    {
+      key: "{{stageName}}",
+      description: t("email_template.variable_stage_name"),
+    },
   ];
 
   const {

@@ -19,12 +19,15 @@ import {
   Event as EventIcon,
   EventAvailable as BookingIcon,
   Link as LinkIcon,
+  Assignment as AssignmentIcon,
 } from "@mui/icons-material";
 import { Stage } from "../../../types/stage.types";
 import { AccordionHeaderWrapper } from "./StagesAccordion.styles";
 import { useInterviewsByStage } from "../../../hooks/api/useInterview";
 import InterviewCard from "../../interview/InterviewCard";
 import ScheduleInterviewDialog from "../../dialogs/ScheduleInterviewDialog";
+import SendAsyncLinkDialog from "../../dialogs/SendAsyncLinkDialog";
+import AsyncSubmissionPanel from "../../async-stage/AsyncSubmissionPanel";
 import { Interview } from "../../../types/interview.types";
 import { canManageResources } from "../../../utils/permissions";
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
@@ -52,6 +55,7 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
   const { t } = useTranslation();
   const { user } = useUserAtom();
   const [scheduleDialogOpen, setScheduleDialogOpen] = useState(false);
+  const [asyncLinkDialogOpen, setAsyncLinkDialogOpen] = useState(false);
   const [editingInterview, setEditingInterview] = useState<Interview | null>(
     null,
   );
@@ -246,10 +250,58 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
                   </Typography>
                 )}
               </Box>
+
+              <Divider sx={{ my: 2 }} />
+
+              <Box sx={{ mt: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mb: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                  >
+                    <AssignmentIcon fontSize="small" />
+                    {t("asyncStage.submissionsTitle")}
+                  </Typography>
+                  {canManage && (
+                    <Button
+                      variant="outlined"
+                      size="small"
+                      startIcon={<LinkIcon />}
+                      onClick={() => setAsyncLinkDialogOpen(true)}
+                    >
+                      {t("asyncStage.requestSubmission")}
+                    </Button>
+                  )}
+                </Box>
+
+                <AsyncSubmissionPanel
+                  stageUid={stage.uid}
+                  hiringProcessUid={hiringProcessUid}
+                  candidateName={candidate?.name ?? ""}
+                />
+              </Box>
             </>
           )}
         </AccordionDetails>
       </Accordion>
+
+      {canManage && (
+        <SendAsyncLinkDialog
+          open={asyncLinkDialogOpen}
+          onClose={() => setAsyncLinkDialogOpen(false)}
+          stageUid={stage.uid}
+          hiringProcessUid={hiringProcessUid}
+          candidateName={candidate?.name ?? ""}
+          stageName={stage.title}
+        />
+      )}
 
       {canManage && (
         <ScheduleInterviewDialog

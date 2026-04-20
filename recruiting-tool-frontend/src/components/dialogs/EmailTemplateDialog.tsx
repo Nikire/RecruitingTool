@@ -42,16 +42,6 @@ interface EmailTemplateFormData {
   isDefault: boolean;
 }
 
-const AVAILABLE_VARIABLES = [
-  { key: "{{candidateName}}", label: "candidateName" },
-  { key: "{{positionTitle}}", label: "positionTitle" },
-  { key: "{{companyName}}", label: "companyName" },
-  { key: "{{hrName}}", label: "hrName" },
-  { key: "{{interviewDate}}", label: "interviewDate" },
-  { key: "{{interviewTime}}", label: "interviewTime" },
-  { key: "{{meetingLink}}", label: "meetingLink" },
-];
-
 const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
   open,
   onClose,
@@ -59,6 +49,22 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
 }) => {
   const { t } = useTranslation();
   const validationRules = useValidationRules();
+
+  const AVAILABLE_VARIABLES = [
+    { key: "{{candidateName}}", label: "candidateName" },
+    { key: "{{positionTitle}}", label: "positionTitle" },
+    { key: "{{companyName}}", label: "companyName" },
+    { key: "{{hrName}}", label: "hrName" },
+    { key: "{{interviewDate}}", label: "interviewDate" },
+    { key: "{{interviewTime}}", label: "interviewTime" },
+    { key: "{{meetingLink}}", label: "meetingLink" },
+    {
+      key: "{{submissionUrl}}",
+      label: t("emailTemplates.variable_submission_url"),
+    },
+    { key: "{{deadline}}", label: t("emailTemplates.variable_deadline") },
+    { key: "{{stageName}}", label: t("emailTemplates.variable_stage_name") },
+  ];
   const isUpdate = !!template;
 
   const {

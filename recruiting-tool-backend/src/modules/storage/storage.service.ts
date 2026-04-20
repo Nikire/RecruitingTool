@@ -93,6 +93,29 @@ export class StorageService {
   }
 
   /**
+   * Upload a file to S3/MinIO using a fully-qualified key (no prefix added)
+   * @param file - File buffer
+   * @param key - Full S3 key to use (e.g. submissions/processUid/stageUid/filename)
+   * @param mimetype - MIME type of the file
+   */
+  async uploadFileWithKey(file: Buffer, key: string, mimetype: string): Promise<void> {
+    const command = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      Body: file,
+      ContentType: mimetype,
+    });
+
+    try {
+      await this.s3Client.send(command);
+      this.logger.log(`File uploaded successfully with key: ${key}`);
+    } catch (error) {
+      this.logger.error(`Error uploading file with key ${key}: ${error.message}`);
+      throw new Error(`Failed to upload file: ${error.message}`);
+    }
+  }
+
+  /**
    * Download a file from S3/MinIO
    * @param key - S3 key of the file
    * @returns Readable stream of the file

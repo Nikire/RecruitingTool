@@ -52,6 +52,7 @@ import { FeatureFlagsModule } from './modules/feature-flags/feature-flags.module
 import { CustomPlansModule } from './modules/custom-plans/custom-plans.module';
 import { CompanyCalendarSettingsModule } from './modules/company-calendar-settings/company-calendar-settings.module';
 import { DemoBookingModule } from './modules/demo-booking/demo-booking.module';
+import { AsyncStageModule } from './modules/async-stage/async-stage.module';
 
 @Module({
   imports: [
@@ -115,6 +116,7 @@ import { DemoBookingModule } from './modules/demo-booking/demo-booking.module';
     CustomPlansModule,
     CompanyCalendarSettingsModule,
     DemoBookingModule,
+    AsyncStageModule,
   ],
   controllers: [AppController],
   providers: [

@@ -29,6 +29,10 @@ import {
   interviewBookedTemplate,
   bookingInvitationTemplate,
   emailBaseStyles,
+  asyncStageInvitationTemplate,
+  AsyncStageInvitationData,
+  asyncStageSubmissionReceivedTemplate,
+  AsyncStageSubmissionReceivedData,
 } from './templates';
 import { NotificationsService } from '../notifications/notifications.service';
 import { DatabaseService } from '../shared/modules/database/database.service';
@@ -867,6 +871,57 @@ The Borderless Team
 
     this.logger.log(`Sending HR booking notification to ${hrEmail} for ${candidateName}`);
     await this.sendEmail(hrEmail, subject, text, html, 'INTERVIEW_BOOKED_BY_CANDIDATE', hiringProcessUid);
+  }
+
+  /**
+   * Send async stage invitation to a candidate with a single-use submission URL.
+   */
+  async sendAsyncStageInvitation(candidateEmail: string, data: AsyncStageInvitationData): Promise<void> {
+    const customTemplate = await this.findCompanyTemplate(undefined, EmailTemplateType.ASYNC_STAGE_INVITATION);
+    if (customTemplate) {
+      const vars: Record<string, any> = {
+        candidateName: data.candidateName,
+        jobTitle: data.jobTitle,
+        companyName: data.companyName,
+        stageName: data.stageName,
+        submissionUrl: data.submissionUrl,
+        deadline: data.deadline ?? '',
+        hrName: data.hrName ?? '',
+      };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(candidateEmail, subject, text, html, 'ASYNC_STAGE_INVITATION');
+      return;
+    }
+
+    const { subject, text, html } = asyncStageInvitationTemplate(data);
+    await this.sendEmail(candidateEmail, subject, text, html, 'ASYNC_STAGE_INVITATION');
+    this.logger.log(`Async stage invitation email sent to ${candidateEmail} for stage "${data.stageName}"`);
+  }
+
+  /**
+   * Send submission-received notification to the HR user who created the token.
+   */
+  async sendAsyncStageSubmissionReceived(hrEmail: string, data: AsyncStageSubmissionReceivedData): Promise<void> {
+    const customTemplate = await this.findCompanyTemplate(undefined, EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED);
+    if (customTemplate) {
+      const vars: Record<string, any> = {
+        hrName: data.hrName,
+        candidateName: data.candidateName,
+        candidateEmail: data.candidateEmail,
+        jobTitle: data.jobTitle,
+        stageName: data.stageName,
+        submittedAt: data.submittedAt,
+        fileCount: data.fileCount,
+        hiringProcessUrl: data.hiringProcessUrl,
+      };
+      const { subject, text, html } = this.renderTemplate(customTemplate, vars);
+      await this.sendEmail(hrEmail, subject, text, html, 'ASYNC_STAGE_SUBMISSION_RECEIVED');
+      return;
+    }
+
+    const { subject, text, html } = asyncStageSubmissionReceivedTemplate(data);
+    await this.sendEmail(hrEmail, subject, text, html, 'ASYNC_STAGE_SUBMISSION_RECEIVED');
+    this.logger.log(`Async stage submission notification sent to ${hrEmail} for candidate "${data.candidateName}"`);
   }
 
   /**

@@ -129,6 +129,8 @@ model User {
   createdCandidates          Candidate[]             @relation("CandidateCreatedBy")
   company                    Company?                @relation(fields: [companyId], references: [id], onDelete: Restrict)
   activityLogs               UserActivityLog[]       @relation("UserActivityLogs")
+  asyncTokensCreated         AsyncStageToken[]       @relation("AsyncTokenCreatedBy")
+  submissionsReviewed        AsyncStageSubmission[]  @relation("SubmissionReviewedBy")
 
   @@unique([email, companyId])
   @@index([roles])
@@ -312,11 +314,13 @@ model HiringProcess {
   lastAccessedAt DateTime?
   accessCount    Int                 @default(0)
   deletedAt      DateTime?
-  candidate      Candidate?          @relation("HiringProcessCandidate", fields: [candidateId], references: [id])
-  company        Company             @relation(fields: [companyId], references: [id])
-  jobPosition    JobPosition         @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
+  candidate      Candidate?             @relation("HiringProcessCandidate", fields: [candidateId], references: [id])
+  company        Company                @relation(fields: [companyId], references: [id])
+  jobPosition    JobPosition            @relation(fields: [jobPositionId], references: [id], onDelete: SetNull)
   stages         Stage[]
-  stageNotes     StageNote[]         @relation("HiringProcessStageNotes")
+  stageNotes     StageNote[]            @relation("HiringProcessStageNotes")
+  asyncTokens    AsyncStageToken[]      @relation("HiringProcessAsyncTokens")
+  submissions    AsyncStageSubmission[] @relation("HiringProcessSubmissions")
 
   @@unique([candidateId, jobPositionId])
   @@index([createdAt])
@@ -340,11 +344,13 @@ model Stage {
   estimatedTime   Int?
   jobPositionId   Int?
   deletedAt       DateTime?
-  interviews      Interview[]    @relation("StageInterviews")
-  hiringProcess   HiringProcess? @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
-  JobPosition     JobPosition?   @relation(fields: [jobPositionId], references: [id])
-  notes           StageNote[]    @relation("StageNotes")
-  timeLogs        StageTimeLog[] @relation("StageTimeLogs")
+  interviews      Interview[]           @relation("StageInterviews")
+  hiringProcess   HiringProcess?        @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
+  JobPosition     JobPosition?          @relation(fields: [jobPositionId], references: [id])
+  notes           StageNote[]           @relation("StageNotes")
+  timeLogs        StageTimeLog[]        @relation("StageTimeLogs")
+  asyncTokens     AsyncStageToken[]     @relation("StageAsyncTokens")
+  submissions     AsyncStageSubmission[] @relation("StageSubmissions")
 
   @@unique([hiringProcessId, position])
   @@index([deletedAt])
@@ -389,9 +395,10 @@ model FileUpload {
   updatedAt          DateTime      @updatedAt
   uploadedByPublic   Boolean       @default(false)
   hash               String?
-  applicationResumes Application[] @relation("ApplicationResume")
-  candidate          Candidate?    @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
-  uploadedBy         User?         @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
+  applicationResumes Application[]              @relation("ApplicationResume")
+  candidate          Candidate?                 @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
+  uploadedBy         User?                      @relation("FileUploadsUser", fields: [uploadedById], references: [id], onDelete: Restrict)
+  submissionFiles    AsyncStageSubmissionFile[] @relation("SubmissionFiles")
 
   @@index([uid])
   @@index([uploadedByPublic])
@@ -1206,6 +1213,8 @@ enum EmailTemplateType {
   INTERVIEW_REMINDER
   OFFER_LETTER
   CUSTOM
+  ASYNC_STAGE_INVITATION
+  ASYNC_STAGE_SUBMISSION_RECEIVED
 }
 
 enum InterviewStatus {
@@ -1331,6 +1340,8 @@ enum NotificationType {
   SYSTEM_MAINTENANCE
   SYSTEM_ANNOUNCEMENT
   SYSTEM_FEATURE_UPDATE
+  ASYNC_STAGE_SUBMISSION_RECEIVED
+  ASYNC_STAGE_REMINDER_SENT
 }
 
 enum JobType {
@@ -1405,4 +1416,66 @@ model DemoTimeSlot {
   selectedAt  DateTime?
 
   @@index([tokenId])
+}
+
+model AsyncStageToken {
+  id                 Int                   @id @default(autoincrement())
+  uid                String                @unique @default(uuid()) @db.Uuid
+  token              String                @unique
+  stageId            Int
+  hiringProcessId    Int
+  candidateEmail     String
+  candidateName      String
+  expiresAt          DateTime?
+  usedAt             DateTime?
+  revokedAt          DateTime?
+  lastReminderSentAt DateTime?
+  createdById        Int
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+  stage              Stage                 @relation("StageAsyncTokens", fields: [stageId], references: [id], onDelete: Cascade)
+  hiringProcess      HiringProcess         @relation("HiringProcessAsyncTokens", fields: [hiringProcessId], references: [id], onDelete: Cascade)
+  createdBy          User                  @relation("AsyncTokenCreatedBy", fields: [createdById], references: [id])
+  submission         AsyncStageSubmission? @relation("TokenSubmission")
+
+  @@index([token])
+  @@index([stageId])
+  @@index([hiringProcessId])
+  @@index([expiresAt])
+  @@index([uid])
+}
+
+model AsyncStageSubmission {
+  id              Int                        @id @default(autoincrement())
+  uid             String                     @unique @default(uuid()) @db.Uuid
+  tokenId         Int                        @unique
+  stageId         Int
+  hiringProcessId Int
+  textContent     String?
+  submittedAt     DateTime                   @default(now())
+  reviewedAt      DateTime?
+  reviewedById    Int?
+  hrNote          String?
+  token           AsyncStageToken            @relation("TokenSubmission", fields: [tokenId], references: [id], onDelete: Cascade)
+  stage           Stage                      @relation("StageSubmissions", fields: [stageId], references: [id])
+  hiringProcess   HiringProcess              @relation("HiringProcessSubmissions", fields: [hiringProcessId], references: [id])
+  reviewedBy      User?                      @relation("SubmissionReviewedBy", fields: [reviewedById], references: [id])
+  files           AsyncStageSubmissionFile[]
+
+  @@index([stageId])
+  @@index([hiringProcessId])
+  @@index([uid])
+}
+
+model AsyncStageSubmissionFile {
+  id           Int                  @id @default(autoincrement())
+  uid          String               @unique @default(uuid()) @db.Uuid
+  submissionId Int
+  fileUploadId Int
+  position     Int                  @default(0)
+  submission   AsyncStageSubmission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
+  fileUpload   FileUpload           @relation("SubmissionFiles", fields: [fileUploadId], references: [id])
+
+  @@index([submissionId])
+  @@index([uid])
 }

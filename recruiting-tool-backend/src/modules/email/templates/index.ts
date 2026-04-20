@@ -13,3 +13,5 @@ export * from './stage-advancement.template';
 export * from './hired-notification.template';
 export * from './interview-booked.template';
 export * from './booking-invitation.template';
+export * from './async-stage-invitation.template';
+export * from './async-stage-submission-received.template';

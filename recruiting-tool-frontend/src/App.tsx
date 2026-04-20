@@ -38,6 +38,7 @@ import AdminSubscriptionsPage from "./pages/admin/AdminSubscriptionsPage";
 import BookInterviewPage from "./pages/booking/BookInterviewPage";
 import BookingConfirmedPage from "./pages/booking/BookingConfirmedPage";
 import BookDemoPage from "./pages/booking/BookDemoPage";
+import AsyncStageSubmissionPage from "./pages/async-stage/AsyncStageSubmissionPage";
 import BookingDemoConfirmedPage from "./pages/booking/BookingDemoConfirmedPage";
 import ErrorBoundaryTest from "./pages/test/ErrorBoundaryTest";
 import HRJobPositionDetailPage from "./pages/hr/job-position-detail/HRJobPositionDetailPage";
@@ -151,6 +152,7 @@ function App() {
             element={<BookingConfirmedPage />}
           />
           <Route path="/book-demo/:token" element={<BookDemoPage />} />
+          <Route path="/submit/:token" element={<AsyncStageSubmissionPage />} />
           <Route
             path="/booking-confirmed-demo/:token"
             element={<BookingDemoConfirmedPage />}

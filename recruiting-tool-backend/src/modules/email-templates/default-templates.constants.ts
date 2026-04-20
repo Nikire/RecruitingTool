@@ -245,6 +245,62 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultTemplateContent[] = [
     ),
   },
   {
+    type: EmailTemplateType.ASYNC_STAGE_INVITATION,
+    name: 'Async Stage Invitation',
+    subject: 'Action Required: {{stageName}} — {{jobTitle}}',
+    body: WRAPPER(
+      'linear-gradient(135deg,#325CE7 0%,#5b7ff0 100%)',
+      'Action Required: {{stageName}}',
+      `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{candidateName}}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">You have been invited to complete the <strong style="color:#325CE7;">{{stageName}}</strong> stage for the <strong>{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>. Please review the details below and submit your work using the link provided.</p>
+      {{#if stageDescription}}
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border-radius:8px;overflow:hidden;border:1px solid #bfdbfe;">
+        <tr><td style="background:#eff6ff;padding:12px 20px;border-bottom:1px solid #bfdbfe;">
+          <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#325CE7;">Stage Description</p>
+        </td></tr>
+        <tr><td style="background:#ffffff;padding:20px;">
+          <p style="margin:0;font-size:14px;color:#475569;line-height:1.7;">{{stageDescription}}</p>
+        </td></tr>
+      </table>
+      {{/if}}
+      {{#if deadline}}
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+        <tr><td><span style="display:inline-block;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;border-radius:20px;padding:6px 16px;font-size:13px;font-weight:700;">⏰ Deadline: {{deadline}}</span></td></tr>
+      </table>
+      {{/if}}
+      <div style="text-align:center;margin:28px 0;">
+        <a href="{{submissionUrl}}" style="display:inline-block;background-color:#325CE7;color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:6px;font-weight:700;font-size:15px;">Submit Your Work →</a>
+      </div>
+      <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;">
+        <tr><td style="background:#f8faff;padding:14px 18px;border-left:4px solid #f59e0b;">
+          <p style="margin:0;font-size:13px;color:#92400e;line-height:1.6;"><strong>Important:</strong> This link is single-use. Once you submit, it cannot be reused.</p>
+        </td></tr>
+      </table>
+      ${SIGNATURE}`,
+    ),
+  },
+  {
+    type: EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED,
+    name: 'Async Stage Submission Received',
+    subject: 'New Submission: {{candidateName}} — {{stageName}}',
+    body: WRAPPER(
+      'linear-gradient(135deg,#059669 0%,#10b981 100%)',
+      'New Submission Received',
+      `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{hrName}}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;"><strong>{{candidateName}}</strong> has submitted their work for the <strong style="color:#059669;">{{stageName}}</strong> stage. Review it in the app at your earliest convenience.</p>
+      <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;margin:24px 0;border-radius:8px;overflow:hidden;border:1px solid #e2e8f0;">
+        <tr><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:700;background:#f8faff;font-size:13px;color:#475569;width:140px;">Candidate</td><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#1e293b;">{{candidateName}}</td></tr>
+        <tr><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:700;background:#f8faff;font-size:13px;color:#475569;">Position</td><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#1e293b;">{{jobTitle}}</td></tr>
+        <tr><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-weight:700;background:#f8faff;font-size:13px;color:#475569;">Stage</td><td style="padding:10px 14px;border-bottom:1px solid #f1f5f9;font-size:14px;color:#1e293b;">{{stageName}}</td></tr>
+        <tr><td style="padding:10px 14px;font-weight:700;background:#f8faff;font-size:13px;color:#475569;">Submitted at</td><td style="padding:10px 14px;font-size:14px;color:#1e293b;">{{submittedAt}}</td></tr>
+      </table>
+      <div style="text-align:center;margin:28px 0;">
+        <a href="{{hiringProcessUrl}}" style="display:inline-block;background-color:#059669;color:#ffffff;padding:12px 28px;text-decoration:none;border-radius:6px;font-weight:700;font-size:15px;">Review Submission →</a>
+      </div>
+      ${SIGNATURE}`,
+    ),
+  },
+  {
     type: EmailTemplateType.CUSTOM,
     name: 'Custom Email',
     subject: 'A message from {{companyName}}',
