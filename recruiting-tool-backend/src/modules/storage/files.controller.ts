@@ -1,8 +1,8 @@
-import { Controller, Post, Get, Delete, Param, Query, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Post, Param, Query, UploadedFile, UseInterceptors, Res } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { FilesService } from './files.service';
-import { FileUploadResponseDto, FileListQueryDto } from './dto/file-upload.dto';
+import { CompanyStorageResponseDto, DeleteManyFilesDto, DownloadZipDto, FileUploadResponseDto, FileListQueryDto } from './dto/file-upload.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -102,6 +102,29 @@ export class FilesController {
     return this.filesService.uploadFile(file, currentUser.uid);
   }
 
+  @Post('download-zip')
+  @Auth([RolesType.USER])
+  @HttpCode(200)
+  @ApiOperation({ summary: 'Download selected files as a ZIP archive' })
+  async downloadZip(@Body() dto: DownloadZipDto, @CurrentUser() currentUser: any, @Res() res: Response): Promise<void> {
+    return this.filesService.downloadZip(dto.uids, currentUser.company.id, res);
+  }
+
+  // NOTE: Static GET routes MUST come before `:uid` parameterized routes to avoid conflicts
+  @Get('company')
+  @Auth([RolesType.USER])
+  @ApiOperation({ summary: "Get all files belonging to the current user's company" })
+  async getCompanyFiles(@CurrentUser() currentUser: any): Promise<FileUploadResponseDto[]> {
+    return this.filesService.getCompanyFiles(currentUser.company.id);
+  }
+
+  @Get('company/storage')
+  @Auth([RolesType.USER])
+  @ApiOperation({ summary: 'Get storage usage for the current company' })
+  async getCompanyStorageUsage(@CurrentUser() currentUser: any): Promise<CompanyStorageResponseDto> {
+    return this.filesService.getCompanyStorageUsage(currentUser.company.id);
+  }
+
   @Get()
   @Auth([RolesType.USER])
   @ApiOperation({ summary: 'Get all files, optionally filtered by candidate' })
@@ -138,6 +161,13 @@ export class FilesController {
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
 
     stream.pipe(res);
+  }
+
+  @Delete('bulk')
+  @Auth([RolesType.USER])
+  @ApiOperation({ summary: 'Delete multiple files (must belong to company)' })
+  async deleteManyFiles(@Body() dto: DeleteManyFilesDto, @CurrentUser() currentUser: any): Promise<{ deleted: number }> {
+    return this.filesService.deleteManyFiles(dto.uids, currentUser.company.id);
   }
 
   @Delete(':uid')

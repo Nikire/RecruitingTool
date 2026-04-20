@@ -8,10 +8,30 @@ export interface FileUploadResponse {
   size: number;
   s3Key: string;
   uploadedByUid?: string;
+  uploadedByName?: string;
   candidateUid?: string;
+  candidateName?: string;
   createdAt: string;
   updatedAt: string;
   downloadUrl?: string;
+}
+
+export interface CompanyFile {
+  uid: string;
+  originalName: string;
+  mimetype: string;
+  size: number;
+  createdAt: string;
+  downloadUrl: string;
+  uploadedByName?: string;
+  candidateUid?: string;
+  candidateName?: string;
+}
+
+export interface CompanyStorageUsage {
+  usedMB: number;
+  limitMB: number;
+  percentage: number;
 }
 
 export interface UploadFileParams {
@@ -139,4 +159,54 @@ export const downloadFile = async (
  */
 export const deleteFile = async (uid: string): Promise<void> => {
   await axios.delete(`/files/${uid}`);
+};
+
+/**
+ * Get all files belonging to the current user's company
+ */
+export const getCompanyFiles = async (): Promise<CompanyFile[]> => {
+  const response = await axios.get<CompanyFile[]>("/files/company");
+  return response.data;
+};
+
+/**
+ * Get company storage usage
+ */
+export const getCompanyStorageUsage =
+  async (): Promise<CompanyStorageUsage> => {
+    const response = await axios.get<CompanyStorageUsage>(
+      "/files/company/storage",
+    );
+    return response.data;
+  };
+
+/**
+ * Download selected files as a ZIP archive
+ */
+export const downloadZip = async (uids: string[]): Promise<void> => {
+  const response = await axios.post(
+    "/files/download-zip",
+    { uids },
+    { responseType: "blob" },
+  );
+  const url = window.URL.createObjectURL(new Blob([response.data]));
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = "files.zip";
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  window.URL.revokeObjectURL(url);
+};
+
+/**
+ * Delete multiple files
+ */
+export const deleteManyFiles = async (
+  uids: string[],
+): Promise<{ deleted: number }> => {
+  const response = await axios.delete<{ deleted: number }>("/files/bulk", {
+    data: { uids },
+  });
+  return response.data;
 };

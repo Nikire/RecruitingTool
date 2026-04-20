@@ -8,6 +8,7 @@ import EmailIcon from "@mui/icons-material/Email";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import EventIcon from "@mui/icons-material/Event";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import FolderIcon from "@mui/icons-material/Folder";
 import PeopleIcon from "@mui/icons-material/People";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import BusinessIcon from "@mui/icons-material/Business";
@@ -47,6 +48,11 @@ const HRLayout: React.FC = () => {
       text: t("hr_layout.analytics"),
       icon: <BarChartIcon />,
       path: "/hr/analytics",
+    },
+    {
+      text: t("hr_layout.files"),
+      icon: <FolderIcon />,
+      path: "/hr/files",
     },
     {
       text: t("hr_layout.email_templates"),

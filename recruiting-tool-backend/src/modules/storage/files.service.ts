@@ -1,11 +1,15 @@
 import { Injectable, HttpException, InternalServerErrorException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { StorageService } from './storage.service';
-import { FileUploadResponseDto } from './dto/file-upload.dto';
+import { CompanyStorageResponseDto, FileUploadResponseDto } from './dto/file-upload.dto';
 import { randomUUID } from 'crypto';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { FileValidator } from './validators/file-validation';
 import { QuotaService } from '../quota/quota.service';
+import * as archiver from 'archiver';
+import { Response } from 'express';
+import { SubscriptionPlan } from '@prisma/client';
+import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 
 @Injectable()
 export class FilesService {
@@ -218,6 +222,145 @@ export class FilesService {
   }
 
   /**
+   * Get all files belonging to a company (HR-uploaded or candidate-linked)
+   */
+  async getCompanyFiles(companyId: number): Promise<FileUploadResponseDto[]> {
+    try {
+      const files = await this.database.fileUpload.findMany({
+        where: {
+          OR: [
+            { uploadedBy: { companyId } },
+            {
+              candidate: {
+                hiringProcesses: {
+                  some: { jobPosition: { companyId } },
+                },
+              },
+            },
+          ],
+        },
+        include: {
+          uploadedBy: { select: { uid: true, name: true } },
+          candidate: { select: { uid: true, name: true } },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      return Promise.all(files.map((file) => this.mapCompanyFileToDto(file)));
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get company files: ${error.message}`);
+    }
+  }
+
+  /**
+   * Get company storage usage and limit
+   */
+  async getCompanyStorageUsage(companyId: number): Promise<CompanyStorageResponseDto> {
+    try {
+      const company = await this.database.company.findUnique({
+        where: { id: companyId },
+        include: { subscription: true },
+      });
+
+      const plan = (company?.subscription?.plan as SubscriptionPlan) || SubscriptionPlan.FREE;
+      const limits = PLAN_LIMITS[plan];
+      const limitMB = limits.maxStorageMB;
+
+      const usedMB = await this.quotaService.getStorageUsageMB(companyId);
+      const percentage = limitMB === -1 ? 0 : Math.min(100, (usedMB / limitMB) * 100);
+
+      return { usedMB, limitMB, percentage };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get storage usage: ${error.message}`);
+    }
+  }
+
+  /**
+   * Stream a ZIP archive of the specified files to the HTTP response
+   */
+  async downloadZip(uids: string[], companyId: number, res: Response): Promise<void> {
+    try {
+      // Fetch files and verify they belong to this company
+      const files = await this.database.fileUpload.findMany({
+        where: {
+          uid: { in: uids },
+          OR: [
+            { uploadedBy: { companyId } },
+            {
+              candidate: {
+                hiringProcesses: {
+                  some: { jobPosition: { companyId } },
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      res.setHeader('Content-Type', 'application/zip');
+      res.setHeader('Content-Disposition', 'attachment; filename="files.zip"');
+
+      const archive = archiver.default('zip', { zlib: { level: 6 } });
+      archive.pipe(res);
+
+      for (const file of files) {
+        const buffer = await this.storageService.downloadFileAsBuffer(file.s3Key);
+        archive.append(buffer, { name: file.originalName });
+      }
+
+      await archive.finalize();
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to generate ZIP: ${error.message}`);
+    }
+  }
+
+  /**
+   * Delete multiple files (verify they belong to the company first)
+   */
+  async deleteManyFiles(uids: string[], companyId: number): Promise<{ deleted: number }> {
+    try {
+      const files = await this.database.fileUpload.findMany({
+        where: {
+          uid: { in: uids },
+          OR: [
+            { uploadedBy: { companyId } },
+            {
+              candidate: {
+                hiringProcesses: {
+                  some: { jobPosition: { companyId } },
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      let deleted = 0;
+      for (const file of files) {
+        await this.storageService.deleteFile(file.s3Key);
+        await this.database.fileUpload.delete({ where: { uid: file.uid } });
+        deleted++;
+      }
+
+      return { deleted };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to delete files: ${error.message}`);
+    }
+  }
+
+  /**
    * Map database entity to DTO with signed URL
    */
   private async mapToDto(file: any): Promise<FileUploadResponseDto> {
@@ -254,6 +397,31 @@ export class FilesService {
       uploadedByPublic: file.uploadedByPublic,
       uploadedByUid,
       candidateUid,
+      createdAt: file.createdAt,
+      updatedAt: file.updatedAt,
+      downloadUrl,
+    };
+  }
+
+  /**
+   * Map company file entity (with pre-included relations) to DTO
+   */
+  private async mapCompanyFileToDto(file: any): Promise<FileUploadResponseDto> {
+    const downloadUrl = await this.storageService.getSignedUrl(file.s3Key);
+
+    return {
+      uid: file.uid,
+      filename: file.filename,
+      originalName: file.originalName,
+      mimetype: file.mimetype,
+      size: file.size,
+      s3Key: file.s3Key,
+      hash: file.hash,
+      uploadedByPublic: file.uploadedByPublic,
+      uploadedByUid: file.uploadedBy?.uid,
+      uploadedByName: file.uploadedBy?.name,
+      candidateUid: file.candidate?.uid,
+      candidateName: file.candidate?.name,
       createdAt: file.createdAt,
       updatedAt: file.updatedAt,
       downloadUrl,

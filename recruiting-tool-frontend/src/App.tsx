@@ -49,6 +49,7 @@ import ApplicantOnboarding from "./pages/applicant/ApplicantOnboarding";
 import CalendarSettingsPage from "./pages/settings/CalendarSettingsPage";
 import CompanyCalendarPage from "./pages/calendar/CompanyCalendarPage";
 import InterviewsPage from "./pages/hr/interviews/InterviewsPage";
+import FilesPage from "./pages/files/FilesPage";
 import OAuthSuccessPage from "./pages/auth/OAuthSuccessPage";
 import NotificationPreferencesPage from "./pages/settings/NotificationPreferencesPage";
 import TeamManagementPage from "./pages/TeamManagementPage";
@@ -244,6 +245,7 @@ function App() {
               />
               <Route path="/hr/calendar" element={<CompanyCalendarPage />} />
               <Route path="/hr/interviews" element={<InterviewsPage />} />
+              <Route path="/hr/files" element={<FilesPage />} />
               <Route path="/hr/guide" element={<HRGuidePage />} />
             </Route>
           </Route>

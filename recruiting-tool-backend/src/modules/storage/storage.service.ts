@@ -137,6 +137,21 @@ export class StorageService {
   }
 
   /**
+   * Download a file from S3/MinIO as a Buffer (for ZIP generation)
+   * @param key - S3 key of the file
+   * @returns Buffer containing the file data
+   */
+  async downloadFileAsBuffer(key: string): Promise<Buffer> {
+    const stream = await this.downloadFile(key);
+    return new Promise<Buffer>((resolve, reject) => {
+      const chunks: Buffer[] = [];
+      stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+      stream.on('end', () => resolve(Buffer.concat(chunks)));
+      stream.on('error', reject);
+    });
+  }
+
+  /**
    * Delete a file from S3/MinIO
    * @param key - S3 key of the file
    */

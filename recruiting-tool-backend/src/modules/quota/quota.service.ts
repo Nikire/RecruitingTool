@@ -300,7 +300,7 @@ export class QuotaService {
     });
   }
 
-  private async getStorageUsageMB(companyId: number): Promise<number> {
+  async getStorageUsageMB(companyId: number): Promise<number> {
     // Count each distinct file once per company, even if shared across multiple candidates/jobs.
     // A file belongs to a company if:
     //   (a) it was uploaded by an HR user of that company, OR

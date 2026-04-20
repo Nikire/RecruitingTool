@@ -106,12 +106,71 @@ export function useDeleteFile() {
     onSuccess: () => {
       // Invalidate all file queries
       queryClient.invalidateQueries({ queryKey: ["files"] });
+      queryClient.invalidateQueries({ queryKey: ["company-files"] });
+      queryClient.invalidateQueries({ queryKey: ["company-storage"] });
       toast.success(t("files.file_deleted"));
     },
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
           ?.data?.message || "Failed to delete file";
+      toast.error(errorMessage);
+    },
+  });
+}
+
+/**
+ * Hook to fetch all company files
+ */
+export function useCompanyFiles() {
+  return useQuery({
+    queryKey: ["company-files"],
+    queryFn: filesApi.getCompanyFiles,
+  });
+}
+
+/**
+ * Hook to fetch company storage usage
+ */
+export function useCompanyStorageUsage() {
+  return useQuery({
+    queryKey: ["company-storage"],
+    queryFn: filesApi.getCompanyStorageUsage,
+  });
+}
+
+/**
+ * Hook to download selected files as a ZIP
+ */
+export function useDownloadZip() {
+  const { t } = useTranslation();
+  return useMutation({
+    mutationFn: (uids: string[]) => filesApi.downloadZip(uids),
+    onError: () => {
+      toast.error(t("files.downloadError"));
+    },
+  });
+}
+
+/**
+ * Hook to delete multiple files
+ */
+export function useDeleteManyFiles() {
+  const queryClient = useQueryClient();
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: (uids: string[]) => filesApi.deleteManyFiles(uids),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["company-files"] });
+      queryClient.invalidateQueries({ queryKey: ["company-storage"] });
+      queryClient.invalidateQueries({ queryKey: ["files"] });
+      toast.success(t("files.deleteSuccess", { count: data.deleted }));
+    },
+    onError: (error: unknown) => {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || "Failed to delete files";
       toast.error(errorMessage);
     },
   });

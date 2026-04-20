@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class FileUploadResponseDto {
   uid: string;
@@ -10,10 +10,30 @@ export class FileUploadResponseDto {
   hash?: string; // SHA-256 hash for deduplication
   uploadedByPublic: boolean;
   uploadedByUid?: string;
+  uploadedByName?: string;
   candidateUid?: string;
+  candidateName?: string;
   createdAt: Date;
   updatedAt: Date;
   downloadUrl?: string; // Optional signed URL for download
+}
+
+export class DownloadZipDto {
+  @IsArray()
+  @IsString({ each: true })
+  uids: string[];
+}
+
+export class DeleteManyFilesDto {
+  @IsArray()
+  @IsString({ each: true })
+  uids: string[];
+}
+
+export class CompanyStorageResponseDto {
+  usedMB: number;
+  limitMB: number;
+  percentage: number;
 }
 
 export class UploadFileDto {
