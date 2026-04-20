@@ -128,6 +128,9 @@ const AsyncStageSubmissionPage: React.FC = () => {
   const [textContent, setTextContent] = useState("");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [submitted, setSubmitted] = useState(false);
+  const [fileSizeError, setFileSizeError] = useState<string | null>(null);
+
+  const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -157,8 +160,15 @@ const AsyncStageSubmissionPage: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    setSelectedFiles((prev) => [...prev, ...Array.from(files)]);
-    // reset input so the same file can be re-added if removed
+    const oversized = Array.from(files).filter((f) => f.size > MAX_FILE_SIZE);
+    if (oversized.length > 0) {
+      setFileSizeError(
+        t("asyncStage.fileTooLarge", { name: oversized[0].name }),
+      );
+    } else {
+      setFileSizeError(null);
+      setSelectedFiles((prev) => [...prev, ...Array.from(files)]);
+    }
     e.target.value = "";
   };
 
@@ -263,10 +273,34 @@ const AsyncStageSubmissionPage: React.FC = () => {
             variant="outlined"
             startIcon={<AttachFileIcon />}
             onClick={() => fileInputRef.current?.click()}
-            sx={{ mb: 2 }}
+            sx={{ mb: 0.5 }}
           >
             {t("asyncStage.attachFiles")}
           </Button>
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block", mb: fileSizeError ? 1 : 2 }}
+          >
+            {t("asyncStage.fileSizeLimit")}
+          </Typography>
+
+          {fileSizeError && (
+            <Box
+              sx={{
+                mb: 2,
+                px: 1.5,
+                py: 1,
+                bgcolor: "error.light",
+                borderRadius: 1,
+              }}
+            >
+              <Typography variant="caption" color="error.contrastText">
+                {fileSizeError}
+              </Typography>
+            </Box>
+          )}
 
           {/* Selected files list */}
           {selectedFiles.length > 0 && (

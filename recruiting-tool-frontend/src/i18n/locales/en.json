@@ -4185,6 +4185,8 @@
     "stageInstructions": "Stage Instructions",
     "textResponse": "Your Response (optional)",
     "attachFiles": "Attach Files",
+    "fileSizeLimit": "Maximum 100 MB per file",
+    "fileTooLarge": "\"{{name}}\" exceeds the 100 MB limit and was not added.",
     "selectedFiles": "Selected files",
     "removeFile": "Remove",
     "submittedSuccess": "Submission Received!",

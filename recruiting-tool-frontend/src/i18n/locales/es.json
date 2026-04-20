@@ -4193,6 +4193,8 @@
     "stageInstructions": "Instrucciones de la Etapa",
     "textResponse": "Tu Respuesta (opcional)",
     "attachFiles": "Adjuntar Archivos",
+    "fileSizeLimit": "Máximo 100 MB por archivo",
+    "fileTooLarge": "\"{{name}}\" supera el límite de 100 MB y no se agregó.",
     "selectedFiles": "Archivos seleccionados",
     "removeFile": "Eliminar",
     "submittedSuccess": "¡Entrega Recibida!",

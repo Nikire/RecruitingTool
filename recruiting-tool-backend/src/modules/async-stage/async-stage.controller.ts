@@ -88,7 +88,7 @@ export class PublicAsyncStageController {
   }
 
   @Post(':token/submit')
-  @UseInterceptors(FilesInterceptor('files', 5, { limits: { fileSize: 10_485_760 } }))
+  @UseInterceptors(FilesInterceptor('files', 10, { limits: { fileSize: 104_857_600 } }))
   @ApiOperation({ summary: 'Submit async stage content using a public token (public)' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -96,7 +96,7 @@ export class PublicAsyncStageController {
       type: 'object',
       properties: {
         textContent: { type: 'string', description: 'Text response from candidate' },
-        files: { type: 'array', items: { type: 'string', format: 'binary' }, description: 'Up to 5 files, max 10MB each' },
+        files: { type: 'array', items: { type: 'string', format: 'binary' }, description: 'Up to 10 files, max 100MB each' },
       },
     },
   })
