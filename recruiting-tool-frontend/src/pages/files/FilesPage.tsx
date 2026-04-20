@@ -160,8 +160,10 @@ const FilesPage: React.FC = () => {
             "&:hover": { color: "primary.main", textDecoration: "underline" },
           }}
           onClick={() =>
-            params.row.downloadUrl &&
-            window.open(params.row.downloadUrl, "_blank")
+            window.open(
+              `${import.meta.env.VITE_API_URL}/files/${params.row.uid}/view`,
+              "_blank",
+            )
           }
         >
           <AttachFileIcon fontSize="small" sx={{ flexShrink: 0 }} />
