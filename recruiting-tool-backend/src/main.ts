@@ -13,12 +13,7 @@ const { PORT, FRONTEND_URL } = process.env;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     rawBody: true, // Enable raw body for webhook signature verification
-    bodyParser: true,
   });
-
-  // Allow large file uploads (100 MB) — multer handles multipart; this covers JSON/binary endpoints
-  app.use(require('express').json({ limit: '100mb' }));
-  app.use(require('express').urlencoded({ extended: true, limit: '100mb' }));
 
   // Set global API prefix
   app.setGlobalPrefix('api');
