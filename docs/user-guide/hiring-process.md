@@ -153,6 +153,23 @@ Interviews are scheduled at the stage level.
 
 See [Interviews Guide](./interviews.md) for complete interview management.
 
+## Async Stage Submissions
+
+Some stages require candidates to submit materials asynchronously (take-home tests, portfolios, written responses).
+
+**Request a Submission:**
+1. Expand the stage in the accordion.
+2. In the **Async Submissions** section, click **Request Submission**.
+3. Set an optional deadline.
+4. Send the link — the candidate is emailed automatically.
+
+**Review a Submission:**
+- The panel updates when the candidate submits.
+- Download files, read text responses, and add HR notes.
+- Click **Mark as Reviewed** when done.
+
+See [Async Stages Guide](./async-stages.md) for complete details.
+
 ## Hiring Process Details
 
 **View Complete Process:**
