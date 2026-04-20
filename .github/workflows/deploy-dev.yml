@@ -30,9 +30,10 @@ jobs:
             echo "==> Disk usage before cleanup..."
             df -h /
 
-            echo "==> Freeing up disk space (safe cleanup - keeps images and volumes)..."
+            echo "==> Freeing up disk space (removes stopped containers, build cache, and dangling images)..."
             docker container prune -f || true
             docker builder prune -f || true
+            docker image prune -f || true
 
             echo "==> Pre-pulling base images to ensure they are available for builds..."
             docker pull node:20-alpine || true
