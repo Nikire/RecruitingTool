@@ -718,10 +718,6 @@
     "storageUsed": "{{used}} MB usados de {{limit}} MB",
     "storageUnlimited": "{{used}} MB usados (Ilimitado)",
     "storageUsage": "Uso de Almacenamiento",
-    "quota_banner": {
-      "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
-      "unlimited": "{{used}}{{unit}} {{label}} (Ilimitado)"
-    },
     "downloadSelected": "Descargar Seleccionados",
     "deleteSelected": "Eliminar Seleccionados",
     "filterByType": "Filtrar por tipo",
@@ -4256,5 +4252,9 @@
       "revoke_failed": "Error al revocar el enlace",
       "submission_failed": "Error al enviar la entrega"
     }
+  },
+  "quota_banner": {
+    "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
+    "unlimited": "{{used}}{{unit}} {{label}} (Ilimitado)"
   }
 }
