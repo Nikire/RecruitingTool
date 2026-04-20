@@ -37,7 +37,11 @@ import {
 import { useCompanyConnectionRequests } from "../hooks/useConnectionRequests";
 import { InvitationStatus } from "../types/invitations";
 import { UserRoles } from "../types/user.types";
-import { PageHeader, CenteredLoadingSpinner } from "../components/common";
+import {
+  PageHeader,
+  CenteredLoadingSpinner,
+  QuotaBanner,
+} from "../components/common";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -187,6 +191,8 @@ const TeamManagementPage: React.FC = () => {
             : undefined
         }
       />
+
+      <QuotaBanner resource="users" labelKey="subscription.quota.users" />
 
       <Paper
         elevation={2}

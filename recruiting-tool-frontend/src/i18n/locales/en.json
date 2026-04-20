@@ -718,6 +718,10 @@
     "storageUsed": "{{used}} MB used of {{limit}} MB",
     "storageUnlimited": "{{used}} MB used (Unlimited)",
     "storageUsage": "Storage Usage",
+    "quota_banner": {
+      "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
+      "unlimited": "{{used}}{{unit}} {{label}} (Unlimited)"
+    },
     "downloadSelected": "Download Selected",
     "deleteSelected": "Delete Selected",
     "filterByType": "Filter by type",

@@ -11,7 +11,6 @@ import {
   FormControl,
   IconButton,
   InputLabel,
-  LinearProgress,
   MenuItem,
   Select,
   SelectChangeEvent,
@@ -27,9 +26,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import PageHeader from "../../components/common/PageHeader";
+import QuotaBanner from "../../components/common/QuotaBanner";
 import {
   useCompanyFiles,
-  useCompanyStorageUsage,
   useDownloadZip,
   useDeleteManyFiles,
   useDeleteFile,
@@ -73,7 +72,6 @@ const FilesPage: React.FC = () => {
   const navigate = useNavigate();
 
   const { data: files = [], isLoading: filesLoading } = useCompanyFiles();
-  const { data: storage } = useCompanyStorageUsage();
   const downloadZip = useDownloadZip();
   const deleteManyFiles = useDeleteManyFiles();
   const deleteFile = useDeleteFile();
@@ -81,23 +79,6 @@ const FilesPage: React.FC = () => {
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
   const [typeFilter, setTypeFilter] = useState<FileTypeFilter>("all");
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
-
-  const storageColor =
-    (storage?.percentage ?? 0) > 90
-      ? "error"
-      : (storage?.percentage ?? 0) > 70
-        ? "warning"
-        : "success";
-
-  const storageText =
-    storage?.limitMB === -1
-      ? t("files.storageUnlimited", {
-          used: (storage?.usedMB ?? 0).toFixed(1),
-        })
-      : t("files.storageUsed", {
-          used: (storage?.usedMB ?? 0).toFixed(1),
-          limit: storage?.limitMB ?? 0,
-        });
 
   const filteredFiles = useMemo(() => {
     if (typeFilter === "all") return files;
@@ -287,30 +268,11 @@ const FilesPage: React.FC = () => {
     <Box sx={{ p: { xs: 2, md: 3 } }}>
       <PageHeader title={t("files.title")} translate={false} />
 
-      {/* Storage Usage */}
-      <Box
-        sx={{
-          mb: 3,
-          p: 2,
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          border: "1px solid",
-          borderColor: "divider",
-        }}
-      >
-        <Typography variant="subtitle2" sx={{ mb: 1, fontWeight: 600 }}>
-          {t("files.storageUsage")}
-        </Typography>
-        <LinearProgress
-          variant="determinate"
-          value={storage?.percentage ?? 0}
-          color={storageColor}
-          sx={{ mb: 1, height: 8, borderRadius: 4 }}
-        />
-        <Typography variant="body2" color="text.secondary">
-          {storageText}
-        </Typography>
-      </Box>
+      <QuotaBanner
+        resource="storage"
+        labelKey="files.storageUsage"
+        unit=" MB"
+      />
 
       {/* Toolbar */}
       <Stack

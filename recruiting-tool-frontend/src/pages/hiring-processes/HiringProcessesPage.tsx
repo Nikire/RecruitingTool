@@ -17,6 +17,7 @@ import {
   AccessDeniedMessage,
   PageHeader,
   CenteredLoadingSpinner,
+  QuotaBanner,
 } from "../../components/common";
 
 const HiringProcessesPage: React.FC = () => {
@@ -84,6 +85,11 @@ const HiringProcessesPage: React.FC = () => {
             </Button>
           ) : undefined
         }
+      />
+
+      <QuotaBanner
+        resource="aiScoringCredits"
+        labelKey="subscription.quota.ai_scoring_credits"
       />
 
       <FilterBar

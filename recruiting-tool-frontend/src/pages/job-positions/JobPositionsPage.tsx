@@ -40,9 +40,11 @@ import { useNavigate } from "react-router-dom";
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { canManageResources } from "../../utils/permissions";
 import { useDialog } from "../../hooks/useDialog";
-import { CenteredLoadingSpinner, PageHeader } from "../../components/common";
-import { useQuota } from "../../api/subscription";
-import { getQuotaByResource } from "../../types/subscription.types";
+import {
+  CenteredLoadingSpinner,
+  PageHeader,
+  QuotaBanner,
+} from "../../components/common";
 import { formatRelativeTime } from "../../utils/dateFormatters";
 
 const JobPositionsPage: React.FC = () => {
@@ -79,12 +81,6 @@ const JobPositionsPage: React.FC = () => {
     sortBy: "createdAt",
     sortOrder: "desc",
   });
-
-  // Fetch quota information for the plan usage display
-  const { data: quotaData } = useQuota();
-  const jobPositionQuota = quotaData
-    ? getQuotaByResource(quotaData.quotas, "jobPositions")
-    : undefined;
 
   // Fetch job positions with server-side pagination and filtering
   const { data, isLoading, error } = useListJobPositions({
@@ -275,48 +271,20 @@ const JobPositionsPage: React.FC = () => {
         </Button>
       )}
 
+      <QuotaBanner
+        resource="jobPositions"
+        labelKey="subscription.quota.job_positions"
+      />
+
       {/* Filters */}
       <JobPositionFilters filters={filters} onChange={handleFilterChange} />
 
-      {/* Pagination Info + Quota Chip */}
+      {/* Pagination Info */}
       {!isLoading && totalCount > 0 && (
-        <Box
-          sx={{
-            mb: 2,
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: 1,
-          }}
-        >
+        <Box sx={{ mb: 2 }}>
           <Typography variant="body2" color="text.secondary">
             {getPaginationText()}
           </Typography>
-          {jobPositionQuota && (
-            <Chip
-              label={
-                jobPositionQuota.limit < 0
-                  ? t("job_positions.quota_usage_unlimited", {
-                      used: jobPositionQuota.used,
-                    })
-                  : t("job_positions.quota_usage", {
-                      used: jobPositionQuota.used,
-                      limit: jobPositionQuota.limit,
-                    })
-              }
-              size="small"
-              color={
-                jobPositionQuota.limit >= 0 && jobPositionQuota.isExceeded
-                  ? "error"
-                  : jobPositionQuota.limit >= 0 &&
-                      jobPositionQuota.percentageUsed >= 80
-                    ? "warning"
-                    : "default"
-              }
-              variant="outlined"
-            />
-          )}
         </Box>
       )}
 
