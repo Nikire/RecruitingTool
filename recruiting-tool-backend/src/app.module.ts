@@ -9,7 +9,6 @@ import { HiringProcessModule } from './modules/hiring-process/hiring-process.mod
 import { StagesModule } from './modules/hiring-process/modules/stages/stages.module';
 import { CandidateModule } from './modules/hiring-process/modules/candidate/candidate.module';
 import { JobPositionModule } from './modules/job-position/job-position.module';
-import { DummyModule } from './modules/dummy/dummy.module';
 import { CompanyModule } from './modules/company/company.module';
 import { StorageModule } from './modules/storage/storage.module';
 import { ApplicationModule } from './modules/application/application.module';
@@ -78,7 +77,6 @@ import { AsyncStageModule } from './modules/async-stage/async-stage.module';
     StagesModule,
     CandidateModule,
     JobPositionModule,
-    DummyModule,
     StorageModule,
     ApplicationModule,
     EmailTemplatesModule,
