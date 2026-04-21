@@ -52,6 +52,7 @@ import { CustomPlansModule } from './modules/custom-plans/custom-plans.module';
 import { CompanyCalendarSettingsModule } from './modules/company-calendar-settings/company-calendar-settings.module';
 import { DemoBookingModule } from './modules/demo-booking/demo-booking.module';
 import { AsyncStageModule } from './modules/async-stage/async-stage.module';
+import { DummyModule } from './modules/dummy/dummy.module';
 
 @Module({
   imports: [
@@ -77,6 +78,7 @@ import { AsyncStageModule } from './modules/async-stage/async-stage.module';
     StagesModule,
     CandidateModule,
     JobPositionModule,
+    ...(process.env.DUMMY_DATA_ENABLED === 'true' ? [DummyModule] : []),
     StorageModule,
     ApplicationModule,
     EmailTemplatesModule,
