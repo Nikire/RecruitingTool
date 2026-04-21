@@ -10,6 +10,16 @@ Job positions represent open roles your company is hiring for. Each job position
 - Applications from external candidates
 - Associated hiring processes
 
+## Job Position Quota Banner
+
+At the top of the Job Positions page, a quota banner shows how many job positions your company has created relative to your plan's limit. The progress bar color changes as you approach the ceiling:
+
+- **Green** — below 70% of the limit
+- **Yellow** — between 70% and 90%
+- **Red** — above 90% or limit exceeded
+
+If you are on the Enterprise plan, the banner shows your current count without a limit. To increase your job position limit, upgrade at `/hr/billing`. See [Subscription and Limits](./subscription-and-limits.md) for plan details.
+
 ## Creating Job Positions
 
 **Navigate to Job Positions:**
@@ -47,10 +57,31 @@ Stages define your hiring workflow. When you create a hiring process from this j
    - **Position**: Auto-numbered (0, 1, 2, ...)
 
 **Stage Types:**
-- **INTERVIEW**: General interview
-- **TECHNICAL_INTERVIEW**: Technical assessment
-- **FINAL_INTERVIEW**: Final round with leadership
-- **OFFER**: Offer extended
+
+Borderless supports 18 stage types covering the full range of modern recruiting workflows:
+
+| Stage Type | Typical Use |
+|-----------|-------------|
+| SCREENING | Initial application review |
+| PHONE_SCREEN | Short introductory call |
+| HR_INTERVIEW | Conversation with an HR team member |
+| INTERVIEW | General-purpose interview |
+| PANEL_INTERVIEW | Candidate interviewed by multiple people simultaneously |
+| GROUP_INTERVIEW | Multiple candidates interviewed together |
+| ONSITE_INTERVIEW | In-person interview at the company office |
+| TECHNICAL_INTERVIEW | Technical questions or whiteboard exercise |
+| FINAL_INTERVIEW | Last round, often with senior leadership |
+| CASE_STUDY | Business or analytical case exercise |
+| TAKE_HOME_ASSIGNMENT | Candidate completes work outside the interview setting |
+| SKILLS_ASSESSMENT | Structured evaluation of a specific skill set |
+| PORTFOLIO_REVIEW | Review of the candidate's past work or portfolio |
+| CULTURE_FIT | Conversation focused on values and team fit |
+| BACKGROUND_CHECK | Employment history and credential verification |
+| REFERENCE_CHECK | Outreach to the candidate's listed references |
+| SALARY_NEGOTIATION | Discussion of compensation terms |
+| OFFER | Formal offer extended to the candidate |
+
+Choose the type that best describes what happens in each stage. The type is shown in the hiring process timeline to help the whole team understand what each step involves.
 
 **Example Workflow:**
 ```

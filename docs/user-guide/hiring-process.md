@@ -170,6 +170,34 @@ Some stages require candidates to submit materials asynchronously (take-home tes
 
 See [Async Stages Guide](./async-stages.md) for complete details.
 
+## Group by Position
+
+The Hiring Processes page offers two ways to view the list: a flat table and a grouped layout. The grouped layout is the default.
+
+### Enabling the Group by Position Toggle
+
+A toggle labeled **Group by Position** appears in the top-right area of the page, above the list. When enabled, all hiring processes are organized under collapsible sections, one section per job position. When disabled, processes are shown in a flat paginated table.
+
+### How the Grouped Layout Works
+
+Each job position appears as a header row showing:
+- The job position title
+- How many candidates have been AI-scored out of the total in that group
+- The average AI score for that group (when at least one candidate has been scored)
+- The total number of processes in the group
+
+Click the header row (or the expand/collapse icon) to show or hide the candidates in that group.
+
+Within an expanded group, each row shows the process title, candidate name and email, current status, active stage, AI score (if available), and action buttons.
+
+### Sorting Within a Group
+
+If one or more candidates in a group have been AI-scored, a sort icon appears on the group header. Click it to sort that group's rows by AI score from highest to lowest. Click again to return to the default order.
+
+### Stage Notes Panel
+
+Each process row in the grouped view includes a note icon. Click it to expand an inline panel that shows notes written for each stage of that process. Notes display the stage name, note content (up to three lines), and the star rating if one was given. This lets you review stage feedback without leaving the list.
+
 ## Hiring Process Details
 
 **View Complete Process:**

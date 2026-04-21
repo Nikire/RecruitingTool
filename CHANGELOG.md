@@ -7,6 +7,100 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 1.0.0 - 2026-04-21
+
+**First stable production release of Borderless ATS.**
+
+This release merges the entire `development` history into `production` and marks the official v1.0 milestone. All features built across versions 0.1.0–0.11.0 are included.
+
+### 🚀 Core Features Shipped in v1.0
+
+#### Recruitment Pipeline
+- Full hiring process management — create, track, and advance candidates through custom multi-stage pipelines
+- 18 stage types: SCREENING, PHONE_SCREEN, HR_INTERVIEW, PANEL_INTERVIEW, GROUP_INTERVIEW, ONSITE_INTERVIEW, CASE_STUDY, TAKE_HOME_ASSIGNMENT, SKILLS_ASSESSMENT, PORTFOLIO_REVIEW, CULTURE_FIT, BACKGROUND_CHECK, REFERENCE_CHECK, SALARY_NEGOTIATION, TECHNICAL_TEST, CODING_CHALLENGE, PRESENTATION, INTERVIEW
+- Stage notes, candidate notes, activity log per process
+- Hiring process grouping by job position
+
+#### Job Positions & Applications
+- Create and manage job positions with full lifecycle (OPEN → CLOSED → CANCELLED)
+- Public careers page for each company with apply flow
+- Application management with status tracking and bulk actions
+- Server-side filtering, pagination, and sorting
+
+#### Candidate Management
+- Candidate profiles with resume/document storage
+- Bulk import, soft delete, GDPR purge
+- Full search and filter across all candidate fields
+
+#### Interview Scheduling
+- Schedule interviews with date, type, meeting link, and interviewer assignment
+- Google Calendar integration — auto-creates Google Calendar events and Google Meet links
+- Interview reminders sent 24h before via email
+- Scorecard system with consensus reports
+
+#### Async Stage Submissions
+- HR sends a secure tokenized link to candidates for file/text submissions
+- Candidates submit without creating an account (public URL)
+- Deadline enforcement, automatic reminder emails 24–48h before expiry
+- Submissions visible in the hiring process timeline
+
+#### Email System
+- 14 transactional email types (application received, status updates, interview scheduled/cancelled/rescheduled/reminder, async stage invitations, team invitations, booking confirmations, deployment notifications)
+- Fully customisable company email templates with Handlebars variable support
+- Template preview, per-company default templates, APPLICATION_STATUS_UPDATE fallback type
+- Powered by Resend HTTP API
+
+#### File Manager
+- Company-wide file manager at `/hr/files`
+- View all uploaded files with metadata (type, size, candidate link, uploader, date)
+- Bulk ZIP download, bulk delete, individual file operations
+- Storage quota bar showing plan usage in real time
+
+#### Subscription & Quota System
+- FREE / PROFESSIONAL / ENTERPRISE plans via Stripe
+- Per-company quota enforcement: job positions, users, storage (MB), AI scoring credits, candidates per position
+- Quota banners on Files, Job Positions, Hiring Processes, and Team pages
+- Billing portal integration
+
+#### AI Features
+- AI resume parsing via Google Gemini
+- Candidate scoring and batch scoring
+- Per-company AI credit tracking with monthly reset
+- Free tier (15 RPM) and paid tier (360 RPM) support
+
+#### Team & Company Management
+- Role-based access control: USER, HR, HR_SPECIALIST, HR_MANAGER, HR_ADMIN, COMPANY_ADMIN, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+- Team invitations, connection requests, role changes
+- Company profile with logo, social links, careers page settings
+- Dark/light theme toggle with persistence
+
+#### Analytics
+- Pipeline conversion funnel
+- Hiring trends chart
+- Candidate source distribution
+- Date range filtering with presets (7d, 30d, 90d, 1y, all time)
+
+#### Auth & Security
+- JWT authentication with refresh tokens
+- Auth0 social login (Google, LinkedIn)
+- Email verification flow
+- Rate limiting on all public endpoints
+
+#### Infrastructure
+- Docker Compose setup (backend, frontend, PostgreSQL, MinIO)
+- GitHub Actions: code quality checks, issue automation, EC2 deploy on push to `development` and `production`
+- Automated deployment notifications via email
+
+### 🗃️ Database
+- 530+ commits, 40+ Prisma migrations applied
+- All migrations included and applied on production EC2
+
+### 📝 Documentation
+- User guides: candidates, interviews, job positions, team management, async stages, email templates, hiring processes, file manager, analytics, subscription & limits
+- External API production activation guide (`docs/EXTERNAL_APIS_PRODUCTION.md`)
+
+---
+
 ## Version 0.11.0 - 2026-04-19
 
 ### 🚀 Features

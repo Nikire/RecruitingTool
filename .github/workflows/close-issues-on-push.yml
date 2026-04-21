@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - development
+      - production
 
 jobs:
   close-issues:
