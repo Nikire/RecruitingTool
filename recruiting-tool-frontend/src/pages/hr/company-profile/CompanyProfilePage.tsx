@@ -329,6 +329,7 @@ const CompanyProfilePage: React.FC = () => {
                       style={{ display: "none" }}
                     />
                     <Button
+                      type="button"
                       variant="contained"
                       size="small"
                       startIcon={<PhotoCameraIcon />}
