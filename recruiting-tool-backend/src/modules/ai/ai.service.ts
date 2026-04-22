@@ -89,7 +89,7 @@ export class AiService {
       });
 
       const buffer = Buffer.from(response.data);
-      const contentType = response.headers['content-type'] || '';
+      const contentType = String(response.headers['content-type'] || '');
 
       // Determine file type and extract text accordingly
       if (contentType.includes('pdf') || fileUrl.toLowerCase().endsWith('.pdf')) {
