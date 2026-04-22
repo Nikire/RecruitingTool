@@ -70,7 +70,7 @@ const AuthLayout = () => {
                 ? "/borderless-logo-light.png"
                 : "/borderless-logo-dark.png"
             }
-            alt="Borderless"
+            alt="Borderless ATS"
             sx={{ height: 28, width: "auto" }}
           />
         </Box>

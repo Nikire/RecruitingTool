@@ -170,7 +170,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <Box
           component="img"
           src="/borderless-logo-light.png"
-          alt="Borderless"
+          alt="Borderless ATS"
           sx={{ height: 28, width: "auto", mr: 1 }}
         />
       </Toolbar>

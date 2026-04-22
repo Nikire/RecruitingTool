@@ -170,7 +170,7 @@ const Navbar: React.FC = () => {
                 <Box
                   component="img"
                   src="/borderless-logo-light.png"
-                  alt="Borderless"
+                  alt="Borderless ATS"
                   sx={{
                     height: { xs: 28, sm: 32 },
                     width: "auto",
