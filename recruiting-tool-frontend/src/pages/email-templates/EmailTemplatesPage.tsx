@@ -101,6 +101,10 @@ const EmailTemplatesPage: React.FC = () => {
         return t("email_template.type_interview_reminder");
       case EmailTemplateType.OFFER_LETTER:
         return t("email_template.type_offer_letter");
+      case EmailTemplateType.ASYNC_STAGE_INVITATION:
+        return t("email_template.type_async_stage_invitation");
+      case EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED:
+        return t("email_template.type_async_stage_submission_received");
       case EmailTemplateType.CUSTOM:
         return t("email_template.type_custom");
       default:

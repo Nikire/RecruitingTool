@@ -970,6 +970,8 @@
     "type_interview_invitation": "Interview Invitation",
     "type_interview_reminder": "Interview Reminder",
     "type_offer_letter": "Offer Letter",
+    "type_async_stage_invitation": "Async Stage Invitation",
+    "type_async_stage_submission_received": "Async Stage Submission Received",
     "type_custom": "Custom",
     "variable_candidate_name": "Candidate name",
     "variable_position_title": "Position title",

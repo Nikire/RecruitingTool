@@ -978,6 +978,8 @@
     "type_interview_invitation": "Invitación a Entrevista",
     "type_interview_reminder": "Recordatorio de Entrevista",
     "type_offer_letter": "Carta de Oferta",
+    "type_async_stage_invitation": "Invitación de Etapa Asíncrona",
+    "type_async_stage_submission_received": "Entrega de Etapa Asíncrona Recibida",
     "type_custom": "Personalizado",
     "variable_candidate_name": "Nombre del candidato",
     "variable_position_title": "Título de la posición",

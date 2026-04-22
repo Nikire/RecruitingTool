@@ -271,6 +271,31 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, DefaultTemplateContent> = {
       ${SIGNATURE}`,
     ),
   },
+  [EmailTemplateType.ASYNC_STAGE_INVITATION]: {
+    name: "Async Stage Invitation",
+    subject:
+      "Action required: Submit your materials for {{jobTitle}} at {{companyName}}",
+    body: WRAPPER(
+      "linear-gradient(135deg,#325CE7 0%,#5b7ff0 100%)",
+      "Submission Request",
+      `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{candidateName}}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">We'd like you to submit your materials for the <strong>{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>.</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Please use the link below to complete your submission before the deadline.</p>
+      <a href="{{submissionLink}}" style="display:inline-block;padding:12px 28px;background:#325CE7;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;">Submit Now</a>
+      ${SIGNATURE}`,
+    ),
+  },
+  [EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED]: {
+    name: "Async Stage Submission Received",
+    subject: "We received your submission for {{jobTitle}} at {{companyName}}",
+    body: WRAPPER(
+      "linear-gradient(135deg,#325CE7 0%,#5b7ff0 100%)",
+      "Submission Received",
+      `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{candidateName}}</strong>,</p>
+      <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Thank you for submitting your materials for the <strong>{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>. We've received everything and will be in touch soon.</p>
+      ${SIGNATURE}`,
+    ),
+  },
   [EmailTemplateType.CUSTOM]: {
     name: "Custom Email",
     subject: "A message from {{companyName}}",
@@ -590,6 +615,14 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
                 </MenuItem>
                 <MenuItem value={EmailTemplateType.OFFER_LETTER}>
                   {t("email_template.type_offer_letter")}
+                </MenuItem>
+                <MenuItem value={EmailTemplateType.ASYNC_STAGE_INVITATION}>
+                  {t("email_template.type_async_stage_invitation")}
+                </MenuItem>
+                <MenuItem
+                  value={EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED}
+                >
+                  {t("email_template.type_async_stage_submission_received")}
                 </MenuItem>
                 <MenuItem value={EmailTemplateType.CUSTOM}>
                   {t("email_template.type_custom")}
