@@ -517,7 +517,7 @@ const LandingPage = () => {
                 <Box
                   component="img"
                   src="/borderless-logo-light.png"
-                  alt="Borderless"
+                  alt="Borderless ATS"
                   sx={{
                     width: { xs: "65%", md: "80%" },
                     maxWidth: 380,
@@ -575,7 +575,7 @@ const LandingPage = () => {
             <Box
               component="img"
               src="/borderless-icon.png"
-              alt="Borderless"
+              alt="Borderless ATS"
               sx={{
                 width: { xs: 72, md: 100 },
                 height: "auto",
