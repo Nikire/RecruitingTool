@@ -46,7 +46,7 @@ export class CustomPlansService {
   ) {
     const apiKey = this.configService.get<string>('STRIPE_SECRET_KEY');
     if (apiKey) {
-      this.stripe = new Stripe(apiKey, { apiVersion: '2025-11-17.clover' });
+      this.stripe = new Stripe(apiKey, { apiVersion: '2026-02-25.clover' });
       this.stripeEnabled = true;
       this.logger.log('Stripe integration available for custom plans');
     } else {
