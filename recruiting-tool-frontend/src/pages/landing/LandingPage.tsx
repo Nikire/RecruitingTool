@@ -1890,10 +1890,12 @@ const LandingPage = () => {
               <Stack spacing={2}>
                 <Typography
                   variant="body2"
-                  onClick={() => navigate("/privacy")}
+                  component="a"
+                  href="/privacy"
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
@@ -1902,10 +1904,12 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  onClick={() => navigate("/terms")}
+                  component="a"
+                  href="/terms"
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
@@ -1914,10 +1918,12 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  onClick={() => navigate("/security")}
+                  component="a"
+                  href="/security"
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
