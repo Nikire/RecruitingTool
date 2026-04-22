@@ -17,6 +17,7 @@ import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CacheService } from '../cache/cache.service';
 import { FilesService } from '../storage/files.service';
+import { StorageService } from '../storage/storage.service';
 import { EmailTemplatesService } from '../email-templates/email-templates.service';
 
 @Injectable()
@@ -25,6 +26,7 @@ export class CompanyService {
     private databaseService: DatabaseService,
     private cacheService: CacheService,
     private filesService: FilesService,
+    private storageService: StorageService,
     private emailTemplatesService: EmailTemplatesService,
   ) {}
 
@@ -542,11 +544,11 @@ export class CompanyService {
         throw new EntityNotFoundException('Company', String(userCompanyId));
       }
 
-      const uploadedFile = await this.filesService.uploadFile(file, userUid);
+      const logoUrl = await this.storageService.uploadLogoFile(file.buffer, file.originalname, file.mimetype);
 
       const updatedCompany = await this.databaseService.company.update({
         where: { id: userCompanyId },
-        data: { logoUrl: uploadedFile.downloadUrl },
+        data: { logoUrl },
       });
 
       await this.cacheService.invalidate(`company:${company.uid}`);
@@ -572,13 +574,11 @@ export class CompanyService {
         throw new EntityNotFoundException('Company', uid);
       }
 
-      // Upload file using existing file upload service
-      const uploadedFile = await this.filesService.uploadFile(file, userUid);
+      const logoUrl = await this.storageService.uploadLogoFile(file.buffer, file.originalname, file.mimetype);
 
-      // Update company with logo URL
       const updatedCompany = await this.databaseService.company.update({
         where: { uid },
-        data: { logoUrl: uploadedFile.downloadUrl },
+        data: { logoUrl },
         include: includeCompany,
       });
 

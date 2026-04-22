@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadBucketCommand, CreateBucketCommand } from '@aws-sdk/client-s3';
+import { S3Client, PutObjectCommand, GetObjectCommand, DeleteObjectCommand, HeadBucketCommand, CreateBucketCommand, PutBucketPolicyCommand } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { randomUUID } from 'crypto';
 import { Readable } from 'stream';
 import { createHash } from 'crypto';
 
@@ -32,6 +33,65 @@ export class StorageService {
 
     this.logger.log(`Storage service initialized with endpoint: ${endpoint}`);
     this.ensureBucketExists();
+    this.ensureLogosPolicyExists();
+  }
+
+  /**
+   * Returns a permanent public URL for a file (no signature, no expiry).
+   * Only valid for publicly readable paths (e.g. logos/).
+   */
+  getPublicUrl(key: string): string {
+    return `${this.publicEndpoint}/${this.bucketName}/${key}`;
+  }
+
+  /**
+   * Uploads a company logo to the logos/ prefix and returns a permanent public URL.
+   * The logos/ prefix is publicly readable via bucket policy.
+   */
+  async uploadLogoFile(file: Buffer, originalName: string, mimetype: string): Promise<string> {
+    const sanitized = originalName.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const key = `logos/${randomUUID()}-${sanitized}`;
+
+    const command = new PutObjectCommand({
+      Bucket: this.bucketName,
+      Key: key,
+      Body: file,
+      ContentType: mimetype,
+    });
+
+    await this.s3Client.send(command);
+    this.logger.log(`Logo uploaded: ${key}`);
+    return this.getPublicUrl(key);
+  }
+
+  /**
+   * Sets a public-read bucket policy on the logos/ prefix so browser can load
+   * company logos without presigned URLs (they never expire).
+   */
+  private async ensureLogosPolicyExists(): Promise<void> {
+    const policy = {
+      Version: '2012-10-17',
+      Statement: [
+        {
+          Effect: 'Allow',
+          Principal: { AWS: ['*'] },
+          Action: ['s3:GetObject'],
+          Resource: [`arn:aws:s3:::${this.bucketName}/logos/*`],
+        },
+      ],
+    };
+
+    try {
+      await this.s3Client.send(
+        new PutBucketPolicyCommand({
+          Bucket: this.bucketName,
+          Policy: JSON.stringify(policy),
+        }),
+      );
+      this.logger.log(`Logos public-read policy applied to bucket "${this.bucketName}"`);
+    } catch (error) {
+      this.logger.warn(`Could not apply logos bucket policy: ${error.message}`);
+    }
   }
 
   /**
