@@ -7,6 +7,7 @@ import {
   PropTypes,
   Toolbar,
   Tooltip,
+  Typography,
   alpha,
   useTheme,
   useMediaQuery,
@@ -167,15 +168,29 @@ const Navbar: React.FC = () => {
                   }}
                 />
               ) : (
-                <Box
-                  component="img"
-                  src="/borderless-logo-light.png"
-                  alt="Borderless ATS"
-                  sx={{
-                    height: { xs: 28, sm: 32 },
-                    width: "auto",
-                  }}
-                />
+                <>
+                  <Box
+                    component="img"
+                    src="/borderless-logo-light.png"
+                    alt="Borderless ATS"
+                    sx={{
+                      height: { xs: 28, sm: 32 },
+                      width: "auto",
+                    }}
+                  />
+                  <Typography
+                    variant="body1"
+                    component="span"
+                    sx={{
+                      fontWeight: 700,
+                      color: "inherit",
+                      display: { xs: "none", sm: "block" },
+                      letterSpacing: "-0.01em",
+                    }}
+                  >
+                    Borderless ATS
+                  </Typography>
+                </>
               )}
             </Box>
 
