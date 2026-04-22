@@ -6,19 +6,56 @@ on:
       - production
 
 jobs:
+  build-frontend:
+    name: Build Frontend Image (GitHub Actions)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./recruiting-tool-frontend
+          push: true
+          tags: ghcr.io/nikire/borderless-frontend:latest
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}
+            VITE_AUTH0_DOMAIN=${{ secrets.VITE_AUTH0_DOMAIN }}
+            VITE_AUTH0_CLIENT_ID=${{ secrets.VITE_AUTH0_CLIENT_ID }}
+            VITE_AUTH0_AUDIENCE=${{ secrets.VITE_AUTH0_AUDIENCE }}
+
   deploy:
     name: SSH Deploy to EC2 (Production)
     runs-on: ubuntu-latest
+    needs: build-frontend
+    permissions:
+      packages: read
 
     steps:
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
+        env:
+          GHCR_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GHCR_USER: ${{ github.actor }}
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
           timeout: 30s
-          command_timeout: 30m
+          command_timeout: 20m
+          envs: GHCR_TOKEN,GHCR_USER
           script: |
             set -e
 
@@ -28,49 +65,37 @@ jobs:
             echo "==> Pulling latest code from production branch..."
             git pull origin production
 
-            echo "==> Disk usage before cleanup..."
-            df -h /
-
-            echo "==> Freeing up disk space (removes stopped containers, build cache, and dangling images)..."
+            echo "==> Freeing up disk space..."
             docker container prune -f || true
-            docker builder prune -f || true
             docker image prune -f || true
-
-            echo "==> Pre-pulling base images to ensure they are available for builds..."
-            docker pull node:20-alpine || true
-
-            echo "==> Disk usage after cleanup..."
-            df -h /
 
             echo "==> Resolving any failed Prisma migrations on DB..."
             DB_USER=$(docker exec borderless-db-1 sh -c 'echo $POSTGRES_USER' 2>/dev/null || echo "postgres")
             docker exec borderless-db-1 psql -U "$DB_USER" -d recruiting_tool_db -c \
               "DELETE FROM _prisma_migrations WHERE migration_name LIKE '20260226%' AND finished_at IS NULL AND rolled_back_at IS NULL;" \
-              2>/dev/null || echo "==> DB fix skipped (container not ready or no failed migrations)"
+              2>/dev/null || echo "==> DB fix skipped"
 
-            echo "==> Ensuring SELinux allows nginx → Docker connections..."
+            echo "==> Ensuring SELinux allows nginx connections..."
             sudo setsebool -P httpd_can_network_connect 1 || true
 
-            echo "==> Building backend (sequential to avoid layer cache conflicts)..."
+            echo "==> Building backend..."
             DOCKER_BUILDKIT=0 docker-compose build backend
 
-            echo "==> Building frontend..."
-            DOCKER_BUILDKIT=0 docker-compose build frontend
+            echo "==> Pulling pre-built frontend image from GitHub Container Registry..."
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
+            docker pull ghcr.io/nikire/borderless-frontend:latest
 
             echo "==> Starting all containers..."
             docker-compose up -d
 
             echo "==> Waiting for containers to initialize..."
-            sleep 30
+            sleep 20
 
-            echo "==> Reloading nginx to pick up any config changes..."
+            echo "==> Reloading nginx..."
             sudo nginx -s reload || sudo systemctl reload nginx || true
 
             echo "==> Verifying container health..."
             docker-compose ps
-
-            echo "==> Backend container logs (last 60 lines)..."
-            docker logs borderless-backend-1 --tail=60 2>&1 || true
 
             echo "==> Smoke testing public endpoints..."
             curl -sf https://borderlessats.com > /dev/null \
@@ -79,9 +104,6 @@ jobs:
             curl -sf https://api.borderlessats.com/api/health/liveness > /dev/null \
               && echo "✅ Backend API: OK" \
               || echo "❌ Backend API: FAILED"
-
-            echo "==> Disk usage after deploy..."
-            df -h /
 
             echo "==> Production deployment complete."
 
@@ -97,13 +119,7 @@ jobs:
             --arg sha "${COMMIT_SHA:0:7}" \
             --arg msg "$COMMIT_MSG" \
             --arg actor "$ACTOR" \
-            '{
-              commitSha: $sha,
-              commitMessage: $msg,
-              actor: $actor,
-              environment: "production",
-              status: "success"
-            }')
+            '{commitSha: $sha, commitMessage: $msg, actor: $actor, environment: "production", status: "success"}')
 
           curl -sf -X POST https://api.borderlessats.com/api/internal/deployment-notification \
             -H "Content-Type: application/json" \

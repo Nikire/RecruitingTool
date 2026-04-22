@@ -141,6 +141,7 @@ services:
       start_period: 40s
 
   frontend:
+    image: ghcr.io/nikire/borderless-frontend:latest
     build:
       context: ./recruiting-tool-frontend
       dockerfile: Dockerfile
