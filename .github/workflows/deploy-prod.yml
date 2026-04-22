@@ -63,7 +63,8 @@ jobs:
             cd ~/borderless
 
             echo "==> Pulling latest code from production branch..."
-            git pull origin production
+            git fetch origin production
+            git reset --hard origin/production
 
             echo "==> Freeing up disk space..."
             docker container prune -f || true
