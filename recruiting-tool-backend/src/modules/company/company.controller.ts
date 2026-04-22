@@ -76,7 +76,7 @@ export class CompanyController {
     file: Express.Multer.File,
     @CurrentUser() currentUser: any,
   ): Promise<CompanyProfileResponseDto> {
-    return this.companyService.uploadLogoForMyCompany(currentUser.companyId, file, currentUser.uid);
+    return this.companyService.uploadLogoForMyCompany(currentUser.companyId, file);
   }
 
   @Post()
@@ -179,9 +179,7 @@ export class CompanyController {
     @Param('uid') uid: string,
     @UploadedFile(new FileValidationPipe('image'))
     file: Express.Multer.File,
-    @CurrentUser() currentUser: any,
   ): Promise<CompanyResponseDto> {
-    const userUid = currentUser?.uid;
-    return this.companyService.uploadLogo(uid, file, userUid);
+    return this.companyService.uploadLogo(uid, file);
   }
 }

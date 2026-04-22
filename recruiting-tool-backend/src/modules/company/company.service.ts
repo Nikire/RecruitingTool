@@ -534,7 +534,7 @@ export class CompanyService {
     }
   }
 
-  async uploadLogoForMyCompany(userCompanyId: number, file: Express.Multer.File, userUid: string): Promise<CompanyProfileResponseDto> {
+  async uploadLogoForMyCompany(userCompanyId: number, file: Express.Multer.File): Promise<CompanyProfileResponseDto> {
     try {
       const company = await this.databaseService.company.findUnique({
         where: { id: userCompanyId },
@@ -563,7 +563,7 @@ export class CompanyService {
     }
   }
 
-  async uploadLogo(uid: string, file: Express.Multer.File, userUid: string): Promise<CompanyResponseDto> {
+  async uploadLogo(uid: string, file: Express.Multer.File): Promise<CompanyResponseDto> {
     try {
       // Verify company exists
       const company = await this.databaseService.company.findUnique({
