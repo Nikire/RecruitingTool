@@ -17,7 +17,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_KEY }}
-          timeout: 10m
+          timeout: 30s
+          command_timeout: 30m
           script: |
             set -e
 
@@ -25,7 +26,8 @@ jobs:
             cd ~/borderless
 
             echo "==> Pulling latest code from development branch..."
-            git pull origin development
+            git fetch origin development
+            git reset --hard origin/development
 
             echo "==> Disk usage before cleanup..."
             df -h /
