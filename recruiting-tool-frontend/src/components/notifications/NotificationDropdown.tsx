@@ -42,10 +42,11 @@ const NotificationDropdown: React.FC<NotificationDropdownProps> = ({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const {
-    data: notifications = [],
+    data: rawNotifications,
     isLoading,
     isError,
   } = useNotifications({ limit: 10 });
+  const notifications = Array.isArray(rawNotifications) ? rawNotifications : [];
   const { mutate: markAsRead } = useMarkAsRead();
   const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllAsRead();
   const { mutate: deleteNotification } = useDeleteNotification();
