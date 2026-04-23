@@ -9,15 +9,10 @@ import { useAuth0Configured } from "../../providers/Auth0ProviderWithNavigate";
 import { getDefaultDashboard } from "../../utils/permissions";
 
 /**
- * Auth0CallbackHandler
- *
- * Runs on every page render. When Auth0 reports isAuthenticated=true but
- * no local JWT is present in localStorage, it exchanges the Auth0 access
- * token for a backend JWT by calling POST /api/auth/social/callback.
- *
- * Uses a ref to guard against double-execution in React StrictMode.
+ * Inner handler — only mounted when Auth0Provider is in the tree.
+ * Calling useAuth0() outside a provider crashes the app.
  */
-const Auth0CallbackHandler: React.FC = () => {
+const Auth0CallbackHandlerInner: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated, isLoading, getIdTokenClaims } = useAuth0();
   const { setUser } = useUserAtom();
@@ -135,6 +130,22 @@ const Auth0CallbackHandler: React.FC = () => {
 
   // No visual output in the normal (already-authenticated) case
   return null;
+};
+
+/**
+ * Auth0CallbackHandler
+ *
+ * Runs on every page render. When Auth0 reports isAuthenticated=true but
+ * no local JWT is present in localStorage, it exchanges the Auth0 access
+ * token for a backend JWT by calling POST /api/auth/social/callback.
+ *
+ * Renders nothing when Auth0 is not configured so that useAuth0() is never
+ * called outside an Auth0Provider context (which would crash the app).
+ */
+const Auth0CallbackHandler: React.FC = () => {
+  const isAuth0Configured = useAuth0Configured();
+  if (!isAuth0Configured) return null;
+  return <Auth0CallbackHandlerInner />;
 };
 
 export default Auth0CallbackHandler;
