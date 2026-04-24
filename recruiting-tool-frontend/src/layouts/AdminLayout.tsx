@@ -14,6 +14,7 @@ import WorkspacePremiumOutlinedIcon from "@mui/icons-material/WorkspacePremiumOu
 import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import ArticleIcon from "@mui/icons-material/Article";
+import CampaignIcon from "@mui/icons-material/Campaign";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -138,6 +139,12 @@ const AdminLayout: React.FC = () => {
           icon: <ArticleIcon />,
           path: "/admin/docs",
           requiresSuperAdmin: true,
+        },
+        {
+          text: t("admin_layout.outreach_templates"),
+          icon: <CampaignIcon />,
+          path: "/admin/outreach-templates",
+          requiresSuperAdmin: false,
         },
       ],
     },

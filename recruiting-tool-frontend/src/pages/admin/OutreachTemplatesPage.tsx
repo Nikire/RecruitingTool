@@ -1,0 +1,780 @@
+import React, { useState } from "react";
+import {
+  Box,
+  Button,
+  Chip,
+  Collapse,
+  Divider,
+  Grid,
+  IconButton,
+  List,
+  ListItemButton,
+  ListItemText,
+  Paper,
+  Stack,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
+  Tooltip,
+  Typography,
+} from "@mui/material";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import EmailIcon from "@mui/icons-material/Email";
+import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import ReplyIcon from "@mui/icons-material/Reply";
+import SearchIcon from "@mui/icons-material/Search";
+import { useTranslation } from "react-i18next";
+
+interface TemplateVariant {
+  label: string;
+  subject?: string;
+  body: string;
+}
+
+interface Template {
+  id: number;
+  channel: "linkedin" | "email" | "whatsapp" | "response" | "directory";
+  titleKey: string;
+  hintKey: string;
+  es: TemplateVariant[];
+  en: TemplateVariant[];
+}
+
+const VARIABLES = [
+  { key: "NOMBRE", defaultVal: "" },
+  { key: "EMPRESA", defaultVal: "" },
+  { key: "CARGO", defaultVal: "" },
+  { key: "CIUDAD", defaultVal: "" },
+  { key: "N_POSICIONES", defaultVal: "" },
+  { key: "CANAL", defaultVal: "" },
+  { key: "TU_NOMBRE", defaultVal: "" },
+  { key: "DESCUENTO", defaultVal: "40" },
+];
+
+const TEMPLATES: Template[] = [
+  {
+    id: 1,
+    channel: "linkedin",
+    titleKey: "outreach.t1_title",
+    hintKey: "outreach.t1_hint",
+    es: [
+      {
+        label: "Variante A — Staff augmentation",
+        body: "Hola {{NOMBRE}}, vi que {{EMPRESA}} trabaja en staff augmentation. Estoy construyendo un ATS diseñado específicamente para empresas de staffing y me gustaría conectar. Tenemos un programa para empresas fundadoras con descuento permanente. ¿Te parece si charlamos?",
+      },
+      {
+        label: "Variante B — Agencia de reclutamiento",
+        body: "Hola {{NOMBRE}}, encontré {{EMPRESA}} en {{CANAL}} y me llamó la atención su enfoque. Estoy lanzando Borderless ATS, pensado para agencias de reclutamiento, con IA para screening y un programa fundador con precio bloqueado para siempre. ¿Conectamos?",
+      },
+    ],
+    en: [
+      {
+        label: "Variant A — Staff augmentation",
+        body: "Hi {{NOMBRE}}, I saw that {{EMPRESA}} works in staff augmentation. I'm building an ATS designed specifically for staffing firms and would love to connect. We have a Founding Companies Program with a permanent discount. Would you be open to a quick chat?",
+      },
+      {
+        label: "Variant B — Recruiting agency",
+        body: "Hi {{NOMBRE}}, I came across {{EMPRESA}} on {{CANAL}} and was impressed by your focus. I'm launching Borderless ATS — built for recruiting agencies — with AI screening and a founder pricing program locked in forever. Want to connect?",
+      },
+    ],
+  },
+  {
+    id: 2,
+    channel: "linkedin",
+    titleKey: "outreach.t2_title",
+    hintKey: "outreach.t2_hint",
+    es: [
+      {
+        label: "Español",
+        body: `Hola {{NOMBRE}}, gracias por conectar.
+
+Te escribo porque estamos abriendo Borderless ATS a un grupo limitado de empresas fundadoras. Es una plataforma ATS con IA para screening de candidatos, programación de entrevistas y gestión de pipelines — pensada para empresas como {{EMPRESA}} que manejan múltiples posiciones a la vez.
+
+El programa fundador incluye:
+✅ Descuento permanente ({{DESCUENTO}}% para siempre, sin excepciones)
+✅ Acceso directo al equipo de producto para moldear el roadmap
+✅ 30 días de prueba gratis sin tarjeta de crédito
+
+¿Tendrías 20 minutos esta semana para que te muestre la plataforma?`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        body: `Hi {{NOMBRE}}, thanks for connecting.
+
+I'm reaching out because we're opening Borderless ATS to a limited group of founding companies. It's an AI-powered ATS with candidate screening, interview scheduling, and pipeline management — built for companies like {{EMPRESA}} that manage multiple open positions at once.
+
+The founding program includes:
+✅ Permanent discount ({{DESCUENTO}}% forever, no exceptions)
+✅ Direct line to the product team to shape the roadmap
+✅ 30-day free trial, no credit card required
+
+Would you have 20 minutes this week for a quick demo?`,
+      },
+    ],
+  },
+  {
+    id: 3,
+    channel: "email",
+    titleKey: "outreach.t3_title",
+    hintKey: "outreach.t3_hint",
+    es: [
+      {
+        label: "Español",
+        subject:
+          "{{EMPRESA}}: ATS diseñado para staffing (programa fundador abierto)",
+        body: `Hola {{NOMBRE}},
+
+Encontré {{EMPRESA}} en {{CANAL}} y quería escribirte directamente.
+
+La mayoría de los ATS del mercado están diseñados para empresas que contratan para sí mismas. Borderless ATS está pensado para empresas de staffing y staff augmentation que gestionan múltiples posiciones para distintos clientes al mismo tiempo.
+
+Lo que resolvemos:
+→ Screening automático con IA para manejar alto volumen de candidatos
+→ Pipelines personalizables por posición/cliente
+→ Programación de entrevistas con integración de calendario
+→ Panel de analytics para tomar decisiones en base a datos
+
+Estamos en fase de lanzamiento y tenemos un programa para empresas fundadoras: {{DESCUENTO}}% de descuento permanente sobre el precio final, a cambio de feedback mensual honesto.
+
+¿Te interesa ver una demo de 20 minutos? Puedo adaptarme a tu horario.
+
+Saludos,
+{{TU_NOMBRE}}
+Borderless ATS — borderlessats.com`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        subject:
+          "{{EMPRESA}}: ATS built for staffing firms (founding program open)",
+        body: `Hi {{NOMBRE}},
+
+I came across {{EMPRESA}} on {{CANAL}} and wanted to reach out directly.
+
+Most ATS tools on the market are built for companies hiring for themselves. Borderless ATS is designed for staffing and staff augmentation firms that manage multiple positions across different clients simultaneously.
+
+What we solve:
+→ AI-powered automatic screening to handle high candidate volumes
+→ Customizable pipelines per position/client
+→ Interview scheduling with calendar integration
+→ Analytics dashboard for data-driven decisions
+
+We're in launch phase and have a Founding Companies Program: {{DESCUENTO}}% permanent discount on final pricing, in exchange for honest monthly feedback.
+
+Would you be open to a 20-minute demo? I can work around your schedule.
+
+Best,
+{{TU_NOMBRE}}
+Borderless ATS — borderlessats.com`,
+      },
+    ],
+  },
+  {
+    id: 4,
+    channel: "email",
+    titleKey: "outreach.t4_title",
+    hintKey: "outreach.t4_hint",
+    es: [
+      {
+        label: "Español",
+        subject:
+          "Re: {{EMPRESA}}: ATS diseñado para staffing (programa fundador abierto)",
+        body: `Hola {{NOMBRE}},
+
+Solo quería asegurarme de que mi mensaje anterior llegó bien.
+
+Entiendo que el timing puede no ser el ideal — si ahora no es un buen momento, no hay problema. Pero si en algún punto están evaluando herramientas para gestionar sus procesos de reclutamiento, con gusto agendamos una llamada corta.
+
+El programa fundador cierra cuando se completen los cupos. Una vez cerrado, el precio es precio de mercado.
+
+¿Hay alguien más en tu equipo con quien debería hablar sobre esto?
+
+Saludos,
+{{TU_NOMBRE}}`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        subject:
+          "Re: {{EMPRESA}}: ATS built for staffing firms (founding program open)",
+        body: `Hi {{NOMBRE}},
+
+Just wanted to make sure my previous message got through.
+
+I understand the timing might not be right — no worries if so. But if at any point you're evaluating tools to manage your recruiting workflows, I'd be happy to set up a quick call.
+
+The founding program closes once spots are filled. After that, it's standard market pricing.
+
+Is there someone else on your team I should be talking to about this?
+
+Best,
+{{TU_NOMBRE}}`,
+      },
+    ],
+  },
+  {
+    id: 5,
+    channel: "email",
+    titleKey: "outreach.t5_title",
+    hintKey: "outreach.t5_hint",
+    es: [
+      {
+        label: "Español",
+        subject: "Cerrando el hilo — {{EMPRESA}}",
+        body: `Hola {{NOMBRE}},
+
+No quiero saturarte, así que este será mi último mensaje sobre esto.
+
+Si en algún momento su empresa necesita una solución ATS — especialmente una pensada para el volumen y la dinámica del staffing — estamos en borderlessats.com.
+
+El programa fundador sigue abierto por ahora.
+
+Mucho éxito con {{EMPRESA}}.
+
+{{TU_NOMBRE}}`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        subject: "Closing the loop — {{EMPRESA}}",
+        body: `Hi {{NOMBRE}},
+
+I don't want to clutter your inbox, so this will be my last message on this.
+
+If your company ever needs an ATS solution — especially one built for the volume and dynamics of staffing — we're at borderlessats.com.
+
+The founding program is still open for now.
+
+Wishing {{EMPRESA}} continued success.
+
+{{TU_NOMBRE}}`,
+      },
+    ],
+  },
+  {
+    id: 6,
+    channel: "whatsapp",
+    titleKey: "outreach.t6_title",
+    hintKey: "outreach.t6_hint",
+    es: [
+      {
+        label: "Español",
+        body: "Hola {{NOMBRE}}, soy {{TU_NOMBRE}}. Te escribo porque estoy lanzando Borderless ATS, un sistema de reclutamiento con IA pensado para empresas de staffing como {{EMPRESA}}. Tenemos un programa fundador con descuento permanente ({{DESCUENTO}}%). ¿Tienes 5 minutos para que te cuente de qué se trata? 🙌",
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        body: "Hi {{NOMBRE}}, I'm {{TU_NOMBRE}}. I'm reaching out because I'm launching Borderless ATS — an AI-powered recruiting system built for staffing firms like {{EMPRESA}}. We have a founding program with a permanent {{DESCUENTO}}% discount. Do you have 5 minutes to hear more? 🙌",
+      },
+    ],
+  },
+  {
+    id: 7,
+    channel: "response",
+    titleKey: "outreach.t7_title",
+    hintKey: "outreach.t7_hint",
+    es: [
+      {
+        label: "Español",
+        body: `Hola {{NOMBRE}}, genial que estés interesado/a.
+
+Te comparto el link para registrarte y empezar la prueba gratuita de 30 días:
+👉 https://borderlessats.com/register
+
+El programa fundador se activa automáticamente una vez que hables con nosotros y confirmemos tu empresa. Si prefieres que hablemos primero para que te explique todo en detalle, podemos agendar una llamada rápida — dime qué horario te queda mejor y lo coordinamos.
+
+¿Alguna pregunta antes de empezar?
+
+{{TU_NOMBRE}}`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        body: `Hi {{NOMBRE}}, great to hear you're interested.
+
+Here's the link to sign up and start your 30-day free trial:
+👉 https://borderlessats.com/register
+
+The founding program is activated once we have a quick chat to confirm your company. If you'd prefer to talk first so I can walk you through everything, happy to schedule a quick call — just let me know what time works best.
+
+Any questions before getting started?
+
+{{TU_NOMBRE}}`,
+      },
+    ],
+  },
+  {
+    id: 8,
+    channel: "email",
+    titleKey: "outreach.t8_title",
+    hintKey: "outreach.t8_hint",
+    es: [
+      {
+        label: "Español",
+        subject: "Resumen de nuestra llamada + próximos pasos — Borderless ATS",
+        body: `Hola {{NOMBRE}},
+
+Gracias por tomarte el tiempo hoy. Fue genial entender mejor el proceso de reclutamiento de {{EMPRESA}}.
+
+Como acordamos, acá van los próximos pasos:
+
+1. Prueba gratuita de 30 días → https://borderlessats.com/register
+2. Bloqueo del descuento fundador de {{DESCUENTO}}% (te confirmo por este medio una vez que te registres)
+3. Onboarding: te ayudo a configurar tu primer pipeline y subir tu equipo
+
+Si tienes dudas durante la prueba, escríbeme directamente a este email o por WhatsApp.
+
+¡Mucho éxito con el proceso!
+
+{{TU_NOMBRE}}
+Borderless ATS — borderlessats.com`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        subject: "Call summary + next steps — Borderless ATS",
+        body: `Hi {{NOMBRE}},
+
+Thanks for taking the time today. It was great to understand {{EMPRESA}}'s recruiting process better.
+
+As we discussed, here are the next steps:
+
+1. 30-day free trial → https://borderlessats.com/register
+2. Lock in your {{DESCUENTO}}% founding discount (I'll confirm via this email once you sign up)
+3. Onboarding: I'll help you set up your first pipeline and invite your team
+
+If you have any questions during the trial, reach out directly by email or WhatsApp.
+
+Looking forward to working with you!
+
+{{TU_NOMBRE}}
+Borderless ATS — borderlessats.com`,
+      },
+    ],
+  },
+  {
+    id: 9,
+    channel: "directory",
+    titleKey: "outreach.t9_title",
+    hintKey: "outreach.t9_hint",
+    es: [
+      {
+        label: "Español",
+        body: `Hola equipo de {{EMPRESA}},
+
+Los encontré en {{CANAL}} y quería contactarlos directamente.
+
+Estoy lanzando Borderless ATS — una plataforma de reclutamiento con IA diseñada específicamente para empresas de staffing y staff augmentation. A diferencia de los ATS genéricos, está construida para manejar alto volumen de candidatos en múltiples posiciones simultáneas.
+
+Tenemos un programa de empresas fundadoras abierto: acceso completo durante 30 días y descuento permanente del {{DESCUENTO}}% a cambio de feedback mensual.
+
+¿Estarían interesados en una demo corta?
+
+{{TU_NOMBRE}} — borderlessats.com`,
+      },
+    ],
+    en: [
+      {
+        label: "English",
+        body: `Hi {{EMPRESA}} team,
+
+I found you on {{CANAL}} and wanted to reach out directly.
+
+I'm launching Borderless ATS — an AI-powered recruiting platform built specifically for staffing and staff augmentation companies. Unlike generic ATS tools, it's designed to handle high candidate volumes across multiple simultaneous positions.
+
+We have a Founding Companies Program open now: full access for 30 days and a permanent {{DESCUENTO}}% discount in exchange for monthly feedback.
+
+Would you be interested in a short demo?
+
+{{TU_NOMBRE}} — borderlessats.com`,
+      },
+    ],
+  },
+];
+
+const CHANNEL_ICONS: Record<Template["channel"], React.ReactNode> = {
+  linkedin: <LinkedInIcon fontSize="small" />,
+  email: <EmailIcon fontSize="small" />,
+  whatsapp: <WhatsAppIcon fontSize="small" />,
+  response: <ReplyIcon fontSize="small" />,
+  directory: <SearchIcon fontSize="small" />,
+};
+
+function applyVars(text: string, vars: Record<string, string>): string {
+  return text.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] || `{{${key}}}`);
+}
+
+const OutreachTemplatesPage: React.FC = () => {
+  const { t } = useTranslation();
+
+  const [selectedId, setSelectedId] = useState(1);
+  const [lang, setLang] = useState<"es" | "en">("es");
+  const [varsOpen, setVarsOpen] = useState(true);
+  const [varValues, setVarValues] = useState<Record<string, string>>(
+    Object.fromEntries(VARIABLES.map((v) => [v.key, v.defaultVal])),
+  );
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const template = TEMPLATES.find((t) => t.id === selectedId)!;
+  const variants = lang === "es" ? template.es : template.en;
+
+  const handleVarChange = (key: string, value: string) => {
+    setVarValues((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleCopy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    });
+  };
+
+  return (
+    <Box sx={{ p: { xs: 2, md: 3 } }}>
+      {/* Header */}
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h5" fontWeight={600}>
+          {t("outreach.title")}
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          {t("outreach.subtitle")}
+        </Typography>
+      </Box>
+
+      {/* Variables panel */}
+      <Paper
+        variant="outlined"
+        sx={{ mb: 3, borderRadius: 2, overflow: "hidden" }}
+      >
+        <Box
+          sx={{
+            px: 2,
+            py: 1.5,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            cursor: "pointer",
+            bgcolor: "action.hover",
+          }}
+          onClick={() => setVarsOpen((p) => !p)}
+        >
+          <Typography variant="subtitle2" fontWeight={600}>
+            {t("outreach.variables_title")}
+          </Typography>
+          <IconButton size="small">
+            {varsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+          </IconButton>
+        </Box>
+        <Collapse in={varsOpen}>
+          <Box sx={{ p: 2 }}>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ mb: 2, display: "block" }}
+            >
+              {t("outreach.variables_hint")}
+            </Typography>
+            <Grid container spacing={2}>
+              {VARIABLES.map((v) => (
+                <Grid key={v.key} size={{ xs: 6, sm: 4, md: 3 }}>
+                  <TextField
+                    size="small"
+                    fullWidth
+                    label={`{{${v.key}}}`}
+                    value={varValues[v.key]}
+                    onChange={(e) => handleVarChange(v.key, e.target.value)}
+                    slotProps={{
+                      inputLabel: {
+                        sx: { fontFamily: "monospace", fontSize: "0.8rem" },
+                      },
+                    }}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        </Collapse>
+      </Paper>
+
+      {/* Main layout */}
+      <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
+        {/* Template list */}
+        <Grid size={{ xs: 12, md: 3 }}>
+          <Paper
+            variant="outlined"
+            sx={{ borderRadius: 2, overflow: "hidden" }}
+          >
+            <Box sx={{ px: 2, py: 1.5, bgcolor: "action.hover" }}>
+              <Typography variant="subtitle2" fontWeight={600}>
+                {t("outreach.templates_label")}
+              </Typography>
+            </Box>
+            <List dense disablePadding>
+              {TEMPLATES.map((tmpl, index) => (
+                <React.Fragment key={tmpl.id}>
+                  {index > 0 && <Divider />}
+                  <ListItemButton
+                    selected={selectedId === tmpl.id}
+                    onClick={() => setSelectedId(tmpl.id)}
+                    sx={{
+                      py: 1.25,
+                      "&.Mui-selected": {
+                        bgcolor: "primary.main",
+                        color: "primary.contrastText",
+                        "& .MuiListItemText-secondary": {
+                          color: "rgba(255,255,255,0.7)",
+                        },
+                        "& svg": { color: "primary.contrastText" },
+                        "&:hover": { bgcolor: "primary.dark" },
+                      },
+                    }}
+                  >
+                    <Box
+                      sx={{
+                        mr: 1.5,
+                        display: "flex",
+                        alignItems: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      {CHANNEL_ICONS[tmpl.channel]}
+                    </Box>
+                    <ListItemText
+                      primary={
+                        <Typography
+                          variant="body2"
+                          fontWeight={selectedId === tmpl.id ? 600 : 400}
+                        >
+                          {`${tmpl.id}. ${t(tmpl.titleKey)}`}
+                        </Typography>
+                      }
+                    />
+                  </ListItemButton>
+                </React.Fragment>
+              ))}
+            </List>
+          </Paper>
+        </Grid>
+
+        {/* Template content */}
+        <Grid size={{ xs: 12, md: 9 }}>
+          <Paper
+            variant="outlined"
+            sx={{ borderRadius: 2, overflow: "hidden" }}
+          >
+            {/* Template header */}
+            <Box
+              sx={{
+                px: 2,
+                py: 1.5,
+                bgcolor: "action.hover",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                flexWrap: "wrap",
+                gap: 1,
+              }}
+            >
+              <Stack direction="row" spacing={1} alignItems="center">
+                {CHANNEL_ICONS[template.channel]}
+                <Typography variant="subtitle2" fontWeight={600}>
+                  {`${template.id}. ${t(template.titleKey)}`}
+                </Typography>
+                <Chip
+                  label={t(`outreach.channel_${template.channel}`)}
+                  size="small"
+                  variant="outlined"
+                />
+              </Stack>
+              <ToggleButtonGroup
+                value={lang}
+                exclusive
+                onChange={(_, val) => val && setLang(val)}
+                size="small"
+              >
+                <ToggleButton value="es">🇪🇸 ES</ToggleButton>
+                <ToggleButton value="en">🇺🇸 EN</ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+
+            {/* Hint */}
+            <Box
+              sx={{
+                px: 2,
+                py: 1,
+                bgcolor: "background.default",
+                borderBottom: 1,
+                borderColor: "divider",
+              }}
+            >
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontStyle="italic"
+              >
+                {t(template.hintKey)}
+              </Typography>
+            </Box>
+
+            {/* Variants */}
+            <Box sx={{ p: 2 }}>
+              <Stack spacing={3}>
+                {variants.map((variant, idx) => {
+                  const subjectKey = `subject-${selectedId}-${lang}-${idx}`;
+                  const bodyKey = `body-${selectedId}-${lang}-${idx}`;
+                  const resolvedSubject = variant.subject
+                    ? applyVars(variant.subject, varValues)
+                    : null;
+                  const resolvedBody = applyVars(variant.body, varValues);
+
+                  return (
+                    <Box key={idx}>
+                      {variants.length > 1 && (
+                        <Typography
+                          variant="caption"
+                          fontWeight={600}
+                          color="text.secondary"
+                          sx={{ mb: 1, display: "block" }}
+                        >
+                          {variant.label}
+                        </Typography>
+                      )}
+
+                      {/* Subject line */}
+                      {resolvedSubject && (
+                        <Box sx={{ mb: 1.5 }}>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              fontWeight={600}
+                            >
+                              {t("outreach.subject")}
+                            </Typography>
+                            <Tooltip
+                              title={
+                                copiedKey === subjectKey
+                                  ? t("outreach.copied")
+                                  : t("outreach.copy")
+                              }
+                            >
+                              <IconButton
+                                size="small"
+                                onClick={() =>
+                                  handleCopy(resolvedSubject, subjectKey)
+                                }
+                              >
+                                {copiedKey === subjectKey ? (
+                                  <CheckIcon fontSize="small" color="success" />
+                                ) : (
+                                  <ContentCopyIcon fontSize="small" />
+                                )}
+                              </IconButton>
+                            </Tooltip>
+                          </Box>
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              px: 2,
+                              py: 1,
+                              borderRadius: 1,
+                              bgcolor: "action.hover",
+                              fontFamily: "monospace",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            {resolvedSubject}
+                          </Paper>
+                        </Box>
+                      )}
+
+                      {/* Body */}
+                      <Box>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            mb: 0.5,
+                          }}
+                        >
+                          <Typography
+                            variant="caption"
+                            color="text.secondary"
+                            fontWeight={600}
+                          >
+                            {variant.subject
+                              ? t("outreach.body")
+                              : t("outreach.message")}
+                          </Typography>
+                          <Button
+                            size="small"
+                            variant={
+                              copiedKey === bodyKey ? "contained" : "outlined"
+                            }
+                            color={
+                              copiedKey === bodyKey ? "success" : "primary"
+                            }
+                            startIcon={
+                              copiedKey === bodyKey ? (
+                                <CheckIcon fontSize="small" />
+                              ) : (
+                                <ContentCopyIcon fontSize="small" />
+                              )
+                            }
+                            onClick={() => handleCopy(resolvedBody, bodyKey)}
+                          >
+                            {copiedKey === bodyKey
+                              ? t("outreach.copied")
+                              : t("outreach.copy")}
+                          </Button>
+                        </Box>
+                        <Paper
+                          variant="outlined"
+                          sx={{
+                            px: 2,
+                            py: 1.5,
+                            borderRadius: 1,
+                            bgcolor: "background.default",
+                            whiteSpace: "pre-wrap",
+                            fontFamily: "inherit",
+                            fontSize: "0.875rem",
+                            lineHeight: 1.7,
+                            color: "text.primary",
+                          }}
+                        >
+                          {resolvedBody}
+                        </Paper>
+                      </Box>
+                    </Box>
+                  );
+                })}
+              </Stack>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
+
+export default OutreachTemplatesPage;

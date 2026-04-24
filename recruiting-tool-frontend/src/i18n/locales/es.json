@@ -1720,6 +1720,7 @@
     "custom_plans": "Planes Personalizados",
     "ai_quota": "Cuota de IA",
     "docs": "Documentación",
+    "outreach_templates": "Plantillas de Outreach",
     "aria_label": "navegación de administrador",
     "group_management": "Gestión",
     "group_configuration": "Configuración"
@@ -4259,5 +4260,40 @@
   "quota_banner": {
     "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
     "unlimited": "{{used}}{{unit}} {{label}} (Ilimitado)"
+  },
+  "outreach": {
+    "title": "Plantillas de Outreach",
+    "subtitle": "Mensajes listos para copiar y enviar a potenciales clientes. Completá las variables y copiá.",
+    "variables_title": "Variables",
+    "variables_hint": "Completá los campos para reemplazar automáticamente los marcadores en todas las plantillas.",
+    "templates_label": "Plantillas",
+    "subject": "Asunto",
+    "body": "Cuerpo",
+    "message": "Mensaje",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
+    "channel_linkedin": "LinkedIn",
+    "channel_email": "Email",
+    "channel_whatsapp": "WhatsApp",
+    "channel_response": "Respuesta",
+    "channel_directory": "Directorio",
+    "t1_title": "LinkedIn — Solicitud de Conexión",
+    "t1_hint": "Límite ~300 caracteres. Ir directo al punto.",
+    "t2_title": "LinkedIn — Mensaje Post-Conexión",
+    "t2_hint": "Enviar 1-2 días después de que acepten la conexión.",
+    "t3_title": "Email Frío",
+    "t3_hint": "Para enviar directamente si tenés el email del contacto.",
+    "t4_title": "Email de Seguimiento #1",
+    "t4_hint": "Enviar 4-5 días después si no hay respuesta.",
+    "t5_title": "Email de Seguimiento #2 — Cierre",
+    "t5_hint": "Último intento. Enviar 7-10 días después del follow-up #1.",
+    "t6_title": "WhatsApp / Mensaje Corto",
+    "t6_hint": "Para contactos donde tenés número de teléfono.",
+    "t7_title": "Respuesta a Interesado",
+    "t7_hint": "Cuando alguien responde positivo a cualquier mensaje anterior.",
+    "t8_title": "Post-Demo",
+    "t8_hint": "Enviar dentro de las 2 horas después de una demo.",
+    "t9_title": "Clutch / Formulario de Directorio",
+    "t9_hint": "Para usar en formularios de contacto de Clutch, GoodFirms, etc."
   }
 }

@@ -72,6 +72,7 @@ import WebhooksPage from "./pages/admin/WebhooksPage";
 import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import AIQuotaPage from "./pages/admin/AIQuotaPage";
 import DocsPage from "./pages/admin/DocsPage";
+import OutreachTemplatesPage from "./pages/admin/OutreachTemplatesPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -352,6 +353,7 @@ function App() {
               <Route path="/admin/custom-plans" element={<CustomPlansPage />} />
               <Route path="/admin/ai-quota" element={<AIQuotaPage />} />
               <Route path="/admin/docs" element={<DocsPage />} />
+              <Route path="/admin/outreach-templates" element={<OutreachTemplatesPage />} />
               <Route
                 path="/admin/email-logs"
                 element={<AdminEmailLogsPage />}

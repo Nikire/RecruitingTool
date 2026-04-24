@@ -3905,6 +3905,7 @@
     "custom_plans": "Custom Plans",
     "ai_quota": "AI Quota",
     "docs": "Documentation",
+    "outreach_templates": "Outreach Templates",
     "aria_label": "admin navigation",
     "group_management": "Management",
     "group_configuration": "Configuration"
@@ -4251,5 +4252,40 @@
   "quota_banner": {
     "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
     "unlimited": "{{used}}{{unit}} {{label}} (Unlimited)"
+  },
+  "outreach": {
+    "title": "Outreach Templates",
+    "subtitle": "Copy-ready messages for reaching out to potential clients. Fill in the variables and copy.",
+    "variables_title": "Variables",
+    "variables_hint": "Fill in the fields below to auto-replace placeholders in all templates.",
+    "templates_label": "Templates",
+    "subject": "Subject",
+    "body": "Body",
+    "message": "Message",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "channel_linkedin": "LinkedIn",
+    "channel_email": "Email",
+    "channel_whatsapp": "WhatsApp",
+    "channel_response": "Response",
+    "channel_directory": "Directory",
+    "t1_title": "LinkedIn — Connection Request",
+    "t1_hint": "Limit ~300 characters. Be direct.",
+    "t2_title": "LinkedIn — Follow-up After Connecting",
+    "t2_hint": "Send 1-2 days after they accept the connection.",
+    "t3_title": "Cold Email",
+    "t3_hint": "Use when you have the contact's email directly.",
+    "t4_title": "Follow-up Email #1",
+    "t4_hint": "Send 4-5 days after no reply.",
+    "t5_title": "Follow-up Email #2 — Closing",
+    "t5_hint": "Last attempt. Send 7-10 days after follow-up #1.",
+    "t6_title": "WhatsApp / Short Message",
+    "t6_hint": "For contacts where you have a phone number.",
+    "t7_title": "Response to Interested Prospect",
+    "t7_hint": "When someone replies positively to any previous message.",
+    "t8_title": "Post-Demo Follow-up",
+    "t8_hint": "Send within 2 hours after a demo call.",
+    "t9_title": "Clutch / Directory Contact Form",
+    "t9_hint": "For use in Clutch, GoodFirms, and similar contact forms."
   }
 }
