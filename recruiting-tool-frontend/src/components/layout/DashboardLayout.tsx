@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import {
   Box,
+  Button,
   Collapse,
   Drawer,
   List,
@@ -21,6 +22,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonIcon from "@mui/icons-material/Person";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import HomeIcon from "@mui/icons-material/Home";
 import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
@@ -415,6 +417,35 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             >
               {displayTitle}
             </Typography>
+
+            {/* Back to site — visible on sm+, icon-only on xs */}
+            <Tooltip title={t("common.back_to_site")}>
+              <Button
+                color="inherit"
+                onClick={() => navigate("/")}
+                startIcon={<HomeIcon />}
+                sx={{
+                  textTransform: "none",
+                  mr: 0.5,
+                  display: { xs: "none", sm: "flex" },
+                  opacity: 0.85,
+                  "&:hover": { opacity: 1 },
+                }}
+              >
+                {t("common.back_to_site")}
+              </Button>
+            </Tooltip>
+            <Tooltip title={t("common.back_to_site")}>
+              <IconButton
+                color="inherit"
+                onClick={() => navigate("/")}
+                sx={{ display: { xs: "flex", sm: "none" } }}
+                aria-label={t("common.back_to_site")}
+              >
+                <HomeIcon />
+              </IconButton>
+            </Tooltip>
+
             <Tooltip
               title={
                 themeMode === "dark"
