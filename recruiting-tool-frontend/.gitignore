@@ -27,5 +27,6 @@ dist-ssr
 test-results/
 playwright-report/
 
-# Screenshot captures
+# Screenshot captures (dev tool output — but NOT public landing page assets)
 screenshots/
+!public/screenshots/

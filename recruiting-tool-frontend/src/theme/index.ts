@@ -202,12 +202,7 @@ const darkThemeOptions: ThemeOptions = {
       main: "#325CE7",
       light: "#B6C5F6",
     },
-    secondary: {
-      main: "#1e2a38",
-      light: "#2d3e52",
-      dark: "#141d28",
-      contrastText: "#ffffff",
-    },
+
     background: {
       default: "#0f1923",
       paper: "#1a2535",
