@@ -575,6 +575,7 @@ const LandingPage = () => {
                 display: "block",
                 width: "100%",
                 height: "auto",
+                aspectRatio: "16/9",
               },
             }}
           >
