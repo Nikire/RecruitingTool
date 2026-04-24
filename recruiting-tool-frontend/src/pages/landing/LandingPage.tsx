@@ -1,3 +1,4 @@
+import { useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -37,6 +38,7 @@ import LooksTwoIcon from "@mui/icons-material/LooksTwo";
 import Looks3Icon from "@mui/icons-material/Looks3";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
+import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
 
 // Keyframe animations - More dynamic
 const gradientShift = keyframes`
@@ -99,6 +101,8 @@ const LandingPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthMe();
   const { data: planLimits } = usePlanLimits();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoStarted, setVideoStarted] = useState(false);
 
   // Detect applicant-only users (USER role with no HR/admin roles)
   const isApplicantOnly =
@@ -564,6 +568,7 @@ const LandingPage = () => {
           </Box>
           <Box
             sx={{
+              position: "relative",
               width: "100%",
               maxWidth: 900,
               mx: "auto",
@@ -579,12 +584,57 @@ const LandingPage = () => {
               },
             }}
           >
-            <video controls preload="metadata" poster="/borderless-icon.png">
+            <video
+              ref={videoRef}
+              controls
+              preload="metadata"
+              onPlay={() => setVideoStarted(true)}
+            >
               <source
                 src="https://api.borderlessats.com/storage/borderless-files/videos/borderless-demo.mp4"
                 type="video/mp4"
               />
             </video>
+
+            {/* Custom thumbnail overlay — black bg + logo, hidden once video starts */}
+            {!videoStarted && (
+              <Box
+                onClick={() => {
+                  videoRef.current?.play();
+                }}
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  bgcolor: "black",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 3,
+                  cursor: "pointer",
+                  "&:hover .play-icon": {
+                    transform: "scale(1.1)",
+                    opacity: 1,
+                  },
+                }}
+              >
+                <Box
+                  component="img"
+                  src="/borderless-logo-light.png"
+                  alt="Borderless ATS"
+                  sx={{ width: { xs: "45%", md: "32%" }, height: "auto" }}
+                />
+                <PlayCircleFilledIcon
+                  className="play-icon"
+                  sx={{
+                    fontSize: { xs: 56, md: 72 },
+                    color: "white",
+                    opacity: 0.85,
+                    transition: "all 0.2s ease",
+                  }}
+                />
+              </Box>
+            )}
           </Box>
         </Container>
       </Box>
