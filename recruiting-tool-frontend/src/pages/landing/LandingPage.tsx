@@ -6,6 +6,7 @@ import {
   CardContent,
   Container,
   Grid,
+  Modal,
   Typography,
   useTheme,
   alpha,
@@ -41,6 +42,9 @@ import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
+import CloseIcon from "@mui/icons-material/Close";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import ZoomOutIcon from "@mui/icons-material/ZoomOut";
 
 const SLIDES = [
   { src: "/screenshots/dashboard-analytics.png", alt: "Analytics Dashboard" },
@@ -120,6 +124,9 @@ const LandingPage = () => {
   const [videoStarted, setVideoStarted] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
   const [sliderHovered, setSliderHovered] = useState(false);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxSlide, setLightboxSlide] = useState(0);
+  const [zoomed, setZoomed] = useState(false);
 
   useEffect(() => {
     if (sliderHovered) return;
@@ -318,7 +325,7 @@ const LandingPage = () => {
 
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
           <Grid container spacing={8} alignItems="center">
-            <Grid size={{ xs: 12, md: 7 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box
                 sx={{
                   animation: `${fadeInUp} 0.8s ease-out`,
@@ -534,7 +541,7 @@ const LandingPage = () => {
                 )}
               </Box>
             </Grid>
-            <Grid size={{ xs: 12, md: 5 }}>
+            <Grid size={{ xs: 12, md: 6 }}>
               <Box
                 sx={{
                   position: "relative",
@@ -665,12 +672,18 @@ const LandingPage = () => {
                   component="img"
                   src={slide.src}
                   alt={slide.alt}
+                  onClick={() => {
+                    setLightboxSlide(idx);
+                    setZoomed(false);
+                    setLightboxOpen(true);
+                  }}
                   sx={{
                     flexShrink: 0,
                     width: "100%",
                     height: "100%",
-                    objectFit: "cover",
+                    objectFit: "contain",
                     display: "block",
+                    cursor: "zoom-in",
                   }}
                 />
               ))}
@@ -750,6 +763,166 @@ const LandingPage = () => {
           </Box>
         </Container>
       </Box>
+
+      {/* Lightbox Modal */}
+      <Modal
+        open={lightboxOpen}
+        onClose={() => setLightboxOpen(false)}
+        sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
+      >
+        <Box
+          sx={{
+            position: "relative",
+            width: { xs: "95vw", md: "90vw" },
+            maxWidth: 1400,
+            outline: "none",
+          }}
+        >
+          {/* Controls row */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 1,
+              px: 0.5,
+            }}
+          >
+            <Box sx={{ display: "flex", gap: 1 }}>
+              <IconButton
+                onClick={() => setZoomed((z) => !z)}
+                sx={{
+                  bgcolor: alpha("#000", 0.55),
+                  color: "white",
+                  "&:hover": { bgcolor: alpha("#000", 0.8) },
+                }}
+              >
+                {zoomed ? <ZoomOutIcon /> : <ZoomInIcon />}
+              </IconButton>
+              {/* Slide counter */}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  px: 1.5,
+                  borderRadius: 2,
+                  bgcolor: alpha("#000", 0.55),
+                  color: "white",
+                  fontSize: "0.85rem",
+                }}
+              >
+                {lightboxSlide + 1} / {SLIDES.length}
+              </Box>
+            </Box>
+            <IconButton
+              onClick={() => setLightboxOpen(false)}
+              sx={{
+                bgcolor: alpha("#000", 0.55),
+                color: "white",
+                "&:hover": { bgcolor: alpha("#000", 0.8) },
+              }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Image container */}
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              maxHeight: "85vh",
+              overflow: zoomed ? "auto" : "hidden",
+              borderRadius: 2,
+              bgcolor: "#000",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <Box
+              component="img"
+              src={SLIDES[lightboxSlide].src}
+              alt={SLIDES[lightboxSlide].alt}
+              onClick={() => setZoomed((z) => !z)}
+              sx={{
+                display: "block",
+                maxWidth: zoomed ? "none" : "100%",
+                maxHeight: zoomed ? "none" : "85vh",
+                width: zoomed ? "150%" : "auto",
+                objectFit: "contain",
+                cursor: zoomed ? "zoom-out" : "zoom-in",
+                transition: "all 0.3s ease",
+              }}
+            />
+
+            {/* Prev */}
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoomed(false);
+                setLightboxSlide(
+                  (p) => (p - 1 + SLIDES.length) % SLIDES.length,
+                );
+              }}
+              sx={{
+                position: "absolute",
+                left: 8,
+                top: "50%",
+                transform: "translateY(-50%)",
+                bgcolor: alpha("#000", 0.55),
+                color: "white",
+                "&:hover": { bgcolor: alpha("#000", 0.8) },
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+
+            {/* Next */}
+            <IconButton
+              onClick={(e) => {
+                e.stopPropagation();
+                setZoomed(false);
+                setLightboxSlide((p) => (p + 1) % SLIDES.length);
+              }}
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: "50%",
+                transform: "translateY(-50%)",
+                bgcolor: alpha("#000", 0.55),
+                color: "white",
+                "&:hover": { bgcolor: alpha("#000", 0.8) },
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+          </Box>
+
+          {/* Dot indicators */}
+          <Box
+            sx={{ display: "flex", justifyContent: "center", gap: 1, mt: 1.5 }}
+          >
+            {SLIDES.map((_, idx) => (
+              <Box
+                key={idx}
+                onClick={() => {
+                  setZoomed(false);
+                  setLightboxSlide(idx);
+                }}
+                sx={{
+                  width: idx === lightboxSlide ? 20 : 8,
+                  height: 8,
+                  borderRadius: 4,
+                  bgcolor: idx === lightboxSlide ? "white" : alpha("#fff", 0.4),
+                  cursor: "pointer",
+                  transition: "all 0.3s ease",
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+      </Modal>
 
       {/* Social Proof Bar - Hidden (no real data yet)
 			<Box
