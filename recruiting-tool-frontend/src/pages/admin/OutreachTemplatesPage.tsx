@@ -12,6 +12,8 @@ import {
   ListItemText,
   Paper,
   Stack,
+  Tab,
+  Tabs,
   TextField,
   ToggleButton,
   ToggleButtonGroup,
@@ -27,6 +29,8 @@ import EmailIcon from "@mui/icons-material/Email";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
 import ReplyIcon from "@mui/icons-material/Reply";
 import SearchIcon from "@mui/icons-material/Search";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { useTranslation } from "react-i18next";
 
 interface TemplateVariant {
@@ -412,6 +416,107 @@ const CHANNEL_ICONS: Record<Template["channel"], React.ReactNode> = {
   directory: <SearchIcon fontSize="small" />,
 };
 
+interface ProspectSource {
+  name: string;
+  url: string;
+  description: string;
+  tipKey: string;
+  category: "directory" | "social" | "community" | "search";
+}
+
+const PROSPECT_SOURCES: ProspectSource[] = [
+  {
+    name: "Clutch.co",
+    url: "https://clutch.co/it-staffing",
+    description:
+      "El directorio B2B más grande de empresas de IT staffing y staff augmentation. Tienen reviews verificadas y datos de contacto.",
+    tipKey: "outreach.prospect_tip_clutch",
+    category: "directory",
+  },
+  {
+    name: "GoodFirms",
+    url: "https://www.goodfirms.co/it-staffing-companies",
+    description:
+      "Directorio similar a Clutch con empresas de staffing rankeadas por reviews y tamaño.",
+    tipKey: "outreach.prospect_tip_goodfirms",
+    category: "directory",
+  },
+  {
+    name: "LinkedIn — Búsqueda de empresas",
+    url: "https://www.linkedin.com/search/results/companies/?keywords=staff%20augmentation",
+    description:
+      'Buscar "staff augmentation" o "IT staffing" como industria. Filtrar por país, tamaño (11-200 empleados ideal). Ver quién es el CEO/Founder/Head of Talent.',
+    tipKey: "outreach.prospect_tip_linkedin",
+    category: "social",
+  },
+  {
+    name: "LinkedIn Sales Navigator",
+    url: "https://business.linkedin.com/sales-solutions/sales-navigator",
+    description:
+      "Versión paga de LinkedIn. Permite filtrar por industria (Staffing & Recruiting), cargo (CEO, Founder, CTO), ubicación y tamaño de empresa.",
+    tipKey: "outreach.prospect_tip_sales_nav",
+    category: "social",
+  },
+  {
+    name: "Upwork — Agencias",
+    url: "https://www.upwork.com/agencies/staffing/",
+    description:
+      "Muchas empresas de staff augmentation tienen perfiles como agencias en Upwork. Pueden ser contactadas directamente desde la plataforma.",
+    tipKey: "outreach.prospect_tip_upwork",
+    category: "directory",
+  },
+  {
+    name: "Toptal — Partners",
+    url: "https://www.toptal.com/",
+    description:
+      "Empresas que compiten con Toptal o lo complementan. Buscar en Google 'Toptal alternative staff augmentation' para encontrar competidores directos.",
+    tipKey: "outreach.prospect_tip_toptal",
+    category: "search",
+  },
+  {
+    name: "Google Maps / Local",
+    url: "https://www.google.com/maps/search/staffing+company",
+    description:
+      'Buscar "staffing company" o "IT recruiting" en Google Maps con tu ciudad o país objetivo. Aparecen empresas locales con datos de contacto.',
+    tipKey: "outreach.prospect_tip_google_maps",
+    category: "search",
+  },
+  {
+    name: "Staffing Industry Analysts (SIA)",
+    url: "https://www2.staffingindustry.com/",
+    description:
+      "Asociación global del sector staffing. Publican rankings anuales de las empresas más grandes. Ideal para encontrar empresas medianas en LATAM y Europa.",
+    tipKey: "outreach.prospect_tip_sia",
+    category: "community",
+  },
+  {
+    name: "Reddit — r/staffing",
+    url: "https://www.reddit.com/r/staffing/",
+    description:
+      "Comunidad de reclutadores y dueños de agencias. Leer conversaciones para entender pain points. Contactar directamente a quienes mencionan problemas con su ATS.",
+    tipKey: "outreach.prospect_tip_reddit",
+    category: "community",
+  },
+  {
+    name: "Crunchbase",
+    url: "https://www.crunchbase.com/search/organizations?q=staffing",
+    description:
+      "Base de datos de startups y empresas. Filtrar por industria Staffing & Recruiting, país, y tamaño. Incluye emails de fundadores en algunos casos.",
+    tipKey: "outreach.prospect_tip_crunchbase",
+    category: "directory",
+  },
+];
+
+const CATEGORY_COLORS: Record<
+  ProspectSource["category"],
+  "primary" | "secondary" | "success" | "warning"
+> = {
+  directory: "primary",
+  social: "secondary",
+  community: "success",
+  search: "warning",
+};
+
 function applyVars(text: string, vars: Record<string, string>): string {
   return text.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] || `{{${key}}}`);
 }
@@ -419,6 +524,7 @@ function applyVars(text: string, vars: Record<string, string>): string {
 const OutreachTemplatesPage: React.FC = () => {
   const { t } = useTranslation();
 
+  const [pageTab, setPageTab] = useState(0);
   const [selectedId, setSelectedId] = useState(1);
   const [lang, setLang] = useState<"es" | "en">("es");
   const [varsOpen, setVarsOpen] = useState(true);
@@ -444,7 +550,7 @@ const OutreachTemplatesPage: React.FC = () => {
   return (
     <Box sx={{ p: { xs: 2, md: 3 } }}>
       {/* Header */}
-      <Box sx={{ mb: 3 }}>
+      <Box sx={{ mb: 2 }}>
         <Typography variant="h5" fontWeight={600}>
           {t("outreach.title")}
         </Typography>
@@ -453,326 +559,469 @@ const OutreachTemplatesPage: React.FC = () => {
         </Typography>
       </Box>
 
-      {/* Variables panel */}
-      <Paper
-        variant="outlined"
-        sx={{ mb: 3, borderRadius: 2, overflow: "hidden" }}
-      >
-        <Box
-          sx={{
-            px: 2,
-            py: 1.5,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            cursor: "pointer",
-            bgcolor: "action.hover",
-          }}
-          onClick={() => setVarsOpen((p) => !p)}
-        >
-          <Typography variant="subtitle2" fontWeight={600}>
-            {t("outreach.variables_title")}
-          </Typography>
-          <IconButton size="small">
-            {varsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-          </IconButton>
-        </Box>
-        <Collapse in={varsOpen}>
-          <Box sx={{ p: 2 }}>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              sx={{ mb: 2, display: "block" }}
-            >
-              {t("outreach.variables_hint")}
-            </Typography>
-            <Grid container spacing={2}>
-              {VARIABLES.map((v) => (
-                <Grid key={v.key} size={{ xs: 6, sm: 4, md: 3 }}>
-                  <TextField
-                    size="small"
-                    fullWidth
-                    label={`{{${v.key}}}`}
-                    value={varValues[v.key]}
-                    onChange={(e) => handleVarChange(v.key, e.target.value)}
-                    slotProps={{
-                      inputLabel: {
-                        sx: { fontFamily: "monospace", fontSize: "0.8rem" },
-                      },
-                    }}
-                  />
-                </Grid>
-              ))}
-            </Grid>
-          </Box>
-        </Collapse>
-      </Paper>
+      {/* Page tabs */}
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs value={pageTab} onChange={(_, v) => setPageTab(v)}>
+          <Tab label={t("outreach.tab_templates")} />
+          <Tab
+            label={t("outreach.tab_prospecting")}
+            icon={<TravelExploreIcon fontSize="small" />}
+            iconPosition="start"
+          />
+        </Tabs>
+      </Box>
 
-      {/* Main layout */}
-      <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
-        {/* Template list */}
-        <Grid size={{ xs: 12, md: 3 }}>
+      {/* ── TAB 0: Templates ──────────────────────────────────────── */}
+      {pageTab === 0 && (
+        <>
+          {/* Variables panel */}
           <Paper
             variant="outlined"
-            sx={{ borderRadius: 2, overflow: "hidden" }}
+            sx={{ mb: 3, borderRadius: 2, overflow: "hidden" }}
           >
-            <Box sx={{ px: 2, py: 1.5, bgcolor: "action.hover" }}>
-              <Typography variant="subtitle2" fontWeight={600}>
-                {t("outreach.templates_label")}
-              </Typography>
-            </Box>
-            <List dense disablePadding>
-              {TEMPLATES.map((tmpl, index) => (
-                <React.Fragment key={tmpl.id}>
-                  {index > 0 && <Divider />}
-                  <ListItemButton
-                    selected={selectedId === tmpl.id}
-                    onClick={() => setSelectedId(tmpl.id)}
-                    sx={{
-                      py: 1.25,
-                      "&.Mui-selected": {
-                        bgcolor: "primary.main",
-                        color: "primary.contrastText",
-                        "& .MuiListItemText-secondary": {
-                          color: "rgba(255,255,255,0.7)",
-                        },
-                        "& svg": { color: "primary.contrastText" },
-                        "&:hover": { bgcolor: "primary.dark" },
-                      },
-                    }}
-                  >
-                    <Box
-                      sx={{
-                        mr: 1.5,
-                        display: "flex",
-                        alignItems: "center",
-                        flexShrink: 0,
-                      }}
-                    >
-                      {CHANNEL_ICONS[tmpl.channel]}
-                    </Box>
-                    <ListItemText
-                      primary={
-                        <Typography
-                          variant="body2"
-                          fontWeight={selectedId === tmpl.id ? 600 : 400}
-                        >
-                          {`${tmpl.id}. ${t(tmpl.titleKey)}`}
-                        </Typography>
-                      }
-                    />
-                  </ListItemButton>
-                </React.Fragment>
-              ))}
-            </List>
-          </Paper>
-        </Grid>
-
-        {/* Template content */}
-        <Grid size={{ xs: 12, md: 9 }}>
-          <Paper
-            variant="outlined"
-            sx={{ borderRadius: 2, overflow: "hidden" }}
-          >
-            {/* Template header */}
             <Box
               sx={{
                 px: 2,
                 py: 1.5,
-                bgcolor: "action.hover",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
-                flexWrap: "wrap",
-                gap: 1,
+                cursor: "pointer",
+                bgcolor: "action.hover",
               }}
+              onClick={() => setVarsOpen((p) => !p)}
             >
-              <Stack direction="row" spacing={1} alignItems="center">
-                {CHANNEL_ICONS[template.channel]}
-                <Typography variant="subtitle2" fontWeight={600}>
-                  {`${template.id}. ${t(template.titleKey)}`}
-                </Typography>
-                <Chip
-                  label={t(`outreach.channel_${template.channel}`)}
-                  size="small"
-                  variant="outlined"
-                />
-              </Stack>
-              <ToggleButtonGroup
-                value={lang}
-                exclusive
-                onChange={(_, val) => val && setLang(val)}
-                size="small"
-              >
-                <ToggleButton value="es">🇪🇸 ES</ToggleButton>
-                <ToggleButton value="en">🇺🇸 EN</ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
-
-            {/* Hint */}
-            <Box
-              sx={{
-                px: 2,
-                py: 1,
-                bgcolor: "background.default",
-                borderBottom: 1,
-                borderColor: "divider",
-              }}
-            >
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontStyle="italic"
-              >
-                {t(template.hintKey)}
+              <Typography variant="subtitle2" fontWeight={600}>
+                {t("outreach.variables_title")}
               </Typography>
+              <IconButton size="small">
+                {varsOpen ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+              </IconButton>
             </Box>
+            <Collapse in={varsOpen}>
+              <Box sx={{ p: 2 }}>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  sx={{ mb: 2, display: "block" }}
+                >
+                  {t("outreach.variables_hint")}
+                </Typography>
+                <Grid container spacing={2}>
+                  {VARIABLES.map((v) => (
+                    <Grid key={v.key} size={{ xs: 6, sm: 4, md: 3 }}>
+                      <TextField
+                        size="small"
+                        fullWidth
+                        label={`{{${v.key}}}`}
+                        value={varValues[v.key]}
+                        onChange={(e) => handleVarChange(v.key, e.target.value)}
+                        slotProps={{
+                          inputLabel: {
+                            sx: { fontFamily: "monospace", fontSize: "0.8rem" },
+                          },
+                        }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
+              </Box>
+            </Collapse>
+          </Paper>
 
-            {/* Variants */}
-            <Box sx={{ p: 2 }}>
-              <Stack spacing={3}>
-                {variants.map((variant, idx) => {
-                  const subjectKey = `subject-${selectedId}-${lang}-${idx}`;
-                  const bodyKey = `body-${selectedId}-${lang}-${idx}`;
-                  const resolvedSubject = variant.subject
-                    ? applyVars(variant.subject, varValues)
-                    : null;
-                  const resolvedBody = applyVars(variant.body, varValues);
-
-                  return (
-                    <Box key={idx}>
-                      {variants.length > 1 && (
-                        <Typography
-                          variant="caption"
-                          fontWeight={600}
-                          color="text.secondary"
-                          sx={{ mb: 1, display: "block" }}
-                        >
-                          {variant.label}
-                        </Typography>
-                      )}
-
-                      {/* Subject line */}
-                      {resolvedSubject && (
-                        <Box sx={{ mb: 1.5 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "space-between",
-                              mb: 0.5,
-                            }}
-                          >
-                            <Typography
-                              variant="caption"
-                              color="text.secondary"
-                              fontWeight={600}
-                            >
-                              {t("outreach.subject")}
-                            </Typography>
-                            <Tooltip
-                              title={
-                                copiedKey === subjectKey
-                                  ? t("outreach.copied")
-                                  : t("outreach.copy")
-                              }
-                            >
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  handleCopy(resolvedSubject, subjectKey)
-                                }
-                              >
-                                {copiedKey === subjectKey ? (
-                                  <CheckIcon fontSize="small" color="success" />
-                                ) : (
-                                  <ContentCopyIcon fontSize="small" />
-                                )}
-                              </IconButton>
-                            </Tooltip>
-                          </Box>
-                          <Paper
-                            variant="outlined"
-                            sx={{
-                              px: 2,
-                              py: 1,
-                              borderRadius: 1,
-                              bgcolor: "action.hover",
-                              fontFamily: "monospace",
-                              fontSize: "0.875rem",
-                            }}
-                          >
-                            {resolvedSubject}
-                          </Paper>
-                        </Box>
-                      )}
-
-                      {/* Body */}
-                      <Box>
+          {/* Main layout */}
+          <Grid container spacing={2} sx={{ alignItems: "flex-start" }}>
+            {/* Template list */}
+            <Grid size={{ xs: 12, md: 3 }}>
+              <Paper
+                variant="outlined"
+                sx={{ borderRadius: 2, overflow: "hidden" }}
+              >
+                <Box sx={{ px: 2, py: 1.5, bgcolor: "action.hover" }}>
+                  <Typography variant="subtitle2" fontWeight={600}>
+                    {t("outreach.templates_label")}
+                  </Typography>
+                </Box>
+                <List dense disablePadding>
+                  {TEMPLATES.map((tmpl, index) => (
+                    <React.Fragment key={tmpl.id}>
+                      {index > 0 && <Divider />}
+                      <ListItemButton
+                        selected={selectedId === tmpl.id}
+                        onClick={() => setSelectedId(tmpl.id)}
+                        sx={{
+                          py: 1.25,
+                          "&.Mui-selected": {
+                            bgcolor: "primary.main",
+                            color: "primary.contrastText",
+                            "& .MuiListItemText-secondary": {
+                              color: "rgba(255,255,255,0.7)",
+                            },
+                            "& svg": { color: "primary.contrastText" },
+                            "&:hover": { bgcolor: "primary.dark" },
+                          },
+                        }}
+                      >
                         <Box
                           sx={{
+                            mr: 1.5,
                             display: "flex",
                             alignItems: "center",
-                            justifyContent: "space-between",
-                            mb: 0.5,
+                            flexShrink: 0,
                           }}
                         >
-                          <Typography
-                            variant="caption"
-                            color="text.secondary"
-                            fontWeight={600}
-                          >
-                            {variant.subject
-                              ? t("outreach.body")
-                              : t("outreach.message")}
-                          </Typography>
-                          <Button
-                            size="small"
-                            variant={
-                              copiedKey === bodyKey ? "contained" : "outlined"
-                            }
-                            color={
-                              copiedKey === bodyKey ? "success" : "primary"
-                            }
-                            startIcon={
-                              copiedKey === bodyKey ? (
-                                <CheckIcon fontSize="small" />
-                              ) : (
-                                <ContentCopyIcon fontSize="small" />
-                              )
-                            }
-                            onClick={() => handleCopy(resolvedBody, bodyKey)}
-                          >
-                            {copiedKey === bodyKey
-                              ? t("outreach.copied")
-                              : t("outreach.copy")}
-                          </Button>
+                          {CHANNEL_ICONS[tmpl.channel]}
                         </Box>
-                        <Paper
-                          variant="outlined"
-                          sx={{
-                            px: 2,
-                            py: 1.5,
-                            borderRadius: 1,
-                            bgcolor: "background.default",
-                            whiteSpace: "pre-wrap",
-                            fontFamily: "inherit",
-                            fontSize: "0.875rem",
-                            lineHeight: 1.7,
-                            color: "text.primary",
-                          }}
+                        <ListItemText
+                          primary={
+                            <Typography
+                              variant="body2"
+                              fontWeight={selectedId === tmpl.id ? 600 : 400}
+                            >
+                              {`${tmpl.id}. ${t(tmpl.titleKey)}`}
+                            </Typography>
+                          }
+                        />
+                      </ListItemButton>
+                    </React.Fragment>
+                  ))}
+                </List>
+              </Paper>
+            </Grid>
+
+            {/* Template content */}
+            <Grid size={{ xs: 12, md: 9 }}>
+              <Paper
+                variant="outlined"
+                sx={{ borderRadius: 2, overflow: "hidden" }}
+              >
+                {/* Template header */}
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 1.5,
+                    bgcolor: "action.hover",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    flexWrap: "wrap",
+                    gap: 1,
+                  }}
+                >
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    {CHANNEL_ICONS[template.channel]}
+                    <Typography variant="subtitle2" fontWeight={600}>
+                      {`${template.id}. ${t(template.titleKey)}`}
+                    </Typography>
+                    <Chip
+                      label={t(`outreach.channel_${template.channel}`)}
+                      size="small"
+                      variant="outlined"
+                    />
+                  </Stack>
+                  <ToggleButtonGroup
+                    value={lang}
+                    exclusive
+                    onChange={(_, val) => val && setLang(val)}
+                    size="small"
+                  >
+                    <ToggleButton value="es">🇪🇸 ES</ToggleButton>
+                    <ToggleButton value="en">🇺🇸 EN</ToggleButton>
+                  </ToggleButtonGroup>
+                </Box>
+
+                {/* Hint */}
+                <Box
+                  sx={{
+                    px: 2,
+                    py: 1,
+                    bgcolor: "background.default",
+                    borderBottom: 1,
+                    borderColor: "divider",
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    fontStyle="italic"
+                  >
+                    {t(template.hintKey)}
+                  </Typography>
+                </Box>
+
+                {/* Variants */}
+                <Box sx={{ p: 2 }}>
+                  <Stack spacing={3}>
+                    {variants.map((variant, idx) => {
+                      const subjectKey = `subject-${selectedId}-${lang}-${idx}`;
+                      const bodyKey = `body-${selectedId}-${lang}-${idx}`;
+                      const resolvedSubject = variant.subject
+                        ? applyVars(variant.subject, varValues)
+                        : null;
+                      const resolvedBody = applyVars(variant.body, varValues);
+
+                      return (
+                        <Box key={idx}>
+                          {variants.length > 1 && (
+                            <Typography
+                              variant="caption"
+                              fontWeight={600}
+                              color="text.secondary"
+                              sx={{ mb: 1, display: "block" }}
+                            >
+                              {variant.label}
+                            </Typography>
+                          )}
+
+                          {/* Subject line */}
+                          {resolvedSubject && (
+                            <Box sx={{ mb: 1.5 }}>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  mb: 0.5,
+                                }}
+                              >
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={600}
+                                >
+                                  {t("outreach.subject")}
+                                </Typography>
+                                <Tooltip
+                                  title={
+                                    copiedKey === subjectKey
+                                      ? t("outreach.copied")
+                                      : t("outreach.copy")
+                                  }
+                                >
+                                  <IconButton
+                                    size="small"
+                                    onClick={() =>
+                                      handleCopy(resolvedSubject, subjectKey)
+                                    }
+                                  >
+                                    {copiedKey === subjectKey ? (
+                                      <CheckIcon
+                                        fontSize="small"
+                                        color="success"
+                                      />
+                                    ) : (
+                                      <ContentCopyIcon fontSize="small" />
+                                    )}
+                                  </IconButton>
+                                </Tooltip>
+                              </Box>
+                              <Paper
+                                variant="outlined"
+                                sx={{
+                                  px: 2,
+                                  py: 1,
+                                  borderRadius: 1,
+                                  bgcolor: "action.hover",
+                                  fontFamily: "monospace",
+                                  fontSize: "0.875rem",
+                                }}
+                              >
+                                {resolvedSubject}
+                              </Paper>
+                            </Box>
+                          )}
+
+                          {/* Body */}
+                          <Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                                mb: 0.5,
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                color="text.secondary"
+                                fontWeight={600}
+                              >
+                                {variant.subject
+                                  ? t("outreach.body")
+                                  : t("outreach.message")}
+                              </Typography>
+                              <Button
+                                size="small"
+                                variant={
+                                  copiedKey === bodyKey
+                                    ? "contained"
+                                    : "outlined"
+                                }
+                                color={
+                                  copiedKey === bodyKey ? "success" : "primary"
+                                }
+                                startIcon={
+                                  copiedKey === bodyKey ? (
+                                    <CheckIcon fontSize="small" />
+                                  ) : (
+                                    <ContentCopyIcon fontSize="small" />
+                                  )
+                                }
+                                onClick={() =>
+                                  handleCopy(resolvedBody, bodyKey)
+                                }
+                              >
+                                {copiedKey === bodyKey
+                                  ? t("outreach.copied")
+                                  : t("outreach.copy")}
+                              </Button>
+                            </Box>
+                            <Paper
+                              variant="outlined"
+                              sx={{
+                                px: 2,
+                                py: 1.5,
+                                borderRadius: 1,
+                                bgcolor: "background.default",
+                                whiteSpace: "pre-wrap",
+                                fontFamily: "inherit",
+                                fontSize: "0.875rem",
+                                lineHeight: 1.7,
+                                color: "text.primary",
+                              }}
+                            >
+                              {resolvedBody}
+                            </Paper>
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Stack>
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
+        </>
+      )}
+
+      {/* ── TAB 1: Prospecting guide ───────────────────────────────── */}
+      {pageTab === 1 && (
+        <Box>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            {t("outreach.prospect_intro")}
+          </Typography>
+
+          <Grid container spacing={2}>
+            {PROSPECT_SOURCES.map((source) => (
+              <Grid key={source.name} size={{ xs: 12, sm: 6, lg: 4 }}>
+                <Paper
+                  variant="outlined"
+                  sx={{
+                    p: 2.5,
+                    borderRadius: 2,
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 1.5,
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <Typography variant="subtitle2" fontWeight={600}>
+                      {source.name}
+                    </Typography>
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <Chip
+                        label={t(`outreach.category_${source.category}`)}
+                        size="small"
+                        color={CATEGORY_COLORS[source.category]}
+                        variant="outlined"
+                      />
+                      <Tooltip title={t("outreach.open_link")}>
+                        <IconButton
+                          size="small"
+                          onClick={() => window.open(source.url, "_blank")}
                         >
-                          {resolvedBody}
-                        </Paper>
-                      </Box>
-                    </Box>
-                  );
-                })}
-              </Stack>
-            </Box>
+                          <OpenInNewIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </Stack>
+                  </Box>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ flex: 1 }}
+                  >
+                    {source.description}
+                  </Typography>
+
+                  <Box
+                    sx={{
+                      bgcolor: "action.hover",
+                      borderRadius: 1,
+                      px: 1.5,
+                      py: 1,
+                      borderLeft: "3px solid",
+                      borderColor: "primary.main",
+                    }}
+                  >
+                    <Typography variant="caption" color="text.secondary">
+                      <strong>{t("outreach.tip_label")}</strong>{" "}
+                      {t(source.tipKey)}
+                    </Typography>
+                  </Box>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+
+          {/* Recommended workflow */}
+          <Paper variant="outlined" sx={{ mt: 3, p: 2.5, borderRadius: 2 }}>
+            <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1.5 }}>
+              {t("outreach.workflow_title")}
+            </Typography>
+            <Stack spacing={1}>
+              {[1, 2, 3, 4, 5].map((step) => (
+                <Box
+                  key={step}
+                  sx={{ display: "flex", gap: 1.5, alignItems: "flex-start" }}
+                >
+                  <Box
+                    sx={{
+                      width: 24,
+                      height: 24,
+                      borderRadius: "50%",
+                      bgcolor: "primary.main",
+                      color: "primary.contrastText",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      flexShrink: 0,
+                      fontSize: "0.75rem",
+                      fontWeight: 700,
+                    }}
+                  >
+                    {step}
+                  </Box>
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ pt: 0.25 }}
+                  >
+                    {t(`outreach.workflow_step_${step}`)}
+                  </Typography>
+                </Box>
+              ))}
+            </Stack>
           </Paper>
-        </Grid>
-      </Grid>
+        </Box>
+      )}
     </Box>
   );
 };
