@@ -86,9 +86,14 @@ const FilesPage: React.FC = () => {
   }, [files, typeFilter]);
 
   const handleSelectionChange = (model: unknown) => {
-    // In DataGrid v8, selection model is { type: string, ids: Set<GridRowId> }
     const m = model as { ids?: Set<string>; type?: string };
-    if (m && m.ids) {
+    if (m?.type === "exclude" && m.ids) {
+      // "exclude" means "all rows except these" — used by Select All
+      const excluded = m.ids;
+      setSelectedUids(
+        filteredFiles.map((f) => f.uid).filter((uid) => !excluded.has(uid)),
+      );
+    } else if (m?.ids) {
       setSelectedUids(Array.from(m.ids));
     } else if (Array.isArray(model)) {
       setSelectedUids(model as string[]);

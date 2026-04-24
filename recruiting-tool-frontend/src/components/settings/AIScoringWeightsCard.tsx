@@ -81,7 +81,7 @@ const AIScoringWeightsCard: React.FC = () => {
                 min={0}
                 max={100}
                 step={1}
-                color="secondary"
+                color="primary"
               />
             </Box>
 
@@ -107,7 +107,7 @@ const AIScoringWeightsCard: React.FC = () => {
                 min={0}
                 max={100}
                 step={1}
-                color="secondary"
+                color="primary"
               />
             </Box>
 
@@ -133,7 +133,7 @@ const AIScoringWeightsCard: React.FC = () => {
                 min={0}
                 max={100}
                 step={1}
-                color="secondary"
+                color="primary"
               />
             </Box>
 
@@ -167,7 +167,7 @@ const AIScoringWeightsCard: React.FC = () => {
 
             <Button
               variant="contained"
-              color="secondary"
+              color="primary"
               disabled={!isValid || isPending}
               onClick={handleSave}
               sx={{ alignSelf: "flex-start" }}

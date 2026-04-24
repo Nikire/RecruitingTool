@@ -50,17 +50,19 @@ const Navbar: React.FC = () => {
     borderRadius: 1,
     px: 2,
     py: 1,
+    color: theme.palette.common.white,
     transition: "all 0.2s ease-in-out",
     "&:hover": {
-      bgcolor: alpha(theme.palette.secondary.light, 0.15),
+      bgcolor: alpha(theme.palette.common.white, 0.1),
+      color: theme.palette.common.white,
       transform: "translateY(-1px)",
     },
     "&.active": {
-      bgcolor: alpha(theme.palette.secondary.main, 0.2),
-      color: "secondary.contrastText",
-      fontWeight: 600,
+      bgcolor: alpha(theme.palette.common.white, 0.18),
+      color: theme.palette.common.white,
+      fontWeight: 700,
       "&:hover": {
-        bgcolor: alpha(theme.palette.secondary.main, 0.3),
+        bgcolor: alpha(theme.palette.common.white, 0.25),
       },
     },
   };
