@@ -508,9 +508,16 @@ const LandingPage = () => {
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
                 sx={{
+                  width: "100%",
+                  aspectRatio: "16/9",
+                  borderRadius: 4,
+                  overflow: "hidden",
+                  boxShadow: `0 24px 64px ${alpha(theme.palette.common.black, 0.22)}`,
+                  border: `1px solid ${alpha(theme.palette.common.white, 0.15)}`,
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
+                  bgcolor: alpha(theme.palette.primary.dark, 0.3),
                   animation: `${scaleIn} 0.8s ease-out 0.3s both`,
                 }}
               >
@@ -519,8 +526,7 @@ const LandingPage = () => {
                   src="/borderless-logo-light.png"
                   alt="Borderless ATS"
                   sx={{
-                    width: { xs: "65%", md: "80%" },
-                    maxWidth: 380,
+                    width: { xs: "55%", md: "65%" },
                     height: "auto",
                     opacity: 0.92,
                   }}
