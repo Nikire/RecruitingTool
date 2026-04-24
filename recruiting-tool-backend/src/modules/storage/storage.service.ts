@@ -33,7 +33,7 @@ export class StorageService {
 
     this.logger.log(`Storage service initialized with endpoint: ${endpoint}`);
     this.ensureBucketExists();
-    this.ensureLogosPolicyExists();
+    this.ensurePublicPrefixPolicyExists();
   }
 
   /**
@@ -68,7 +68,7 @@ export class StorageService {
    * Sets a public-read bucket policy on the logos/ prefix so browser can load
    * company logos without presigned URLs (they never expire).
    */
-  private async ensureLogosPolicyExists(): Promise<void> {
+  private async ensurePublicPrefixPolicyExists(): Promise<void> {
     const policy = {
       Version: '2012-10-17',
       Statement: [
@@ -76,7 +76,7 @@ export class StorageService {
           Effect: 'Allow',
           Principal: { AWS: ['*'] },
           Action: ['s3:GetObject'],
-          Resource: [`arn:aws:s3:::${this.bucketName}/logos/*`],
+          Resource: [`arn:aws:s3:::${this.bucketName}/logos/*`, `arn:aws:s3:::${this.bucketName}/videos/*`],
         },
       ],
     };
@@ -88,9 +88,9 @@ export class StorageService {
           Policy: JSON.stringify(policy),
         }),
       );
-      this.logger.log(`Logos public-read policy applied to bucket "${this.bucketName}"`);
+      this.logger.log(`Public-read policy applied to logos/* and videos/* in "${this.bucketName}"`);
     } catch (error) {
-      this.logger.warn(`Could not apply logos bucket policy: ${error.message}`);
+      this.logger.warn(`Could not apply public bucket policy: ${error.message}`);
     }
   }
 
