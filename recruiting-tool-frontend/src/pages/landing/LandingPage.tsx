@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Box,
   Button,
@@ -37,8 +37,23 @@ import LooksOneIcon from "@mui/icons-material/LooksOne";
 import LooksTwoIcon from "@mui/icons-material/LooksTwo";
 import Looks3Icon from "@mui/icons-material/Looks3";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
 import PlayCircleFilledIcon from "@mui/icons-material/PlayCircleFilled";
+
+const SLIDES = [
+  { src: "/screenshots/dashboard-analytics.png", alt: "Analytics Dashboard" },
+  { src: "/screenshots/dashboard-calendar.png", alt: "Company Calendar" },
+  {
+    src: "/screenshots/dashboard-hiring-detail.png",
+    alt: "Hiring Process Detail",
+  },
+  {
+    src: "/screenshots/dashboard-hiring-processes.png",
+    alt: "Hiring Processes",
+  },
+];
 
 // Keyframe animations - More dynamic
 const gradientShift = keyframes`
@@ -103,6 +118,16 @@ const LandingPage = () => {
   const { data: planLimits } = usePlanLimits();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoStarted, setVideoStarted] = useState(false);
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [sliderHovered, setSliderHovered] = useState(false);
+
+  useEffect(() => {
+    if (sliderHovered) return;
+    const timer = setInterval(() => {
+      setActiveSlide((prev) => (prev + 1) % SLIDES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, [sliderHovered]);
 
   // Detect applicant-only users (USER role with no HR/admin roles)
   const isApplicantOnly =
@@ -512,29 +537,70 @@ const LandingPage = () => {
             <Grid size={{ xs: 12, md: 5 }}>
               <Box
                 sx={{
+                  position: "relative",
                   width: "100%",
                   aspectRatio: "16/9",
                   borderRadius: 4,
                   overflow: "hidden",
                   boxShadow: `0 24px 64px ${alpha(theme.palette.common.black, 0.22)}`,
                   border: `1px solid ${alpha(theme.palette.common.white, 0.15)}`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  bgcolor: alpha(theme.palette.primary.dark, 0.3),
                   animation: `${scaleIn} 0.8s ease-out 0.3s both`,
+                  "& video": {
+                    display: "block",
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  },
                 }}
               >
-                <Box
-                  component="img"
-                  src="/borderless-logo-light.png"
-                  alt="Borderless ATS"
-                  sx={{
-                    width: { xs: "55%", md: "65%" },
-                    height: "auto",
-                    opacity: 0.92,
-                  }}
-                />
+                <video
+                  ref={videoRef}
+                  controls
+                  preload="metadata"
+                  onPlay={() => setVideoStarted(true)}
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                >
+                  <source
+                    src="https://api.borderlessats.com/storage/borderless-files/videos/borderless-demo.mp4"
+                    type="video/mp4"
+                  />
+                </video>
+                {!videoStarted && (
+                  <Box
+                    onClick={() => videoRef.current?.play()}
+                    sx={{
+                      position: "absolute",
+                      inset: 0,
+                      bgcolor: "black",
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 2,
+                      cursor: "pointer",
+                      "&:hover .play-icon": {
+                        transform: "scale(1.1)",
+                        opacity: 1,
+                      },
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src="/borderless-icon-transp.png"
+                      alt="Borderless ATS"
+                      sx={{ width: "22%", height: "auto" }}
+                    />
+                    <PlayCircleFilledIcon
+                      className="play-icon"
+                      sx={{
+                        fontSize: 52,
+                        color: "white",
+                        opacity: 0.85,
+                        transition: "all 0.2s ease",
+                      }}
+                    />
+                  </Box>
+                )}
               </Box>
             </Grid>
           </Grid>
@@ -566,6 +632,7 @@ const LandingPage = () => {
               {t("landing.product_preview.subtitle")}
             </Typography>
           </Box>
+          {/* Image slider */}
           <Box
             sx={{
               position: "relative",
@@ -576,65 +643,110 @@ const LandingPage = () => {
               overflow: "hidden",
               boxShadow: `0 24px 64px ${alpha(theme.palette.common.black, 0.18)}`,
               border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
-              "& video": {
-                display: "block",
-                width: "100%",
-                height: "auto",
-                aspectRatio: "16/9",
-              },
+              aspectRatio: "16/9",
+              bgcolor: "black",
             }}
+            onMouseEnter={() => setSliderHovered(true)}
+            onMouseLeave={() => setSliderHovered(false)}
           >
-            <video
-              ref={videoRef}
-              controls
-              preload="metadata"
-              onPlay={() => setVideoStarted(true)}
+            {/* Slides strip */}
+            <Box
+              sx={{
+                display: "flex",
+                width: "100%",
+                height: "100%",
+                transform: `translateX(-${activeSlide * 100}%)`,
+                transition: "transform 0.5s ease-in-out",
+              }}
             >
-              <source
-                src="https://api.borderlessats.com/storage/borderless-files/videos/borderless-demo.mp4"
-                type="video/mp4"
-              />
-            </video>
-
-            {/* Custom thumbnail overlay — black bg + logo, hidden once video starts */}
-            {!videoStarted && (
-              <Box
-                onClick={() => {
-                  videoRef.current?.play();
-                }}
-                sx={{
-                  position: "absolute",
-                  inset: 0,
-                  bgcolor: "black",
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  gap: 3,
-                  cursor: "pointer",
-                  "&:hover .play-icon": {
-                    transform: "scale(1.1)",
-                    opacity: 1,
-                  },
-                }}
-              >
+              {SLIDES.map((slide, idx) => (
                 <Box
+                  key={idx}
                   component="img"
-                  src="/borderless-icon-transp.png"
-                  alt="Borderless ATS"
-                  sx={{ width: { xs: "25%", md: "18%" }, height: "auto" }}
-                />
-                <PlayCircleFilledIcon
-                  className="play-icon"
+                  src={slide.src}
+                  alt={slide.alt}
                   sx={{
-                    fontSize: { xs: 56, md: 72 },
-                    color: "white",
-                    opacity: 0.85,
-                    transition: "all 0.2s ease",
+                    flexShrink: 0,
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    display: "block",
                   }}
                 />
-              </Box>
-            )}
+              ))}
+            </Box>
+
+            {/* Prev */}
+            <IconButton
+              onClick={() =>
+                setActiveSlide(
+                  (prev) => (prev - 1 + SLIDES.length) % SLIDES.length,
+                )
+              }
+              sx={{
+                position: "absolute",
+                left: 8,
+                top: "50%",
+                transform: "translateY(-50%)",
+                bgcolor: alpha(theme.palette.common.black, 0.45),
+                color: "white",
+                "&:hover": {
+                  bgcolor: alpha(theme.palette.common.black, 0.7),
+                },
+              }}
+            >
+              <ChevronLeftIcon />
+            </IconButton>
+
+            {/* Next */}
+            <IconButton
+              onClick={() =>
+                setActiveSlide((prev) => (prev + 1) % SLIDES.length)
+              }
+              sx={{
+                position: "absolute",
+                right: 8,
+                top: "50%",
+                transform: "translateY(-50%)",
+                bgcolor: alpha(theme.palette.common.black, 0.45),
+                color: "white",
+                "&:hover": {
+                  bgcolor: alpha(theme.palette.common.black, 0.7),
+                },
+              }}
+            >
+              <ChevronRightIcon />
+            </IconButton>
+
+            {/* Dot indicators */}
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 12,
+                left: "50%",
+                transform: "translateX(-50%)",
+                display: "flex",
+                gap: 1,
+              }}
+            >
+              {SLIDES.map((_, idx) => (
+                <Box
+                  key={idx}
+                  onClick={() => setActiveSlide(idx)}
+                  sx={{
+                    width: idx === activeSlide ? 20 : 8,
+                    height: 8,
+                    borderRadius: 4,
+                    bgcolor:
+                      idx === activeSlide
+                        ? "white"
+                        : alpha(theme.palette.common.white, 0.45),
+                    cursor: "pointer",
+                    transition: "all 0.3s ease",
+                  }}
+                />
+              ))}
+            </Box>
           </Box>
         </Container>
       </Box>
