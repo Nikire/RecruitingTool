@@ -620,9 +620,9 @@ const LandingPage = () => {
               >
                 <Box
                   component="img"
-                  src="/borderless-logo-light.png"
+                  src="/borderless-icon-transp.png"
                   alt="Borderless ATS"
-                  sx={{ width: { xs: "45%", md: "32%" }, height: "auto" }}
+                  sx={{ width: { xs: "25%", md: "18%" }, height: "auto" }}
                 />
                 <PlayCircleFilledIcon
                   className="play-icon"
