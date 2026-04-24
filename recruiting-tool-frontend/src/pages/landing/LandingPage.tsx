@@ -274,10 +274,10 @@ const LandingPage = () => {
           backgroundSize: "200% 200%",
           animation: `${gradientShift} 5s ease infinite`,
           color: theme.palette.common.white,
-          pt: { xs: 12, md: 14 },
-          pb: { xs: 12, md: 14 },
+          pt: { xs: 10, sm: 12, md: 14 },
+          pb: { xs: 8, sm: 10, md: 14 },
           overflow: "hidden",
-          minHeight: { xs: "calc(100vh - 56px)", md: "calc(100vh - 64px)" },
+          minHeight: { xs: "auto", sm: "calc(100vh - 56px)", md: "calc(100vh - 64px)" },
           display: "flex",
           alignItems: "center",
         }}
@@ -324,8 +324,8 @@ const LandingPage = () => {
         />
 
         <Container maxWidth="lg" sx={{ position: "relative", zIndex: 1 }}>
-          <Grid container spacing={8} alignItems="center">
-            <Grid size={{ xs: 12, md: 6 }}>
+          <Grid container spacing={{ xs: 3, md: 5 }} alignItems="center">
+            <Grid size={{ xs: 12, md: 5 }} sx={{ order: { xs: 2, md: 1 } }}>
               <Box
                 sx={{
                   animation: `${fadeInUp} 0.8s ease-out`,
@@ -376,7 +376,7 @@ const LandingPage = () => {
                   gutterBottom
                   sx={{
                     fontWeight: 900,
-                    fontSize: { xs: "2.75rem", sm: "3.75rem", md: "4.5rem" },
+                    fontSize: { xs: "2.5rem", sm: "3.25rem", md: "3.75rem" },
                     lineHeight: 1.15,
                     mb: 3,
                     color: theme.palette.common.white,
@@ -392,9 +392,8 @@ const LandingPage = () => {
                     mb: 3,
                     opacity: 0.92,
                     fontWeight: 400,
-                    fontSize: { xs: "1.15rem", sm: "1.4rem" },
+                    fontSize: { xs: "1.05rem", sm: "1.2rem", md: "1.3rem" },
                     lineHeight: 1.65,
-                    maxWidth: 580,
                     color: alpha(theme.palette.common.white, 0.95),
                   }}
                 >
@@ -541,7 +540,7 @@ const LandingPage = () => {
                 )}
               </Box>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
+            <Grid size={{ xs: 12, md: 7 }} sx={{ order: { xs: 1, md: 2 } }}>
               <Box
                 sx={{
                   position: "relative",
@@ -946,8 +945,8 @@ const LandingPage = () => {
 			*/}
 
       {/* Features Section */}
-      <Container id="features" maxWidth="lg" sx={{ py: { xs: 8, md: 10 } }}>
-        <Box sx={{ textAlign: "center", mb: 8 }}>
+      <Container id="features" maxWidth="lg" sx={{ py: { xs: 6, md: 10 } }}>
+        <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
           <Typography
             variant="overline"
             sx={{
@@ -1077,7 +1076,7 @@ const LandingPage = () => {
         }}
       >
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: "center", mb: 8 }}>
+          <Box sx={{ textAlign: "center", mb: { xs: 4, md: 8 } }}>
             <Typography
               variant="overline"
               sx={{
@@ -1105,10 +1104,10 @@ const LandingPage = () => {
             </Typography>
           </Box>
 
-          <Grid container spacing={6} justifyContent="center">
+          <Grid container spacing={{ xs: 3, md: 6 }} justifyContent="center">
             {howItWorksSteps.map((step, index) => (
               <Grid
-                size={{ xs: 12, md: 4 }}
+                size={{ xs: 12, sm: 6, md: 4 }}
                 key={index}
                 sx={{ overflow: "visible" }}
               >
