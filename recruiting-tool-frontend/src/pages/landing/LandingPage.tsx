@@ -561,35 +561,23 @@ const LandingPage = () => {
               width: "100%",
               maxWidth: 900,
               mx: "auto",
-              height: { xs: 280, md: 420 },
-              bgcolor: alpha(theme.palette.primary.main, 0.04),
               borderRadius: 4,
-              border: `2px solid ${alpha(theme.palette.primary.main, 0.12)}`,
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
-              gap: 3,
+              overflow: "hidden",
+              boxShadow: `0 24px 64px ${alpha(theme.palette.common.black, 0.18)}`,
+              border: `1px solid ${alpha(theme.palette.divider, 0.12)}`,
+              "& video": {
+                display: "block",
+                width: "100%",
+                height: "auto",
+              },
             }}
           >
-            <Box
-              component="img"
-              src="/borderless-icon.png"
-              alt="Borderless ATS"
-              sx={{
-                width: { xs: 72, md: 100 },
-                height: "auto",
-                opacity: 0.35,
-                filter: theme.palette.mode === "dark" ? "invert(1)" : "none",
-              }}
-            />
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              sx={{ fontWeight: 500, letterSpacing: "0.08em" }}
-            >
-              {t("landing.product_preview.coming_soon")}
-            </Typography>
+            <video controls preload="metadata" poster="/borderless-icon.png">
+              <source
+                src="https://api.borderlessats.com/storage/borderless-files/videos/borderless-demo.mp4"
+                type="video/mp4"
+              />
+            </video>
           </Box>
         </Container>
       </Box>
