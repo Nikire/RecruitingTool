@@ -277,7 +277,11 @@ const LandingPage = () => {
           pt: { xs: 10, sm: 12, md: 14 },
           pb: { xs: 8, sm: 10, md: 14 },
           overflow: "hidden",
-          minHeight: { xs: "auto", sm: "calc(100vh - 56px)", md: "calc(100vh - 64px)" },
+          minHeight: {
+            xs: "auto",
+            sm: "calc(100vh - 56px)",
+            md: "calc(100vh - 64px)",
+          },
           display: "flex",
           alignItems: "center",
         }}

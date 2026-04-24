@@ -353,7 +353,10 @@ function App() {
               <Route path="/admin/custom-plans" element={<CustomPlansPage />} />
               <Route path="/admin/ai-quota" element={<AIQuotaPage />} />
               <Route path="/admin/docs" element={<DocsPage />} />
-              <Route path="/admin/outreach-templates" element={<OutreachTemplatesPage />} />
+              <Route
+                path="/admin/outreach-templates"
+                element={<OutreachTemplatesPage />}
+              />
               <Route
                 path="/admin/email-logs"
                 element={<AdminEmailLogsPage />}

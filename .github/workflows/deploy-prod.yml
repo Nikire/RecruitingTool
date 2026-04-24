@@ -66,9 +66,8 @@ jobs:
             git fetch origin production
             git reset --hard origin/production
 
-            echo "==> Freeing up disk space..."
+            echo "==> Pruning stopped containers..."
             docker container prune -f || true
-            docker image prune -f || true
 
             echo "==> Resolving any failed Prisma migrations on DB..."
             DB_USER=$(docker exec borderless-db-1 sh -c 'echo $POSTGRES_USER' 2>/dev/null || echo "postgres")
@@ -88,6 +87,9 @@ jobs:
 
             echo "==> Starting all containers..."
             docker-compose up -d
+
+            echo "==> Pruning dangling images after build..."
+            docker image prune -f || true
 
             echo "==> Waiting for containers to initialize..."
             sleep 20

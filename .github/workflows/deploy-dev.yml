@@ -32,10 +32,9 @@ jobs:
             echo "==> Disk usage before cleanup..."
             df -h /
 
-            echo "==> Freeing up disk space (removes stopped containers, build cache, and dangling images)..."
+            echo "==> Freeing up disk space (containers and build cache only — images pruned after build)..."
             docker container prune -f || true
             docker builder prune -f || true
-            docker image prune -f || true
 
             echo "==> Pre-pulling base images to ensure they are available for builds..."
             docker pull node:20-alpine || true
@@ -60,6 +59,9 @@ jobs:
 
             echo "==> Starting all containers..."
             docker-compose up -d
+
+            echo "==> Pruning dangling images after build..."
+            docker image prune -f || true
 
             echo "==> Waiting for containers to initialize..."
             sleep 30
