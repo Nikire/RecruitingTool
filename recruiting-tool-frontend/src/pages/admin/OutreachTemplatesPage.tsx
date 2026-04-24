@@ -427,7 +427,7 @@ interface ProspectSource {
 const PROSPECT_SOURCES: ProspectSource[] = [
   {
     name: "Clutch.co",
-    url: "https://clutch.co/it-staffing",
+    url: "https://clutch.co/it-services/staff-augmentation",
     description:
       "El directorio B2B más grande de empresas de IT staffing y staff augmentation. Tienen reviews verificadas y datos de contacto.",
     tipKey: "outreach.prospect_tip_clutch",
@@ -435,7 +435,7 @@ const PROSPECT_SOURCES: ProspectSource[] = [
   },
   {
     name: "GoodFirms",
-    url: "https://www.goodfirms.co/it-staffing-companies",
+    url: "https://www.goodfirms.co/it-services/staff-augmentation",
     description:
       "Directorio similar a Clutch con empresas de staffing rankeadas por reviews y tamaño.",
     tipKey: "outreach.prospect_tip_goodfirms",
@@ -459,7 +459,7 @@ const PROSPECT_SOURCES: ProspectSource[] = [
   },
   {
     name: "Upwork — Agencias",
-    url: "https://www.upwork.com/agencies/staffing/",
+    url: "https://www.upwork.com/nx/search/talent/?nbs=1&q=staff%20augmentation",
     description:
       "Muchas empresas de staff augmentation tienen perfiles como agencias en Upwork. Pueden ser contactadas directamente desde la plataforma.",
     tipKey: "outreach.prospect_tip_upwork",
