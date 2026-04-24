@@ -56,7 +56,7 @@ const VARIABLES = [
   { key: "N_POSICIONES", defaultVal: "" },
   { key: "CANAL", defaultVal: "" },
   { key: "TU_NOMBRE", defaultVal: "" },
-  { key: "DESCUENTO", defaultVal: "40" },
+  { key: "DESCUENTO", defaultVal: "20" },
 ];
 
 const TEMPLATES: Template[] = [
