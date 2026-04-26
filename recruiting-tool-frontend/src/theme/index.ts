@@ -131,6 +131,26 @@ const sharedThemeOptions: Omit<ThemeOptions, "palette"> = {
         },
       },
     },
+    MuiButton: {
+      styleOverrides: {
+        outlinedSecondary: ({ theme }) => ({
+          backgroundColor: theme.palette.secondary.main,
+          borderColor: theme.palette.secondary.main,
+          color: theme.palette.secondary.contrastText,
+          "&:hover": {
+            backgroundColor: theme.palette.secondary.dark,
+            borderColor: theme.palette.secondary.dark,
+          },
+        }),
+        textSecondary: ({ theme }) => ({
+          backgroundColor: theme.palette.secondary.main,
+          color: theme.palette.secondary.contrastText,
+          "&:hover": {
+            backgroundColor: theme.palette.secondary.dark,
+          },
+        }),
+      },
+    },
     MuiTypography: {
       defaultProps: {
         variantMapping: {
