@@ -30,7 +30,7 @@ const TestConnectionButton: React.FC<TestConnectionButtonProps> = ({
   disabled = false,
   label = "settings.test_connection",
   size = "small",
-  variant = "outlined",
+  variant = "contained",
 }) => {
   const { t } = useTranslation();
 
@@ -41,6 +41,7 @@ const TestConnectionButton: React.FC<TestConnectionButtonProps> = ({
   return (
     <Button
       variant={variant}
+      color="secondary"
       size={size}
       onClick={handleClick}
       disabled={disabled || isLoading}
