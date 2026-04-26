@@ -1391,21 +1391,26 @@ enum InvitationStatus {
 }
 
 model DemoBookingToken {
-  id              Int            @id @default(autoincrement())
-  uid             String         @unique @default(uuid()) @db.Uuid
-  token           String         @unique
-  prospectEmail   String
-  prospectName    String?
-  prospectCompany String?
-  expiresAt       DateTime
-  usedAt          DateTime?
-  companyId       Int
-  company         Company        @relation("DemoBookings", fields: [companyId], references: [id], onDelete: Cascade)
-  slots           DemoTimeSlot[]
-  createdAt       DateTime       @default(now())
+  id                 Int            @id @default(autoincrement())
+  uid                String         @unique @default(uuid()) @db.Uuid
+  token              String         @unique
+  prospectEmail      String
+  prospectName       String?
+  prospectCompany    String?
+  expiresAt          DateTime
+  usedAt             DateTime?
+  companyId          Int
+  company            Company        @relation("DemoBookings", fields: [companyId], references: [id], onDelete: Cascade)
+  slots              DemoTimeSlot[]
+  createdAt          DateTime       @default(now())
+  scheduledAt        DateTime?
+  outcome            DemoOutcome    @default(PENDING)
+  outcomeNotes       String?
+  linkedProspectUid  String?
 
   @@index([token])
   @@index([companyId])
+  @@index([outcome])
 }
 
 model DemoTimeSlot {
@@ -1592,4 +1597,12 @@ enum OutreachChannel {
   PHONE
   IN_PERSON
   OTHER
+}
+
+enum DemoOutcome {
+  PENDING
+  COMPLETED
+  NO_SHOW
+  RESCHEDULED
+  CANCELED
 }

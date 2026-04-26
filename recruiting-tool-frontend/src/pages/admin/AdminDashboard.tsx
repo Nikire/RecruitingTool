@@ -18,6 +18,7 @@ import {
   Speed as SpeedIcon,
   MonitorHeart as MonitorHeartIcon,
   RocketLaunch as RocketLaunchIcon,
+  EventNote as EventNoteIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -57,6 +58,13 @@ const AdminDashboard: React.FC = () => {
       color: "#00838f",
       description: t("admin_dashboard.trial_tracker_desc"),
       path: "/admin/trials",
+    },
+    {
+      title: t("admin_dashboard.demo_manager"),
+      icon: <EventNoteIcon />,
+      color: "#6a1b9a",
+      description: t("admin_dashboard.demo_manager_desc"),
+      path: "/admin/demos",
     },
     {
       title: t("admin_layout.companies"),

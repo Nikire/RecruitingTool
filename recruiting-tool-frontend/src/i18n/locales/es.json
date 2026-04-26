@@ -2019,7 +2019,32 @@
     "company_health": "Salud de Empresas",
     "company_health_desc": "Monitorear puntuaciones de riesgo de abandono y señales de engagement para todas las empresas",
     "trial_tracker": "Rastreador de Pruebas",
-    "trial_tracker_desc": "Identifica empresas en plan gratuito y prueba listas para convertir a un plan de pago"
+    "trial_tracker_desc": "Identifica empresas en plan gratuito y prueba listas para convertir a un plan de pago",
+    "demo_manager": "Reservas de Demo",
+    "demo_manager_desc": "Rastrea resultados de demos y vincula prospectos a tu CRM"
+  },
+  "demo_manager": {
+    "title": "Gestor de Reservas Demo",
+    "subtitle": "Rastrea resultados, notas y vinculación CRM de todas las reservas de demo",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "no_show": "No apareció",
+    "rescheduled": "Reprogramado",
+    "canceled": "Cancelado",
+    "prospect": "Prospecto",
+    "company": "Empresa",
+    "scheduled": "Programado",
+    "created_at": "Creado",
+    "outcome": "Resultado",
+    "notes": "Notas",
+    "set_outcome": "Establecer resultado",
+    "set_outcome_title": "Establecer resultado de demo",
+    "in_crm": "En CRM",
+    "no_crm": "Sin CRM",
+    "not_scheduled": "Sin programar",
+    "filter_outcome": "Filtrar por resultado",
+    "outcome_updated": "Resultado de demo actualizado correctamente",
+    "outcome_update_error": "Error al actualizar el resultado"
   },
   "revenue_dashboard": {
     "title": "Panel de Ingresos",

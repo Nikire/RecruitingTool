@@ -1987,7 +1987,32 @@
     "company_health": "Company Health",
     "company_health_desc": "Track churn-risk scores and engagement signals for all customer companies",
     "trial_tracker": "Trial Tracker",
-    "trial_tracker_desc": "Identify free and trialing companies ready to convert to a paid plan"
+    "trial_tracker_desc": "Identify free and trialing companies ready to convert to a paid plan",
+    "demo_manager": "Demo Bookings",
+    "demo_manager_desc": "Track demo booking outcomes and link prospects to your CRM"
+  },
+  "demo_manager": {
+    "title": "Demo Booking Manager",
+    "subtitle": "Track demo booking outcomes, notes, and CRM linkage for all prospects",
+    "pending": "Pending",
+    "completed": "Completed",
+    "no_show": "No-Show",
+    "rescheduled": "Rescheduled",
+    "canceled": "Canceled",
+    "prospect": "Prospect",
+    "company": "Company",
+    "scheduled": "Scheduled",
+    "created_at": "Created",
+    "outcome": "Outcome",
+    "notes": "Notes",
+    "set_outcome": "Set Outcome",
+    "set_outcome_title": "Set Demo Outcome",
+    "in_crm": "In CRM",
+    "no_crm": "No CRM",
+    "not_scheduled": "Not scheduled",
+    "filter_outcome": "Filter by outcome",
+    "outcome_updated": "Demo outcome updated successfully",
+    "outcome_update_error": "Failed to update outcome"
   },
   "revenue_dashboard": {
     "title": "Revenue Dashboard",

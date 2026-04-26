@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, HttpException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, HttpException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import {
   AdminStatsResponseDto,
@@ -28,9 +28,13 @@ import {
   ExtendTrialDto,
   SubscriptionAuditLogItemDto,
   UpdatedSubscriptionDto,
+  DemoBookingAdminItemDto,
+  DemoBookingListResponseDto,
+  SetDemoOutcomeDto,
+  LinkDemoProspectDto,
 } from './dto/admin-stats.dto';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
-import { QuotaType, SubscriptionPlan } from '@prisma/client';
+import { DemoOutcome, QuotaType, SubscriptionPlan } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
@@ -968,6 +972,147 @@ export class AdminService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to get company health scores: ${error.message}`);
+    }
+  }
+
+  // ─── Demo Booking Manager ─────────────────────────────────────────────────
+
+  async getDemoBookings(page: number, limit: number, outcome?: string): Promise<DemoBookingListResponseDto> {
+    try {
+      const skip = (page - 1) * limit;
+      const whereClause = outcome ? { outcome: outcome as DemoOutcome } : {};
+
+      const [demos, total, summaryData] = await Promise.all([
+        this.databaseService.demoBookingToken.findMany({
+          where: whereClause,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+          include: {
+            slots: {
+              where: { selectedAt: { not: null } },
+              orderBy: { selectedAt: 'asc' },
+              take: 1,
+            },
+          },
+        }),
+        this.databaseService.demoBookingToken.count({ where: whereClause }),
+        this.databaseService.demoBookingToken.groupBy({
+          by: ['outcome'],
+          _count: { outcome: true },
+        }),
+      ]);
+
+      const summaryMap: Record<string, number> = {};
+      summaryData.forEach((item) => {
+        summaryMap[item.outcome] = item._count.outcome;
+      });
+
+      const items: DemoBookingAdminItemDto[] = demos.map((demo) => ({
+        uid: demo.uid,
+        prospectEmail: demo.prospectEmail,
+        prospectName: demo.prospectName,
+        prospectCompany: demo.prospectCompany,
+        scheduledAt: demo.scheduledAt ?? demo.slots[0]?.startTime ?? null,
+        outcome: demo.outcome,
+        outcomeNotes: demo.outcomeNotes,
+        linkedProspectUid: demo.linkedProspectUid,
+        createdAt: demo.createdAt,
+        usedAt: demo.usedAt,
+      }));
+
+      return {
+        demos: items,
+        total,
+        page,
+        limit,
+        summary: {
+          pending: summaryMap['PENDING'] ?? 0,
+          completed: summaryMap['COMPLETED'] ?? 0,
+          noShow: summaryMap['NO_SHOW'] ?? 0,
+          rescheduled: summaryMap['RESCHEDULED'] ?? 0,
+          canceled: summaryMap['CANCELED'] ?? 0,
+        },
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to get demo bookings: ${error.message}`);
+    }
+  }
+
+  async setDemoOutcome(uid: string, dto: SetDemoOutcomeDto): Promise<DemoBookingAdminItemDto> {
+    try {
+      const existing = await this.databaseService.demoBookingToken.findUnique({ where: { uid } });
+      if (!existing) throw new NotFoundException(`Demo booking with uid ${uid} not found`);
+
+      const updated = await this.databaseService.demoBookingToken.update({
+        where: { uid },
+        data: {
+          outcome: dto.outcome as DemoOutcome,
+          ...(dto.notes !== undefined ? { outcomeNotes: dto.notes } : {}),
+        },
+        include: {
+          slots: {
+            where: { selectedAt: { not: null } },
+            orderBy: { selectedAt: 'asc' },
+            take: 1,
+          },
+        },
+      });
+
+      return {
+        uid: updated.uid,
+        prospectEmail: updated.prospectEmail,
+        prospectName: updated.prospectName,
+        prospectCompany: updated.prospectCompany,
+        scheduledAt: updated.scheduledAt ?? updated.slots[0]?.startTime ?? null,
+        outcome: updated.outcome,
+        outcomeNotes: updated.outcomeNotes,
+        linkedProspectUid: updated.linkedProspectUid,
+        createdAt: updated.createdAt,
+        usedAt: updated.usedAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to update demo outcome: ${error.message}`);
+    }
+  }
+
+  async linkDemoProspect(uid: string, dto: LinkDemoProspectDto): Promise<DemoBookingAdminItemDto> {
+    try {
+      const existing = await this.databaseService.demoBookingToken.findUnique({ where: { uid } });
+      if (!existing) throw new NotFoundException(`Demo booking with uid ${uid} not found`);
+
+      const prospect = await this.databaseService.prospectCompany.findUnique({ where: { uid: dto.prospectUid } });
+      if (!prospect) throw new NotFoundException(`ProspectCompany with uid ${dto.prospectUid} not found`);
+
+      const updated = await this.databaseService.demoBookingToken.update({
+        where: { uid },
+        data: { linkedProspectUid: dto.prospectUid },
+        include: {
+          slots: {
+            where: { selectedAt: { not: null } },
+            orderBy: { selectedAt: 'asc' },
+            take: 1,
+          },
+        },
+      });
+
+      return {
+        uid: updated.uid,
+        prospectEmail: updated.prospectEmail,
+        prospectName: updated.prospectName,
+        prospectCompany: updated.prospectCompany,
+        scheduledAt: updated.scheduledAt ?? updated.slots[0]?.startTime ?? null,
+        outcome: updated.outcome,
+        outcomeNotes: updated.outcomeNotes,
+        linkedProspectUid: updated.linkedProspectUid,
+        createdAt: updated.createdAt,
+        usedAt: updated.usedAt,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to link prospect to demo: ${error.message}`);
     }
   }
 }

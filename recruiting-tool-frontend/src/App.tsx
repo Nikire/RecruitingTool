@@ -78,6 +78,7 @@ import RevenueDashboardPage from "./pages/admin/RevenueDashboardPage";
 import QuotaInspectorPage from "./pages/admin/QuotaInspectorPage";
 import CompanyHealthPage from "./pages/admin/CompanyHealthPage";
 import TrialTrackerPage from "./pages/admin/TrialTrackerPage";
+import DemoBookingManagerPage from "./pages/admin/DemoBookingManagerPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -374,6 +375,7 @@ function App() {
               />
               <Route path="/admin/health" element={<CompanyHealthPage />} />
               <Route path="/admin/trials" element={<TrialTrackerPage />} />
+              <Route path="/admin/demos" element={<DemoBookingManagerPage />} />
             </Route>
           </Route>
         </Route>

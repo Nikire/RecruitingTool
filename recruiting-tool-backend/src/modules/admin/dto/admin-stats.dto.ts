@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Min, IsNotEmpty } from 'class-validator';
 
 export class UsersByRoleDto {
   @ApiProperty({ description: 'The role name', example: 'USER' })
@@ -446,4 +446,94 @@ export class UpdatedSubscriptionDto {
 
   @ApiProperty({ description: 'Current period end', nullable: true })
   currentPeriodEnd: Date | null;
+}
+
+// ─── Demo Booking Manager DTOs ───────────────────────────────────────────────
+
+export const DEMO_OUTCOME_VALUES = ['PENDING', 'COMPLETED', 'NO_SHOW', 'RESCHEDULED', 'CANCELED'] as const;
+export type DemoOutcomeValue = (typeof DEMO_OUTCOME_VALUES)[number];
+
+export class DemoBookingAdminItemDto {
+  @ApiProperty({ description: 'Demo booking token UID' })
+  uid: string;
+
+  @ApiProperty({ description: 'Prospect email address' })
+  prospectEmail: string;
+
+  @ApiProperty({ description: 'Prospect name', nullable: true })
+  prospectName: string | null;
+
+  @ApiProperty({ description: 'Prospect company name', nullable: true })
+  prospectCompany: string | null;
+
+  @ApiProperty({ description: 'Scheduled date/time of the demo', nullable: true })
+  scheduledAt: Date | null;
+
+  @ApiProperty({ description: 'Demo outcome', enum: DEMO_OUTCOME_VALUES })
+  outcome: string;
+
+  @ApiProperty({ description: 'Notes about the outcome', nullable: true })
+  outcomeNotes: string | null;
+
+  @ApiProperty({ description: 'Linked ProspectCompany UID', nullable: true })
+  linkedProspectUid: string | null;
+
+  @ApiProperty({ description: 'Token creation date' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Date the booking was used (slot selected)', nullable: true })
+  usedAt: Date | null;
+}
+
+export class DemoBookingOutcomeSummaryDto {
+  @ApiProperty({ description: 'Number of pending demos' })
+  pending: number;
+
+  @ApiProperty({ description: 'Number of completed demos' })
+  completed: number;
+
+  @ApiProperty({ description: 'Number of no-show demos' })
+  noShow: number;
+
+  @ApiProperty({ description: 'Number of rescheduled demos' })
+  rescheduled: number;
+
+  @ApiProperty({ description: 'Number of canceled demos' })
+  canceled: number;
+}
+
+export class DemoBookingListResponseDto {
+  @ApiProperty({ type: [DemoBookingAdminItemDto] })
+  demos: DemoBookingAdminItemDto[];
+
+  @ApiProperty({ description: 'Total number of records matching filter' })
+  total: number;
+
+  @ApiProperty({ description: 'Current page' })
+  page: number;
+
+  @ApiProperty({ description: 'Items per page' })
+  limit: number;
+
+  @ApiProperty({ type: DemoBookingOutcomeSummaryDto })
+  summary: DemoBookingOutcomeSummaryDto;
+}
+
+export class SetDemoOutcomeDto {
+  @ApiProperty({ description: 'New outcome for the demo', enum: DEMO_OUTCOME_VALUES })
+  @IsEnum(DEMO_OUTCOME_VALUES)
+  @IsNotEmpty()
+  outcome: DemoOutcomeValue;
+
+  @ApiProperty({ description: 'Optional notes about the outcome', required: false })
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}
+
+export class LinkDemoProspectDto {
+  @ApiProperty({ description: 'UID of the ProspectCompany to link' })
+  @IsString()
+  @IsNotEmpty()
+  prospectUid: string;
 }

@@ -14,6 +14,10 @@ import {
   ExtendTrialDto,
   SubscriptionAuditLogItemDto,
   UpdatedSubscriptionDto,
+  DemoBookingAdminItemDto,
+  DemoBookingListResponseDto,
+  SetDemoOutcomeDto,
+  LinkDemoProspectDto,
 } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
@@ -201,5 +205,40 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Returns audit log entries', type: [SubscriptionAuditLogItemDto] })
   getSubscriptionAuditLog(@Param('companyUid') companyUid: string): Promise<SubscriptionAuditLogItemDto[]> {
     return this.adminService.getSubscriptionAuditLog(companyUid);
+  }
+
+  // ─── Demo Booking Manager ─────────────────────────────────────────────────
+
+  @Get('demos')
+  @ApiOperation({
+    summary: 'Get paginated list of demo bookings - ADMIN role required',
+    description: 'Returns paginated demo booking tokens with outcome tracking and summary counts',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
+  @ApiQuery({ name: 'outcome', required: false, type: String, description: 'Filter by outcome: PENDING|COMPLETED|NO_SHOW|RESCHEDULED|CANCELED' })
+  @ApiResponse({ status: 200, description: 'Returns paginated demo bookings with summary', type: DemoBookingListResponseDto })
+  getDemoBookings(@Query('page') page?: string, @Query('limit') limit?: string, @Query('outcome') outcome?: string): Promise<DemoBookingListResponseDto> {
+    return this.adminService.getDemoBookings(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 20, outcome || undefined);
+  }
+
+  @Patch('demos/:uid/outcome')
+  @ApiOperation({
+    summary: 'Set outcome for a demo booking - ADMIN role required',
+    description: 'Updates the outcome and optional notes for a specific demo booking',
+  })
+  @ApiResponse({ status: 200, description: 'Returns updated demo booking item', type: DemoBookingAdminItemDto })
+  setDemoOutcome(@Param('uid') uid: string, @Body() dto: SetDemoOutcomeDto): Promise<DemoBookingAdminItemDto> {
+    return this.adminService.setDemoOutcome(uid, dto);
+  }
+
+  @Patch('demos/:uid/link-prospect')
+  @ApiOperation({
+    summary: 'Link a ProspectCompany to a demo booking - ADMIN role required',
+    description: 'Associates an existing ProspectCompany record with a demo booking via UID',
+  })
+  @ApiResponse({ status: 200, description: 'Returns updated demo booking item', type: DemoBookingAdminItemDto })
+  linkDemoProspect(@Param('uid') uid: string, @Body() dto: LinkDemoProspectDto): Promise<DemoBookingAdminItemDto> {
+    return this.adminService.linkDemoProspect(uid, dto);
   }
 }
