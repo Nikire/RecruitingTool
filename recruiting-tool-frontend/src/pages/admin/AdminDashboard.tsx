@@ -14,6 +14,7 @@ import {
   Psychology as PsychologyIcon,
   Settings as SettingsIcon,
   Article as ArticleIcon,
+  TrendingUp as TrendingUpIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -26,6 +27,13 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const managementItems = [
+    {
+      title: t("admin_dashboard.revenue_dashboard"),
+      icon: <TrendingUpIcon />,
+      color: "#1565c0",
+      description: t("admin_dashboard.revenue_dashboard_desc"),
+      path: "/admin/revenue",
+    },
     {
       title: t("admin_layout.companies"),
       icon: <BusinessIcon />,

@@ -1,6 +1,17 @@
 import { Injectable, InternalServerErrorException, HttpException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
-import { AdminStatsResponseDto, UserStatsResponseDto, CompanyStatsResponseDto, RecentActivityResponseDto, UsersByRoleDto, RecentLoginDto } from './dto/admin-stats.dto';
+import {
+  AdminStatsResponseDto,
+  UserStatsResponseDto,
+  CompanyStatsResponseDto,
+  RecentActivityResponseDto,
+  UsersByRoleDto,
+  RecentLoginDto,
+  RevenueStatsResponseDto,
+  PlanDistributionItemDto,
+  StatusDistributionItemDto,
+  MonthlySignupItemDto,
+} from './dto/admin-stats.dto';
 
 @Injectable()
 export class AdminService {
@@ -197,6 +208,137 @@ export class AdminService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to get hiring process stats: ${error.message}`);
+    }
+  }
+
+  async getRevenueStats(): Promise<RevenueStatsResponseDto> {
+    try {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59, 999);
+
+      // Plan pricing in USD
+      const PLAN_PRICES: Record<string, number> = {
+        FREE: 0,
+        PROFESSIONAL: 49,
+        ENTERPRISE: 149,
+      };
+
+      // Run all queries in parallel
+      const [activeSubscriptions, trialingCount, pastDueCount, canceledThisMonthCount, totalCount, planGroupBy, statusGroupBy, allCompanies, lastMonthActiveSubscriptions] =
+        await Promise.all([
+          // Active subscriptions for MRR calculation
+          this.databaseService.subscription.findMany({
+            where: { status: 'ACTIVE' },
+            select: { plan: true },
+          }),
+          // Trialing count
+          this.databaseService.subscription.count({ where: { status: 'TRIALING' } }),
+          // Past due count
+          this.databaseService.subscription.count({ where: { status: 'PAST_DUE' } }),
+          // Canceled this month
+          this.databaseService.subscription.count({
+            where: {
+              status: 'CANCELED',
+              updatedAt: { gte: startOfMonth },
+            },
+          }),
+          // Total subscriptions
+          this.databaseService.subscription.count(),
+          // Plan distribution
+          this.databaseService.subscription.groupBy({
+            by: ['plan'],
+            _count: { id: true },
+          }),
+          // Status distribution
+          this.databaseService.subscription.groupBy({
+            by: ['status'],
+            _count: { id: true },
+          }),
+          // All companies with createdAt for monthly signups (last 6 months)
+          this.databaseService.company.findMany({
+            where: {
+              createdAt: {
+                gte: new Date(now.getFullYear(), now.getMonth() - 5, 1),
+              },
+            },
+            select: { createdAt: true },
+          }),
+          // Last month active subscriptions for MRR growth
+          this.databaseService.subscription.findMany({
+            where: {
+              status: 'ACTIVE',
+              createdAt: { lte: endOfLastMonth },
+              updatedAt: { lte: endOfLastMonth },
+            },
+            select: { plan: true },
+          }),
+        ]);
+
+      // Calculate current MRR
+      const currentMrr = activeSubscriptions.reduce((sum, sub) => {
+        return sum + (PLAN_PRICES[sub.plan] ?? 0);
+      }, 0);
+
+      // Calculate last month MRR (rough estimate based on active subs created before end of last month)
+      const lastMonthMrr = lastMonthActiveSubscriptions.reduce((sum, sub) => {
+        return sum + (PLAN_PRICES[sub.plan] ?? 0);
+      }, 0);
+
+      // Calculate MRR growth percentage
+      const mrrGrowth = lastMonthMrr === 0 ? (currentMrr > 0 ? 100 : 0) : parseFloat((((currentMrr - lastMonthMrr) / lastMonthMrr) * 100).toFixed(1));
+
+      // Plan distribution
+      const planDistribution: PlanDistributionItemDto[] = planGroupBy.map((g) => ({
+        plan: g.plan,
+        count: g._count.id,
+      }));
+
+      // Status distribution
+      const statusDistribution: StatusDistributionItemDto[] = statusGroupBy.map((g) => ({
+        status: g.status,
+        count: g._count.id,
+      }));
+
+      // Monthly signups — last 6 months
+      const monthlyMap: Record<string, number> = {};
+      // Initialize all 6 months with 0
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        monthlyMap[key] = 0;
+      }
+      // Count companies per month
+      allCompanies.forEach((c) => {
+        const d = c.createdAt;
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (key in monthlyMap) {
+          monthlyMap[key] = (monthlyMap[key] ?? 0) + 1;
+        }
+      });
+      const monthlySignups: MonthlySignupItemDto[] = Object.entries(monthlyMap).map(([month, count]) => ({
+        month,
+        count,
+      }));
+
+      return {
+        mrr: currentMrr,
+        mrrGrowth,
+        activeCompanies: activeSubscriptions.length,
+        trialingCompanies: trialingCount,
+        pastDueCompanies: pastDueCount,
+        canceledThisMonth: canceledThisMonthCount,
+        totalCompanies: totalCount,
+        planDistribution,
+        statusDistribution,
+        monthlySignups,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get revenue stats: ${error.message}`);
     }
   }
 

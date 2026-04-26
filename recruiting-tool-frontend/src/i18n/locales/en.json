@@ -1978,7 +1978,32 @@
     "custom_plans_desc": "Create and manage custom subscription plans",
     "ai_quota_desc": "Set AI scoring quotas per company",
     "system_settings_desc": "Email, storage, rate limiting and infrastructure config",
-    "docs_desc": "Internal API and platform documentation"
+    "docs_desc": "Internal API and platform documentation",
+    "revenue_dashboard": "Revenue Dashboard",
+    "revenue_dashboard_desc": "Monitor MRR, subscription plans and company growth metrics"
+  },
+  "revenue_dashboard": {
+    "title": "Revenue Dashboard",
+    "subtitle": "Monitor subscription revenue, plan distribution, and company growth",
+    "mrr": "Estimated MRR",
+    "mrr_growth": "MRR Growth",
+    "vs_last_month": "vs last month",
+    "active_companies": "Active Paying Companies",
+    "trialing": "Companies in Trial",
+    "canceled_this_month": "Canceled This Month",
+    "plan_distribution": "Plan Distribution",
+    "monthly_signups": "Monthly New Companies (Last 6 Months)",
+    "status_breakdown": "Subscription Status Breakdown",
+    "free": "Free",
+    "professional": "Professional",
+    "enterprise": "Enterprise",
+    "active": "Active",
+    "trialing_status": "Trialing",
+    "past_due": "Past Due",
+    "canceled": "Canceled",
+    "companies": "Companies",
+    "new_companies": "New Companies",
+    "no_data": "No data available"
   },
   "admin": {
     "ai_quota": {

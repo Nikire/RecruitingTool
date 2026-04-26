@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { AdminStatsResponseDto, UserStatsResponseDto, CompanyStatsResponseDto, RecentActivityResponseDto } from './dto/admin-stats.dto';
+import { AdminStatsResponseDto, UserStatsResponseDto, CompanyStatsResponseDto, RecentActivityResponseDto, RevenueStatsResponseDto } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
@@ -68,5 +68,19 @@ export class AdminController {
   })
   getRecentActivity(): Promise<RecentActivityResponseDto> {
     return this.adminService.getRecentActivity();
+  }
+
+  @Get('revenue/stats')
+  @ApiOperation({
+    summary: 'Get revenue dashboard statistics - ADMIN role required',
+    description: 'Returns MRR, subscription status breakdown, plan distribution and monthly signups for the last 6 months',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns revenue statistics',
+    type: RevenueStatsResponseDto,
+  })
+  getRevenueStats(): Promise<RevenueStatsResponseDto> {
+    return this.adminService.getRevenueStats();
   }
 }

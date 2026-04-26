@@ -74,6 +74,7 @@ import AIQuotaPage from "./pages/admin/AIQuotaPage";
 import DocsPage from "./pages/admin/DocsPage";
 import OutreachTemplatesPage from "./pages/admin/OutreachTemplatesPage";
 import OutreachCRMPage from "./pages/admin/OutreachCRMPage";
+import RevenueDashboardPage from "./pages/admin/RevenueDashboardPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -363,6 +364,7 @@ function App() {
                 path="/admin/email-logs"
                 element={<AdminEmailLogsPage />}
               />
+              <Route path="/admin/revenue" element={<RevenueDashboardPage />} />
             </Route>
           </Route>
         </Route>

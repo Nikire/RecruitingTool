@@ -101,3 +101,59 @@ export class RecentActivityResponseDto {
   @ApiProperty({ description: 'Recent user logins', type: [RecentLoginDto] })
   recentLogins: RecentLoginDto[];
 }
+
+export class PlanDistributionItemDto {
+  @ApiProperty({ description: 'Subscription plan name', example: 'PROFESSIONAL' })
+  plan: string;
+
+  @ApiProperty({ description: 'Number of companies on this plan', example: 12 })
+  count: number;
+}
+
+export class StatusDistributionItemDto {
+  @ApiProperty({ description: 'Subscription status name', example: 'ACTIVE' })
+  status: string;
+
+  @ApiProperty({ description: 'Number of companies with this status', example: 20 })
+  count: number;
+}
+
+export class MonthlySignupItemDto {
+  @ApiProperty({ description: 'Month in YYYY-MM format', example: '2025-01' })
+  month: string;
+
+  @ApiProperty({ description: 'Number of new company signups in this month', example: 5 })
+  count: number;
+}
+
+export class RevenueStatsResponseDto {
+  @ApiProperty({ description: 'Estimated Monthly Recurring Revenue in USD', example: 2940 })
+  mrr: number;
+
+  @ApiProperty({ description: 'MRR percentage change vs last month', example: 12.5 })
+  mrrGrowth: number;
+
+  @ApiProperty({ description: 'Number of companies with ACTIVE subscription', example: 20 })
+  activeCompanies: number;
+
+  @ApiProperty({ description: 'Number of companies currently in TRIALING status', example: 8 })
+  trialingCompanies: number;
+
+  @ApiProperty({ description: 'Number of companies with PAST_DUE status', example: 2 })
+  pastDueCompanies: number;
+
+  @ApiProperty({ description: 'Number of companies whose subscription was CANCELED in the current calendar month', example: 1 })
+  canceledThisMonth: number;
+
+  @ApiProperty({ description: 'Total number of companies with any subscription', example: 35 })
+  totalCompanies: number;
+
+  @ApiProperty({ description: 'Plan distribution for pie chart', type: [PlanDistributionItemDto] })
+  planDistribution: PlanDistributionItemDto[];
+
+  @ApiProperty({ description: 'Status distribution for bar chart', type: [StatusDistributionItemDto] })
+  statusDistribution: StatusDistributionItemDto[];
+
+  @ApiProperty({ description: 'Monthly new company signups for the last 6 months', type: [MonthlySignupItemDto] })
+  monthlySignups: MonthlySignupItemDto[];
+}

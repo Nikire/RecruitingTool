@@ -2010,7 +2010,32 @@
     "custom_plans_desc": "Crear y gestionar planes de suscripción personalizados",
     "ai_quota_desc": "Establecer cuotas de puntuación de IA por empresa",
     "system_settings_desc": "Configuración de correo, almacenamiento, límites y más",
-    "docs_desc": "Documentación interna de API y plataforma"
+    "docs_desc": "Documentación interna de API y plataforma",
+    "revenue_dashboard": "Panel de Ingresos",
+    "revenue_dashboard_desc": "Monitorear MRR, planes de suscripción y métricas de crecimiento"
+  },
+  "revenue_dashboard": {
+    "title": "Panel de Ingresos",
+    "subtitle": "Monitorea los ingresos por suscripción, distribución de planes y crecimiento",
+    "mrr": "MRR Estimado",
+    "mrr_growth": "Crecimiento MRR",
+    "vs_last_month": "vs mes anterior",
+    "active_companies": "Empresas con Pago Activo",
+    "trialing": "Empresas en Prueba",
+    "canceled_this_month": "Canceladas Este Mes",
+    "plan_distribution": "Distribución de Planes",
+    "monthly_signups": "Nuevas Empresas por Mes (Últimos 6 Meses)",
+    "status_breakdown": "Desglose por Estado de Suscripción",
+    "free": "Gratis",
+    "professional": "Profesional",
+    "enterprise": "Empresarial",
+    "active": "Activo",
+    "trialing_status": "En Prueba",
+    "past_due": "Vencido",
+    "canceled": "Cancelado",
+    "companies": "Empresas",
+    "new_companies": "Nuevas Empresas",
+    "no_data": "No hay datos disponibles"
   },
   "admin": {
     "ai_quota": {
