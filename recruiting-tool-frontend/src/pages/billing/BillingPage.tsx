@@ -14,6 +14,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import toast from "react-hot-toast";
 import DownloadIcon from "@mui/icons-material/Download";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import {
@@ -54,7 +55,8 @@ const BillingPage: React.FC = () => {
   const hasInvoices = invoices.length > 0;
 
   const handleManageBilling = () => {
-    billingPortal.mutate(undefined as never);
+    toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+    // billingPortal.mutate(undefined as never);
   };
 
   const getSubscriptionStatusColor = (status: SubscriptionStatus) => {
@@ -200,31 +202,31 @@ const BillingPage: React.FC = () => {
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title={t("billing.download_pdf")}>
-                      <IconButton
-                        component="a"
-                        href={invoice.pdfUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        size="small"
-                        color="primary"
-                        disabled={!invoice.pdfUrl}
-                      >
-                        <DownloadIcon />
-                      </IconButton>
+                      <span>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          disabled={!invoice.pdfUrl}
+                          onClick={() => toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 })}
+                          // href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer"
+                        >
+                          <DownloadIcon />
+                        </IconButton>
+                      </span>
                     </Tooltip>
                     <Tooltip title={t("billing.view_invoice")}>
-                      <IconButton
-                        component="a"
-                        href={invoice.hostedInvoiceUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        size="small"
-                        color="primary"
-                        disabled={!invoice.hostedInvoiceUrl}
-                        sx={{ ml: 1 }}
-                      >
-                        <ReceiptIcon />
-                      </IconButton>
+                      <span>
+                        <IconButton
+                          size="small"
+                          color="primary"
+                          disabled={!invoice.hostedInvoiceUrl}
+                          onClick={() => toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 })}
+                          sx={{ ml: 1 }}
+                          // href={invoice.hostedInvoiceUrl} target="_blank" rel="noopener noreferrer"
+                        >
+                          <ReceiptIcon />
+                        </IconButton>
+                      </span>
                     </Tooltip>
                   </TableCell>
                 </TableRow>

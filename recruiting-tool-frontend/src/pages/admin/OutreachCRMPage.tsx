@@ -65,17 +65,17 @@ interface StatusConfig {
 }
 
 const STATUS_CONFIG: Record<ProspectStatus, StatusConfig> = {
-  NEW: { color: "default", variant: "outlined" },
-  CONTACTED: { color: "info", variant: "outlined" },
-  FOLLOW_UP_1: { color: "warning", variant: "outlined" },
+  NEW: { color: "default", variant: "filled" },
+  CONTACTED: { color: "info", variant: "filled" },
+  FOLLOW_UP_1: { color: "warning", variant: "filled" },
   FOLLOW_UP_2: { color: "warning", variant: "filled" },
-  RESPONDED: { color: "success", variant: "outlined" },
+  RESPONDED: { color: "success", variant: "filled" },
   DEMO_SCHEDULED: { color: "primary", variant: "filled" },
-  DEMO_DONE: { color: "secondary", variant: "outlined" },
+  DEMO_DONE: { color: "secondary", variant: "filled" },
   PROPOSAL_SENT: { color: "info", variant: "filled" },
   CONVERTED: { color: "success", variant: "filled" },
   LOST: { color: "error", variant: "filled" },
-  ARCHIVED: { color: "default", variant: "outlined" },
+  ARCHIVED: { color: "default", variant: "filled" },
 };
 
 const SOURCE_COLORS: Record<ProspectSource, string | undefined> = {
@@ -620,8 +620,8 @@ const OutreachCRMPage: React.FC = () => {
             <Chip
               label={t(`outreach_crm.source_${src.toLowerCase()}`)}
               size="small"
-              variant="outlined"
-              sx={color ? { borderColor: color, color } : undefined}
+              variant="filled"
+              sx={color ? { bgcolor: color, color: "#fff" } : undefined}
             />
           );
         },
@@ -908,7 +908,7 @@ const OutreachCRMPage: React.FC = () => {
             noRowsLabel: t("outreach_crm.no_prospects"),
           }}
           sx={{
-            "& .MuiDataGrid-cell": { alignItems: "center" },
+            "& .MuiDataGrid-cell": { display: "flex", alignItems: "center" },
             "& .MuiDataGrid-columnHeader": { bgcolor: "background.default" },
           }}
         />

@@ -108,12 +108,9 @@ const SubscriptionPage: React.FC = () => {
     isLoading: isLoadingQuota,
     isError: isErrorQuota,
   } = useQuota();
-  const { mutate: createCheckout, isPending: isCreatingCheckout } =
-    useCheckout();
-  const { mutate: openBillingPortal, isPending: isOpeningPortal } =
-    useBillingPortal();
-  const { mutate: cancelSubscription, isPending: isCanceling } =
-    useCancelSubscription();
+  const { isPending: isCreatingCheckout } = useCheckout();
+  const { isPending: isOpeningPortal } = useBillingPortal();
+  const { isPending: isCanceling } = useCancelSubscription();
   const { data: planLimits, isLoading: limitsLoading } = usePlanLimits();
 
   // Memoized validation checks
@@ -163,52 +160,32 @@ const SubscriptionPage: React.FC = () => {
 
   const handleUpgrade = (plan: SubscriptionPlan) => {
     if (plan === SubscriptionPlan.FREE) return;
-
-    const successUrl = `${window.location.origin}/profile/subscription?success=true`;
-    const cancelUrl = `${window.location.origin}/profile/subscription?canceled=true`;
-
-    createCheckout(
-      {
-        plan,
-        interval: billingInterval,
-        successUrl,
-        cancelUrl,
-      },
-      {
-        onError: (error: Error) => {
-          toast.error(
-            error?.message || t("subscription.errors.checkout_failed"),
-          );
-        },
-      },
-    );
+    toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+    // const successUrl = `${window.location.origin}/profile/subscription?success=true`;
+    // const cancelUrl = `${window.location.origin}/profile/subscription?canceled=true`;
+    // createCheckout({ plan, interval: billingInterval, successUrl, cancelUrl }, {
+    //   onError: (error: Error) => { toast.error(error?.message || t("subscription.errors.checkout_failed")); },
+    // });
   };
 
   const handleManageBilling = () => {
-    openBillingPortal(undefined, {
-      onError: (error: Error) => {
-        toast.error(
-          error?.message || t("subscription.errors.billing_portal_failed"),
-        );
-      },
-    });
+    toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+    // openBillingPortal(undefined, {
+    //   onError: (error: Error) => { toast.error(error?.message || t("subscription.errors.billing_portal_failed")); },
+    // });
   };
 
   const handleCancelSubscription = () => {
-    cancelSubscription(undefined, {
-      onSuccess: (data) => {
-        const formattedDate = formatDate(data.cancelAt);
-        toast.success(
-          t("subscription.messages.cancel_success", {
-            date: formattedDate || t("common.unknown"),
-          }),
-        );
-        setCancelDialogOpen(false);
-      },
-      onError: (error: Error) => {
-        toast.error(error?.message || t("subscription.errors.cancel_failed"));
-      },
-    });
+    toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+    setCancelDialogOpen(false);
+    // cancelSubscription(undefined, {
+    //   onSuccess: (data) => {
+    //     const formattedDate = formatDate(data.cancelAt);
+    //     toast.success(t("subscription.messages.cancel_success", { date: formattedDate || t("common.unknown") }));
+    //     setCancelDialogOpen(false);
+    //   },
+    //   onError: (error: Error) => { toast.error(error?.message || t("subscription.errors.cancel_failed")); },
+    // });
   };
 
   const getPlanFeatures = (plan: SubscriptionPlan): string[] => {
