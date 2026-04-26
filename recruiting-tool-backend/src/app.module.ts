@@ -53,6 +53,7 @@ import { CompanyCalendarSettingsModule } from './modules/company-calendar-settin
 import { DemoBookingModule } from './modules/demo-booking/demo-booking.module';
 import { AsyncStageModule } from './modules/async-stage/async-stage.module';
 import { DummyModule } from './modules/dummy/dummy.module';
+import { ProspectTrackingModule } from './modules/prospect-tracking/prospect-tracking.module';
 
 @Module({
   imports: [
@@ -117,6 +118,7 @@ import { DummyModule } from './modules/dummy/dummy.module';
     CompanyCalendarSettingsModule,
     DemoBookingModule,
     AsyncStageModule,
+    ProspectTrackingModule,
   ],
   controllers: [AppController],
   providers: [

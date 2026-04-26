@@ -15,6 +15,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import ArticleIcon from "@mui/icons-material/Article";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import TrackChangesIcon from "@mui/icons-material/TrackChanges";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -46,6 +47,24 @@ const AdminLayout: React.FC = () => {
 
   // Grouped sections
   const menuGroups: DashboardMenuGroup[] = [
+    {
+      label: t("admin_layout.group_outreach"),
+      icon: <CampaignIcon />,
+      items: [
+        {
+          text: t("admin_layout.outreach_crm"),
+          icon: <TrackChangesIcon />,
+          path: "/admin/outreach-crm",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.outreach_templates"),
+          icon: <CampaignIcon />,
+          path: "/admin/outreach-templates",
+          requiresSuperAdmin: false,
+        },
+      ],
+    },
     {
       label: t("admin_layout.group_management"),
       icon: <ManageAccountsIcon />,
@@ -139,12 +158,6 @@ const AdminLayout: React.FC = () => {
           icon: <ArticleIcon />,
           path: "/admin/docs",
           requiresSuperAdmin: true,
-        },
-        {
-          text: t("admin_layout.outreach_templates"),
-          icon: <CampaignIcon />,
-          path: "/admin/outreach-templates",
-          requiresSuperAdmin: false,
         },
       ],
     },

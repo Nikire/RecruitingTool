@@ -73,6 +73,7 @@ import CustomPlansPage from "./pages/admin/CustomPlansPage";
 import AIQuotaPage from "./pages/admin/AIQuotaPage";
 import DocsPage from "./pages/admin/DocsPage";
 import OutreachTemplatesPage from "./pages/admin/OutreachTemplatesPage";
+import OutreachCRMPage from "./pages/admin/OutreachCRMPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -357,6 +358,7 @@ function App() {
                 path="/admin/outreach-templates"
                 element={<OutreachTemplatesPage />}
               />
+              <Route path="/admin/outreach-crm" element={<OutreachCRMPage />} />
               <Route
                 path="/admin/email-logs"
                 element={<AdminEmailLogsPage />}

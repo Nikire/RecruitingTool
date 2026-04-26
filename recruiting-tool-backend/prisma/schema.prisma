@@ -43,6 +43,7 @@ model Company {
   users              User[]
   calendarSettings   CompanyCalendarSettings?
   demoBookings       DemoBookingToken[]          @relation("DemoBookings")
+  prospectLink       ProspectCompany?
 
   @@index([uid])
   @@index([name])
@@ -131,6 +132,8 @@ model User {
   activityLogs               UserActivityLog[]       @relation("UserActivityLogs")
   asyncTokensCreated         AsyncStageToken[]       @relation("AsyncTokenCreatedBy")
   submissionsReviewed        AsyncStageSubmission[]  @relation("SubmissionReviewedBy")
+  prospectCompaniesCreated   ProspectCompany[]       @relation("ProspectCreatedBy")
+  outreachActivitiesCreated  OutreachActivity[]      @relation("ActivityCreatedBy")
 
   @@unique([email, companyId])
   @@index([roles])
@@ -1478,4 +1481,115 @@ model AsyncStageSubmissionFile {
 
   @@index([submissionId])
   @@index([uid])
+}
+
+model ProspectCompany {
+  id              Int                @id @default(autoincrement())
+  uid             String             @unique @default(uuid()) @db.Uuid
+  name            String
+  website         String?
+  industry        String?
+  companySize     String?
+  country         String?
+  city            String?
+  source          ProspectSource     @default(OTHER)
+  status          ProspectStatus     @default(NEW)
+  notes           String?
+  contacts        OutreachContact[]
+  activities      OutreachActivity[]
+  linkedCompanyId Int?               @unique
+  linkedCompany   Company?           @relation(fields: [linkedCompanyId], references: [id])
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  createdById     Int?
+  createdBy       User?              @relation("ProspectCreatedBy", fields: [createdById], references: [id])
+
+  @@index([uid])
+  @@index([status])
+  @@index([source])
+  @@index([name])
+}
+
+model OutreachContact {
+  id                Int             @id @default(autoincrement())
+  uid               String          @unique @default(uuid()) @db.Uuid
+  prospectCompanyId Int
+  prospectCompany   ProspectCompany @relation(fields: [prospectCompanyId], references: [id], onDelete: Cascade)
+  name              String
+  role              String?
+  email             String?
+  linkedinUrl       String?
+  phone             String?
+  isPrimary         Boolean         @default(false)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  @@index([prospectCompanyId])
+}
+
+model OutreachActivity {
+  id                Int                  @id @default(autoincrement())
+  uid               String               @unique @default(uuid()) @db.Uuid
+  prospectCompanyId Int
+  prospectCompany   ProspectCompany      @relation(fields: [prospectCompanyId], references: [id], onDelete: Cascade)
+  type              OutreachActivityType
+  channel           OutreachChannel?
+  notes             String?
+  templateUsed      String?
+  previousStatus    ProspectStatus?
+  newStatus         ProspectStatus?
+  createdAt         DateTime             @default(now())
+  createdById       Int?
+  createdBy         User?                @relation("ActivityCreatedBy", fields: [createdById], references: [id])
+
+  @@index([prospectCompanyId])
+  @@index([createdAt])
+}
+
+enum ProspectSource {
+  CLUTCH
+  GOODFIRMS
+  LINKEDIN
+  SALES_NAVIGATOR
+  UPWORK
+  TOPTAL
+  GOOGLE_MAPS
+  REFERRAL
+  DIRECT
+  OTHER
+}
+
+enum ProspectStatus {
+  NEW
+  CONTACTED
+  FOLLOW_UP_1
+  FOLLOW_UP_2
+  RESPONDED
+  DEMO_SCHEDULED
+  DEMO_DONE
+  PROPOSAL_SENT
+  CONVERTED
+  LOST
+  ARCHIVED
+}
+
+enum OutreachActivityType {
+  NOTE
+  MESSAGE_SENT
+  RESPONSE_RECEIVED
+  FOLLOW_UP
+  DEMO_SCHEDULED
+  DEMO_COMPLETED
+  PROPOSAL_SENT
+  STATUS_CHANGED
+  CONTACT_ADDED
+}
+
+enum OutreachChannel {
+  LINKEDIN
+  EMAIL
+  WHATSAPP
+  PHONE
+  IN_PERSON
+  OTHER
 }
