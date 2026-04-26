@@ -14,6 +14,7 @@ import {
   Skeleton,
   Typography,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import WarningAmberIcon from "@mui/icons-material/WarningAmber";
@@ -103,17 +104,16 @@ const SummaryCard: React.FC<{
   label: string;
   count: number;
   color: string;
-  bgColor: string;
   icon: React.ReactNode;
   isLoading?: boolean;
-}> = ({ label, count, color, bgColor, icon, isLoading }) => (
+}> = ({ label, count, color, icon, isLoading }) => (
   <Card
     sx={{
       flex: 1,
       minWidth: 160,
-      border: `1px solid ${color}30`,
+      border: `1px solid ${alpha(color, 0.3)}`,
       borderLeft: `4px solid ${color}`,
-      bgcolor: bgColor,
+      bgcolor: alpha(color, 0.08),
     }}
     elevation={0}
   >
@@ -291,7 +291,6 @@ const QuotaInspectorPage: React.FC = () => {
           label={t("quota_inspector.ok")}
           count={data?.summary.okCount ?? 0}
           color="#2e7d32"
-          bgColor="#f1f8e9"
           icon={<CheckCircleOutlineIcon fontSize="small" />}
           isLoading={isLoading}
         />
@@ -299,7 +298,6 @@ const QuotaInspectorPage: React.FC = () => {
           label={t("quota_inspector.warning")}
           count={data?.summary.warningCount ?? 0}
           color="#e65100"
-          bgColor="#fff8e1"
           icon={<WarningAmberIcon fontSize="small" />}
           isLoading={isLoading}
         />
@@ -307,7 +305,6 @@ const QuotaInspectorPage: React.FC = () => {
           label={t("quota_inspector.critical")}
           count={data?.summary.criticalCount ?? 0}
           color="#b71c1c"
-          bgColor="#fce4ec"
           icon={<ErrorOutlineIcon fontSize="small" />}
           isLoading={isLoading}
         />
@@ -315,7 +312,6 @@ const QuotaInspectorPage: React.FC = () => {
           label={t("quota_inspector.exceeded")}
           count={data?.summary.exceededCount ?? 0}
           color="#c62828"
-          bgColor="#ffebee"
           icon={<BlockIcon fontSize="small" />}
           isLoading={isLoading}
         />
@@ -378,7 +374,7 @@ const QuotaInspectorPage: React.FC = () => {
               alignItems: "center",
             },
             "& .MuiDataGrid-columnHeader": {
-              bgcolor: "grey.50",
+              bgcolor: "action.hover",
             },
           }}
         />
