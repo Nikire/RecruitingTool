@@ -616,3 +616,67 @@ export class EmailDeliverabilityPerTypeDto {
   @ApiProperty({ description: 'Per email type breakdown sorted by bounceRate descending', type: [EmailDeliverabilityPerTypeItemDto] })
   perType: EmailDeliverabilityPerTypeItemDto[];
 }
+
+// ─── Pipeline Analytics DTOs ─────────────────────────────────────────────────
+
+export class PlatformStatsDto {
+  @ApiProperty({ description: 'Total applications (all time, non-deleted)', example: 1250 })
+  totalApplications: number;
+
+  @ApiProperty({ description: 'Applications submitted this calendar month', example: 87 })
+  applicationsThisMonth: number;
+
+  @ApiProperty({ description: 'Month-over-month growth percentage for applications', example: 12.5 })
+  applicationsLastMonthGrowth: number;
+
+  @ApiProperty({ description: 'Total interviews ever created (non-deleted)', example: 430 })
+  totalInterviews: number;
+
+  @ApiProperty({ description: 'Interviews created this calendar month', example: 34 })
+  interviewsThisMonth: number;
+
+  @ApiProperty({ description: 'Currently open job positions', example: 45 })
+  openPositions: number;
+
+  @ApiProperty({ description: 'Total job positions (all time)', example: 120 })
+  totalPositions: number;
+
+  @ApiProperty({ description: 'Total closed job positions', example: 75 })
+  closedPositions: number;
+
+  @ApiProperty({ description: 'Average days from process creation to close', example: 28 })
+  avgTimeToHireDays: number;
+
+  @ApiProperty({ description: 'Closed hiring processes / total positions as a percentage', example: 62.5 })
+  conversionRate: number;
+
+  @ApiProperty({ description: 'Companies with ACTIVE or TRIALING subscription', example: 18 })
+  totalActiveCompanies: number;
+}
+
+export class MonthlyApplicationItemDto {
+  @ApiProperty({ description: 'Month string in YYYY-MM format', example: '2025-10' })
+  month: string;
+
+  @ApiProperty({ description: 'Number of applications in this month', example: 94 })
+  count: number;
+}
+
+export class ApplicationSourceItemDto {
+  @ApiProperty({ description: 'Application source label', example: 'LINKEDIN' })
+  source: string;
+
+  @ApiProperty({ description: 'Number of applications from this source', example: 320 })
+  count: number;
+}
+
+export class PipelineAnalyticsResponseDto {
+  @ApiProperty({ description: 'Platform-wide KPI stats', type: PlatformStatsDto })
+  platformStats: PlatformStatsDto;
+
+  @ApiProperty({ description: 'Monthly application counts for the last 6 months', type: [MonthlyApplicationItemDto] })
+  monthlyApplications: MonthlyApplicationItemDto[];
+
+  @ApiProperty({ description: 'Application counts grouped by source, sorted by count descending', type: [ApplicationSourceItemDto] })
+  applicationSources: ApplicationSourceItemDto[];
+}

@@ -2023,7 +2023,9 @@
     "demo_manager": "Reservas de Demo",
     "demo_manager_desc": "Rastrea resultados de demos y vincula prospectos a tu CRM",
     "email_deliverability": "Salud del Correo",
-    "email_deliverability_desc": "Monitorea tasas de entrega, aperturas, rebotes y quejas de spam."
+    "email_deliverability_desc": "Monitorea tasas de entrega, aperturas, rebotes y quejas de spam.",
+    "pipeline_analytics": "Analítica del Pipeline",
+    "pipeline_analytics_desc": "Métricas del embudo de reclutamiento entre empresas para inteligencia de negocio"
   },
   "demo_manager": {
     "title": "Gestor de Reservas Demo",
@@ -4544,5 +4546,27 @@
     "health_ok": "OK",
     "health_warning": "ADVERTENCIA",
     "health_critical": "CRÍTICO"
+  },
+  "pipeline_analytics": {
+    "title": "Analítica del Pipeline",
+    "subtitle": "Métricas del embudo de reclutamiento entre empresas para inteligencia de negocio y conversaciones con inversores",
+    "platform_note": "Datos de toda la plataforma entre {{count}} empresas activas",
+    "total_applications": "Total de Aplicaciones",
+    "apps_this_month": "Aplicaciones Este Mes",
+    "open_positions": "Posiciones Abiertas",
+    "avg_time_to_hire": "Tiempo Promedio de Contratación",
+    "conversion_rate": "Tasa de Conversión",
+    "active_companies": "Empresas Activas",
+    "total_interviews": "Total de Entrevistas",
+    "interviews_this_month": "Entrevistas Este Mes",
+    "monthly_applications": "Aplicaciones Mensuales (Últimos 6 Meses)",
+    "application_sources": "Fuentes de Aplicaciones",
+    "days": "días",
+    "growth": "crecimiento",
+    "vs_last_month": "vs mes anterior",
+    "total_positions": "posiciones totales",
+    "closed_positions": "posiciones cerradas",
+    "applications": "Aplicaciones",
+    "no_data": "No hay datos disponibles"
   }
 }

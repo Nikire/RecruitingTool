@@ -36,6 +36,10 @@ import {
   EmailDeliverabilityPerTypeDto,
   RecentBounceDto,
   EmailDeliverabilityPerTypeItemDto,
+  PipelineAnalyticsResponseDto,
+  PlatformStatsDto,
+  MonthlyApplicationItemDto,
+  ApplicationSourceItemDto,
 } from './dto/admin-stats.dto';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { DemoOutcome, QuotaType, SubscriptionPlan } from '@prisma/client';
@@ -1193,6 +1197,104 @@ export class AdminService {
       return { perType };
     } catch (error) {
       throw new InternalServerErrorException(`Failed to fetch email deliverability per type: ${error.message}`);
+    }
+  }
+
+  // ─── Pipeline Analytics ─────────────────────────────────────────────────────
+
+  async getPipelineAnalytics(): Promise<PipelineAnalyticsResponseDto> {
+    try {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+      const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0, 23, 59, 59);
+      const sixMonthsAgo = new Date(now.getFullYear(), now.getMonth() - 5, 1);
+
+      const [
+        totalApplications,
+        applicationsThisMonth,
+        applicationsLastMonth,
+        totalInterviews,
+        interviewsThisMonth,
+        openPositions,
+        totalPositions,
+        closedProcesses,
+        totalActiveCompanies,
+        applicationsBySource,
+        monthlyApplicationsRaw,
+      ] = await Promise.all([
+        this.databaseService.application.count({ where: { deletedAt: null } }),
+        this.databaseService.application.count({ where: { deletedAt: null, createdAt: { gte: startOfMonth } } }),
+        this.databaseService.application.count({ where: { deletedAt: null, createdAt: { gte: startOfLastMonth, lte: endOfLastMonth } } }),
+        this.databaseService.interview.count({ where: { deletedAt: null } }),
+        this.databaseService.interview.count({ where: { deletedAt: null, createdAt: { gte: startOfMonth } } }),
+        this.databaseService.jobPosition.count({ where: { status: 'OPEN' } }),
+        this.databaseService.jobPosition.count(),
+        this.databaseService.hiringProcess.findMany({ where: { status: 'CLOSED' }, select: { createdAt: true, updatedAt: true } }),
+        this.databaseService.company.count({ where: { subscription: { status: { in: ['ACTIVE', 'TRIALING'] } } } }),
+        this.databaseService.application.groupBy({ by: ['applicationSource'], _count: { id: true }, where: { deletedAt: null } }),
+        this.databaseService.application.findMany({
+          where: { deletedAt: null, createdAt: { gte: sixMonthsAgo } },
+          select: { createdAt: true },
+          orderBy: { createdAt: 'asc' },
+        }),
+      ]);
+
+      // Average time to hire in days
+      let avgTimeToHireDays = 0;
+      if (closedProcesses.length > 0) {
+        const totalDays = closedProcesses.reduce((sum, p) => {
+          const diffMs = p.updatedAt.getTime() - p.createdAt.getTime();
+          return sum + diffMs / (1000 * 60 * 60 * 24);
+        }, 0);
+        avgTimeToHireDays = Math.round(totalDays / closedProcesses.length);
+      }
+
+      // Conversion rate: closed processes / total positions
+      const conversionRate = parseFloat(((closedProcesses.length / Math.max(totalPositions, 1)) * 100).toFixed(1));
+
+      // Month-over-month growth for applications
+      const applicationsLastMonthGrowth = parseFloat((((applicationsThisMonth - applicationsLastMonth) / Math.max(applicationsLastMonth, 1)) * 100).toFixed(1));
+
+      // Build monthly applications map for last 6 months (fill missing with 0)
+      const monthlyMap: Record<string, number> = {};
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        monthlyMap[key] = 0;
+      }
+      monthlyApplicationsRaw.forEach((app) => {
+        const d = app.createdAt;
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (key in monthlyMap) {
+          monthlyMap[key] = (monthlyMap[key] ?? 0) + 1;
+        }
+      });
+      const monthlyApplications: MonthlyApplicationItemDto[] = Object.entries(monthlyMap).map(([month, count]) => ({ month, count }));
+
+      // Application sources sorted by count desc
+      const applicationSources: ApplicationSourceItemDto[] = applicationsBySource
+        .map((g) => ({ source: g.applicationSource, count: g._count.id }))
+        .sort((a, b) => b.count - a.count);
+
+      const platformStats: PlatformStatsDto = {
+        totalApplications,
+        applicationsThisMonth,
+        applicationsLastMonthGrowth,
+        totalInterviews,
+        interviewsThisMonth,
+        openPositions,
+        totalPositions,
+        closedPositions: totalPositions - openPositions,
+        avgTimeToHireDays,
+        conversionRate,
+        totalActiveCompanies,
+      };
+
+      return { platformStats, monthlyApplications, applicationSources };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to get pipeline analytics: ${error.message}`);
     }
   }
 }

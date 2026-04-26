@@ -20,6 +20,7 @@ import {
   RocketLaunch as RocketLaunchIcon,
   EventNote as EventNoteIcon,
   MarkEmailRead as MarkEmailReadIcon,
+  BarChart as BarChartIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -32,6 +33,13 @@ const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
 
   const managementItems = [
+    {
+      title: t("admin_dashboard.pipeline_analytics"),
+      icon: <BarChartIcon />,
+      color: "#0277bd",
+      description: t("admin_dashboard.pipeline_analytics_desc"),
+      path: "/admin/pipeline-analytics",
+    },
     {
       title: t("admin_dashboard.revenue_dashboard"),
       icon: <TrendingUpIcon />,

@@ -75,6 +75,7 @@ import DocsPage from "./pages/admin/DocsPage";
 import OutreachTemplatesPage from "./pages/admin/OutreachTemplatesPage";
 import OutreachCRMPage from "./pages/admin/OutreachCRMPage";
 import RevenueDashboardPage from "./pages/admin/RevenueDashboardPage";
+import PipelineAnalyticsPage from "./pages/admin/PipelineAnalyticsPage";
 import QuotaInspectorPage from "./pages/admin/QuotaInspectorPage";
 import CompanyHealthPage from "./pages/admin/CompanyHealthPage";
 import TrialTrackerPage from "./pages/admin/TrialTrackerPage";
@@ -368,6 +369,10 @@ function App() {
               <Route
                 path="/admin/email-logs"
                 element={<AdminEmailLogsPage />}
+              />
+              <Route
+                path="/admin/pipeline-analytics"
+                element={<PipelineAnalyticsPage />}
               />
               <Route path="/admin/revenue" element={<RevenueDashboardPage />} />
               <Route

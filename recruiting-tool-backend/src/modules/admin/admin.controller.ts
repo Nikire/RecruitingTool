@@ -20,6 +20,7 @@ import {
   LinkDemoProspectDto,
   EmailDeliverabilityStatsDto,
   EmailDeliverabilityPerTypeDto,
+  PipelineAnalyticsResponseDto,
 } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
@@ -264,5 +265,18 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Returns per-type deliverability breakdown', type: EmailDeliverabilityPerTypeDto })
   getEmailDeliverabilityPerType(): Promise<EmailDeliverabilityPerTypeDto> {
     return this.adminService.getEmailDeliverabilityPerType();
+  }
+
+  // ─── Pipeline Analytics ─────────────────────────────────────────────────────
+
+  @Get('analytics/pipeline')
+  @ApiOperation({
+    summary: 'Get aggregate pipeline analytics - ADMIN role required',
+    description:
+      'Returns platform-wide KPI stats (applications, interviews, positions, time-to-hire, conversion rate), monthly application trend for last 6 months, and application source breakdown',
+  })
+  @ApiResponse({ status: 200, description: 'Returns pipeline analytics data', type: PipelineAnalyticsResponseDto })
+  getPipelineAnalytics(): Promise<PipelineAnalyticsResponseDto> {
+    return this.adminService.getPipelineAnalytics();
   }
 }

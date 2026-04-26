@@ -1991,7 +1991,9 @@
     "demo_manager": "Demo Bookings",
     "demo_manager_desc": "Track demo booking outcomes and link prospects to your CRM",
     "email_deliverability": "Email Health",
-    "email_deliverability_desc": "Monitor email delivery rates, open rates, bounces, and spam complaints."
+    "email_deliverability_desc": "Monitor email delivery rates, open rates, bounces, and spam complaints.",
+    "pipeline_analytics": "Pipeline Analytics",
+    "pipeline_analytics_desc": "Cross-company recruiting funnel metrics for business intelligence and investor conversations"
   },
   "demo_manager": {
     "title": "Demo Booking Manager",
@@ -4536,5 +4538,27 @@
     "health_ok": "OK",
     "health_warning": "WARNING",
     "health_critical": "CRITICAL"
+  },
+  "pipeline_analytics": {
+    "title": "Pipeline Analytics",
+    "subtitle": "Cross-company recruiting pipeline metrics for business intelligence and investor conversations",
+    "platform_note": "Platform-wide data across {{count}} active companies",
+    "total_applications": "Total Applications",
+    "apps_this_month": "Applications This Month",
+    "open_positions": "Open Job Positions",
+    "avg_time_to_hire": "Avg Time to Hire",
+    "conversion_rate": "Conversion Rate",
+    "active_companies": "Active Companies",
+    "total_interviews": "Total Interviews",
+    "interviews_this_month": "Interviews This Month",
+    "monthly_applications": "Monthly Applications (Last 6 Months)",
+    "application_sources": "Application Sources",
+    "days": "days",
+    "growth": "growth",
+    "vs_last_month": "vs last month",
+    "total_positions": "total positions",
+    "closed_positions": "closed positions",
+    "applications": "Applications",
+    "no_data": "No data available"
   }
 }
