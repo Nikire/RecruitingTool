@@ -1,8 +1,17 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { AdminService } from './admin.service';
-import { AdminStatsResponseDto, UserStatsResponseDto, CompanyStatsResponseDto, RecentActivityResponseDto, RevenueStatsResponseDto } from './dto/admin-stats.dto';
+import {
+  AdminStatsResponseDto,
+  UserStatsResponseDto,
+  CompanyStatsResponseDto,
+  RecentActivityResponseDto,
+  RevenueStatsResponseDto,
+  QuotaOverviewResponseDto,
+  CompanyHealthResponseDto,
+  TrialOverviewResponseDto,
+} from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
 @ApiTags('Admin')
 @ApiBearerAuth()
@@ -82,5 +91,68 @@ export class AdminController {
   })
   getRevenueStats(): Promise<RevenueStatsResponseDto> {
     return this.adminService.getRevenueStats();
+  }
+
+  @Get('quota/overview')
+  @ApiOperation({
+    summary: 'Get quota usage overview for all companies - ADMIN role required',
+    description: 'Returns paginated list of companies with their real-time resource consumption vs plan limits',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
+  @ApiQuery({ name: 'plan', required: false, type: String, description: 'Filter by plan: FREE, PROFESSIONAL, ENTERPRISE' })
+  @ApiQuery({ name: 'status', required: false, type: String, description: 'Filter by health status: OK, WARNING, CRITICAL, EXCEEDED' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns quota usage overview',
+    type: QuotaOverviewResponseDto,
+  })
+  getQuotaOverview(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('plan') plan?: string,
+    @Query('status') status?: string,
+  ): Promise<QuotaOverviewResponseDto> {
+    return this.adminService.getQuotaOverview(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 20, plan || undefined, status || undefined);
+  }
+
+  @Get('health/companies')
+  @ApiOperation({
+    summary: 'Get company health (churn-risk) scores - ADMIN role required',
+    description: 'Returns paginated list of companies with engagement-based health scores and churn-risk tiers, sorted by health score ascending (most at-risk first)',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
+  @ApiQuery({ name: 'riskTier', required: false, type: String, description: 'Filter by risk tier: HEALTHY, AT_RISK, CHURNING, CRITICAL' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns company health scores and churn-risk data',
+    type: CompanyHealthResponseDto,
+  })
+  getCompanyHealthScores(@Query('page') page?: string, @Query('limit') limit?: string, @Query('riskTier') riskTier?: string): Promise<CompanyHealthResponseDto> {
+    return this.adminService.getCompanyHealthScores(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 20, riskTier || undefined);
+  }
+
+  @Get('trials/overview')
+  @ApiOperation({
+    summary: 'Get trial & conversion tracker overview - ADMIN role required',
+    description: 'Returns paginated list of FREE/TRIALING companies with activation depth metrics to identify who is ready to convert to a paid plan',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
+  @ApiQuery({ name: 'readiness', required: false, type: String, description: 'Filter by conversion readiness: HOT, WARM, COLD' })
+  @ApiQuery({ name: 'plan', required: false, type: String, description: 'Filter by plan type: FREE, TRIALING' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns trial companies with activation scores and conversion readiness',
+    type: TrialOverviewResponseDto,
+  })
+  getTrialOverview(
+    @Query('page') page?: string,
+    @Query('limit') limit?: string,
+    @Query('readiness') readiness?: string,
+    @Query('plan') plan?: string,
+  ): Promise<TrialOverviewResponseDto> {
+    return this.adminService.getTrialOverview(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 20, readiness || undefined, plan || undefined);
   }
 }

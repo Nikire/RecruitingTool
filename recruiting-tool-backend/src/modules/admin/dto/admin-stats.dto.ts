@@ -157,3 +157,219 @@ export class RevenueStatsResponseDto {
   @ApiProperty({ description: 'Monthly new company signups for the last 6 months', type: [MonthlySignupItemDto] })
   monthlySignups: MonthlySignupItemDto[];
 }
+
+// ─── Quota Overview DTOs ───────────────────────────────────────────────────────
+
+export class QuotaResourceUsageDto {
+  @ApiProperty({ description: 'Used count', example: 2 })
+  used: number;
+
+  @ApiProperty({ description: 'Limit count (-1 means unlimited)', example: 3 })
+  limit: number;
+
+  @ApiProperty({ description: 'Usage percentage (0-100+)', example: 66.67 })
+  percentage: number;
+}
+
+export class CompanyQuotaItemDto {
+  @ApiProperty({ description: 'Company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ description: 'Company name', example: 'Acme Corp' })
+  name: string;
+
+  @ApiProperty({ description: 'Subscription plan', example: 'FREE' })
+  plan: string;
+
+  @ApiProperty({ description: 'Subscription status', example: 'ACTIVE' })
+  subscriptionStatus: string;
+
+  @ApiProperty({ description: 'Job positions usage', type: QuotaResourceUsageDto })
+  jobPositions: QuotaResourceUsageDto;
+
+  @ApiProperty({ description: 'Users usage', type: QuotaResourceUsageDto })
+  users: QuotaResourceUsageDto;
+
+  @ApiProperty({ description: 'AI credits usage', type: QuotaResourceUsageDto })
+  aiCredits: QuotaResourceUsageDto;
+
+  @ApiProperty({ description: 'Overall health status', enum: ['OK', 'WARNING', 'CRITICAL', 'EXCEEDED'] })
+  healthStatus: 'OK' | 'WARNING' | 'CRITICAL' | 'EXCEEDED';
+}
+
+export class QuotaOverviewSummaryDto {
+  @ApiProperty({ description: 'Total companies', example: 10 })
+  totalCompanies: number;
+
+  @ApiProperty({ description: 'Companies with OK status', example: 5 })
+  okCount: number;
+
+  @ApiProperty({ description: 'Companies with WARNING status', example: 3 })
+  warningCount: number;
+
+  @ApiProperty({ description: 'Companies with CRITICAL status', example: 1 })
+  criticalCount: number;
+
+  @ApiProperty({ description: 'Companies with EXCEEDED status', example: 1 })
+  exceededCount: number;
+}
+
+export class QuotaOverviewResponseDto {
+  @ApiProperty({ description: 'List of companies with quota usage', type: [CompanyQuotaItemDto] })
+  companies: CompanyQuotaItemDto[];
+
+  @ApiProperty({ description: 'Total matching companies', example: 10 })
+  total: number;
+
+  @ApiProperty({ description: 'Current page', example: 1 })
+  page: number;
+
+  @ApiProperty({ description: 'Items per page', example: 20 })
+  limit: number;
+
+  @ApiProperty({ description: 'Summary counters', type: QuotaOverviewSummaryDto })
+  summary: QuotaOverviewSummaryDto;
+}
+
+// ─── Company Health Monitor DTOs ──────────────────────────────────────────────
+
+export type RiskTier = 'HEALTHY' | 'AT_RISK' | 'CHURNING' | 'CRITICAL';
+
+export class CompanyHealthItemDto {
+  @ApiProperty({ description: 'Company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ description: 'Company name', example: 'Acme Corp' })
+  name: string;
+
+  @ApiProperty({ description: 'Subscription plan', example: 'PROFESSIONAL' })
+  plan: string;
+
+  @ApiProperty({ description: 'Subscription status', example: 'ACTIVE' })
+  subscriptionStatus: string;
+
+  @ApiProperty({ description: 'Churn-risk health score 0-100', example: 72 })
+  healthScore: number;
+
+  @ApiProperty({ description: 'Risk tier derived from health score', enum: ['HEALTHY', 'AT_RISK', 'CHURNING', 'CRITICAL'] })
+  riskTier: RiskTier;
+
+  @ApiProperty({ description: 'Days since most recent user login, null if never logged in', example: 5, nullable: true })
+  lastLoginDaysAgo: number | null;
+
+  @ApiProperty({ description: 'Number of open job positions', example: 3 })
+  activeJobPositions: number;
+
+  @ApiProperty({ description: 'Number of applications created this calendar month', example: 12 })
+  applicationsThisMonth: number;
+
+  @ApiProperty({ description: 'Number of hiring processes updated this calendar month', example: 4 })
+  hiringActivitiesThisMonth: number;
+}
+
+export class CompanyHealthSummaryDto {
+  @ApiProperty({ description: 'Number of HEALTHY companies (score 80-100)', example: 5 })
+  healthyCount: number;
+
+  @ApiProperty({ description: 'Number of AT_RISK companies (score 50-79)', example: 3 })
+  atRiskCount: number;
+
+  @ApiProperty({ description: 'Number of CHURNING companies (score 20-49)', example: 2 })
+  churningCount: number;
+
+  @ApiProperty({ description: 'Number of CRITICAL companies (score 0-19)', example: 1 })
+  criticalCount: number;
+}
+
+export class CompanyHealthResponseDto {
+  @ApiProperty({ description: 'List of companies with health scores', type: [CompanyHealthItemDto] })
+  companies: CompanyHealthItemDto[];
+
+  @ApiProperty({ description: 'Total matching companies', example: 10 })
+  total: number;
+
+  @ApiProperty({ description: 'Current page', example: 1 })
+  page: number;
+
+  @ApiProperty({ description: 'Items per page', example: 20 })
+  limit: number;
+
+  @ApiProperty({ description: 'Risk tier summary counters', type: CompanyHealthSummaryDto })
+  summary: CompanyHealthSummaryDto;
+}
+
+// ─── Trial & Conversion Tracker DTOs ─────────────────────────────────────────
+
+export type ConversionReadiness = 'HOT' | 'WARM' | 'COLD';
+
+export class TrialCompanyItemDto {
+  @ApiProperty({ description: 'Company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ description: 'Company name', example: 'Acme Corp' })
+  name: string;
+
+  @ApiProperty({ description: 'Subscription plan', example: 'FREE' })
+  plan: string;
+
+  @ApiProperty({ description: 'Subscription status', example: 'TRIALING' })
+  subscriptionStatus: string;
+
+  @ApiProperty({ description: 'Days since company was created', example: 14 })
+  daysOnPlatform: number;
+
+  @ApiProperty({ description: 'Activation score 0-100 based on 5 signals × 20pts each', example: 60 })
+  activationScore: number;
+
+  @ApiProperty({ description: 'Conversion readiness tier derived from activation score', enum: ['HOT', 'WARM', 'COLD'] })
+  conversionReadiness: ConversionReadiness;
+
+  @ApiProperty({ description: 'Number of job positions created', example: 2 })
+  jobPositionsCreated: number;
+
+  @ApiProperty({ description: 'Number of candidates added to the company', example: 7 })
+  candidatesAdded: number;
+
+  @ApiProperty({ description: 'Number of non-deleted applications received', example: 4 })
+  applicationsReceived: number;
+
+  @ApiProperty({ description: 'Number of hiring processes started', example: 1 })
+  hiringProcessesStarted: number;
+
+  @ApiProperty({ description: 'Number of active team members (users)', example: 2 })
+  teamMembersInvited: number;
+
+  @ApiProperty({ description: 'Whether a ProspectCompany record is linked to this company', example: false })
+  hasOutreachRecord: boolean;
+
+  @ApiProperty({ description: 'UID of the linked ProspectCompany record, null if none', example: null, nullable: true })
+  prospectCompanyUid: string | null;
+}
+
+export class TrialOverviewSummaryDto {
+  @ApiProperty({ description: 'Number of HOT companies (score ≥70)', example: 3 })
+  hotCount: number;
+
+  @ApiProperty({ description: 'Number of WARM companies (score 40-69)', example: 5 })
+  warmCount: number;
+
+  @ApiProperty({ description: 'Number of COLD companies (score <40)', example: 7 })
+  coldCount: number;
+}
+
+export class TrialOverviewResponseDto {
+  @ApiProperty({ description: 'List of FREE/TRIALING companies with activation metrics', type: [TrialCompanyItemDto] })
+  companies: TrialCompanyItemDto[];
+
+  @ApiProperty({ description: 'Total matching companies', example: 15 })
+  total: number;
+
+  @ApiProperty({ description: 'Current page', example: 1 })
+  page: number;
+
+  @ApiProperty({ description: 'Items per page', example: 20 })
+  limit: number;
+
+  @ApiProperty({ description: 'Summary counters by readiness tier', type: TrialOverviewSummaryDto })
+  summary: TrialOverviewSummaryDto;
+}

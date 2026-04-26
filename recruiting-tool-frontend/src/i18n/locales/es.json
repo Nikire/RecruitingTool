@@ -2012,7 +2012,13 @@
     "system_settings_desc": "Configuración de correo, almacenamiento, límites y más",
     "docs_desc": "Documentación interna de API y plataforma",
     "revenue_dashboard": "Panel de Ingresos",
-    "revenue_dashboard_desc": "Monitorear MRR, planes de suscripción y métricas de crecimiento"
+    "revenue_dashboard_desc": "Monitorear MRR, planes de suscripción y métricas de crecimiento",
+    "quota_inspector": "Inspector de Cuotas",
+    "quota_inspector_desc": "Monitorear el consumo de recursos en tiempo real vs los límites del plan",
+    "company_health": "Salud de Empresas",
+    "company_health_desc": "Monitorear puntuaciones de riesgo de abandono y señales de engagement para todas las empresas",
+    "trial_tracker": "Rastreador de Pruebas",
+    "trial_tracker_desc": "Identifica empresas en plan gratuito y prueba listas para convertir a un plan de pago"
   },
   "revenue_dashboard": {
     "title": "Panel de Ingresos",
@@ -4418,5 +4424,59 @@
       "201-500": "201–500 empleados",
       "500+": "500+ empleados"
     }
+  },
+  "quota_inspector": {
+    "title": "Inspector de Cuotas",
+    "subtitle": "Monitorear el consumo de recursos en tiempo real vs los límites del plan para todas las empresas",
+    "ok": "OK",
+    "warning": "Advertencia",
+    "critical": "Crítico",
+    "exceeded": "Excedido",
+    "job_positions": "Posiciones de Trabajo",
+    "users": "Usuarios",
+    "ai_credits": "Créditos IA",
+    "health_status": "Estado",
+    "plan": "Plan",
+    "company": "Empresa",
+    "filter_plan": "Filtrar por plan",
+    "filter_status": "Filtrar por estado",
+    "unlimited": "Ilimitado"
+  },
+  "company_health": {
+    "title": "Monitor de Salud de Empresas",
+    "subtitle": "Monitorea las puntuaciones de riesgo de abandono y señales de engagement",
+    "healthy": "Saludable",
+    "at_risk": "En Riesgo",
+    "churning": "Deteriorando",
+    "critical": "Crítico",
+    "health_score": "Puntuación",
+    "risk_tier": "Nivel de Riesgo",
+    "last_login": "Último Acceso",
+    "active_jobs": "Empleos Activos",
+    "apps_this_month": "Aplic. (Mes)",
+    "hiring_activities": "Contrat. (Mes)",
+    "days_ago": "Hace {{count}} días",
+    "never": "Nunca",
+    "filter_risk": "Filtrar por nivel de riesgo"
+  },
+  "trial_tracker": {
+    "title": "Rastreador de Pruebas y Conversión",
+    "subtitle": "Monitorea empresas en plan gratuito y prueba con métricas de activación para identificar quién está listo para convertir",
+    "hot": "Leads CALIENTES",
+    "warm": "Leads TIBIOS",
+    "cold": "Leads FRÍOS",
+    "days_on_platform": "Días en Plataforma",
+    "activation_score": "Puntuación de Activación",
+    "conversion_readiness": "Disposición",
+    "jobs": "Empleos",
+    "candidates": "Candidatos",
+    "applications": "Aplicaciones",
+    "team": "Equipo",
+    "in_crm": "En CRM",
+    "add_to_crm": "Agregar al CRM",
+    "filter_readiness": "Filtrar por disposición",
+    "filter_plan": "Filtrar por plan",
+    "plan_free": "Plan Gratuito",
+    "plan_trialing": "En Prueba"
   }
 }

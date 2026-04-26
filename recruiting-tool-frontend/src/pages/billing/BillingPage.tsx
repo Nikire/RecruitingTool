@@ -207,7 +207,12 @@ const BillingPage: React.FC = () => {
                           size="small"
                           color="primary"
                           disabled={!invoice.pdfUrl}
-                          onClick={() => toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 })}
+                          onClick={() =>
+                            toast(t("common.coming_soon"), {
+                              icon: "🚀",
+                              duration: 3000,
+                            })
+                          }
                           // href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer"
                         >
                           <DownloadIcon />
@@ -220,7 +225,12 @@ const BillingPage: React.FC = () => {
                           size="small"
                           color="primary"
                           disabled={!invoice.hostedInvoiceUrl}
-                          onClick={() => toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 })}
+                          onClick={() =>
+                            toast(t("common.coming_soon"), {
+                              icon: "🚀",
+                              duration: 3000,
+                            })
+                          }
                           sx={{ ml: 1 }}
                           // href={invoice.hostedInvoiceUrl} target="_blank" rel="noopener noreferrer"
                         >

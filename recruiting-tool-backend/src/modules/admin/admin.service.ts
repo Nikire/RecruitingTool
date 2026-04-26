@@ -11,7 +11,21 @@ import {
   PlanDistributionItemDto,
   StatusDistributionItemDto,
   MonthlySignupItemDto,
+  CompanyQuotaItemDto,
+  QuotaOverviewResponseDto,
+  QuotaOverviewSummaryDto,
+  QuotaResourceUsageDto,
+  CompanyHealthItemDto,
+  CompanyHealthResponseDto,
+  CompanyHealthSummaryDto,
+  RiskTier,
+  TrialCompanyItemDto,
+  TrialOverviewResponseDto,
+  TrialOverviewSummaryDto,
+  ConversionReadiness,
 } from './dto/admin-stats.dto';
+import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
+import { QuotaType, SubscriptionPlan } from '@prisma/client';
 
 @Injectable()
 export class AdminService {
@@ -377,6 +391,417 @@ export class AdminService {
         throw error;
       }
       throw new InternalServerErrorException(`Failed to get recent activity: ${error.message}`);
+    }
+  }
+
+  // ─── Quota Overview ──────────────────────────────────────────────────────────
+
+  async getQuotaOverview(page: number, limit: number, planFilter?: string, statusFilter?: string): Promise<QuotaOverviewResponseDto> {
+    try {
+      // Fetch all companies with their subscriptions, user counts, job position counts, and AI quotas
+      const allCompanies = await this.databaseService.company.findMany({
+        select: {
+          uid: true,
+          name: true,
+          subscription: {
+            select: {
+              plan: true,
+              status: true,
+            },
+          },
+          _count: {
+            select: {
+              users: { where: { isActive: true } },
+              jobPositions: { where: { deletedAt: null, status: { not: 'CLOSED' as any } } },
+            },
+          },
+          aiQuotas: {
+            where: {
+              quotaType: QuotaType.CANDIDATE_SCORING,
+            },
+            select: {
+              used: true,
+              limit: true,
+            },
+          },
+        },
+      });
+
+      // Build quota items for each company
+      const allItems: CompanyQuotaItemDto[] = allCompanies.map((company) => {
+        const plan = (company.subscription?.plan ?? 'FREE') as SubscriptionPlan;
+        const subscriptionStatus = company.subscription?.status ?? 'ACTIVE';
+        const planLimits = PLAN_LIMITS[plan];
+
+        const jobPositionsUsed = company._count.jobPositions;
+        const usersUsed = company._count.users;
+        const aiQuotaRecord = company.aiQuotas[0];
+        const aiCreditsUsed = aiQuotaRecord?.used ?? 0;
+        // Use the AIQuota record limit if available, fall back to plan limit
+        const aiCreditsLimit = aiQuotaRecord?.limit ?? planLimits.aiScoringCreditsPerMonth;
+
+        const jobPositions = this.buildResourceUsage(jobPositionsUsed, planLimits.maxJobPositions);
+        const users = this.buildResourceUsage(usersUsed, planLimits.maxUsers);
+        const aiCredits = this.buildResourceUsage(aiCreditsUsed, aiCreditsLimit);
+
+        const healthStatus = this.computeHealthStatus([jobPositions, users, aiCredits]);
+
+        return {
+          uid: company.uid,
+          name: company.name,
+          plan,
+          subscriptionStatus,
+          jobPositions,
+          users,
+          aiCredits,
+          healthStatus,
+        };
+      });
+
+      // Apply plan filter
+      let filtered = planFilter ? allItems.filter((item) => item.plan === planFilter) : allItems;
+
+      // Apply health status filter
+      if (statusFilter) {
+        filtered = filtered.filter((item) => item.healthStatus === statusFilter);
+      }
+
+      // Sort: EXCEEDED → CRITICAL → WARNING → OK, then by highest job position %
+      const statusOrder: Record<string, number> = { EXCEEDED: 0, CRITICAL: 1, WARNING: 2, OK: 3 };
+      filtered.sort((a, b) => {
+        const statusDiff = (statusOrder[a.healthStatus] ?? 99) - (statusOrder[b.healthStatus] ?? 99);
+        if (statusDiff !== 0) return statusDiff;
+        return b.jobPositions.percentage - a.jobPositions.percentage;
+      });
+
+      // Compute summary from full unfiltered list
+      const summary: QuotaOverviewSummaryDto = {
+        totalCompanies: allItems.length,
+        okCount: allItems.filter((i) => i.healthStatus === 'OK').length,
+        warningCount: allItems.filter((i) => i.healthStatus === 'WARNING').length,
+        criticalCount: allItems.filter((i) => i.healthStatus === 'CRITICAL').length,
+        exceededCount: allItems.filter((i) => i.healthStatus === 'EXCEEDED').length,
+      };
+
+      // Paginate
+      const total = filtered.length;
+      const offset = (page - 1) * limit;
+      const paginated = filtered.slice(offset, offset + limit);
+
+      return {
+        companies: paginated,
+        total,
+        page,
+        limit,
+        summary,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get quota overview: ${error.message}`);
+    }
+  }
+
+  // ─── Trial & Conversion Tracker ─────────────────────────────────────────────
+
+  async getTrialOverview(page: number, limit: number, readiness?: string, planFilter?: string): Promise<TrialOverviewResponseDto> {
+    try {
+      const now = new Date();
+
+      // Fetch all companies that are FREE or TRIALING
+      const companies = await this.databaseService.company.findMany({
+        select: {
+          id: true,
+          uid: true,
+          name: true,
+          createdAt: true,
+          subscription: {
+            select: {
+              plan: true,
+              status: true,
+            },
+          },
+        },
+        where: {
+          OR: [{ subscription: { plan: 'FREE' } }, { subscription: { status: 'TRIALING' } }],
+        },
+      });
+
+      // Compute activation metrics for each company in parallel
+      const allItems: TrialCompanyItemDto[] = await Promise.all(
+        companies.map(async (company) => {
+          const [jobPositionsCreated, candidatesAdded, applicationsReceived, hiringProcessesStarted, teamMembersInvited, prospectRecord] = await Promise.all([
+            // Signal 1: job positions created ≥ 1
+            this.databaseService.jobPosition.count({
+              where: { companyId: company.id },
+            }),
+            // Signal 2: candidates added ≥ 5
+            this.databaseService.candidate.count({
+              where: { companyId: company.id },
+            }),
+            // Signal 3: applications received ≥ 3 (non-deleted)
+            this.databaseService.application.count({
+              where: {
+                jobPosition: { companyId: company.id },
+                deletedAt: null,
+              },
+            }),
+            // Signal 4: hiring processes started ≥ 1
+            this.databaseService.hiringProcess.count({
+              where: { companyId: company.id },
+            }),
+            // Signal 5: team members (active users) ≥ 2
+            this.databaseService.user.count({
+              where: { companyId: company.id, isActive: true },
+            }),
+            // Check for outreach record
+            this.databaseService.prospectCompany.findFirst({
+              where: { linkedCompanyId: company.id },
+              select: { uid: true },
+            }),
+          ]);
+
+          // Compute activation score (5 signals × 20pts each)
+          let activationScore = 0;
+          if (jobPositionsCreated >= 1) activationScore += 20;
+          if (candidatesAdded >= 5) activationScore += 20;
+          if (applicationsReceived >= 3) activationScore += 20;
+          if (hiringProcessesStarted >= 1) activationScore += 20;
+          if (teamMembersInvited >= 2) activationScore += 20;
+
+          // Determine readiness tier
+          let conversionReadiness: ConversionReadiness;
+          if (activationScore >= 70) conversionReadiness = 'HOT';
+          else if (activationScore >= 40) conversionReadiness = 'WARM';
+          else conversionReadiness = 'COLD';
+
+          // Days on platform
+          const diffMs = now.getTime() - company.createdAt.getTime();
+          const daysOnPlatform = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+          return {
+            uid: company.uid,
+            name: company.name,
+            plan: company.subscription?.plan ?? 'FREE',
+            subscriptionStatus: company.subscription?.status ?? 'ACTIVE',
+            daysOnPlatform,
+            activationScore,
+            conversionReadiness,
+            jobPositionsCreated,
+            candidatesAdded,
+            applicationsReceived,
+            hiringProcessesStarted,
+            teamMembersInvited,
+            hasOutreachRecord: !!prospectRecord,
+            prospectCompanyUid: prospectRecord?.uid ?? null,
+          };
+        }),
+      );
+
+      // Sort by activationScore descending (hottest first)
+      allItems.sort((a, b) => b.activationScore - a.activationScore);
+
+      // Compute summary from full unfiltered list
+      const summary: TrialOverviewSummaryDto = {
+        hotCount: allItems.filter((i) => i.conversionReadiness === 'HOT').length,
+        warmCount: allItems.filter((i) => i.conversionReadiness === 'WARM').length,
+        coldCount: allItems.filter((i) => i.conversionReadiness === 'COLD').length,
+      };
+
+      // Apply readiness filter
+      let filtered = readiness ? allItems.filter((i) => i.conversionReadiness === readiness) : allItems;
+
+      // Apply plan filter: "FREE" → plan=FREE, "TRIALING" → status=TRIALING
+      if (planFilter === 'FREE') {
+        filtered = filtered.filter((i) => i.plan === 'FREE');
+      } else if (planFilter === 'TRIALING') {
+        filtered = filtered.filter((i) => i.subscriptionStatus === 'TRIALING');
+      }
+
+      // Paginate
+      const total = filtered.length;
+      const offset = (page - 1) * limit;
+      const paginated = filtered.slice(offset, offset + limit);
+
+      return {
+        companies: paginated,
+        total,
+        page,
+        limit,
+        summary,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get trial overview: ${error.message}`);
+    }
+  }
+
+  private buildResourceUsage(used: number, limit: number): QuotaResourceUsageDto {
+    // -1 means unlimited (Enterprise plan)
+    if (limit === -1) {
+      return { used, limit, percentage: 0 };
+    }
+    const percentage = limit === 0 ? 0 : parseFloat(((used / limit) * 100).toFixed(2));
+    return { used, limit, percentage };
+  }
+
+  private computeHealthStatus(resources: QuotaResourceUsageDto[]): 'OK' | 'WARNING' | 'CRITICAL' | 'EXCEEDED' {
+    // Filter out unlimited resources (limit === -1)
+    const limited = resources.filter((r) => r.limit !== -1);
+
+    if (limited.some((r) => r.percentage >= 100)) return 'EXCEEDED';
+    if (limited.some((r) => r.percentage >= 90)) return 'CRITICAL';
+    if (limited.some((r) => r.percentage >= 70)) return 'WARNING';
+    return 'OK';
+  }
+
+  // ─── Company Health Monitor ──────────────────────────────────────────────────
+
+  async getCompanyHealthScores(page: number, limit: number, riskTier?: string): Promise<CompanyHealthResponseDto> {
+    try {
+      const now = new Date();
+      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      // Fetch all companies with their subscription info
+      const companies = await this.databaseService.company.findMany({
+        select: {
+          id: true,
+          uid: true,
+          name: true,
+          subscription: {
+            select: {
+              plan: true,
+              status: true,
+            },
+          },
+        },
+      });
+
+      // Compute health signals for each company in parallel batches
+      const allItems: CompanyHealthItemDto[] = await Promise.all(
+        companies.map(async (company) => {
+          // Signal 1: Last login recency — most recent lastLoginAt of any user in company
+          const mostRecentUser = await this.databaseService.user.findFirst({
+            where: {
+              companyId: company.id,
+              lastLoginAt: { not: null },
+            },
+            orderBy: { lastLoginAt: 'desc' },
+            select: { lastLoginAt: true },
+          });
+
+          const lastLoginAt = mostRecentUser?.lastLoginAt ?? null;
+          let lastLoginDaysAgo: number | null = null;
+          let loginSignal = 0;
+
+          if (lastLoginAt) {
+            const diffMs = now.getTime() - lastLoginAt.getTime();
+            lastLoginDaysAgo = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+            if (lastLoginDaysAgo <= 7) loginSignal = 25;
+            else if (lastLoginDaysAgo <= 14) loginSignal = 15;
+            else if (lastLoginDaysAgo <= 30) loginSignal = 5;
+            else loginSignal = 0;
+          }
+
+          // Signal 2: Active job positions
+          const activeJobPositions = await this.databaseService.jobPosition.count({
+            where: {
+              companyId: company.id,
+              status: 'OPEN',
+            },
+          });
+
+          let jobSignal = 0;
+          if (activeJobPositions >= 3) jobSignal = 25;
+          else if (activeJobPositions >= 1) jobSignal = 15;
+          else jobSignal = 0;
+
+          // Signal 3: Applications this month
+          const applicationsThisMonth = await this.databaseService.application.count({
+            where: {
+              createdAt: { gte: startOfMonth },
+              jobPosition: { companyId: company.id },
+              deletedAt: null,
+            },
+          });
+
+          let appsSignal = 0;
+          if (applicationsThisMonth >= 10) appsSignal = 25;
+          else if (applicationsThisMonth >= 5) appsSignal = 15;
+          else if (applicationsThisMonth >= 1) appsSignal = 5;
+          else appsSignal = 0;
+
+          // Signal 4: Hiring activity this month
+          const hiringActivitiesThisMonth = await this.databaseService.hiringProcess.count({
+            where: {
+              companyId: company.id,
+              updatedAt: { gte: startOfMonth },
+            },
+          });
+
+          let hiringSignal = 0;
+          if (hiringActivitiesThisMonth >= 5) hiringSignal = 25;
+          else if (hiringActivitiesThisMonth >= 1) hiringSignal = 10;
+          else hiringSignal = 0;
+
+          const healthScore = loginSignal + jobSignal + appsSignal + hiringSignal;
+
+          let riskTierValue: RiskTier;
+          if (healthScore >= 80) riskTierValue = 'HEALTHY';
+          else if (healthScore >= 50) riskTierValue = 'AT_RISK';
+          else if (healthScore >= 20) riskTierValue = 'CHURNING';
+          else riskTierValue = 'CRITICAL';
+
+          return {
+            uid: company.uid,
+            name: company.name,
+            plan: company.subscription?.plan ?? 'FREE',
+            subscriptionStatus: company.subscription?.status ?? 'ACTIVE',
+            healthScore,
+            riskTier: riskTierValue,
+            lastLoginDaysAgo,
+            activeJobPositions,
+            applicationsThisMonth,
+            hiringActivitiesThisMonth,
+          };
+        }),
+      );
+
+      // Sort by healthScore ascending (most at-risk first)
+      allItems.sort((a, b) => a.healthScore - b.healthScore);
+
+      // Compute summary from full unfiltered list
+      const summary: CompanyHealthSummaryDto = {
+        healthyCount: allItems.filter((i) => i.riskTier === 'HEALTHY').length,
+        atRiskCount: allItems.filter((i) => i.riskTier === 'AT_RISK').length,
+        churningCount: allItems.filter((i) => i.riskTier === 'CHURNING').length,
+        criticalCount: allItems.filter((i) => i.riskTier === 'CRITICAL').length,
+      };
+
+      // Apply optional risk tier filter
+      const filtered = riskTier ? allItems.filter((i) => i.riskTier === riskTier) : allItems;
+
+      // Paginate
+      const total = filtered.length;
+      const offset = (page - 1) * limit;
+      const paginated = filtered.slice(offset, offset + limit);
+
+      return {
+        companies: paginated,
+        total,
+        page,
+        limit,
+        summary,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) {
+        throw error;
+      }
+      throw new InternalServerErrorException(`Failed to get company health scores: ${error.message}`);
     }
   }
 }

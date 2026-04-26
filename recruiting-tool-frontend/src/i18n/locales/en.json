@@ -1980,7 +1980,13 @@
     "system_settings_desc": "Email, storage, rate limiting and infrastructure config",
     "docs_desc": "Internal API and platform documentation",
     "revenue_dashboard": "Revenue Dashboard",
-    "revenue_dashboard_desc": "Monitor MRR, subscription plans and company growth metrics"
+    "revenue_dashboard_desc": "Monitor MRR, subscription plans and company growth metrics",
+    "quota_inspector": "Quota Inspector",
+    "quota_inspector_desc": "Monitor real-time resource consumption vs plan limits for all companies",
+    "company_health": "Company Health",
+    "company_health_desc": "Track churn-risk scores and engagement signals for all customer companies",
+    "trial_tracker": "Trial Tracker",
+    "trial_tracker_desc": "Identify free and trialing companies ready to convert to a paid plan"
   },
   "revenue_dashboard": {
     "title": "Revenue Dashboard",
@@ -4410,5 +4416,59 @@
       "201-500": "201–500 employees",
       "500+": "500+ employees"
     }
+  },
+  "quota_inspector": {
+    "title": "Quota Inspector",
+    "subtitle": "Monitor real-time resource consumption vs plan limits for all companies",
+    "ok": "OK",
+    "warning": "Warning",
+    "critical": "Critical",
+    "exceeded": "Exceeded",
+    "job_positions": "Job Positions",
+    "users": "Users",
+    "ai_credits": "AI Credits",
+    "health_status": "Health",
+    "plan": "Plan",
+    "company": "Company",
+    "filter_plan": "Filter by plan",
+    "filter_status": "Filter by status",
+    "unlimited": "Unlimited"
+  },
+  "company_health": {
+    "title": "Company Health Monitor",
+    "subtitle": "Track churn-risk scores and engagement signals for all customer companies",
+    "healthy": "Healthy",
+    "at_risk": "At Risk",
+    "churning": "Churning",
+    "critical": "Critical",
+    "health_score": "Health Score",
+    "risk_tier": "Risk Tier",
+    "last_login": "Last Login",
+    "active_jobs": "Active Jobs",
+    "apps_this_month": "Apps (Month)",
+    "hiring_activities": "Hiring (Month)",
+    "days_ago": "{{count}} days ago",
+    "never": "Never",
+    "filter_risk": "Filter by risk tier"
+  },
+  "trial_tracker": {
+    "title": "Trial & Conversion Tracker",
+    "subtitle": "Monitor free-tier and trialing companies with activation depth metrics to identify who is ready to convert",
+    "hot": "HOT Leads",
+    "warm": "WARM Leads",
+    "cold": "COLD Leads",
+    "days_on_platform": "Days on Platform",
+    "activation_score": "Activation Score",
+    "conversion_readiness": "Readiness",
+    "jobs": "Jobs",
+    "candidates": "Candidates",
+    "applications": "Applications",
+    "team": "Team",
+    "in_crm": "In CRM",
+    "add_to_crm": "Add to CRM",
+    "filter_readiness": "Filter by readiness",
+    "filter_plan": "Filter by plan",
+    "plan_free": "Free Plan",
+    "plan_trialing": "Trialing"
   }
 }

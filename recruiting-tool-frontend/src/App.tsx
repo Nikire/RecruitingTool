@@ -75,6 +75,9 @@ import DocsPage from "./pages/admin/DocsPage";
 import OutreachTemplatesPage from "./pages/admin/OutreachTemplatesPage";
 import OutreachCRMPage from "./pages/admin/OutreachCRMPage";
 import RevenueDashboardPage from "./pages/admin/RevenueDashboardPage";
+import QuotaInspectorPage from "./pages/admin/QuotaInspectorPage";
+import CompanyHealthPage from "./pages/admin/CompanyHealthPage";
+import TrialTrackerPage from "./pages/admin/TrialTrackerPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -365,6 +368,12 @@ function App() {
                 element={<AdminEmailLogsPage />}
               />
               <Route path="/admin/revenue" element={<RevenueDashboardPage />} />
+              <Route
+                path="/admin/quota-inspector"
+                element={<QuotaInspectorPage />}
+              />
+              <Route path="/admin/health" element={<CompanyHealthPage />} />
+              <Route path="/admin/trials" element={<TrialTrackerPage />} />
             </Route>
           </Route>
         </Route>

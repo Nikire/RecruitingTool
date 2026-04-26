@@ -15,6 +15,9 @@ import {
   Settings as SettingsIcon,
   Article as ArticleIcon,
   TrendingUp as TrendingUpIcon,
+  Speed as SpeedIcon,
+  MonitorHeart as MonitorHeartIcon,
+  RocketLaunch as RocketLaunchIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -33,6 +36,27 @@ const AdminDashboard: React.FC = () => {
       color: "#1565c0",
       description: t("admin_dashboard.revenue_dashboard_desc"),
       path: "/admin/revenue",
+    },
+    {
+      title: t("admin_dashboard.quota_inspector"),
+      icon: <SpeedIcon />,
+      color: "#00695c",
+      description: t("admin_dashboard.quota_inspector_desc"),
+      path: "/admin/quota-inspector",
+    },
+    {
+      title: t("admin_dashboard.company_health"),
+      icon: <MonitorHeartIcon />,
+      color: "#7b1fa2",
+      description: t("admin_dashboard.company_health_desc"),
+      path: "/admin/health",
+    },
+    {
+      title: t("admin_dashboard.trial_tracker"),
+      icon: <RocketLaunchIcon />,
+      color: "#00838f",
+      description: t("admin_dashboard.trial_tracker_desc"),
+      path: "/admin/trials",
     },
     {
       title: t("admin_layout.companies"),

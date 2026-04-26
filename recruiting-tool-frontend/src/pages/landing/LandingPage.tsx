@@ -1195,230 +1195,232 @@ const LandingPage = () => {
       </Box>
 
       {/* Pricing Section — hidden for authenticated users */}
-      {!isAuthenticated && <Container id="pricing" maxWidth="lg" sx={{ py: { xs: 8, md: 10 } }}>
-        <Box sx={{ textAlign: "center", mb: 8 }}>
-          <Typography
-            variant="overline"
-            sx={{
-              color: theme.palette.primary.main,
-              fontWeight: 800,
-              fontSize: "0.875rem",
-              letterSpacing: 2,
-            }}
-          >
-            {t("landing.pricing.section_label")}
-          </Typography>
-          <Typography
-            variant="h2"
-            component="h2"
-            gutterBottom
-            sx={{
-              fontWeight: 900,
-              mb: 3,
-              fontSize: { xs: "2.25rem", md: "3rem" },
-              mt: 2,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            {t("landing.pricing.section_title")}
-          </Typography>
-          <Typography
-            variant="h6"
-            color="text.secondary"
-            sx={{
-              fontSize: "1.2rem",
-              fontWeight: 400,
-              lineHeight: 1.6,
-              maxWidth: 680,
-              mx: "auto",
-            }}
-          >
-            {t("landing.pricing.section_subtitle")}
-          </Typography>
-        </Box>
-
-        <Grid container spacing={4} justifyContent="center">
-          {pricingPlans.map((plan, index) => (
-            <Grid
-              size={{ xs: 12, sm: 6, md: 4 }}
-              key={index}
-              sx={{ display: "flex", overflow: "visible" }}
+      {!isAuthenticated && (
+        <Container id="pricing" maxWidth="lg" sx={{ py: { xs: 8, md: 10 } }}>
+          <Box sx={{ textAlign: "center", mb: 8 }}>
+            <Typography
+              variant="overline"
+              sx={{
+                color: theme.palette.primary.main,
+                fontWeight: 800,
+                fontSize: "0.875rem",
+                letterSpacing: 2,
+              }}
             >
-              <Card
-                sx={{
-                  height: "100%",
-                  width: 360,
-                  maxWidth: "100%",
-                  mx: "auto",
-                  position: "relative",
-                  borderRadius: 4,
-                  border: plan.recommended
-                    ? `2px solid ${plan.color}`
-                    : theme.palette.mode === "dark"
-                      ? `1px solid ${alpha(plan.color, 0.35)}`
-                      : `1px solid ${alpha(theme.palette.divider, 0.08)}`,
-                  overflow: "visible",
-                  transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
-                  bgcolor: "background.paper",
-                  display: "flex",
-                  flexDirection: "column",
-                  animation: `${slideInLeft} 0.6s ease-out forwards`,
-                  animationDelay: `${index * 0.15}s`,
-                  opacity: 0,
-                  ...(plan.recommended && {
-                    boxShadow: `0 20px 60px ${alpha(plan.color, 0.15)}`,
-                  }),
-                  "&:hover": {
-                    transform: "translateY(-8px) scale(1.02)",
-                    boxShadow: plan.recommended
-                      ? `0 30px 80px ${alpha(plan.color, 0.25)}`
-                      : `0 25px 70px ${alpha(theme.palette.primary.main, 0.12)}`,
-                  },
-                }}
+              {t("landing.pricing.section_label")}
+            </Typography>
+            <Typography
+              variant="h2"
+              component="h2"
+              gutterBottom
+              sx={{
+                fontWeight: 900,
+                mb: 3,
+                fontSize: { xs: "2.25rem", md: "3rem" },
+                mt: 2,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              {t("landing.pricing.section_title")}
+            </Typography>
+            <Typography
+              variant="h6"
+              color="text.secondary"
+              sx={{
+                fontSize: "1.2rem",
+                fontWeight: 400,
+                lineHeight: 1.6,
+                maxWidth: 680,
+                mx: "auto",
+              }}
+            >
+              {t("landing.pricing.section_subtitle")}
+            </Typography>
+          </Box>
+
+          <Grid container spacing={4} justifyContent="center">
+            {pricingPlans.map((plan, index) => (
+              <Grid
+                size={{ xs: 12, sm: 6, md: 4 }}
+                key={index}
+                sx={{ display: "flex", overflow: "visible" }}
               >
-                {plan.recommended && (
-                  <Chip
-                    icon={<StarIcon sx={{ fontSize: 18 }} />}
-                    label={t("landing.pricing.recommended")}
-                    sx={{
-                      position: "absolute",
-                      top: -16,
-                      left: "50%",
-                      transform: "translateX(-50%)",
-                      bgcolor: plan.color,
-                      color: theme.palette.getContrastText(plan.color),
-                      fontWeight: 800,
-                      fontSize: "0.875rem",
-                      height: 32,
-                      px: 2,
-                      boxShadow: `0 4px 12px ${alpha(plan.color, 0.4)}`,
-                      "& .MuiChip-icon": {
-                        color: theme.palette.getContrastText(plan.color),
-                      },
-                    }}
-                  />
-                )}
-                <CardContent
+                <Card
                   sx={{
-                    p: 5,
-                    flexGrow: 1,
+                    height: "100%",
+                    width: 360,
+                    maxWidth: "100%",
+                    mx: "auto",
+                    position: "relative",
+                    borderRadius: 4,
+                    border: plan.recommended
+                      ? `2px solid ${plan.color}`
+                      : theme.palette.mode === "dark"
+                        ? `1px solid ${alpha(plan.color, 0.35)}`
+                        : `1px solid ${alpha(theme.palette.divider, 0.08)}`,
+                    overflow: "visible",
+                    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+                    bgcolor: "background.paper",
                     display: "flex",
                     flexDirection: "column",
+                    animation: `${slideInLeft} 0.6s ease-out forwards`,
+                    animationDelay: `${index * 0.15}s`,
+                    opacity: 0,
+                    ...(plan.recommended && {
+                      boxShadow: `0 20px 60px ${alpha(plan.color, 0.15)}`,
+                    }),
+                    "&:hover": {
+                      transform: "translateY(-8px) scale(1.02)",
+                      boxShadow: plan.recommended
+                        ? `0 30px 80px ${alpha(plan.color, 0.25)}`
+                        : `0 25px 70px ${alpha(theme.palette.primary.main, 0.12)}`,
+                    },
                   }}
                 >
-                  <Typography
-                    variant="h5"
-                    gutterBottom
+                  {plan.recommended && (
+                    <Chip
+                      icon={<StarIcon sx={{ fontSize: 18 }} />}
+                      label={t("landing.pricing.recommended")}
+                      sx={{
+                        position: "absolute",
+                        top: -16,
+                        left: "50%",
+                        transform: "translateX(-50%)",
+                        bgcolor: plan.color,
+                        color: theme.palette.getContrastText(plan.color),
+                        fontWeight: 800,
+                        fontSize: "0.875rem",
+                        height: 32,
+                        px: 2,
+                        boxShadow: `0 4px 12px ${alpha(plan.color, 0.4)}`,
+                        "& .MuiChip-icon": {
+                          color: theme.palette.getContrastText(plan.color),
+                        },
+                      }}
+                    />
+                  )}
+                  <CardContent
                     sx={{
-                      fontWeight: 800,
-                      mb: 1,
-                      fontSize: "1.5rem",
-                      letterSpacing: "-0.01em",
+                      p: 5,
+                      flexGrow: 1,
+                      display: "flex",
+                      flexDirection: "column",
                     }}
                   >
-                    {plan.name}
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 4, minHeight: 44, lineHeight: 1.6 }}
-                  >
-                    {plan.description}
-                  </Typography>
-                  <Box sx={{ mb: 5 }}>
                     <Typography
-                      variant="h3"
-                      component="span"
+                      variant="h5"
+                      gutterBottom
                       sx={{
-                        fontWeight: 900,
-                        color: plan.color,
-                        fontSize: "3.5rem",
-                        letterSpacing: "-0.02em",
+                        fontWeight: 800,
+                        mb: 1,
+                        fontSize: "1.5rem",
+                        letterSpacing: "-0.01em",
                       }}
                     >
-                      {plan.price}
+                      {plan.name}
                     </Typography>
                     <Typography
-                      variant="h6"
-                      component="span"
+                      variant="body2"
                       color="text.secondary"
-                      sx={{ ml: 1.5, fontWeight: 500 }}
+                      sx={{ mb: 4, minHeight: 44, lineHeight: 1.6 }}
                     >
-                      /{plan.period}
+                      {plan.description}
                     </Typography>
-                  </Box>
-                  <Box sx={{ mb: 5, flexGrow: 1 }}>
-                    {plan.features.map((feature, idx) => (
-                      <Box
-                        key={idx}
+                    <Box sx={{ mb: 5 }}>
+                      <Typography
+                        variant="h3"
+                        component="span"
                         sx={{
-                          display: "flex",
-                          alignItems: "flex-start",
-                          mb: 2,
+                          fontWeight: 900,
+                          color: plan.color,
+                          fontSize: "3.5rem",
+                          letterSpacing: "-0.02em",
                         }}
                       >
-                        <CheckCircleIcon
+                        {plan.price}
+                      </Typography>
+                      <Typography
+                        variant="h6"
+                        component="span"
+                        color="text.secondary"
+                        sx={{ ml: 1.5, fontWeight: 500 }}
+                      >
+                        /{plan.period}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ mb: 5, flexGrow: 1 }}>
+                      {plan.features.map((feature, idx) => (
+                        <Box
+                          key={idx}
                           sx={{
-                            fontSize: 22,
-                            color: plan.color,
-                            mr: 2,
-                            mt: 0.2,
-                            flexShrink: 0,
+                            display: "flex",
+                            alignItems: "flex-start",
+                            mb: 2,
                           }}
-                        />
-                        <Typography
-                          variant="body2"
-                          sx={{ fontSize: "0.95rem", lineHeight: 1.6 }}
                         >
-                          {feature}
-                        </Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                </CardContent>
-                <Box sx={{ p: 5, pt: 0 }}>
-                  <Button
-                    variant={plan.buttonVariant}
-                    fullWidth
-                    size="large"
-                    onClick={() => navigate("/register")}
-                    sx={{
-                      py: 2,
-                      fontSize: "1.05rem",
-                      fontWeight: 700,
-                      borderRadius: 2.5,
-                      textTransform: "none",
-                      transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
-                      ...(plan.recommended && {
-                        bgcolor: plan.color,
-                        boxShadow: `0 4px 16px ${alpha(plan.color, 0.3)}`,
-                        "&:hover": {
-                          bgcolor: alpha(plan.color, 0.9),
-                          transform: "translateY(-2px)",
-                          boxShadow: `0 8px 24px ${alpha(plan.color, 0.4)}`,
-                        },
-                      }),
-                      ...(!plan.recommended && {
-                        borderColor: plan.color,
-                        borderWidth: 2,
-                        color: plan.color,
-                        "&:hover": {
+                          <CheckCircleIcon
+                            sx={{
+                              fontSize: 22,
+                              color: plan.color,
+                              mr: 2,
+                              mt: 0.2,
+                              flexShrink: 0,
+                            }}
+                          />
+                          <Typography
+                            variant="body2"
+                            sx={{ fontSize: "0.95rem", lineHeight: 1.6 }}
+                          >
+                            {feature}
+                          </Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </CardContent>
+                  <Box sx={{ p: 5, pt: 0 }}>
+                    <Button
+                      variant={plan.buttonVariant}
+                      fullWidth
+                      size="large"
+                      onClick={() => navigate("/register")}
+                      sx={{
+                        py: 2,
+                        fontSize: "1.05rem",
+                        fontWeight: 700,
+                        borderRadius: 2.5,
+                        textTransform: "none",
+                        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+                        ...(plan.recommended && {
+                          bgcolor: plan.color,
+                          boxShadow: `0 4px 16px ${alpha(plan.color, 0.3)}`,
+                          "&:hover": {
+                            bgcolor: alpha(plan.color, 0.9),
+                            transform: "translateY(-2px)",
+                            boxShadow: `0 8px 24px ${alpha(plan.color, 0.4)}`,
+                          },
+                        }),
+                        ...(!plan.recommended && {
                           borderColor: plan.color,
                           borderWidth: 2,
-                          bgcolor: alpha(plan.color, 0.06),
-                          transform: "translateY(-2px)",
-                        },
-                      }),
-                    }}
-                  >
-                    {t("landing.pricing.cta")}
-                  </Button>
-                </Box>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>}
+                          color: plan.color,
+                          "&:hover": {
+                            borderColor: plan.color,
+                            borderWidth: 2,
+                            bgcolor: alpha(plan.color, 0.06),
+                            transform: "translateY(-2px)",
+                          },
+                        }),
+                      }}
+                    >
+                      {t("landing.pricing.cta")}
+                    </Button>
+                  </Box>
+                </Card>
+              </Grid>
+            ))}
+          </Grid>
+        </Container>
+      )}
 
       {/* Testimonials Section - COMMENTED OUT (no real testimonials yet) */}
       {/*
