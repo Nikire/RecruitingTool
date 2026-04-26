@@ -203,9 +203,9 @@ const darkThemeOptions: ThemeOptions = {
       light: "#B6C5F6",
     },
     secondary: {
-      main: "#0891B2",
-      light: "#0BAFD6",
-      dark: "#0C6E8C",
+      main: "#1e2a38",
+      light: "#2d3e52",
+      dark: "#141d28",
       contrastText: "#ffffff",
     },
     background: {
@@ -230,6 +230,14 @@ const darkThemeOptions: ThemeOptions = {
         }),
         rounded: {
           borderRadius: "20px !important",
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        colorSecondary: {
+          backgroundColor: "#0891B2",
+          color: "#ffffff",
         },
       },
     },
