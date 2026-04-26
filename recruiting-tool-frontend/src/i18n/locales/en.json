@@ -2426,7 +2426,8 @@
     "select_time": "Select a time",
     "no_slots_this_day": "No available slots for this day",
     "available_times": "Available times",
-    "date_unavailable": "Unavailable"
+    "date_unavailable": "Unavailable",
+    "timezone_label": "Timezone"
   },
   "booking_link": {
     "send_tooltip": "Send booking link to candidate",

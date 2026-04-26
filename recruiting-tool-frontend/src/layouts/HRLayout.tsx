@@ -23,6 +23,7 @@ import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
+import toast from "react-hot-toast";
 
 /**
  * HRLayout - Layout component for HR panel with dedicated navigation
@@ -129,6 +130,8 @@ const HRLayout: React.FC = () => {
           icon: <ReceiptIcon />,
           path: "/hr/billing",
           requiresCompanyOwner: true,
+          onClick: () =>
+            toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 }),
         } as ExtendedMenuItem,
         {
           text: t("hr_layout.company_profile"),

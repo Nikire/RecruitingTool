@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -13,9 +13,11 @@ import {
   Skeleton,
   Stack,
   Grid,
+  Select,
+  MenuItem,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { format, parseISO, addDays, startOfDay } from "date-fns";
+import { format, addDays } from "date-fns";
 import {
   useDemoSlots,
   useDemoSettings,
@@ -26,20 +28,62 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import PublicIcon from "@mui/icons-material/Public";
+
+// ─── Timezone list ────────────────────────────────────────────────────────────
+
+const COMMON_TIMEZONES = [
+  { value: "UTC", label: "UTC" },
+  { value: "America/New_York", label: "New York (ET)" },
+  { value: "America/Chicago", label: "Chicago (CT)" },
+  { value: "America/Denver", label: "Denver (MT)" },
+  { value: "America/Los_Angeles", label: "Los Angeles (PT)" },
+  { value: "America/Sao_Paulo", label: "São Paulo (BRT)" },
+  { value: "America/Argentina/Buenos_Aires", label: "Buenos Aires (ART)" },
+  { value: "America/Bogota", label: "Bogotá (COT)" },
+  { value: "America/Mexico_City", label: "Mexico City (CST)" },
+  { value: "Europe/London", label: "London (GMT/BST)" },
+  { value: "Europe/Paris", label: "Paris (CET/CEST)" },
+  { value: "Europe/Berlin", label: "Berlin (CET/CEST)" },
+  { value: "Europe/Moscow", label: "Moscow (MSK)" },
+  { value: "Asia/Dubai", label: "Dubai (GST)" },
+  { value: "Asia/Kolkata", label: "Mumbai/Delhi (IST)" },
+  { value: "Asia/Singapore", label: "Singapore (SGT)" },
+  { value: "Asia/Tokyo", label: "Tokyo (JST)" },
+  { value: "Australia/Sydney", label: "Sydney (AEST)" },
+  { value: "Pacific/Auckland", label: "Auckland (NZST)" },
+];
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
-const toDateStr = (date: Date): string => format(date, "yyyy-MM-dd");
+/** ISO string → "YYYY-MM-DD" in the given timezone */
+const getSlotDateInTZ = (isoStr: string, tz: string): string => {
+  return new Intl.DateTimeFormat("en-CA", { timeZone: tz }).format(
+    new Date(isoStr),
+  );
+};
 
-const formatSlotTime = (startStr: string, endStr: string): string => {
+/** Format slot time range in the given timezone */
+const formatSlotTime = (
+  startStr: string,
+  endStr: string,
+  tz: string,
+): string => {
   try {
-    const start = format(parseISO(startStr), "HH:mm");
-    const end = format(parseISO(endStr), "HH:mm");
-    return `${start} – ${end}`;
+    const opts: Intl.DateTimeFormatOptions = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23",
+      timeZone: tz,
+    };
+    const fmt = new Intl.DateTimeFormat("en-US", opts);
+    return `${fmt.format(new Date(startStr))} – ${fmt.format(new Date(endStr))}`;
   } catch {
     return `${startStr} – ${endStr}`;
   }
 };
+
+const toDateStr = (date: Date): string => format(date, "yyyy-MM-dd");
 
 const getDurationMinutes = (startStr: string, endStr: string): number => {
   try {
@@ -138,6 +182,16 @@ const BookDemoPage: React.FC = () => {
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotUid, setSelectedSlotUid] = useState<string | null>(null);
+  const [timezone, setTimezone] = useState<string>(
+    () => Intl.DateTimeFormat().resolvedOptions().timeZone,
+  );
+
+  const tzOptions = useMemo(() => {
+    const inList = COMMON_TIMEZONES.some((tz) => tz.value === timezone);
+    return inList
+      ? COMMON_TIMEZONES
+      : [{ value: timezone, label: timezone }, ...COMMON_TIMEZONES];
+  }, [timezone]);
 
   const {
     data: availableSlots,
@@ -159,22 +213,28 @@ const BookDemoPage: React.FC = () => {
   ];
   const blockedDates: string[] = calendarSettings?.blockedDates ?? [];
 
-  const dateRange: Date[] = Array.from({ length: advanceDays }, (_, i) =>
-    addDays(startOfDay(new Date()), i),
-  );
+  // Build date range anchored to "today" in the selected timezone
+  const dateRange: Date[] = useMemo(() => {
+    const todayStr = new Intl.DateTimeFormat("en-CA", {
+      timeZone: timezone,
+    }).format(new Date());
+    const todayInTZ = new Date(todayStr + "T00:00:00");
+    return Array.from({ length: advanceDays }, (_, i) => addDays(todayInTZ, i));
+  }, [advanceDays, timezone]);
 
   const isDateDisabled = (dateStr: string, dayOfWeek: number): boolean => {
     if (!workingDays.includes(dayOfWeek)) return true;
     if (blockedDates.includes(dateStr)) return true;
-    const hasSlots = availableSlots?.some((s) =>
-      s.startTime.startsWith(dateStr),
+    const hasSlots = availableSlots?.some(
+      (s) => getSlotDateInTZ(s.startTime, timezone) === dateStr,
     );
     return !hasSlots;
   };
 
   const slotsForSelectedDate = selectedDate
-    ? (availableSlots?.filter((s) => s.startTime.startsWith(selectedDate)) ??
-      [])
+    ? (availableSlots?.filter(
+        (s) => getSlotDateInTZ(s.startTime, timezone) === selectedDate,
+      ) ?? [])
     : [];
 
   const handleConfirm = () => {
@@ -241,7 +301,7 @@ const BookDemoPage: React.FC = () => {
   return (
     <Container maxWidth="md" sx={{ mt: 8, mb: 8 }}>
       {/* Header */}
-      <Box sx={{ textAlign: "center", mb: 5 }}>
+      <Box sx={{ textAlign: "center", mb: 4 }}>
         <EventAvailableIcon
           sx={{ fontSize: 56, color: "primary.main", mb: 1.5 }}
         />
@@ -251,6 +311,50 @@ const BookDemoPage: React.FC = () => {
         <Typography variant="body1" color="text.secondary">
           {t("contact.book_demo_page_subtitle")}
         </Typography>
+      </Box>
+
+      {/* Timezone selector */}
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+          mb: 3,
+          p: 1.5,
+          borderRadius: 1,
+          bgcolor: "action.hover",
+        }}
+      >
+        <PublicIcon fontSize="small" color="action" />
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          sx={{ flexShrink: 0 }}
+        >
+          {t("booking.timezone_label")}:
+        </Typography>
+        <Select
+          value={timezone}
+          onChange={(e) => {
+            setTimezone(e.target.value);
+            setSelectedDate(null);
+            setSelectedSlotUid(null);
+          }}
+          size="small"
+          variant="standard"
+          disableUnderline
+          sx={{ fontSize: "0.875rem", flex: 1, maxWidth: 320 }}
+        >
+          {tzOptions.map((tz) => (
+            <MenuItem
+              key={tz.value}
+              value={tz.value}
+              sx={{ fontSize: "0.875rem" }}
+            >
+              {tz.label}
+            </MenuItem>
+          ))}
+        </Select>
       </Box>
 
       {/* Date selector */}
@@ -365,7 +469,7 @@ const BookDemoPage: React.FC = () => {
                         }}
                       />
                       <Typography variant="h6" fontWeight={600}>
-                        {formatSlotTime(slot.startTime, slot.endTime)}
+                        {formatSlotTime(slot.startTime, slot.endTime, timezone)}
                       </Typography>
                       {duration > 0 && (
                         <Chip

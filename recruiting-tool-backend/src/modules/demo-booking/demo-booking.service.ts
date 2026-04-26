@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException, BadRequestException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
+import { GoogleCalendarService } from '../google-calendar/google-calendar.service';
 import { RolesType } from '@prisma/client';
 import { randomBytes } from 'crypto';
 import { RequestDemoBookingDto, SelectDemoSlotDto, DemoBookingResponseDto, DemoTimeSlotResponseDto, DemoCalendarSettingsResponseDto } from './dto/demo-booking.dto';
@@ -12,6 +13,7 @@ export class DemoBookingService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly emailService: EmailService,
+    private readonly googleCalendarService: GoogleCalendarService,
   ) {}
 
   /**
@@ -184,6 +186,39 @@ export class DemoBookingService {
     }
 
     this.logger.log(`Demo slot confirmed for ${demoToken.prospectEmail} at ${slot.startTime.toISOString()}`);
+
+    // Create Google Calendar event with Meet link (fire and forget)
+    try {
+      const superAdmin = await this.prisma.user.findFirst({
+        where: {
+          companyId: demoToken.companyId,
+          roles: { has: RolesType.SUPER_ADMIN },
+        },
+        select: { id: true },
+      });
+
+      if (superAdmin) {
+        const companyLine = demoToken.prospectCompany ? ` from ${demoToken.prospectCompany}` : '';
+        await this.googleCalendarService.createCalendarEvent(superAdmin.id, {
+          summary: 'Borderless ATS Demo',
+          description: `Demo call with ${demoToken.prospectName ?? demoToken.prospectEmail}${companyLine}`,
+          startTime: slot.startTime.toISOString(),
+          endTime: slot.endTime.toISOString(),
+          attendees: [
+            {
+              email: demoToken.prospectEmail,
+              displayName: demoToken.prospectName ?? demoToken.prospectEmail,
+            },
+          ],
+          createMeetLink: true,
+        });
+        this.logger.log(`Google Calendar event created for demo at ${slot.startTime.toISOString()}`);
+      } else {
+        this.logger.warn('No SUPER_ADMIN found for company, skipping Google Calendar event');
+      }
+    } catch (err) {
+      this.logger.error('Failed to create Google Calendar event for demo', err);
+    }
 
     return {
       uid: updatedSlot.uid,

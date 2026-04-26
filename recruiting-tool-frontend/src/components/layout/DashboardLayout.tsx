@@ -39,6 +39,7 @@ import { useSubscription } from "../../api/subscription";
 import { EmailVerificationBanner } from "../common";
 import AddEmailBanner from "../navbar/AddEmailBanner";
 import { themeModeAtom } from "../../store/preferences.atoms";
+import toast from "react-hot-toast";
 
 const drawerWidth = 240;
 
@@ -54,6 +55,8 @@ export interface DashboardMenuItem {
   path: string;
   /** Whether this item requires super admin role */
   requiresSuperAdmin?: boolean;
+  /** Override click handler — prevents NavLink navigation when set */
+  onClick?: () => void;
 }
 
 /**
@@ -247,31 +250,47 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     const itemText = translate ? t(item.text) : item.text;
                     return (
                       <ListItem key={item.text} disablePadding>
-                        <ListItemButton
-                          component={NavLink}
-                          to={item.path}
-                          end={
-                            item.path.endsWith("/dashboard") ||
-                            item.path === "/admin"
-                          }
-                          sx={{
-                            pl: 4,
-                            "&.active": {
-                              bgcolor: "primary.dark",
-                              color: "primary.contrastText",
-                              "& .MuiListItemIcon-root": {
+                        {item.onClick ? (
+                          <ListItemButton
+                            sx={{ pl: 4 }}
+                            onClick={() => {
+                              setMobileOpen(false);
+                              item.onClick!();
+                            }}
+                            aria-label={itemText}
+                          >
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              {item.icon}
+                            </ListItemIcon>
+                            <ListItemText primary={itemText} />
+                          </ListItemButton>
+                        ) : (
+                          <ListItemButton
+                            component={NavLink}
+                            to={item.path}
+                            end={
+                              item.path.endsWith("/dashboard") ||
+                              item.path === "/admin"
+                            }
+                            sx={{
+                              pl: 4,
+                              "&.active": {
+                                bgcolor: "primary.dark",
                                 color: "primary.contrastText",
+                                "& .MuiListItemIcon-root": {
+                                  color: "primary.contrastText",
+                                },
                               },
-                            },
-                          }}
-                          onClick={() => setMobileOpen(false)}
-                          aria-label={itemText}
-                        >
-                          <ListItemIcon sx={{ minWidth: 36 }}>
-                            {item.icon}
-                          </ListItemIcon>
-                          <ListItemText primary={itemText} />
-                        </ListItemButton>
+                            }}
+                            onClick={() => setMobileOpen(false)}
+                            aria-label={itemText}
+                          >
+                            <ListItemIcon sx={{ minWidth: 36 }}>
+                              {item.icon}
+                            </ListItemIcon>
+                            <ListItemText primary={itemText} />
+                          </ListItemButton>
+                        )}
                       </ListItem>
                     );
                   })}
@@ -300,9 +319,10 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         </ListItem>
         <ListItem disablePadding>
           <ListItemButton
-            component={NavLink}
-            to="/profile/subscription"
-            onClick={() => setMobileOpen(false)}
+            onClick={() => {
+              setMobileOpen(false);
+              toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+            }}
             aria-label={translate ? t("common.subscription") : "Subscription"}
           >
             <ListItemIcon>
