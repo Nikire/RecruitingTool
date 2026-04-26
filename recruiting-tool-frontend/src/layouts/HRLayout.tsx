@@ -24,6 +24,7 @@ import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
 import toast from "react-hot-toast";
+import { WhatsNewModal } from "../components/common";
 
 /**
  * HRLayout - Layout component for HR panel with dedicated navigation
@@ -153,13 +154,16 @@ const HRLayout: React.FC = () => {
   };
 
   return (
-    <DashboardLayout
-      title={t("hr_layout.title")}
-      menuItems={flatItems}
-      menuGroups={menuGroups}
-      ariaLabel={t("hr_layout.aria_label")}
-      canShowMenuItem={canShowMenuItem}
-    />
+    <>
+      <WhatsNewModal />
+      <DashboardLayout
+        title={t("hr_layout.title")}
+        menuItems={flatItems}
+        menuGroups={menuGroups}
+        ariaLabel={t("hr_layout.aria_label")}
+        canShowMenuItem={canShowMenuItem}
+      />
+    </>
   );
 };
 

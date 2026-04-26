@@ -54,6 +54,7 @@ import { DemoBookingModule } from './modules/demo-booking/demo-booking.module';
 import { AsyncStageModule } from './modules/async-stage/async-stage.module';
 import { DummyModule } from './modules/dummy/dummy.module';
 import { ProspectTrackingModule } from './modules/prospect-tracking/prospect-tracking.module';
+import { ReleaseNotesModule } from './modules/release-notes/release-notes.module';
 
 @Module({
   imports: [
@@ -119,6 +120,7 @@ import { ProspectTrackingModule } from './modules/prospect-tracking/prospect-tra
     DemoBookingModule,
     AsyncStageModule,
     ProspectTrackingModule,
+    ReleaseNotesModule,
   ],
   controllers: [AppController],
   providers: [

@@ -81,6 +81,7 @@ import CompanyHealthPage from "./pages/admin/CompanyHealthPage";
 import TrialTrackerPage from "./pages/admin/TrialTrackerPage";
 import DemoBookingManagerPage from "./pages/admin/DemoBookingManagerPage";
 import EmailDeliverabilityPage from "./pages/admin/EmailDeliverabilityPage";
+import ChangelogPage from "./pages/admin/ChangelogPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -386,6 +387,7 @@ function App() {
                 path="/admin/email-deliverability"
                 element={<EmailDeliverabilityPage />}
               />
+              <Route path="/admin/changelog" element={<ChangelogPage />} />
             </Route>
           </Route>
         </Route>

@@ -680,3 +680,105 @@ export class PipelineAnalyticsResponseDto {
   @ApiProperty({ description: 'Application counts grouped by source, sorted by count descending', type: [ApplicationSourceItemDto] })
   applicationSources: ApplicationSourceItemDto[];
 }
+
+// ─── Release Notes (Admin) DTOs ───────────────────────────────────────────────
+
+export const TARGET_TIER_VALUES = ['all', 'professional', 'enterprise'] as const;
+export type TargetTierValue = (typeof TARGET_TIER_VALUES)[number];
+
+export class CreateReleaseNoteDto {
+  @ApiProperty({ description: 'Title of the release note', example: 'New AI Scoring Features' })
+  @IsString()
+  @IsNotEmpty()
+  title: string;
+
+  @ApiProperty({ description: 'Body / content of the release note (supports markdown)', example: 'We added AI-powered scoring...' })
+  @IsString()
+  @IsNotEmpty()
+  body: string;
+
+  @ApiProperty({ description: 'Optional version string', example: '1.5.0', required: false })
+  @IsOptional()
+  @IsString()
+  version?: string;
+
+  @ApiProperty({ description: 'Target subscription tier', enum: TARGET_TIER_VALUES, default: 'all' })
+  @IsEnum(TARGET_TIER_VALUES)
+  @IsOptional()
+  targetTier?: TargetTierValue;
+
+  @ApiProperty({ description: 'Whether to publish immediately', required: false })
+  @IsOptional()
+  isPublished?: boolean;
+}
+
+export class UpdateReleaseNoteDto {
+  @ApiProperty({ description: 'Title of the release note', required: false })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  title?: string;
+
+  @ApiProperty({ description: 'Body / content of the release note', required: false })
+  @IsOptional()
+  @IsString()
+  @IsNotEmpty()
+  body?: string;
+
+  @ApiProperty({ description: 'Optional version string', required: false })
+  @IsOptional()
+  @IsString()
+  version?: string;
+
+  @ApiProperty({ description: 'Target subscription tier', enum: TARGET_TIER_VALUES, required: false })
+  @IsOptional()
+  @IsEnum(TARGET_TIER_VALUES)
+  targetTier?: TargetTierValue;
+
+  @ApiProperty({ description: 'Whether to publish', required: false })
+  @IsOptional()
+  isPublished?: boolean;
+}
+
+export class ReleaseNoteAdminItemDto {
+  @ApiProperty({ description: 'UID of the release note' })
+  uid: string;
+
+  @ApiProperty({ description: 'Title' })
+  title: string;
+
+  @ApiProperty({ description: 'Body / content' })
+  body: string;
+
+  @ApiProperty({ description: 'Version string', nullable: true })
+  version: string | null;
+
+  @ApiProperty({ description: 'Target subscription tier' })
+  targetTier: string;
+
+  @ApiProperty({ description: 'Whether the note is published' })
+  isPublished: boolean;
+
+  @ApiProperty({ description: 'Published timestamp', nullable: true })
+  publishedAt: Date | null;
+
+  @ApiProperty({ description: 'Created timestamp' })
+  createdAt: Date;
+
+  @ApiProperty({ description: 'Number of users who have seen this note' })
+  seenCount: number;
+}
+
+export class ReleaseNoteListResponseDto {
+  @ApiProperty({ type: [ReleaseNoteAdminItemDto] })
+  notes: ReleaseNoteAdminItemDto[];
+
+  @ApiProperty({ description: 'Total records matching filters' })
+  total: number;
+
+  @ApiProperty({ description: 'Current page' })
+  page: number;
+
+  @ApiProperty({ description: 'Items per page' })
+  limit: number;
+}

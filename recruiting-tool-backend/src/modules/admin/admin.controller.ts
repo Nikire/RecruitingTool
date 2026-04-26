@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import {
   AdminStatsResponseDto,
@@ -21,6 +21,10 @@ import {
   EmailDeliverabilityStatsDto,
   EmailDeliverabilityPerTypeDto,
   PipelineAnalyticsResponseDto,
+  CreateReleaseNoteDto,
+  UpdateReleaseNoteDto,
+  ReleaseNoteAdminItemDto,
+  ReleaseNoteListResponseDto,
 } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
@@ -278,5 +282,48 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Returns pipeline analytics data', type: PipelineAnalyticsResponseDto })
   getPipelineAnalytics(): Promise<PipelineAnalyticsResponseDto> {
     return this.adminService.getPipelineAnalytics();
+  }
+
+  // ─── Release Notes ───────────────────────────────────────────────────────────
+
+  @Get('release-notes')
+  @ApiOperation({
+    summary: 'Get paginated list of release notes - ADMIN role required',
+    description: 'Returns paginated release notes with seen counts. Optionally filter by published status.',
+  })
+  @ApiQuery({ name: 'page', required: false, type: Number, description: 'Page number (default: 1)' })
+  @ApiQuery({ name: 'limit', required: false, type: Number, description: 'Items per page (default: 20)' })
+  @ApiQuery({ name: 'published', required: false, type: String, description: 'Filter by published status: true|false' })
+  @ApiResponse({ status: 200, description: 'Returns paginated release notes', type: ReleaseNoteListResponseDto })
+  getReleaseNotes(@Query('page') page?: string, @Query('limit') limit?: string, @Query('published') published?: string): Promise<ReleaseNoteListResponseDto> {
+    return this.adminService.getReleaseNotes(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 20, published);
+  }
+
+  @Post('release-notes')
+  @ApiOperation({ summary: 'Create a new release note - ADMIN role required' })
+  @ApiResponse({ status: 201, description: 'Release note created', type: ReleaseNoteAdminItemDto })
+  createReleaseNote(@Body() dto: CreateReleaseNoteDto): Promise<ReleaseNoteAdminItemDto> {
+    return this.adminService.createReleaseNote(dto);
+  }
+
+  @Patch('release-notes/:uid')
+  @ApiOperation({ summary: 'Update a release note - ADMIN role required' })
+  @ApiResponse({ status: 200, description: 'Release note updated', type: ReleaseNoteAdminItemDto })
+  updateReleaseNote(@Param('uid') uid: string, @Body() dto: UpdateReleaseNoteDto): Promise<ReleaseNoteAdminItemDto> {
+    return this.adminService.updateReleaseNote(uid, dto);
+  }
+
+  @Patch('release-notes/:uid/publish')
+  @ApiOperation({ summary: 'Toggle publish status of a release note - ADMIN role required' })
+  @ApiResponse({ status: 200, description: 'Publish status toggled', type: ReleaseNoteAdminItemDto })
+  togglePublishReleaseNote(@Param('uid') uid: string): Promise<ReleaseNoteAdminItemDto> {
+    return this.adminService.togglePublishReleaseNote(uid);
+  }
+
+  @Delete('release-notes/:uid')
+  @ApiOperation({ summary: 'Delete a release note - ADMIN role required' })
+  @ApiResponse({ status: 200, description: 'Release note deleted' })
+  deleteReleaseNote(@Param('uid') uid: string): Promise<void> {
+    return this.adminService.deleteReleaseNote(uid);
   }
 }

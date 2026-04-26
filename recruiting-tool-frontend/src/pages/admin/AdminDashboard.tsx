@@ -21,6 +21,7 @@ import {
   EventNote as EventNoteIcon,
   MarkEmailRead as MarkEmailReadIcon,
   BarChart as BarChartIcon,
+  NewReleases as NewReleasesIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -123,6 +124,13 @@ const AdminDashboard: React.FC = () => {
       color: "#00695c",
       description: t("admin_dashboard.email_deliverability_desc"),
       path: "/admin/email-deliverability",
+    },
+    {
+      title: t("admin_dashboard.changelog"),
+      icon: <NewReleasesIcon />,
+      color: "#1565c0",
+      description: t("admin_dashboard.changelog_desc"),
+      path: "/admin/changelog",
     },
   ];
 

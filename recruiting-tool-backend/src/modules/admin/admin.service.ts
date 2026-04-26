@@ -40,6 +40,10 @@ import {
   PlatformStatsDto,
   MonthlyApplicationItemDto,
   ApplicationSourceItemDto,
+  CreateReleaseNoteDto,
+  UpdateReleaseNoteDto,
+  ReleaseNoteAdminItemDto,
+  ReleaseNoteListResponseDto,
 } from './dto/admin-stats.dto';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { DemoOutcome, QuotaType, SubscriptionPlan } from '@prisma/client';
@@ -1295,6 +1299,165 @@ export class AdminService {
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new InternalServerErrorException(`Failed to get pipeline analytics: ${error.message}`);
+    }
+  }
+
+  // ─── Release Notes ───────────────────────────────────────────────────────────
+
+  async getReleaseNotes(page: number, limit: number, published?: string): Promise<ReleaseNoteListResponseDto> {
+    try {
+      const skip = (page - 1) * limit;
+      const where: Record<string, unknown> = {};
+
+      if (published === 'true') where.isPublished = true;
+      else if (published === 'false') where.isPublished = false;
+
+      const [notes, total] = await Promise.all([
+        this.databaseService.releaseNote.findMany({
+          where,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+          include: { _count: { select: { seenBy: true } } },
+        }),
+        this.databaseService.releaseNote.count({ where }),
+      ]);
+
+      return {
+        notes: notes.map((n) => ({
+          uid: n.uid,
+          title: n.title,
+          body: n.body,
+          version: n.version ?? null,
+          targetTier: n.targetTier,
+          isPublished: n.isPublished,
+          publishedAt: n.publishedAt ?? null,
+          createdAt: n.createdAt,
+          seenCount: n._count.seenBy,
+        })),
+        total,
+        page,
+        limit,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to get release notes: ${error.message}`);
+    }
+  }
+
+  async createReleaseNote(dto: CreateReleaseNoteDto): Promise<ReleaseNoteAdminItemDto> {
+    try {
+      const note = await this.databaseService.releaseNote.create({
+        data: {
+          title: dto.title,
+          body: dto.body,
+          version: dto.version ?? null,
+          targetTier: dto.targetTier ?? 'all',
+          isPublished: dto.isPublished ?? false,
+          publishedAt: dto.isPublished ? new Date() : null,
+        },
+        include: { _count: { select: { seenBy: true } } },
+      });
+
+      return {
+        uid: note.uid,
+        title: note.title,
+        body: note.body,
+        version: note.version ?? null,
+        targetTier: note.targetTier,
+        isPublished: note.isPublished,
+        publishedAt: note.publishedAt ?? null,
+        createdAt: note.createdAt,
+        seenCount: note._count.seenBy,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to create release note: ${error.message}`);
+    }
+  }
+
+  async updateReleaseNote(uid: string, dto: UpdateReleaseNoteDto): Promise<ReleaseNoteAdminItemDto> {
+    try {
+      const existing = await this.databaseService.releaseNote.findUnique({ where: { uid } });
+      if (!existing) throw new NotFoundException(`Release note not found: ${uid}`);
+
+      const data: Record<string, unknown> = {};
+      if (dto.title !== undefined) data.title = dto.title;
+      if (dto.body !== undefined) data.body = dto.body;
+      if (dto.version !== undefined) data.version = dto.version;
+      if (dto.targetTier !== undefined) data.targetTier = dto.targetTier;
+      if (dto.isPublished !== undefined) {
+        data.isPublished = dto.isPublished;
+        if (dto.isPublished && !existing.publishedAt) {
+          data.publishedAt = new Date();
+        } else if (!dto.isPublished) {
+          data.publishedAt = null;
+        }
+      }
+
+      const note = await this.databaseService.releaseNote.update({
+        where: { uid },
+        data,
+        include: { _count: { select: { seenBy: true } } },
+      });
+
+      return {
+        uid: note.uid,
+        title: note.title,
+        body: note.body,
+        version: note.version ?? null,
+        targetTier: note.targetTier,
+        isPublished: note.isPublished,
+        publishedAt: note.publishedAt ?? null,
+        createdAt: note.createdAt,
+        seenCount: note._count.seenBy,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to update release note: ${error.message}`);
+    }
+  }
+
+  async togglePublishReleaseNote(uid: string): Promise<ReleaseNoteAdminItemDto> {
+    try {
+      const existing = await this.databaseService.releaseNote.findUnique({ where: { uid } });
+      if (!existing) throw new NotFoundException(`Release note not found: ${uid}`);
+
+      const newPublished = !existing.isPublished;
+      const note = await this.databaseService.releaseNote.update({
+        where: { uid },
+        data: {
+          isPublished: newPublished,
+          publishedAt: newPublished ? (existing.publishedAt ?? new Date()) : null,
+        },
+        include: { _count: { select: { seenBy: true } } },
+      });
+
+      return {
+        uid: note.uid,
+        title: note.title,
+        body: note.body,
+        version: note.version ?? null,
+        targetTier: note.targetTier,
+        isPublished: note.isPublished,
+        publishedAt: note.publishedAt ?? null,
+        createdAt: note.createdAt,
+        seenCount: note._count.seenBy,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to toggle release note publish: ${error.message}`);
+    }
+  }
+
+  async deleteReleaseNote(uid: string): Promise<void> {
+    try {
+      const existing = await this.databaseService.releaseNote.findUnique({ where: { uid } });
+      if (!existing) throw new NotFoundException(`Release note not found: ${uid}`);
+      await this.databaseService.releaseNote.delete({ where: { uid } });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to delete release note: ${error.message}`);
     }
   }
 }

@@ -31,3 +31,4 @@ export { default as RoleBadge } from "./RoleBadge";
 export type { RoleBadgeProps } from "./RoleBadge";
 export { ScrollToTop } from "./ScrollToTop";
 export { default as QuotaBanner } from "./QuotaBanner";
+export { default as WhatsNewModal } from "./WhatsNewModal";

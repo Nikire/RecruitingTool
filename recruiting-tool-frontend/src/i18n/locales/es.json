@@ -2025,7 +2025,9 @@
     "email_deliverability": "Salud del Correo",
     "email_deliverability_desc": "Monitorea tasas de entrega, aperturas, rebotes y quejas de spam.",
     "pipeline_analytics": "Analítica del Pipeline",
-    "pipeline_analytics_desc": "Métricas del embudo de reclutamiento entre empresas para inteligencia de negocio"
+    "pipeline_analytics_desc": "Métricas del embudo de reclutamiento entre empresas para inteligencia de negocio",
+    "changelog": "Changelog",
+    "changelog_desc": "Escribir y publicar notas de lanzamiento mostradas a los usuarios al iniciar sesión"
   },
   "demo_manager": {
     "title": "Gestor de Reservas Demo",
@@ -4568,5 +4570,48 @@
     "closed_positions": "posiciones cerradas",
     "applications": "Aplicaciones",
     "no_data": "No hay datos disponibles"
+  },
+  "changelog": {
+    "title": "Changelog",
+    "subtitle": "Gestionar notas de lanzamiento publicadas a los clientes",
+    "new_note": "Nueva Nota de Lanzamiento",
+    "edit_note": "Editar Nota de Lanzamiento",
+    "note_title": "Título",
+    "note_title_placeholder": "ej. Nuevas Funciones de Puntuación IA",
+    "version": "Versión",
+    "version_placeholder": "ej. 1.5.0",
+    "body": "Contenido",
+    "body_placeholder": "Describe qué hay de nuevo en esta versión...",
+    "target_tier": "Nivel Objetivo",
+    "publish": "Publicar",
+    "published": "Publicado",
+    "draft": "Borrador",
+    "all_tiers": "Todos los Usuarios",
+    "professional_plus": "Professional+",
+    "enterprise_only": "Solo Enterprise",
+    "seen_by": "Visto por {{count}} usuarios",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "confirm_delete": "¿Estás seguro de que deseas eliminar esta nota de lanzamiento? Esta acción no se puede deshacer.",
+    "delete_title": "Eliminar Nota de Lanzamiento",
+    "toggle_publish_confirm": "¿Cambiar el estado de publicación de esta nota de lanzamiento?",
+    "actions": "Acciones",
+    "created_success": "Nota de lanzamiento creada exitosamente",
+    "updated_success": "Nota de lanzamiento actualizada exitosamente",
+    "deleted_success": "Nota de lanzamiento eliminada exitosamente",
+    "toggle_success": "Estado de publicación actualizado",
+    "created_error": "Error al crear la nota de lanzamiento",
+    "updated_error": "Error al actualizar la nota de lanzamiento",
+    "deleted_error": "Error al eliminar la nota de lanzamiento",
+    "toggle_error": "Error al actualizar el estado de publicación"
+  },
+  "whats_new": {
+    "title": "Novedades",
+    "got_it": "¡Entendido!",
+    "new_features": "Nuevas Funciones y Actualizaciones"
+  },
+  "admin_dashboard_changelog": {
+    "changelog": "Changelog",
+    "changelog_desc": "Escribir y publicar notas de lanzamiento mostradas a los usuarios clientes al iniciar sesión"
   }
 }
