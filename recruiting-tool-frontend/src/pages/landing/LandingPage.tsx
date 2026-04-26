@@ -1194,8 +1194,8 @@ const LandingPage = () => {
         </Container>
       </Box>
 
-      {/* Pricing Section */}
-      <Container id="pricing" maxWidth="lg" sx={{ py: { xs: 8, md: 10 } }}>
+      {/* Pricing Section — hidden for authenticated users */}
+      {!isAuthenticated && <Container id="pricing" maxWidth="lg" sx={{ py: { xs: 8, md: 10 } }}>
         <Box sx={{ textAlign: "center", mb: 8 }}>
           <Typography
             variant="overline"
@@ -1418,7 +1418,7 @@ const LandingPage = () => {
             </Grid>
           ))}
         </Grid>
-      </Container>
+      </Container>}
 
       {/* Testimonials Section - COMMENTED OUT (no real testimonials yet) */}
       {/*
