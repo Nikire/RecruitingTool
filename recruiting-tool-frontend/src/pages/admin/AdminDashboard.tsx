@@ -19,6 +19,7 @@ import {
   MonitorHeart as MonitorHeartIcon,
   RocketLaunch as RocketLaunchIcon,
   EventNote as EventNoteIcon,
+  MarkEmailRead as MarkEmailReadIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -107,6 +108,13 @@ const AdminDashboard: React.FC = () => {
       color: "#6a1b9a",
       description: t("admin_dashboard.email_logs_desc"),
       path: "/admin/email-logs",
+    },
+    {
+      title: t("admin_dashboard.email_deliverability"),
+      icon: <MarkEmailReadIcon />,
+      color: "#00695c",
+      description: t("admin_dashboard.email_deliverability_desc"),
+      path: "/admin/email-deliverability",
     },
   ];
 

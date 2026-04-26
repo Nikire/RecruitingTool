@@ -42,7 +42,7 @@ model Company {
   subscription       Subscription?
   users              User[]
   calendarSettings   CompanyCalendarSettings?
-  demoBookings       DemoBookingToken[]          @relation("DemoBookings")
+  demoBookings       DemoBookingToken[]       @relation("DemoBookings")
   prospectLink       ProspectCompany?
 
   @@index([uid])
@@ -303,19 +303,19 @@ model JobPosition {
 }
 
 model HiringProcess {
-  id             Int                 @id @default(autoincrement())
-  uid            String              @unique @default(uuid()) @db.Uuid
+  id             Int                    @id @default(autoincrement())
+  uid            String                 @unique @default(uuid()) @db.Uuid
   title          String
-  status         HiringProcessStatus @default(OPEN)
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  status         HiringProcessStatus    @default(OPEN)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
   candidateId    Int?
   jobPositionId  Int
   companyId      Int
-  accessCode     String?             @unique
+  accessCode     String?                @unique
   codeExpiresAt  DateTime?
   lastAccessedAt DateTime?
-  accessCount    Int                 @default(0)
+  accessCount    Int                    @default(0)
   deletedAt      DateTime?
   candidate      Candidate?             @relation("HiringProcessCandidate", fields: [candidateId], references: [id])
   company        Company                @relation(fields: [companyId], references: [id])
@@ -334,25 +334,25 @@ model HiringProcess {
 }
 
 model Stage {
-  id              Int            @id @default(autoincrement())
-  uid             String         @unique @default(uuid()) @db.Uuid
+  id              Int                    @id @default(autoincrement())
+  uid             String                 @unique @default(uuid()) @db.Uuid
   title           String
   type            StageType
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
   hiringProcessId Int?
   description     String
   position        Int
-  status          StageStatus    @default(OPEN)
+  status          StageStatus            @default(OPEN)
   estimatedTime   Int?
   jobPositionId   Int?
   deletedAt       DateTime?
-  interviews      Interview[]           @relation("StageInterviews")
-  hiringProcess   HiringProcess?        @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
-  JobPosition     JobPosition?          @relation(fields: [jobPositionId], references: [id])
-  notes           StageNote[]           @relation("StageNotes")
-  timeLogs        StageTimeLog[]        @relation("StageTimeLogs")
-  asyncTokens     AsyncStageToken[]     @relation("StageAsyncTokens")
+  interviews      Interview[]            @relation("StageInterviews")
+  hiringProcess   HiringProcess?         @relation(fields: [hiringProcessId], references: [id], onDelete: Cascade)
+  JobPosition     JobPosition?           @relation(fields: [jobPositionId], references: [id])
+  notes           StageNote[]            @relation("StageNotes")
+  timeLogs        StageTimeLog[]         @relation("StageTimeLogs")
+  asyncTokens     AsyncStageToken[]      @relation("StageAsyncTokens")
   submissions     AsyncStageSubmission[] @relation("StageSubmissions")
 
   @@unique([hiringProcessId, position])
@@ -385,8 +385,8 @@ model StageNote {
 }
 
 model FileUpload {
-  id                 Int           @id @default(autoincrement())
-  uid                String        @unique @default(uuid()) @db.Uuid
+  id                 Int                        @id @default(autoincrement())
+  uid                String                     @unique @default(uuid()) @db.Uuid
   filename           String
   originalName       String
   mimetype           String
@@ -394,9 +394,9 @@ model FileUpload {
   s3Key              String
   uploadedById       Int?
   candidateId        Int?
-  createdAt          DateTime      @default(now())
-  updatedAt          DateTime      @updatedAt
-  uploadedByPublic   Boolean       @default(false)
+  createdAt          DateTime                   @default(now())
+  updatedAt          DateTime                   @updatedAt
+  uploadedByPublic   Boolean                    @default(false)
   hash               String?
   applicationResumes Application[]              @relation("ApplicationResume")
   candidate          Candidate?                 @relation("CandidateFiles", fields: [candidateId], references: [id], onDelete: Cascade)
@@ -463,24 +463,31 @@ model EmailTemplate {
 }
 
 model EmailLog {
-  id              Int      @id @default(autoincrement())
-  uid             String   @unique @default(uuid()) @db.Uuid
+  id              Int       @id @default(autoincrement())
+  uid             String    @unique @default(uuid()) @db.Uuid
   recipientEmail  String
   recipientName   String
   subject         String
   template        String
-  status          String   @default("SENT")
+  status          String    @default("SENT")
   emailType       String
   relatedEntity   String?
   relatedEntityId String?
-  sentAt          DateTime @default(now())
-  createdAt       DateTime @default(now())
+  sentAt          DateTime  @default(now())
+  createdAt       DateTime  @default(now())
+  deliveryStatus  String    @default("SENT")
+  openedAt        DateTime?
+  bouncedAt       DateTime?
+  bounceType      String?
+  resendEmailId   String?   @unique
 
   @@index([recipientEmail])
   @@index([sentAt])
   @@index([emailType])
   @@index([relatedEntityId])
   @@index([uid])
+  @@index([deliveryStatus])
+  @@index([resendEmailId])
 }
 
 model Interview {
@@ -1391,22 +1398,22 @@ enum InvitationStatus {
 }
 
 model DemoBookingToken {
-  id                 Int            @id @default(autoincrement())
-  uid                String         @unique @default(uuid()) @db.Uuid
-  token              String         @unique
-  prospectEmail      String
-  prospectName       String?
-  prospectCompany    String?
-  expiresAt          DateTime
-  usedAt             DateTime?
-  companyId          Int
-  company            Company        @relation("DemoBookings", fields: [companyId], references: [id], onDelete: Cascade)
-  slots              DemoTimeSlot[]
-  createdAt          DateTime       @default(now())
-  scheduledAt        DateTime?
-  outcome            DemoOutcome    @default(PENDING)
-  outcomeNotes       String?
-  linkedProspectUid  String?
+  id                Int            @id @default(autoincrement())
+  uid               String         @unique @default(uuid()) @db.Uuid
+  token             String         @unique
+  prospectEmail     String
+  prospectName      String?
+  prospectCompany   String?
+  expiresAt         DateTime
+  usedAt            DateTime?
+  companyId         Int
+  company           Company        @relation("DemoBookings", fields: [companyId], references: [id], onDelete: Cascade)
+  slots             DemoTimeSlot[]
+  createdAt         DateTime       @default(now())
+  scheduledAt       DateTime?
+  outcome           DemoOutcome    @default(PENDING)
+  outcomeNotes      String?
+  linkedProspectUid String?
 
   @@index([token])
   @@index([companyId])

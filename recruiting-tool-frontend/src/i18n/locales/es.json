@@ -2021,7 +2021,9 @@
     "trial_tracker": "Rastreador de Pruebas",
     "trial_tracker_desc": "Identifica empresas en plan gratuito y prueba listas para convertir a un plan de pago",
     "demo_manager": "Reservas de Demo",
-    "demo_manager_desc": "Rastrea resultados de demos y vincula prospectos a tu CRM"
+    "demo_manager_desc": "Rastrea resultados de demos y vincula prospectos a tu CRM",
+    "email_deliverability": "Salud del Correo",
+    "email_deliverability_desc": "Monitorea tasas de entrega, aperturas, rebotes y quejas de spam."
   },
   "demo_manager": {
     "title": "Gestor de Reservas Demo",
@@ -4522,5 +4524,25 @@
     "new_value": "Nuevo",
     "days": "días",
     "no_audit_entries": "No se encontraron entradas de auditoría para esta suscripción"
+  },
+  "email_deliverability": {
+    "title": "Monitor de Entregabilidad de Correo",
+    "subtitle": "Monitorea la salud de entrega, tasas de apertura, rebotes y quejas de spam en todos los correos enviados.",
+    "total_sent": "Total Enviados",
+    "delivery_rate": "Tasa de Entrega",
+    "open_rate": "Tasa de Apertura",
+    "bounce_rate": "Tasa de Rebote",
+    "spam": "Spam / Quejas",
+    "high_bounce_warning": "La tasa de rebote supera el 5% — revisa los rebotes recientes y las prácticas de envío.",
+    "per_type_title": "Desglose por Tipo de Correo",
+    "email_type": "Tipo de Correo",
+    "delivered": "Entregados",
+    "opened": "Abiertos",
+    "bounced": "Rebotados",
+    "recent_bounces": "Rebotes Recientes",
+    "no_bounces": "No se han registrado rebotes aún.",
+    "health_ok": "OK",
+    "health_warning": "ADVERTENCIA",
+    "health_critical": "CRÍTICO"
   }
 }

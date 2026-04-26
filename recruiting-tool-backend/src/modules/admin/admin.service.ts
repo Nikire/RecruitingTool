@@ -32,6 +32,10 @@ import {
   DemoBookingListResponseDto,
   SetDemoOutcomeDto,
   LinkDemoProspectDto,
+  EmailDeliverabilityStatsDto,
+  EmailDeliverabilityPerTypeDto,
+  RecentBounceDto,
+  EmailDeliverabilityPerTypeItemDto,
 } from './dto/admin-stats.dto';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { DemoOutcome, QuotaType, SubscriptionPlan } from '@prisma/client';
@@ -1113,6 +1117,82 @@ export class AdminService {
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new InternalServerErrorException(`Failed to link prospect to demo: ${error.message}`);
+    }
+  }
+
+  // ─── Email Deliverability ─────────────────────────────────────────────────
+
+  async getEmailDeliverabilityStats(): Promise<EmailDeliverabilityStatsDto> {
+    try {
+      const [totalSent, delivered, opened, bounced, spam, failed, recentBouncesRaw] = await Promise.all([
+        this.databaseService.emailLog.count(),
+        this.databaseService.emailLog.count({ where: { deliveryStatus: 'DELIVERED' } }),
+        this.databaseService.emailLog.count({ where: { deliveryStatus: 'OPENED' } }),
+        this.databaseService.emailLog.count({ where: { deliveryStatus: 'BOUNCED' } }),
+        this.databaseService.emailLog.count({ where: { deliveryStatus: 'SPAM' } }),
+        this.databaseService.emailLog.count({ where: { deliveryStatus: 'FAILED' } }),
+        this.databaseService.emailLog.findMany({
+          where: { deliveryStatus: 'BOUNCED' },
+          orderBy: { bouncedAt: 'desc' },
+          take: 10,
+          select: { uid: true, recipientEmail: true, subject: true, bouncedAt: true, bounceType: true, emailType: true },
+        }),
+      ]);
+
+      const deliveryRate = totalSent > 0 ? Math.round(((delivered + opened) / totalSent) * 10000) / 100 : 0;
+      const openRate = delivered + opened > 0 ? Math.round((opened / (delivered + opened)) * 10000) / 100 : 0;
+      const bounceRate = totalSent > 0 ? Math.round((bounced / totalSent) * 10000) / 100 : 0;
+
+      const recentBounces: RecentBounceDto[] = recentBouncesRaw.map((r) => ({
+        uid: r.uid,
+        recipientEmail: r.recipientEmail,
+        subject: r.subject,
+        bouncedAt: r.bouncedAt ? r.bouncedAt.toISOString() : null,
+        bounceType: r.bounceType,
+        emailType: r.emailType,
+      }));
+
+      return { totalSent, delivered, opened, bounced, spam, failed, deliveryRate, openRate, bounceRate, recentBounces };
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to fetch email deliverability stats: ${error.message}`);
+    }
+  }
+
+  async getEmailDeliverabilityPerType(): Promise<EmailDeliverabilityPerTypeDto> {
+    try {
+      const rows = await this.databaseService.emailLog.groupBy({
+        by: ['emailType', 'deliveryStatus'],
+        _count: { _all: true },
+      });
+
+      // Aggregate by emailType
+      const typeMap = new Map<string, { total: number; delivered: number; opened: number; bounced: number }>();
+
+      for (const row of rows) {
+        const entry = typeMap.get(row.emailType) ?? { total: 0, delivered: 0, opened: 0, bounced: 0 };
+        entry.total += row._count._all;
+
+        if (row.deliveryStatus === 'DELIVERED') entry.delivered += row._count._all;
+        else if (row.deliveryStatus === 'OPENED') entry.opened += row._count._all;
+        else if (row.deliveryStatus === 'BOUNCED') entry.bounced += row._count._all;
+
+        typeMap.set(row.emailType, entry);
+      }
+
+      const perType: EmailDeliverabilityPerTypeItemDto[] = Array.from(typeMap.entries())
+        .map(([emailType, stats]) => ({
+          emailType,
+          total: stats.total,
+          delivered: stats.delivered,
+          opened: stats.opened,
+          bounced: stats.bounced,
+          bounceRate: stats.total > 0 ? Math.round((stats.bounced / stats.total) * 10000) / 100 : 0,
+        }))
+        .sort((a, b) => b.bounceRate - a.bounceRate);
+
+      return { perType };
+    } catch (error) {
+      throw new InternalServerErrorException(`Failed to fetch email deliverability per type: ${error.message}`);
     }
   }
 }

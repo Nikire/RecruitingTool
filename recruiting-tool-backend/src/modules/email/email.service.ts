@@ -140,7 +140,7 @@ export class EmailService {
     };
   }
 
-  private async sendViaResendApi(to: string, subject: string, text: string, html: string, emailFrom: string): Promise<void> {
+  private async sendViaResendApi(to: string, subject: string, text: string, html: string, emailFrom: string): Promise<string | null> {
     const apiKey = this.configService.get<string>('SMTP_PASSWORD');
     const adminBcc = this.configService.get<string>('EMAIL_ADMIN_BCC');
     const payload: Record<string, unknown> = { from: emailFrom, to: [to], subject, text, html };
@@ -160,6 +160,8 @@ export class EmailService {
       const error = await response.text();
       throw new Error(`Resend API error ${response.status}: ${error}`);
     }
+    const data = (await response.json()) as { id?: string };
+    return data.id ?? null;
   }
 
   async sendApplicationConfirmation(
@@ -410,10 +412,11 @@ Please log in to the admin panel to review this application.
     const emailFrom = this.configService.get<string>('EMAIL_FROM', 'noreply@borderlessats.com');
     const smtpEnabled = this.configService.get<string>('SMTP_ENABLED', 'false') === 'true';
     let status = 'SENT';
+    let resendEmailId: string | null = null;
 
     if (smtpEnabled) {
       try {
-        await this.sendViaResendApi(to, subject, text, html, emailFrom);
+        resendEmailId = await this.sendViaResendApi(to, subject, text, html, emailFrom);
         this.logger.log(`Email sent to ${to}: ${subject}`);
       } catch (error) {
         status = 'FAILED';
@@ -445,6 +448,8 @@ ${text}
           emailType,
           relatedEntity: 'Application',
           relatedEntityId: relatedEntityId || null,
+          resendEmailId: resendEmailId || null,
+          deliveryStatus: status === 'FAILED' ? 'FAILED' : 'SENT',
         },
       });
     } catch (error) {
@@ -922,6 +927,63 @@ The Borderless Team
     const { subject, text, html } = asyncStageSubmissionReceivedTemplate(data);
     await this.sendEmail(hrEmail, subject, text, html, 'ASYNC_STAGE_SUBMISSION_RECEIVED');
     this.logger.log(`Async stage submission notification sent to ${hrEmail} for candidate "${data.candidateName}"`);
+  }
+
+  /**
+   * Handle incoming webhook events from Resend.
+   * Updates EmailLog delivery status based on event type.
+   */
+  async handleResendWebhook(body: any): Promise<void> {
+    const eventType = body?.type as string | undefined;
+    const emailId = body?.data?.email_id as string | undefined;
+
+    if (!emailId) {
+      this.logger.warn(`Resend webhook received without email_id: ${eventType}`);
+      return;
+    }
+
+    this.logger.log(`Processing Resend webhook event: ${eventType} for email ${emailId}`);
+
+    switch (eventType) {
+      case 'email.delivered':
+        await this.databaseService.emailLog.updateMany({
+          where: { resendEmailId: emailId },
+          data: { deliveryStatus: 'DELIVERED' },
+        });
+        break;
+
+      case 'email.opened':
+        await this.databaseService.emailLog.updateMany({
+          where: { resendEmailId: emailId, openedAt: null },
+          data: { deliveryStatus: 'OPENED', openedAt: new Date() },
+        });
+        break;
+
+      case 'email.bounced':
+        await this.databaseService.emailLog.updateMany({
+          where: { resendEmailId: emailId },
+          data: {
+            deliveryStatus: 'BOUNCED',
+            bouncedAt: new Date(),
+            bounceType: (body?.data?.bounce?.type as string | undefined) ?? 'hard',
+          },
+        });
+        break;
+
+      case 'email.complained':
+        await this.databaseService.emailLog.updateMany({
+          where: { resendEmailId: emailId },
+          data: {
+            deliveryStatus: 'SPAM',
+            bounceType: 'complaint',
+            bouncedAt: new Date(),
+          },
+        });
+        break;
+
+      default:
+        this.logger.debug(`Unhandled Resend webhook event type: ${eventType}`);
+    }
   }
 
   /**

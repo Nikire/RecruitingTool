@@ -1989,7 +1989,9 @@
     "trial_tracker": "Trial Tracker",
     "trial_tracker_desc": "Identify free and trialing companies ready to convert to a paid plan",
     "demo_manager": "Demo Bookings",
-    "demo_manager_desc": "Track demo booking outcomes and link prospects to your CRM"
+    "demo_manager_desc": "Track demo booking outcomes and link prospects to your CRM",
+    "email_deliverability": "Email Health",
+    "email_deliverability_desc": "Monitor email delivery rates, open rates, bounces, and spam complaints."
   },
   "demo_manager": {
     "title": "Demo Booking Manager",
@@ -4514,5 +4516,25 @@
     "new_value": "New",
     "days": "days",
     "no_audit_entries": "No audit entries found for this subscription"
+  },
+  "email_deliverability": {
+    "title": "Email Deliverability Monitor",
+    "subtitle": "Track email delivery health, open rates, bounces, and spam complaints across all sent emails.",
+    "total_sent": "Total Sent",
+    "delivery_rate": "Delivery Rate",
+    "open_rate": "Open Rate",
+    "bounce_rate": "Bounce Rate",
+    "spam": "Spam / Complaints",
+    "high_bounce_warning": "Bounce rate is above 5% — check recent bounces below and review your email sending practices.",
+    "per_type_title": "Breakdown by Email Type",
+    "email_type": "Email Type",
+    "delivered": "Delivered",
+    "opened": "Opened",
+    "bounced": "Bounced",
+    "recent_bounces": "Recent Bounces",
+    "no_bounces": "No bounces recorded yet.",
+    "health_ok": "OK",
+    "health_warning": "WARNING",
+    "health_critical": "CRITICAL"
   }
 }

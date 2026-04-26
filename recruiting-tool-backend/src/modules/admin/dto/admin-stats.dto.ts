@@ -537,3 +537,82 @@ export class LinkDemoProspectDto {
   @IsNotEmpty()
   prospectUid: string;
 }
+
+// ─── Email Deliverability DTOs ────────────────────────────────────────────────
+
+export class RecentBounceDto {
+  @ApiProperty({ description: 'UID of the EmailLog record' })
+  uid: string;
+
+  @ApiProperty({ description: 'Recipient email address' })
+  recipientEmail: string;
+
+  @ApiProperty({ description: 'Email subject' })
+  subject: string;
+
+  @ApiProperty({ description: 'Timestamp when the email bounced', nullable: true })
+  bouncedAt: string | null;
+
+  @ApiProperty({ description: 'Type of bounce: hard, soft, or complaint', nullable: true })
+  bounceType: string | null;
+
+  @ApiProperty({ description: 'Email type/category' })
+  emailType: string;
+}
+
+export class EmailDeliverabilityStatsDto {
+  @ApiProperty({ description: 'Total emails sent' })
+  totalSent: number;
+
+  @ApiProperty({ description: 'Emails with DELIVERED status' })
+  delivered: number;
+
+  @ApiProperty({ description: 'Emails with OPENED status' })
+  opened: number;
+
+  @ApiProperty({ description: 'Emails with BOUNCED status' })
+  bounced: number;
+
+  @ApiProperty({ description: 'Emails with SPAM/complaint status' })
+  spam: number;
+
+  @ApiProperty({ description: 'Emails with FAILED status' })
+  failed: number;
+
+  @ApiProperty({ description: 'Delivery rate as a percentage (DELIVERED + OPENED / total)' })
+  deliveryRate: number;
+
+  @ApiProperty({ description: 'Open rate as a percentage (OPENED / DELIVERED)' })
+  openRate: number;
+
+  @ApiProperty({ description: 'Bounce rate as a percentage (BOUNCED / total)' })
+  bounceRate: number;
+
+  @ApiProperty({ description: 'Last 10 bounced email records', type: [RecentBounceDto] })
+  recentBounces: RecentBounceDto[];
+}
+
+export class EmailDeliverabilityPerTypeItemDto {
+  @ApiProperty({ description: 'Email type/category' })
+  emailType: string;
+
+  @ApiProperty({ description: 'Total emails of this type' })
+  total: number;
+
+  @ApiProperty({ description: 'Delivered count' })
+  delivered: number;
+
+  @ApiProperty({ description: 'Opened count' })
+  opened: number;
+
+  @ApiProperty({ description: 'Bounced count' })
+  bounced: number;
+
+  @ApiProperty({ description: 'Bounce rate as a percentage' })
+  bounceRate: number;
+}
+
+export class EmailDeliverabilityPerTypeDto {
+  @ApiProperty({ description: 'Per email type breakdown sorted by bounceRate descending', type: [EmailDeliverabilityPerTypeItemDto] })
+  perType: EmailDeliverabilityPerTypeItemDto[];
+}

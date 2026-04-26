@@ -18,6 +18,8 @@ import {
   DemoBookingListResponseDto,
   SetDemoOutcomeDto,
   LinkDemoProspectDto,
+  EmailDeliverabilityStatsDto,
+  EmailDeliverabilityPerTypeDto,
 } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
@@ -240,5 +242,27 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Returns updated demo booking item', type: DemoBookingAdminItemDto })
   linkDemoProspect(@Param('uid') uid: string, @Body() dto: LinkDemoProspectDto): Promise<DemoBookingAdminItemDto> {
     return this.adminService.linkDemoProspect(uid, dto);
+  }
+
+  // ─── Email Deliverability ─────────────────────────────────────────────────
+
+  @Get('email/deliverability')
+  @ApiOperation({
+    summary: 'Get platform-wide email deliverability statistics - ADMIN role required',
+    description: 'Returns total sent, delivery rate, open rate, bounce rate, and the last 10 bounced emails',
+  })
+  @ApiResponse({ status: 200, description: 'Returns email deliverability stats', type: EmailDeliverabilityStatsDto })
+  getEmailDeliverabilityStats(): Promise<EmailDeliverabilityStatsDto> {
+    return this.adminService.getEmailDeliverabilityStats();
+  }
+
+  @Get('email/deliverability/per-type')
+  @ApiOperation({
+    summary: 'Get email deliverability breakdown per email type - ADMIN role required',
+    description: 'Returns aggregated delivery stats grouped by emailType, sorted by bounce rate descending',
+  })
+  @ApiResponse({ status: 200, description: 'Returns per-type deliverability breakdown', type: EmailDeliverabilityPerTypeDto })
+  getEmailDeliverabilityPerType(): Promise<EmailDeliverabilityPerTypeDto> {
+    return this.adminService.getEmailDeliverabilityPerType();
   }
 }
