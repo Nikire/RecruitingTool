@@ -716,7 +716,7 @@ const OutreachTemplatesPage: React.FC = () => {
                     <Chip
                       label={t(`outreach.channel_${template.channel}`)}
                       size="small"
-                      variant="outlined"
+                      variant="filled"
                     />
                   </Stack>
                   <ToggleButtonGroup
@@ -940,7 +940,7 @@ const OutreachTemplatesPage: React.FC = () => {
                         label={t(`outreach.category_${source.category}`)}
                         size="small"
                         color={CATEGORY_COLORS[source.category]}
-                        variant="outlined"
+                        variant="filled"
                       />
                       <Tooltip title={t("outreach.open_link")}>
                         <IconButton
