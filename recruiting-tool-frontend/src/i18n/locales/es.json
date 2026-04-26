@@ -1726,7 +1726,17 @@
     "group_management": "Gestión",
     "group_configuration": "Configuración",
     "group_outreach": "Outreach",
-    "outreach_crm": "CRM de Prospectos"
+    "outreach_crm": "CRM de Prospectos",
+    "group_business_intelligence": "Inteligencia de Negocio",
+    "revenue_dashboard": "Panel de Ingresos",
+    "quota_inspector": "Inspector de Cuotas",
+    "company_health": "Salud de Empresas",
+    "trial_tracker": "Rastreador de Trials",
+    "pipeline_analytics": "Analítica del Pipeline",
+    "group_operations": "Operaciones",
+    "demo_bookings": "Demos Agendadas",
+    "email_deliverability": "Salud del Email",
+    "changelog": "Changelog"
   },
   "language": {
     "select_language": "Seleccionar Idioma",
@@ -2050,7 +2060,8 @@
     "not_scheduled": "Sin programar",
     "filter_outcome": "Filtrar por resultado",
     "outcome_updated": "Resultado de demo actualizado correctamente",
-    "outcome_update_error": "Error al actualizar el resultado"
+    "outcome_update_error": "Error al actualizar el resultado",
+    "description": "Rastrea cada reserva de demo desde la solicitud inicial hasta el resultado final. Registra notas de llamadas, marca conversiones o ausencias, y vincula prospectos a un registro CRM en el módulo de Alcance para cerrar el ciclo entre marketing y ventas."
   },
   "revenue_dashboard": {
     "title": "Panel de Ingresos",
@@ -2073,7 +2084,8 @@
     "canceled": "Cancelado",
     "companies": "Empresas",
     "new_companies": "Nuevas Empresas",
-    "no_data": "No hay datos disponibles"
+    "no_data": "No hay datos disponibles",
+    "description": "Muestra el MRR estimado, el recuento de empresas activas y en prueba, la distribución de planes y las tendencias de registro mensual. Utiliza esta página para revisiones de negocio, actualizaciones para inversores y seguimiento del crecimiento."
   },
   "admin": {
     "ai_quota": {
@@ -4473,7 +4485,8 @@
     "company": "Empresa",
     "filter_plan": "Filtrar por plan",
     "filter_status": "Filtrar por estado",
-    "unlimited": "Ilimitado"
+    "unlimited": "Ilimitado",
+    "description": "Muestra el uso de recursos en tiempo real frente a los límites del plan para cada empresa. Las empresas cerca de sus límites son candidatas a actualizar; las que apenas usan el producto corren riesgo de cancelación. Filtra por tipo de recurso para enfocar tu alcance."
   },
   "company_health": {
     "title": "Monitor de Salud de Empresas",
@@ -4490,7 +4503,8 @@
     "hiring_activities": "Contrat. (Mes)",
     "days_ago": "Hace {{count}} días",
     "never": "Nunca",
-    "filter_risk": "Filtrar por nivel de riesgo"
+    "filter_risk": "Filtrar por nivel de riesgo",
+    "description": "Puntúa a cada cliente en señales de compromiso como posiciones activas, volumen de solicitudes y actividad de usuarios. Las empresas en nivel rojo corren riesgo de abandono — revísalas regularmente y contacta antes de que cancelen."
   },
   "trial_tracker": {
     "title": "Rastreador de Pruebas y Conversión",
@@ -4510,7 +4524,8 @@
     "filter_readiness": "Filtrar por disposición",
     "filter_plan": "Filtrar por plan",
     "plan_free": "Plan Gratuito",
-    "plan_trialing": "En Prueba"
+    "plan_trialing": "En Prueba",
+    "description": "Lista empresas en prueba gratuita con puntuaciones de activación y señales de preparación para conversión. Las empresas \"calientes\" tienen alto compromiso y son las mejores candidatas para actualizar. Usa el botón de CRM de Alcance para iniciar una conversación de conversión."
   },
   "subscription_manager": {
     "change_plan": "Cambiar Plan",
@@ -4547,7 +4562,8 @@
     "no_bounces": "No se han registrado rebotes aún.",
     "health_ok": "OK",
     "health_warning": "ADVERTENCIA",
-    "health_critical": "CRÍTICO"
+    "health_critical": "CRÍTICO",
+    "description": "Monitoriza el estado de todos los correos transaccionales enviados por la plataforma: confirmaciones de entrega, aperturas, rebotes y quejas de spam. Una tasa de rebote superior al 5% puede dañar tu reputación de remitente. Investiga y limpia las direcciones problemáticas rápidamente."
   },
   "pipeline_analytics": {
     "title": "Analítica del Pipeline",
@@ -4569,7 +4585,8 @@
     "total_positions": "posiciones totales",
     "closed_positions": "posiciones cerradas",
     "applications": "Aplicaciones",
-    "no_data": "No hay datos disponibles"
+    "no_data": "No hay datos disponibles",
+    "description": "Agrega datos del embudo de reclutamiento de todas las empresas clientes: solicitudes totales, posiciones activas, tasas de conversión por etapa y días promedio hasta la contratación. Usa estos benchmarks en historias de producto y conversaciones con inversores."
   },
   "changelog": {
     "title": "Changelog",
@@ -4603,7 +4620,8 @@
     "created_error": "Error al crear la nota de lanzamiento",
     "updated_error": "Error al actualizar la nota de lanzamiento",
     "deleted_error": "Error al eliminar la nota de lanzamiento",
-    "toggle_error": "Error al actualizar el estado de publicación"
+    "toggle_error": "Error al actualizar el estado de publicación",
+    "description": "Crea y publica notas de versión que aparecen a los clientes en el modal '¿Qué hay de nuevo?' al iniciar sesión. Las notas pueden dirigirse por nivel de plan: todos, Profesional y superior, o solo Empresarial. Los borradores no serán visibles hasta que los publiques."
   },
   "whats_new": {
     "title": "Novedades",

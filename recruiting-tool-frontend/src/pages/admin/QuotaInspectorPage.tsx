@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Card,
   CardContent,
@@ -272,6 +273,10 @@ const QuotaInspectorPage: React.FC = () => {
         subtitle={t("quota_inspector.subtitle")}
         translate={false}
       />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("quota_inspector.description")}
+      </Alert>
 
       {/* Summary cards */}
       <Box

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Card,
   CardContent,
@@ -491,6 +492,10 @@ const DemoBookingManagerPage: React.FC = () => {
   return (
     <Box sx={{ width: "100%", py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 0 } }}>
       <PageHeader title="demo_manager.title" subtitle="demo_manager.subtitle" />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("demo_manager.description")}
+      </Alert>
 
       {/* Summary Cards */}
       <Box

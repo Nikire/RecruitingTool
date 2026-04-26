@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -390,6 +391,10 @@ const ChangelogPage: React.FC = () => {
           },
         }}
       />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("changelog.description")}
+      </Alert>
 
       <Box sx={{ height: 600, mt: 2 }}>
         <DataGrid

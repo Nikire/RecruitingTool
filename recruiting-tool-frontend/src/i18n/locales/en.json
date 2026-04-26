@@ -2018,7 +2018,8 @@
     "not_scheduled": "Not scheduled",
     "filter_outcome": "Filter by outcome",
     "outcome_updated": "Demo outcome updated successfully",
-    "outcome_update_error": "Failed to update outcome"
+    "outcome_update_error": "Failed to update outcome",
+    "description": "Tracks every demo booking from initial request through final outcome. Record call notes, mark conversions or no-shows, and link prospects to a CRM record in the Outreach module to close the loop between marketing and sales."
   },
   "revenue_dashboard": {
     "title": "Revenue Dashboard",
@@ -2041,7 +2042,8 @@
     "canceled": "Canceled",
     "companies": "Companies",
     "new_companies": "New Companies",
-    "no_data": "No data available"
+    "no_data": "No data available",
+    "description": "Shows Estimated MRR, active and trialing company counts, plan distribution, and monthly signup trends. Use this page for business reviews, investor updates, and tracking growth health over time."
   },
   "admin": {
     "ai_quota": {
@@ -3975,7 +3977,17 @@
     "group_management": "Management",
     "group_configuration": "Configuration",
     "group_outreach": "Outreach",
-    "outreach_crm": "Prospect CRM"
+    "outreach_crm": "Prospect CRM",
+    "group_business_intelligence": "Business Intelligence",
+    "revenue_dashboard": "Revenue Dashboard",
+    "quota_inspector": "Quota Inspector",
+    "company_health": "Company Health",
+    "trial_tracker": "Trial Tracker",
+    "pipeline_analytics": "Pipeline Analytics",
+    "group_operations": "Operations",
+    "demo_bookings": "Demo Bookings",
+    "email_deliverability": "Email Health",
+    "changelog": "Changelog"
   },
   "admin_email_logs": {
     "title": "Email Logs",
@@ -4465,7 +4477,8 @@
     "company": "Company",
     "filter_plan": "Filter by plan",
     "filter_status": "Filter by status",
-    "unlimited": "Unlimited"
+    "unlimited": "Unlimited",
+    "description": "Displays real-time resource usage vs. plan limits for every company. Companies near their limits are upgrade candidates; companies barely using the product are churn risks. Filter by resource type to focus your outreach."
   },
   "company_health": {
     "title": "Company Health Monitor",
@@ -4482,7 +4495,8 @@
     "hiring_activities": "Hiring (Month)",
     "days_ago": "{{count}} days ago",
     "never": "Never",
-    "filter_risk": "Filter by risk tier"
+    "filter_risk": "Filter by risk tier",
+    "description": "Scores every customer on engagement signals such as active job positions, application volume, and user activity. Red-tier companies are at churn risk — review them regularly and reach out before they cancel."
   },
   "trial_tracker": {
     "title": "Trial & Conversion Tracker",
@@ -4502,7 +4516,8 @@
     "filter_readiness": "Filter by readiness",
     "filter_plan": "Filter by plan",
     "plan_free": "Free Plan",
-    "plan_trialing": "Trialing"
+    "plan_trialing": "Trialing",
+    "description": "Lists free-tier and trialing companies with activation depth scores and conversion readiness signals. Hot companies have high product engagement and are prime upgrade candidates. Use the Outreach CRM button to start a conversion conversation."
   },
   "subscription_manager": {
     "change_plan": "Change Plan",
@@ -4539,7 +4554,8 @@
     "no_bounces": "No bounces recorded yet.",
     "health_ok": "OK",
     "health_warning": "WARNING",
-    "health_critical": "CRITICAL"
+    "health_critical": "CRITICAL",
+    "description": "Monitors the health of all transactional emails sent by the platform — delivery confirmations, opens, bounces, and spam complaints. A bounce rate above 5% or complaint rate above 0.1% can damage your sender reputation. Investigate and clean problematic addresses quickly."
   },
   "pipeline_analytics": {
     "title": "Pipeline Analytics",
@@ -4561,7 +4577,8 @@
     "total_positions": "total positions",
     "closed_positions": "closed positions",
     "applications": "Applications",
-    "no_data": "No data available"
+    "no_data": "No data available",
+    "description": "Aggregates recruiting funnel data across all customer companies — total applications, active job positions, stage conversion rates, and average time-to-hire. Use these cross-company benchmarks in product storytelling and investor conversations."
   },
   "changelog": {
     "title": "Changelog",
@@ -4595,7 +4612,8 @@
     "created_error": "Failed to create release note",
     "updated_error": "Failed to update release note",
     "deleted_error": "Failed to delete release note",
-    "toggle_error": "Failed to update publish status"
+    "toggle_error": "Failed to update publish status",
+    "description": "Create and publish release notes that appear to customers in the 'What's New' modal when they log in. Notes can be targeted by plan tier — all customers, Professional and above, or Enterprise only. Unpublished notes are saved as drafts and won't be visible until you publish them."
   },
   "whats_new": {
     "title": "What's New",

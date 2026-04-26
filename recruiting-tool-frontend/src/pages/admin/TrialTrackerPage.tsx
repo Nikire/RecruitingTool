@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Card,
   CardContent,
@@ -392,6 +393,10 @@ const TrialTrackerPage: React.FC = () => {
         title="trial_tracker.title"
         subtitle="trial_tracker.subtitle"
       />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("trial_tracker.description")}
+      </Alert>
 
       {/* Summary Cards */}
       <Box

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import {
+  Alert,
   Box,
   Card,
   CardContent,
@@ -325,6 +326,10 @@ const CompanyHealthPage: React.FC = () => {
         title="company_health.title"
         subtitle="company_health.subtitle"
       />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("company_health.description")}
+      </Alert>
 
       {/* Summary Cards */}
       <Box

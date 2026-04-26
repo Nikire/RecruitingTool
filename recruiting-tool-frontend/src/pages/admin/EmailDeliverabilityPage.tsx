@@ -199,6 +199,10 @@ const EmailDeliverabilityPage: React.FC = () => {
         translate={false}
       />
 
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("email_deliverability.description")}
+      </Alert>
+
       {/* High bounce warning */}
       {showHighBounceWarning && (
         <Alert severity="warning" sx={{ mb: 3 }}>

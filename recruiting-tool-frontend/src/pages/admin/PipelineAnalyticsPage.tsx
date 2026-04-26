@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Card,
   CardContent,
@@ -206,6 +207,10 @@ const PipelineAnalyticsPage: React.FC = () => {
         }
         translate={!isLoading}
       />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("pipeline_analytics.description")}
+      </Alert>
 
       {/* ── KPI Row ─────────────────────────────────────────────────────── */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>

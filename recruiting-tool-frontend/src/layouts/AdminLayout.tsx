@@ -16,6 +16,16 @@ import PsychologyIcon from "@mui/icons-material/Psychology";
 import ArticleIcon from "@mui/icons-material/Article";
 import CampaignIcon from "@mui/icons-material/Campaign";
 import TrackChangesIcon from "@mui/icons-material/TrackChanges";
+import InsightsIcon from "@mui/icons-material/Insights";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import SpeedIcon from "@mui/icons-material/Speed";
+import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
+import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
+import BarChartIcon from "@mui/icons-material/BarChart";
+import BuildIcon from "@mui/icons-material/Build";
+import EventIcon from "@mui/icons-material/Event";
+import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
+import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -104,6 +114,66 @@ const AdminLayout: React.FC = () => {
           icon: <ForwardToInboxIcon />,
           path: "/admin/email-logs",
           requiresSuperAdmin: true,
+        },
+      ],
+    },
+    {
+      label: t("admin_layout.group_business_intelligence"),
+      icon: <InsightsIcon />,
+      items: [
+        {
+          text: t("admin_layout.revenue_dashboard"),
+          icon: <TrendingUpIcon />,
+          path: "/admin/revenue",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.quota_inspector"),
+          icon: <SpeedIcon />,
+          path: "/admin/quota-inspector",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.company_health"),
+          icon: <MonitorHeartIcon />,
+          path: "/admin/health",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.trial_tracker"),
+          icon: <RocketLaunchIcon />,
+          path: "/admin/trials",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.pipeline_analytics"),
+          icon: <BarChartIcon />,
+          path: "/admin/pipeline-analytics",
+          requiresSuperAdmin: false,
+        },
+      ],
+    },
+    {
+      label: t("admin_layout.group_operations"),
+      icon: <BuildIcon />,
+      items: [
+        {
+          text: t("admin_layout.demo_bookings"),
+          icon: <EventIcon />,
+          path: "/admin/demos",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.email_deliverability"),
+          icon: <MarkEmailReadIcon />,
+          path: "/admin/email-deliverability",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.changelog"),
+          icon: <NewReleasesIcon />,
+          path: "/admin/changelog",
+          requiresSuperAdmin: false,
         },
       ],
     },

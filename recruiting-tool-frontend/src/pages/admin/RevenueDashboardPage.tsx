@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Card,
   CardContent,
@@ -189,6 +190,10 @@ const RevenueDashboardPage: React.FC = () => {
         subtitle="revenue_dashboard.subtitle"
         translate={true}
       />
+
+      <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>
+        {t("revenue_dashboard.description")}
+      </Alert>
 
       {/* KPI Row */}
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
