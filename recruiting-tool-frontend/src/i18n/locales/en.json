@@ -61,7 +61,8 @@
     "not_available": "N/A",
     "not_applicable": "N/A",
     "search_placeholder": "Search...",
-    "company_logo_alt": "Company Logo"
+    "company_logo_alt": "Company Logo",
+    "error_occurred": "An error occurred. Please try again."
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -2049,7 +2050,8 @@
         "status": "Status",
         "mrr": "MRR",
         "period_end": "Period End",
-        "created": "Created"
+        "created": "Created",
+        "actions": "Actions"
       },
       "stats": {
         "total_subscriptions": "Total Subscriptions",
@@ -4470,5 +4472,22 @@
     "filter_plan": "Filter by plan",
     "plan_free": "Free Plan",
     "plan_trialing": "Trialing"
+  },
+  "subscription_manager": {
+    "change_plan": "Change Plan",
+    "change_plan_title": "Change Subscription Plan",
+    "audit_log": "Audit Log",
+    "audit_log_title": "Subscription Audit Log",
+    "note": "Note",
+    "note_placeholder": "Optional reason for this change...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "plan_changed": "Subscription plan updated successfully",
+    "status_changed": "Subscription status updated successfully",
+    "trial_extended": "Trial period extended successfully",
+    "previous": "Previous",
+    "new_value": "New",
+    "days": "days",
+    "no_audit_entries": "No audit entries found for this subscription"
   }
 }

@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 
 export class UsersByRoleDto {
   @ApiProperty({ description: 'The role name', example: 'USER' })
@@ -372,4 +373,77 @@ export class TrialOverviewResponseDto {
 
   @ApiProperty({ description: 'Summary counters by readiness tier', type: TrialOverviewSummaryDto })
   summary: TrialOverviewSummaryDto;
+}
+
+// ─── Subscription Lifecycle Manager DTOs ─────────────────────────────────────
+
+export class ChangePlanDto {
+  @ApiProperty({ description: 'New subscription plan', enum: ['FREE', 'PROFESSIONAL', 'ENTERPRISE'], example: 'PROFESSIONAL' })
+  @IsEnum(['FREE', 'PROFESSIONAL', 'ENTERPRISE'])
+  plan: string;
+
+  @ApiProperty({ description: 'Optional note explaining the plan change', required: false, example: 'Customer requested upgrade' })
+  @IsOptional()
+  @IsString()
+  note?: string;
+}
+
+export class ChangeStatusDto {
+  @ApiProperty({ description: 'New subscription status', enum: ['TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELED', 'UNPAID', 'EXPIRED'], example: 'ACTIVE' })
+  @IsEnum(['TRIALING', 'ACTIVE', 'PAST_DUE', 'CANCELED', 'UNPAID', 'EXPIRED'])
+  status: string;
+
+  @ApiProperty({ description: 'Optional note explaining the status change', required: false, example: 'Manual activation after payment confirmed' })
+  @IsOptional()
+  @IsString()
+  note?: string;
+}
+
+export class ExtendTrialDto {
+  @ApiProperty({ description: 'Number of days to extend the trial', example: 14 })
+  @IsInt()
+  @Min(1)
+  days: number;
+
+  @ApiProperty({ description: 'Optional note explaining the trial extension', required: false, example: 'Extended for onboarding assistance' })
+  @IsOptional()
+  @IsString()
+  note?: string;
+}
+
+export class SubscriptionAuditLogItemDto {
+  @ApiProperty({ description: 'Audit log entry UID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ description: 'Action performed', example: 'PLAN_CHANGE' })
+  action: string;
+
+  @ApiProperty({ description: 'Timestamp of the action', example: '2025-01-15T10:30:00.000Z' })
+  timestamp: Date;
+
+  @ApiProperty({ description: 'Metadata about the change (previousPlan, newPlan, note, etc.)', nullable: true })
+  metadata: Record<string, unknown> | null;
+
+  @ApiProperty({ description: 'Name of the admin who performed the action', example: 'John Admin' })
+  adminName: string;
+}
+
+export class UpdatedSubscriptionDto {
+  @ApiProperty({ description: 'Subscription UID', example: '123e4567-e89b-12d3-a456-426614174000' })
+  uid: string;
+
+  @ApiProperty({ description: 'Current plan', example: 'PROFESSIONAL' })
+  plan: string;
+
+  @ApiProperty({ description: 'Current status', example: 'ACTIVE' })
+  status: string;
+
+  @ApiProperty({ description: 'Trial end date', nullable: true })
+  trialEnd: Date | null;
+
+  @ApiProperty({ description: 'Current period start', nullable: true })
+  currentPeriodStart: Date | null;
+
+  @ApiProperty({ description: 'Current period end', nullable: true })
+  currentPeriodEnd: Date | null;
 }

@@ -61,7 +61,8 @@
     "not_available": "N/D",
     "not_applicable": "N/A",
     "search_placeholder": "Buscar...",
-    "company_logo_alt": "Logo de Empresa"
+    "company_logo_alt": "Logo de Empresa",
+    "error_occurred": "Se produjo un error. Por favor, inténtalo de nuevo."
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -2081,7 +2082,8 @@
         "status": "Estado",
         "mrr": "MRR",
         "period_end": "Fin de Período",
-        "created": "Creado"
+        "created": "Creado",
+        "actions": "Acciones"
       },
       "stats": {
         "total_subscriptions": "Total de Suscripciones",
@@ -4478,5 +4480,22 @@
     "filter_plan": "Filtrar por plan",
     "plan_free": "Plan Gratuito",
     "plan_trialing": "En Prueba"
+  },
+  "subscription_manager": {
+    "change_plan": "Cambiar Plan",
+    "change_plan_title": "Cambiar Plan de Suscripción",
+    "audit_log": "Registro de Auditoría",
+    "audit_log_title": "Registro de Auditoría de Suscripción",
+    "note": "Nota",
+    "note_placeholder": "Razón opcional para este cambio...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "plan_changed": "Plan de suscripción actualizado exitosamente",
+    "status_changed": "Estado de suscripción actualizado exitosamente",
+    "trial_extended": "Período de prueba extendido exitosamente",
+    "previous": "Anterior",
+    "new_value": "Nuevo",
+    "days": "días",
+    "no_audit_entries": "No se encontraron entradas de auditoría para esta suscripción"
   }
 }

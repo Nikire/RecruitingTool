@@ -23,6 +23,11 @@ import {
   TrialOverviewResponseDto,
   TrialOverviewSummaryDto,
   ConversionReadiness,
+  ChangePlanDto,
+  ChangeStatusDto,
+  ExtendTrialDto,
+  SubscriptionAuditLogItemDto,
+  UpdatedSubscriptionDto,
 } from './dto/admin-stats.dto';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { QuotaType, SubscriptionPlan } from '@prisma/client';
@@ -656,6 +661,167 @@ export class AdminService {
     if (limited.some((r) => r.percentage >= 90)) return 'CRITICAL';
     if (limited.some((r) => r.percentage >= 70)) return 'WARNING';
     return 'OK';
+  }
+
+  // ─── Subscription Lifecycle Manager ─────────────────────────────────────────
+
+  private async findSubscriptionByCompanyUid(companyUid: string) {
+    const company = await this.databaseService.company.findUnique({
+      where: { uid: companyUid },
+      select: { id: true },
+    });
+    if (!company) {
+      throw new HttpException(`Company not found: ${companyUid}`, 404);
+    }
+    const subscription = await this.databaseService.subscription.findUnique({
+      where: { companyId: company.id },
+    });
+    if (!subscription) {
+      throw new HttpException(`Subscription not found for company: ${companyUid}`, 404);
+    }
+    return subscription;
+  }
+
+  async changePlan(companyUid: string, dto: ChangePlanDto, adminUserId: number): Promise<UpdatedSubscriptionDto> {
+    try {
+      const subscription = await this.findSubscriptionByCompanyUid(companyUid);
+      const previousPlan = subscription.plan;
+
+      const updated = await this.databaseService.subscription.update({
+        where: { id: subscription.id },
+        data: { plan: dto.plan as any },
+      });
+
+      await this.databaseService.auditLog.create({
+        data: {
+          action: 'PLAN_CHANGE',
+          entityType: 'Subscription',
+          entityId: subscription.id,
+          entityUid: subscription.uid,
+          userId: adminUserId,
+          metadata: { previousPlan, newPlan: dto.plan, note: dto.note ?? null },
+        },
+      });
+
+      return {
+        uid: updated.uid,
+        plan: updated.plan,
+        status: updated.status,
+        trialEnd: updated.trialEnd,
+        currentPeriodStart: updated.currentPeriodStart,
+        currentPeriodEnd: updated.currentPeriodEnd,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to change plan: ${error.message}`);
+    }
+  }
+
+  async changeStatus(companyUid: string, dto: ChangeStatusDto, adminUserId: number): Promise<UpdatedSubscriptionDto> {
+    try {
+      const subscription = await this.findSubscriptionByCompanyUid(companyUid);
+      const previousStatus = subscription.status;
+
+      const updated = await this.databaseService.subscription.update({
+        where: { id: subscription.id },
+        data: { status: dto.status as any },
+      });
+
+      await this.databaseService.auditLog.create({
+        data: {
+          action: 'STATUS_CHANGE',
+          entityType: 'Subscription',
+          entityId: subscription.id,
+          entityUid: subscription.uid,
+          userId: adminUserId,
+          metadata: { previousStatus, newStatus: dto.status, note: dto.note ?? null },
+        },
+      });
+
+      return {
+        uid: updated.uid,
+        plan: updated.plan,
+        status: updated.status,
+        trialEnd: updated.trialEnd,
+        currentPeriodStart: updated.currentPeriodStart,
+        currentPeriodEnd: updated.currentPeriodEnd,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to change status: ${error.message}`);
+    }
+  }
+
+  async extendTrial(companyUid: string, dto: ExtendTrialDto, adminUserId: number): Promise<UpdatedSubscriptionDto> {
+    try {
+      const subscription = await this.findSubscriptionByCompanyUid(companyUid);
+      const previousTrialEnd = subscription.trialEnd;
+      const baseDate = subscription.trialEnd ? new Date(subscription.trialEnd) : new Date();
+      const newTrialEnd = new Date(baseDate.getTime() + dto.days * 24 * 60 * 60 * 1000);
+
+      const updated = await this.databaseService.subscription.update({
+        where: { id: subscription.id },
+        data: { trialEnd: newTrialEnd },
+      });
+
+      await this.databaseService.auditLog.create({
+        data: {
+          action: 'TRIAL_EXTENDED',
+          entityType: 'Subscription',
+          entityId: subscription.id,
+          entityUid: subscription.uid,
+          userId: adminUserId,
+          metadata: {
+            previousTrialEnd: previousTrialEnd ? previousTrialEnd.toISOString() : null,
+            newTrialEnd: newTrialEnd.toISOString(),
+            daysAdded: dto.days,
+            note: dto.note ?? null,
+          },
+        },
+      });
+
+      return {
+        uid: updated.uid,
+        plan: updated.plan,
+        status: updated.status,
+        trialEnd: updated.trialEnd,
+        currentPeriodStart: updated.currentPeriodStart,
+        currentPeriodEnd: updated.currentPeriodEnd,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to extend trial: ${error.message}`);
+    }
+  }
+
+  async getSubscriptionAuditLog(companyUid: string): Promise<SubscriptionAuditLogItemDto[]> {
+    try {
+      const subscription = await this.findSubscriptionByCompanyUid(companyUid);
+
+      const logs = await this.databaseService.auditLog.findMany({
+        where: {
+          entityType: 'Subscription',
+          entityUid: subscription.uid,
+        },
+        orderBy: { timestamp: 'desc' },
+        include: {
+          user: {
+            select: { name: true },
+          },
+        },
+      });
+
+      return logs.map((log) => ({
+        uid: log.uid,
+        action: log.action,
+        timestamp: log.timestamp,
+        metadata: log.metadata as Record<string, unknown> | null,
+        adminName: log.user.name,
+      }));
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to get audit log: ${error.message}`);
+    }
   }
 
   // ─── Company Health Monitor ──────────────────────────────────────────────────

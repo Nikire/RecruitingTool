@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import {
   AdminStatsResponseDto,
@@ -9,6 +9,11 @@ import {
   QuotaOverviewResponseDto,
   CompanyHealthResponseDto,
   TrialOverviewResponseDto,
+  ChangePlanDto,
+  ChangeStatusDto,
+  ExtendTrialDto,
+  SubscriptionAuditLogItemDto,
+  UpdatedSubscriptionDto,
 } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
@@ -154,5 +159,47 @@ export class AdminController {
     @Query('plan') plan?: string,
   ): Promise<TrialOverviewResponseDto> {
     return this.adminService.getTrialOverview(page ? parseInt(page, 10) : 1, limit ? parseInt(limit, 10) : 20, readiness || undefined, plan || undefined);
+  }
+
+  // ─── Subscription Lifecycle Manager ─────────────────────────────────────────
+
+  @Patch('subscriptions/:companyUid/plan')
+  @ApiOperation({
+    summary: 'Change subscription plan for a company - ADMIN role required',
+    description: 'Updates the subscription plan and writes an audit log entry',
+  })
+  @ApiResponse({ status: 200, description: 'Plan updated', type: UpdatedSubscriptionDto })
+  changePlan(@Param('companyUid') companyUid: string, @Body() dto: ChangePlanDto, @Request() req: { user: { id: number } }): Promise<UpdatedSubscriptionDto> {
+    return this.adminService.changePlan(companyUid, dto, req.user.id);
+  }
+
+  @Patch('subscriptions/:companyUid/status')
+  @ApiOperation({
+    summary: 'Change subscription status for a company - ADMIN role required',
+    description: 'Updates the subscription status and writes an audit log entry',
+  })
+  @ApiResponse({ status: 200, description: 'Status updated', type: UpdatedSubscriptionDto })
+  changeStatus(@Param('companyUid') companyUid: string, @Body() dto: ChangeStatusDto, @Request() req: { user: { id: number } }): Promise<UpdatedSubscriptionDto> {
+    return this.adminService.changeStatus(companyUid, dto, req.user.id);
+  }
+
+  @Post('subscriptions/:companyUid/extend-trial')
+  @ApiOperation({
+    summary: 'Extend trial period for a company - ADMIN role required',
+    description: 'Extends the subscription trial end date by the specified number of days and writes an audit log entry',
+  })
+  @ApiResponse({ status: 201, description: 'Trial extended', type: UpdatedSubscriptionDto })
+  extendTrial(@Param('companyUid') companyUid: string, @Body() dto: ExtendTrialDto, @Request() req: { user: { id: number } }): Promise<UpdatedSubscriptionDto> {
+    return this.adminService.extendTrial(companyUid, dto, req.user.id);
+  }
+
+  @Get('subscriptions/:companyUid/audit-log')
+  @ApiOperation({
+    summary: 'Get subscription audit log for a company - ADMIN role required',
+    description: 'Returns all subscription lifecycle audit log entries for the specified company, ordered by timestamp desc',
+  })
+  @ApiResponse({ status: 200, description: 'Returns audit log entries', type: [SubscriptionAuditLogItemDto] })
+  getSubscriptionAuditLog(@Param('companyUid') companyUid: string): Promise<SubscriptionAuditLogItemDto[]> {
+    return this.adminService.getSubscriptionAuditLog(companyUid);
   }
 }
