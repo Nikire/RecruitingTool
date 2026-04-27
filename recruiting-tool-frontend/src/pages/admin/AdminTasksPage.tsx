@@ -20,7 +20,9 @@ import {
   Tooltip,
   Typography,
   Avatar,
+  useTheme,
 } from "@mui/material";
+import { alpha } from "@mui/material/styles";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -105,28 +107,18 @@ function priorityColor(p: AdminTaskPriority): PriorityColor {
 
 const COLUMN_META: Record<
   AdminTaskStatus,
-  { labelKey: string; color: string; bgColor: string }
+  { labelKey: string; colorKey: string }
 > = {
-  TODO: {
-    labelKey: "admin_tasks.col_todo",
-    color: "text.secondary",
-    bgColor: "grey.200",
-  },
+  TODO: { labelKey: "admin_tasks.col_todo", colorKey: "text.secondary" },
   IN_PROGRESS: {
     labelKey: "admin_tasks.col_in_progress",
-    color: "#1976d2",
-    bgColor: "#e3f2fd",
+    colorKey: "info.main",
   },
   IN_REVIEW: {
     labelKey: "admin_tasks.col_in_review",
-    color: "#ed6c02",
-    bgColor: "#fff3e0",
+    colorKey: "warning.main",
   },
-  DONE: {
-    labelKey: "admin_tasks.col_done",
-    color: "#2e7d32",
-    bgColor: "#e8f5e9",
-  },
+  DONE: { labelKey: "admin_tasks.col_done", colorKey: "success.main" },
 };
 
 interface TaskFormState {
@@ -591,6 +583,7 @@ const TaskCard: React.FC<TaskCardProps> = ({
 
 const AdminTasksPage: React.FC = () => {
   const { t } = useTranslation();
+  const theme = useTheme();
   const { data: tasks = [], isLoading } = useAdminTasks();
   const { data: users = [] } = useAdminUsers();
   const { data: companies = [] } = useAllCompanies();
@@ -744,6 +737,14 @@ const AdminTasksPage: React.FC = () => {
           {STATUSES.map((status) => {
             const meta = COLUMN_META[status];
             const colTasks = byStatus[status];
+            const resolvedColor =
+              meta.colorKey === "text.secondary"
+                ? theme.palette.text.secondary
+                : meta.colorKey === "info.main"
+                  ? theme.palette.info.main
+                  : meta.colorKey === "warning.main"
+                    ? theme.palette.warning.main
+                    : theme.palette.success.main;
             return (
               <Box key={status}>
                 <Paper
@@ -758,9 +759,9 @@ const AdminTasksPage: React.FC = () => {
                     sx={{
                       px: 2,
                       py: 1.25,
-                      backgroundColor: meta.bgColor,
+                      backgroundColor: alpha(resolvedColor, 0.1),
                       borderLeft: `4px solid`,
-                      borderLeftColor: meta.color,
+                      borderLeftColor: resolvedColor,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "space-between",
@@ -769,7 +770,7 @@ const AdminTasksPage: React.FC = () => {
                     <Typography
                       variant="subtitle2"
                       fontWeight={700}
-                      sx={{ color: meta.color }}
+                      sx={{ color: meta.colorKey }}
                     >
                       {t(meta.labelKey)}
                     </Typography>
@@ -778,8 +779,8 @@ const AdminTasksPage: React.FC = () => {
                       size="small"
                       variant="filled"
                       sx={{
-                        bgcolor: meta.color,
-                        color: "white",
+                        bgcolor: alpha(resolvedColor, 0.2),
+                        color: meta.colorKey,
                         fontWeight: 700,
                         minWidth: 24,
                         height: 20,
