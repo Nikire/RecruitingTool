@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SubscriptionPlan } from '@prisma/client';
-import { ReleaseNoteUserItemDto, UnreadReleaseNotesResponseDto, MarkSeenResponseDto } from './dto/release-note.dto';
+import { UnreadReleaseNotesResponseDto, MarkSeenResponseDto } from './dto/release-note.dto';
 
 @Injectable()
 export class ReleaseNotesService {

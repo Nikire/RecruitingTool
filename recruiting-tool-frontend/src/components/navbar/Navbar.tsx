@@ -205,18 +205,16 @@ const Navbar: React.FC = () => {
                   {t("navbar.careers")}
                 </Button>
 
-                {/* Contact (for unauthenticated users) */}
-                {!isAuthenticated && (
-                  <Button
-                    color="inherit"
-                    component={NavLink}
-                    to="/contact"
-                    sx={linkSx}
-                    aria-label={t("navbar.contact")}
-                  >
-                    {t("navbar.contact")}
-                  </Button>
-                )}
+                {/* Contact */}
+                <Button
+                  color="inherit"
+                  component={NavLink}
+                  to="/contact"
+                  sx={linkSx}
+                  aria-label={t("navbar.contact")}
+                >
+                  {t("navbar.contact")}
+                </Button>
 
                 {/* HR Panel (for HR users) */}
                 {isAuthenticated && canManageResources(logedUser) && (
