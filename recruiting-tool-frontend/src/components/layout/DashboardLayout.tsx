@@ -307,14 +307,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             component={NavLink}
             to="/profile"
             onClick={() => setMobileOpen(false)}
-            aria-label={translate ? t("common.my_profile") : "My Profile"}
+            aria-label={t("common.my_profile")}
           >
             <ListItemIcon>
               <PersonIcon />
             </ListItemIcon>
-            <ListItemText
-              primary={translate ? t("common.my_profile") : "My Profile"}
-            />
+            <ListItemText primary={t("common.my_profile")} />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -323,14 +321,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               setMobileOpen(false);
               toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
             }}
-            aria-label={translate ? t("common.subscription") : "Subscription"}
+            aria-label={t("common.subscription")}
           >
             <ListItemIcon>
               <SubscriptionsIcon />
             </ListItemIcon>
-            <ListItemText
-              primary={translate ? t("common.subscription") : "Subscription"}
-            />
+            <ListItemText primary={t("common.subscription")} />
           </ListItemButton>
         </ListItem>
         <ListItem disablePadding>
@@ -339,18 +335,12 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               setMobileOpen(false);
               navigate("/careers");
             }}
-            aria-label={
-              translate ? t("common.back_to_careers") : "Back to Careers"
-            }
+            aria-label={t("common.back_to_careers")}
           >
             <ListItemIcon>
               <ArrowBackIcon />
             </ListItemIcon>
-            <ListItemText
-              primary={
-                translate ? t("common.back_to_careers") : "Back to Careers"
-              }
-            />
+            <ListItemText primary={t("common.back_to_careers")} />
           </ListItemButton>
         </ListItem>
       </List>
