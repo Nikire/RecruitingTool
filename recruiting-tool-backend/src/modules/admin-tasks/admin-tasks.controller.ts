@@ -1,8 +1,9 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AdminTasksService } from './admin-tasks.service';
 import { CreateAdminTaskDto, UpdateAdminTaskDto, AdminTaskResponseDto } from './dto/admin-task.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
+import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
 
 @ApiTags('admin-tasks')
@@ -22,8 +23,8 @@ export class AdminTasksController {
   @Post()
   @ApiOperation({ summary: 'Create an admin task - ADMIN role required' })
   @ApiResponse({ status: 201, description: 'Task created', type: AdminTaskResponseDto })
-  create(@Body() dto: CreateAdminTaskDto, @Request() req: { user: { id: number } }): Promise<AdminTaskResponseDto> {
-    return this.adminTasksService.create(dto, req.user.id);
+  create(@Body() dto: CreateAdminTaskDto, @CurrentUser('id') userId: number): Promise<AdminTaskResponseDto> {
+    return this.adminTasksService.create(dto, userId);
   }
 
   @Patch(':uid')
