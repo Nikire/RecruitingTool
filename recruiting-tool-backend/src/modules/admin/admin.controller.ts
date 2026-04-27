@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Request } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Put, Query, Request } from '@nestjs/common';
 import { AdminService } from './admin.service';
 import {
   AdminStatsResponseDto,
@@ -25,6 +25,8 @@ import {
   UpdateReleaseNoteDto,
   ReleaseNoteAdminItemDto,
   ReleaseNoteListResponseDto,
+  OutreachTemplateOverrideDto,
+  UpsertOutreachTemplateDto,
 } from './dto/admin-stats.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
@@ -325,5 +327,29 @@ export class AdminController {
   @ApiResponse({ status: 200, description: 'Release note deleted' })
   deleteReleaseNote(@Param('uid') uid: string): Promise<void> {
     return this.adminService.deleteReleaseNote(uid);
+  }
+
+  // ─── Outreach Template Overrides ─────────────────────────────────────────────
+
+  @Get('outreach-templates')
+  @ApiOperation({ summary: 'Get all outreach template overrides - ADMIN role required' })
+  @ApiResponse({ status: 200, description: 'Returns all overrides', type: [OutreachTemplateOverrideDto] })
+  getOutreachTemplateOverrides(): Promise<OutreachTemplateOverrideDto[]> {
+    return this.adminService.getOutreachTemplateOverrides();
+  }
+
+  @Put('outreach-templates')
+  @ApiOperation({ summary: 'Upsert an outreach template override - ADMIN role required' })
+  @ApiResponse({ status: 200, description: 'Override saved', type: OutreachTemplateOverrideDto })
+  upsertOutreachTemplateOverride(@Body() dto: UpsertOutreachTemplateDto): Promise<OutreachTemplateOverrideDto> {
+    return this.adminService.upsertOutreachTemplateOverride(dto);
+  }
+
+  @Delete('outreach-templates/:templateId/:lang/:variantIndex')
+  @HttpCode(204)
+  @ApiOperation({ summary: 'Reset outreach template to default - ADMIN role required' })
+  @ApiResponse({ status: 204, description: 'Override deleted' })
+  deleteOutreachTemplateOverride(@Param('templateId') templateId: string, @Param('lang') lang: string, @Param('variantIndex') variantIndex: string): Promise<void> {
+    return this.adminService.deleteOutreachTemplateOverride(Number(templateId), lang, Number(variantIndex));
   }
 }

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsInt, IsOptional, IsString, Min, IsNotEmpty } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, IsString, Min, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class UsersByRoleDto {
   @ApiProperty({ description: 'The role name', example: 'USER' })
@@ -781,4 +781,46 @@ export class ReleaseNoteListResponseDto {
 
   @ApiProperty({ description: 'Items per page' })
   limit: number;
+}
+
+// ─── Outreach Template Overrides DTOs ─────────────────────────────────────────
+
+export class OutreachTemplateOverrideDto {
+  @ApiProperty({ description: 'Template ID (1-9)' })
+  templateId: number;
+
+  @ApiProperty({ description: 'Language code: es or en' })
+  lang: string;
+
+  @ApiProperty({ description: 'Variant index (0-based)' })
+  variantIndex: number;
+
+  @ApiProperty({ description: 'Email subject override', required: false })
+  subject?: string;
+
+  @ApiProperty({ description: 'Message body override' })
+  body: string;
+}
+
+export class UpsertOutreachTemplateDto {
+  @ApiProperty({ description: 'Template ID (1-9)' })
+  @IsNumber()
+  templateId: number;
+
+  @ApiProperty({ description: 'Language code: es or en' })
+  @IsString()
+  lang: string;
+
+  @ApiProperty({ description: 'Variant index (0-based)' })
+  @IsNumber()
+  variantIndex: number;
+
+  @ApiProperty({ description: 'Email subject override', required: false })
+  @IsOptional()
+  @IsString()
+  subject?: string;
+
+  @ApiProperty({ description: 'Message body override' })
+  @IsString()
+  body: string;
 }

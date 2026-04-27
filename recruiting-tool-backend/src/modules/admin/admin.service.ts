@@ -44,6 +44,8 @@ import {
   UpdateReleaseNoteDto,
   ReleaseNoteAdminItemDto,
   ReleaseNoteListResponseDto,
+  OutreachTemplateOverrideDto,
+  UpsertOutreachTemplateDto,
 } from './dto/admin-stats.dto';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { DemoOutcome, QuotaType, SubscriptionPlan } from '@prisma/client';
@@ -1457,6 +1459,55 @@ export class AdminService {
     } catch (error) {
       if (error instanceof HttpException) throw error;
       throw new InternalServerErrorException(`Failed to delete release note: ${error.message}`);
+    }
+  }
+
+  // ─── Outreach Template Overrides ─────────────────────────────────────────────
+
+  async getOutreachTemplateOverrides(): Promise<OutreachTemplateOverrideDto[]> {
+    try {
+      const overrides = await this.databaseService.outreachTemplateOverride.findMany();
+      return overrides.map((o) => ({
+        templateId: o.templateId,
+        lang: o.lang,
+        variantIndex: o.variantIndex,
+        subject: o.subject ?? undefined,
+        body: o.body,
+      }));
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to get outreach template overrides: ${error.message}`);
+    }
+  }
+
+  async upsertOutreachTemplateOverride(dto: UpsertOutreachTemplateDto): Promise<OutreachTemplateOverrideDto> {
+    try {
+      const override = await this.databaseService.outreachTemplateOverride.upsert({
+        where: { templateId_lang_variantIndex: { templateId: dto.templateId, lang: dto.lang, variantIndex: dto.variantIndex } },
+        create: { templateId: dto.templateId, lang: dto.lang, variantIndex: dto.variantIndex, subject: dto.subject, body: dto.body },
+        update: { subject: dto.subject, body: dto.body },
+      });
+      return {
+        templateId: override.templateId,
+        lang: override.lang,
+        variantIndex: override.variantIndex,
+        subject: override.subject ?? undefined,
+        body: override.body,
+      };
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to upsert outreach template override: ${error.message}`);
+    }
+  }
+
+  async deleteOutreachTemplateOverride(templateId: number, lang: string, variantIndex: number): Promise<void> {
+    try {
+      await this.databaseService.outreachTemplateOverride.deleteMany({
+        where: { templateId, lang, variantIndex },
+      });
+    } catch (error) {
+      if (error instanceof HttpException) throw error;
+      throw new InternalServerErrorException(`Failed to delete outreach template override: ${error.message}`);
     }
   }
 }

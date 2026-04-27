@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Button,
@@ -37,6 +37,11 @@ import SearchIcon from "@mui/icons-material/Search";
 import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { useTranslation } from "react-i18next";
+import {
+  useOutreachTemplateOverrides,
+  useUpsertOutreachTemplateOverride,
+  useDeleteOutreachTemplateOverride,
+} from "../../api/adminOutreachTemplates";
 
 interface TemplateVariant {
   label: string;
@@ -539,6 +544,8 @@ interface EditDialogProps {
   onClose: () => void;
   onSave: (subject: string, body: string) => void;
   onReset: () => void;
+  isSaving?: boolean;
+  isResetting?: boolean;
 }
 
 const EditTemplateDialog: React.FC<EditDialogProps> = ({
@@ -546,10 +553,13 @@ const EditTemplateDialog: React.FC<EditDialogProps> = ({
   onClose,
   onSave,
   onReset,
+  isSaving,
+  isResetting,
 }) => {
   const { t } = useTranslation();
   const [subject, setSubject] = useState(state.subject);
   const [body, setBody] = useState(state.body);
+  const isLoading = isSaving || isResetting;
 
   return (
     <Dialog open={state.open} onClose={onClose} maxWidth="md" fullWidth>
@@ -563,6 +573,7 @@ const EditTemplateDialog: React.FC<EditDialogProps> = ({
               onChange={(e) => setSubject(e.target.value)}
               fullWidth
               size="small"
+              disabled={isLoading}
             />
           )}
           <TextField
@@ -574,16 +585,28 @@ const EditTemplateDialog: React.FC<EditDialogProps> = ({
             fullWidth
             multiline
             rows={10}
+            disabled={isLoading}
           />
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
-        <Button variant="outlined" color="warning" onClick={onReset}>
+        <Button
+          variant="outlined"
+          color="warning"
+          onClick={onReset}
+          disabled={isLoading}
+        >
           {t("outreach.reset_to_default")}
         </Button>
         <Stack direction="row" spacing={1}>
-          <Button onClick={onClose}>{t("common.cancel")}</Button>
-          <Button variant="contained" onClick={() => onSave(subject, body)}>
+          <Button onClick={onClose} disabled={isLoading}>
+            {t("common.cancel")}
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => onSave(subject, body)}
+            disabled={isLoading}
+          >
             {t("common.save")}
           </Button>
         </Stack>
@@ -603,18 +626,23 @@ const OutreachTemplatesPage: React.FC = () => {
     Object.fromEntries(VARIABLES.map((v) => [v.key, v.defaultVal])),
   );
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
-  const [editedTemplates, setEditedTemplates] = useState<
-    Record<string, { subject?: string; body: string }>
-  >(() => {
-    try {
-      const stored = localStorage.getItem("outreach_templates_edits");
-      return stored ? JSON.parse(stored) : {};
-    } catch {
-      return {};
-    }
-  });
   const [editDialogState, setEditDialogState] =
     useState<EditDialogState | null>(null);
+
+  const { data: overridesData } = useOutreachTemplateOverrides();
+  const upsertMutation = useUpsertOutreachTemplateOverride();
+  const deleteMutation = useDeleteOutreachTemplateOverride();
+
+  const editedTemplates = useMemo(() => {
+    const map: Record<string, { subject?: string; body: string }> = {};
+    (overridesData ?? []).forEach((o) => {
+      map[`${o.templateId}-${o.lang}-${o.variantIndex}`] = {
+        subject: o.subject,
+        body: o.body,
+      };
+    });
+    return map;
+  }, [overridesData]);
 
   const template = TEMPLATES.find((t) => t.id === selectedId)!;
   const variants = lang === "es" ? template.es : template.en;
@@ -630,26 +658,29 @@ const OutreachTemplatesPage: React.FC = () => {
     });
   };
 
-  const handleSaveEdit = (subject: string, body: string) => {
+  const handleSaveEdit = async (subject: string, body: string) => {
     if (!editDialogState) return;
-    const updated = {
-      ...editedTemplates,
-      [editDialogState.key]: {
-        ...(editDialogState.hasSubject ? { subject } : {}),
-        body,
-      },
-    };
-    setEditedTemplates(updated);
-    localStorage.setItem("outreach_templates_edits", JSON.stringify(updated));
+    const [templateIdStr, langStr, variantIndexStr] =
+      editDialogState.key.split("-");
+    await upsertMutation.mutateAsync({
+      templateId: Number(templateIdStr),
+      lang: langStr,
+      variantIndex: Number(variantIndexStr),
+      subject: editDialogState.hasSubject ? subject : undefined,
+      body,
+    });
     setEditDialogState(null);
   };
 
-  const handleResetEdit = () => {
+  const handleResetEdit = async () => {
     if (!editDialogState) return;
-    const updated = { ...editedTemplates };
-    delete updated[editDialogState.key];
-    setEditedTemplates(updated);
-    localStorage.setItem("outreach_templates_edits", JSON.stringify(updated));
+    const [templateIdStr, langStr, variantIndexStr] =
+      editDialogState.key.split("-");
+    await deleteMutation.mutateAsync({
+      templateId: Number(templateIdStr),
+      lang: langStr,
+      variantIndex: Number(variantIndexStr),
+    });
     setEditDialogState(null);
   };
 
@@ -1193,6 +1224,8 @@ const OutreachTemplatesPage: React.FC = () => {
           onClose={() => setEditDialogState(null)}
           onSave={handleSaveEdit}
           onReset={handleResetEdit}
+          isSaving={upsertMutation.isPending}
+          isResetting={deleteMutation.isPending}
         />
       )}
     </Box>

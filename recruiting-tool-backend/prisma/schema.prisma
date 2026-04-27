@@ -1645,3 +1645,19 @@ model SeenReleaseNote {
   @@index([userId])
   @@index([releaseNoteId])
 }
+
+model OutreachTemplateOverride {
+  id           Int      @id @default(autoincrement())
+  uid          String   @unique @default(cuid())
+  templateId   Int
+  lang         String
+  variantIndex Int
+  subject      String?
+  body         String   @db.Text
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([templateId, lang, variantIndex])
+  @@index([uid])
+  @@index([templateId])
+}
