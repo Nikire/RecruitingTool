@@ -4,6 +4,10 @@ import {
   Button,
   Chip,
   Collapse,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
   Divider,
   Grid,
   IconButton,
@@ -22,6 +26,7 @@ import {
 } from "@mui/material";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
+import EditIcon from "@mui/icons-material/Edit";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
@@ -521,6 +526,72 @@ function applyVars(text: string, vars: Record<string, string>): string {
   return text.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] || `{{${key}}}`);
 }
 
+interface EditDialogState {
+  open: boolean;
+  key: string;
+  hasSubject: boolean;
+  subject: string;
+  body: string;
+}
+
+interface EditDialogProps {
+  state: EditDialogState;
+  onClose: () => void;
+  onSave: (subject: string, body: string) => void;
+  onReset: () => void;
+}
+
+const EditTemplateDialog: React.FC<EditDialogProps> = ({
+  state,
+  onClose,
+  onSave,
+  onReset,
+}) => {
+  const { t } = useTranslation();
+  const [subject, setSubject] = useState(state.subject);
+  const [body, setBody] = useState(state.body);
+
+  return (
+    <Dialog open={state.open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>{t("outreach.edit_template")}</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ mt: 1 }}>
+          {state.hasSubject && (
+            <TextField
+              label={t("outreach.subject")}
+              value={subject}
+              onChange={(e) => setSubject(e.target.value)}
+              fullWidth
+              size="small"
+            />
+          )}
+          <TextField
+            label={
+              state.hasSubject ? t("outreach.body") : t("outreach.message")
+            }
+            value={body}
+            onChange={(e) => setBody(e.target.value)}
+            fullWidth
+            multiline
+            rows={10}
+          />
+        </Stack>
+      </DialogContent>
+      <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
+        <Button variant="outlined" color="warning" onClick={onReset}>
+          {t("outreach.reset_to_default")}
+        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button onClick={onClose}>{t("common.cancel")}</Button>
+          <Button variant="contained" onClick={() => onSave(subject, body)}>
+            {t("common.save")}
+          </Button>
+        </Stack>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 const OutreachTemplatesPage: React.FC = () => {
   const { t } = useTranslation();
 
@@ -532,6 +603,18 @@ const OutreachTemplatesPage: React.FC = () => {
     Object.fromEntries(VARIABLES.map((v) => [v.key, v.defaultVal])),
   );
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [editedTemplates, setEditedTemplates] = useState<
+    Record<string, { subject?: string; body: string }>
+  >(() => {
+    try {
+      const stored = localStorage.getItem("outreach_templates_edits");
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+  const [editDialogState, setEditDialogState] =
+    useState<EditDialogState | null>(null);
 
   const template = TEMPLATES.find((t) => t.id === selectedId)!;
   const variants = lang === "es" ? template.es : template.en;
@@ -545,6 +628,29 @@ const OutreachTemplatesPage: React.FC = () => {
       setCopiedKey(key);
       setTimeout(() => setCopiedKey(null), 2000);
     });
+  };
+
+  const handleSaveEdit = (subject: string, body: string) => {
+    if (!editDialogState) return;
+    const updated = {
+      ...editedTemplates,
+      [editDialogState.key]: {
+        ...(editDialogState.hasSubject ? { subject } : {}),
+        body,
+      },
+    };
+    setEditedTemplates(updated);
+    localStorage.setItem("outreach_templates_edits", JSON.stringify(updated));
+    setEditDialogState(null);
+  };
+
+  const handleResetEdit = () => {
+    if (!editDialogState) return;
+    const updated = { ...editedTemplates };
+    delete updated[editDialogState.key];
+    setEditedTemplates(updated);
+    localStorage.setItem("outreach_templates_edits", JSON.stringify(updated));
+    setEditDialogState(null);
   };
 
   return (
@@ -753,24 +859,44 @@ const OutreachTemplatesPage: React.FC = () => {
                 <Box sx={{ p: 2 }}>
                   <Stack spacing={3}>
                     {variants.map((variant, idx) => {
+                      const variantKey = `${selectedId}-${lang}-${idx}`;
                       const subjectKey = `subject-${selectedId}-${lang}-${idx}`;
                       const bodyKey = `body-${selectedId}-${lang}-${idx}`;
-                      const resolvedSubject = variant.subject
-                        ? applyVars(variant.subject, varValues)
+                      const edited = editedTemplates[variantKey];
+                      const isModified = !!edited;
+                      const effectiveSubject =
+                        edited?.subject ?? variant.subject;
+                      const effectiveBody = edited?.body ?? variant.body;
+                      const resolvedSubject = effectiveSubject
+                        ? applyVars(effectiveSubject, varValues)
                         : null;
-                      const resolvedBody = applyVars(variant.body, varValues);
+                      const resolvedBody = applyVars(effectiveBody, varValues);
 
                       return (
                         <Box key={idx}>
                           {variants.length > 1 && (
-                            <Typography
-                              variant="caption"
-                              fontWeight={600}
-                              color="text.secondary"
-                              sx={{ mb: 1, display: "block" }}
+                            <Stack
+                              direction="row"
+                              spacing={1}
+                              alignItems="center"
+                              sx={{ mb: 1 }}
                             >
-                              {variant.label}
-                            </Typography>
+                              <Typography
+                                variant="caption"
+                                fontWeight={600}
+                                color="text.secondary"
+                              >
+                                {variant.label}
+                              </Typography>
+                              {isModified && (
+                                <Chip
+                                  label={t("outreach.modified_badge")}
+                                  size="small"
+                                  color="warning"
+                                  variant="outlined"
+                                />
+                              )}
+                            </Stack>
                           )}
 
                           {/* Subject line */}
@@ -841,40 +967,78 @@ const OutreachTemplatesPage: React.FC = () => {
                                 mb: 0.5,
                               }}
                             >
-                              <Typography
-                                variant="caption"
-                                color="text.secondary"
-                                fontWeight={600}
+                              <Stack
+                                direction="row"
+                                spacing={1}
+                                alignItems="center"
                               >
-                                {variant.subject
-                                  ? t("outreach.body")
-                                  : t("outreach.message")}
-                              </Typography>
-                              <Button
-                                size="small"
-                                variant={
-                                  copiedKey === bodyKey
-                                    ? "contained"
-                                    : "outlined"
-                                }
-                                color={
-                                  copiedKey === bodyKey ? "success" : "primary"
-                                }
-                                startIcon={
-                                  copiedKey === bodyKey ? (
-                                    <CheckIcon fontSize="small" />
-                                  ) : (
-                                    <ContentCopyIcon fontSize="small" />
-                                  )
-                                }
-                                onClick={() =>
-                                  handleCopy(resolvedBody, bodyKey)
-                                }
+                                <Typography
+                                  variant="caption"
+                                  color="text.secondary"
+                                  fontWeight={600}
+                                >
+                                  {variant.subject
+                                    ? t("outreach.body")
+                                    : t("outreach.message")}
+                                </Typography>
+                                {isModified && variants.length === 1 && (
+                                  <Chip
+                                    label={t("outreach.modified_badge")}
+                                    size="small"
+                                    color="warning"
+                                    variant="outlined"
+                                  />
+                                )}
+                              </Stack>
+                              <Stack
+                                direction="row"
+                                spacing={0.5}
+                                alignItems="center"
                               >
-                                {copiedKey === bodyKey
-                                  ? t("outreach.copied")
-                                  : t("outreach.copy")}
-                              </Button>
+                                <Tooltip title={t("outreach.edit_body")}>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() =>
+                                      setEditDialogState({
+                                        open: true,
+                                        key: variantKey,
+                                        hasSubject: !!variant.subject,
+                                        subject: effectiveSubject ?? "",
+                                        body: effectiveBody,
+                                      })
+                                    }
+                                  >
+                                    <EditIcon fontSize="small" />
+                                  </IconButton>
+                                </Tooltip>
+                                <Button
+                                  size="small"
+                                  variant={
+                                    copiedKey === bodyKey
+                                      ? "contained"
+                                      : "outlined"
+                                  }
+                                  color={
+                                    copiedKey === bodyKey
+                                      ? "success"
+                                      : "primary"
+                                  }
+                                  startIcon={
+                                    copiedKey === bodyKey ? (
+                                      <CheckIcon fontSize="small" />
+                                    ) : (
+                                      <ContentCopyIcon fontSize="small" />
+                                    )
+                                  }
+                                  onClick={() =>
+                                    handleCopy(resolvedBody, bodyKey)
+                                  }
+                                >
+                                  {copiedKey === bodyKey
+                                    ? t("outreach.copied")
+                                    : t("outreach.copy")}
+                                </Button>
+                              </Stack>
                             </Box>
                             <Paper
                               variant="outlined"
@@ -1021,6 +1185,15 @@ const OutreachTemplatesPage: React.FC = () => {
             </Stack>
           </Paper>
         </Box>
+      )}
+
+      {editDialogState && (
+        <EditTemplateDialog
+          state={editDialogState}
+          onClose={() => setEditDialogState(null)}
+          onSave={handleSaveEdit}
+          onReset={handleResetEdit}
+        />
       )}
     </Box>
   );

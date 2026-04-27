@@ -4390,7 +4390,11 @@
     "workflow_step_2": "Find the CEO or Head of Talent for each company on LinkedIn. Save profile + URL.",
     "workflow_step_3": "Send a LinkedIn connection request using Template #1 (see 'Message Templates' tab).",
     "workflow_step_4": "48h after they connect: send the post-connect message (Template #2). If you have an email, send the cold email in parallel (Template #3).",
-    "workflow_step_5": "Follow up with Template #4 at day 5 and Template #5 at day 12 if no reply. Track status in a spreadsheet or CRM."
+    "workflow_step_5": "Follow up with Template #4 at day 5 and Template #5 at day 12 if no reply. Track status in a spreadsheet or CRM.",
+    "edit_template": "Edit Template",
+    "modified_badge": "Modified",
+    "reset_to_default": "Reset to default",
+    "edit_body": "Edit"
   },
   "outreach_crm": {
     "title": "Prospect CRM",

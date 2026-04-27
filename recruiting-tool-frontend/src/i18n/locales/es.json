@@ -4398,7 +4398,11 @@
     "workflow_step_2": "Buscar en LinkedIn el CEO o Head of Talent de cada empresa. Guardar perfil + URL.",
     "workflow_step_3": "Enviar solicitud de conexión en LinkedIn usando la Plantilla #1 (Tab 'Plantillas').",
     "workflow_step_4": "48h después de aceptar: enviar mensaje post-conexión (Plantilla #2). Si hay email, enviar Email Frío en paralelo (Plantilla #3).",
-    "workflow_step_5": "Hacer seguimiento con Plantilla #4 a los 5 días y Plantilla #5 a los 12 días si no hay respuesta. Registrar estado en una planilla o CRM."
+    "workflow_step_5": "Hacer seguimiento con Plantilla #4 a los 5 días y Plantilla #5 a los 12 días si no hay respuesta. Registrar estado en una planilla o CRM.",
+    "edit_template": "Editar plantilla",
+    "modified_badge": "Modificada",
+    "reset_to_default": "Restablecer",
+    "edit_body": "Editar"
   },
   "outreach_crm": {
     "title": "CRM de Prospectos",
