@@ -55,6 +55,7 @@ import { AsyncStageModule } from './modules/async-stage/async-stage.module';
 import { DummyModule } from './modules/dummy/dummy.module';
 import { ProspectTrackingModule } from './modules/prospect-tracking/prospect-tracking.module';
 import { ReleaseNotesModule } from './modules/release-notes/release-notes.module';
+import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
 
 @Module({
   imports: [
@@ -121,6 +122,7 @@ import { ReleaseNotesModule } from './modules/release-notes/release-notes.module
     AsyncStageModule,
     ProspectTrackingModule,
     ReleaseNotesModule,
+    AdminTasksModule,
   ],
   controllers: [AppController],
   providers: [

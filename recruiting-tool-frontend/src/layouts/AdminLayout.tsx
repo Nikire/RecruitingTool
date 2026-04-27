@@ -26,6 +26,7 @@ import BuildIcon from "@mui/icons-material/Build";
 import EventIcon from "@mui/icons-material/Event";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -173,6 +174,12 @@ const AdminLayout: React.FC = () => {
           text: t("admin_layout.changelog"),
           icon: <NewReleasesIcon />,
           path: "/admin/changelog",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.task_tracker"),
+          icon: <AssignmentIcon />,
+          path: "/admin/tasks",
           requiresSuperAdmin: false,
         },
       ],

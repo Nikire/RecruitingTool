@@ -1736,7 +1736,8 @@
     "group_operations": "Operaciones",
     "demo_bookings": "Demos Agendadas",
     "email_deliverability": "Salud del Email",
-    "changelog": "Changelog"
+    "changelog": "Changelog",
+    "task_tracker": "Gestor de Tareas"
   },
   "language": {
     "select_language": "Seleccionar Idioma",
@@ -4635,5 +4636,42 @@
   "admin_dashboard_changelog": {
     "changelog": "Changelog",
     "changelog_desc": "Escribir y publicar notas de lanzamiento mostradas a los usuarios clientes al iniciar sesión"
+  },
+  "admin_tasks": {
+    "title": "Gestor de Tareas",
+    "subtitle": "Rastrea y gestiona tareas internas del equipo",
+    "description": "Crea, asigna y rastrea tareas en tu equipo. Usa el tablero Kanban para visualizar el progreso del flujo de trabajo.",
+    "add_task": "Agregar Tarea",
+    "edit_task": "Editar Tarea",
+    "delete_task": "Eliminar Tarea",
+    "confirm_delete": "¿Estás seguro de que deseas eliminar esta tarea?",
+    "col_todo": "Por Hacer",
+    "col_in_progress": "En Progreso",
+    "col_in_review": "En Revisión",
+    "col_done": "Completado",
+    "priority_low": "Baja",
+    "priority_medium": "Media",
+    "priority_high": "Alta",
+    "priority_urgent": "Urgente",
+    "field_title": "Título",
+    "field_description": "Descripción",
+    "field_status": "Estado",
+    "field_priority": "Prioridad",
+    "field_due_date": "Fecha de Vencimiento",
+    "field_labels": "Etiquetas",
+    "field_labels_hint": "Escribe y presiona Enter para agregar",
+    "field_assignee": "Asignado a",
+    "field_company": "Empresa Vinculada",
+    "no_assignee": "Sin asignar",
+    "no_company": "Sin empresa",
+    "no_tasks": "Sin tareas",
+    "overdue": "Vencido",
+    "filter_priority": "Prioridad",
+    "filter_assignee": "Asignado a",
+    "search_placeholder": "Buscar tareas...",
+    "created_success": "Tarea creada",
+    "updated_success": "Tarea actualizada",
+    "deleted_success": "Tarea eliminada",
+    "error": "Algo salió mal"
   }
 }

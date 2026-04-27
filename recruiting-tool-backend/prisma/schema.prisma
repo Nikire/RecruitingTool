@@ -44,6 +44,7 @@ model Company {
   calendarSettings   CompanyCalendarSettings?
   demoBookings       DemoBookingToken[]       @relation("DemoBookings")
   prospectLink       ProspectCompany?
+  adminTasks         AdminTask[]              @relation("AdminTaskLinkedCompany")
 
   @@index([uid])
   @@index([name])
@@ -135,6 +136,8 @@ model User {
   prospectCompaniesCreated   ProspectCompany[]       @relation("ProspectCreatedBy")
   outreachActivitiesCreated  OutreachActivity[]      @relation("ActivityCreatedBy")
   seenReleaseNotes           SeenReleaseNote[]       @relation("UserSeenReleaseNotes")
+  assignedAdminTasks         AdminTask[]             @relation("AdminTaskAssignedTo")
+  createdAdminTasks          AdminTask[]             @relation("AdminTaskCreatedBy")
 
   @@unique([email, companyId])
   @@index([roles])
@@ -1660,4 +1663,42 @@ model OutreachTemplateOverride {
   @@unique([templateId, lang, variantIndex])
   @@index([uid])
   @@index([templateId])
+}
+
+enum AdminTaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+}
+
+enum AdminTaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model AdminTask {
+  id              Int               @id @default(autoincrement())
+  uid             String            @unique @default(cuid())
+  title           String
+  description     String?
+  status          AdminTaskStatus   @default(TODO)
+  priority        AdminTaskPriority @default(MEDIUM)
+  dueDate         DateTime?
+  labels          String[]
+  assignedToId    Int?
+  assignedTo      User?             @relation("AdminTaskAssignedTo", fields: [assignedToId], references: [id])
+  linkedCompanyId Int?
+  linkedCompany   Company?          @relation("AdminTaskLinkedCompany", fields: [linkedCompanyId], references: [id])
+  createdById     Int
+  createdBy       User              @relation("AdminTaskCreatedBy", fields: [createdById], references: [id])
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([uid])
+  @@index([status])
+  @@index([createdById])
+  @@index([assignedToId])
 }

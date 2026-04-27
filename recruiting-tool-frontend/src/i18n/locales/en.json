@@ -3987,7 +3987,8 @@
     "group_operations": "Operations",
     "demo_bookings": "Demo Bookings",
     "email_deliverability": "Email Health",
-    "changelog": "Changelog"
+    "changelog": "Changelog",
+    "task_tracker": "Task Tracker"
   },
   "admin_email_logs": {
     "title": "Email Logs",
@@ -4627,5 +4628,42 @@
   "admin_dashboard_changelog": {
     "changelog": "Changelog",
     "changelog_desc": "Write and publish release notes shown to customer users on login"
+  },
+  "admin_tasks": {
+    "title": "Task Tracker",
+    "subtitle": "Track and manage internal team tasks",
+    "description": "Create, assign, and track tasks across your team. Use the Kanban board to visualize workflow progress from To Do through to Done.",
+    "add_task": "Add Task",
+    "edit_task": "Edit Task",
+    "delete_task": "Delete Task",
+    "confirm_delete": "Are you sure you want to delete this task?",
+    "col_todo": "To Do",
+    "col_in_progress": "In Progress",
+    "col_in_review": "In Review",
+    "col_done": "Done",
+    "priority_low": "Low",
+    "priority_medium": "Medium",
+    "priority_high": "High",
+    "priority_urgent": "Urgent",
+    "field_title": "Title",
+    "field_description": "Description",
+    "field_status": "Status",
+    "field_priority": "Priority",
+    "field_due_date": "Due Date",
+    "field_labels": "Labels",
+    "field_labels_hint": "Type and press Enter to add",
+    "field_assignee": "Assignee",
+    "field_company": "Linked Company",
+    "no_assignee": "Unassigned",
+    "no_company": "No company",
+    "no_tasks": "No tasks",
+    "overdue": "Overdue",
+    "filter_priority": "Priority",
+    "filter_assignee": "Assignee",
+    "search_placeholder": "Search tasks...",
+    "created_success": "Task created",
+    "updated_success": "Task updated",
+    "deleted_success": "Task deleted",
+    "error": "Something went wrong"
   }
 }
