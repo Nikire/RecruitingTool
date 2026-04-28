@@ -1,0 +1,2 @@
+ALTER TABLE "ProspectCompany" ADD COLUMN "tags" TEXT[] NOT NULL DEFAULT ARRAY[]::TEXT[];
+ALTER TABLE "ProspectCompany" ADD COLUMN "isFeatured" BOOLEAN NOT NULL DEFAULT false;

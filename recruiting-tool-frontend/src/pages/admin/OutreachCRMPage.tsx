@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useMemo } from "react";
+import React, { useState, useCallback, useMemo, KeyboardEvent } from "react";
 import {
+  Autocomplete,
   Box,
   Button,
   Chip,
@@ -30,6 +31,8 @@ import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import TrackChangesIcon from "@mui/icons-material/TrackChanges";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
 import { useTranslation } from "react-i18next";
 import { useForm, Controller } from "react-hook-form";
 import { UnifiedStatCard } from "../../components/common";
@@ -174,6 +177,9 @@ const ProspectDialog: React.FC<ProspectDialogProps> = ({
   const updateMutation = useUpdateProspect();
   const isEdit = !!initialData;
 
+  const [tags, setTags] = useState<string[]>([]);
+  const [tagInput, setTagInput] = useState("");
+
   const {
     control,
     handleSubmit,
@@ -207,6 +213,7 @@ const ProspectDialog: React.FC<ProspectDialogProps> = ({
           status: initialData.status,
           notes: initialData.notes ?? "",
         });
+        setTags(initialData.tags ?? []);
       } else {
         reset({
           name: "",
@@ -219,9 +226,26 @@ const ProspectDialog: React.FC<ProspectDialogProps> = ({
           status: "",
           notes: "",
         });
+        setTags([]);
       }
+      setTagInput("");
     }
   }, [open, initialData, reset]);
+
+  const handleTagKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && tagInput.trim()) {
+      e.preventDefault();
+      const trimmed = tagInput.trim();
+      if (!tags.includes(trimmed)) {
+        setTags((prev) => [...prev, trimmed]);
+      }
+      setTagInput("");
+    }
+  };
+
+  const handleRemoveTag = (tag: string) => {
+    setTags((prev) => prev.filter((t) => t !== tag));
+  };
 
   const onSubmit = async (data: ProspectFormData) => {
     const dto: CreateProspectDto = {
@@ -234,6 +258,7 @@ const ProspectDialog: React.FC<ProspectDialogProps> = ({
       source: (data.source as ProspectSource) || undefined,
       status: (data.status as ProspectStatus) || undefined,
       notes: data.notes || undefined,
+      tags,
     };
 
     if (isEdit && initialData) {
@@ -417,6 +442,34 @@ const ProspectDialog: React.FC<ProspectDialogProps> = ({
                 />
               )}
             />
+
+            {/* Tags input */}
+            <Box>
+              <TextField
+                label={t("outreach_crm.field_tags")}
+                placeholder={t("outreach_crm.tag_placeholder")}
+                size="small"
+                fullWidth
+                value={tagInput}
+                onChange={(e) => setTagInput(e.target.value)}
+                onKeyDown={handleTagKeyDown}
+              />
+              {tags.length > 0 && (
+                <Box
+                  sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 1 }}
+                >
+                  {tags.map((tag) => (
+                    <Chip
+                      key={tag}
+                      label={tag}
+                      size="small"
+                      variant="filled"
+                      onDelete={() => handleRemoveTag(tag)}
+                    />
+                  ))}
+                </Box>
+              )}
+            </Box>
           </Stack>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
@@ -484,6 +537,8 @@ const OutreachCRMPage: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [filterStatus, setFilterStatus] = useState<ProspectStatus | "">("");
   const [filterSource, setFilterSource] = useState<ProspectSource | "">("");
+  const [filterTag, setFilterTag] = useState<string>("");
+  const [filterFeatured, setFilterFeatured] = useState(false);
   const [paginationModel, setPaginationModel] = useState({
     page: 0,
     pageSize: 50,
@@ -496,6 +551,7 @@ const OutreachCRMPage: React.FC = () => {
   );
 
   const deleteMutation = useDeleteProspect();
+  const updateMutation = useUpdateProspect();
 
   // Debounce search
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -519,6 +575,8 @@ const OutreachCRMPage: React.FC = () => {
       search: debouncedSearch || undefined,
       status: filterStatus || undefined,
       source: filterSource || undefined,
+      tag: filterTag || undefined,
+      featured: filterFeatured || undefined,
     }),
     [
       paginationModel.page,
@@ -526,6 +584,8 @@ const OutreachCRMPage: React.FC = () => {
       debouncedSearch,
       filterStatus,
       filterSource,
+      filterTag,
+      filterFeatured,
     ],
   );
 
@@ -534,6 +594,12 @@ const OutreachCRMPage: React.FC = () => {
 
   const rows = listData?.data ?? [];
   const totalRows = listData?.total ?? 0;
+
+  // Derive unique tags from loaded prospects for autocomplete suggestions
+  const allTags = useMemo(
+    () => [...new Set(rows.flatMap((p) => p.tags ?? []))].sort(),
+    [rows],
+  );
 
   const handleOpenCreate = () => {
     setEditTarget(null);
@@ -555,13 +621,48 @@ const OutreachCRMPage: React.FC = () => {
     setDeleteTarget(null);
   };
 
+  const handleToggleFeatured = useCallback(
+    (row: ProspectCompany) => {
+      updateMutation.mutate({ uid: row.uid, isFeatured: !row.isFeatured });
+    },
+    [updateMutation],
+  );
+
   const columns: GridColDef[] = useMemo(
     () => [
       {
+        field: "isFeatured",
+        headerName: "",
+        width: 50,
+        sortable: false,
+        filterable: false,
+        renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
+          <Tooltip
+            title={
+              params.row.isFeatured
+                ? t("outreach_crm.filter_featured")
+                : t("outreach_crm.filter_featured")
+            }
+          >
+            <IconButton
+              size="small"
+              onClick={() => handleToggleFeatured(params.row)}
+              sx={{ p: 0.5 }}
+            >
+              {params.row.isFeatured ? (
+                <StarIcon sx={{ fontSize: 18, color: "#f59e0b" }} />
+              ) : (
+                <StarBorderIcon sx={{ fontSize: 18, color: "text.disabled" }} />
+              )}
+            </IconButton>
+          </Tooltip>
+        ),
+      },
+      {
         field: "name",
         headerName: t("outreach_crm.col_company"),
-        flex: 1.5,
-        minWidth: 160,
+        flex: 1.2,
+        minWidth: 140,
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
           <Typography
             variant="body2"
@@ -573,10 +674,51 @@ const OutreachCRMPage: React.FC = () => {
         ),
       },
       {
+        field: "tags",
+        headerName: t("outreach_crm.field_tags"),
+        flex: 1,
+        minWidth: 120,
+        sortable: false,
+        renderCell: (params: GridRenderCellParams<ProspectCompany>) => {
+          const tagList: string[] = params.row.tags ?? [];
+          if (tagList.length === 0) return null;
+          const visible = tagList.slice(0, 2);
+          const overflow = tagList.length - 2;
+          return (
+            <Box
+              sx={{
+                display: "flex",
+                gap: 0.5,
+                flexWrap: "nowrap",
+                alignItems: "center",
+              }}
+            >
+              {visible.map((tag) => (
+                <Chip
+                  key={tag}
+                  label={tag}
+                  size="small"
+                  variant="filled"
+                  sx={{ maxWidth: 80 }}
+                />
+              ))}
+              {overflow > 0 && (
+                <Chip
+                  label={`+${overflow}`}
+                  size="small"
+                  variant="filled"
+                  color="default"
+                />
+              )}
+            </Box>
+          );
+        },
+      },
+      {
         field: "website",
         headerName: t("outreach_crm.col_website"),
         flex: 1,
-        minWidth: 130,
+        minWidth: 120,
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => {
           const url = params.value as string | undefined;
           if (!url) return null;
@@ -586,7 +728,7 @@ const OutreachCRMPage: React.FC = () => {
               <Typography
                 variant="body2"
                 sx={{
-                  maxWidth: 110,
+                  maxWidth: 100,
                   overflow: "hidden",
                   textOverflow: "ellipsis",
                   whiteSpace: "nowrap",
@@ -646,7 +788,7 @@ const OutreachCRMPage: React.FC = () => {
       {
         field: "location",
         headerName: t("outreach_crm.col_location"),
-        width: 140,
+        width: 130,
         sortable: false,
         valueGetter: (_value: unknown, row: ProspectCompany) => {
           const parts = [row.city, row.country].filter(Boolean);
@@ -668,7 +810,7 @@ const OutreachCRMPage: React.FC = () => {
       {
         field: "primaryContact",
         headerName: t("outreach_crm.col_contact"),
-        width: 140,
+        width: 130,
         sortable: false,
         valueGetter: (_value: unknown, row: ProspectCompany) =>
           getPrimaryContact(row),
@@ -688,7 +830,7 @@ const OutreachCRMPage: React.FC = () => {
       {
         field: "lastActivityAt",
         headerName: t("outreach_crm.col_last_activity"),
-        width: 130,
+        width: 120,
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => {
           const val = params.value as string | null | undefined;
           if (!val) {
@@ -706,7 +848,7 @@ const OutreachCRMPage: React.FC = () => {
       {
         field: "createdAt",
         headerName: t("outreach_crm.col_created"),
-        width: 110,
+        width: 100,
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
           <Typography variant="body2">
             {new Date(params.value as string).toLocaleDateString()}
@@ -742,7 +884,7 @@ const OutreachCRMPage: React.FC = () => {
         ),
       },
     ],
-    [t, handleOpenEdit, handleOpenDelete],
+    [t, handleOpenEdit, handleOpenDelete, handleToggleFeatured],
   );
 
   return (
@@ -834,7 +976,7 @@ const OutreachCRMPage: React.FC = () => {
           placeholder={t("outreach_crm.search_placeholder")}
           value={search}
           onChange={handleSearchChange}
-          sx={{ minWidth: 220, flexGrow: 1, maxWidth: 400 }}
+          sx={{ minWidth: 200, flexGrow: 1, maxWidth: 360 }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -843,7 +985,7 @@ const OutreachCRMPage: React.FC = () => {
             ),
           }}
         />
-        <FormControl size="small" sx={{ minWidth: 160 }}>
+        <FormControl size="small" sx={{ minWidth: 150 }}>
           <InputLabel>{t("outreach_crm.filter_status")}</InputLabel>
           <Select
             value={filterStatus}
@@ -863,7 +1005,7 @@ const OutreachCRMPage: React.FC = () => {
             ))}
           </Select>
         </FormControl>
-        <FormControl size="small" sx={{ minWidth: 150 }}>
+        <FormControl size="small" sx={{ minWidth: 140 }}>
           <InputLabel>{t("outreach_crm.filter_source")}</InputLabel>
           <Select
             value={filterSource}
@@ -883,6 +1025,37 @@ const OutreachCRMPage: React.FC = () => {
             ))}
           </Select>
         </FormControl>
+        <Autocomplete
+          size="small"
+          freeSolo
+          options={allTags}
+          value={filterTag}
+          onInputChange={(_e, val) => {
+            setFilterTag(val);
+            setPaginationModel((p) => ({ ...p, page: 0 }));
+          }}
+          sx={{ minWidth: 140 }}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              label={t("outreach_crm.field_tags")}
+              size="small"
+            />
+          )}
+        />
+        <Button
+          size="small"
+          variant={filterFeatured ? "contained" : "outlined"}
+          color={filterFeatured ? "warning" : "inherit"}
+          startIcon={filterFeatured ? <StarIcon /> : <StarBorderIcon />}
+          onClick={() => {
+            setFilterFeatured((v) => !v);
+            setPaginationModel((p) => ({ ...p, page: 0 }));
+          }}
+          sx={{ whiteSpace: "nowrap" }}
+        >
+          {t("outreach_crm.filter_featured")}
+        </Button>
       </Box>
 
       {/* DataGrid */}

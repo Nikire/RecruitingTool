@@ -75,6 +75,8 @@ export interface ProspectCompany {
   source: ProspectSource;
   status: ProspectStatus;
   notes?: string;
+  tags: string[];
+  isFeatured: boolean;
   contacts?: ProspectContact[];
   activities?: ProspectActivity[];
   createdAt: string;
@@ -102,6 +104,8 @@ export interface ProspectListParams {
   search?: string;
   status?: ProspectStatus | "";
   source?: ProspectSource | "";
+  tag?: string;
+  featured?: boolean;
 }
 
 export interface CreateProspectDto {
@@ -114,6 +118,8 @@ export interface CreateProspectDto {
   source?: ProspectSource;
   status?: ProspectStatus;
   notes?: string;
+  tags?: string[];
+  isFeatured?: boolean;
 }
 
 export type UpdateProspectDto = Partial<CreateProspectDto>;

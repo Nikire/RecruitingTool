@@ -4467,6 +4467,10 @@
     "delete_confirm_message": "¿Seguro que deseas eliminar {{name}}? Esta acción no se puede deshacer.",
     "delete_success": "Prospecto eliminado",
     "never": "Nunca",
+    "field_tags": "Etiquetas",
+    "filter_featured": "Solo destacados",
+    "tag_placeholder": "Agregar etiqueta y presionar Enter",
+    "no_tags": "Sin etiquetas",
     "size_options": {
       "1-10": "1–10 empleados",
       "11-50": "11–50 empleados",

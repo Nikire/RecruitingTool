@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsBoolean, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsBoolean, IsNotEmpty, IsArray } from 'class-validator';
 import { ProspectSource, ProspectStatus, OutreachActivityType, OutreachChannel } from '@prisma/client';
 
 export class CreateProspectCompanyDto {
@@ -47,6 +47,17 @@ export class CreateProspectCompanyDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isFeatured?: boolean;
 }
 
 export class UpdateProspectCompanyDto {
@@ -94,6 +105,17 @@ export class UpdateProspectCompanyDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  @ApiPropertyOptional({ type: [String] })
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  tags?: string[];
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsBoolean()
+  isFeatured?: boolean;
 }
 
 export class CreateOutreachContactDto {
@@ -187,6 +209,8 @@ export class ProspectCompanyResponseDto {
   source: ProspectSource;
   status: ProspectStatus;
   notes?: string;
+  tags: string[];
+  isFeatured: boolean;
   contacts?: OutreachContactResponseDto[];
   activities?: OutreachActivityResponseDto[];
   createdAt: string;
@@ -200,4 +224,6 @@ export class ProspectListQueryDto {
   search?: string;
   status?: ProspectStatus;
   source?: ProspectSource;
+  tag?: string;
+  featured?: string;
 }

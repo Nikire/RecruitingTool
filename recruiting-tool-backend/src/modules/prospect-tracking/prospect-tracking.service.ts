@@ -8,13 +8,15 @@ export class ProspectTrackingService {
   constructor(private readonly prisma: DatabaseService) {}
 
   async findAll(query: ProspectListQueryDto) {
-    const { page = 1, limit = 50, search, status, source } = query;
+    const { page = 1, limit = 50, search, status, source, tag, featured } = query;
     const skip = (Number(page) - 1) * Number(limit);
 
     const where: Record<string, unknown> = {};
     if (search) where.name = { contains: search, mode: 'insensitive' };
     if (status) where.status = status;
     if (source) where.source = source;
+    if (tag) where.tags = { has: tag };
+    if (featured === 'true') where.isFeatured = true;
 
     const [data, total] = await this.prisma.$transaction([
       this.prisma.prospectCompany.findMany({
@@ -79,7 +81,12 @@ export class ProspectTrackingService {
 
   async create(dto: CreateProspectCompanyDto, userId: number) {
     const prospect = await this.prisma.prospectCompany.create({
-      data: { ...dto, createdById: userId },
+      data: {
+        ...dto,
+        tags: dto.tags ?? [],
+        isFeatured: dto.isFeatured ?? false,
+        createdById: userId,
+      },
       include: { contacts: true, activities: true },
     });
     return this.mapProspect(prospect);
@@ -197,6 +204,8 @@ export class ProspectTrackingService {
     source: string;
     status: string;
     notes?: string | null;
+    tags: string[];
+    isFeatured: boolean;
     contacts?: Array<{
       uid: string;
       name: string;
@@ -231,6 +240,8 @@ export class ProspectTrackingService {
       source: p.source,
       status: p.status,
       notes: p.notes ?? undefined,
+      tags: p.tags,
+      isFeatured: p.isFeatured,
       contacts: p.contacts?.map((c) => ({
         uid: c.uid,
         name: c.name,

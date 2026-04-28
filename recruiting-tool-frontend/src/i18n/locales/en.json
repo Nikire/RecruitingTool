@@ -4459,6 +4459,10 @@
     "delete_confirm_message": "Are you sure you want to delete {{name}}? This cannot be undone.",
     "delete_success": "Prospect deleted",
     "never": "Never",
+    "field_tags": "Tags",
+    "filter_featured": "Starred only",
+    "tag_placeholder": "Add tag and press Enter",
+    "no_tags": "No tags",
     "size_options": {
       "1-10": "1–10 employees",
       "11-50": "11–50 employees",

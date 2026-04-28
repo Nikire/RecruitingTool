@@ -14,8 +14,8 @@ export class ProspectTrackingController {
   constructor(private readonly service: ProspectTrackingService) {}
 
   @Get()
-  findAll(@Query() query: ProspectListQueryDto) {
-    return this.service.findAll(query);
+  findAll(@Query() query: ProspectListQueryDto, @Query('tag') tag?: string, @Query('featured') featured?: string) {
+    return this.service.findAll({ ...query, tag, featured });
   }
 
   @Get('stats')

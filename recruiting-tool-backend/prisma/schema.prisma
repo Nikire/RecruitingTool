@@ -1511,6 +1511,8 @@ model ProspectCompany {
   source          ProspectSource     @default(OTHER)
   status          ProspectStatus     @default(NEW)
   notes           String?
+  tags            String[]
+  isFeatured      Boolean            @default(false)
   contacts        OutreachContact[]
   activities      OutreachActivity[]
   linkedCompanyId Int?               @unique
