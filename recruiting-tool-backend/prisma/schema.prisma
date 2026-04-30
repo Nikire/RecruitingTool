@@ -977,6 +977,9 @@ model Subscription {
   companyId            Int                @unique
   stripeCustomerId     String?            @unique
   stripeSubscriptionId String?            @unique
+  lsCustomerId         String?            @unique
+  lsSubscriptionId     String?            @unique
+  lsCustomerPortalUrl  String?
   status               SubscriptionStatus @default(TRIALING)
   plan                 SubscriptionPlan   @default(FREE)
   currentPeriodStart   DateTime?
@@ -992,6 +995,8 @@ model Subscription {
   @@index([companyId])
   @@index([stripeCustomerId])
   @@index([stripeSubscriptionId])
+  @@index([lsCustomerId])
+  @@index([lsSubscriptionId])
   @@index([status])
   @@index([plan])
   @@index([uid])

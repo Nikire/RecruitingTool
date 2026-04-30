@@ -15,7 +15,7 @@ import {
 // API functions
 export const subscriptionApi = {
   getSubscription: async (): Promise<Subscription> => {
-    const response = await api.get("/stripe/subscription");
+    const response = await api.get("/billing/subscription");
     return response.data;
   },
 
@@ -27,24 +27,24 @@ export const subscriptionApi = {
   createCheckoutSession: async (
     data: CreateCheckoutSessionDto,
   ): Promise<CheckoutSessionResponse> => {
-    const response = await api.post("/stripe/checkout", data);
+    const response = await api.post("/billing/checkout", data);
     return response.data;
   },
 
   getBillingPortal: async (): Promise<BillingPortalResponse> => {
-    const response = await api.post("/stripe/billing-portal", {
+    const response = await api.post("/billing/customer-portal", {
       returnUrl: window.location.href,
     });
     return response.data;
   },
 
   cancelSubscription: async (): Promise<CancelSubscriptionResponse> => {
-    const response = await api.post("/stripe/cancel");
+    const response = await api.post("/billing/cancel");
     return response.data;
   },
 
   getInvoices: async (): Promise<InvoicesResponse> => {
-    const response = await api.get("/stripe/invoices");
+    const response = await api.get("/billing/invoices");
     return response.data;
   },
 

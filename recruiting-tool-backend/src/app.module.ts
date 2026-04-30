@@ -35,6 +35,7 @@ import { CacheModule } from './modules/cache/cache.module';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
 import { StripeModule } from './modules/stripe/stripe.module';
+import { LemonSqueezyModule } from './modules/lemon-squeezy/lemon-squeezy.module';
 import { QuotaModule } from './modules/quota/quota.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { NotificationPreferencesModule } from './modules/notification-preferences/notification-preferences.module';
@@ -103,6 +104,7 @@ import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
     HealthModule,
     MetricsModule,
     StripeModule,
+    LemonSqueezyModule,
     QuotaModule,
     NotificationsModule,
     NotificationPreferencesModule,

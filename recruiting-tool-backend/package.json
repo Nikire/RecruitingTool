@@ -43,6 +43,7 @@
     "@aws-sdk/s3-request-presigner": "^3.931.0",
     "@google-cloud/local-auth": "^3.0.1",
     "@google/generative-ai": "^0.24.1",
+    "@lemonsqueezy/lemonsqueezy.js": "^4.0.0",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cache-manager": "^3.0.1",
     "@nestjs/common": "^10.0.0",
@@ -82,7 +83,6 @@
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",
-    "strip-ansi": "6.0.1",
     "@nestjs/config": "^4.0.0",
     "@nestjs/schematics": "^10.0.0",
     "@nestjs/testing": "^10.0.0",
