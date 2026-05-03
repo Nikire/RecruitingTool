@@ -16,6 +16,9 @@ import {
   OutreachLeadChannel,
   SendLeadEmailDto,
   SendLeadEmailResultDto,
+  PreviewEmailResultDto,
+  SendTestEmailDto,
+  SendTestEmailResultDto,
 } from './dto/outreach-campaign.dto';
 import { EmailService } from '../email/email.service';
 import { EmailTemplatesService } from '../email-templates/email-templates.service';
@@ -459,6 +462,163 @@ export class OutreachCampaignsService {
     });
 
     return { success: true, emailLogUid: emailLog.uid };
+  }
+
+  // ─── Preview Email ───────────────────────────────────────────────────────────
+
+  async previewLeadEmail(campaignUid: string, leadUid: string, requestingUser: { id: number; name: string; companyId: number | null }): Promise<PreviewEmailResultDto> {
+    const db = this.prisma as PrismaClient;
+
+    // 1. Find campaign
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    // 2. Find lead within campaign
+    const lead = await db.outreachLead.findFirst({
+      where: { uid: leadUid, campaignId: campaign.id },
+    });
+    if (!lead) throw new NotFoundException('Lead not found');
+
+    // 3. Resolve template (same logic as sendLeadEmail)
+    let template: { uid: string; name: string; subject: string; body: string } | null = null;
+
+    if (requestingUser.companyId) {
+      const found = await db.emailTemplate.findFirst({
+        where: {
+          companyId: requestingUser.companyId,
+          type: EmailTemplateType.OUTREACH,
+        },
+        orderBy: { isDefault: 'desc' as const },
+      });
+      if (found) template = found;
+    }
+
+    if (!template) {
+      const found = await db.emailTemplate.findFirst({
+        where: { type: EmailTemplateType.OUTREACH },
+        orderBy: { createdAt: 'desc' as const },
+      });
+      if (found) template = found;
+    }
+
+    if (!template) {
+      throw new NotFoundException('No OUTREACH email template found. Please create one in Email Templates.');
+    }
+
+    // 4. Build Handlebars variables
+    const firstName = lead.name ? lead.name.split(' ')[0] : lead.name;
+    const variables: Record<string, string> = {
+      firstName,
+      company: lead.company,
+      senderName: requestingUser.name,
+    };
+
+    // 5. Render subject and body (no send)
+    const renderedSubject = this.emailTemplatesService.renderTemplate(template.subject, variables);
+    const renderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
+
+    return {
+      subject: renderedSubject,
+      body: renderedBody,
+      templateName: template.name,
+    };
+  }
+
+  // ─── Send Test Email ─────────────────────────────────────────────────────────
+
+  async sendTestEmail(campaignUid: string, dto: SendTestEmailDto, requestingUser: { id: number; name: string; companyId: number | null }): Promise<SendTestEmailResultDto> {
+    const db = this.prisma as PrismaClient;
+
+    // 1. Verify campaign exists
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    // 2. Resolve template
+    let template: { uid: string; name: string; subject: string; body: string } | null = null;
+
+    if (dto.templateUid) {
+      const found = await db.emailTemplate.findUnique({ where: { uid: dto.templateUid } });
+      if (!found) throw new NotFoundException(`Email template ${dto.templateUid} not found`);
+      template = found;
+    } else {
+      if (requestingUser.companyId) {
+        const found = await db.emailTemplate.findFirst({
+          where: {
+            companyId: requestingUser.companyId,
+            type: EmailTemplateType.OUTREACH,
+          },
+          orderBy: { isDefault: 'desc' as const },
+        });
+        if (found) template = found;
+      }
+
+      if (!template) {
+        const found = await db.emailTemplate.findFirst({
+          where: { type: EmailTemplateType.OUTREACH },
+          orderBy: { createdAt: 'desc' as const },
+        });
+        if (found) template = found;
+      }
+
+      if (!template) {
+        throw new NotFoundException('No OUTREACH email template found. Please create one in Email Templates.');
+      }
+    }
+
+    // 3. Build dummy variables
+    const dummyName = dto.dummyName ?? 'John Doe';
+    const dummyCompany = dto.dummyCompany ?? 'Acme Corp';
+    const firstName = dummyName.split(' ')[0];
+    const variables: Record<string, string> = {
+      firstName,
+      company: dummyCompany,
+      senderName: requestingUser.name,
+    };
+
+    // 4. Render subject and body
+    const renderedSubject = this.emailTemplatesService.renderTemplate(template.subject, variables);
+    const renderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
+
+    // 5. Get requesting user's email from DB
+    const userRecord = await db.user.findUnique({ where: { id: requestingUser.id }, select: { email: true } });
+    if (!userRecord?.email) {
+      throw new BadRequestException('Could not determine your email address to send the test');
+    }
+    const recipientEmail: string = userRecord.email;
+
+    // 6. Send via Resend if SMTP enabled
+    const emailFrom = this.config.get<string>('EMAIL_FROM', 'noreply@borderlessats.com');
+    const smtpEnabled = this.config.get<string>('SMTP_ENABLED', 'false') === 'true';
+
+    if (smtpEnabled) {
+      const apiKey = this.config.get<string>('SMTP_PASSWORD');
+      const isHtml = /<[a-z][\s\S]*>/i.test(renderedBody);
+      const htmlBody = isHtml ? renderedBody : renderedBody.replace(/\n/g, '<br>');
+
+      const payload: Record<string, unknown> = {
+        from: emailFrom,
+        to: [recipientEmail],
+        subject: `[TEST] ${renderedSubject}`,
+        text: renderedBody,
+        html: htmlBody,
+      };
+
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const error = await response.text();
+        throw new BadRequestException(`Failed to send test email: Resend API error ${response.status}: ${error}`);
+      }
+    }
+
+    return { success: true, sentTo: recipientEmail };
   }
 
   // ─── Private helpers ────────────────────────────────────────────────────────

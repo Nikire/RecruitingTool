@@ -15,6 +15,9 @@ import {
   BulkCreateLeadsDto,
   SendLeadEmailDto,
   SendLeadEmailResultDto,
+  PreviewEmailResultDto,
+  SendTestEmailDto,
+  SendTestEmailResultDto,
 } from './dto/outreach-campaign.dto';
 import { WebhookAuthGuard } from '../webhooks/guards/webhook-auth.guard';
 import { SkipAuth } from '../shared/modules/auth/decorators/skip-auth.decorator';
@@ -113,5 +116,29 @@ export class OutreachCampaignsController {
     @CurrentUser() user: { id: number; name: string; companyId: number | null },
   ): Promise<SendLeadEmailResultDto> {
     return this.service.sendLeadEmail(campaignUid, leadUid, dto, user);
+  }
+
+  @Get(':campaignUid/leads/:leadUid/preview-email')
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.HR, RolesType.HR_MANAGER, RolesType.COMPANY_OWNER])
+  @ApiOperation({ summary: 'Preview rendered outreach email for a lead (no send) - HR/ADMIN required' })
+  @ApiResponse({ status: 200, type: PreviewEmailResultDto })
+  previewLeadEmail(
+    @Param('campaignUid') campaignUid: string,
+    @Param('leadUid') leadUid: string,
+    @CurrentUser() user: { id: number; name: string; companyId: number | null },
+  ): Promise<PreviewEmailResultDto> {
+    return this.service.previewLeadEmail(campaignUid, leadUid, user);
+  }
+
+  @Post(':campaignUid/send-test-email')
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.HR, RolesType.HR_MANAGER, RolesType.COMPANY_OWNER])
+  @ApiOperation({ summary: 'Send a test outreach email to yourself with dummy data - HR/ADMIN required' })
+  @ApiResponse({ status: 201, type: SendTestEmailResultDto })
+  sendTestEmail(
+    @Param('campaignUid') campaignUid: string,
+    @Body() dto: SendTestEmailDto,
+    @CurrentUser() user: { id: number; name: string; companyId: number | null },
+  ): Promise<SendTestEmailResultDto> {
+    return this.service.sendTestEmail(campaignUid, dto, user);
   }
 }

@@ -4726,6 +4726,26 @@
       "noEmail": "This lead has no email address",
       "subject_preview": "Email subject: {{subject}}"
     },
+    "previewEmail": {
+      "title": "Preview Email",
+      "tooltip": "Preview email",
+      "col_header": "Preview",
+      "template_label": "Template",
+      "subject_label": "Subject",
+      "body_label": "Body",
+      "error": "Failed to load email preview"
+    },
+    "sendTestEmail": {
+      "title": "Send Test Email",
+      "button": "Send Test",
+      "description": "Send a test version of the outreach email to your own address using dummy data.",
+      "dummy_name": "Dummy Name",
+      "dummy_company": "Dummy Company",
+      "sending": "Sending...",
+      "send_button": "Send Test",
+      "success": "Test email sent to {{email}}",
+      "error": "Failed to send test email"
+    },
     "guide": {
       "accordion_title": "How to get leads",
       "apollo_title": "Apollo.io (Recommended)",

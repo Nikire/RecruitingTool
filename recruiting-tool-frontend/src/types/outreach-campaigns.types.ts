@@ -61,3 +61,20 @@ export interface SendLeadEmailResult {
   success: boolean;
   emailLogUid: string;
 }
+
+export interface PreviewEmailResult {
+  subject: string;
+  body: string;
+  templateName: string;
+}
+
+export interface SendTestEmailPayload {
+  templateUid?: string;
+  dummyName?: string;
+  dummyCompany?: string;
+}
+
+export interface SendTestEmailResult {
+  success: boolean;
+  sentTo: string;
+}

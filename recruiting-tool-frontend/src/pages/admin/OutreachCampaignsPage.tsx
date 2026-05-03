@@ -19,6 +19,7 @@ import {
   MenuItem,
   Paper,
   Select,
+  Skeleton,
   Stack,
   Tab,
   Table,
@@ -39,6 +40,8 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EmailIcon from "@mui/icons-material/Email";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import ScienceIcon from "@mui/icons-material/Science";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -52,6 +55,8 @@ import {
   useUpdateLead,
   useConvertLead,
   useSendLeadEmail,
+  usePreviewLeadEmail,
+  useSendTestEmail,
 } from "../../api/outreachCampaigns";
 import type {
   OutreachCampaign,
@@ -438,6 +443,197 @@ const SendEmailDialog: React.FC<SendEmailDialogProps> = ({
   );
 };
 
+// ─── Preview Email Dialog ─────────────────────────────────────────────────────
+
+interface PreviewEmailDialogProps {
+  open: boolean;
+  onClose: () => void;
+  lead: OutreachLead;
+  campaignUid: string;
+}
+
+const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
+  open,
+  onClose,
+  lead,
+  campaignUid,
+}) => {
+  const { t } = useTranslation();
+  const { data, isLoading, isError } = usePreviewLeadEmail(
+    campaignUid,
+    lead.uid,
+    open,
+  );
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
+      <DialogTitle>
+        {t("outreachCampaigns.previewEmail.title")}
+        {data && (
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            {t("outreachCampaigns.previewEmail.template_label")}:{" "}
+            <strong>{data.templateName}</strong>
+          </Typography>
+        )}
+      </DialogTitle>
+      <DialogContent dividers>
+        {isLoading && (
+          <Stack spacing={1.5}>
+            <Skeleton variant="text" width="60%" height={28} />
+            <Skeleton variant="rectangular" height={200} />
+          </Stack>
+        )}
+        {isError && (
+          <Typography color="error">
+            {t("outreachCampaigns.previewEmail.error")}
+          </Typography>
+        )}
+        {data && (
+          <Stack spacing={2}>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={600}
+                display="block"
+                sx={{ mb: 0.5 }}
+              >
+                {t("outreachCampaigns.previewEmail.subject_label")}
+              </Typography>
+              <Paper
+                variant="outlined"
+                sx={{ px: 2, py: 1.5, bgcolor: "action.hover" }}
+              >
+                <Typography variant="body2" fontWeight={500}>
+                  {data.subject}
+                </Typography>
+              </Paper>
+            </Box>
+            <Box>
+              <Typography
+                variant="caption"
+                color="text.secondary"
+                fontWeight={600}
+                display="block"
+                sx={{ mb: 0.5 }}
+              >
+                {t("outreachCampaigns.previewEmail.body_label")}
+              </Typography>
+              <Paper
+                variant="outlined"
+                sx={{
+                  p: 2,
+                  maxHeight: 420,
+                  overflow: "auto",
+                  bgcolor: "background.paper",
+                }}
+              >
+                <div
+                  // eslint-disable-next-line react/no-danger
+                  dangerouslySetInnerHTML={{ __html: data.body }}
+                />
+              </Paper>
+            </Box>
+          </Stack>
+        )}
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose}>{t("common.close")}</Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
+// ─── Send Test Email Dialog ───────────────────────────────────────────────────
+
+interface SendTestEmailDialogProps {
+  open: boolean;
+  onClose: () => void;
+  campaignUid: string;
+}
+
+const SendTestEmailDialog: React.FC<SendTestEmailDialogProps> = ({
+  open,
+  onClose,
+  campaignUid,
+}) => {
+  const { t } = useTranslation();
+  const [dummyName, setDummyName] = useState("John Doe");
+  const [dummyCompany, setDummyCompany] = useState("Acme Corp");
+  const sendTestMutation = useSendTestEmail(campaignUid);
+
+  const handleSend = async () => {
+    try {
+      const result = await sendTestMutation.mutateAsync({
+        dummyName: dummyName.trim() || "John Doe",
+        dummyCompany: dummyCompany.trim() || "Acme Corp",
+      });
+      toast.success(
+        t("outreachCampaigns.sendTestEmail.success", {
+          email: result.sentTo,
+        }),
+      );
+      onClose();
+    } catch {
+      toast.error(t("outreachCampaigns.sendTestEmail.error"));
+    }
+  };
+
+  const handleClose = () => {
+    setDummyName("John Doe");
+    setDummyCompany("Acme Corp");
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{t("outreachCampaigns.sendTestEmail.title")}</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            {t("outreachCampaigns.sendTestEmail.description")}
+          </Typography>
+          <TextField
+            label={t("outreachCampaigns.sendTestEmail.dummy_name")}
+            value={dummyName}
+            onChange={(e) => setDummyName(e.target.value)}
+            fullWidth
+            size="small"
+          />
+          <TextField
+            label={t("outreachCampaigns.sendTestEmail.dummy_company")}
+            value={dummyCompany}
+            onChange={(e) => setDummyCompany(e.target.value)}
+            fullWidth
+            size="small"
+          />
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} disabled={sendTestMutation.isPending}>
+          {t("common.cancel")}
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleSend}
+          disabled={sendTestMutation.isPending}
+          startIcon={
+            sendTestMutation.isPending ? (
+              <CircularProgress size={16} />
+            ) : (
+              <ScienceIcon />
+            )
+          }
+        >
+          {sendTestMutation.isPending
+            ? t("outreachCampaigns.sendTestEmail.sending")
+            : t("outreachCampaigns.sendTestEmail.send_button")}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 // ─── Leads Table ──────────────────────────────────────────────────────────────
 
 interface LeadsTableProps {
@@ -466,6 +662,9 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
   const [convertConfirmLead, setConvertConfirmLead] =
     useState<OutreachLead | null>(null);
   const [sendEmailLead, setSendEmailLead] = useState<OutreachLead | null>(null);
+  const [previewEmailLead, setPreviewEmailLead] = useState<OutreachLead | null>(
+    null,
+  );
 
   const handleStatusChange = async (
     lead: OutreachLead,
@@ -701,6 +900,25 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
       },
     },
     {
+      field: "previewEmail",
+      headerName: t("outreachCampaigns.previewEmail.col_header"),
+      width: 70,
+      sortable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params: GridRenderCellParams<OutreachLead>) => (
+        <Tooltip title={t("outreachCampaigns.previewEmail.tooltip")}>
+          <IconButton
+            size="small"
+            color="default"
+            onClick={() => setPreviewEmailLead(params.row)}
+          >
+            <VisibilityIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      ),
+    },
+    {
       field: "actions",
       headerName: t("common.actions"),
       width: 130,
@@ -764,6 +982,15 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
           open={true}
           onClose={() => setSendEmailLead(null)}
           lead={sendEmailLead}
+          campaignUid={campaignUid}
+        />
+      )}
+
+      {previewEmailLead && (
+        <PreviewEmailDialog
+          open={true}
+          onClose={() => setPreviewEmailLead(null)}
+          lead={previewEmailLead}
           campaignUid={campaignUid}
         />
       )}
@@ -948,6 +1175,7 @@ const OutreachCampaignsPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [newCampaignOpen, setNewCampaignOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [sendTestEmailOpen, setSendTestEmailOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterChannel, setFilterChannel] = useState("");
   const [deleteCampaign, setDeleteCampaign] = useState<OutreachCampaign | null>(
@@ -1180,7 +1408,15 @@ const OutreachCampaignsPage: React.FC = () => {
                   </Box>
                 </Box>
 
-                <Box sx={{ display: "flex", gap: 1 }}>
+                <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
+                  <Button
+                    variant="outlined"
+                    startIcon={<ScienceIcon />}
+                    size="small"
+                    onClick={() => setSendTestEmailOpen(true)}
+                  >
+                    {t("outreachCampaigns.sendTestEmail.button")}
+                  </Button>
                   <Button
                     variant="outlined"
                     startIcon={<UploadFileIcon />}
@@ -1222,6 +1458,14 @@ const OutreachCampaignsPage: React.FC = () => {
         <ImportCsvDialog
           open={importOpen}
           onClose={() => setImportOpen(false)}
+          campaignUid={selectedCampaign.uid}
+        />
+      )}
+
+      {selectedCampaign && (
+        <SendTestEmailDialog
+          open={sendTestEmailOpen}
+          onClose={() => setSendTestEmailOpen(false)}
           campaignUid={selectedCampaign.uid}
         />
       )}

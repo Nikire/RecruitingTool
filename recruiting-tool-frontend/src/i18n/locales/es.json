@@ -4734,6 +4734,26 @@
       "noEmail": "Este prospecto no tiene dirección de email",
       "subject_preview": "Asunto del email: {{subject}}"
     },
+    "previewEmail": {
+      "title": "Vista Previa del Email",
+      "tooltip": "Vista previa del email",
+      "col_header": "Vista Previa",
+      "template_label": "Plantilla",
+      "subject_label": "Asunto",
+      "body_label": "Cuerpo",
+      "error": "Error al cargar la vista previa del email"
+    },
+    "sendTestEmail": {
+      "title": "Enviar Email de Prueba",
+      "button": "Enviar Prueba",
+      "description": "Envía una versión de prueba del email de prospección a tu propia dirección con datos ficticios.",
+      "dummy_name": "Nombre ficticio",
+      "dummy_company": "Empresa ficticia",
+      "sending": "Enviando...",
+      "send_button": "Enviar Prueba",
+      "success": "Email de prueba enviado a {{email}}",
+      "error": "Error al enviar el email de prueba"
+    },
     "guide": {
       "accordion_title": "Cómo conseguir prospectos",
       "apollo_title": "Apollo.io (Recomendado)",

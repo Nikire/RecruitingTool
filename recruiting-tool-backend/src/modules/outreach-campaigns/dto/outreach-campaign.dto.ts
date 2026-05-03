@@ -188,3 +188,43 @@ export class SendLeadEmailResultDto {
   @ApiProperty()
   emailLogUid: string;
 }
+
+// ─── Preview Email DTOs ────────────────────────────────────────────────────────
+
+export class PreviewEmailResultDto {
+  @ApiProperty({ description: 'Rendered email subject' })
+  subject: string;
+
+  @ApiProperty({ description: 'Rendered email body (may be HTML)' })
+  body: string;
+
+  @ApiProperty({ description: 'Name of the email template used' })
+  templateName: string;
+}
+
+// ─── Send Test Email DTOs ──────────────────────────────────────────────────────
+
+export class SendTestEmailDto {
+  @ApiPropertyOptional({ description: 'UID of the email template to use. If omitted, the default OUTREACH template is used.' })
+  @IsOptional()
+  @IsString()
+  templateUid?: string;
+
+  @ApiPropertyOptional({ description: 'Dummy first name for rendering', default: 'John Doe' })
+  @IsOptional()
+  @IsString()
+  dummyName?: string;
+
+  @ApiPropertyOptional({ description: 'Dummy company name for rendering', default: 'Acme Corp' })
+  @IsOptional()
+  @IsString()
+  dummyCompany?: string;
+}
+
+export class SendTestEmailResultDto {
+  @ApiProperty()
+  success: boolean;
+
+  @ApiProperty({ description: 'Email address the test was sent to' })
+  sentTo: string;
+}

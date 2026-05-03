@@ -9,6 +9,9 @@ import type {
   ConvertResult,
   SendLeadEmailPayload,
   SendLeadEmailResult,
+  PreviewEmailResult,
+  SendTestEmailPayload,
+  SendTestEmailResult,
 } from "../types/outreach-campaigns.types";
 
 // ─── Query keys ───────────────────────────────────────────────────────────────
@@ -151,6 +154,35 @@ export function useSendLeadEmail(campaignUid: string) {
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: leadsQK(campaignUid) });
       qc.invalidateQueries({ queryKey: CAMPAIGNS_QK });
+    },
+  });
+}
+
+export function usePreviewLeadEmail(
+  campaignUid: string,
+  leadUid: string,
+  enabled: boolean,
+) {
+  return useQuery<PreviewEmailResult>({
+    queryKey: ["outreach-preview-email", campaignUid, leadUid],
+    queryFn: async () => {
+      const res = await api.get<PreviewEmailResult>(
+        `/outreach-campaigns/${campaignUid}/leads/${leadUid}/preview-email`,
+      );
+      return res.data;
+    },
+    enabled: enabled && !!campaignUid && !!leadUid,
+  });
+}
+
+export function useSendTestEmail(campaignUid: string) {
+  return useMutation<SendTestEmailResult, Error, SendTestEmailPayload>({
+    mutationFn: async (payload) => {
+      const res = await api.post<SendTestEmailResult>(
+        `/outreach-campaigns/${campaignUid}/send-test-email`,
+        payload,
+      );
+      return res.data;
     },
   });
 }
