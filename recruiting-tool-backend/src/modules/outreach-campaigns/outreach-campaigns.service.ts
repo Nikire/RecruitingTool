@@ -10,6 +10,7 @@ import {
   LeadResponseDto,
   ImportResultDto,
   ConvertResultDto,
+  BulkLeadItemDto,
   OutreachLeadStatus,
   OutreachLeadChannel,
 } from './dto/outreach-campaign.dto';
@@ -93,15 +94,24 @@ export class OutreachCampaignsService {
     let skipped = 0;
 
     for (const row of rows) {
-      const name = (row['name'] || '').trim();
-      const company = (row['company'] || '').trim();
-      const email = (row['email'] || '').trim() || null;
-      const linkedinUrl = (row['linkedinurl'] || row['linkedin_url'] || row['linkedin'] || '').trim() || null;
+      const firstName = (row['firstname'] || row['first name'] || row['first_name'] || '').trim();
+      const lastName = (row['lastname'] || row['last name'] || row['last_name'] || '').trim();
+      const name = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName || row['name'] || '').trim();
+      const company = (row['companyname'] || row['company name'] || row['company_name'] || row['company'] || '').trim();
+      const email = (row['email'] || row['primaryemail'] || row['primary email'] || '').trim() || null;
+      const linkedinUrl =
+        (row['personlinkedinurl'] || row['person linkedin url'] || row['person_linkedin_url'] || row['linkedinurl'] || row['linkedin_url'] || row['linkedin'] || '').trim() || null;
+      const title = (row['title'] || row['jobtitle'] || row['job title'] || '').trim() || null;
+      const companySize = (row['#employees'] || row['employees'] || '').trim() || null;
+      const industry = (row['industry'] || '').trim() || null;
+      const country = (row['country'] || row['companycountry'] || row['company country'] || '').trim() || null;
 
       if (!name && !company) {
         skipped++;
         continue;
       }
+
+      const notes = [title, industry, companySize ? `${companySize} employees` : null, country].filter(Boolean).join(' | ') || null;
 
       await db.outreachLead.create({
         data: {
@@ -109,6 +119,7 @@ export class OutreachCampaignsService {
           company: company || name,
           email,
           linkedinUrl,
+          notes,
           campaignId: campaign.id,
           createdById: userId,
         },
@@ -194,6 +205,35 @@ export class OutreachCampaignsService {
     });
 
     return { prospectUid: prospect.uid };
+  }
+
+  async bulkCreateLeads(campaignUid: string, leads: BulkLeadItemDto[]): Promise<ImportResultDto> {
+    const db = this.prisma as PrismaClient;
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    let imported = 0;
+    let skipped = 0;
+
+    for (const lead of leads) {
+      if (!lead.name && !lead.company) {
+        skipped++;
+        continue;
+      }
+      await db.outreachLead.create({
+        data: {
+          name: lead.name || lead.company,
+          company: lead.company || lead.name,
+          email: lead.email ?? null,
+          linkedinUrl: lead.linkedinUrl ?? null,
+          notes: lead.notes ?? null,
+          campaignId: campaign.id,
+        },
+      });
+      imported++;
+    }
+
+    return { imported, skipped };
   }
 
   // ─── Private helpers ────────────────────────────────────────────────────────

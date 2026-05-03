@@ -1,5 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsNotEmpty } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
 
 export enum OutreachLeadChannel {
   EMAIL = 'EMAIL',
@@ -132,4 +133,41 @@ export class ImportResultDto {
 export class ConvertResultDto {
   @ApiProperty()
   prospectUid: string;
+}
+
+// ─── Bulk Import DTOs ──────────────────────────────────────────────────────────
+
+export class BulkLeadItemDto {
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsNotEmpty()
+  company: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  email?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  linkedinUrl?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  notes?: string;
+}
+
+export class BulkCreateLeadsDto {
+  @ApiProperty({ type: [BulkLeadItemDto] })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => BulkLeadItemDto)
+  leads: BulkLeadItemDto[];
 }

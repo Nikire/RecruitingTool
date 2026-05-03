@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
   Button,
   Chip,
@@ -8,14 +11,21 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Divider,
   FormControl,
   IconButton,
   InputLabel,
   Link,
   MenuItem,
+  Paper,
   Select,
   Stack,
   Tab,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
   Tabs,
   TextField,
   Tooltip,
@@ -23,6 +33,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
@@ -627,6 +638,159 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
   );
 };
 
+// ─── Guide Accordion ──────────────────────────────────────────────────────────
+
+const GuideAccordion: React.FC = () => {
+  const { t } = useTranslation();
+
+  const csvRows = [
+    {
+      col: t("outreachCampaigns.guide.csv_row1_col"),
+      field: t("outreachCampaigns.guide.csv_row1_field"),
+    },
+    {
+      col: t("outreachCampaigns.guide.csv_row2_col"),
+      field: t("outreachCampaigns.guide.csv_row2_field"),
+    },
+    {
+      col: t("outreachCampaigns.guide.csv_row3_col"),
+      field: t("outreachCampaigns.guide.csv_row3_field"),
+    },
+    {
+      col: t("outreachCampaigns.guide.csv_row4_col"),
+      field: t("outreachCampaigns.guide.csv_row4_field"),
+    },
+    {
+      col: t("outreachCampaigns.guide.csv_row5_col"),
+      field: t("outreachCampaigns.guide.csv_row5_field"),
+    },
+  ];
+
+  const apolloFilterChips = [
+    "HR Director",
+    "VP of People",
+    "Head of Talent",
+    "50–500 employees",
+    "Tech",
+    "Consulting",
+    "Agency",
+  ];
+
+  return (
+    <Accordion defaultExpanded={false} sx={{ mb: 3 }}>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+        <Typography variant="subtitle1" fontWeight={600}>
+          {t("outreachCampaigns.guide.accordion_title")}
+        </Typography>
+      </AccordionSummary>
+      <AccordionDetails>
+        <Stack spacing={3}>
+          {/* Section 1: Apollo.io */}
+          <Box>
+            <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+              {t("outreachCampaigns.guide.apollo_title")}
+            </Typography>
+            <Stack component="ol" spacing={1} sx={{ pl: 2, m: 0 }}>
+              <Typography component="li" variant="body2">
+                {t("outreachCampaigns.guide.apollo_step1")}
+              </Typography>
+              <Box component="li">
+                <Typography variant="body2" gutterBottom>
+                  {t("outreachCampaigns.guide.apollo_step2")}
+                </Typography>
+                <Box
+                  sx={{ display: "flex", flexWrap: "wrap", gap: 0.5, mt: 0.5 }}
+                >
+                  {apolloFilterChips.map((chip) => (
+                    <Chip
+                      key={chip}
+                      label={chip}
+                      size="small"
+                      variant="filled"
+                      color="primary"
+                    />
+                  ))}
+                </Box>
+              </Box>
+              <Box component="li">
+                <Typography variant="body2" gutterBottom>
+                  {t("outreachCampaigns.guide.apollo_step3_label")}
+                </Typography>
+                <Paper
+                  variant="outlined"
+                  sx={{ p: 1.5, bgcolor: "action.hover", borderRadius: 1 }}
+                >
+                  <Typography
+                    variant="body2"
+                    fontStyle="italic"
+                    color="text.secondary"
+                  >
+                    &ldquo;{t("outreachCampaigns.guide.apollo_step3_prompt")}
+                    &rdquo;
+                  </Typography>
+                </Paper>
+              </Box>
+              <Typography component="li" variant="body2">
+                {t("outreachCampaigns.guide.apollo_step4")}
+              </Typography>
+              <Typography component="li" variant="body2">
+                {t("outreachCampaigns.guide.apollo_step5")}
+              </Typography>
+            </Stack>
+          </Box>
+
+          <Divider />
+
+          {/* Section 2: CSV format */}
+          <Box>
+            <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+              {t("outreachCampaigns.guide.csv_title")}
+            </Typography>
+            <Table size="small" sx={{ maxWidth: 500 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600 }}>
+                    {t("outreachCampaigns.guide.csv_apollo_col")}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600 }}>
+                    {t("outreachCampaigns.guide.csv_our_field")}
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {csvRows.map((row) => (
+                  <TableRow key={row.col}>
+                    <TableCell>
+                      <Typography variant="body2" color="text.secondary">
+                        {row.col}
+                      </Typography>
+                    </TableCell>
+                    <TableCell>
+                      <Typography variant="body2">{row.field}</Typography>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Box>
+
+          <Divider />
+
+          {/* Section 3: n8n */}
+          <Box>
+            <Typography variant="subtitle2" fontWeight={600} gutterBottom>
+              {t("outreachCampaigns.guide.n8n_title")}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {t("outreachCampaigns.guide.n8n_description")}
+            </Typography>
+          </Box>
+        </Stack>
+      </AccordionDetails>
+    </Accordion>
+  );
+};
+
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const OutreachCampaignsPage: React.FC = () => {
@@ -671,6 +835,9 @@ const OutreachCampaignsPage: React.FC = () => {
           onClick: () => setNewCampaignOpen(true),
         }}
       />
+
+      {/* How to get leads guide */}
+      <GuideAccordion />
 
       {/* Campaign tabs */}
       {campaignsLoading ? (

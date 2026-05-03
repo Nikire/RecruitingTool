@@ -1,11 +1,12 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiConsumes, ApiOperation, ApiQuery, ApiResponse, ApiSecurity, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
 import { OutreachCampaignsService } from './outreach-campaigns.service';
-import { CreateCampaignDto, UpdateLeadDto, CampaignResponseDto, LeadResponseDto, ImportResultDto, ConvertResultDto } from './dto/outreach-campaign.dto';
+import { CreateCampaignDto, UpdateLeadDto, CampaignResponseDto, LeadResponseDto, ImportResultDto, ConvertResultDto, BulkCreateLeadsDto } from './dto/outreach-campaign.dto';
+import { WebhookAuthGuard } from '../webhooks/guards/webhook-auth.guard';
 
 @ApiTags('outreach-campaigns')
 @ApiBearerAuth()
@@ -59,6 +60,15 @@ export class OutreachCampaignsController {
       throw new Error('No file uploaded');
     }
     return this.service.importLeads(campaignUid, file.buffer, userId);
+  }
+
+  @Post(':campaignUid/leads/bulk')
+  @UseGuards(WebhookAuthGuard)
+  @ApiSecurity('X-API-Key')
+  @ApiOperation({ summary: 'Bulk create leads via JSON (n8n / webhook) - requires x-api-key header' })
+  @ApiResponse({ status: 201, type: ImportResultDto })
+  bulkCreateLeads(@Param('campaignUid') campaignUid: string, @Body() body: BulkCreateLeadsDto): Promise<ImportResultDto> {
+    return this.service.bulkCreateLeads(campaignUid, body.leads);
   }
 
   @Patch(':campaignUid/leads/:leadUid')

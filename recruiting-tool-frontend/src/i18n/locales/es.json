@@ -4722,6 +4722,31 @@
     "confirm_delete_campaign_message": "¿Eliminar la campaña \"{{name}}\" y todos sus prospectos? Esta acción no se puede deshacer.",
     "delete_campaign": "Eliminar Campaña",
     "lead_updated": "Prospecto actualizado",
-    "error": "Algo salió mal"
+    "error": "Algo salió mal",
+    "guide": {
+      "accordion_title": "Cómo conseguir prospectos",
+      "apollo_title": "Apollo.io (Recomendado)",
+      "apollo_step1": "Ve a Apollo.io → Búsqueda de personas",
+      "apollo_step2": "Usa filtros: HR Director, VP de Personas, Head of Talent, 50–500 empleados, Tecnología / Consultoría / Agencia",
+      "apollo_step3_label": "O pega este prompt de búsqueda IA:",
+      "apollo_step3_prompt": "Encuentra HR Directors, VP of People, Head of Talent Acquisition y Talent Acquisition Managers en empresas con 50 a 500 empleados que estén contratando actualmente en tecnología, consultoría o agencias digitales.",
+      "apollo_step4": "Exportar → CSV (todas las columnas)",
+      "apollo_step5": "Importa el CSV aquí — las columnas de Apollo se mapean automáticamente",
+      "csv_title": "Columnas CSV admitidas",
+      "csv_apollo_col": "Columna Apollo",
+      "csv_our_field": "Nuestro campo",
+      "csv_row1_col": "First Name + Last Name",
+      "csv_row1_field": "Nombre del contacto",
+      "csv_row2_col": "Company Name",
+      "csv_row2_field": "Empresa",
+      "csv_row3_col": "Email",
+      "csv_row3_field": "Email",
+      "csv_row4_col": "Person Linkedin Url",
+      "csv_row4_field": "LinkedIn",
+      "csv_row5_col": "Title, Industry, # Employees, Country",
+      "csv_row5_field": "Guardado en Notas",
+      "n8n_title": "Auto-importación con n8n",
+      "n8n_description": "Si n8n está configurado, los prospectos de Apollo se importan automáticamente según un horario. Configura N8N_OUTREACH_WEBHOOK_URL en el .env del backend para activar los recordatorios de seguimiento."
+    }
   }
 }

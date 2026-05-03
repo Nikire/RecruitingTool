@@ -4714,6 +4714,31 @@
     "confirm_delete_campaign_message": "Delete campaign \"{{name}}\" and all its leads? This cannot be undone.",
     "delete_campaign": "Delete Campaign",
     "lead_updated": "Lead updated",
-    "error": "Something went wrong"
+    "error": "Something went wrong",
+    "guide": {
+      "accordion_title": "How to get leads",
+      "apollo_title": "Apollo.io (Recommended)",
+      "apollo_step1": "Go to Apollo.io → People search",
+      "apollo_step2": "Use filters: HR Director, VP of People, Head of Talent, 50–500 employees, Tech / Consulting / Agency",
+      "apollo_step3_label": "Or paste this AI search prompt:",
+      "apollo_step3_prompt": "Find HR Directors, VP of People, Head of Talent Acquisition, and Talent Acquisition Managers at companies with 50 to 500 employees that are currently hiring in technology, consulting, or digital agencies.",
+      "apollo_step4": "Export → CSV (all columns)",
+      "apollo_step5": "Import the CSV here — Apollo columns are automatically mapped",
+      "csv_title": "Supported CSV Columns",
+      "csv_apollo_col": "Apollo Column",
+      "csv_our_field": "Our Field",
+      "csv_row1_col": "First Name + Last Name",
+      "csv_row1_field": "Contact Name",
+      "csv_row2_col": "Company Name",
+      "csv_row2_field": "Company",
+      "csv_row3_col": "Email",
+      "csv_row3_field": "Email",
+      "csv_row4_col": "Person Linkedin Url",
+      "csv_row4_field": "LinkedIn",
+      "csv_row5_col": "Title, Industry, # Employees, Country",
+      "csv_row5_field": "Saved in Notes",
+      "n8n_title": "n8n Auto-Import",
+      "n8n_description": "If n8n is configured, leads from Apollo are imported automatically on schedule. Set N8N_OUTREACH_WEBHOOK_URL in your backend .env to enable follow-up reminders."
+    }
   }
 }
