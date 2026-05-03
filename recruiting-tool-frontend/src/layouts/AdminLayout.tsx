@@ -15,6 +15,7 @@ import ManageAccountsIcon from "@mui/icons-material/ManageAccounts";
 import PsychologyIcon from "@mui/icons-material/Psychology";
 import ArticleIcon from "@mui/icons-material/Article";
 import CampaignIcon from "@mui/icons-material/Campaign";
+import SendIcon from "@mui/icons-material/Send";
 import TrackChangesIcon from "@mui/icons-material/TrackChanges";
 import InsightsIcon from "@mui/icons-material/Insights";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
@@ -72,6 +73,12 @@ const AdminLayout: React.FC = () => {
           text: t("admin_layout.outreach_templates"),
           icon: <CampaignIcon />,
           path: "/admin/outreach-templates",
+          requiresSuperAdmin: false,
+        },
+        {
+          text: t("admin_layout.outreach_campaigns"),
+          icon: <SendIcon />,
+          path: "/admin/outreach-campaigns",
           requiresSuperAdmin: false,
         },
       ],

@@ -57,6 +57,7 @@ import { DummyModule } from './modules/dummy/dummy.module';
 import { ProspectTrackingModule } from './modules/prospect-tracking/prospect-tracking.module';
 import { ReleaseNotesModule } from './modules/release-notes/release-notes.module';
 import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
+import { OutreachCampaignsModule } from './modules/outreach-campaigns/outreach-campaigns.module';
 
 @Module({
   imports: [
@@ -125,6 +126,7 @@ import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
     ProspectTrackingModule,
     ReleaseNotesModule,
     AdminTasksModule,
+    OutreachCampaignsModule,
   ],
   controllers: [AppController],
   providers: [

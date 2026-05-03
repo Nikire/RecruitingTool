@@ -83,6 +83,7 @@ import DemoBookingManagerPage from "./pages/admin/DemoBookingManagerPage";
 import EmailDeliverabilityPage from "./pages/admin/EmailDeliverabilityPage";
 import ChangelogPage from "./pages/admin/ChangelogPage";
 import AdminTasksPage from "./pages/admin/AdminTasksPage";
+import OutreachCampaignsPage from "./pages/admin/OutreachCampaignsPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -390,6 +391,10 @@ function App() {
               />
               <Route path="/admin/changelog" element={<ChangelogPage />} />
               <Route path="/admin/tasks" element={<AdminTasksPage />} />
+              <Route
+                path="/admin/outreach-campaigns"
+                element={<OutreachCampaignsPage />}
+              />
             </Route>
           </Route>
         </Route>

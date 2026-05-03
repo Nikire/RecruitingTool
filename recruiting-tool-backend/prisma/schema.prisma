@@ -138,6 +138,8 @@ model User {
   seenReleaseNotes           SeenReleaseNote[]       @relation("UserSeenReleaseNotes")
   assignedAdminTasks         AdminTask[]             @relation("AdminTaskAssignedTo")
   createdAdminTasks          AdminTask[]             @relation("AdminTaskCreatedBy")
+  createdOutreachCampaigns   OutreachCampaign[]      @relation("OutreachCampaignCreatedBy")
+  createdOutreachLeads       OutreachLead[]          @relation("OutreachLeadCreatedBy")
 
   @@unique([email, companyId])
   @@index([roles])
@@ -1708,4 +1710,57 @@ model AdminTask {
   @@index([status])
   @@index([createdById])
   @@index([assignedToId])
+}
+
+model OutreachCampaign {
+  id          Int            @id @default(autoincrement())
+  uid         String         @unique @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  leads       OutreachLead[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  createdById Int?
+  createdBy   User?          @relation("OutreachCampaignCreatedBy", fields: [createdById], references: [id])
+
+  @@index([uid])
+  @@index([createdAt])
+  @@map("outreach_campaigns")
+}
+
+model OutreachLead {
+  id                    Int                 @id @default(autoincrement())
+  uid                   String              @unique @default(uuid()) @db.Uuid
+  name                  String
+  company               String
+  email                 String?
+  linkedinUrl           String?
+  channel               OutreachLeadChannel @default(EMAIL)
+  status                OutreachLeadStatus  @default(PENDING)
+  notes                 String?
+  convertedToProspectAt DateTime?
+  prospectUid           String?
+  campaignId            Int?
+  campaign              OutreachCampaign?   @relation(fields: [campaignId], references: [id], onDelete: SetNull)
+  createdAt             DateTime            @default(now())
+  updatedAt             DateTime            @updatedAt
+  createdById           Int?
+  createdBy             User?               @relation("OutreachLeadCreatedBy", fields: [createdById], references: [id])
+
+  @@index([status])
+  @@index([campaignId])
+  @@index([uid])
+  @@map("outreach_leads")
+}
+
+enum OutreachLeadChannel {
+  EMAIL
+  LINKEDIN
+}
+
+enum OutreachLeadStatus {
+  PENDING
+  SENT
+  REPLIED
+  CONVERTED
 }
