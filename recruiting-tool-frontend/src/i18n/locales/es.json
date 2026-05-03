@@ -4725,6 +4725,15 @@
     "delete_campaign": "Eliminar Campaña",
     "lead_updated": "Prospecto actualizado",
     "error": "Algo salió mal",
+    "sendEmail": {
+      "title": "Enviar Email de Prospección",
+      "confirmMessage": "¿Enviar el email de prospección a {{name}} de {{company}}?",
+      "sending": "Enviando...",
+      "success": "Email enviado a {{name}}",
+      "error": "Error al enviar el email",
+      "noEmail": "Este prospecto no tiene dirección de email",
+      "subject_preview": "Asunto del email: {{subject}}"
+    },
     "guide": {
       "accordion_title": "Cómo conseguir prospectos",
       "apollo_title": "Apollo.io (Recomendado)",

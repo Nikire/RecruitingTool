@@ -3,6 +3,7 @@ import { Readable } from 'stream';
 import csv from 'csv-parser';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { ConfigService } from '@nestjs/config';
+import { EmailTemplateType } from '@prisma/client';
 import {
   CreateCampaignDto,
   UpdateLeadDto,
@@ -13,7 +14,11 @@ import {
   BulkLeadItemDto,
   OutreachLeadStatus,
   OutreachLeadChannel,
+  SendLeadEmailDto,
+  SendLeadEmailResultDto,
 } from './dto/outreach-campaign.dto';
+import { EmailService } from '../email/email.service';
+import { EmailTemplatesService } from '../email-templates/email-templates.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PrismaClient = any;
@@ -23,6 +28,8 @@ export class OutreachCampaignsService {
   constructor(
     private readonly prisma: DatabaseService,
     private readonly config: ConfigService,
+    private readonly emailService: EmailService,
+    private readonly emailTemplatesService: EmailTemplatesService,
   ) {}
 
   // ─── Campaigns ──────────────────────────────────────────────────────────────
@@ -234,6 +241,194 @@ export class OutreachCampaignsService {
     }
 
     return { imported, skipped };
+  }
+
+  // ─── Send Email ─────────────────────────────────────────────────────────────
+
+  async sendLeadEmail(
+    campaignUid: string,
+    leadUid: string,
+    dto: SendLeadEmailDto,
+    requestingUser: { id: number; name: string; companyId: number | null },
+  ): Promise<SendLeadEmailResultDto> {
+    const db = this.prisma as PrismaClient;
+
+    // 1. Find campaign
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    // 2. Find lead within campaign
+    const lead = await db.outreachLead.findFirst({
+      where: { uid: leadUid, campaignId: campaign.id },
+    });
+    if (!lead) throw new NotFoundException('Lead not found');
+
+    if (!lead.email) {
+      throw new BadRequestException('This lead has no email address');
+    }
+
+    // 3. Resolve template
+    let template: { uid: string; name: string; subject: string; body: string } | null = null;
+
+    if (dto.templateUid) {
+      // Use explicitly provided template
+      const found = await db.emailTemplate.findUnique({ where: { uid: dto.templateUid } });
+      if (!found) throw new NotFoundException(`Email template ${dto.templateUid} not found`);
+      template = found;
+    } else {
+      // Look up default OUTREACH template for the user's company
+      if (requestingUser.companyId) {
+        const found = await db.emailTemplate.findFirst({
+          where: {
+            companyId: requestingUser.companyId,
+            type: EmailTemplateType.OUTREACH,
+          },
+          orderBy: { isDefault: 'desc' as const },
+        });
+        if (found) template = found;
+      }
+
+      // Fallback: any OUTREACH template (no company scope)
+      if (!template) {
+        const found = await db.emailTemplate.findFirst({
+          where: { type: EmailTemplateType.OUTREACH },
+          orderBy: { createdAt: 'desc' as const },
+        });
+        if (found) template = found;
+      }
+
+      if (!template) {
+        throw new NotFoundException('No OUTREACH email template found. Please create one in Email Templates.');
+      }
+    }
+
+    // 4. Build Handlebars variables
+    const firstName = lead.name ? lead.name.split(' ')[0] : lead.name;
+    const variables: Record<string, string> = {
+      firstName,
+      company: lead.company,
+      senderName: requestingUser.name,
+    };
+
+    // 5. Render subject and body
+    const renderedSubject = this.emailTemplatesService.renderTemplate(template.subject, variables);
+    const renderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
+
+    // 6. Send via Resend API using the private method on EmailService
+    const emailFrom = this.config.get<string>('EMAIL_FROM', 'noreply@borderlessats.com');
+    const smtpEnabled = this.config.get<string>('SMTP_ENABLED', 'false') === 'true';
+
+    let resendEmailId: string | null = null;
+    let deliveryStatus = 'SENT';
+
+    if (smtpEnabled) {
+      // Access the private sendViaResendApi by delegating through the public sendEmailFromTemplate
+      // Instead we replicate the minimal send directly here
+      const apiKey = this.config.get<string>('SMTP_PASSWORD');
+      const adminBcc = this.config.get<string>('EMAIL_ADMIN_BCC');
+      const isHtml = /<[a-z][\s\S]*>/i.test(renderedBody);
+      const htmlBody = isHtml ? renderedBody : renderedBody.replace(/\n/g, '<br>');
+
+      const payload: Record<string, unknown> = {
+        from: emailFrom,
+        to: [lead.email],
+        subject: renderedSubject,
+        text: renderedBody,
+        html: htmlBody,
+      };
+      if (adminBcc && adminBcc !== lead.email) {
+        payload.bcc = [adminBcc];
+      }
+
+      try {
+        const response = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${apiKey}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+          const error = await response.text();
+          throw new Error(`Resend API error ${response.status}: ${error}`);
+        }
+        const data = (await response.json()) as { id?: string };
+        resendEmailId = data.id ?? null;
+      } catch (err) {
+        deliveryStatus = 'FAILED';
+        throw new BadRequestException(`Failed to send email: ${(err as Error).message}`);
+      }
+    }
+    // In dev mode we just log and continue (no throw)
+
+    // 7. Log to EmailLog
+    const emailLog = await db.emailLog.create({
+      data: {
+        recipientEmail: lead.email,
+        recipientName: lead.name,
+        subject: renderedSubject,
+        template: renderedBody,
+        status: deliveryStatus,
+        emailType: 'OUTREACH',
+        relatedEntity: 'OutreachLead',
+        relatedEntityId: lead.uid,
+        resendEmailId: resendEmailId ?? null,
+        deliveryStatus,
+      },
+    });
+
+    // 8. Create OutreachActivity
+    if (requestingUser.companyId) {
+      // Find a ProspectCompany linked to this lead if it exists
+      let prospectCompanyId: number | null = null;
+      if (lead.prospectUid) {
+        const prospect = await db.prospectCompany.findUnique({ where: { uid: lead.prospectUid } });
+        if (prospect) prospectCompanyId = prospect.id;
+      }
+
+      if (!prospectCompanyId) {
+        // Create a lightweight prospect placeholder or find by name
+        const existing = await db.prospectCompany.findFirst({ where: { name: lead.company } });
+        if (existing) {
+          prospectCompanyId = existing.id;
+        } else {
+          const newProspect = await db.prospectCompany.create({
+            data: {
+              name: lead.company,
+              source: 'OTHER',
+              createdById: requestingUser.id,
+            },
+          });
+          prospectCompanyId = newProspect.id;
+          // Link lead to this prospect
+          await db.outreachLead.update({
+            where: { uid: leadUid },
+            data: { prospectUid: newProspect.uid },
+          });
+        }
+      }
+
+      await db.outreachActivity.create({
+        data: {
+          prospectCompanyId,
+          type: 'MESSAGE_SENT',
+          channel: 'EMAIL',
+          templateUsed: template.name,
+          notes: renderedSubject,
+          createdById: requestingUser.id,
+        },
+      });
+    }
+
+    // 9. Update lead status to SENT
+    await db.outreachLead.update({
+      where: { uid: leadUid },
+      data: { status: OutreachLeadStatus.SENT },
+    });
+
+    return { success: true, emailLogUid: emailLog.uid };
   }
 
   // ─── Private helpers ────────────────────────────────────────────────────────

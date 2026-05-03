@@ -5,7 +5,17 @@ import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
 import { OutreachCampaignsService } from './outreach-campaigns.service';
-import { CreateCampaignDto, UpdateLeadDto, CampaignResponseDto, LeadResponseDto, ImportResultDto, ConvertResultDto, BulkCreateLeadsDto } from './dto/outreach-campaign.dto';
+import {
+  CreateCampaignDto,
+  UpdateLeadDto,
+  CampaignResponseDto,
+  LeadResponseDto,
+  ImportResultDto,
+  ConvertResultDto,
+  BulkCreateLeadsDto,
+  SendLeadEmailDto,
+  SendLeadEmailResultDto,
+} from './dto/outreach-campaign.dto';
 import { WebhookAuthGuard } from '../webhooks/guards/webhook-auth.guard';
 
 @ApiTags('outreach-campaigns')
@@ -88,5 +98,18 @@ export class OutreachCampaignsController {
   @ApiResponse({ status: 201, type: ConvertResultDto })
   convertLead(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string, @CurrentUser('id') userId: number): Promise<ConvertResultDto> {
     return this.service.convertLead(campaignUid, leadUid, userId);
+  }
+
+  @Post(':campaignUid/leads/:leadUid/send-email')
+  @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.HR, RolesType.HR_MANAGER, RolesType.COMPANY_OWNER])
+  @ApiOperation({ summary: 'Send outreach email to a lead - HR/ADMIN required' })
+  @ApiResponse({ status: 201, type: SendLeadEmailResultDto })
+  sendLeadEmail(
+    @Param('campaignUid') campaignUid: string,
+    @Param('leadUid') leadUid: string,
+    @Body() dto: SendLeadEmailDto,
+    @CurrentUser() user: { id: number; name: string; companyId: number | null },
+  ): Promise<SendLeadEmailResultDto> {
+    return this.service.sendLeadEmail(campaignUid, leadUid, dto, user);
   }
 }

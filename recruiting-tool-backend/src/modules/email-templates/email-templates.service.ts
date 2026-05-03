@@ -75,10 +75,9 @@ export class EmailTemplatesService {
     return EmailTemplateMapper(emailTemplate);
   }
 
-  async findAll(companyUid?: string): Promise<EmailTemplateResponseDto[]> {
+  async findAll(companyUid?: string, isSuperAdmin = false): Promise<EmailTemplateResponseDto[]> {
     let companyId: number | undefined;
 
-    // If companyUid is provided, filter by company
     if (companyUid) {
       const company = await this.databaseService.company.findUnique({
         where: { uid: companyUid },
@@ -92,7 +91,10 @@ export class EmailTemplatesService {
     }
 
     const emailTemplates = await this.databaseService.emailTemplate.findMany({
-      where: companyId ? { companyId } : {},
+      where: {
+        ...(companyId ? { companyId } : {}),
+        ...(!isSuperAdmin ? { NOT: { type: 'OUTREACH' } } : {}),
+      },
       include: {
         company: true,
         createdBy: true,

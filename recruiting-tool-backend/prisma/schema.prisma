@@ -1236,6 +1236,7 @@ enum EmailTemplateType {
   CUSTOM
   ASYNC_STAGE_INVITATION
   ASYNC_STAGE_SUBMISSION_RECEIVED
+  OUTREACH
 }
 
 enum InterviewStatus {

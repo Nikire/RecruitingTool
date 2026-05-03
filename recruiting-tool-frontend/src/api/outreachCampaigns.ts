@@ -7,6 +7,8 @@ import type {
   UpdateLeadPayload,
   ImportResult,
   ConvertResult,
+  SendLeadEmailPayload,
+  SendLeadEmailResult,
 } from "../types/outreach-campaigns.types";
 
 // ─── Query keys ───────────────────────────────────────────────────────────────
@@ -122,6 +124,27 @@ export function useConvertLead(campaignUid: string) {
     mutationFn: async (leadUid) => {
       const res = await api.post<ConvertResult>(
         `/outreach-campaigns/${campaignUid}/leads/${leadUid}/convert`,
+      );
+      return res.data;
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: leadsQK(campaignUid) });
+      qc.invalidateQueries({ queryKey: CAMPAIGNS_QK });
+    },
+  });
+}
+
+export function useSendLeadEmail(campaignUid: string) {
+  const qc = useQueryClient();
+  return useMutation<
+    SendLeadEmailResult,
+    Error,
+    { leadUid: string } & SendLeadEmailPayload
+  >({
+    mutationFn: async ({ leadUid, ...payload }) => {
+      const res = await api.post<SendLeadEmailResult>(
+        `/outreach-campaigns/${campaignUid}/leads/${leadUid}/send-email`,
+        payload,
       );
       return res.data;
     },

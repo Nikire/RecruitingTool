@@ -312,4 +312,20 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultTemplateContent[] = [
       ${SIGNATURE}`,
     ),
   },
+  {
+    type: EmailTemplateType.OUTREACH,
+    name: 'Cold Outreach - Initial Contact',
+    subject: 'Quick question about hiring at {{company}}',
+    body: `<p>Hi {{firstName}},</p>
+
+<p>I came across your profile and noticed you're in an HR/People role at {{company}} — I wanted to reach out directly.</p>
+
+<p>We've built <strong>Borderless</strong>, a modern ATS designed for growing teams. It helps HR teams manage job openings, candidates, and the full hiring workflow in one place — without the complexity of enterprise tools.</p>
+
+<p>Would you be open to a quick 15-minute call this week? I'd love to show you how teams like yours are using it.</p>
+
+<p>Best,<br>{{senderName}}</p>
+
+<p style="font-size:11px;color:#999;margin-top:32px;">If you'd prefer not to receive emails from us, just reply with "unsubscribe" and we'll remove you immediately.</p>`,
+  },
 ];

@@ -52,3 +52,12 @@ export interface ImportResult {
 export interface ConvertResult {
   prospectUid: string;
 }
+
+export interface SendLeadEmailPayload {
+  templateUid?: string;
+}
+
+export interface SendLeadEmailResult {
+  success: boolean;
+  emailLogUid: string;
+}

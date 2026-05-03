@@ -38,6 +38,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import EmailIcon from "@mui/icons-material/Email";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +51,7 @@ import {
   useImportLeads,
   useUpdateLead,
   useConvertLead,
+  useSendLeadEmail,
 } from "../../api/outreachCampaigns";
 import type {
   OutreachCampaign,
@@ -336,6 +338,106 @@ const EditNotesDialog: React.FC<EditNotesDialogProps> = ({
   );
 };
 
+// ─── Send Email Dialog ────────────────────────────────────────────────────────
+
+interface SendEmailDialogProps {
+  open: boolean;
+  onClose: () => void;
+  lead: OutreachLead;
+  campaignUid: string;
+}
+
+const SendEmailDialog: React.FC<SendEmailDialogProps> = ({
+  open,
+  onClose,
+  lead,
+  campaignUid,
+}) => {
+  const { t } = useTranslation();
+  const sendMutation = useSendLeadEmail(campaignUid);
+
+  const handleSend = async () => {
+    try {
+      await sendMutation.mutateAsync({ leadUid: lead.uid });
+      toast.success(
+        t("outreachCampaigns.sendEmail.success", { name: lead.name }),
+      );
+      onClose();
+    } catch {
+      toast.error(t("outreachCampaigns.sendEmail.error"));
+    }
+  };
+
+  return (
+    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+      <DialogTitle>{t("outreachCampaigns.sendEmail.title")}</DialogTitle>
+      <DialogContent>
+        <Stack spacing={2} sx={{ mt: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            {t("outreachCampaigns.sendEmail.confirmMessage", {
+              name: lead.name,
+              company: lead.company,
+            })}
+          </Typography>
+          <Box
+            sx={{
+              p: 1.5,
+              bgcolor: "action.hover",
+              borderRadius: 1,
+              border: "1px solid",
+              borderColor: "divider",
+            }}
+          >
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+            >
+              {t("outreachCampaigns.col_email")}
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {lead.email}
+            </Typography>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              display="block"
+              sx={{ mt: 1 }}
+            >
+              {t("outreachCampaigns.col_company")}
+            </Typography>
+            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+              {lead.company}
+            </Typography>
+          </Box>
+        </Stack>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={onClose} disabled={sendMutation.isPending}>
+          {t("common.cancel")}
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleSend}
+          disabled={sendMutation.isPending}
+          startIcon={
+            sendMutation.isPending ? (
+              <CircularProgress size={16} />
+            ) : (
+              <EmailIcon />
+            )
+          }
+        >
+          {sendMutation.isPending
+            ? t("outreachCampaigns.sendEmail.sending")
+            : t("outreachCampaigns.sendEmail.title")}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+};
+
 // ─── Leads Table ──────────────────────────────────────────────────────────────
 
 interface LeadsTableProps {
@@ -363,6 +465,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
   );
   const [convertConfirmLead, setConvertConfirmLead] =
     useState<OutreachLead | null>(null);
+  const [sendEmailLead, setSendEmailLead] = useState<OutreachLead | null>(null);
 
   const handleStatusChange = async (
     lead: OutreachLead,
@@ -565,6 +668,39 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
       ),
     },
     {
+      field: "sendEmail",
+      headerName: t("outreachCampaigns.sendEmail.title"),
+      width: 70,
+      sortable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params: GridRenderCellParams<OutreachLead>) => {
+        const hasEmail = !!params.row.email;
+        const isConverted = params.row.status === "CONVERTED";
+        if (!hasEmail || isConverted) return null;
+        return (
+          <Tooltip
+            title={
+              hasEmail
+                ? t("outreachCampaigns.sendEmail.title")
+                : t("outreachCampaigns.sendEmail.noEmail")
+            }
+          >
+            <span>
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() => setSendEmailLead(params.row)}
+                disabled={!hasEmail}
+              >
+                <EmailIcon fontSize="small" />
+              </IconButton>
+            </span>
+          </Tooltip>
+        );
+      },
+    },
+    {
       field: "actions",
       headerName: t("common.actions"),
       width: 130,
@@ -619,6 +755,15 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
           open={true}
           onClose={() => setNotesDialogLead(null)}
           lead={notesDialogLead}
+          campaignUid={campaignUid}
+        />
+      )}
+
+      {sendEmailLead && (
+        <SendEmailDialog
+          open={true}
+          onClose={() => setSendEmailLead(null)}
+          lead={sendEmailLead}
           campaignUid={campaignUid}
         />
       )}

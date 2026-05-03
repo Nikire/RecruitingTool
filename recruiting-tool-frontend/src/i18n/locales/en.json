@@ -4717,6 +4717,15 @@
     "delete_campaign": "Delete Campaign",
     "lead_updated": "Lead updated",
     "error": "Something went wrong",
+    "sendEmail": {
+      "title": "Send Outreach Email",
+      "confirmMessage": "Send the outreach email to {{name}} at {{company}}?",
+      "sending": "Sending...",
+      "success": "Email sent to {{name}}",
+      "error": "Failed to send email",
+      "noEmail": "This lead has no email address",
+      "subject_preview": "Email subject: {{subject}}"
+    },
     "guide": {
       "accordion_title": "How to get leads",
       "apollo_title": "Apollo.io (Recommended)",

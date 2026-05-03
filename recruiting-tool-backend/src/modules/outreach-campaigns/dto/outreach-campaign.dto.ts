@@ -171,3 +171,20 @@ export class BulkCreateLeadsDto {
   @Type(() => BulkLeadItemDto)
   leads: BulkLeadItemDto[];
 }
+
+// ─── Send Email DTOs ───────────────────────────────────────────────────────────
+
+export class SendLeadEmailDto {
+  @ApiPropertyOptional({ description: 'UID of the email template to use. If omitted, the default OUTREACH template for the company is used.' })
+  @IsOptional()
+  @IsString()
+  templateUid?: string;
+}
+
+export class SendLeadEmailResultDto {
+  @ApiProperty()
+  success: boolean;
+
+  @ApiProperty()
+  emailLogUid: string;
+}
