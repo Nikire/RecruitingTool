@@ -4678,6 +4678,8 @@
     "campaign_name": "Campaign Name",
     "campaign_description": "Description (optional)",
     "campaign_created": "Campaign created",
+    "campaign_uid_label": "Campaign UID",
+    "uid_copied": "UID copied to clipboard",
     "campaign_deleted": "Campaign deleted",
     "no_campaigns": "No campaigns yet. Create your first one.",
     "import_csv": "Import CSV",

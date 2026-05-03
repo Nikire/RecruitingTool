@@ -4686,6 +4686,8 @@
     "campaign_name": "Nombre de la Campaña",
     "campaign_description": "Descripción (opcional)",
     "campaign_created": "Campaña creada",
+    "campaign_uid_label": "UID de campaña",
+    "uid_copied": "UID copiado al portapapeles",
     "campaign_deleted": "Campaña eliminada",
     "no_campaigns": "Aún no hay campañas. Crea la primera.",
     "import_csv": "Importar CSV",

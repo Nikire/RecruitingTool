@@ -37,6 +37,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import UploadFileIcon from "@mui/icons-material/UploadFile";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -900,6 +901,29 @@ const OutreachCampaignsPage: React.FC = () => {
 
           {selectedCampaign && (
             <>
+              {/* Campaign UID row */}
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}
+              >
+                <Typography variant="caption" color="text.secondary">
+                  {t("outreachCampaigns.campaign_uid_label")}:
+                </Typography>
+                <Typography variant="caption" sx={{ fontFamily: "monospace" }}>
+                  {selectedCampaign.uid}
+                </Typography>
+                <Tooltip title={t("common.copy")}>
+                  <IconButton
+                    size="small"
+                    onClick={() => {
+                      navigator.clipboard.writeText(selectedCampaign.uid);
+                      toast.success(t("outreachCampaigns.uid_copied"));
+                    }}
+                  >
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+
               {/* Toolbar */}
               <Box
                 sx={{
