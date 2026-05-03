@@ -9,6 +9,7 @@ import PendingEmailVerificationPage from "./pages/auth/PendingEmailVerificationP
 // Home component is now unused - LandingPage is the root page
 import LandingPage from "./pages/landing/LandingPage";
 import HiringProcessTrackingPage from "./pages/public/HiringProcessTrackingPage";
+import UnsubscribePage from "./pages/public/UnsubscribePage";
 import HiringProcessPage from "./pages/hiring-process/HiringProcessPage";
 import { ProtectedRoute } from "./lib/ProtectedRoute/ProtectedRoute";
 import { RoleGuard } from "./lib/RoleGuard";
@@ -164,6 +165,7 @@ function App() {
             path="/booking-confirmed/:token"
             element={<BookingConfirmedPage />}
           />
+          <Route path="/unsubscribe/:token" element={<UnsubscribePage />} />
           <Route path="/book-demo/:token" element={<BookDemoPage />} />
           <Route path="/submit/:token" element={<AsyncStageSubmissionPage />} />
           <Route

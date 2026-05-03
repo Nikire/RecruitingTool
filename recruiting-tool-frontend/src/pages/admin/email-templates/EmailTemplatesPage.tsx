@@ -14,6 +14,9 @@ import {
   Chip,
   TextField,
   InputAdornment,
+  Tabs,
+  Tab,
+  Alert,
 } from "@mui/material";
 import { Add, Edit, Delete, Search } from "@mui/icons-material";
 import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
@@ -43,13 +46,24 @@ const EmailTemplatesPage: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] =
     useState<EmailTemplate | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeTab, setActiveTab] = useState(0);
 
   const companyUid = user?.company?.uid;
   const { data: templates, isLoading, error } = useEmailTemplates(companyUid);
   const { mutate: deleteTemplate } = useDeleteEmailTemplate();
 
-  // Filter templates based on search
-  const filteredTemplates = templates?.filter((template) => {
+  // Split templates into HR templates and Outreach templates
+  const hrTemplates = templates?.filter(
+    (template) => template.type !== EmailTemplateType.OUTREACH,
+  );
+  const outreachTemplates = templates?.filter(
+    (template) => template.type === EmailTemplateType.OUTREACH,
+  );
+
+  const activeTemplates = activeTab === 0 ? hrTemplates : outreachTemplates;
+
+  // Filter templates based on search within the active tab
+  const filteredTemplates = activeTemplates?.filter((template) => {
     const searchLower = searchTerm.toLowerCase();
     return (
       template.name.toLowerCase().includes(searchLower) ||
@@ -83,6 +97,11 @@ const EmailTemplatesPage: React.FC = () => {
     }
   };
 
+  const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+    setActiveTab(newValue);
+    setSearchTerm("");
+  };
+
   return (
     <Box>
       <Box
@@ -102,6 +121,19 @@ const EmailTemplatesPage: React.FC = () => {
           {t("email_templates_page.create_template")}
         </Button>
       </Box>
+
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs value={activeTab} onChange={handleTabChange}>
+          <Tab label={t("email_templates_page.tab_hr_templates")} />
+          <Tab label={t("email_templates_page.tab_outreach")} />
+        </Tabs>
+      </Box>
+
+      {activeTab === 1 && (
+        <Alert severity="info" sx={{ mb: 3 }}>
+          {t("email_templates_page.outreach_info")}
+        </Alert>
+      )}
 
       <Paper sx={{ p: 2, mb: 3 }}>
         <TextField
@@ -220,7 +252,10 @@ const EmailTemplatesPage: React.FC = () => {
                                       : template.type ===
                                           EmailTemplateType.OFFER_LETTER
                                         ? "success"
-                                        : "default"
+                                        : template.type ===
+                                            EmailTemplateType.OUTREACH
+                                          ? "secondary"
+                                          : "default"
                           }
                         />
                       )}

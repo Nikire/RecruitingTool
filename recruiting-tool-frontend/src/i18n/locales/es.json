@@ -983,6 +983,7 @@
     "type_async_stage_invitation": "Invitación de Etapa Asíncrona",
     "type_async_stage_submission_received": "Entrega de Etapa Asíncrona Recibida",
     "type_custom": "Personalizado",
+    "type_outreach": "Prospección / Email Frío",
     "variable_candidate_name": "Nombre del candidato",
     "variable_position_title": "Título de la posición",
     "variable_company_name": "Nombre de la empresa",
@@ -1309,7 +1310,10 @@
     "table_created_at": "Creada el",
     "table_actions": "Acciones",
     "edit_tooltip": "Editar plantilla",
-    "delete_tooltip": "Eliminar plantilla"
+    "delete_tooltip": "Eliminar plantilla",
+    "tab_hr_templates": "Plantillas de RR.HH.",
+    "tab_outreach": "Prospección",
+    "outreach_info": "Estas plantillas se utilizan para campañas de prospección. Variables disponibles: {{firstName}}, {{company}}, {{senderName}}, {{unsubscribeUrl}}"
   },
   "auth": {
     "login_title": "Iniciar Sesión",
@@ -4779,5 +4783,12 @@
       "n8n_title": "Auto-importación con n8n",
       "n8n_description": "Si n8n está configurado, los prospectos de Apollo se importan automáticamente según un horario. Configura N8N_OUTREACH_WEBHOOK_URL en el .env del backend para activar los recordatorios de seguimiento."
     }
+  },
+  "unsubscribe": {
+    "title": "Dado de baja correctamente",
+    "message": "Ya no recibirás emails de prospección de nuestra parte.",
+    "error_title": "Algo salió mal",
+    "error_message": "Es posible que ya estés dado de baja o que el enlace haya expirado.",
+    "loading": "Procesando tu solicitud..."
   }
 }

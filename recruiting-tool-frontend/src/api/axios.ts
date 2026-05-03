@@ -41,6 +41,7 @@ function isPublicRoute(): boolean {
     "/book-interview",
     "/booking-confirmed",
     "/hiring-process",
+    "/unsubscribe",
   ];
   return publicRoutes.some((route) => currentPath.startsWith(route));
 }
@@ -75,7 +76,9 @@ api.interceptors.request.use((config) => {
   // Fully public endpoints — skip auth header entirely
   const isFullyPublicEndpoint =
     !isHiringProcessPublic &&
-    (config.url?.includes("/public/") || config.url?.includes("-public"));
+    (config.url?.includes("/public/") ||
+      config.url?.includes("-public") ||
+      config.url?.startsWith("/unsubscribe/"));
 
   if (isFullyPublicEndpoint) {
     return config;
@@ -105,7 +108,8 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
   const isPublicEndpoint =
     originalRequest?.url?.includes("/public/") ||
     originalRequest?.url?.includes("-public") ||
-    originalRequest?.url?.match(/\/hiring-process\/[^/]+\/public$/);
+    originalRequest?.url?.match(/\/hiring-process\/[^/]+\/public$/) ||
+    originalRequest?.url?.startsWith("/unsubscribe/");
   if (isPublicEndpoint) {
     console.warn(
       "[AUTH] Public endpoint error, not redirecting to login:",

@@ -58,6 +58,7 @@ import { ProspectTrackingModule } from './modules/prospect-tracking/prospect-tra
 import { ReleaseNotesModule } from './modules/release-notes/release-notes.module';
 import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
 import { OutreachCampaignsModule } from './modules/outreach-campaigns/outreach-campaigns.module';
+import { UnsubscribeModule } from './modules/unsubscribe/unsubscribe.module';
 
 @Module({
   imports: [
@@ -127,6 +128,7 @@ import { OutreachCampaignsModule } from './modules/outreach-campaigns/outreach-c
     ReleaseNotesModule,
     AdminTasksModule,
     OutreachCampaignsModule,
+    UnsubscribeModule,
   ],
   controllers: [AppController],
   providers: [

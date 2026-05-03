@@ -5,9 +5,10 @@ import { SharedModule } from '../shared/shared.module';
 import { WebhookAuthGuard } from '../webhooks/guards/webhook-auth.guard';
 import { EmailModule } from '../email/email.module';
 import { EmailTemplatesModule } from '../email-templates/email-templates.module';
+import { UnsubscribeModule } from '../unsubscribe/unsubscribe.module';
 
 @Module({
-  imports: [SharedModule, EmailModule, EmailTemplatesModule],
+  imports: [SharedModule, EmailModule, EmailTemplatesModule, UnsubscribeModule],
   controllers: [OutreachCampaignsController],
   providers: [OutreachCampaignsService, WebhookAuthGuard],
 })

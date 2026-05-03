@@ -22,6 +22,7 @@ import {
 } from './dto/outreach-campaign.dto';
 import { EmailService } from '../email/email.service';
 import { EmailTemplatesService } from '../email-templates/email-templates.service';
+import { UnsubscribeService } from '../unsubscribe/unsubscribe.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PrismaClient = any;
@@ -33,6 +34,7 @@ export class OutreachCampaignsService {
     private readonly config: ConfigService,
     private readonly emailService: EmailService,
     private readonly emailTemplatesService: EmailTemplatesService,
+    private readonly unsubscribeService: UnsubscribeService,
   ) {}
 
   // ─── Campaigns ──────────────────────────────────────────────────────────────
@@ -335,19 +337,33 @@ export class OutreachCampaignsService {
       }
     }
 
-    // 4. Build Handlebars variables
+    // 4. Check unsubscribe list
+    const unsubscribed = await this.unsubscribeService.isEmailUnsubscribed(lead.email);
+    if (unsubscribed) {
+      throw new BadRequestException('This email address has unsubscribed and cannot receive emails.');
+    }
+
+    // 4b. Generate unsubscribe token and URL
+    const { randomBytes } = await import('crypto');
+    const unsubscribeToken = randomBytes(32).toString('hex');
+    await db.emailUnsubscribe.create({ data: { email: lead.email, token: unsubscribeToken } });
+    const frontendUrl = this.config.get<string>('FRONTEND_URL', 'https://app.borderlessats.com');
+    const unsubscribeUrl = `${frontendUrl}/unsubscribe/${unsubscribeToken}`;
+
+    // 5. Build Handlebars variables
     const firstName = lead.name ? lead.name.split(' ')[0] : lead.name;
     const variables: Record<string, string> = {
       firstName,
       company: lead.company,
       senderName: requestingUser.name,
+      unsubscribeUrl,
     };
 
-    // 5. Render subject and body
+    // 6. Render subject and body
     const renderedSubject = this.emailTemplatesService.renderTemplate(template.subject, variables);
     const renderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
 
-    // 6. Send via Resend API using the private method on EmailService
+    // 7. Send via Resend API using the private method on EmailService
     const emailFrom = this.config.get<string>('EMAIL_FROM', 'noreply@borderlessats.com');
     const smtpEnabled = this.config.get<string>('SMTP_ENABLED', 'false') === 'true';
 

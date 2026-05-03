@@ -1713,6 +1713,18 @@ model AdminTask {
   @@index([assignedToId])
 }
 
+model EmailUnsubscribe {
+  id        Int       @id @default(autoincrement())
+  uid       String    @unique @default(cuid())
+  email     String
+  token     String    @unique
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email])
+  @@index([token])
+}
+
 model OutreachCampaign {
   id          Int            @id @default(autoincrement())
   uid         String         @unique @default(uuid()) @db.Uuid

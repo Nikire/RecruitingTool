@@ -307,6 +307,31 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, DefaultTemplateContent> = {
       ${SIGNATURE}`,
     ),
   },
+  [EmailTemplateType.OUTREACH]: {
+    name: "Outreach Email",
+    subject: "Quick question, {{firstName}}",
+    body: `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background-color:#f4f6fb;font-family:'Segoe UI',Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6fb;padding:32px 0;">
+  <tr><td align="center">
+    <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+      <tr>
+        <td style="background:#ffffff;padding:40px;">
+          <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Hi {{firstName}},</p>
+          <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">I came across your profile and was impressed by your background at <strong>{{company}}</strong>. I wanted to reach out personally because I think you could be a great fit for an exciting opportunity.</p>
+          <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Would you be open to a quick 15-minute call to explore whether this could be a mutual fit?</p>
+          <p style="margin:0;font-size:14px;color:#475569;">Best regards,<br><strong>{{senderName}}</strong></p>
+          <p style="margin:24px 0 0;font-size:11px;color:#94a3b8;">If you prefer not to receive emails like this, you can <a href="{{unsubscribeUrl}}" style="color:#94a3b8;">unsubscribe here</a>.</p>
+        </td>
+      </tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>`,
+  },
 };
 
 interface EmailTemplateDialogProps {
@@ -626,6 +651,9 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
                 </MenuItem>
                 <MenuItem value={EmailTemplateType.CUSTOM}>
                   {t("email_template.type_custom")}
+                </MenuItem>
+                <MenuItem value={EmailTemplateType.OUTREACH}>
+                  {t("email_template.type_outreach")}
                 </MenuItem>
               </TextField>
             )}

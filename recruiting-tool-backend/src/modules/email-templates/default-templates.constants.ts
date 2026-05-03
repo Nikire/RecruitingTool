@@ -326,6 +326,6 @@ export const DEFAULT_EMAIL_TEMPLATES: DefaultTemplateContent[] = [
 
 <p>Best,<br>{{senderName}}</p>
 
-<p style="font-size:11px;color:#999;margin-top:32px;">If you'd prefer not to receive emails from us, just reply with "unsubscribe" and we'll remove you immediately.</p>`,
+<p style="font-size:11px;color:#999;margin-top:32px;">If you'd prefer not to receive future emails, <a href="{{unsubscribeUrl}}" style="color:#999;">click here to unsubscribe</a>.</p>`,
   },
 ];

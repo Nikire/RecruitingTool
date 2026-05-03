@@ -975,6 +975,7 @@
     "type_async_stage_invitation": "Async Stage Invitation",
     "type_async_stage_submission_received": "Async Stage Submission Received",
     "type_custom": "Custom",
+    "type_outreach": "Outreach / Cold Email",
     "variable_candidate_name": "Candidate name",
     "variable_position_title": "Position title",
     "variable_company_name": "Company name",
@@ -1301,7 +1302,10 @@
     "table_created_at": "Created At",
     "table_actions": "Actions",
     "edit_tooltip": "Edit template",
-    "delete_tooltip": "Delete template"
+    "delete_tooltip": "Delete template",
+    "tab_hr_templates": "HR Templates",
+    "tab_outreach": "Outreach",
+    "outreach_info": "These templates are used for cold outreach campaigns. Available variables: {{firstName}}, {{company}}, {{senderName}}, {{unsubscribeUrl}}"
   },
   "auth": {
     "login_title": "Login",
@@ -4771,5 +4775,12 @@
       "n8n_title": "n8n Auto-Import",
       "n8n_description": "If n8n is configured, leads from Apollo are imported automatically on schedule. Set N8N_OUTREACH_WEBHOOK_URL in your backend .env to enable follow-up reminders."
     }
+  },
+  "unsubscribe": {
+    "title": "Unsubscribed Successfully",
+    "message": "You will no longer receive outreach emails from us.",
+    "error_title": "Something Went Wrong",
+    "error_message": "You may already be unsubscribed, or the link may have expired.",
+    "loading": "Processing your request..."
   }
 }
