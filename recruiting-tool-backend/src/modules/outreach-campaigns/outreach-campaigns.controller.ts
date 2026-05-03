@@ -17,6 +17,7 @@ import {
   SendLeadEmailResultDto,
 } from './dto/outreach-campaign.dto';
 import { WebhookAuthGuard } from '../webhooks/guards/webhook-auth.guard';
+import { SkipAuth } from '../shared/modules/auth/decorators/skip-auth.decorator';
 
 @ApiTags('outreach-campaigns')
 @ApiBearerAuth()
@@ -73,6 +74,7 @@ export class OutreachCampaignsController {
   }
 
   @Post(':campaignUid/leads/bulk')
+  @SkipAuth()
   @UseGuards(WebhookAuthGuard)
   @ApiSecurity('X-API-Key')
   @ApiOperation({ summary: 'Bulk create leads via JSON (n8n / webhook) - requires x-api-key header' })
