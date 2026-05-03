@@ -219,25 +219,55 @@ export class OutreachCampaignsService {
     const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
     if (!campaign) throw new NotFoundException('Campaign not found');
 
+    // Fetch all existing non-null emails for this campaign (lower-cased for case-insensitive comparison)
+    const existingLeads = await db.outreachLead.findMany({
+      where: { campaignId: campaign.id, email: { not: null } },
+      select: { email: true },
+    });
+    const existingEmails = new Set(existingLeads.map((l) => l.email!.toLowerCase()));
+
     let imported = 0;
     let skipped = 0;
+    const toCreate: {
+      name: string;
+      company: string;
+      email: string | null;
+      linkedinUrl: string | null;
+      notes: string | null;
+      campaignId: number;
+    }[] = [];
+    // Track emails added within this batch to prevent intra-batch duplicates
+    const batchEmails = new Set<string>();
 
     for (const lead of leads) {
       if (!lead.name && !lead.company) {
         skipped++;
         continue;
       }
-      await db.outreachLead.create({
-        data: {
-          name: lead.name || lead.company,
-          company: lead.company || lead.name,
-          email: lead.email ?? null,
-          linkedinUrl: lead.linkedinUrl ?? null,
-          notes: lead.notes ?? null,
-          campaignId: campaign.id,
-        },
+
+      // Deduplicate by email (skip if email already exists in campaign or current batch)
+      if (lead.email) {
+        const normalised = lead.email.toLowerCase();
+        if (existingEmails.has(normalised) || batchEmails.has(normalised)) {
+          skipped++;
+          continue;
+        }
+        batchEmails.add(normalised);
+      }
+
+      toCreate.push({
+        name: lead.name || lead.company,
+        company: lead.company || lead.name,
+        email: lead.email ?? null,
+        linkedinUrl: lead.linkedinUrl ?? null,
+        notes: lead.notes ?? null,
+        campaignId: campaign.id,
       });
       imported++;
+    }
+
+    if (toCreate.length > 0) {
+      await db.outreachLead.createMany({ data: toCreate });
     }
 
     return { imported, skipped };
