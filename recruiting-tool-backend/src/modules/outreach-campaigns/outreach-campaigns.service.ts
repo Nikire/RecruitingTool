@@ -272,7 +272,10 @@ export class OutreachCampaignsService {
     }
 
     if (toCreate.length > 0) {
-      await db.outreachLead.createMany({ data: toCreate });
+      const result = await db.outreachLead.createMany({ data: toCreate, skipDuplicates: true });
+      // Adjust imported count for any DB-level duplicates silently dropped
+      imported = result.count;
+      skipped += toCreate.length - result.count;
     }
 
     return { imported, skipped };

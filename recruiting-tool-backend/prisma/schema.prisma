@@ -1763,6 +1763,7 @@ model OutreachLead {
   @@index([status])
   @@index([campaignId])
   @@index([uid])
+  @@index([email])
   @@map("outreach_leads")
 }
 
