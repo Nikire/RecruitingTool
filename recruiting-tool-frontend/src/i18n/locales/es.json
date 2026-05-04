@@ -4713,8 +4713,6 @@
     "channel_email": "Email",
     "channel_linkedin": "LinkedIn",
     "status_pending": "Pendiente",
-    "status_sent": "Enviado",
-    "status_replied": "Respondió",
     "status_converted": "Convertido",
     "filter_status": "Estado",
     "filter_channel": "Canal",
@@ -4736,7 +4734,8 @@
       "success": "Email enviado a {{name}}",
       "error": "Error al enviar el email",
       "noEmail": "Este prospecto no tiene dirección de email",
-      "subject_preview": "Asunto del email: {{subject}}"
+      "subject_preview": "Asunto del email: {{subject}}",
+      "disabled_tooltip": "Envío de email temporalmente deshabilitado"
     },
     "previewEmail": {
       "title": "Vista Previa del Email",
@@ -4745,7 +4744,11 @@
       "template_label": "Plantilla",
       "subject_label": "Asunto",
       "body_label": "Cuerpo",
-      "error": "Error al cargar la vista previa del email"
+      "error": "Error al cargar la vista previa del email",
+      "copy_subject": "Copiar asunto",
+      "copy_body": "Copiar cuerpo (texto plano)",
+      "copied_subject": "Asunto copiado",
+      "copied_body": "Cuerpo copiado"
     },
     "sendTestEmail": {
       "title": "Enviar Email de Prueba",
@@ -4782,7 +4785,14 @@
       "csv_row5_field": "Guardado en Notas",
       "n8n_title": "Auto-importación con n8n",
       "n8n_description": "Si n8n está configurado, los prospectos de Apollo se importan automáticamente según un horario. Configura N8N_OUTREACH_WEBHOOK_URL en el .env del backend para activar los recordatorios de seguimiento."
-    }
+    },
+    "col_title": "Cargo",
+    "col_phone": "Teléfono",
+    "col_city": "Ciudad",
+    "col_country": "País",
+    "col_seniority": "Seniority",
+    "convert_tags_label": "Asignar a",
+    "convert_tags_placeholder": "Escribe o selecciona..."
   },
   "unsubscribe": {
     "title": "Dado de baja correctamente",

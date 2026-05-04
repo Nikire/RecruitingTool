@@ -12,6 +12,8 @@ import {
   LeadResponseDto,
   ImportResultDto,
   ConvertResultDto,
+  ConvertLeadDto,
+  DailyCheckResultDto,
   BulkCreateLeadsDto,
   SendLeadEmailDto,
   SendLeadEmailResultDto,
@@ -67,7 +69,7 @@ export class OutreachCampaignsController {
   @Post(':campaignUid/leads/import')
   @UseInterceptors(FileInterceptor('file'))
   @ApiConsumes('multipart/form-data')
-  @ApiOperation({ summary: 'Import leads from CSV - ADMIN required' })
+  @ApiOperation({ summary: 'Import leads from CSV (Apollo format supported) - ADMIN required' })
   @ApiResponse({ status: 201, type: ImportResultDto })
   importLeads(@Param('campaignUid') campaignUid: string, @UploadedFile() file: Express.Multer.File, @CurrentUser('id') userId: number): Promise<ImportResultDto> {
     if (!file) {
@@ -101,8 +103,23 @@ export class OutreachCampaignsController {
   @Post(':campaignUid/leads/:leadUid/convert')
   @ApiOperation({ summary: 'Convert lead to CRM prospect - ADMIN required' })
   @ApiResponse({ status: 201, type: ConvertResultDto })
-  convertLead(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string, @CurrentUser('id') userId: number): Promise<ConvertResultDto> {
-    return this.service.convertLead(campaignUid, leadUid, userId);
+  convertLead(
+    @Param('campaignUid') campaignUid: string,
+    @Param('leadUid') leadUid: string,
+    @Body() dto: ConvertLeadDto,
+    @CurrentUser('id') userId: number,
+  ): Promise<ConvertResultDto> {
+    return this.service.convertLead(campaignUid, leadUid, userId, dto);
+  }
+
+  @Get(':campaignUid/daily-check')
+  @SkipAuth()
+  @UseGuards(WebhookAuthGuard)
+  @ApiSecurity('X-API-Key')
+  @ApiOperation({ summary: 'Check if leads were already created today for this campaign (n8n idempotency check)' })
+  @ApiResponse({ status: 200, type: DailyCheckResultDto })
+  dailyCheck(@Param('campaignUid') campaignUid: string): Promise<DailyCheckResultDto> {
+    return this.service.dailyCheck(campaignUid);
   }
 
   @Post(':campaignUid/leads/:leadUid/send-email')

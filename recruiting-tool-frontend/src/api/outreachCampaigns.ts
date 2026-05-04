@@ -7,6 +7,7 @@ import type {
   UpdateLeadPayload,
   ImportResult,
   ConvertResult,
+  ConvertLeadPayload,
   SendLeadEmailPayload,
   SendLeadEmailResult,
   PreviewEmailResult,
@@ -123,10 +124,15 @@ export function useUpdateLead(campaignUid: string) {
 
 export function useConvertLead(campaignUid: string) {
   const qc = useQueryClient();
-  return useMutation<ConvertResult, Error, string>({
-    mutationFn: async (leadUid) => {
+  return useMutation<
+    ConvertResult,
+    Error,
+    { leadUid: string } & ConvertLeadPayload
+  >({
+    mutationFn: async ({ leadUid, tags }) => {
       const res = await api.post<ConvertResult>(
         `/outreach-campaigns/${campaignUid}/leads/${leadUid}/convert`,
+        { tags: tags ?? [] },
       );
       return res.data;
     },

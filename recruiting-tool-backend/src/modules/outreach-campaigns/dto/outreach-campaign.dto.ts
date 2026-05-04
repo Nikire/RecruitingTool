@@ -9,8 +9,6 @@ export enum OutreachLeadChannel {
 
 export enum OutreachLeadStatus {
   PENDING = 'PENDING',
-  SENT = 'SENT',
-  REPLIED = 'REPLIED',
   CONVERTED = 'CONVERTED',
 }
 
@@ -34,12 +32,6 @@ export class CampaignLeadCountsDto {
 
   @ApiProperty()
   pending: number;
-
-  @ApiProperty()
-  sent: number;
-
-  @ApiProperty()
-  replied: number;
 
   @ApiProperty()
   converted: number;
@@ -120,6 +112,49 @@ export class LeadResponseDto {
 
   @ApiProperty()
   updatedAt: string;
+
+  // Apollo enrichment fields
+  @ApiProperty({ required: false })
+  firstName?: string;
+
+  @ApiProperty({ required: false })
+  lastName?: string;
+
+  @ApiProperty({ required: false })
+  title?: string;
+
+  @ApiProperty({ required: false })
+  phone?: string;
+
+  @ApiProperty({ required: false })
+  city?: string;
+
+  @ApiProperty({ required: false })
+  state?: string;
+
+  @ApiProperty({ required: false })
+  country?: string;
+
+  @ApiProperty({ required: false })
+  website?: string;
+
+  @ApiProperty({ required: false })
+  industry?: string;
+
+  @ApiProperty({ required: false })
+  seniority?: string;
+
+  @ApiProperty({ required: false })
+  apolloContactId?: string;
+
+  @ApiProperty({ required: false })
+  apolloAccountId?: string;
+
+  @ApiProperty({ required: false })
+  secondaryEmail?: string;
+
+  @ApiProperty({ required: false })
+  apolloData?: Record<string, unknown>;
 }
 
 export class ImportResultDto {
@@ -133,6 +168,15 @@ export class ImportResultDto {
 export class ConvertResultDto {
   @ApiProperty()
   prospectUid: string;
+}
+
+// ─── Convert Lead DTO ──────────────────────────────────────────────────────────
+
+export class ConvertLeadDto {
+  @ApiPropertyOptional({ type: [String], description: 'Tags to assign to the new CRM prospect' })
+  @IsOptional()
+  @IsArray()
+  tags?: string[];
 }
 
 // ─── Bulk Import DTOs ──────────────────────────────────────────────────────────
@@ -162,6 +206,76 @@ export class BulkLeadItemDto {
   @IsOptional()
   @IsString()
   notes?: string;
+
+  // Apollo enrichment fields
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  firstName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  lastName?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  title?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  phone?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  city?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  state?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  country?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  website?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  industry?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  seniority?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  apolloContactId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  apolloAccountId?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString()
+  secondaryEmail?: string;
+
+  @ApiPropertyOptional({ type: Object })
+  @IsOptional()
+  apolloData?: Record<string, unknown>;
 }
 
 export class BulkCreateLeadsDto {
@@ -227,4 +341,14 @@ export class SendTestEmailResultDto {
 
   @ApiProperty({ description: 'Email address the test was sent to' })
   sentTo: string;
+}
+
+// ─── Daily Check DTO ───────────────────────────────────────────────────────────
+
+export class DailyCheckResultDto {
+  @ApiProperty({ description: 'Whether leads were already created today for this campaign' })
+  alreadyRanToday: boolean;
+
+  @ApiProperty({ description: 'Number of leads created today' })
+  count: number;
 }

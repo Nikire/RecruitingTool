@@ -3,6 +3,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Autocomplete,
   Box,
   Button,
   Chip,
@@ -41,7 +42,6 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import EmailIcon from "@mui/icons-material/Email";
 import VisibilityIcon from "@mui/icons-material/Visibility";
-import ScienceIcon from "@mui/icons-material/Science";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -54,9 +54,7 @@ import {
   useImportLeads,
   useUpdateLead,
   useConvertLead,
-  useSendLeadEmail,
   usePreviewLeadEmail,
-  useSendTestEmail,
 } from "../../api/outreachCampaigns";
 import type {
   OutreachCampaign,
@@ -83,10 +81,6 @@ function statusChipProps(status: OutreachLeadStatus): {
   switch (status) {
     case "PENDING":
       return { color: "default" };
-    case "SENT":
-      return { color: "info" };
-    case "REPLIED":
-      return { color: "success" };
     case "CONVERTED":
       return { color: "secondary", sx: { bgcolor: "purple", color: "white" } };
     default:
@@ -343,106 +337,6 @@ const EditNotesDialog: React.FC<EditNotesDialogProps> = ({
   );
 };
 
-// ─── Send Email Dialog ────────────────────────────────────────────────────────
-
-interface SendEmailDialogProps {
-  open: boolean;
-  onClose: () => void;
-  lead: OutreachLead;
-  campaignUid: string;
-}
-
-const SendEmailDialog: React.FC<SendEmailDialogProps> = ({
-  open,
-  onClose,
-  lead,
-  campaignUid,
-}) => {
-  const { t } = useTranslation();
-  const sendMutation = useSendLeadEmail(campaignUid);
-
-  const handleSend = async () => {
-    try {
-      await sendMutation.mutateAsync({ leadUid: lead.uid });
-      toast.success(
-        t("outreachCampaigns.sendEmail.success", { name: lead.name }),
-      );
-      onClose();
-    } catch {
-      toast.error(t("outreachCampaigns.sendEmail.error"));
-    }
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t("outreachCampaigns.sendEmail.title")}</DialogTitle>
-      <DialogContent>
-        <Stack spacing={2} sx={{ mt: 1 }}>
-          <Typography variant="body2" color="text.secondary">
-            {t("outreachCampaigns.sendEmail.confirmMessage", {
-              name: lead.name,
-              company: lead.company,
-            })}
-          </Typography>
-          <Box
-            sx={{
-              p: 1.5,
-              bgcolor: "action.hover",
-              borderRadius: 1,
-              border: "1px solid",
-              borderColor: "divider",
-            }}
-          >
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              display="block"
-            >
-              {t("outreachCampaigns.col_email")}
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {lead.email}
-            </Typography>
-            <Typography
-              variant="caption"
-              color="text.secondary"
-              display="block"
-              sx={{ mt: 1 }}
-            >
-              {t("outreachCampaigns.col_company")}
-            </Typography>
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
-              {lead.company}
-            </Typography>
-          </Box>
-        </Stack>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose} disabled={sendMutation.isPending}>
-          {t("common.cancel")}
-        </Button>
-        <Button
-          variant="contained"
-          color="primary"
-          onClick={handleSend}
-          disabled={sendMutation.isPending}
-          startIcon={
-            sendMutation.isPending ? (
-              <CircularProgress size={16} />
-            ) : (
-              <EmailIcon />
-            )
-          }
-        >
-          {sendMutation.isPending
-            ? t("outreachCampaigns.sendEmail.sending")
-            : t("outreachCampaigns.sendEmail.title")}
-        </Button>
-      </DialogActions>
-    </Dialog>
-  );
-};
-
 // ─── Preview Email Dialog ─────────────────────────────────────────────────────
 
 interface PreviewEmailDialogProps {
@@ -464,6 +358,24 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
     lead.uid,
     open,
   );
+
+  const handleCopySubject = () => {
+    if (data?.subject) {
+      navigator.clipboard.writeText(data.subject);
+      toast.success(t("outreachCampaigns.previewEmail.copied_subject"));
+    }
+  };
+
+  const handleCopyBody = () => {
+    if (data?.body) {
+      // Strip HTML tags for plain text copy
+      const div = document.createElement("div");
+      div.innerHTML = data.body;
+      const plain = div.textContent ?? div.innerText ?? data.body;
+      navigator.clipboard.writeText(plain);
+      toast.success(t("outreachCampaigns.previewEmail.copied_body"));
+    }
+  };
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
@@ -491,15 +403,29 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
         {data && (
           <Stack spacing={2}>
             <Box>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontWeight={600}
-                display="block"
-                sx={{ mb: 0.5 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 0.5,
+                }}
               >
-                {t("outreachCampaigns.previewEmail.subject_label")}
-              </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                >
+                  {t("outreachCampaigns.previewEmail.subject_label")}
+                </Typography>
+                <Tooltip
+                  title={t("outreachCampaigns.previewEmail.copy_subject")}
+                >
+                  <IconButton size="small" onClick={handleCopySubject}>
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Paper
                 variant="outlined"
                 sx={{ px: 2, py: 1.5, bgcolor: "action.hover" }}
@@ -510,15 +436,27 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
               </Paper>
             </Box>
             <Box>
-              <Typography
-                variant="caption"
-                color="text.secondary"
-                fontWeight={600}
-                display="block"
-                sx={{ mb: 0.5 }}
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 0.5,
+                }}
               >
-                {t("outreachCampaigns.previewEmail.body_label")}
-              </Typography>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                >
+                  {t("outreachCampaigns.previewEmail.body_label")}
+                </Typography>
+                <Tooltip title={t("outreachCampaigns.previewEmail.copy_body")}>
+                  <IconButton size="small" onClick={handleCopyBody}>
+                    <ContentCopyIcon fontSize="inherit" />
+                  </IconButton>
+                </Tooltip>
+              </Box>
               <Paper
                 variant="outlined"
                 sx={{
@@ -544,90 +482,122 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
   );
 };
 
-// ─── Send Test Email Dialog ───────────────────────────────────────────────────
+// ─── Convert Lead Dialog ──────────────────────────────────────────────────────
 
-interface SendTestEmailDialogProps {
+interface ConvertLeadDialogProps {
   open: boolean;
   onClose: () => void;
+  lead: OutreachLead | null;
   campaignUid: string;
 }
 
-const SendTestEmailDialog: React.FC<SendTestEmailDialogProps> = ({
+const TAG_SUGGESTIONS = ["Santiago", "Erik"];
+
+const ConvertLeadDialog: React.FC<ConvertLeadDialogProps> = ({
   open,
   onClose,
+  lead,
   campaignUid,
 }) => {
   const { t } = useTranslation();
-  const [dummyName, setDummyName] = useState("John Doe");
-  const [dummyCompany, setDummyCompany] = useState("Acme Corp");
-  const sendTestMutation = useSendTestEmail(campaignUid);
+  const navigate = useNavigate();
+  const [tags, setTags] = useState<string[]>([]);
+  const convertMutation = useConvertLead(campaignUid);
 
-  const handleSend = async () => {
+  const handleConvert = async () => {
+    if (!lead) return;
     try {
-      const result = await sendTestMutation.mutateAsync({
-        dummyName: dummyName.trim() || "John Doe",
-        dummyCompany: dummyCompany.trim() || "Acme Corp",
-      });
+      await convertMutation.mutateAsync({ leadUid: lead.uid, tags });
       toast.success(
-        t("outreachCampaigns.sendTestEmail.success", {
-          email: result.sentTo,
-        }),
+        <Box>
+          <Typography variant="body2">
+            {t("outreachCampaigns.converted_success")}
+          </Typography>
+          <Link
+            component="button"
+            variant="body2"
+            onClick={() => navigate("/admin/outreach-crm")}
+            sx={{ cursor: "pointer" }}
+          >
+            {t("outreachCampaigns.view_in_crm")}
+          </Link>
+        </Box>,
       );
+      setTags([]);
       onClose();
     } catch {
-      toast.error(t("outreachCampaigns.sendTestEmail.error"));
+      toast.error(t("outreachCampaigns.error"));
+      onClose();
     }
   };
 
   const handleClose = () => {
-    setDummyName("John Doe");
-    setDummyCompany("Acme Corp");
+    setTags([]);
     onClose();
   };
 
+  if (!lead) return null;
+
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-      <DialogTitle>{t("outreachCampaigns.sendTestEmail.title")}</DialogTitle>
+      <DialogTitle>{t("outreachCampaigns.confirm_convert_title")}</DialogTitle>
       <DialogContent>
         <Stack spacing={2} sx={{ mt: 1 }}>
           <Typography variant="body2" color="text.secondary">
-            {t("outreachCampaigns.sendTestEmail.description")}
+            {t("outreachCampaigns.confirm_convert_message", {
+              name: lead.name,
+              company: lead.company,
+            })}
           </Typography>
-          <TextField
-            label={t("outreachCampaigns.sendTestEmail.dummy_name")}
-            value={dummyName}
-            onChange={(e) => setDummyName(e.target.value)}
-            fullWidth
-            size="small"
-          />
-          <TextField
-            label={t("outreachCampaigns.sendTestEmail.dummy_company")}
-            value={dummyCompany}
-            onChange={(e) => setDummyCompany(e.target.value)}
-            fullWidth
-            size="small"
+          <Autocomplete
+            multiple
+            freeSolo
+            options={TAG_SUGGESTIONS}
+            value={tags}
+            onChange={(_e, newValue) => setTags(newValue as string[])}
+            renderTags={(value, getTagProps) =>
+              value.map((option, index) => {
+                const { key, ...tagProps } = getTagProps({ index });
+                return (
+                  <Chip
+                    key={key}
+                    label={option}
+                    size="small"
+                    variant="filled"
+                    {...tagProps}
+                  />
+                );
+              })
+            }
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                size="small"
+                label={t("outreachCampaigns.convert_tags_label")}
+                placeholder={t("outreachCampaigns.convert_tags_placeholder")}
+              />
+            )}
           />
         </Stack>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleClose} disabled={sendTestMutation.isPending}>
+        <Button onClick={handleClose} disabled={convertMutation.isPending}>
           {t("common.cancel")}
         </Button>
         <Button
           variant="contained"
-          onClick={handleSend}
-          disabled={sendTestMutation.isPending}
+          color="secondary"
+          onClick={handleConvert}
+          disabled={convertMutation.isPending}
           startIcon={
-            sendTestMutation.isPending ? (
+            convertMutation.isPending ? (
               <CircularProgress size={16} />
-            ) : (
-              <ScienceIcon />
-            )
+            ) : undefined
           }
         >
-          {sendTestMutation.isPending
-            ? t("outreachCampaigns.sendTestEmail.sending")
-            : t("outreachCampaigns.sendTestEmail.send_button")}
+          {convertMutation.isPending
+            ? t("common.saving")
+            : t("outreachCampaigns.add_to_crm")}
         </Button>
       </DialogActions>
     </Dialog>
@@ -648,20 +618,17 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
   filterChannel,
 }) => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { data: leads = [], isLoading } = useOutreachLeads(campaignUid, {
     status: filterStatus || undefined,
     channel: filterChannel || undefined,
   });
   const updateMutation = useUpdateLead(campaignUid);
-  const convertMutation = useConvertLead(campaignUid);
 
   const [notesDialogLead, setNotesDialogLead] = useState<OutreachLead | null>(
     null,
   );
-  const [convertConfirmLead, setConvertConfirmLead] =
+  const [convertDialogLead, setConvertDialogLead] =
     useState<OutreachLead | null>(null);
-  const [sendEmailLead, setSendEmailLead] = useState<OutreachLead | null>(null);
   const [previewEmailLead, setPreviewEmailLead] = useState<OutreachLead | null>(
     null,
   );
@@ -688,33 +655,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
     }
   };
 
-  const handleConvert = async () => {
-    if (!convertConfirmLead) return;
-    try {
-      const result = await convertMutation.mutateAsync(convertConfirmLead.uid);
-      toast.success(
-        <Box>
-          <Typography variant="body2">
-            {t("outreachCampaigns.converted_success")}
-          </Typography>
-          <Link
-            component="button"
-            variant="body2"
-            onClick={() => navigate("/admin/outreach-crm")}
-            sx={{ cursor: "pointer" }}
-          >
-            {t("outreachCampaigns.view_in_crm")}
-          </Link>
-        </Box>,
-      );
-      void result;
-      setConvertConfirmLead(null);
-    } catch {
-      toast.error(t("outreachCampaigns.error"));
-      setConvertConfirmLead(null);
-    }
-  };
-
   const columns: GridColDef<OutreachLead>[] = [
     {
       field: "name",
@@ -737,6 +677,85 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
         params.row.email ? (
           <Typography variant="body2" noWrap>
             {params.row.email}
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.disabled">
+            —
+          </Typography>
+        ),
+    },
+    {
+      field: "title",
+      headerName: t("outreachCampaigns.col_title"),
+      width: 160,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row.title ? (
+          <Typography variant="body2" noWrap>
+            {params.row.title}
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.disabled">
+            —
+          </Typography>
+        ),
+    },
+    {
+      field: "phone",
+      headerName: t("outreachCampaigns.col_phone"),
+      width: 140,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row.phone ? (
+          <Link
+            href={`tel:${params.row.phone}`}
+            variant="body2"
+            underline="hover"
+          >
+            {params.row.phone}
+          </Link>
+        ) : (
+          <Typography variant="body2" color="text.disabled">
+            —
+          </Typography>
+        ),
+    },
+    {
+      field: "city",
+      headerName: t("outreachCampaigns.col_city"),
+      width: 120,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row.city ? (
+          <Typography variant="body2" noWrap>
+            {params.row.city}
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.disabled">
+            —
+          </Typography>
+        ),
+    },
+    {
+      field: "country",
+      headerName: t("outreachCampaigns.col_country"),
+      width: 120,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row.country ? (
+          <Typography variant="body2" noWrap>
+            {params.row.country}
+          </Typography>
+        ) : (
+          <Typography variant="body2" color="text.disabled">
+            —
+          </Typography>
+        ),
+    },
+    {
+      field: "seniority",
+      headerName: t("outreachCampaigns.col_seniority"),
+      width: 120,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row.seniority ? (
+          <Typography variant="body2" noWrap>
+            {params.row.seniority}
           </Typography>
         ) : (
           <Typography variant="body2" color="text.disabled">
@@ -829,12 +848,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
               <MenuItem value="PENDING">
                 {t("outreachCampaigns.status_pending")}
               </MenuItem>
-              <MenuItem value="SENT">
-                {t("outreachCampaigns.status_sent")}
-              </MenuItem>
-              <MenuItem value="REPLIED">
-                {t("outreachCampaigns.status_replied")}
-              </MenuItem>
               <MenuItem value="CONVERTED">
                 {t("outreachCampaigns.status_converted")}
               </MenuItem>
@@ -878,20 +891,9 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
         const isConverted = params.row.status === "CONVERTED";
         if (!hasEmail || isConverted) return null;
         return (
-          <Tooltip
-            title={
-              hasEmail
-                ? t("outreachCampaigns.sendEmail.title")
-                : t("outreachCampaigns.sendEmail.noEmail")
-            }
-          >
+          <Tooltip title={t("outreachCampaigns.sendEmail.disabled_tooltip")}>
             <span>
-              <IconButton
-                size="small"
-                color="primary"
-                onClick={() => setSendEmailLead(params.row)}
-                disabled={!hasEmail}
-              >
+              <IconButton size="small" color="primary" disabled={true}>
                 <EmailIcon fontSize="small" />
               </IconButton>
             </span>
@@ -940,8 +942,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
                 size="small"
                 variant="outlined"
                 color="secondary"
-                onClick={() => setConvertConfirmLead(params.row)}
-                disabled={convertMutation.isPending}
+                onClick={() => setConvertDialogLead(params.row)}
               >
                 {t("outreachCampaigns.add_to_crm")}
               </Button>
@@ -977,15 +978,6 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
         />
       )}
 
-      {sendEmailLead && (
-        <SendEmailDialog
-          open={true}
-          onClose={() => setSendEmailLead(null)}
-          lead={sendEmailLead}
-          campaignUid={campaignUid}
-        />
-      )}
-
       {previewEmailLead && (
         <PreviewEmailDialog
           open={true}
@@ -995,17 +987,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
         />
       )}
 
-      <ConfirmationDialog
-        open={!!convertConfirmLead}
-        onClose={() => setConvertConfirmLead(null)}
-        onConfirm={handleConvert}
-        title={t("outreachCampaigns.confirm_convert_title")}
-        message={t("outreachCampaigns.confirm_convert_message", {
-          name: convertConfirmLead?.name,
-          company: convertConfirmLead?.company,
-        })}
-        severity="info"
-        isLoading={convertMutation.isPending}
+      <ConvertLeadDialog
+        open={!!convertDialogLead}
+        onClose={() => setConvertDialogLead(null)}
+        lead={convertDialogLead}
+        campaignUid={campaignUid}
       />
     </>
   );
@@ -1175,7 +1161,6 @@ const OutreachCampaignsPage: React.FC = () => {
   const [selectedTab, setSelectedTab] = useState(0);
   const [newCampaignOpen, setNewCampaignOpen] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
-  const [sendTestEmailOpen, setSendTestEmailOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterChannel, setFilterChannel] = useState("");
   const [deleteCampaign, setDeleteCampaign] = useState<OutreachCampaign | null>(
@@ -1331,12 +1316,6 @@ const OutreachCampaignsPage: React.FC = () => {
                       <MenuItem value="PENDING">
                         {t("outreachCampaigns.status_pending")}
                       </MenuItem>
-                      <MenuItem value="SENT">
-                        {t("outreachCampaigns.status_sent")}
-                      </MenuItem>
-                      <MenuItem value="REPLIED">
-                        {t("outreachCampaigns.status_replied")}
-                      </MenuItem>
                       <MenuItem value="CONVERTED">
                         {t("outreachCampaigns.status_converted")}
                       </MenuItem>
@@ -1374,18 +1353,6 @@ const OutreachCampaignsPage: React.FC = () => {
                         color: "default" as ChipColor,
                       },
                       {
-                        key: "sent",
-                        label: t("outreachCampaigns.status_sent"),
-                        count: selectedCampaign.leadCounts.sent,
-                        color: "info" as ChipColor,
-                      },
-                      {
-                        key: "replied",
-                        label: t("outreachCampaigns.status_replied"),
-                        count: selectedCampaign.leadCounts.replied,
-                        color: "success" as ChipColor,
-                      },
-                      {
                         key: "converted",
                         label: t("outreachCampaigns.status_converted"),
                         count: selectedCampaign.leadCounts.converted,
@@ -1409,14 +1376,6 @@ const OutreachCampaignsPage: React.FC = () => {
                 </Box>
 
                 <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-                  <Button
-                    variant="outlined"
-                    startIcon={<ScienceIcon />}
-                    size="small"
-                    onClick={() => setSendTestEmailOpen(true)}
-                  >
-                    {t("outreachCampaigns.sendTestEmail.button")}
-                  </Button>
                   <Button
                     variant="outlined"
                     startIcon={<UploadFileIcon />}
@@ -1458,14 +1417,6 @@ const OutreachCampaignsPage: React.FC = () => {
         <ImportCsvDialog
           open={importOpen}
           onClose={() => setImportOpen(false)}
-          campaignUid={selectedCampaign.uid}
-        />
-      )}
-
-      {selectedCampaign && (
-        <SendTestEmailDialog
-          open={sendTestEmailOpen}
-          onClose={() => setSendTestEmailOpen(false)}
           campaignUid={selectedCampaign.uid}
         />
       )}

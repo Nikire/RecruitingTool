@@ -4705,8 +4705,6 @@
     "channel_email": "Email",
     "channel_linkedin": "LinkedIn",
     "status_pending": "Pending",
-    "status_sent": "Sent",
-    "status_replied": "Replied",
     "status_converted": "Converted",
     "filter_status": "Status",
     "filter_channel": "Channel",
@@ -4728,7 +4726,8 @@
       "success": "Email sent to {{name}}",
       "error": "Failed to send email",
       "noEmail": "This lead has no email address",
-      "subject_preview": "Email subject: {{subject}}"
+      "subject_preview": "Email subject: {{subject}}",
+      "disabled_tooltip": "Email sending temporarily disabled"
     },
     "previewEmail": {
       "title": "Preview Email",
@@ -4737,7 +4736,11 @@
       "template_label": "Template",
       "subject_label": "Subject",
       "body_label": "Body",
-      "error": "Failed to load email preview"
+      "error": "Failed to load email preview",
+      "copy_subject": "Copy subject",
+      "copy_body": "Copy body (plain text)",
+      "copied_subject": "Subject copied",
+      "copied_body": "Body copied"
     },
     "sendTestEmail": {
       "title": "Send Test Email",
@@ -4774,7 +4777,14 @@
       "csv_row5_field": "Saved in Notes",
       "n8n_title": "n8n Auto-Import",
       "n8n_description": "If n8n is configured, leads from Apollo are imported automatically on schedule. Set N8N_OUTREACH_WEBHOOK_URL in your backend .env to enable follow-up reminders."
-    }
+    },
+    "col_title": "Title",
+    "col_phone": "Phone",
+    "col_city": "City",
+    "col_country": "Country",
+    "col_seniority": "Seniority",
+    "convert_tags_label": "Assign to",
+    "convert_tags_placeholder": "Type or select..."
   },
   "unsubscribe": {
     "title": "Unsubscribed Successfully",

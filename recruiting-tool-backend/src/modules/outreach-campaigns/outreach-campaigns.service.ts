@@ -11,7 +11,9 @@ import {
   LeadResponseDto,
   ImportResultDto,
   ConvertResultDto,
+  ConvertLeadDto,
   BulkLeadItemDto,
+  DailyCheckResultDto,
   OutreachLeadStatus,
   OutreachLeadChannel,
   SendLeadEmailDto,
@@ -100,30 +102,74 @@ export class OutreachCampaignsService {
     const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
     if (!campaign) throw new NotFoundException('Campaign not found');
 
-    const rows = await this.parseCSV(fileBuffer);
+    // Parse with original headers (not lowercased) for Apollo columns
+    const rows = await this.parseCSVRaw(fileBuffer);
 
     let imported = 0;
     let skipped = 0;
 
+    // Fetch existing emails to deduplicate
+    const existingLeads = await db.outreachLead.findMany({
+      where: { campaignId: campaign.id, email: { not: null } },
+      select: { email: true },
+    });
+    const existingEmails = new Set(existingLeads.map((l: { email: string }) => l.email!.toLowerCase()));
+    const batchEmails = new Set<string>();
+
     for (const row of rows) {
-      const firstName = (row['firstname'] || row['first name'] || row['first_name'] || '').trim();
-      const lastName = (row['lastname'] || row['last name'] || row['last_name'] || '').trim();
-      const name = firstName && lastName ? `${firstName} ${lastName}` : (firstName || lastName || row['name'] || '').trim();
-      const company = (row['companyname'] || row['company name'] || row['company_name'] || row['company'] || '').trim();
-      const email = (row['email'] || row['primaryemail'] || row['primary email'] || '').trim() || null;
-      const linkedinUrl =
-        (row['personlinkedinurl'] || row['person linkedin url'] || row['person_linkedin_url'] || row['linkedinurl'] || row['linkedin_url'] || row['linkedin'] || '').trim() || null;
-      const title = (row['title'] || row['jobtitle'] || row['job title'] || '').trim() || null;
-      const companySize = (row['#employees'] || row['employees'] || '').trim() || null;
-      const industry = (row['industry'] || '').trim() || null;
-      const country = (row['country'] || row['companycountry'] || row['company country'] || '').trim() || null;
+      // Helper: get value from row by trying multiple key variants (original and lowercase)
+      const get = (...keys: string[]): string => {
+        for (const key of keys) {
+          const v = row[key] ?? row[key.toLowerCase()] ?? row[key.toLowerCase().replace(/\s+/g, '')] ?? '';
+          if (typeof v === 'string' && v.trim()) return v.trim();
+        }
+        return '';
+      };
+
+      const firstName = get('First Name', 'firstname', 'first_name');
+      const lastName = get('Last Name', 'lastname', 'last_name');
+      const name = firstName && lastName ? `${firstName} ${lastName}`.trim() : firstName || lastName || get('name') || '';
+      const company = get('Company Name', 'companyname', 'company_name', 'company');
+      const email = get('Email', 'primaryemail', 'primary email') || null;
+      const linkedinUrl = get('Person Linkedin Url', 'personlinkedinurl', 'person_linkedin_url', 'linkedinurl', 'linkedin_url', 'linkedin') || null;
+      const title = get('Title', 'jobtitle', 'job title') || null;
+      const phone = get('Work Direct Phone', 'Mobile Phone', 'Corporate Phone', 'phone') || null;
+      const city = get('City', 'city') || null;
+      const state = get('State', 'state') || null;
+      const country = get('Country', 'companycountry', 'company country') || null;
+      const website = get('Website', 'website') || null;
+      const industry = get('Industry', 'industry') || null;
+      const seniority = get('Seniority', 'seniority') || null;
+      const apolloContactId = get('Apollo Contact Id', 'apollocontactid') || null;
+      const apolloAccountId = get('Apollo Account Id', 'apolloaccountid') || null;
+      const secondaryEmail = get('Secondary Email', 'secondaryemail') || null;
+      const companySize = get('#Employees', '#employees', 'employees') || null;
 
       if (!name && !company) {
         skipped++;
         continue;
       }
 
+      // Deduplicate by email
+      if (email) {
+        const normalised = email.toLowerCase();
+        if (existingEmails.has(normalised) || batchEmails.has(normalised)) {
+          skipped++;
+          continue;
+        }
+        batchEmails.add(normalised);
+      }
+
+      // Legacy notes field (keep for backwards compat with non-Apollo imports)
       const notes = [title, industry, companySize ? `${companySize} employees` : null, country].filter(Boolean).join(' | ') || null;
+
+      // Store entire row as apolloData for reference
+      const apolloData: Record<string, unknown> = {};
+      for (const k of Object.keys(row)) {
+        if (row[k] !== undefined && row[k] !== '') {
+          apolloData[k] = row[k];
+        }
+      }
 
       await db.outreachLead.create({
         data: {
@@ -134,6 +180,20 @@ export class OutreachCampaignsService {
           notes,
           campaignId: campaign.id,
           createdById: userId,
+          firstName: firstName || null,
+          lastName: lastName || null,
+          title,
+          phone,
+          city,
+          state,
+          country,
+          website,
+          industry,
+          seniority,
+          apolloContactId,
+          apolloAccountId,
+          secondaryEmail,
+          apolloData: Object.keys(apolloData).length > 0 ? apolloData : undefined,
         },
       });
       imported++;
@@ -152,8 +212,6 @@ export class OutreachCampaignsService {
     });
     if (!lead) throw new NotFoundException('Lead not found');
 
-    const previousStatus: string = lead.status;
-
     const updateData: Record<string, unknown> = {};
     if (dto.channel !== undefined) updateData.channel = dto.channel;
     if (dto.status !== undefined) updateData.status = dto.status;
@@ -164,15 +222,10 @@ export class OutreachCampaignsService {
       data: updateData,
     });
 
-    // Fire n8n webhook when status changes to SENT
-    if (dto.status === OutreachLeadStatus.SENT && previousStatus !== OutreachLeadStatus.SENT) {
-      await this.fireN8nWebhook(updated);
-    }
-
     return this.mapLead(updated);
   }
 
-  async convertLead(campaignUid: string, leadUid: string, userId: number): Promise<ConvertResultDto> {
+  async convertLead(campaignUid: string, leadUid: string, userId: number, dto: ConvertLeadDto): Promise<ConvertResultDto> {
     const db = this.prisma as PrismaClient;
     const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
     if (!campaign) throw new NotFoundException('Campaign not found');
@@ -186,22 +239,35 @@ export class OutreachCampaignsService {
       throw new BadRequestException('Lead already converted to CRM prospect');
     }
 
-    // Create ProspectCompany
+    const tags: string[] = dto.tags ?? [];
+
+    // Build CRM notes description from lead data
+    const notes = this.buildCrmDescription(lead, campaign);
+
+    // Create ProspectCompany with full Apollo data
     const prospect = await (this.prisma as PrismaClient).prospectCompany.create({
       data: {
         name: lead.company,
-        source: 'OTHER',
+        source: 'APOLLO_CAMPAIGN',
+        website: lead.website ?? null,
+        industry: lead.industry ?? null,
+        country: lead.country ?? null,
+        city: lead.city ?? null,
+        tags: tags,
+        notes,
         createdById: userId,
       },
     });
 
-    // Create OutreachContact
+    // Create OutreachContact with role (title)
     await (this.prisma as PrismaClient).outreachContact.create({
       data: {
         prospectCompanyId: prospect.id,
         name: lead.name,
+        role: lead.title ?? null,
         email: lead.email ?? null,
         linkedinUrl: lead.linkedinUrl ?? null,
+        phone: lead.phone ?? null,
         isPrimary: true,
       },
     });
@@ -229,7 +295,7 @@ export class OutreachCampaignsService {
       where: { campaignId: campaign.id, email: { not: null } },
       select: { email: true },
     });
-    const existingEmails = new Set(existingLeads.map((l) => l.email!.toLowerCase()));
+    const existingEmails = new Set(existingLeads.map((l: { email: string }) => l.email!.toLowerCase()));
 
     let imported = 0;
     let skipped = 0;
@@ -240,6 +306,20 @@ export class OutreachCampaignsService {
       linkedinUrl: string | null;
       notes: string | null;
       campaignId: number;
+      firstName?: string | null;
+      lastName?: string | null;
+      title?: string | null;
+      phone?: string | null;
+      city?: string | null;
+      state?: string | null;
+      country?: string | null;
+      website?: string | null;
+      industry?: string | null;
+      seniority?: string | null;
+      apolloContactId?: string | null;
+      apolloAccountId?: string | null;
+      secondaryEmail?: string | null;
+      apolloData?: Record<string, unknown>;
     }[] = [];
     // Track emails added within this batch to prevent intra-batch duplicates
     const batchEmails = new Set<string>();
@@ -267,6 +347,20 @@ export class OutreachCampaignsService {
         linkedinUrl: lead.linkedinUrl ?? null,
         notes: lead.notes ?? null,
         campaignId: campaign.id,
+        firstName: lead.firstName ?? null,
+        lastName: lead.lastName ?? null,
+        title: lead.title ?? null,
+        phone: lead.phone ?? null,
+        city: lead.city ?? null,
+        state: lead.state ?? null,
+        country: lead.country ?? null,
+        website: lead.website ?? null,
+        industry: lead.industry ?? null,
+        seniority: lead.seniority ?? null,
+        apolloContactId: lead.apolloContactId ?? null,
+        apolloAccountId: lead.apolloAccountId ?? null,
+        secondaryEmail: lead.secondaryEmail ?? null,
+        apolloData: lead.apolloData,
       });
       imported++;
     }
@@ -279,6 +373,23 @@ export class OutreachCampaignsService {
     }
 
     return { imported, skipped };
+  }
+
+  // ─── Daily Check ─────────────────────────────────────────────────────────────
+
+  async dailyCheck(campaignUid: string): Promise<DailyCheckResultDto> {
+    const db = this.prisma as PrismaClient;
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+
+    const count = await db.outreachLead.count({
+      where: { campaignId: campaign.id, createdAt: { gte: startOfToday } },
+    });
+
+    return { alreadyRanToday: count > 0, count };
   }
 
   // ─── Send Email ─────────────────────────────────────────────────────────────
@@ -353,13 +464,19 @@ export class OutreachCampaignsService {
     const frontendUrl = this.config.get<string>('FRONTEND_URL', 'https://app.borderlessats.com');
     const unsubscribeUrl = `${frontendUrl}/unsubscribe/${unsubscribeToken}`;
 
-    // 5. Build Handlebars variables
-    const firstName = lead.name ? lead.name.split(' ')[0] : lead.name;
+    // 5. Build Handlebars variables (include Apollo fields)
+    const firstName = lead.firstName ?? (lead.name ? lead.name.split(' ')[0] : lead.name);
     const variables: Record<string, string> = {
       firstName,
       company: lead.company,
       senderName: requestingUser.name,
       unsubscribeUrl,
+      title: lead.title ?? '',
+      lastName: lead.lastName ?? '',
+      seniority: lead.seniority ?? '',
+      industry: lead.industry ?? '',
+      city: lead.city ?? '',
+      country: lead.country ?? '',
     };
 
     // 6. Render subject and body
@@ -474,12 +591,6 @@ export class OutreachCampaignsService {
       });
     }
 
-    // 9. Update lead status to SENT
-    await db.outreachLead.update({
-      where: { uid: leadUid },
-      data: { status: OutreachLeadStatus.SENT },
-    });
-
     return { success: true, emailLogUid: emailLog.uid };
   }
 
@@ -524,12 +635,18 @@ export class OutreachCampaignsService {
       throw new NotFoundException('No OUTREACH email template found. Please create one in Email Templates.');
     }
 
-    // 4. Build Handlebars variables
-    const firstName = lead.name ? lead.name.split(' ')[0] : lead.name;
+    // 4. Build Handlebars variables (include Apollo fields)
+    const firstName = lead.firstName ?? (lead.name ? lead.name.split(' ')[0] : lead.name);
     const variables: Record<string, string> = {
       firstName,
       company: lead.company,
       senderName: requestingUser.name,
+      title: lead.title ?? '',
+      lastName: lead.lastName ?? '',
+      seniority: lead.seniority ?? '',
+      industry: lead.industry ?? '',
+      city: lead.city ?? '',
+      country: lead.country ?? '',
     };
 
     // 5. Render subject and body (no send)
@@ -592,6 +709,12 @@ export class OutreachCampaignsService {
       firstName,
       company: dummyCompany,
       senderName: requestingUser.name,
+      title: 'HR Director',
+      lastName: dummyName.split(' ').slice(1).join(' ') || 'Doe',
+      seniority: 'Senior',
+      industry: 'Technology',
+      city: 'New York',
+      country: 'US',
     };
 
     // 4. Render subject and body
@@ -642,7 +765,35 @@ export class OutreachCampaignsService {
 
   // ─── Private helpers ────────────────────────────────────────────────────────
 
-  private async parseCSV(buffer: Buffer): Promise<Record<string, string>[]> {
+  private buildCrmDescription(
+    lead: {
+      name: string;
+      email?: string | null;
+      secondaryEmail?: string | null;
+      linkedinUrl?: string | null;
+      title?: string | null;
+      seniority?: string | null;
+      channel?: string | null;
+    },
+    campaign: { name: string },
+  ): string {
+    const lines: string[] = [`Source: ${campaign.name} (Outreach Campaign)`, `Channel: ${lead.channel ?? 'Unknown'}`];
+    if (lead.title) lines.push(`Title: ${lead.title}`);
+    if (lead.seniority) lines.push(`Seniority: ${lead.seniority}`);
+
+    lines.push('');
+    lines.push('Contacts:');
+
+    const contactParts: string[] = [lead.name];
+    if (lead.email) contactParts.push(lead.email);
+    if (lead.secondaryEmail) contactParts.push(lead.secondaryEmail);
+    if (lead.linkedinUrl) contactParts.push(lead.linkedinUrl);
+    lines.push(`- ${contactParts.join(' | ')}`);
+
+    return lines.join('\n');
+  }
+
+  private async parseCSVRaw(buffer: Buffer): Promise<Record<string, string>[]> {
     return new Promise((resolve, reject) => {
       const rows: Record<string, string>[] = [];
       const stream = Readable.from(buffer);
@@ -650,7 +801,8 @@ export class OutreachCampaignsService {
       stream
         .pipe(
           csv({
-            mapHeaders: ({ header }) => header.trim().toLowerCase().replace(/\s+/g, ''),
+            // Keep original header casing so we can match Apollo columns exactly
+            mapHeaders: ({ header }) => header.trim(),
           }),
         )
         .on('data', (row: Record<string, string>) => {
@@ -689,12 +841,10 @@ export class OutreachCampaignsService {
   }
 
   private mapCampaign(c: { uid: string; name: string; description: string | null; createdAt: Date; updatedAt: Date; leads: Array<{ status: string }> }): CampaignResponseDto {
-    const counts = { total: 0, pending: 0, sent: 0, replied: 0, converted: 0 };
+    const counts = { total: 0, pending: 0, converted: 0 };
     for (const lead of c.leads) {
       counts.total++;
       if (lead.status === 'PENDING') counts.pending++;
-      else if (lead.status === 'SENT') counts.sent++;
-      else if (lead.status === 'REPLIED') counts.replied++;
       else if (lead.status === 'CONVERTED') counts.converted++;
     }
 
@@ -721,6 +871,20 @@ export class OutreachCampaignsService {
     prospectUid: string | null;
     createdAt: Date;
     updatedAt: Date;
+    firstName?: string | null;
+    lastName?: string | null;
+    title?: string | null;
+    phone?: string | null;
+    city?: string | null;
+    state?: string | null;
+    country?: string | null;
+    website?: string | null;
+    industry?: string | null;
+    seniority?: string | null;
+    apolloContactId?: string | null;
+    apolloAccountId?: string | null;
+    secondaryEmail?: string | null;
+    apolloData?: Record<string, unknown> | null;
   }): LeadResponseDto {
     return {
       uid: lead.uid,
@@ -735,6 +899,20 @@ export class OutreachCampaignsService {
       prospectUid: lead.prospectUid ?? undefined,
       createdAt: lead.createdAt.toISOString(),
       updatedAt: lead.updatedAt.toISOString(),
+      firstName: lead.firstName ?? undefined,
+      lastName: lead.lastName ?? undefined,
+      title: lead.title ?? undefined,
+      phone: lead.phone ?? undefined,
+      city: lead.city ?? undefined,
+      state: lead.state ?? undefined,
+      country: lead.country ?? undefined,
+      website: lead.website ?? undefined,
+      industry: lead.industry ?? undefined,
+      seniority: lead.seniority ?? undefined,
+      apolloContactId: lead.apolloContactId ?? undefined,
+      apolloAccountId: lead.apolloAccountId ?? undefined,
+      secondaryEmail: lead.secondaryEmail ?? undefined,
+      apolloData: (lead.apolloData as Record<string, unknown> | null) ?? undefined,
     };
   }
 }

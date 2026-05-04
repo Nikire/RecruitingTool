@@ -1583,6 +1583,7 @@ enum ProspectSource {
   REFERRAL
   DIRECT
   OTHER
+  APOLLO_CAMPAIGN
 }
 
 enum ProspectStatus {
@@ -1760,10 +1761,28 @@ model OutreachLead {
   createdById           Int?
   createdBy             User?               @relation("OutreachLeadCreatedBy", fields: [createdById], references: [id])
 
+  // Apollo enrichment fields
+  firstName       String?
+  lastName        String?
+  title           String?
+  phone           String?
+  city            String?
+  state           String?
+  country         String?
+  website         String?
+  industry        String?
+  seniority       String?
+  apolloContactId String?
+  apolloAccountId String?
+  secondaryEmail  String?
+  apolloData      Json?
+
   @@index([status])
   @@index([campaignId])
   @@index([uid])
   @@index([email])
+  @@index([apolloContactId])
+  @@index([apolloAccountId])
   @@map("outreach_leads")
 }
 
@@ -1774,7 +1793,5 @@ enum OutreachLeadChannel {
 
 enum OutreachLeadStatus {
   PENDING
-  SENT
-  REPLIED
   CONVERTED
 }

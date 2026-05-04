@@ -1,11 +1,9 @@
 export type OutreachLeadChannel = "EMAIL" | "LINKEDIN";
-export type OutreachLeadStatus = "PENDING" | "SENT" | "REPLIED" | "CONVERTED";
+export type OutreachLeadStatus = "PENDING" | "CONVERTED";
 
 export interface CampaignLeadCounts {
   total: number;
   pending: number;
-  sent: number;
-  replied: number;
   converted: number;
 }
 
@@ -31,6 +29,21 @@ export interface OutreachLead {
   prospectUid?: string;
   createdAt: string;
   updatedAt: string;
+  // Apollo enrichment fields
+  firstName?: string;
+  lastName?: string;
+  title?: string;
+  phone?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  website?: string;
+  industry?: string;
+  seniority?: string;
+  apolloContactId?: string;
+  apolloAccountId?: string;
+  secondaryEmail?: string;
+  apolloData?: Record<string, unknown>;
 }
 
 export interface CreateCampaignPayload {
@@ -51,6 +64,10 @@ export interface ImportResult {
 
 export interface ConvertResult {
   prospectUid: string;
+}
+
+export interface ConvertLeadPayload {
+  tags?: string[];
 }
 
 export interface SendLeadEmailPayload {
@@ -77,4 +94,9 @@ export interface SendTestEmailPayload {
 export interface SendTestEmailResult {
   success: boolean;
   sentTo: string;
+}
+
+export interface DailyCheckResult {
+  alreadyRanToday: boolean;
+  count: number;
 }
