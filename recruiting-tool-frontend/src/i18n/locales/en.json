@@ -3576,7 +3576,9 @@
       "content_required": "Please provide your feedback",
       "content_min_length": "Feedback must be at least 10 characters",
       "rating_invalid": "Rating must be between 1 and 5"
-    }
+    },
+    "hide_label": "Hide feedback button",
+    "restore_label": "Show feedback"
   },
   "markdown_editor": {
     "placeholder": "Write your content here... Supports **bold**, *italic*, and more markdown formatting.",

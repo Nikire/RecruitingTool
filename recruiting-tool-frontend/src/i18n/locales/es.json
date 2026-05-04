@@ -3620,7 +3620,9 @@
       "content_required": "Por favor proporciona tus comentarios",
       "content_min_length": "Los comentarios deben tener al menos 10 caracteres",
       "rating_invalid": "La calificación debe estar entre 1 y 5"
-    }
+    },
+    "hide_label": "Ocultar botón de feedback",
+    "restore_label": "Mostrar feedback"
   },
   "markdown_editor": {
     "placeholder": "Escribe tu contenido aquí... Admite formato **negrita**, *cursiva*, y más markdown.",
