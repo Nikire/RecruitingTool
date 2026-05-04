@@ -4708,6 +4708,8 @@
     "status_converted": "Converted",
     "filter_status": "Status",
     "filter_channel": "Channel",
+    "filter_date": "Added on",
+    "filter_date_clear": "Clear date filter",
     "add_to_crm": "Add to CRM",
     "in_crm": "In CRM",
     "converted_success": "Lead converted to CRM prospect",

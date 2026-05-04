@@ -4716,6 +4716,8 @@
     "status_converted": "Convertido",
     "filter_status": "Estado",
     "filter_channel": "Canal",
+    "filter_date": "Añadido el",
+    "filter_date_clear": "Limpiar filtro de fecha",
     "add_to_crm": "Agregar al CRM",
     "in_crm": "En CRM",
     "converted_success": "Prospecto agregado al CRM",

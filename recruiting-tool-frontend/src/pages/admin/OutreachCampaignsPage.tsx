@@ -610,18 +610,27 @@ interface LeadsTableProps {
   campaignUid: string;
   filterStatus: string;
   filterChannel: string;
+  filterDate: string;
 }
 
 const LeadsTable: React.FC<LeadsTableProps> = ({
   campaignUid,
   filterStatus,
   filterChannel,
+  filterDate,
 }) => {
   const { t } = useTranslation();
-  const { data: leads = [], isLoading } = useOutreachLeads(campaignUid, {
+  const { data: rawLeads = [], isLoading } = useOutreachLeads(campaignUid, {
     status: filterStatus || undefined,
     channel: filterChannel || undefined,
   });
+
+  const leads = filterDate
+    ? rawLeads.filter((l) => {
+        const leadDay = l.createdAt.slice(0, 10);
+        return leadDay === filterDate;
+      })
+    : rawLeads;
   const updateMutation = useUpdateLead(campaignUid);
 
   const [notesDialogLead, setNotesDialogLead] = useState<OutreachLead | null>(
@@ -1163,6 +1172,7 @@ const OutreachCampaignsPage: React.FC = () => {
   const [importOpen, setImportOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState("");
   const [filterChannel, setFilterChannel] = useState("");
+  const [filterDate, setFilterDate] = useState("");
   const [deleteCampaign, setDeleteCampaign] = useState<OutreachCampaign | null>(
     null,
   );
@@ -1343,6 +1353,31 @@ const OutreachCampaignsPage: React.FC = () => {
                     </Select>
                   </FormControl>
 
+                  <TextField
+                    type="date"
+                    size="small"
+                    label={t("outreachCampaigns.filter_date")}
+                    value={filterDate}
+                    onChange={(e) => setFilterDate(e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                    sx={{ minWidth: 160 }}
+                    InputProps={{
+                      endAdornment: filterDate ? (
+                        <Tooltip
+                          title={t("outreachCampaigns.filter_date_clear")}
+                        >
+                          <IconButton
+                            size="small"
+                            onClick={() => setFilterDate("")}
+                            edge="end"
+                          >
+                            <DeleteOutlineIcon fontSize="small" />
+                          </IconButton>
+                        </Tooltip>
+                      ) : undefined,
+                    }}
+                  />
+
                   {/* Lead counts summary */}
                   <Box sx={{ display: "flex", gap: 1, ml: 1 }}>
                     {[
@@ -1401,6 +1436,7 @@ const OutreachCampaignsPage: React.FC = () => {
                 campaignUid={selectedCampaign.uid}
                 filterStatus={filterStatus}
                 filterChannel={filterChannel}
+                filterDate={filterDate}
               />
             </>
           )}
