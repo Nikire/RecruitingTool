@@ -74,6 +74,8 @@ const EmailTemplatesPage: React.FC = () => {
         return "warning";
       case EmailTemplateType.OFFER_LETTER:
         return "success";
+      case EmailTemplateType.OUTREACH:
+        return "secondary";
       case EmailTemplateType.CUSTOM:
         return "default";
       default:
@@ -105,6 +107,8 @@ const EmailTemplatesPage: React.FC = () => {
         return t("email_template.type_async_stage_invitation");
       case EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED:
         return t("email_template.type_async_stage_submission_received");
+      case EmailTemplateType.OUTREACH:
+        return t("email_template.type_outreach");
       case EmailTemplateType.CUSTOM:
         return t("email_template.type_custom");
       default:

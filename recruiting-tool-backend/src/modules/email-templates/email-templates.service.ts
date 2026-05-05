@@ -93,7 +93,6 @@ export class EmailTemplatesService {
     const emailTemplates = await this.databaseService.emailTemplate.findMany({
       where: {
         ...(companyId ? { companyId } : {}),
-        ...(!isSuperAdmin ? { NOT: { type: 'OUTREACH' } } : {}),
       },
       include: {
         company: true,
