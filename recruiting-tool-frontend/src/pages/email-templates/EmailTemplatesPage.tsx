@@ -124,14 +124,14 @@ const EmailTemplatesPage: React.FC = () => {
 
   const canManage = canManageResources(user);
 
-  // Filter templates based on search query
+  // Filter templates based on search query, excluding OUTREACH type (managed via admin/outreach-templates)
   const filteredTemplates = useMemo(() => {
-    if (!templates || !searchQuery.trim()) {
-      return templates || [];
-    }
-
+    const nonOutreach = (templates || []).filter(
+      (t) => t.type !== EmailTemplateType.OUTREACH,
+    );
+    if (!searchQuery.trim()) return nonOutreach;
     const query = searchQuery.toLowerCase();
-    return templates.filter(
+    return nonOutreach.filter(
       (template) =>
         template.name.toLowerCase().includes(query) ||
         template.subject.toLowerCase().includes(query) ||

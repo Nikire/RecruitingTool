@@ -42,6 +42,12 @@ import {
   useUpsertOutreachTemplateOverride,
   useDeleteOutreachTemplateOverride,
 } from "../../api/adminOutreachTemplates";
+import {
+  useEmailTemplates,
+  useUpdateEmailTemplate,
+} from "../../hooks/api/useEmailTemplates";
+import { useUserAtom } from "../../hooks/api/state/useUserAtom";
+import { EmailTemplateType } from "../../types/emailTemplate.types";
 
 interface TemplateVariant {
   label: string;
@@ -416,6 +422,14 @@ Would you be interested in a short demo?
       },
     ],
   },
+  {
+    id: 10,
+    channel: "email",
+    titleKey: "outreach.t10_title",
+    hintKey: "outreach.t10_hint",
+    es: [],
+    en: [],
+  },
 ];
 
 const CHANNEL_ICONS: Record<Template["channel"], React.ReactNode> = {
@@ -615,8 +629,11 @@ const EditTemplateDialog: React.FC<EditDialogProps> = ({
   );
 };
 
+const CAMPAIGN_TEMPLATE_ID = 10;
+
 const OutreachTemplatesPage: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useUserAtom();
 
   const [pageTab, setPageTab] = useState(0);
   const [selectedId, setSelectedId] = useState(1);
@@ -632,6 +649,12 @@ const OutreachTemplatesPage: React.FC = () => {
   const { data: overridesData } = useOutreachTemplateOverrides();
   const upsertMutation = useUpsertOutreachTemplateOverride();
   const deleteMutation = useDeleteOutreachTemplateOverride();
+
+  const { data: emailTemplates } = useEmailTemplates(user?.companyUid);
+  const updateEmailTemplateMutation = useUpdateEmailTemplate();
+  const campaignEmailTemplate = emailTemplates?.find(
+    (et) => et.type === EmailTemplateType.OUTREACH,
+  );
 
   const editedTemplates = useMemo(() => {
     const map: Record<string, { subject?: string; body: string }> = {};
@@ -660,6 +683,10 @@ const OutreachTemplatesPage: React.FC = () => {
 
   const handleSaveEdit = async (subject: string, body: string) => {
     if (!editDialogState) return;
+    if (editDialogState.key === "campaign") {
+      await handleSaveCampaignTemplate(subject, body);
+      return;
+    }
     const [templateIdStr, langStr, variantIndexStr] =
       editDialogState.key.split("-");
     await upsertMutation.mutateAsync({
@@ -674,12 +701,25 @@ const OutreachTemplatesPage: React.FC = () => {
 
   const handleResetEdit = async () => {
     if (!editDialogState) return;
+    if (editDialogState.key === "campaign") {
+      setEditDialogState(null);
+      return;
+    }
     const [templateIdStr, langStr, variantIndexStr] =
       editDialogState.key.split("-");
     await deleteMutation.mutateAsync({
       templateId: Number(templateIdStr),
       lang: langStr,
       variantIndex: Number(variantIndexStr),
+    });
+    setEditDialogState(null);
+  };
+
+  const handleSaveCampaignTemplate = async (subject: string, body: string) => {
+    if (!campaignEmailTemplate) return;
+    await updateEmailTemplateMutation.mutateAsync({
+      uid: campaignEmailTemplate.uid,
+      data: { subject, body },
     });
     setEditDialogState(null);
   };
@@ -886,133 +926,227 @@ const OutreachTemplatesPage: React.FC = () => {
                   </Typography>
                 </Box>
 
-                {/* Variants */}
-                <Box sx={{ p: 2 }}>
-                  <Stack spacing={3}>
-                    {variants.map((variant, idx) => {
-                      const variantKey = `${selectedId}-${lang}-${idx}`;
-                      const subjectKey = `subject-${selectedId}-${lang}-${idx}`;
-                      const bodyKey = `body-${selectedId}-${lang}-${idx}`;
-                      const edited = editedTemplates[variantKey];
-                      const isModified = !!edited;
-                      const effectiveSubject =
-                        edited?.subject ?? variant.subject;
-                      const effectiveBody = edited?.body ?? variant.body;
-                      const resolvedSubject = effectiveSubject
-                        ? applyVars(effectiveSubject, varValues)
-                        : null;
-                      const resolvedBody = applyVars(effectiveBody, varValues);
-
-                      return (
-                        <Box key={idx}>
-                          {variants.length > 1 && (
-                            <Stack
-                              direction="row"
-                              spacing={1}
-                              alignItems="center"
-                              sx={{ mb: 1 }}
+                {/* Campaign email template (ID 10) */}
+                {selectedId === CAMPAIGN_TEMPLATE_ID && (
+                  <Box sx={{ p: 2 }}>
+                    {!campaignEmailTemplate ? (
+                      <Stack spacing={1.5}>
+                        <Typography variant="body2" color="text.secondary">
+                          {t("outreach.t10_no_template")}
+                        </Typography>
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          fontStyle="italic"
+                        >
+                          {t("outreach.t10_create_hint")}
+                        </Typography>
+                      </Stack>
+                    ) : (
+                      <Stack spacing={2}>
+                        {/* Subject */}
+                        <Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              fontWeight={600}
                             >
-                              <Typography
-                                variant="caption"
-                                fontWeight={600}
-                                color="text.secondary"
-                              >
-                                {variant.label}
-                              </Typography>
-                              {isModified && (
-                                <Chip
-                                  label={t("outreach.modified_badge")}
+                              {t("outreach.subject")}
+                            </Typography>
+                            <Stack direction="row" spacing={0.5}>
+                              <Tooltip title={t("outreach.edit_body")}>
+                                <IconButton
                                   size="small"
-                                  color="warning"
-                                  variant="outlined"
-                                />
-                              )}
-                            </Stack>
-                          )}
-
-                          {/* Subject line */}
-                          {resolvedSubject && (
-                            <Box sx={{ mb: 1.5 }}>
-                              <Box
-                                sx={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "space-between",
-                                  mb: 0.5,
-                                }}
-                              >
-                                <Typography
-                                  variant="caption"
-                                  color="text.secondary"
-                                  fontWeight={600}
-                                >
-                                  {t("outreach.subject")}
-                                </Typography>
-                                <Tooltip
-                                  title={
-                                    copiedKey === subjectKey
-                                      ? t("outreach.copied")
-                                      : t("outreach.copy")
+                                  onClick={() =>
+                                    setEditDialogState({
+                                      open: true,
+                                      key: "campaign",
+                                      hasSubject: true,
+                                      subject:
+                                        campaignEmailTemplate.subject ?? "",
+                                      body: campaignEmailTemplate.body,
+                                    })
                                   }
                                 >
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      handleCopy(resolvedSubject, subjectKey)
-                                    }
-                                  >
-                                    {copiedKey === subjectKey ? (
-                                      <CheckIcon
-                                        fontSize="small"
-                                        color="success"
-                                      />
-                                    ) : (
-                                      <ContentCopyIcon fontSize="small" />
-                                    )}
-                                  </IconButton>
-                                </Tooltip>
-                              </Box>
-                              <Paper
-                                variant="outlined"
-                                sx={{
-                                  px: 2,
-                                  py: 1,
-                                  borderRadius: 1,
-                                  bgcolor: "action.hover",
-                                  fontFamily: "monospace",
-                                  fontSize: "0.875rem",
-                                }}
+                                  <EditIcon fontSize="small" />
+                                </IconButton>
+                              </Tooltip>
+                              <Tooltip
+                                title={
+                                  copiedKey === "campaign-subject"
+                                    ? t("outreach.copied")
+                                    : t("outreach.copy")
+                                }
                               >
-                                {resolvedSubject}
-                              </Paper>
-                            </Box>
-                          )}
-
-                          {/* Body */}
-                          <Box>
-                            <Box
-                              sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                                mb: 0.5,
-                              }}
+                                <IconButton
+                                  size="small"
+                                  onClick={() =>
+                                    handleCopy(
+                                      campaignEmailTemplate.subject ?? "",
+                                      "campaign-subject",
+                                    )
+                                  }
+                                >
+                                  {copiedKey === "campaign-subject" ? (
+                                    <CheckIcon
+                                      fontSize="small"
+                                      color="success"
+                                    />
+                                  ) : (
+                                    <ContentCopyIcon fontSize="small" />
+                                  )}
+                                </IconButton>
+                              </Tooltip>
+                            </Stack>
+                          </Box>
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              px: 2,
+                              py: 1,
+                              borderRadius: 1,
+                              bgcolor: "action.hover",
+                              fontFamily: "monospace",
+                              fontSize: "0.875rem",
+                            }}
+                          >
+                            {campaignEmailTemplate.subject}
+                          </Paper>
+                        </Box>
+                        {/* Body */}
+                        <Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                              mb: 0.5,
+                            }}
+                          >
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                              fontWeight={600}
                             >
+                              {t("outreach.body")}
+                            </Typography>
+                            <Button
+                              size="small"
+                              variant={
+                                copiedKey === "campaign-body"
+                                  ? "contained"
+                                  : "outlined"
+                              }
+                              color={
+                                copiedKey === "campaign-body"
+                                  ? "success"
+                                  : "primary"
+                              }
+                              startIcon={
+                                copiedKey === "campaign-body" ? (
+                                  <CheckIcon fontSize="small" />
+                                ) : (
+                                  <ContentCopyIcon fontSize="small" />
+                                )
+                              }
+                              onClick={() =>
+                                handleCopy(
+                                  campaignEmailTemplate.body,
+                                  "campaign-body",
+                                )
+                              }
+                            >
+                              {copiedKey === "campaign-body"
+                                ? t("outreach.copied")
+                                : t("outreach.copy")}
+                            </Button>
+                          </Box>
+                          <Paper
+                            variant="outlined"
+                            sx={{
+                              px: 2,
+                              py: 1.5,
+                              borderRadius: 1,
+                              bgcolor: "background.default",
+                              whiteSpace: "pre-wrap",
+                              fontFamily: "inherit",
+                              fontSize: "0.875rem",
+                              lineHeight: 1.7,
+                            }}
+                          >
+                            {campaignEmailTemplate.body}
+                          </Paper>
+                        </Box>
+                        <Box
+                          sx={{ display: "flex", justifyContent: "flex-end" }}
+                        >
+                          <Button
+                            variant="outlined"
+                            startIcon={<EditIcon />}
+                            onClick={() =>
+                              setEditDialogState({
+                                open: true,
+                                key: "campaign",
+                                hasSubject: true,
+                                subject: campaignEmailTemplate.subject ?? "",
+                                body: campaignEmailTemplate.body,
+                              })
+                            }
+                          >
+                            {t("outreach.edit_template")}
+                          </Button>
+                        </Box>
+                      </Stack>
+                    )}
+                  </Box>
+                )}
+
+                {/* Variants (templates 1-9) */}
+                {selectedId !== CAMPAIGN_TEMPLATE_ID && (
+                  <Box sx={{ p: 2 }}>
+                    <Stack spacing={3}>
+                      {variants.map((variant, idx) => {
+                        const variantKey = `${selectedId}-${lang}-${idx}`;
+                        const subjectKey = `subject-${selectedId}-${lang}-${idx}`;
+                        const bodyKey = `body-${selectedId}-${lang}-${idx}`;
+                        const edited = editedTemplates[variantKey];
+                        const isModified = !!edited;
+                        const effectiveSubject =
+                          edited?.subject ?? variant.subject;
+                        const effectiveBody = edited?.body ?? variant.body;
+                        const resolvedSubject = effectiveSubject
+                          ? applyVars(effectiveSubject, varValues)
+                          : null;
+                        const resolvedBody = applyVars(
+                          effectiveBody,
+                          varValues,
+                        );
+
+                        return (
+                          <Box key={idx}>
+                            {variants.length > 1 && (
                               <Stack
                                 direction="row"
                                 spacing={1}
                                 alignItems="center"
+                                sx={{ mb: 1 }}
                               >
                                 <Typography
                                   variant="caption"
-                                  color="text.secondary"
                                   fontWeight={600}
+                                  color="text.secondary"
                                 >
-                                  {variant.subject
-                                    ? t("outreach.body")
-                                    : t("outreach.message")}
+                                  {variant.label}
                                 </Typography>
-                                {isModified && variants.length === 1 && (
+                                {isModified && (
                                   <Chip
                                     label={t("outreach.modified_badge")}
                                     size="small"
@@ -1021,78 +1155,172 @@ const OutreachTemplatesPage: React.FC = () => {
                                   />
                                 )}
                               </Stack>
-                              <Stack
-                                direction="row"
-                                spacing={0.5}
-                                alignItems="center"
-                              >
-                                <Tooltip title={t("outreach.edit_body")}>
-                                  <IconButton
-                                    size="small"
-                                    onClick={() =>
-                                      setEditDialogState({
-                                        open: true,
-                                        key: variantKey,
-                                        hasSubject: !!variant.subject,
-                                        subject: effectiveSubject ?? "",
-                                        body: effectiveBody,
-                                      })
+                            )}
+
+                            {/* Subject line */}
+                            {resolvedSubject && (
+                              <Box sx={{ mb: 1.5 }}>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "space-between",
+                                    mb: 0.5,
+                                  }}
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    fontWeight={600}
+                                  >
+                                    {t("outreach.subject")}
+                                  </Typography>
+                                  <Tooltip
+                                    title={
+                                      copiedKey === subjectKey
+                                        ? t("outreach.copied")
+                                        : t("outreach.copy")
                                     }
                                   >
-                                    <EditIcon fontSize="small" />
-                                  </IconButton>
-                                </Tooltip>
-                                <Button
-                                  size="small"
-                                  variant={
-                                    copiedKey === bodyKey
-                                      ? "contained"
-                                      : "outlined"
-                                  }
-                                  color={
-                                    copiedKey === bodyKey
-                                      ? "success"
-                                      : "primary"
-                                  }
-                                  startIcon={
-                                    copiedKey === bodyKey ? (
-                                      <CheckIcon fontSize="small" />
-                                    ) : (
-                                      <ContentCopyIcon fontSize="small" />
-                                    )
-                                  }
-                                  onClick={() =>
-                                    handleCopy(resolvedBody, bodyKey)
-                                  }
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        handleCopy(resolvedSubject, subjectKey)
+                                      }
+                                    >
+                                      {copiedKey === subjectKey ? (
+                                        <CheckIcon
+                                          fontSize="small"
+                                          color="success"
+                                        />
+                                      ) : (
+                                        <ContentCopyIcon fontSize="small" />
+                                      )}
+                                    </IconButton>
+                                  </Tooltip>
+                                </Box>
+                                <Paper
+                                  variant="outlined"
+                                  sx={{
+                                    px: 2,
+                                    py: 1,
+                                    borderRadius: 1,
+                                    bgcolor: "action.hover",
+                                    fontFamily: "monospace",
+                                    fontSize: "0.875rem",
+                                  }}
                                 >
-                                  {copiedKey === bodyKey
-                                    ? t("outreach.copied")
-                                    : t("outreach.copy")}
-                                </Button>
-                              </Stack>
+                                  {resolvedSubject}
+                                </Paper>
+                              </Box>
+                            )}
+
+                            {/* Body */}
+                            <Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  mb: 0.5,
+                                }}
+                              >
+                                <Stack
+                                  direction="row"
+                                  spacing={1}
+                                  alignItems="center"
+                                >
+                                  <Typography
+                                    variant="caption"
+                                    color="text.secondary"
+                                    fontWeight={600}
+                                  >
+                                    {variant.subject
+                                      ? t("outreach.body")
+                                      : t("outreach.message")}
+                                  </Typography>
+                                  {isModified && variants.length === 1 && (
+                                    <Chip
+                                      label={t("outreach.modified_badge")}
+                                      size="small"
+                                      color="warning"
+                                      variant="outlined"
+                                    />
+                                  )}
+                                </Stack>
+                                <Stack
+                                  direction="row"
+                                  spacing={0.5}
+                                  alignItems="center"
+                                >
+                                  <Tooltip title={t("outreach.edit_body")}>
+                                    <IconButton
+                                      size="small"
+                                      onClick={() =>
+                                        setEditDialogState({
+                                          open: true,
+                                          key: variantKey,
+                                          hasSubject: !!variant.subject,
+                                          subject: effectiveSubject ?? "",
+                                          body: effectiveBody,
+                                        })
+                                      }
+                                    >
+                                      <EditIcon fontSize="small" />
+                                    </IconButton>
+                                  </Tooltip>
+                                  <Button
+                                    size="small"
+                                    variant={
+                                      copiedKey === bodyKey
+                                        ? "contained"
+                                        : "outlined"
+                                    }
+                                    color={
+                                      copiedKey === bodyKey
+                                        ? "success"
+                                        : "primary"
+                                    }
+                                    startIcon={
+                                      copiedKey === bodyKey ? (
+                                        <CheckIcon fontSize="small" />
+                                      ) : (
+                                        <ContentCopyIcon fontSize="small" />
+                                      )
+                                    }
+                                    onClick={() =>
+                                      handleCopy(resolvedBody, bodyKey)
+                                    }
+                                  >
+                                    {copiedKey === bodyKey
+                                      ? t("outreach.copied")
+                                      : t("outreach.copy")}
+                                  </Button>
+                                </Stack>
+                              </Box>
+                              <Paper
+                                variant="outlined"
+                                sx={{
+                                  px: 2,
+                                  py: 1.5,
+                                  borderRadius: 1,
+                                  bgcolor: "background.default",
+                                  whiteSpace: "pre-wrap",
+                                  fontFamily: "inherit",
+                                  fontSize: "0.875rem",
+                                  lineHeight: 1.7,
+                                  color: "text.primary",
+                                }}
+                              >
+                                {resolvedBody}
+                              </Paper>
                             </Box>
-                            <Paper
-                              variant="outlined"
-                              sx={{
-                                px: 2,
-                                py: 1.5,
-                                borderRadius: 1,
-                                bgcolor: "background.default",
-                                whiteSpace: "pre-wrap",
-                                fontFamily: "inherit",
-                                fontSize: "0.875rem",
-                                lineHeight: 1.7,
-                                color: "text.primary",
-                              }}
-                            >
-                              {resolvedBody}
-                            </Paper>
                           </Box>
-                        </Box>
-                      );
-                    })}
-                  </Stack>
-                </Box>
+                        );
+                      })}
+                    </Stack>
+                  </Box>
+                )}
               </Paper>
             </Grid>
           </Grid>
