@@ -249,6 +249,8 @@ export class OutreachCampaignsService {
       data: {
         name: lead.company,
         source: 'APOLLO_CAMPAIGN',
+        status: 'CONTACTED',
+        campaignRef: campaign.name,
         website: lead.website ?? null,
         industry: lead.industry ?? null,
         country: lead.country ?? null,
@@ -269,6 +271,18 @@ export class OutreachCampaignsService {
         linkedinUrl: lead.linkedinUrl ?? null,
         phone: lead.phone ?? null,
         isPrimary: true,
+      },
+    });
+
+    // Log the outreach activity with the lead's channel
+    await (this.prisma as PrismaClient).outreachActivity.create({
+      data: {
+        prospectCompanyId: prospect.id,
+        type: 'MESSAGE_SENT',
+        channel: lead.channel === 'EMAIL' ? 'EMAIL' : 'LINKEDIN',
+        templateUsed: campaign.name,
+        notes: `Added from outreach campaign: ${campaign.name}`,
+        createdById: userId,
       },
     });
 

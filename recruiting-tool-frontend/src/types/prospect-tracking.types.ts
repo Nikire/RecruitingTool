@@ -8,7 +8,8 @@ export type ProspectSource =
   | "GOOGLE_MAPS"
   | "REFERRAL"
   | "DIRECT"
-  | "OTHER";
+  | "OTHER"
+  | "APOLLO_CAMPAIGN";
 
 export type ProspectStatus =
   | "NEW"
@@ -74,6 +75,7 @@ export interface ProspectCompany {
   city?: string;
   source: ProspectSource;
   status: ProspectStatus;
+  campaignRef?: string;
   notes?: string;
   tags: string[];
   isFeatured: boolean;

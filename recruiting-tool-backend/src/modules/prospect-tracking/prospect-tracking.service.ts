@@ -203,6 +203,7 @@ export class ProspectTrackingService {
     city?: string | null;
     source: string;
     status: string;
+    campaignRef?: string | null;
     notes?: string | null;
     tags: string[];
     isFeatured: boolean;
@@ -239,6 +240,7 @@ export class ProspectTrackingService {
       city: p.city ?? undefined,
       source: p.source,
       status: p.status,
+      campaignRef: p.campaignRef ?? undefined,
       notes: p.notes ?? undefined,
       tags: p.tags,
       isFeatured: p.isFeatured,

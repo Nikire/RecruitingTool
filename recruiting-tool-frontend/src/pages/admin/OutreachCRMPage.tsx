@@ -92,6 +92,7 @@ const SOURCE_COLORS: Record<ProspectSource, string | undefined> = {
   REFERRAL: "#9c27b0",
   DIRECT: "#607d8b",
   OTHER: undefined,
+  APOLLO_CAMPAIGN: "#ff6b35",
 };
 
 const PROSPECT_STATUSES: ProspectStatus[] = [
@@ -119,6 +120,7 @@ const PROSPECT_SOURCES: ProspectSource[] = [
   "REFERRAL",
   "DIRECT",
   "OTHER",
+  "APOLLO_CAMPAIGN",
 ];
 
 const COMPANY_SIZE_OPTIONS = ["1-10", "11-50", "51-200", "201-500", "500+"];
@@ -758,13 +760,19 @@ const OutreachCRMPage: React.FC = () => {
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => {
           const src = params.value as ProspectSource;
           const color = SOURCE_COLORS[src];
-          return (
+          const campaignRef = params.row.campaignRef;
+          const chip = (
             <Chip
               label={t(`outreach_crm.source_${src.toLowerCase()}`)}
               size="small"
               variant="filled"
               sx={color ? { bgcolor: color, color: "#fff" } : undefined}
             />
+          );
+          return campaignRef ? (
+            <Tooltip title={campaignRef}>{chip}</Tooltip>
+          ) : (
+            chip
           );
         },
       },

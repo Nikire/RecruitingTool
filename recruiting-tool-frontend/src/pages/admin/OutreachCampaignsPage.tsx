@@ -344,6 +344,7 @@ interface PreviewEmailDialogProps {
   onClose: () => void;
   lead: OutreachLead;
   campaignUid: string;
+  onAddToCrm?: () => void;
 }
 
 const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
@@ -351,6 +352,7 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
   onClose,
   lead,
   campaignUid,
+  onAddToCrm,
 }) => {
   const { t } = useTranslation();
   const { data, isLoading, isError } = usePreviewLeadEmail(
@@ -477,6 +479,18 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose}>{t("common.close")}</Button>
+        {onAddToCrm && !lead.convertedToProspectAt && (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => {
+              onClose();
+              onAddToCrm();
+            }}
+          >
+            {t("outreachCampaigns.add_to_crm")}
+          </Button>
+        )}
       </DialogActions>
     </Dialog>
   );
@@ -993,6 +1007,14 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
           onClose={() => setPreviewEmailLead(null)}
           lead={previewEmailLead}
           campaignUid={campaignUid}
+          onAddToCrm={
+            !previewEmailLead.convertedToProspectAt
+              ? () => {
+                  setConvertDialogLead(previewEmailLead);
+                  setPreviewEmailLead(null);
+                }
+              : undefined
+          }
         />
       )}
 

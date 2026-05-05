@@ -1518,6 +1518,7 @@ model ProspectCompany {
   city            String?
   source          ProspectSource     @default(OTHER)
   status          ProspectStatus     @default(NEW)
+  campaignRef     String?
   notes           String?
   tags            String[]
   isFeatured      Boolean            @default(false)
