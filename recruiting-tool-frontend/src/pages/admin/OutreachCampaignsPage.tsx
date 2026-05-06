@@ -40,6 +40,7 @@ import UploadFileIcon from "@mui/icons-material/UploadFile";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
 import EmailIcon from "@mui/icons-material/Email";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useTranslation } from "react-i18next";
@@ -355,28 +356,31 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
   onAddToCrm,
 }) => {
   const { t } = useTranslation();
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const { data, isLoading, isError } = usePreviewLeadEmail(
     campaignUid,
     lead.uid,
     open,
   );
 
-  const handleCopySubject = () => {
-    if (data?.subject) {
-      navigator.clipboard.writeText(data.subject);
-      toast.success(t("outreachCampaigns.previewEmail.copied_subject"));
-    }
+  const stripHtml = (html: string) => {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    return div.textContent ?? div.innerText ?? html;
   };
 
-  const handleCopyBody = () => {
-    if (data?.body) {
-      // Strip HTML tags for plain text copy
-      const div = document.createElement("div");
-      div.innerHTML = data.body;
-      const plain = div.textContent ?? div.innerText ?? data.body;
-      navigator.clipboard.writeText(plain);
-      toast.success(t("outreachCampaigns.previewEmail.copied_body"));
-    }
+  const copy = (text: string, key: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedKey(key);
+      setTimeout(() => setCopiedKey(null), 2000);
+    });
+  };
+
+  const plainBody = data ? stripHtml(data.body) : "";
+
+  const handleCopyAll = () => {
+    if (!data) return;
+    copy(`${data.subject}\n\n${plainBody}`, "all");
   };
 
   return (
@@ -404,6 +408,7 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
         )}
         {data && (
           <Stack spacing={2}>
+            {/* Subject */}
             <Box>
               <Box
                 sx={{
@@ -420,23 +425,34 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
                 >
                   {t("outreachCampaigns.previewEmail.subject_label")}
                 </Typography>
-                <Tooltip
-                  title={t("outreachCampaigns.previewEmail.copy_subject")}
+                <Button
+                  size="small"
+                  variant={copiedKey === "subject" ? "contained" : "outlined"}
+                  color={copiedKey === "subject" ? "success" : "primary"}
+                  startIcon={
+                    copiedKey === "subject" ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )
+                  }
+                  onClick={() => copy(data.subject, "subject")}
                 >
-                  <IconButton size="small" onClick={handleCopySubject}>
-                    <ContentCopyIcon fontSize="inherit" />
-                  </IconButton>
-                </Tooltip>
+                  {copiedKey === "subject"
+                    ? t("outreachCampaigns.previewEmail.copied_subject")
+                    : t("outreachCampaigns.previewEmail.copy_subject")}
+                </Button>
               </Box>
-              <Paper
-                variant="outlined"
-                sx={{ px: 2, py: 1.5, bgcolor: "action.hover" }}
-              >
-                <Typography variant="body2" fontWeight={500}>
-                  {data.subject}
-                </Typography>
-              </Paper>
+              <TextField
+                value={data.subject}
+                fullWidth
+                size="small"
+                slotProps={{ input: { readOnly: true } }}
+                sx={{ "& .MuiInputBase-input": { fontWeight: 500 } }}
+              />
             </Box>
+
+            {/* Body */}
             <Box>
               <Box
                 sx={{
@@ -453,44 +469,75 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
                 >
                   {t("outreachCampaigns.previewEmail.body_label")}
                 </Typography>
-                <Tooltip title={t("outreachCampaigns.previewEmail.copy_body")}>
-                  <IconButton size="small" onClick={handleCopyBody}>
-                    <ContentCopyIcon fontSize="inherit" />
-                  </IconButton>
-                </Tooltip>
+                <Button
+                  size="small"
+                  variant={copiedKey === "body" ? "contained" : "outlined"}
+                  color={copiedKey === "body" ? "success" : "primary"}
+                  startIcon={
+                    copiedKey === "body" ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )
+                  }
+                  onClick={() => copy(plainBody, "body")}
+                >
+                  {copiedKey === "body"
+                    ? t("outreachCampaigns.previewEmail.copied_body")
+                    : t("outreachCampaigns.previewEmail.copy_body")}
+                </Button>
               </Box>
-              <Paper
-                variant="outlined"
+              <TextField
+                value={plainBody}
+                fullWidth
+                multiline
+                rows={12}
+                slotProps={{ input: { readOnly: true } }}
                 sx={{
-                  p: 2,
-                  maxHeight: 420,
-                  overflow: "auto",
-                  bgcolor: "background.paper",
+                  "& .MuiInputBase-input": {
+                    fontFamily: "inherit",
+                    fontSize: "0.875rem",
+                    lineHeight: 1.7,
+                  },
                 }}
-              >
-                <div
-                  // eslint-disable-next-line react/no-danger
-                  dangerouslySetInnerHTML={{ __html: data.body }}
-                />
-              </Paper>
+              />
             </Box>
           </Stack>
         )}
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>{t("common.close")}</Button>
-        {onAddToCrm && !lead.convertedToProspectAt && (
-          <Button
-            variant="contained"
-            color="secondary"
-            onClick={() => {
-              onClose();
-              onAddToCrm();
-            }}
-          >
-            {t("outreachCampaigns.add_to_crm")}
-          </Button>
-        )}
+      <DialogActions sx={{ justifyContent: "space-between", px: 2.5, pb: 2 }}>
+        <Button
+          variant="outlined"
+          startIcon={
+            copiedKey === "all" ? (
+              <CheckIcon fontSize="small" />
+            ) : (
+              <ContentCopyIcon fontSize="small" />
+            )
+          }
+          color={copiedKey === "all" ? "success" : "inherit"}
+          onClick={handleCopyAll}
+          disabled={!data}
+        >
+          {copiedKey === "all"
+            ? t("outreachCampaigns.previewEmail.copied_all")
+            : t("outreachCampaigns.previewEmail.copy_all")}
+        </Button>
+        <Stack direction="row" spacing={1}>
+          <Button onClick={onClose}>{t("common.close")}</Button>
+          {onAddToCrm && !lead.convertedToProspectAt && (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                onClose();
+                onAddToCrm();
+              }}
+            >
+              {t("outreachCampaigns.add_to_crm")}
+            </Button>
+          )}
+        </Stack>
       </DialogActions>
     </Dialog>
   );

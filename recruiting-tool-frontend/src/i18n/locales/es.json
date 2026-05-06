@@ -4755,9 +4755,11 @@
       "body_label": "Cuerpo",
       "error": "Error al cargar la vista previa del email",
       "copy_subject": "Copiar asunto",
-      "copy_body": "Copiar cuerpo (texto plano)",
-      "copied_subject": "Asunto copiado",
-      "copied_body": "Cuerpo copiado"
+      "copy_body": "Copiar cuerpo",
+      "copied_subject": "¡Copiado!",
+      "copied_body": "¡Copiado!",
+      "copy_all": "Copiar email completo",
+      "copied_all": "¡Copiado!"
     },
     "sendTestEmail": {
       "title": "Enviar Email de Prueba",

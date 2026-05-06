@@ -4747,9 +4747,11 @@
       "body_label": "Body",
       "error": "Failed to load email preview",
       "copy_subject": "Copy subject",
-      "copy_body": "Copy body (plain text)",
-      "copied_subject": "Subject copied",
-      "copied_body": "Body copied"
+      "copy_body": "Copy body",
+      "copied_subject": "Copied!",
+      "copied_body": "Copied!",
+      "copy_all": "Copy full email",
+      "copied_all": "Copied!"
     },
     "sendTestEmail": {
       "title": "Send Test Email",
