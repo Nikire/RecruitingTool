@@ -9,7 +9,8 @@ export type ProspectSource =
   | "REFERRAL"
   | "DIRECT"
   | "OTHER"
-  | "APOLLO_CAMPAIGN";
+  | "APOLLO_CAMPAIGN"
+  | "N8N_WORKFLOW";
 
 export type ProspectStatus =
   | "NEW"

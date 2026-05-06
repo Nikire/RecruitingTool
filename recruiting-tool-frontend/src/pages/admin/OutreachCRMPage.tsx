@@ -93,6 +93,7 @@ const SOURCE_COLORS: Record<ProspectSource, string | undefined> = {
   DIRECT: "#607d8b",
   OTHER: undefined,
   APOLLO_CAMPAIGN: "#ff6b35",
+  N8N_WORKFLOW: "#ea4b71",
 };
 
 const PROSPECT_STATUSES: ProspectStatus[] = [
@@ -121,6 +122,7 @@ const PROSPECT_SOURCES: ProspectSource[] = [
   "DIRECT",
   "OTHER",
   "APOLLO_CAMPAIGN",
+  "N8N_WORKFLOW",
 ];
 
 const COMPANY_SIZE_OPTIONS = ["1-10", "11-50", "51-200", "201-500", "500+"];

@@ -177,6 +177,11 @@ export class ConvertLeadDto {
   @IsOptional()
   @IsArray()
   tags?: string[];
+
+  @ApiPropertyOptional({ description: 'Source override for the CRM prospect (defaults to APOLLO_CAMPAIGN)' })
+  @IsOptional()
+  @IsString()
+  source?: string;
 }
 
 // ─── Bulk Import DTOs ──────────────────────────────────────────────────────────

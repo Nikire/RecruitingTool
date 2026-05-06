@@ -4463,6 +4463,7 @@
     "source_direct": "Directo",
     "source_other": "Otro",
     "source_apollo_campaign": "Apollo Campaign",
+    "source_n8n_workflow": "n8n Workflow",
     "field_name": "Nombre de la Empresa",
     "field_website": "Sitio Web",
     "field_industry": "Industria",

@@ -248,7 +248,7 @@ export class OutreachCampaignsService {
     const prospect = await (this.prisma as PrismaClient).prospectCompany.create({
       data: {
         name: lead.company,
-        source: 'APOLLO_CAMPAIGN',
+        source: (dto.source ?? 'APOLLO_CAMPAIGN') as any,
         status: 'CONTACTED',
         campaignRef: campaign.name,
         website: lead.website ?? null,
@@ -512,12 +512,14 @@ export class OutreachCampaignsService {
       const isHtml = /<[a-z][\s\S]*>/i.test(renderedBody);
       const htmlBody = isHtml ? renderedBody : renderedBody.replace(/\n/g, '<br>');
 
+      const replyTo = this.config.get<string>('EMAIL_REPLY_TO');
       const payload: Record<string, unknown> = {
         from: emailFrom,
         to: [lead.email],
         subject: renderedSubject,
         text: renderedBody,
         html: htmlBody,
+        ...(replyTo ? { reply_to: replyTo } : {}),
       };
       if (adminBcc && adminBcc !== lead.email) {
         payload.bcc = [adminBcc];

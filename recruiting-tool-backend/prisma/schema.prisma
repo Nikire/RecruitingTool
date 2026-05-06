@@ -1585,6 +1585,7 @@ enum ProspectSource {
   DIRECT
   OTHER
   APOLLO_CAMPAIGN
+  N8N_WORKFLOW
 }
 
 enum ProspectStatus {
