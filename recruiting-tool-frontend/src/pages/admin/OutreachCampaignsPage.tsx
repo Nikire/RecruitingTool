@@ -410,22 +410,33 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
           <Stack spacing={2}>
             {/* To */}
             {lead.email && (
-              <Box>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  fontWeight={600}
-                  sx={{ display: "block", mb: 0.5 }}
-                >
-                  {t("outreachCampaigns.previewEmail.to_label")}
-                </Typography>
+              <Stack direction="row" spacing={1} alignItems="center">
                 <TextField
-                  value={`${lead.name} <${lead.email}>`}
-                  fullWidth
+                  value={lead.email}
                   size="small"
                   slotProps={{ input: { readOnly: true } }}
+                  sx={{ flex: 1 }}
+                  label={t("outreachCampaigns.previewEmail.to_label")}
                 />
-              </Box>
+                <Button
+                  size="small"
+                  variant={copiedKey === "email" ? "contained" : "outlined"}
+                  color={copiedKey === "email" ? "success" : "primary"}
+                  startIcon={
+                    copiedKey === "email" ? (
+                      <CheckIcon fontSize="small" />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )
+                  }
+                  onClick={() => copy(lead.email!, "email")}
+                  sx={{ whiteSpace: "nowrap", flexShrink: 0 }}
+                >
+                  {copiedKey === "email"
+                    ? t("outreachCampaigns.previewEmail.copied_email")
+                    : t("outreachCampaigns.previewEmail.copy_email")}
+                </Button>
+              </Stack>
             )}
 
             {/* Subject */}
