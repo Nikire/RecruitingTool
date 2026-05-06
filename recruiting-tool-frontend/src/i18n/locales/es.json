@@ -4754,6 +4754,7 @@
       "subject_label": "Asunto",
       "body_label": "Cuerpo",
       "error": "Error al cargar la vista previa del email",
+      "to_label": "Para",
       "copy_subject": "Copiar asunto",
       "copy_body": "Copiar cuerpo",
       "copied_subject": "¡Copiado!",

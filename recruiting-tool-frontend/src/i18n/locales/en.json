@@ -4746,6 +4746,7 @@
       "subject_label": "Subject",
       "body_label": "Body",
       "error": "Failed to load email preview",
+      "to_label": "To",
       "copy_subject": "Copy subject",
       "copy_body": "Copy body",
       "copied_subject": "Copied!",

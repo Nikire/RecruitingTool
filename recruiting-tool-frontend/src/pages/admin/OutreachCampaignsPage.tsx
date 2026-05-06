@@ -408,6 +408,26 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
         )}
         {data && (
           <Stack spacing={2}>
+            {/* To */}
+            {lead.email && (
+              <Box>
+                <Typography
+                  variant="caption"
+                  color="text.secondary"
+                  fontWeight={600}
+                  sx={{ display: "block", mb: 0.5 }}
+                >
+                  {t("outreachCampaigns.previewEmail.to_label")}
+                </Typography>
+                <TextField
+                  value={`${lead.name} <${lead.email}>`}
+                  fullWidth
+                  size="small"
+                  slotProps={{ input: { readOnly: true } }}
+                />
+              </Box>
+            )}
+
             {/* Subject */}
             <Box>
               <Box
