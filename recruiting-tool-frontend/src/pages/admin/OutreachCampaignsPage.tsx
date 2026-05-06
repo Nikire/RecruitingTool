@@ -32,6 +32,8 @@ import {
   TextField,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import AddIcon from "@mui/icons-material/Add";
@@ -41,6 +43,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
+import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import EmailIcon from "@mui/icons-material/Email";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useTranslation } from "react-i18next";
@@ -345,7 +348,10 @@ interface PreviewEmailDialogProps {
   onClose: () => void;
   lead: OutreachLead;
   campaignUid: string;
-  onAddToCrm?: () => void;
+  /** All unconverted leads in order — used to compute next lead */
+  allLeads: OutreachLead[];
+  /** Called when user clicks Next/Add to CRM; receives the lead to show next (null = last) */
+  onConvertAndNext: (nextLead: OutreachLead | null) => void;
 }
 
 const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
@@ -353,15 +359,23 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
   onClose,
   lead,
   campaignUid,
-  onAddToCrm,
+  allLeads,
+  onConvertAndNext,
 }) => {
   const { t } = useTranslation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
   const { data, isLoading, isError } = usePreviewLeadEmail(
     campaignUid,
     lead.uid,
     open,
   );
+
+  const currentIndex = allLeads.findIndex((l) => l.uid === lead.uid);
+  const nextLead =
+    currentIndex >= 0 ? (allLeads[currentIndex + 1] ?? null) : null;
+  const position = currentIndex >= 0 ? currentIndex + 1 : null;
 
   const stripHtml = (html: string) => {
     const div = document.createElement("div");
@@ -383,17 +397,55 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
     copy(`${data.subject}\n\n${plainBody}`, "all");
   };
 
+  const isConverted = !!lead.convertedToProspectAt;
+
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {t("outreachCampaigns.previewEmail.title")}
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      fullScreen={isMobile}
+    >
+      <DialogTitle sx={{ pb: 1 }}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent="space-between"
+          flexWrap="wrap"
+          gap={1}
+        >
+          <Box>
+            <Typography variant="h6" component="div">
+              {lead.name}
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              {lead.company}
+            </Typography>
+          </Box>
+          {position !== null && (
+            <Chip
+              label={t("outreachCampaigns.previewEmail.progress", {
+                current: position,
+                total: allLeads.length,
+              })}
+              size="small"
+              variant="outlined"
+            />
+          )}
+        </Stack>
         {data && (
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ mt: 0.5, display: "block" }}
+          >
             {t("outreachCampaigns.previewEmail.template_label")}:{" "}
             <strong>{data.templateName}</strong>
           </Typography>
         )}
       </DialogTitle>
+
       <DialogContent dividers>
         {isLoading && (
           <Stack spacing={1.5}>
@@ -522,7 +574,7 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
                 value={plainBody}
                 fullWidth
                 multiline
-                rows={12}
+                rows={isMobile ? 8 : 12}
                 slotProps={{ input: { readOnly: true } }}
                 sx={{
                   "& .MuiInputBase-input": {
@@ -536,7 +588,16 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
           </Stack>
         )}
       </DialogContent>
-      <DialogActions sx={{ justifyContent: "space-between", px: 2.5, pb: 2 }}>
+
+      <DialogActions
+        sx={{
+          justifyContent: "space-between",
+          px: 2.5,
+          pb: 2,
+          flexWrap: "wrap",
+          gap: 1,
+        }}
+      >
         <Button
           variant="outlined"
           startIcon={
@@ -554,18 +615,19 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
             ? t("outreachCampaigns.previewEmail.copied_all")
             : t("outreachCampaigns.previewEmail.copy_all")}
         </Button>
-        <Stack direction="row" spacing={1}>
+
+        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
           <Button onClick={onClose}>{t("common.close")}</Button>
-          {onAddToCrm && !lead.convertedToProspectAt && (
+          {!isConverted && (
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => {
-                onClose();
-                onAddToCrm();
-              }}
+              endIcon={nextLead ? <ArrowForwardIcon /> : undefined}
+              onClick={() => onConvertAndNext(nextLead)}
             >
-              {t("outreachCampaigns.add_to_crm")}
+              {nextLead
+                ? t("outreachCampaigns.previewEmail.next_lead")
+                : t("outreachCampaigns.add_to_crm")}
             </Button>
           )}
         </Stack>
@@ -581,6 +643,7 @@ interface ConvertLeadDialogProps {
   onClose: () => void;
   lead: OutreachLead | null;
   campaignUid: string;
+  onSuccess?: () => void;
 }
 
 const TAG_SUGGESTIONS = ["Santiago", "Erik"];
@@ -590,6 +653,7 @@ const ConvertLeadDialog: React.FC<ConvertLeadDialogProps> = ({
   onClose,
   lead,
   campaignUid,
+  onSuccess,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -617,6 +681,7 @@ const ConvertLeadDialog: React.FC<ConvertLeadDialogProps> = ({
       );
       setTags([]);
       onClose();
+      onSuccess?.();
     } catch {
       toast.error(t("outreachCampaigns.error"));
       onClose();
@@ -733,6 +798,11 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
   const [previewEmailLead, setPreviewEmailLead] = useState<OutreachLead | null>(
     null,
   );
+  const [pendingNextLead, setPendingNextLead] = useState<OutreachLead | null>(
+    null,
+  );
+
+  const unconvertedLeads = rawLeads.filter((l) => !l.convertedToProspectAt);
 
   const handleStatusChange = async (
     lead: OutreachLead,
@@ -1085,14 +1155,12 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
           onClose={() => setPreviewEmailLead(null)}
           lead={previewEmailLead}
           campaignUid={campaignUid}
-          onAddToCrm={
-            !previewEmailLead.convertedToProspectAt
-              ? () => {
-                  setConvertDialogLead(previewEmailLead);
-                  setPreviewEmailLead(null);
-                }
-              : undefined
-          }
+          allLeads={unconvertedLeads}
+          onConvertAndNext={(nextLead) => {
+            setPendingNextLead(nextLead);
+            setConvertDialogLead(previewEmailLead);
+            setPreviewEmailLead(null);
+          }}
         />
       )}
 
@@ -1101,6 +1169,12 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
         onClose={() => setConvertDialogLead(null)}
         lead={convertDialogLead}
         campaignUid={campaignUid}
+        onSuccess={() => {
+          if (pendingNextLead) {
+            setPreviewEmailLead(pendingNextLead);
+            setPendingNextLead(null);
+          }
+        }}
       />
     </>
   );

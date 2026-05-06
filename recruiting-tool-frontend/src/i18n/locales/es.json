@@ -4755,6 +4755,8 @@
       "body_label": "Cuerpo",
       "error": "Error al cargar la vista previa del email",
       "to_label": "Para",
+      "progress": "{{current}} de {{total}} restantes",
+      "next_lead": "Agregar a CRM y Siguiente",
       "copy_email": "Copiar email",
       "copied_email": "¡Copiado!",
       "copy_subject": "Copiar asunto",
