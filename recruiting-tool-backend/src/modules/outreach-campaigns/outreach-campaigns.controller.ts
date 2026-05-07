@@ -147,6 +147,40 @@ export class OutreachCampaignsController {
     return this.service.previewLeadEmail(campaignUid, leadUid, user);
   }
 
+  // ─── Internal endpoints (x-api-key, no JWT) ─────────────────────────────────
+
+  @Get(':campaignUid/leads-internal')
+  @SkipAuth()
+  @UseGuards(WebhookAuthGuard)
+  @ApiSecurity('X-API-Key')
+  @ApiOperation({ summary: 'List leads for a campaign - internal x-api-key auth' })
+  @ApiQuery({ name: 'status', required: false })
+  @ApiQuery({ name: 'channel', required: false })
+  @ApiResponse({ status: 200, type: [LeadResponseDto] })
+  findLeadsInternal(@Param('campaignUid') campaignUid: string, @Query('status') status?: string, @Query('channel') channel?: string): Promise<LeadResponseDto[]> {
+    return this.service.findLeads(campaignUid, { status, channel });
+  }
+
+  @Get(':campaignUid/leads/:leadUid/preview-email-internal')
+  @SkipAuth()
+  @UseGuards(WebhookAuthGuard)
+  @ApiSecurity('X-API-Key')
+  @ApiOperation({ summary: 'Preview rendered email for a lead - internal x-api-key auth' })
+  @ApiResponse({ status: 200, type: PreviewEmailResultDto })
+  previewLeadEmailInternal(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string): Promise<PreviewEmailResultDto> {
+    return this.service.previewLeadEmailInternal(campaignUid, leadUid);
+  }
+
+  @Post(':campaignUid/leads/:leadUid/convert-internal')
+  @SkipAuth()
+  @UseGuards(WebhookAuthGuard)
+  @ApiSecurity('X-API-Key')
+  @ApiOperation({ summary: 'Convert lead to CRM prospect - internal x-api-key auth' })
+  @ApiResponse({ status: 201, type: ConvertResultDto })
+  convertLeadInternal(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string, @Body() dto: ConvertLeadDto): Promise<ConvertResultDto> {
+    return this.service.convertLeadInternal(campaignUid, leadUid, dto);
+  }
+
   @Post(':campaignUid/send-test-email')
   @Auth([RolesType.ADMIN, RolesType.SUPER_ADMIN, RolesType.HR, RolesType.HR_MANAGER, RolesType.COMPANY_OWNER])
   @ApiOperation({ summary: 'Send a test outreach email to yourself with dummy data - HR/ADMIN required' })

@@ -676,6 +676,33 @@ export class OutreachCampaignsService {
     };
   }
 
+  // ─── Internal API helpers (no JWT — x-api-key only) ─────────────────────────
+
+  async previewLeadEmailInternal(campaignUid: string, leadUid: string): Promise<PreviewEmailResultDto> {
+    const db = this.prisma as PrismaClient;
+    const campaign = await db.outreachCampaign.findUnique({
+      where: { uid: campaignUid },
+      include: { createdBy: { select: { id: true, name: true, companyId: true } } },
+    });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    const systemUser = {
+      id: campaign.createdById ?? 0,
+      name: campaign.createdBy?.name ?? 'Borderless',
+      companyId: campaign.createdBy?.companyId ?? null,
+    };
+
+    return this.previewLeadEmail(campaignUid, leadUid, systemUser);
+  }
+
+  async convertLeadInternal(campaignUid: string, leadUid: string, dto: ConvertLeadDto): Promise<ConvertResultDto> {
+    const db = this.prisma as PrismaClient;
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    return this.convertLead(campaignUid, leadUid, campaign.createdById ?? 0, dto);
+  }
+
   // ─── Send Test Email ─────────────────────────────────────────────────────────
 
   async sendTestEmail(campaignUid: string, dto: SendTestEmailDto, requestingUser: { id: number; name: string; companyId: number | null }): Promise<SendTestEmailResultDto> {
