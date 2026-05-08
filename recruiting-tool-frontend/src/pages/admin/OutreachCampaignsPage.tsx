@@ -1059,8 +1059,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
       sortable: true,
       align: "center",
       headerAlign: "center",
-      valueGetter: (params: GridRenderCellParams<OutreachLead>) =>
-        params.row?.openedAt ?? null,
+      valueGetter: (_value: unknown, row: OutreachLead) => row.openedAt ?? null,
       renderCell: (params: GridRenderCellParams<OutreachLead>) => {
         const opened = !!params.row.openedAt;
         const count = params.row.openCount ?? 0;
@@ -1100,8 +1099,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
       sortable: true,
       align: "center",
       headerAlign: "center",
-      valueGetter: (params: GridRenderCellParams<OutreachLead>) =>
-        params.row?.clickedAt ?? null,
+      valueGetter: (_value: unknown, row: OutreachLead) =>
+        row.clickedAt ?? null,
       renderCell: (params: GridRenderCellParams<OutreachLead>) => {
         const clicked = !!params.row.clickedAt;
         const count = params.row.clickCount ?? 0;
@@ -1278,7 +1277,7 @@ const CampaignAnalytics: React.FC<CampaignAnalyticsProps> = ({
   const { t } = useTranslation();
   const { data: leads = [], isLoading } = useOutreachLeads(campaignUid);
 
-  if (isLoading || leads.length === 0) return null;
+  if (isLoading) return null;
 
   const emailLeads = leads.filter((l) => !!l.email);
   const openedLeads = leads.filter((l) => (l.openCount ?? 0) > 0);
