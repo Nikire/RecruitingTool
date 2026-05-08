@@ -4801,7 +4801,22 @@
     "col_country": "Country",
     "col_seniority": "Seniority",
     "convert_tags_label": "Assign to",
-    "convert_tags_placeholder": "Type or select..."
+    "convert_tags_placeholder": "Type or select...",
+    "tracking": {
+      "col_opened": "Opened",
+      "col_clicked": "Clicked",
+      "opened_on": "Opened {{count}}x · Last: {{date}}",
+      "not_opened": "Not opened",
+      "clicked_on": "Clicked {{count}}x · Last: {{date}}",
+      "not_clicked": "Not clicked",
+      "analytics_title": "Email Analytics",
+      "stat_total_leads": "Total Leads",
+      "stat_with_email": "With Email",
+      "stat_unique_opens": "Unique Opens",
+      "stat_total_opens": "Total Opens",
+      "stat_unique_clicks": "Unique Clicks",
+      "stat_total_clicks": "Total Clicks"
+    }
   },
   "unsubscribe": {
     "title": "Unsubscribed Successfully",

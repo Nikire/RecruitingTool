@@ -59,6 +59,7 @@ import { ReleaseNotesModule } from './modules/release-notes/release-notes.module
 import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
 import { OutreachCampaignsModule } from './modules/outreach-campaigns/outreach-campaigns.module';
 import { UnsubscribeModule } from './modules/unsubscribe/unsubscribe.module';
+import { TrackingModule } from './modules/tracking/tracking.module';
 
 @Module({
   imports: [
@@ -129,6 +130,7 @@ import { UnsubscribeModule } from './modules/unsubscribe/unsubscribe.module';
     AdminTasksModule,
     OutreachCampaignsModule,
     UnsubscribeModule,
+    TrackingModule,
   ],
   controllers: [AppController],
   providers: [

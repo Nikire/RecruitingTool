@@ -1779,6 +1779,14 @@ model OutreachLead {
   secondaryEmail  String?
   apolloData      Json?
 
+  // Email tracking fields
+  openedAt      DateTime?
+  clickedAt     DateTime?
+  openCount     Int       @default(0)
+  clickCount    Int       @default(0)
+  lastOpenedAt  DateTime?
+  lastClickedAt DateTime?
+
   @@index([status])
   @@index([campaignId])
   @@index([uid])

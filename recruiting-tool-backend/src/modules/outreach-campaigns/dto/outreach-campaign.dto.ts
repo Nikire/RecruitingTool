@@ -155,6 +155,25 @@ export class LeadResponseDto {
 
   @ApiProperty({ required: false })
   apolloData?: Record<string, unknown>;
+
+  // Email tracking fields
+  @ApiProperty({ required: false })
+  openCount?: number;
+
+  @ApiProperty({ required: false })
+  clickCount?: number;
+
+  @ApiPropertyOptional()
+  openedAt?: string;
+
+  @ApiPropertyOptional()
+  clickedAt?: string;
+
+  @ApiPropertyOptional()
+  lastOpenedAt?: string;
+
+  @ApiPropertyOptional()
+  lastClickedAt?: string;
 }
 
 export class ImportResultDto {

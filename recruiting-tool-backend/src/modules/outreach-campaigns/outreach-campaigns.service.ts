@@ -495,7 +495,9 @@ export class OutreachCampaignsService {
 
     // 6. Render subject and body
     const renderedSubject = this.emailTemplatesService.renderTemplate(template.subject, variables);
-    const renderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
+    const rawRenderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
+    // Inject tracking pixel and wrap links before sending
+    const renderedBody = this.injectTracking(rawRenderedBody, lead.uid);
 
     // 7. Send via Resend API using the private method on EmailService
     const emailFrom = this.config.get<string>('EMAIL_FROM', 'noreply@borderlessats.com');
@@ -669,9 +671,12 @@ export class OutreachCampaignsService {
     const renderedSubject = this.emailTemplatesService.renderTemplate(template.subject, variables);
     const renderedBody = this.emailTemplatesService.renderTemplate(template.body, variables);
 
+    // 6. Inject tracking pixel and wrap links
+    const trackedBody = this.injectTracking(renderedBody, lead.uid);
+
     return {
       subject: renderedSubject,
-      body: renderedBody,
+      body: trackedBody,
       templateName: template.name,
     };
   }
@@ -808,6 +813,36 @@ export class OutreachCampaignsService {
 
   // ─── Private helpers ────────────────────────────────────────────────────────
 
+  /**
+   * Inject email tracking into an HTML email body:
+   * 1. Append a 1×1 invisible tracking pixel before </body> (or at end)
+   * 2. Wrap all <a href="..."> links through the click-tracking redirect endpoint
+   */
+  private injectTracking(body: string, leadUid: string): string {
+    const baseUrl = this.config.get<string>('APP_BASE_URL', 'https://api.borderlessats.com');
+
+    // 1. Wrap <a href="..."> links (only http/https) through click tracker
+    const trackedBody = body.replace(/(<a\s[^>]*href=")([^"]+)("[^>]*>)/gi, (_match, before, href, after) => {
+      try {
+        const parsed = new URL(href);
+        if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
+          return _match; // leave mailto:, tel:, etc. unchanged
+        }
+        const trackUrl = `${baseUrl}/api/tracking/click/${leadUid}?url=${encodeURIComponent(href)}`;
+        return `${before}${trackUrl}${after}`;
+      } catch {
+        return _match;
+      }
+    });
+
+    // 2. Insert tracking pixel before </body> or append at end
+    const pixel = `<img src="${baseUrl}/api/tracking/open/${leadUid}" width="1" height="1" style="display:none;" alt="" />`;
+    if (/<\/body>/i.test(trackedBody)) {
+      return trackedBody.replace(/<\/body>/i, `${pixel}</body>`);
+    }
+    return trackedBody + pixel;
+  }
+
   private buildCrmDescription(
     lead: {
       name: string;
@@ -928,6 +963,12 @@ export class OutreachCampaignsService {
     apolloAccountId?: string | null;
     secondaryEmail?: string | null;
     apolloData?: Record<string, unknown> | null;
+    openCount?: number | null;
+    clickCount?: number | null;
+    openedAt?: Date | null;
+    clickedAt?: Date | null;
+    lastOpenedAt?: Date | null;
+    lastClickedAt?: Date | null;
   }): LeadResponseDto {
     return {
       uid: lead.uid,
@@ -956,6 +997,12 @@ export class OutreachCampaignsService {
       apolloAccountId: lead.apolloAccountId ?? undefined,
       secondaryEmail: lead.secondaryEmail ?? undefined,
       apolloData: (lead.apolloData as Record<string, unknown> | null) ?? undefined,
+      openCount: lead.openCount ?? 0,
+      clickCount: lead.clickCount ?? 0,
+      openedAt: lead.openedAt?.toISOString(),
+      clickedAt: lead.clickedAt?.toISOString(),
+      lastOpenedAt: lead.lastOpenedAt?.toISOString(),
+      lastClickedAt: lead.lastClickedAt?.toISOString(),
     };
   }
 }

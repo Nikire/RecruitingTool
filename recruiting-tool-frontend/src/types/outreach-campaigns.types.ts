@@ -44,6 +44,13 @@ export interface OutreachLead {
   apolloAccountId?: string;
   secondaryEmail?: string;
   apolloData?: Record<string, unknown>;
+  // Email tracking
+  openCount?: number;
+  clickCount?: number;
+  openedAt?: string;
+  clickedAt?: string;
+  lastOpenedAt?: string;
+  lastClickedAt?: string;
 }
 
 export interface CreateCampaignPayload {

@@ -4809,7 +4809,22 @@
     "col_country": "País",
     "col_seniority": "Seniority",
     "convert_tags_label": "Asignar a",
-    "convert_tags_placeholder": "Escribe o selecciona..."
+    "convert_tags_placeholder": "Escribe o selecciona...",
+    "tracking": {
+      "col_opened": "Abierto",
+      "col_clicked": "Clic",
+      "opened_on": "Abierto {{count}}x · Último: {{date}}",
+      "not_opened": "No abierto",
+      "clicked_on": "Clic {{count}}x · Último: {{date}}",
+      "not_clicked": "Sin clics",
+      "analytics_title": "Analítica de Email",
+      "stat_total_leads": "Total Leads",
+      "stat_with_email": "Con Email",
+      "stat_unique_opens": "Aperturas Únicas",
+      "stat_total_opens": "Total Aperturas",
+      "stat_unique_clicks": "Clics Únicos",
+      "stat_total_clicks": "Total Clics"
+    }
   },
   "unsubscribe": {
     "title": "Dado de baja correctamente",

@@ -46,6 +46,8 @@ import CheckIcon from "@mui/icons-material/Check";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import EmailIcon from "@mui/icons-material/Email";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import TouchAppIcon from "@mui/icons-material/TouchApp";
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
@@ -1051,6 +1053,88 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
       ),
     },
     {
+      field: "openTracking",
+      headerName: t("outreachCampaigns.tracking.col_opened"),
+      width: 80,
+      sortable: true,
+      align: "center",
+      headerAlign: "center",
+      valueGetter: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row?.openedAt ?? null,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) => {
+        const opened = !!params.row.openedAt;
+        const count = params.row.openCount ?? 0;
+        const tooltip = opened
+          ? t("outreachCampaigns.tracking.opened_on", {
+              date: new Date(
+                params.row.lastOpenedAt ?? params.row.openedAt!,
+              ).toLocaleDateString(),
+              count,
+            })
+          : t("outreachCampaigns.tracking.not_opened");
+        return (
+          <Tooltip title={tooltip}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <VisibilityIcon
+                fontSize="small"
+                sx={{ color: opened ? "success.main" : "action.disabled" }}
+              />
+              {count > 1 && (
+                <Typography
+                  variant="caption"
+                  color="success.main"
+                  fontWeight={700}
+                >
+                  {count}
+                </Typography>
+              )}
+            </Box>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      field: "clickTracking",
+      headerName: t("outreachCampaigns.tracking.col_clicked"),
+      width: 80,
+      sortable: true,
+      align: "center",
+      headerAlign: "center",
+      valueGetter: (params: GridRenderCellParams<OutreachLead>) =>
+        params.row?.clickedAt ?? null,
+      renderCell: (params: GridRenderCellParams<OutreachLead>) => {
+        const clicked = !!params.row.clickedAt;
+        const count = params.row.clickCount ?? 0;
+        const tooltip = clicked
+          ? t("outreachCampaigns.tracking.clicked_on", {
+              date: new Date(
+                params.row.lastClickedAt ?? params.row.clickedAt!,
+              ).toLocaleDateString(),
+              count,
+            })
+          : t("outreachCampaigns.tracking.not_clicked");
+        return (
+          <Tooltip title={tooltip}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+              <TouchAppIcon
+                fontSize="small"
+                sx={{ color: clicked ? "primary.main" : "action.disabled" }}
+              />
+              {count > 1 && (
+                <Typography
+                  variant="caption"
+                  color="primary.main"
+                  fontWeight={700}
+                >
+                  {count}
+                </Typography>
+              )}
+            </Box>
+          </Tooltip>
+        );
+      },
+    },
+    {
       field: "sendEmail",
       headerName: t("outreachCampaigns.sendEmail.title"),
       width: 70,
@@ -1177,6 +1261,102 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
         }}
       />
     </>
+  );
+};
+
+// ─── Campaign Analytics Summary ──────────────────────────────────────────────
+
+interface CampaignAnalyticsProps {
+  campaignUid: string;
+  totalLeads: number;
+}
+
+const CampaignAnalytics: React.FC<CampaignAnalyticsProps> = ({
+  campaignUid,
+  totalLeads,
+}) => {
+  const { t } = useTranslation();
+  const { data: leads = [], isLoading } = useOutreachLeads(campaignUid);
+
+  if (isLoading || leads.length === 0) return null;
+
+  const emailLeads = leads.filter((l) => !!l.email);
+  const openedLeads = leads.filter((l) => (l.openCount ?? 0) > 0);
+  const clickedLeads = leads.filter((l) => (l.clickCount ?? 0) > 0);
+
+  const totalEmails = emailLeads.length;
+  const openRate =
+    totalEmails > 0 ? Math.round((openedLeads.length / totalEmails) * 100) : 0;
+  const clickRate =
+    totalEmails > 0 ? Math.round((clickedLeads.length / totalEmails) * 100) : 0;
+  const totalOpens = leads.reduce((sum, l) => sum + (l.openCount ?? 0), 0);
+  const totalClicks = leads.reduce((sum, l) => sum + (l.clickCount ?? 0), 0);
+
+  const stats = [
+    {
+      label: t("outreachCampaigns.tracking.stat_total_leads"),
+      value: totalLeads,
+      color: "text.primary" as const,
+    },
+    {
+      label: t("outreachCampaigns.tracking.stat_with_email"),
+      value: totalEmails,
+      color: "text.secondary" as const,
+    },
+    {
+      label: t("outreachCampaigns.tracking.stat_unique_opens"),
+      value: `${openedLeads.length} (${openRate}%)`,
+      color: "success.main" as const,
+      icon: <VisibilityIcon fontSize="small" sx={{ color: "success.main" }} />,
+    },
+    {
+      label: t("outreachCampaigns.tracking.stat_total_opens"),
+      value: totalOpens,
+      color: "success.main" as const,
+    },
+    {
+      label: t("outreachCampaigns.tracking.stat_unique_clicks"),
+      value: `${clickedLeads.length} (${clickRate}%)`,
+      color: "primary.main" as const,
+      icon: <TouchAppIcon fontSize="small" sx={{ color: "primary.main" }} />,
+    },
+    {
+      label: t("outreachCampaigns.tracking.stat_total_clicks"),
+      value: totalClicks,
+      color: "primary.main" as const,
+    },
+  ];
+
+  return (
+    <Paper variant="outlined" sx={{ p: 2, mb: 2 }}>
+      <Stack direction="row" spacing={1} alignItems="center" mb={1.5}>
+        <TrendingUpIcon fontSize="small" color="action" />
+        <Typography variant="subtitle2" fontWeight={600}>
+          {t("outreachCampaigns.tracking.analytics_title")}
+        </Typography>
+      </Stack>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))",
+          gap: 2,
+        }}
+      >
+        {stats.map((stat) => (
+          <Box key={stat.label}>
+            <Stack direction="row" spacing={0.5} alignItems="center">
+              {stat.icon}
+              <Typography variant="h6" fontWeight={700} color={stat.color}>
+                {stat.value}
+              </Typography>
+            </Stack>
+            <Typography variant="caption" color="text.secondary">
+              {stat.label}
+            </Typography>
+          </Box>
+        ))}
+      </Box>
+    </Paper>
   );
 };
 
@@ -1465,6 +1645,12 @@ const OutreachCampaignsPage: React.FC = () => {
                   </IconButton>
                 </Tooltip>
               </Box>
+
+              {/* Analytics */}
+              <CampaignAnalytics
+                campaignUid={selectedCampaign.uid}
+                totalLeads={selectedCampaign.leadCounts.total}
+              />
 
               {/* Toolbar */}
               <Box
