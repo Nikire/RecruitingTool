@@ -37,8 +37,8 @@ export class EmailTemplatesController {
     type: [EmailTemplateResponseDto],
   })
   @ApiQuery({ name: 'companyUid', required: false, description: 'Filter by company UID' })
-  findAll(@Query('companyUid') companyUid?: string, @CurrentUser() user?: any): Promise<EmailTemplateResponseDto[]> {
-    return this.emailTemplatesService.findAll(companyUid, user?.role === 'SUPER_ADMIN' || user?.role === 'ADMIN');
+  findAll(@Query('companyUid') companyUid?: string): Promise<EmailTemplateResponseDto[]> {
+    return this.emailTemplatesService.findAll(companyUid);
   }
 
   @Post('create-defaults')

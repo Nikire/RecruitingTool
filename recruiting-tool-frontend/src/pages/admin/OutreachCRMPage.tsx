@@ -596,7 +596,7 @@ const OutreachCRMPage: React.FC = () => {
   const { data: listData, isLoading } = useProspects(queryParams);
   const { data: stats, isLoading: statsLoading } = useProspectStats();
 
-  const rows = listData?.data ?? [];
+  const rows = useMemo(() => listData?.data ?? [], [listData]);
   const totalRows = listData?.total ?? 0;
 
   // Derive unique tags from loaded prospects for autocomplete suggestions

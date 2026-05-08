@@ -75,7 +75,7 @@ export class EmailTemplatesService {
     return EmailTemplateMapper(emailTemplate);
   }
 
-  async findAll(companyUid?: string, isSuperAdmin = false): Promise<EmailTemplateResponseDto[]> {
+  async findAll(companyUid?: string): Promise<EmailTemplateResponseDto[]> {
     let companyId: number | undefined;
 
     if (companyUid) {

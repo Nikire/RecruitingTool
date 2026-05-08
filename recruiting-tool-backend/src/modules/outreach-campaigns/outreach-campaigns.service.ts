@@ -41,7 +41,7 @@ export class OutreachCampaignsService {
 
   // ─── Campaigns ──────────────────────────────────────────────────────────────
 
-  async findAllCampaigns(_userId: number): Promise<CampaignResponseDto[]> {
+  async findAllCampaigns(): Promise<CampaignResponseDto[]> {
     const db = this.prisma as PrismaClient;
     const campaigns = await db.outreachCampaign.findMany({
       orderBy: { createdAt: 'desc' },
@@ -202,7 +202,7 @@ export class OutreachCampaignsService {
     return { imported, skipped };
   }
 
-  async updateLead(campaignUid: string, leadUid: string, dto: UpdateLeadDto, _userId: number): Promise<LeadResponseDto> {
+  async updateLead(campaignUid: string, leadUid: string, dto: UpdateLeadDto): Promise<LeadResponseDto> {
     const db = this.prisma as PrismaClient;
     const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
     if (!campaign) throw new NotFoundException('Campaign not found');

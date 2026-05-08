@@ -36,8 +36,8 @@ export class OutreachCampaignsController {
   @Get()
   @ApiOperation({ summary: 'List all campaigns - ADMIN required' })
   @ApiResponse({ status: 200, type: [CampaignResponseDto] })
-  findAll(@CurrentUser('id') userId: number): Promise<CampaignResponseDto[]> {
-    return this.service.findAllCampaigns(userId);
+  findAll(): Promise<CampaignResponseDto[]> {
+    return this.service.findAllCampaigns();
   }
 
   @Post()
@@ -91,13 +91,8 @@ export class OutreachCampaignsController {
   @Patch(':campaignUid/leads/:leadUid')
   @ApiOperation({ summary: 'Update a lead (status, channel, notes) - ADMIN required' })
   @ApiResponse({ status: 200, type: LeadResponseDto })
-  updateLead(
-    @Param('campaignUid') campaignUid: string,
-    @Param('leadUid') leadUid: string,
-    @Body() dto: UpdateLeadDto,
-    @CurrentUser('id') userId: number,
-  ): Promise<LeadResponseDto> {
-    return this.service.updateLead(campaignUid, leadUid, dto, userId);
+  updateLead(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string, @Body() dto: UpdateLeadDto): Promise<LeadResponseDto> {
+    return this.service.updateLead(campaignUid, leadUid, dto);
   }
 
   @Post(':campaignUid/leads/:leadUid/convert')
