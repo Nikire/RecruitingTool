@@ -198,38 +198,22 @@ const BillingPage: React.FC = () => {
                     />
                   </TableCell>
                   <TableCell align="right">
-                    <Tooltip title={t("billing.download_pdf")}>
-                      <span>
-                        <IconButton
-                          size="small"
-                          color="primary"
-                          disabled={!invoice.pdfUrl}
-                          onClick={() =>
-                            toast(t("common.coming_soon"), {
-                              icon: "🚀",
-                              duration: 3000,
-                            })
-                          }
-                          // href={invoice.pdfUrl} target="_blank" rel="noopener noreferrer"
-                        >
-                          <DownloadIcon />
-                        </IconButton>
-                      </span>
-                    </Tooltip>
                     <Tooltip title={t("billing.view_invoice")}>
                       <span>
                         <IconButton
                           size="small"
                           color="primary"
-                          disabled={!invoice.hostedInvoiceUrl}
-                          onClick={() =>
-                            toast(t("common.coming_soon"), {
-                              icon: "🚀",
-                              duration: 3000,
-                            })
+                          disabled={
+                            !invoice.invoiceUrl && !invoice.hostedInvoiceUrl
                           }
-                          sx={{ ml: 1 }}
-                          // href={invoice.hostedInvoiceUrl} target="_blank" rel="noopener noreferrer"
+                          component="a"
+                          href={
+                            invoice.invoiceUrl ??
+                            invoice.hostedInvoiceUrl ??
+                            "#"
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
                         >
                           <ReceiptIcon />
                         </IconButton>

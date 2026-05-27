@@ -319,7 +319,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
           <ListItemButton
             onClick={() => {
               setMobileOpen(false);
-              toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+              navigate("/profile/subscription");
             }}
             aria-label={t("common.subscription")}
           >

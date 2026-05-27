@@ -121,8 +121,9 @@ export interface Invoice {
   status: string;
   createdAt: string;
   dueDate?: string;
-  pdfUrl: string;
-  hostedInvoiceUrl: string;
+  pdfUrl?: string;
+  hostedInvoiceUrl?: string;
+  invoiceUrl?: string;
 }
 
 // Invoices Response

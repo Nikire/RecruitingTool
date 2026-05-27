@@ -64,7 +64,7 @@ const ProfileDropdown: React.FC<ProfileDropdownProps> = ({
 
   const handleSubscription = () => {
     handleClose();
-    toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
+    navigate("/profile/subscription");
   };
 
   const handleLogout = () => {

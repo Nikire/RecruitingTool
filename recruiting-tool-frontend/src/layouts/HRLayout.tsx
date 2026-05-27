@@ -131,8 +131,7 @@ const HRLayout: React.FC = () => {
           icon: <ReceiptIcon />,
           path: "/hr/billing",
           requiresCompanyOwner: true,
-          onClick: () =>
-            toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 }),
+          onClick: undefined,
         } as ExtendedMenuItem,
         {
           text: t("hr_layout.company_profile"),
