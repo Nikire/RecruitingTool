@@ -69,9 +69,7 @@ export class DodoPaymentsService {
       const productId = this.getProductId(dto.plan, dto.interval ?? 'monthly');
 
       // Build customer object — attach existing Dodo customer if available
-      const customerPayload = company.subscription?.doCustomerId
-        ? { customer_id: company.subscription.doCustomerId }
-        : { email: user.email, name: company.name, create_new_customer: false };
+      const customerPayload = company.subscription?.doCustomerId ? { customer_id: company.subscription.doCustomerId } : { email: user.email, name: company.name };
 
       const session = await this.client!.checkoutSessions.create({
         product_cart: [{ product_id: productId, quantity: 1 }],
@@ -81,6 +79,22 @@ export class DodoPaymentsService {
         metadata: {
           companyId: String(companyId),
           companyUid: company.uid,
+        },
+        customization: {
+          theme_config: {
+            light: {
+              button_primary: '#325CE7',
+              button_primary_hover: '#2748C0',
+              button_text_primary: '#ffffff',
+              input_focus_border: '#325CE7',
+            },
+            dark: {
+              button_primary: '#325CE7',
+              button_primary_hover: '#2748C0',
+              button_text_primary: '#ffffff',
+              input_focus_border: '#B6C5F6',
+            },
+          },
         },
       });
 
