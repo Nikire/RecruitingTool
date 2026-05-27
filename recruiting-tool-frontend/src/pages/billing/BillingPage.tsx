@@ -55,8 +55,7 @@ const BillingPage: React.FC = () => {
   const hasInvoices = invoices.length > 0;
 
   const handleManageBilling = () => {
-    toast(t("common.coming_soon"), { icon: "🚀", duration: 3000 });
-    // billingPortal.mutate(undefined as never);
+    billingPortal.mutate(undefined as never);
   };
 
   const getSubscriptionStatusColor = (status: SubscriptionStatus) => {
@@ -143,9 +142,7 @@ const BillingPage: React.FC = () => {
             <Button
               variant="contained"
               onClick={handleManageBilling}
-              disabled={
-                billingPortal.isPending || !subscription.stripeCustomerId
-              }
+              disabled={billingPortal.isPending}
             >
               {t("subscription.manage_billing")}
             </Button>
