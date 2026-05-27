@@ -982,6 +982,8 @@ model Subscription {
   lsCustomerId         String?            @unique
   lsSubscriptionId     String?            @unique
   lsCustomerPortalUrl  String?
+  doCustomerId         String?            @unique
+  doSubscriptionId     String?            @unique
   status               SubscriptionStatus @default(TRIALING)
   plan                 SubscriptionPlan   @default(FREE)
   currentPeriodStart   DateTime?
@@ -999,6 +1001,8 @@ model Subscription {
   @@index([stripeSubscriptionId])
   @@index([lsCustomerId])
   @@index([lsSubscriptionId])
+  @@index([doCustomerId])
+  @@index([doSubscriptionId])
   @@index([status])
   @@index([plan])
   @@index([uid])
