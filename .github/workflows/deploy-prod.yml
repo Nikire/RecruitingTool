@@ -76,7 +76,7 @@ jobs:
               2>/dev/null || echo "==> DB fix skipped"
 
             echo "==> Ensuring SELinux allows nginx connections..."
-            sudo setsebool -P httpd_can_network_connect 1 || true
+            timeout 10 sudo setsebool -P httpd_can_network_connect 1 || true
 
             echo "==> Building backend..."
             DOCKER_BUILDKIT=0 docker-compose build backend
