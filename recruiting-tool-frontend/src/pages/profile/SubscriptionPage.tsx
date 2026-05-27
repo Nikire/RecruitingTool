@@ -487,7 +487,7 @@ const SubscriptionPage: React.FC = () => {
             <PricingCard
               plan={SubscriptionPlan.PROFESSIONAL}
               monthlyPrice={79}
-              annualPrice={799}
+              annualPrice={708}
               interval={billingInterval}
               features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
               isCurrentPlan={
@@ -506,8 +506,8 @@ const SubscriptionPage: React.FC = () => {
           <Grid size={{ xs: 12, md: 4 }} sx={{ overflow: "visible" }}>
             <PricingCard
               plan={SubscriptionPlan.ENTERPRISE}
-              monthlyPrice={249}
-              annualPrice={2499}
+              monthlyPrice={299}
+              annualPrice={2988}
               interval={billingInterval}
               features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
               isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}
