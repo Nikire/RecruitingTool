@@ -204,6 +204,14 @@ const SubscriptionPage: React.FC = () => {
     });
   };
 
+  const planRank: Record<SubscriptionPlan, number> = {
+    [SubscriptionPlan.FREE]: 0,
+    [SubscriptionPlan.PROFESSIONAL]: 1,
+    [SubscriptionPlan.ENTERPRISE]: 2,
+  };
+  const currentRank = subscription ? planRank[subscription.plan] : 0;
+  const canUpgradeTo = (plan: SubscriptionPlan) => currentRank < planRank[plan];
+
   const getPlanFeatures = (plan: SubscriptionPlan): string[] => {
     if (!planLimits) return [];
     return buildPlanFeatures(planLimits[plan], t);
@@ -472,7 +480,6 @@ const SubscriptionPage: React.FC = () => {
               interval={billingInterval}
               features={getPlanFeatures(SubscriptionPlan.FREE)}
               isCurrentPlan={subscription?.plan === SubscriptionPlan.FREE}
-              upgradeDisabled
             />
           </Grid>
 
@@ -486,12 +493,12 @@ const SubscriptionPage: React.FC = () => {
               isCurrentPlan={
                 subscription?.plan === SubscriptionPlan.PROFESSIONAL
               }
-              onUpgrade={() => handleUpgrade(SubscriptionPlan.PROFESSIONAL)}
-              upgradeDisabled={
-                isCreatingCheckout ||
-                subscription?.plan === SubscriptionPlan.PROFESSIONAL ||
-                subscription?.plan === SubscriptionPlan.ENTERPRISE
+              onUpgrade={
+                canUpgradeTo(SubscriptionPlan.PROFESSIONAL)
+                  ? () => handleUpgrade(SubscriptionPlan.PROFESSIONAL)
+                  : undefined
               }
+              upgradeDisabled={isCreatingCheckout}
               highlighted
             />
           </Grid>
@@ -504,11 +511,12 @@ const SubscriptionPage: React.FC = () => {
               interval={billingInterval}
               features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
               isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}
-              onUpgrade={() => handleUpgrade(SubscriptionPlan.ENTERPRISE)}
-              upgradeDisabled={
-                isCreatingCheckout ||
-                subscription?.plan === SubscriptionPlan.ENTERPRISE
+              onUpgrade={
+                canUpgradeTo(SubscriptionPlan.ENTERPRISE)
+                  ? () => handleUpgrade(SubscriptionPlan.ENTERPRISE)
+                  : undefined
               }
+              upgradeDisabled={isCreatingCheckout}
             />
           </Grid>
         </Grid>

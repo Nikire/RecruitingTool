@@ -165,7 +165,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
               color="primary"
               sx={{ width: "100%" }}
             />
-          ) : (
+          ) : onUpgrade ? (
             <Button
               variant={highlighted ? "contained" : "outlined"}
               fullWidth
@@ -174,7 +174,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
             >
               {t("subscription.upgrade_to_plan")}
             </Button>
-          )}
+          ) : null}
         </Box>
       </CardActions>
     </Card>
