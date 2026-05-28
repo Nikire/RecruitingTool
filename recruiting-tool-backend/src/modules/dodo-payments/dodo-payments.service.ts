@@ -68,18 +68,13 @@ export class DodoPaymentsService {
       const user = company.users[0];
       const productId = this.getProductId(dto.plan, dto.interval ?? 'monthly');
 
-      // Build customer object — attach existing Dodo customer if available
-      const customerPayload = company.subscription?.doCustomerId ? { customer_id: company.subscription.doCustomerId } : { email: user.email, name: company.name };
-
-      const session = await this.client!.checkoutSessions.create({
+      const storedCustomerId = company.subscription?.doCustomerId;
+      const newCustomerPayload = { email: user.email, name: company.name };
+      const checkoutParams = {
         product_cart: [{ product_id: productId, quantity: 1 }],
-        customer: customerPayload,
         return_url: dto.successUrl,
         cancel_url: dto.cancelUrl,
-        metadata: {
-          companyId: String(companyId),
-          companyUid: company.uid,
-        },
+        metadata: { companyId: String(companyId), companyUid: company.uid },
         customization: {
           theme_config: {
             light: {
@@ -96,7 +91,24 @@ export class DodoPaymentsService {
             },
           },
         },
-      });
+      };
+
+      let session: Awaited<ReturnType<typeof this.client.checkoutSessions.create>>;
+      try {
+        session = await this.client!.checkoutSessions.create({
+          ...checkoutParams,
+          customer: storedCustomerId ? { customer_id: storedCustomerId } : newCustomerPayload,
+        });
+      } catch (customerError) {
+        // Stale customer ID (e.g. test→live mode switch) — clear it and retry with email
+        if (storedCustomerId && (customerError as { status?: number })?.status === 404) {
+          this.logger.warn(`Dodo customer ${storedCustomerId} not found, clearing stale ID and retrying with email`);
+          await this.databaseService.subscription.update({ where: { companyId }, data: { doCustomerId: null } });
+          session = await this.client!.checkoutSessions.create({ ...checkoutParams, customer: newCustomerPayload });
+        } else {
+          throw customerError;
+        }
+      }
 
       const checkoutUrl = session.checkout_url;
       if (!checkoutUrl) {
