@@ -23,7 +23,6 @@ import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
-import toast from "react-hot-toast";
 import { WhatsNewModal } from "../components/common";
 
 /**

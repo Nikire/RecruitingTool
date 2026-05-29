@@ -14,7 +14,6 @@ import SubscriptionsIcon from "@mui/icons-material/Subscriptions";
 import LogoutIcon from "@mui/icons-material/Logout";
 import UserAvatar from "../user/UserAvatar";
 import { useLogout } from "../../hooks/api/useAuth";
-import toast from "react-hot-toast";
 
 interface ProfileDropdownProps {
   /** User's name for avatar display */

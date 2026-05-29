@@ -23,6 +23,11 @@ export class ProspectTrackingController {
     return this.service.getStats();
   }
 
+  @Get('analytics')
+  getAnalytics() {
+    return this.service.getAnalytics();
+  }
+
   @Get(':uid')
   findOne(@Param('uid') uid: string) {
     return this.service.findOne(uid);

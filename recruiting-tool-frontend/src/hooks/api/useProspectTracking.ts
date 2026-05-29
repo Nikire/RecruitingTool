@@ -4,6 +4,7 @@ import {
   getProspects,
   getProspectStats,
   getProspect,
+  getProspectAnalytics,
   createProspect,
   updateProspect,
   deleteProspect,
@@ -25,6 +26,7 @@ export const PROSPECT_KEYS = {
   list: (params?: ProspectListParams) =>
     [...PROSPECT_KEYS.all, "list", params] as const,
   stats: () => [...PROSPECT_KEYS.all, "stats"] as const,
+  analytics: () => [...PROSPECT_KEYS.all, "analytics"] as const,
   detail: (uid: string) => [...PROSPECT_KEYS.all, uid] as const,
 };
 
@@ -41,6 +43,14 @@ export function useProspectStats() {
     queryKey: PROSPECT_KEYS.stats(),
     queryFn: getProspectStats,
     staleTime: 2 * 60 * 1000,
+  });
+}
+
+export function useProspectAnalytics() {
+  return useQuery({
+    queryKey: PROSPECT_KEYS.analytics(),
+    queryFn: getProspectAnalytics,
+    staleTime: 5 * 60 * 1000,
   });
 }
 
@@ -109,8 +119,9 @@ export function useAddProspectContact() {
   return useMutation({
     mutationFn: ({ uid, ...dto }: CreateOutreachContactDto & { uid: string }) =>
       addProspectContact(uid, dto),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.all });
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.detail(vars.uid) });
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.list() });
     },
   });
 }
@@ -120,13 +131,15 @@ export function useRemoveProspectContact() {
   return useMutation({
     mutationFn: ({ uid, contactUid }: { uid: string; contactUid: string }) =>
       removeProspectContact(uid, contactUid),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.all });
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.detail(vars.uid) });
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.list() });
     },
   });
 }
 
 export function useAddProspectActivity() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -134,8 +147,14 @@ export function useAddProspectActivity() {
       ...dto
     }: CreateOutreachActivityDto & { uid: string }) =>
       addProspectActivity(uid, dto),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.all });
+    onSuccess: (_data, vars) => {
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.detail(vars.uid) });
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.list() });
+      qc.invalidateQueries({ queryKey: PROSPECT_KEYS.analytics() });
+      showSuccessToast(t("outreach_crm_detail.activity_logged"));
+    },
+    onError: () => {
+      showErrorToast(t("outreach_crm_detail.activity_log_error"));
     },
   });
 }

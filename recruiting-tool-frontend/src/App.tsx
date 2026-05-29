@@ -75,6 +75,8 @@ import AIQuotaPage from "./pages/admin/AIQuotaPage";
 import DocsPage from "./pages/admin/DocsPage";
 import OutreachTemplatesPage from "./pages/admin/OutreachTemplatesPage";
 import OutreachCRMPage from "./pages/admin/OutreachCRMPage";
+import OutreachCRMDetailPage from "./pages/admin/OutreachCRMDetailPage";
+import OutreachAnalyticsPage from "./pages/admin/OutreachAnalyticsPage";
 import RevenueDashboardPage from "./pages/admin/RevenueDashboardPage";
 import PipelineAnalyticsPage from "./pages/admin/PipelineAnalyticsPage";
 import QuotaInspectorPage from "./pages/admin/QuotaInspectorPage";
@@ -371,6 +373,14 @@ function App() {
                 element={<OutreachTemplatesPage />}
               />
               <Route path="/admin/outreach-crm" element={<OutreachCRMPage />} />
+              <Route
+                path="/admin/outreach-crm/:uid"
+                element={<OutreachCRMDetailPage />}
+              />
+              <Route
+                path="/admin/outreach-analytics"
+                element={<OutreachAnalyticsPage />}
+              />
               <Route
                 path="/admin/email-logs"
                 element={<AdminEmailLogsPage />}

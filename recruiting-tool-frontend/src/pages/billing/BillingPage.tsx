@@ -14,8 +14,6 @@ import {
   Alert,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import toast from "react-hot-toast";
-import DownloadIcon from "@mui/icons-material/Download";
 import ReceiptIcon from "@mui/icons-material/Receipt";
 import {
   useInvoices,

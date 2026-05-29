@@ -33,7 +33,9 @@ import TrackChangesIcon from "@mui/icons-material/TrackChanges";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import VisibilityIcon from "@mui/icons-material/Visibility";
 import { useTranslation } from "react-i18next";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { UnifiedStatCard } from "../../components/common";
 import {
@@ -536,6 +538,8 @@ const DeleteConfirmDialog: React.FC<DeleteDialogProps> = ({
 
 const OutreachCRMPage: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -553,6 +557,15 @@ const OutreachCRMPage: React.FC = () => {
   const [deleteTarget, setDeleteTarget] = useState<ProspectCompany | null>(
     null,
   );
+
+  // Handle editUid coming from detail page navigation
+  const locationState = location.state as { editUid?: string } | null;
+  React.useEffect(() => {
+    if (locationState?.editUid) {
+      // Clear the state so it doesn't re-trigger
+      window.history.replaceState({}, "");
+    }
+  }, [locationState]);
 
   const deleteMutation = useDeleteProspect();
   const updateMutation = useUpdateProspect();
@@ -670,8 +683,13 @@ const OutreachCRMPage: React.FC = () => {
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
           <Typography
             variant="body2"
-            sx={{ fontWeight: 600, cursor: "pointer" }}
-            onClick={() => handleOpenEdit(params.row)}
+            sx={{
+              fontWeight: 600,
+              cursor: "pointer",
+              color: "primary.main",
+              "&:hover": { textDecoration: "underline" },
+            }}
+            onClick={() => navigate(`/admin/outreach-crm/${params.row.uid}`)}
           >
             {params.value as string}
           </Typography>
@@ -868,11 +886,22 @@ const OutreachCRMPage: React.FC = () => {
       {
         field: "actions",
         headerName: t("outreach_crm.col_actions"),
-        width: 90,
+        width: 120,
         sortable: false,
         filterable: false,
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
           <Box sx={{ display: "flex", gap: 0.5 }}>
+            <Tooltip title={t("outreach_crm.view_details")}>
+              <IconButton
+                size="small"
+                color="primary"
+                onClick={() =>
+                  navigate(`/admin/outreach-crm/${params.row.uid}`)
+                }
+              >
+                <VisibilityIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
             <Tooltip title={t("common.edit")}>
               <IconButton
                 size="small"

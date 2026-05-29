@@ -39,7 +39,6 @@ import { useSubscription } from "../../api/subscription";
 import { EmailVerificationBanner } from "../common";
 import AddEmailBanner from "../navbar/AddEmailBanner";
 import { themeModeAtom } from "../../store/preferences.atoms";
-import toast from "react-hot-toast";
 
 const drawerWidth = 240;
 

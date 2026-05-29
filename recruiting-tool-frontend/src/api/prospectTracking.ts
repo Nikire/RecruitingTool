@@ -10,6 +10,7 @@ import type {
   ProspectListParams,
   ProspectContact,
   ProspectActivity,
+  ProspectAnalytics,
 } from "../types/prospect-tracking.types";
 
 const BASE = "/prospect-tracking";
@@ -22,6 +23,10 @@ export function getProspects(
 
 export function getProspectStats(): Promise<ProspectStats> {
   return api.get(`${BASE}/stats`).then((res) => res.data);
+}
+
+export function getProspectAnalytics(): Promise<ProspectAnalytics> {
+  return api.get(`${BASE}/analytics`).then((res) => res.data);
 }
 
 export function getProspect(uid: string): Promise<ProspectCompany> {

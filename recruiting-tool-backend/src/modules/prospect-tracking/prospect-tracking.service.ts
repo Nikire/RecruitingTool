@@ -193,6 +193,109 @@ export class ProspectTrackingService {
     };
   }
 
+  async getAnalytics() {
+    const allProspects = await this.prisma.prospectCompany.findMany({
+      select: {
+        id: true,
+        status: true,
+        source: true,
+        createdAt: true,
+        activities: {
+          select: { type: true, newStatus: true, createdAt: true },
+          orderBy: { createdAt: 'asc' },
+        },
+      },
+    });
+
+    const totalProspects = allProspects.length;
+
+    // Response rate: reached RESPONDED or beyond
+    const responsedStatuses: ProspectStatus[] = [
+      ProspectStatus.RESPONDED,
+      ProspectStatus.DEMO_SCHEDULED,
+      ProspectStatus.DEMO_DONE,
+      ProspectStatus.PROPOSAL_SENT,
+      ProspectStatus.CONVERTED,
+    ];
+    const respondedCount = allProspects.filter((p) => responsedStatuses.includes(p.status)).length;
+    const responseRate = totalProspects > 0 ? Math.round((respondedCount / totalProspects) * 100) : 0;
+
+    // Demos scheduled
+    const demosScheduled = allProspects.filter((p) => p.status === ProspectStatus.DEMO_SCHEDULED || p.status === ProspectStatus.DEMO_DONE).length;
+
+    // Conversion rate
+    const convertedCount = allProspects.filter((p) => p.status === ProspectStatus.CONVERTED).length;
+    const conversionRate = totalProspects > 0 ? Math.round((convertedCount / totalProspects) * 100) : 0;
+
+    // Avg days to convert
+    const convertedProspects = allProspects.filter((p) => p.status === ProspectStatus.CONVERTED);
+    let avgDaysToConvert = 0;
+    if (convertedProspects.length > 0) {
+      const totalDays = convertedProspects.reduce((sum, p) => {
+        const convertActivity = [...p.activities].reverse().find((a) => a.newStatus === ProspectStatus.CONVERTED);
+        if (convertActivity) {
+          const diffMs = new Date(convertActivity.createdAt).getTime() - new Date(p.createdAt).getTime();
+          return sum + diffMs / (1000 * 60 * 60 * 24);
+        }
+        const diffMs = Date.now() - new Date(p.createdAt).getTime();
+        return sum + diffMs / (1000 * 60 * 60 * 24);
+      }, 0);
+      avgDaysToConvert = Math.round(totalDays / convertedProspects.length);
+    }
+
+    // Funnel
+    const funnelStatuses: ProspectStatus[] = [ProspectStatus.NEW, ProspectStatus.CONTACTED, ProspectStatus.RESPONDED, ProspectStatus.DEMO_SCHEDULED, ProspectStatus.CONVERTED];
+    const statusCounts = new Map<string, number>();
+    for (const p of allProspects) {
+      statusCounts.set(p.status, (statusCounts.get(p.status) ?? 0) + 1);
+    }
+    const funnel = funnelStatuses.map((s) => ({ status: s, count: statusCounts.get(s) ?? 0 }));
+
+    // By source
+    const sourceCounts = new Map<string, number>();
+    for (const p of allProspects) {
+      sourceCounts.set(p.source, (sourceCounts.get(p.source) ?? 0) + 1);
+    }
+    const bySource = Array.from(sourceCounts.entries()).map(([source, count]) => ({ source, count }));
+
+    // By status (full breakdown)
+    const byStatus = Array.from(statusCounts.entries()).map(([status, count]) => ({ status, count }));
+
+    // Activities over last 30 days
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const recentActivities = await this.prisma.outreachActivity.findMany({
+      where: { createdAt: { gte: thirtyDaysAgo } },
+      select: { createdAt: true },
+    });
+
+    const activityDayCounts = new Map<string, number>();
+    for (const a of recentActivities) {
+      const dateStr = a.createdAt.toISOString().split('T')[0];
+      activityDayCounts.set(dateStr, (activityDayCounts.get(dateStr) ?? 0) + 1);
+    }
+    // Fill in all 30 days
+    const activitiesOverTime: Array<{ date: string; count: number }> = [];
+    for (let i = 29; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dateStr = d.toISOString().split('T')[0];
+      activitiesOverTime.push({ date: dateStr, count: activityDayCounts.get(dateStr) ?? 0 });
+    }
+
+    return {
+      totalProspects,
+      responseRate,
+      demosScheduled,
+      conversionRate,
+      avgDaysToConvert,
+      funnel,
+      bySource,
+      byStatus,
+      activitiesOverTime,
+    };
+  }
+
   private mapProspect(p: {
     uid: string;
     name: string;

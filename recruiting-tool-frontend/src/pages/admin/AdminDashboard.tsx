@@ -22,6 +22,7 @@ import {
   MarkEmailRead as MarkEmailReadIcon,
   BarChart as BarChartIcon,
   NewReleases as NewReleasesIcon,
+  TrackChanges as TrackChangesIcon,
 } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -40,6 +41,13 @@ const AdminDashboard: React.FC = () => {
       color: "#0277bd",
       description: t("admin_dashboard.pipeline_analytics_desc"),
       path: "/admin/pipeline-analytics",
+    },
+    {
+      title: t("admin_dashboard.outreach_analytics"),
+      icon: <TrackChangesIcon />,
+      color: "#00695c",
+      description: t("admin_dashboard.outreach_analytics_desc"),
+      path: "/admin/outreach-analytics",
     },
     {
       title: t("admin_dashboard.revenue_dashboard"),

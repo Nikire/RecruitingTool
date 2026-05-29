@@ -94,6 +94,18 @@ export interface ProspectStats {
   converted: number;
 }
 
+export interface ProspectAnalytics {
+  totalProspects: number;
+  responseRate: number;
+  demosScheduled: number;
+  conversionRate: number;
+  avgDaysToConvert: number;
+  funnel: Array<{ status: string; count: number }>;
+  bySource: Array<{ source: string; count: number }>;
+  byStatus: Array<{ status: string; count: number }>;
+  activitiesOverTime: Array<{ date: string; count: number }>;
+}
+
 export interface ProspectListResponse {
   data: ProspectCompany[];
   total: number;
