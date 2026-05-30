@@ -1640,7 +1640,8 @@
     "group_scheduling": "Programación",
     "group_settings": "Configuración",
     "guide": "Guía de Usuario",
-    "files": "Archivos"
+    "files": "Archivos",
+    "api_keys": "Claves API"
   },
   "hrGuide": {
     "title": "Guía de Usuario HR",
@@ -4904,5 +4905,62 @@
     "error_title": "Algo salió mal",
     "error_message": "Es posible que ya estés dado de baja o que el enlace haya expirado.",
     "loading": "Procesando tu solicitud..."
+  },
+  "apiKeys": {
+    "title": "Claves API",
+    "description": "Gestiona las claves API para integraciones de terceros con Borderless ATS",
+    "createKey": "Crear Clave API",
+    "noKeys": "Aún no hay claves API",
+    "noKeysDescription": "Crea una clave API para permitir que aplicaciones de terceros accedan a tus datos",
+    "never": "Nunca",
+    "columns": {
+      "name": "Nombre",
+      "prefix": "Prefijo",
+      "status": "Estado",
+      "lastUsed": "Último Uso",
+      "expires": "Vence",
+      "actions": "Acciones"
+    },
+    "status": {
+      "active": "Activa",
+      "revoked": "Revocada"
+    },
+    "createDialog": {
+      "title": "Crear Clave API",
+      "namePlaceholder": "ej. Integración de Producción",
+      "nameLabel": "Nombre de la Clave",
+      "expiresLabel": "Fecha de Vencimiento (opcional)",
+      "submit": "Crear Clave"
+    },
+    "createdDialog": {
+      "title": "Clave API Creada",
+      "warning": "Copia tu clave API ahora. Por razones de seguridad, no se mostrará de nuevo.",
+      "copy": "Copiar al Portapapeles",
+      "copied": "¡Copiado!",
+      "done": "Listo"
+    },
+    "revokeDialog": {
+      "title": "Revocar Clave API",
+      "message": "¿Estás seguro de que quieres revocar \"{{name}}\"? Las aplicaciones que usan esta clave perderán el acceso inmediatamente.",
+      "confirm": "Revocar Clave",
+      "cancel": "Cancelar"
+    },
+    "renameDialog": {
+      "title": "Renombrar Clave API"
+    },
+    "actions": {
+      "revoke": "Revocar",
+      "rename": "Renombrar",
+      "deactivate": "Desactivar",
+      "activate": "Activar"
+    },
+    "messages": {
+      "created": "Clave API creada correctamente",
+      "updated": "Clave API actualizada correctamente",
+      "revoked": "Clave API revocada correctamente",
+      "createError": "Error al crear la clave API",
+      "updateError": "Error al actualizar la clave API",
+      "revokeError": "Error al revocar la clave API"
+    }
   }
 }

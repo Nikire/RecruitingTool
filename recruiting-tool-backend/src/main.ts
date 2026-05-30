@@ -7,6 +7,7 @@ import { PrismaExceptionFilter } from './common/filters/prisma-exception.filter'
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
 import { PlanLimitsService } from './modules/plan-limits/plan-limits.service';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
+import { PublicApiModule } from './public-api/public-api.module';
 
 const { PORT, FRONTEND_URL } = process.env;
 
@@ -39,16 +40,50 @@ async function bootstrap() {
     }),
   );
 
-  const config = new DocumentBuilder()
-    .setTitle('BorderLess API')
-    .setDescription('API for managing recruitment processes, user roles and more by EMP Employment Solutions.')
+  // ─── Internal Swagger docs (JWT-authenticated, all routes) ───────────────────
+  const internalConfig = new DocumentBuilder()
+    .setTitle('BorderLess Internal API')
+    .setDescription('Internal API for managing recruitment processes, user roles and more by EMP Employment Solutions.')
     .setVersion('1.0')
     .addBearerAuth()
     .build();
 
-  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  const internalDocument = SwaggerModule.createDocument(app, internalConfig);
+  SwaggerModule.setup('api/internal-docs', app, internalDocument, {
+    customSiteTitle: 'BorderLess Internal API Docs',
+    swaggerOptions: {
+      persistAuthorization: true,
+    },
+  });
 
-  SwaggerModule.setup('api', app, documentFactory);
+  // ─── Public API Swagger docs (API-key authenticated, public v1 routes only) ──
+  const publicConfig = new DocumentBuilder()
+    .setTitle('Borderless ATS Public API')
+    .setDescription('REST API for third-party developers to integrate with Borderless ATS. ' + 'Authenticate using an API key in the X-API-Key header.')
+    .setVersion('v1')
+    .setContact('Borderless Support', 'https://borderlessats.com', '')
+    .addApiKey(
+      {
+        type: 'apiKey',
+        in: 'header',
+        name: 'X-API-Key',
+        description: 'Your Borderless API key (format: blss_live_...)',
+      },
+      'api-key',
+    )
+    .build();
+
+  const publicDocument = SwaggerModule.createDocument(app, publicConfig, {
+    include: [PublicApiModule],
+  });
+  SwaggerModule.setup('api/docs', app, publicDocument, {
+    customSiteTitle: 'Borderless ATS API Docs',
+    swaggerOptions: {
+      persistAuthorization: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
 
   // Seed default plan limits and feature flags — non-blocking, app starts even if seeding fails.
   try {

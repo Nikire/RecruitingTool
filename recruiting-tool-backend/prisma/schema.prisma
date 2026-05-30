@@ -45,6 +45,8 @@ model Company {
   demoBookings       DemoBookingToken[]       @relation("DemoBookings")
   prospectLink       ProspectCompany?
   adminTasks         AdminTask[]              @relation("AdminTaskLinkedCompany")
+  apiKeys            ApiKey[]
+  webhookEndpoints   WebhookEndpoint[]
 
   @@index([uid])
   @@index([name])
@@ -1808,4 +1810,38 @@ enum OutreachLeadChannel {
 enum OutreachLeadStatus {
   PENDING
   CONVERTED
+}
+
+model ApiKey {
+  id         Int       @id @default(autoincrement())
+  uid        String    @unique @default(uuid())
+  key        String    @unique
+  keyPrefix  String
+  name       String
+  companyId  Int
+  company    Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  lastUsedAt DateTime?
+  expiresAt  DateTime?
+  isActive   Boolean   @default(true)
+  scopes     String[]  @default([])
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  @@index([companyId])
+  @@index([key])
+}
+
+model WebhookEndpoint {
+  id        Int      @id @default(autoincrement())
+  uid       String   @unique @default(uuid())
+  url       String
+  secret    String
+  events    String[]
+  companyId Int
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
 }

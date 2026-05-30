@@ -88,6 +88,7 @@ import ChangelogPage from "./pages/admin/ChangelogPage";
 import AdminTasksPage from "./pages/admin/AdminTasksPage";
 import OutreachCampaignsPage from "./pages/admin/OutreachCampaignsPage";
 import HRGuidePage from "./pages/hr/HRGuidePage";
+import ApiKeysPage from "./pages/settings/ApiKeysPage";
 import { Toaster } from "react-hot-toast";
 import { ScrollToTop } from "./components/common/ScrollToTop";
 import Auth0CallbackHandler from "./components/auth/Auth0CallbackHandler";
@@ -259,6 +260,7 @@ function App() {
                 path="/settings/calendar"
                 element={<CalendarSettingsPage />}
               />
+              <Route path="/settings/api-keys" element={<ApiKeysPage />} />
               <Route path="/hr/calendar" element={<CompanyCalendarPage />} />
               <Route path="/hr/interviews" element={<InterviewsPage />} />
               <Route path="/hr/files" element={<FilesPage />} />

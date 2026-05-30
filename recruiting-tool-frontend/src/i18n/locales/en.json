@@ -1632,7 +1632,8 @@
     "group_scheduling": "Scheduling",
     "group_settings": "Settings",
     "guide": "User Guide",
-    "files": "Files"
+    "files": "Files",
+    "api_keys": "API Keys"
   },
   "hrGuide": {
     "title": "HR User Guide",
@@ -4896,5 +4897,62 @@
     "error_title": "Something Went Wrong",
     "error_message": "You may already be unsubscribed, or the link may have expired.",
     "loading": "Processing your request..."
+  },
+  "apiKeys": {
+    "title": "API Keys",
+    "description": "Manage API keys for third-party integrations with Borderless ATS",
+    "createKey": "Create API Key",
+    "noKeys": "No API keys yet",
+    "noKeysDescription": "Create an API key to allow third-party applications to access your data",
+    "never": "Never",
+    "columns": {
+      "name": "Name",
+      "prefix": "Prefix",
+      "status": "Status",
+      "lastUsed": "Last Used",
+      "expires": "Expires",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "revoked": "Revoked"
+    },
+    "createDialog": {
+      "title": "Create API Key",
+      "namePlaceholder": "e.g. Production Integration",
+      "nameLabel": "Key Name",
+      "expiresLabel": "Expiration Date (optional)",
+      "submit": "Create Key"
+    },
+    "createdDialog": {
+      "title": "API Key Created",
+      "warning": "Copy your API key now. For security reasons, it will not be shown again.",
+      "copy": "Copy to Clipboard",
+      "copied": "Copied!",
+      "done": "Done"
+    },
+    "revokeDialog": {
+      "title": "Revoke API Key",
+      "message": "Are you sure you want to revoke \"{{name}}\"? Applications using this key will immediately lose access.",
+      "confirm": "Revoke Key",
+      "cancel": "Cancel"
+    },
+    "renameDialog": {
+      "title": "Rename API Key"
+    },
+    "actions": {
+      "revoke": "Revoke",
+      "rename": "Rename",
+      "deactivate": "Deactivate",
+      "activate": "Activate"
+    },
+    "messages": {
+      "created": "API key created successfully",
+      "updated": "API key updated successfully",
+      "revoked": "API key revoked successfully",
+      "createError": "Failed to create API key",
+      "updateError": "Failed to update API key",
+      "revokeError": "Failed to revoke API key"
+    }
   }
 }

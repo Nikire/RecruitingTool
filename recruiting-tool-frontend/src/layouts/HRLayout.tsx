@@ -14,6 +14,7 @@ import ReceiptIcon from "@mui/icons-material/Receipt";
 import BusinessIcon from "@mui/icons-material/Business";
 import SettingsIcon from "@mui/icons-material/Settings";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
+import VpnKeyIcon from "@mui/icons-material/VpnKey";
 import {
   DashboardLayout,
   DashboardMenuItem,
@@ -119,6 +120,11 @@ const HRLayout: React.FC = () => {
           text: t("hr_layout.calendar"),
           icon: <CalendarMonthIcon />,
           path: "/settings/calendar",
+        },
+        {
+          text: t("hr_layout.api_keys"),
+          icon: <VpnKeyIcon />,
+          path: "/settings/api-keys",
         },
         {
           text: t("hr_layout.team"),

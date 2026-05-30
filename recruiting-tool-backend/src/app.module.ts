@@ -2,6 +2,7 @@ import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { UsersModule } from './modules/users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -61,11 +62,14 @@ import { AdminTasksModule } from './modules/admin-tasks/admin-tasks.module';
 import { OutreachCampaignsModule } from './modules/outreach-campaigns/outreach-campaigns.module';
 import { UnsubscribeModule } from './modules/unsubscribe/unsubscribe.module';
 import { TrackingModule } from './modules/tracking/tracking.module';
+import { PublicApiModule } from './public-api/public-api.module';
+import { ApiKeyManagementModule } from './modules/api-key-management/api-key-management.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     CacheModule,
     ThrottlerModule.forRootAsync({
       inject: [ConfigService],
@@ -133,6 +137,8 @@ import { TrackingModule } from './modules/tracking/tracking.module';
     OutreachCampaignsModule,
     UnsubscribeModule,
     TrackingModule,
+    PublicApiModule,
+    ApiKeyManagementModule,
   ],
   controllers: [AppController],
   providers: [
