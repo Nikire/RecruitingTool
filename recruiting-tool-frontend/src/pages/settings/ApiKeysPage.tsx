@@ -16,12 +16,25 @@ import {
   Alert,
   Paper,
   Stack,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+  Grid,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Divider,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AddIcon from "@mui/icons-material/Add";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import CheckIcon from "@mui/icons-material/Check";
 import KeyIcon from "@mui/icons-material/Key";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import OpenInNewIcon from "@mui/icons-material/OpenInNew";
+import CircleIcon from "@mui/icons-material/Circle";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import {
@@ -42,6 +55,29 @@ interface RenameApiKeyFormData {
   name: string;
 }
 
+const BASE_URL = "https://api.borderlessats.com";
+
+const CodeBlock = ({ children }: { children: string }) => (
+  <Box
+    component="pre"
+    sx={{
+      bgcolor: "grey.900",
+      color: "grey.100",
+      borderRadius: 1,
+      p: 1.5,
+      fontSize: "0.75rem",
+      fontFamily: "monospace",
+      overflowX: "auto",
+      whiteSpace: "pre-wrap",
+      wordBreak: "break-all",
+      m: 0,
+      lineHeight: 1.6,
+    }}
+  >
+    <code>{children}</code>
+  </Box>
+);
+
 const ApiKeysPage = () => {
   const { t } = useTranslation();
 
@@ -57,6 +93,7 @@ const ApiKeysPage = () => {
   const [createdKey, setCreatedKey] = useState<ApiKeyCreated | null>(null);
   const [createdKeyDialogOpen, setCreatedKeyDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [copiedSnippet, setCopiedSnippet] = useState<string | null>(null);
 
   // Revoke confirmation dialog state
   const [revokeTarget, setRevokeTarget] = useState<ApiKey | null>(null);
@@ -89,7 +126,7 @@ const ApiKeysPage = () => {
     createApiKey(
       {
         name: data.name.trim(),
-        expiresAt: data.expiresAt ? data.expiresAt : undefined,
+        expiresAt: data.expiresAt || undefined,
       },
       {
         onSuccess: (created) => {
@@ -115,6 +152,14 @@ const ApiKeysPage = () => {
     setCreatedKeyDialogOpen(false);
     setCreatedKey(null);
     setCopied(false);
+  };
+
+  // --- Copy snippet handler ---
+  const handleCopySnippet = (text: string, key: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedSnippet(key);
+      setTimeout(() => setCopiedSnippet(null), 2000);
+    });
   };
 
   // --- Revoke handlers ---
@@ -175,6 +220,16 @@ const ApiKeysPage = () => {
     if (!dateStr) return t("apiKeys.never");
     return new Date(dateStr).toLocaleDateString();
   };
+
+  // --- Code snippets ---
+  const curlSnippet = `curl ${BASE_URL}/api/v1/candidates \\
+  -H "X-API-Key: blss_live_YOUR_KEY_HERE"`;
+
+  const jsSnippet = `const res = await fetch(
+  '${BASE_URL}/api/v1/candidates',
+  { headers: { 'X-API-Key': 'blss_live_YOUR_KEY' } }
+);
+const { data } = await res.json();`;
 
   // --- Table columns ---
   const columns: DataTableColumn<ApiKey>[] = [
@@ -352,7 +407,7 @@ const ApiKeysPage = () => {
           justifyContent: "space-between",
           flexDirection: { xs: "column", sm: "row" },
           gap: 2,
-          mb: 4,
+          mb: 3,
         }}
       >
         <Box>
@@ -377,6 +432,176 @@ const ApiKeysPage = () => {
           {t("apiKeys.createKey")}
         </Button>
       </Box>
+
+      {/* Quick Start Docs Accordion */}
+      <Accordion
+        defaultExpanded={(apiKeys ?? []).length === 0}
+        sx={{
+          mb: 3,
+          border: "1px solid",
+          borderColor: "divider",
+          "&:before": { display: "none" },
+        }}
+      >
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <MenuBookIcon color="primary" fontSize="small" />
+            <Typography fontWeight={600}>{t("apiKeys.docs.title")}</Typography>
+          </Box>
+        </AccordionSummary>
+        <AccordionDetails sx={{ pt: 0 }}>
+          <Divider sx={{ mb: 2 }} />
+          <Grid container spacing={3}>
+            {/* Left column: auth + endpoints */}
+            <Grid size={{ xs: 12, md: 5 }}>
+              <Typography variant="subtitle2" gutterBottom>
+                {t("apiKeys.docs.baseUrl")}
+              </Typography>
+              <CodeBlock>{BASE_URL}</CodeBlock>
+
+              <Typography variant="subtitle2" sx={{ mt: 2 }} gutterBottom>
+                {t("apiKeys.docs.authTitle")}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                {t("apiKeys.docs.authDescription")}
+              </Typography>
+              <CodeBlock>{"X-API-Key: blss_live_..."}</CodeBlock>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 0.5, mb: 1, fontSize: "0.75rem" }}
+              >
+                or: Authorization: Bearer blss_live_...
+              </Typography>
+
+              <Typography variant="subtitle2" sx={{ mt: 2 }} gutterBottom>
+                {t("apiKeys.docs.endpointsTitle")}
+              </Typography>
+              <List dense disablePadding>
+                {[
+                  { key: "candidates", path: "/api/v1/candidates" },
+                  { key: "jobPositions", path: "/api/v1/job-positions" },
+                  { key: "applications", path: "/api/v1/applications" },
+                  { key: "webhooks", path: "/api/v1/webhooks" },
+                ].map((ep) => (
+                  <ListItem key={ep.key} disableGutters sx={{ py: 0.25 }}>
+                    <ListItemIcon sx={{ minWidth: 20 }}>
+                      <CircleIcon sx={{ fontSize: 6, color: "primary.main" }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={
+                        <Box>
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            sx={{
+                              fontFamily: "monospace",
+                              fontSize: "0.75rem",
+                              color: "primary.main",
+                            }}
+                          >
+                            {ep.path}
+                          </Typography>
+                          <Typography
+                            component="span"
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ fontSize: "0.75rem" }}
+                          >
+                            {" — "}
+                            {t(`apiKeys.docs.${ep.key}`)}
+                          </Typography>
+                        </Box>
+                      }
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            </Grid>
+
+            {/* Right column: code examples */}
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 0.5,
+                }}
+              >
+                <Typography variant="subtitle2">
+                  {t("apiKeys.docs.exampleTitle")} (curl)
+                </Typography>
+                <Tooltip
+                  title={
+                    copiedSnippet === "curl"
+                      ? t("apiKeys.createdDialog.copied")
+                      : t("apiKeys.createdDialog.copy")
+                  }
+                >
+                  <IconButton
+                    size="small"
+                    onClick={() => handleCopySnippet(curlSnippet, "curl")}
+                  >
+                    {copiedSnippet === "curl" ? (
+                      <CheckIcon fontSize="small" color="success" />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              <CodeBlock>{curlSnippet}</CodeBlock>
+
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  mb: 0.5,
+                  mt: 2,
+                }}
+              >
+                <Typography variant="subtitle2">
+                  {t("apiKeys.docs.exampleTitle")} (JavaScript)
+                </Typography>
+                <Tooltip
+                  title={
+                    copiedSnippet === "js"
+                      ? t("apiKeys.createdDialog.copied")
+                      : t("apiKeys.createdDialog.copy")
+                  }
+                >
+                  <IconButton
+                    size="small"
+                    onClick={() => handleCopySnippet(jsSnippet, "js")}
+                  >
+                    {copiedSnippet === "js" ? (
+                      <CheckIcon fontSize="small" color="success" />
+                    ) : (
+                      <ContentCopyIcon fontSize="small" />
+                    )}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              <CodeBlock>{jsSnippet}</CodeBlock>
+
+              <Box sx={{ mt: 2, display: "flex", justifyContent: "flex-end" }}>
+                <Button
+                  href={`${BASE_URL}/api/docs`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  endIcon={<OpenInNewIcon fontSize="small" />}
+                  size="small"
+                  variant="outlined"
+                >
+                  {t("apiKeys.docs.viewDocs")}
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
+        </AccordionDetails>
+      </Accordion>
 
       {/* Table */}
       <DataTable

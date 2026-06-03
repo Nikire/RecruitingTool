@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, MinLength, MaxLength, IsOptional, IsArray, IsDateString } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class CreateApiKeyDto {
   @ApiProperty({
@@ -15,13 +14,12 @@ export class CreateApiKeyDto {
   name: string;
 
   @ApiPropertyOptional({
-    description: 'Expiration date/time for the API key (ISO 8601). Omit for no expiry.',
-    example: '2027-01-01T00:00:00.000Z',
+    description: 'Expiration date for the API key (ISO 8601 date string). Omit for no expiry.',
+    example: '2027-01-01',
   })
   @IsOptional()
   @IsDateString()
-  @Type(() => Date)
-  expiresAt?: Date;
+  expiresAt?: string;
 
   @ApiPropertyOptional({
     description: 'List of permission scopes granted to this key',

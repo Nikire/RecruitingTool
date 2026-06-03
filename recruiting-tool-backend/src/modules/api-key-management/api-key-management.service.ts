@@ -26,7 +26,7 @@ export class ApiKeyManagementService {
         key: hashedKey,
         keyPrefix,
         companyId,
-        expiresAt: dto.expiresAt ?? null,
+        expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null,
         scopes: dto.scopes ?? [],
         isActive: true,
       },
@@ -75,7 +75,7 @@ export class ApiKeyManagementService {
       where: { uid },
       data: {
         ...(dto.name !== undefined && { name: dto.name }),
-        ...(dto.expiresAt !== undefined && { expiresAt: dto.expiresAt }),
+        ...(dto.expiresAt !== undefined && { expiresAt: dto.expiresAt ? new Date(dto.expiresAt) : null }),
         ...(dto.isActive !== undefined && { isActive: dto.isActive }),
       },
     });

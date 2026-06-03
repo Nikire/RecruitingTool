@@ -4961,6 +4961,19 @@
       "createError": "Error al crear la clave API",
       "updateError": "Error al actualizar la clave API",
       "revokeError": "Error al revocar la clave API"
+    },
+    "docs": {
+      "title": "Inicio Rápido",
+      "baseUrl": "URL Base",
+      "authTitle": "Autenticación",
+      "authDescription": "Agrega tu clave API como cabecera en cada solicitud:",
+      "exampleTitle": "Ejemplo de solicitud",
+      "endpointsTitle": "Endpoints disponibles",
+      "viewDocs": "Ver documentación completa →",
+      "candidates": "Candidatos — listar, crear, actualizar, eliminar",
+      "jobPositions": "Puestos de trabajo — listar, crear, actualizar",
+      "applications": "Aplicaciones — listar, enviar, actualizar estado",
+      "webhooks": "Webhooks — registrar, listar, eliminar"
     }
   }
 }

@@ -4953,6 +4953,19 @@
       "createError": "Failed to create API key",
       "updateError": "Failed to update API key",
       "revokeError": "Failed to revoke API key"
+    },
+    "docs": {
+      "title": "Quick Start",
+      "baseUrl": "Base URL",
+      "authTitle": "Authentication",
+      "authDescription": "Add your API key as a header to every request:",
+      "exampleTitle": "Example request",
+      "endpointsTitle": "Available endpoints",
+      "viewDocs": "View Full Documentation →",
+      "candidates": "Candidates — list, create, update, delete",
+      "jobPositions": "Job Positions — list, create, update",
+      "applications": "Applications — list, submit, update status",
+      "webhooks": "Webhooks — register, list, delete"
     }
   }
 }

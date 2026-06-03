@@ -1,6 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsString, MinLength, MaxLength, IsOptional, IsBoolean, IsDateString } from 'class-validator';
-import { Type } from 'class-transformer';
 
 export class UpdateApiKeyDto {
   @ApiPropertyOptional({
@@ -16,14 +15,13 @@ export class UpdateApiKeyDto {
   name?: string;
 
   @ApiPropertyOptional({
-    description: 'Updated expiration date/time (ISO 8601). Pass null to remove expiry.',
-    example: '2028-06-01T00:00:00.000Z',
+    description: 'Updated expiration date (ISO 8601 date string). Pass null to remove expiry.',
+    example: '2028-06-01',
     nullable: true,
   })
   @IsOptional()
   @IsDateString()
-  @Type(() => Date)
-  expiresAt?: Date | null;
+  expiresAt?: string | null;
 
   @ApiPropertyOptional({
     description: 'Enable or disable this API key',
