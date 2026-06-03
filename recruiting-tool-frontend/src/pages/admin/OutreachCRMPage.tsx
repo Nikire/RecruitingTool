@@ -923,7 +923,7 @@ const OutreachCRMPage: React.FC = () => {
         ),
       },
     ],
-    [t, handleOpenEdit, handleOpenDelete, handleToggleFeatured],
+    [t, navigate, handleOpenEdit, handleOpenDelete, handleToggleFeatured],
   );
 
   return (
