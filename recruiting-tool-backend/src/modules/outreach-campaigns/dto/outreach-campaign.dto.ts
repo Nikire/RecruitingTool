@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsOptional, IsEnum, IsNotEmpty, IsArray, ValidateNested } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsNotEmpty, IsArray, ValidateNested, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
 
 export enum OutreachLeadChannel {
@@ -106,6 +106,9 @@ export class LeadResponseDto {
 
   @ApiPropertyOptional()
   prospectUid?: string;
+
+  @ApiPropertyOptional({ description: 'LinkedIn outreach message (set by Claude/n8n)', maxLength: 300 })
+  linkedinMessage?: string;
 
   @ApiProperty()
   createdAt: string;
@@ -365,6 +368,16 @@ export class SendTestEmailResultDto {
 
   @ApiProperty({ description: 'Email address the test was sent to' })
   sentTo: string;
+}
+
+// ─── Set LinkedIn Message DTO ──────────────────────────────────────────────────
+
+export class SetLinkedinMessageDto {
+  @ApiProperty({ description: 'LinkedIn outreach message (max 300 characters)', maxLength: 300 })
+  @IsString()
+  @IsNotEmpty()
+  @MaxLength(300)
+  message: string;
 }
 
 // ─── Daily Check DTO ───────────────────────────────────────────────────────────

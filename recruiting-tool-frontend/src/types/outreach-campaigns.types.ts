@@ -44,6 +44,8 @@ export interface OutreachLead {
   apolloAccountId?: string;
   secondaryEmail?: string;
   apolloData?: Record<string, unknown>;
+  // LinkedIn outreach message (set by Claude/n8n)
+  linkedinMessage?: string;
   // Email tracking
   openCount?: number;
   clickCount?: number;

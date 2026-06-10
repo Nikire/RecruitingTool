@@ -1785,6 +1785,9 @@ model OutreachLead {
   secondaryEmail  String?
   apolloData      Json?
 
+  // LinkedIn outreach message (set by n8n/Claude)
+  linkedinMessage String?
+
   // Email tracking fields
   openedAt      DateTime?
   clickedAt     DateTime?

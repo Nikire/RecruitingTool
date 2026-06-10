@@ -20,6 +20,7 @@ import {
   PreviewEmailResultDto,
   SendTestEmailDto,
   SendTestEmailResultDto,
+  SetLinkedinMessageDto,
 } from './dto/outreach-campaign.dto';
 import { WebhookAuthGuard } from '../webhooks/guards/webhook-auth.guard';
 import { SkipAuth } from '../shared/modules/auth/decorators/skip-auth.decorator';
@@ -174,6 +175,16 @@ export class OutreachCampaignsController {
   @ApiResponse({ status: 201, type: ConvertResultDto })
   convertLeadInternal(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string, @Body() dto: ConvertLeadDto): Promise<ConvertResultDto> {
     return this.service.convertLeadInternal(campaignUid, leadUid, dto);
+  }
+
+  @Patch(':campaignUid/leads/:leadUid/set-linkedin-message-internal')
+  @SkipAuth()
+  @UseGuards(WebhookAuthGuard)
+  @ApiSecurity('X-API-Key')
+  @ApiOperation({ summary: 'Set LinkedIn outreach message for a lead - internal x-api-key auth (called by Claude/n8n)' })
+  @ApiResponse({ status: 200, type: LeadResponseDto })
+  setLinkedinMessageInternal(@Param('campaignUid') campaignUid: string, @Param('leadUid') leadUid: string, @Body() dto: SetLinkedinMessageDto): Promise<LeadResponseDto> {
+    return this.service.setLinkedinMessage(campaignUid, leadUid, dto);
   }
 
   @Post(':campaignUid/send-test-email')

@@ -4897,7 +4897,11 @@
       "stat_total_opens": "Total Aperturas",
       "stat_unique_clicks": "Clics Únicos",
       "stat_total_clicks": "Total Clics"
-    }
+    },
+    "linkedinMessage": "Mensaje de LinkedIn",
+    "copyMessage": "Copiar mensaje",
+    "messageCopied": "¡Copiado!",
+    "noMessageGenerated": "Sin mensaje generado"
   },
   "unsubscribe": {
     "title": "Dado de baja correctamente",

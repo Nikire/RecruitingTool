@@ -21,6 +21,7 @@ import {
   PreviewEmailResultDto,
   SendTestEmailDto,
   SendTestEmailResultDto,
+  SetLinkedinMessageDto,
 } from './dto/outreach-campaign.dto';
 import { EmailService } from '../email/email.service';
 import { EmailTemplatesService } from '../email-templates/email-templates.service';
@@ -708,6 +709,24 @@ export class OutreachCampaignsService {
     return this.convertLead(campaignUid, leadUid, campaign.createdById ?? 0, dto);
   }
 
+  async setLinkedinMessage(campaignUid: string, leadUid: string, dto: SetLinkedinMessageDto): Promise<LeadResponseDto> {
+    const db = this.prisma as PrismaClient;
+    const campaign = await db.outreachCampaign.findUnique({ where: { uid: campaignUid } });
+    if (!campaign) throw new NotFoundException('Campaign not found');
+
+    const lead = await db.outreachLead.findFirst({
+      where: { uid: leadUid, campaignId: campaign.id },
+    });
+    if (!lead) throw new NotFoundException('Lead not found');
+
+    const updated = await db.outreachLead.update({
+      where: { uid: leadUid },
+      data: { linkedinMessage: dto.message },
+    });
+
+    return this.mapLead(updated);
+  }
+
   // ─── Send Test Email ─────────────────────────────────────────────────────────
 
   async sendTestEmail(campaignUid: string, dto: SendTestEmailDto, requestingUser: { id: number; name: string; companyId: number | null }): Promise<SendTestEmailResultDto> {
@@ -969,6 +988,7 @@ export class OutreachCampaignsService {
     clickedAt?: Date | null;
     lastOpenedAt?: Date | null;
     lastClickedAt?: Date | null;
+    linkedinMessage?: string | null;
   }): LeadResponseDto {
     return {
       uid: lead.uid,
@@ -981,6 +1001,7 @@ export class OutreachCampaignsService {
       notes: lead.notes ?? undefined,
       convertedToProspectAt: lead.convertedToProspectAt?.toISOString(),
       prospectUid: lead.prospectUid ?? undefined,
+      linkedinMessage: lead.linkedinMessage ?? undefined,
       createdAt: lead.createdAt.toISOString(),
       updatedAt: lead.updatedAt.toISOString(),
       firstName: lead.firstName ?? undefined,

@@ -4889,7 +4889,11 @@
       "stat_total_opens": "Total Opens",
       "stat_unique_clicks": "Unique Clicks",
       "stat_total_clicks": "Total Clicks"
-    }
+    },
+    "linkedinMessage": "LinkedIn Message",
+    "copyMessage": "Copy message",
+    "messageCopied": "Copied!",
+    "noMessageGenerated": "No message generated yet"
   },
   "unsubscribe": {
     "title": "Unsubscribed Successfully",

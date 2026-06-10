@@ -493,6 +493,69 @@ const PreviewEmailDialog: React.FC<PreviewEmailDialogProps> = ({
               </Stack>
             )}
 
+            {/* LinkedIn Message */}
+            {lead.channel === "LINKEDIN" && (
+              <Box>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    mb: 0.5,
+                  }}
+                >
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    fontWeight={600}
+                  >
+                    {t("outreachCampaigns.linkedinMessage")}
+                  </Typography>
+                  {lead.linkedinMessage && (
+                    <Button
+                      size="small"
+                      variant={
+                        copiedKey === "linkedin" ? "contained" : "outlined"
+                      }
+                      color={copiedKey === "linkedin" ? "success" : "primary"}
+                      startIcon={
+                        copiedKey === "linkedin" ? (
+                          <CheckIcon fontSize="small" />
+                        ) : (
+                          <ContentCopyIcon fontSize="small" />
+                        )
+                      }
+                      onClick={() => copy(lead.linkedinMessage!, "linkedin")}
+                    >
+                      {copiedKey === "linkedin"
+                        ? t("outreachCampaigns.messageCopied")
+                        : t("outreachCampaigns.copyMessage")}
+                    </Button>
+                  )}
+                </Box>
+                {lead.linkedinMessage ? (
+                  <TextField
+                    value={lead.linkedinMessage}
+                    fullWidth
+                    multiline
+                    rows={isMobile ? 5 : 8}
+                    slotProps={{ input: { readOnly: true } }}
+                    sx={{
+                      "& .MuiInputBase-input": {
+                        fontFamily: "inherit",
+                        fontSize: "0.875rem",
+                        lineHeight: 1.7,
+                      },
+                    }}
+                  />
+                ) : (
+                  <Typography variant="body2" color="text.disabled">
+                    {t("outreachCampaigns.noMessageGenerated")}
+                  </Typography>
+                )}
+              </Box>
+            )}
+
             {/* Subject */}
             <Box>
               <Box
@@ -763,6 +826,43 @@ const ConvertLeadDialog: React.FC<ConvertLeadDialogProps> = ({
   );
 };
 
+// ─── LinkedIn Message Copy Button ────────────────────────────────────────────
+
+interface LinkedinMessageCopyButtonProps {
+  message: string;
+}
+
+const LinkedinMessageCopyButton: React.FC<LinkedinMessageCopyButtonProps> = ({
+  message,
+}) => {
+  const { t } = useTranslation();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(message).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  return (
+    <Tooltip title={copied ? t("outreachCampaigns.messageCopied") : message}>
+      <IconButton
+        size="small"
+        color={copied ? "success" : "default"}
+        onClick={handleCopy}
+        aria-label={t("outreachCampaigns.copyMessage")}
+      >
+        {copied ? (
+          <CheckIcon fontSize="small" />
+        ) : (
+          <ContentCopyIcon fontSize="small" />
+        )}
+      </IconButton>
+    </Tooltip>
+  );
+};
+
 // ─── Leads Table ──────────────────────────────────────────────────────────────
 
 interface LeadsTableProps {
@@ -960,6 +1060,26 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
             —
           </Typography>
         ),
+    },
+    {
+      field: "linkedinMessage",
+      headerName: t("outreachCampaigns.linkedinMessage"),
+      width: 110,
+      sortable: false,
+      align: "center",
+      headerAlign: "center",
+      renderCell: (params: GridRenderCellParams<OutreachLead>) => {
+        if (params.row.channel !== "LINKEDIN" || !params.row.linkedinMessage) {
+          return (
+            <Typography variant="body2" color="text.disabled">
+              —
+            </Typography>
+          );
+        }
+        return (
+          <LinkedinMessageCopyButton message={params.row.linkedinMessage} />
+        );
+      },
     },
     {
       field: "channel",
