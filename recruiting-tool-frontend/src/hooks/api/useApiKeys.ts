@@ -1,3 +1,4 @@
+import { apiKeyKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   apiKeysApi,
@@ -7,11 +8,9 @@ import {
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useTranslation } from "react-i18next";
 
-const API_KEYS_QUERY_KEY = "api-keys";
-
 export const useApiKeys = () => {
   return useQuery({
-    queryKey: [API_KEYS_QUERY_KEY],
+    queryKey: apiKeyKeys.all,
     queryFn: () => apiKeysApi.list(),
   });
 };
@@ -23,7 +22,7 @@ export const useCreateApiKey = () => {
   return useMutation({
     mutationFn: (data: CreateApiKeyDto) => apiKeysApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_KEYS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: apiKeyKeys.all });
       showSuccessToast(t("apiKeys.messages.created"));
     },
     onError: (error) => {
@@ -40,7 +39,7 @@ export const useUpdateApiKey = () => {
     mutationFn: ({ uid, data }: { uid: string; data: UpdateApiKeyDto }) =>
       apiKeysApi.update(uid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_KEYS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: apiKeyKeys.all });
       showSuccessToast(t("apiKeys.messages.updated"));
     },
     onError: (error) => {
@@ -56,7 +55,7 @@ export const useRevokeApiKey = () => {
   return useMutation({
     mutationFn: (uid: string) => apiKeysApi.revoke(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [API_KEYS_QUERY_KEY] });
+      queryClient.invalidateQueries({ queryKey: apiKeyKeys.all });
       showSuccessToast(t("apiKeys.messages.revoked"));
     },
     onError: (error) => {

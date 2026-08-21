@@ -5,14 +5,9 @@ import {
   ApplicationFilterDto,
   ApplicationGroupedFilterDto,
   PaginatedApplicationGroupsResponse,
-  PublicJobPosition,
 } from "../types/application.types";
 import { MessageResponse } from "../types/responses";
 import api from "./axios";
-
-export function getPublicJobPositions(): Promise<PublicJobPosition[]> {
-  return api.get("/job-position/public/all").then((res) => res.data);
-}
 
 export function createApplication(
   data: CreateApplicationDto,

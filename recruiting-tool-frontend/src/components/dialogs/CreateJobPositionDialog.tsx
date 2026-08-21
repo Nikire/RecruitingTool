@@ -1,6 +1,5 @@
 import React, { useState, KeyboardEvent } from "react";
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -23,6 +22,7 @@ import {
   AccordionDetails,
   Grid,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import AddIcon from "@mui/icons-material/Add";
@@ -130,6 +130,7 @@ const ChipListInput: React.FC<ChipListInputProps> = ({
   onAdd,
   onRemove,
 }) => {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = useState("");
 
   const handleAdd = () => {
@@ -166,7 +167,7 @@ const ChipListInput: React.FC<ChipListInputProps> = ({
           startIcon={<AddIcon />}
           sx={{ whiteSpace: "nowrap" }}
         >
-          Add
+          {t("common.add")}
         </Button>
       </Box>
       {items.length > 0 && (
@@ -207,7 +208,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
     watch,
     setValue,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<JobPositionFormData>({
     defaultValues: {
       title: "",
@@ -320,8 +321,25 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
     onClose();
   };
 
+  // Stages, custom questions and the list builders live outside react-hook-form,
+  // so they have to be taken into account before discarding the draft.
+  const hasUnsavedChanges =
+    isDirty ||
+    stages.length > 0 ||
+    customQuestions.length > 0 ||
+    requirements.length > 0 ||
+    responsibilities.length > 0 ||
+    benefits.length > 0 ||
+    skills.length > 0;
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={hasUnsavedChanges}
+      maxWidth="md"
+      fullWidth
+    >
       <DialogTitle>{t("job_positions.create_title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -839,7 +857,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

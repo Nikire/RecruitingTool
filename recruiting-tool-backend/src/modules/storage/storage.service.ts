@@ -234,12 +234,17 @@ export class StorageService {
    * Get a signed URL for temporary file access
    * @param key - S3 key of the file
    * @param expiresIn - URL expiration time in seconds (default: 3600 = 1 hour)
-   * @returns Signed URL
+   * @param options - Optional response header overrides (Content-Disposition / Content-Type)
+   * @returns Signed URL pointing at the PUBLIC storage endpoint (browser reachable)
    */
-  async getSignedUrl(key: string, expiresIn: number = 3600): Promise<string> {
+  async getSignedUrl(key: string, expiresIn: number = 3600, options?: { contentDisposition?: string; contentType?: string }): Promise<string> {
     const command = new GetObjectCommand({
       Bucket: this.bucketName,
       Key: key,
+      // Let the caller force `inline` (view in browser) or `attachment` (download)
+      // without proxying the bytes through Nest.
+      ResponseContentDisposition: options?.contentDisposition,
+      ResponseContentType: options?.contentType,
     });
 
     try {

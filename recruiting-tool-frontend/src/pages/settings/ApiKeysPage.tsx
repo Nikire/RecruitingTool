@@ -611,6 +611,14 @@ const { data } = await res.json();`;
         loading={isLoading}
         error={isError}
         emptyMessage="apiKeys.noKeys"
+        emptyIcon={<KeyIcon sx={{ fontSize: 40, color: "text.secondary" }} />}
+        emptyTitle="apiKeys.noKeys"
+        emptyDescription="apiKeys.noKeysDescription"
+        emptyAction={{
+          label: "apiKeys.createKey",
+          onClick: () => setCreateDialogOpen(true),
+          startIcon: <AddIcon />,
+        }}
         onboardingKey="api-keys-list"
         dataGridProps={{
           sx: {

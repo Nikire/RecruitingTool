@@ -52,4 +52,12 @@ export class HiringProcessFilterDto extends PaginationDto {
   @IsOptional()
   @IsString()
   candidateUid?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter to processes whose job position is being filled for this end client (UID)',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+  })
+  @IsOptional()
+  @IsString()
+  clientUid?: string;
 }

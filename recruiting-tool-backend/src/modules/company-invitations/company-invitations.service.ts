@@ -3,6 +3,7 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { EmailService } from '../email/email.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { QuotaService } from '../quota/quota.service';
+import { ActivationEventsService } from '../tracking/activation-events.service';
 import { RolesType, InvitationStatus, NotificationType, SubscriptionPlan } from '@prisma/client';
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { CreateInvitationDto, CompanyInvitationResponseDto, GetInvitationsQueryDto } from './dto';
@@ -17,6 +18,7 @@ export class CompanyInvitationsService {
     private readonly emailService: EmailService,
     private readonly notificationsService: NotificationsService,
     private readonly quotaService: QuotaService,
+    private readonly activationEvents: ActivationEventsService,
   ) {}
 
   /**
@@ -107,6 +109,14 @@ export class CompanyInvitationsService {
         company: true,
         invitedBy: true,
       },
+    });
+
+    // Activation event (fire-and-forget - never awaited, never throws)
+    this.activationEvents.teammateInvited({
+      userId: inviter.id,
+      companyId: company.id,
+      invitationUid: invitation.uid,
+      role: dto.role,
     });
 
     // Send invitation email

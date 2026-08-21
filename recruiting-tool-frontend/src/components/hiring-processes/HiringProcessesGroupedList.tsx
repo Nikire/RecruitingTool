@@ -37,6 +37,7 @@ import { useRankings, useScoreCandidate } from "../../hooks/api/useAi";
 import {
   HiringProcess,
   HiringProcessGroup,
+  HiringProcessGroupedFilterDto,
 } from "../../types/hiringProcess.types";
 import {
   RankedCandidateDto,
@@ -64,6 +65,8 @@ const AI_SCORING_ROLES = [
 interface HiringProcessesGroupedListProps {
   search: string;
   status?: string;
+  /** End-client UID to narrow the list to a single account. Empty string = all clients. */
+  clientUid?: string;
   highlightUid?: string;
 }
 
@@ -653,6 +656,7 @@ const GroupSection: React.FC<{
 const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   search,
   status,
+  clientUid,
   highlightUid,
 }) => {
   const { t } = useTranslation();
@@ -676,10 +680,10 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   const [page, setPage] = useState(0); // TablePagination is 0-indexed
   const [rowsPerPage, setRowsPerPage] = useState(10);
 
-  // Reset to page 1 when search or status filters change
+  // Reset to page 1 when search, status or client filters change
   useEffect(() => {
     setPage(0);
-  }, [search, status]);
+  }, [search, status, clientUid]);
 
   const updateDialog = useDialog<HiringProcess>();
   const deleteMutation = useDeleteHiringProcess();
@@ -690,12 +694,19 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
     new Set(),
   );
 
-  const { data, isLoading, error } = useListHiringProcessesGrouped({
-    page: page + 1, // backend is 1-indexed
-    limit: rowsPerPage,
-    search,
-    status,
-  });
+  // Typed as a const rather than inlined so the extra `clientUid` query param passes
+  // through without widening the shared grouped-filter type.
+  const groupedParams: HiringProcessGroupedFilterDto & { clientUid?: string } =
+    {
+      page: page + 1, // backend is 1-indexed
+      limit: rowsPerPage,
+      search,
+      status,
+      clientUid: clientUid || undefined,
+    };
+
+  const { data, isLoading, error } =
+    useListHiringProcessesGrouped(groupedParams);
 
   // Scroll to highlighted row once data loads and the ref is set
   useEffect(() => {

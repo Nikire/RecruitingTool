@@ -3,8 +3,8 @@ import { DatabaseService } from '../shared/modules/database/database.service';
 import { User } from '@prisma/client';
 
 export interface AuditLogData {
-  action: 'SOFT_DELETE' | 'HARD_DELETE' | 'RESTORE' | 'PURGE';
-  entityType: 'JobPosition' | 'Candidate' | 'Application' | 'Interview' | 'Stage' | 'HiringProcess' | 'User';
+  action: 'SOFT_DELETE' | 'HARD_DELETE' | 'RESTORE' | 'PURGE' | 'MODERATION_APPROVE' | 'MODERATION_REJECT';
+  entityType: 'JobPosition' | 'Candidate' | 'Application' | 'Interview' | 'Stage' | 'HiringProcess' | 'User' | 'Client';
   entityId: number;
   entityUid: string;
   user: User;

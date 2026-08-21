@@ -36,7 +36,6 @@ import {
   LightMode as LightModeIcon,
   DarkMode as DarkModeIcon,
 } from "@mui/icons-material";
-import toast from "react-hot-toast";
 
 const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -347,13 +346,9 @@ const Navbar: React.FC = () => {
                       <ListItemText>{t("navbar.profile")}</ListItemText>
                     </MenuItem>
                     <MenuItem
-                      onClick={() => {
-                        handleUserMenuNavigation("/profile");
-                        toast(t("common.coming_soon"), {
-                          icon: "🚀",
-                          duration: 3000,
-                        });
-                      }}
+                      onClick={() =>
+                        handleUserMenuNavigation("/profile/subscription")
+                      }
                     >
                       <ListItemIcon>
                         <SubscriptionIcon fontSize="small" />

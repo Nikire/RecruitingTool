@@ -1,3 +1,4 @@
+import { applicationKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createApplication,
@@ -5,7 +6,6 @@ import {
   getApplication,
   getApplications,
   getApplicationsGrouped,
-  getPublicJobPositions,
   updateApplication,
   acceptApplication,
 } from "../../api/applications";
@@ -17,33 +17,23 @@ import {
 } from "../../types/application.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const APPLICATIONS_KEY = "applications";
-const PUBLIC_JOBS_KEY = "publicJobs";
-
-export function usePublicJobPositions() {
-  return useQuery({
-    queryKey: [PUBLIC_JOBS_KEY],
-    queryFn: () => getPublicJobPositions(),
-  });
-}
-
 export function useApplications(filters?: ApplicationFilterDto) {
   return useQuery({
-    queryKey: [APPLICATIONS_KEY, filters],
+    queryKey: applicationKeys.list(filters),
     queryFn: () => getApplications(filters),
   });
 }
 
 export function useApplicationsGrouped(filters?: ApplicationGroupedFilterDto) {
   return useQuery({
-    queryKey: [APPLICATIONS_KEY, "grouped", filters],
+    queryKey: applicationKeys.grouped(filters),
     queryFn: () => getApplicationsGrouped(filters),
   });
 }
 
 export function useApplication(uid: string) {
   return useQuery({
-    queryKey: [APPLICATIONS_KEY, uid],
+    queryKey: applicationKeys.detail(uid),
     queryFn: () => getApplication(uid),
     enabled: !!uid,
   });
@@ -55,7 +45,7 @@ export function useCreateApplication() {
   return useMutation({
     mutationFn: (data: CreateApplicationDto) => createApplication(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [APPLICATIONS_KEY] });
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
       showSuccessToast("Application submitted successfully!");
     },
     onError: (error) => {
@@ -71,7 +61,7 @@ export function useUpdateApplication() {
     mutationFn: ({ uid, data }: { uid: string; data: UpdateApplicationDto }) =>
       updateApplication(uid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [APPLICATIONS_KEY] });
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
       showSuccessToast("Application updated successfully!");
     },
     onError: (error) => {
@@ -86,7 +76,7 @@ export function useDeleteApplication() {
   return useMutation({
     mutationFn: (uid: string) => deleteApplication(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [APPLICATIONS_KEY] });
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
       showSuccessToast("Application deleted successfully!");
     },
     onError: (error) => {
@@ -101,7 +91,7 @@ export function useAcceptApplication() {
   return useMutation({
     mutationFn: (uid: string) => acceptApplication(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [APPLICATIONS_KEY] });
+      queryClient.invalidateQueries({ queryKey: applicationKeys.all });
       showSuccessToast(
         "Application accepted! Candidate and hiring process created.",
       );

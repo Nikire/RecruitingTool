@@ -27,6 +27,7 @@ import {
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../../components/common/FormErrorSummary";
+import { track, ANALYTICS_EVENTS } from "../../analytics";
 
 const HROnboardingWizard: React.FC = () => {
   const { t } = useTranslation();
@@ -77,6 +78,13 @@ const HROnboardingWizard: React.FC = () => {
         // Clean up localStorage after successful onboarding
         localStorage.removeItem("hr_onboarding_position");
         setIsCompleted(true);
+        // Analytics seam (never posthog-js directly) - this is the real
+        // completion handler for HR users who joined via an invitation.
+        track(ANALYTICS_EVENTS.ONBOARDING_COMPLETED, {
+          flow: "hr_invited",
+          wasInvited: onboardingStatus?.wasInvited ?? false,
+          destination: response.redirectTo,
+        });
         // Redirect after showing success message
         setTimeout(() => {
           navigate(response.redirectTo, { replace: true });

@@ -136,7 +136,10 @@ const ApplicationsPage: React.FC = () => {
           statusFilter={statusFilter || undefined}
         />
       ) : (
-        <ApplicationsTable statusFilter={statusFilter || undefined} />
+        <ApplicationsTable
+          statusFilter={statusFilter || undefined}
+          onClearStatusFilter={() => setStatusFilter("")}
+        />
       )}
     </Box>
   );

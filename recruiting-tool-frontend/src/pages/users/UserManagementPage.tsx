@@ -55,6 +55,8 @@ const UserManagementPage: React.FC = () => {
         search={search}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
+        onCreate={() => setCreateDialogOpen(true)}
+        onClearSearch={() => handleSearch("")}
       />
 
       <CreateUserDialog

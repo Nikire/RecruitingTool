@@ -1,8 +1,19 @@
-import { Controller, Get, Header } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse, ApiExcludeEndpoint } from '@nestjs/swagger';
+import { Controller, Get, Header, UseGuards } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse, ApiExcludeEndpoint, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
+import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { MetricsService } from './metrics.service';
 import { BusinessMetricsService } from './business-metrics.service';
+import { MetricsTokenGuard } from './guards/metrics-token.guard';
 
+/**
+ * Every route here was previously unauthenticated. Between them they exposed
+ * candidate/application/job counts, active users broken down by role, AI spend,
+ * database pool state, memory/CPU and the Node version — enough for anyone who
+ * guessed the URL to size the customer base and fingerprint the runtime.
+ *
+ * The JSON routes now require SUPER_ADMIN. The Prometheus scrape route uses a
+ * static bearer token instead, because a scraper cannot present a JWT.
+ */
 @ApiTags('Metrics')
 @Controller('metrics')
 export class MetricsController {
@@ -11,7 +22,11 @@ export class MetricsController {
     private readonly businessMetricsService: BusinessMetricsService,
   ) {}
 
+  // Prometheus scrape target. Authenticated with a static bearer token
+  // (METRICS_TOKEN) rather than a JWT, since a scraper cannot log in.
+  // Fails closed when METRICS_TOKEN is unset — see MetricsTokenGuard.
   @Get()
+  @UseGuards(MetricsTokenGuard)
   @Header('Content-Type', 'text/plain; version=0.0.4')
   @ApiExcludeEndpoint() // Exclude from Swagger as it returns Prometheus format
   async getMetrics(): Promise<string> {
@@ -21,7 +36,13 @@ export class MetricsController {
   }
 
   @Get('json')
-  @ApiOperation({ summary: 'Get all metrics in JSON format' })
+  @Auth(['SUPER_ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden - SUPER_ADMIN role required' })
+  @ApiOperation({ summary: 'Get all metrics in JSON format - SUPER_ADMIN role required' })
   @ApiResponse({
     status: 200,
     description: 'Current application metrics',
@@ -79,7 +100,13 @@ export class MetricsController {
   }
 
   @Get('business')
-  @ApiOperation({ summary: 'Get business metrics' })
+  @Auth(['SUPER_ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden - SUPER_ADMIN role required' })
+  @ApiOperation({ summary: 'Get business metrics - SUPER_ADMIN role required' })
   @ApiResponse({
     status: 200,
     description: 'Current business metrics',
@@ -123,7 +150,13 @@ export class MetricsController {
   }
 
   @Get('system')
-  @ApiOperation({ summary: 'Get system metrics' })
+  @Auth(['SUPER_ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden - SUPER_ADMIN role required' })
+  @ApiOperation({ summary: 'Get system metrics - SUPER_ADMIN role required' })
   @ApiResponse({
     status: 200,
     description: 'Current system metrics',

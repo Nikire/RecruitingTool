@@ -146,6 +146,7 @@ describe('UsersService', () => {
       expect(result).toHaveProperty('uid', mockUser.uid);
       expect(databaseService.user.findFirst).toHaveBeenCalledWith({
         where: { email: 'test@example.com' },
+        include: { company: true },
       });
     });
 

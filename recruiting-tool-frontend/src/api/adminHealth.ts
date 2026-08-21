@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -54,7 +55,7 @@ const fetchAdminCompanyHealth = async (
 
 export function useAdminCompanyHealth(params: AdminCompanyHealthParams) {
   return useQuery<CompanyHealthResponse>({
-    queryKey: ["admin", "health", "companies", params],
+    queryKey: adminKeys.companyHealth(params),
     queryFn: () => fetchAdminCompanyHealth(params),
     staleTime: 3 * 60 * 1000, // 3 minutes
     retry: 2,

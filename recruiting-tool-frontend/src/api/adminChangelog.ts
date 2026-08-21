@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -94,7 +95,7 @@ const deleteReleaseNote = async (uid: string): Promise<void> => {
 
 export function useAdminReleaseNotes(params: AdminChangelogParams) {
   return useQuery<ReleaseNoteListResponse>({
-    queryKey: ["admin", "release-notes", params],
+    queryKey: adminKeys.releaseNotesList(params),
     queryFn: () => fetchAdminReleaseNotes(params),
     staleTime: 3 * 60 * 1000,
     retry: 2,
@@ -106,7 +107,7 @@ export function useCreateReleaseNote() {
   return useMutation<ReleaseNoteAdminItem, Error, CreateReleaseNotePayload>({
     mutationFn: createReleaseNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "release-notes"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.releaseNotes() });
     },
   });
 }
@@ -116,7 +117,7 @@ export function useUpdateReleaseNote() {
   return useMutation<ReleaseNoteAdminItem, Error, UpdateReleaseNotePayload>({
     mutationFn: updateReleaseNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "release-notes"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.releaseNotes() });
     },
   });
 }
@@ -126,7 +127,7 @@ export function useTogglePublishReleaseNote() {
   return useMutation<ReleaseNoteAdminItem, Error, string>({
     mutationFn: togglePublishReleaseNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "release-notes"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.releaseNotes() });
     },
   });
 }
@@ -136,7 +137,7 @@ export function useDeleteReleaseNote() {
   return useMutation<void, Error, string>({
     mutationFn: deleteReleaseNote,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "release-notes"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.releaseNotes() });
     },
   });
 }

@@ -1,3 +1,9 @@
+import {
+  hiringProcessKeys,
+  jobPositionKeys,
+  stageKeys,
+  stageNoteKeys,
+} from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getStage,
@@ -20,11 +26,9 @@ import {
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const STAGES_KEY = "stages";
-
 export function useStage(uid: string) {
   return useQuery({
-    queryKey: [STAGES_KEY, uid],
+    queryKey: stageKeys.detail(uid),
     queryFn: () => getStage(uid),
     enabled: !!uid,
   });
@@ -32,7 +36,7 @@ export function useStage(uid: string) {
 
 export function useListStages(params: PaginationParams) {
   return useQuery({
-    queryKey: [STAGES_KEY, "list", params],
+    queryKey: stageKeys.list(params),
     queryFn: () => listStages(params),
   });
 }
@@ -45,10 +49,10 @@ export function useCreateStage() {
     onSuccess: () => {
       // Invalidate all jobPositions queries (including those with specific uids)
       queryClient.invalidateQueries({
-        queryKey: ["jobPositions"],
+        queryKey: jobPositionKeys.all,
         refetchType: "all",
       });
-      queryClient.invalidateQueries({ queryKey: [STAGES_KEY] });
+      queryClient.invalidateQueries({ queryKey: stageKeys.all });
       showSuccessToast("Stage created successfully!");
     },
     onError: (error) => {
@@ -65,10 +69,10 @@ export function useBulkCreateStages() {
     onSuccess: () => {
       // Invalidate all jobPositions queries (including those with specific uids)
       queryClient.invalidateQueries({
-        queryKey: ["jobPositions"],
+        queryKey: jobPositionKeys.all,
         refetchType: "all",
       });
-      queryClient.invalidateQueries({ queryKey: [STAGES_KEY] });
+      queryClient.invalidateQueries({ queryKey: stageKeys.all });
       showSuccessToast("Stages created successfully!");
     },
     onError: (error) => {
@@ -84,9 +88,9 @@ export function useUpdateStage() {
     mutationFn: ({ uid, data }: { uid: string; data: Partial<Stage> }) =>
       updateStage(data, uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["jobPositions"] });
-      queryClient.invalidateQueries({ queryKey: ["hiringProcess"] });
-      queryClient.invalidateQueries({ queryKey: [STAGES_KEY] });
+      queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
+      queryClient.invalidateQueries({ queryKey: stageKeys.all });
       showSuccessToast("Stage updated successfully!");
     },
     onError: (error) => {
@@ -102,8 +106,8 @@ export function useReorderStages() {
     mutationFn: (stages: { uid: string; position: number }[]) =>
       reorderStages(stages),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["jobPositions"] });
-      queryClient.invalidateQueries({ queryKey: [STAGES_KEY] });
+      queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
+      queryClient.invalidateQueries({ queryKey: stageKeys.all });
     },
     onError: (error) => {
       showErrorToast(error, "Failed to reorder stages");
@@ -117,8 +121,8 @@ export function useDeleteStage() {
   return useMutation({
     mutationFn: (uid: string) => deleteStage(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["jobPositions"] });
-      queryClient.invalidateQueries({ queryKey: [STAGES_KEY] });
+      queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
+      queryClient.invalidateQueries({ queryKey: stageKeys.all });
       showSuccessToast("Stage deleted successfully!");
     },
     onError: (error) => {
@@ -128,11 +132,9 @@ export function useDeleteStage() {
 }
 
 // Stage Notes Hooks
-const STAGE_NOTES_KEY = "stageNotes";
-
 export function useStageNotes(stageUid: string) {
   return useQuery({
-    queryKey: [STAGE_NOTES_KEY, stageUid],
+    queryKey: stageNoteKeys.byStage(stageUid),
     queryFn: () => getStageNotes(stageUid),
     enabled: !!stageUid,
   });
@@ -151,7 +153,7 @@ export function useCreateStageNote() {
     }) => createStageNote(stageUid, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [STAGE_NOTES_KEY, variables.stageUid],
+        queryKey: stageNoteKeys.byStage(variables.stageUid),
       });
       showSuccessToast("Note created successfully!");
     },
@@ -174,7 +176,7 @@ export function useUpdateStageNote() {
     }) => updateStageNote(noteUid, data),
     onSuccess: (updatedNote) => {
       queryClient.invalidateQueries({
-        queryKey: [STAGE_NOTES_KEY, updatedNote.stageUid],
+        queryKey: stageNoteKeys.byStage(updatedNote.stageUid),
       });
       showSuccessToast("Note updated successfully!");
     },
@@ -192,7 +194,7 @@ export function useDeleteStageNote() {
       deleteStageNote(noteUid),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [STAGE_NOTES_KEY, variables.stageUid],
+        queryKey: stageNoteKeys.byStage(variables.stageUid),
       });
       showSuccessToast("Note deleted successfully!");
     },

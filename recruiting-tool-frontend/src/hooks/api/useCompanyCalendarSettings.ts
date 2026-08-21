@@ -1,3 +1,4 @@
+import { companyCalendarSettingsKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import api from "../../api/axios";
@@ -26,8 +27,6 @@ export type UpdateCompanyCalendarSettings = Partial<
 
 // ─── Query key ────────────────────────────────────────────────────────────────
 
-const CALENDAR_SETTINGS_KEY = "company-calendar-settings";
-
 // ─── Hooks ────────────────────────────────────────────────────────────────────
 
 /**
@@ -35,7 +34,7 @@ const CALENDAR_SETTINGS_KEY = "company-calendar-settings";
  */
 export function useGetCompanyCalendarSettings() {
   return useQuery<CompanyCalendarSettings>({
-    queryKey: [CALENDAR_SETTINGS_KEY],
+    queryKey: companyCalendarSettingsKeys.all,
     queryFn: async () => {
       const response = await api.get<CompanyCalendarSettings>(
         "/company-calendar-settings",
@@ -67,7 +66,9 @@ export function useUpdateCompanyCalendarSettings() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CALENDAR_SETTINGS_KEY] });
+      queryClient.invalidateQueries({
+        queryKey: companyCalendarSettingsKeys.all,
+      });
       showSuccessToast(t("calendar_settings.save_success"));
     },
     onError: (error) => {

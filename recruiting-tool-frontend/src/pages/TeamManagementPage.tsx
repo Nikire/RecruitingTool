@@ -17,7 +17,6 @@ import AddIcon from "@mui/icons-material/Add";
 import GroupIcon from "@mui/icons-material/Group";
 import MailIcon from "@mui/icons-material/Mail";
 import PendingIcon from "@mui/icons-material/Pending";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
@@ -25,8 +24,8 @@ import InviteTeamMemberDialog from "../components/team/InviteTeamMemberDialog";
 import TeamMemberCard from "../components/team/TeamMemberCard";
 import ChangeRoleDialog from "../components/team/ChangeRoleDialog";
 import ConfirmDeleteDialog from "../components/dialogs/ConfirmDeleteDialog";
-import { useCompanyMembers } from "../hooks/useCompanyRoles";
 import {
+  useCompanyMembers,
   useUpdateUserRole,
   useRemoveUserFromCompany,
 } from "../hooks/api/useCompanyRoles";
@@ -34,7 +33,9 @@ import {
   useCompanyInvitations,
   useCancelInvitation,
 } from "../hooks/useInvitations";
-import { useCompanyConnectionRequests } from "../hooks/useConnectionRequests";
+import { useCompanyConnectionRequests } from "../hooks/connection-requests";
+import { ConnectionRequestsList } from "../components/connection-requests";
+import { ConnectionRequestStatus } from "../types/connection-requests";
 import { InvitationStatus } from "../types/invitations";
 import { UserRoles } from "../types/user.types";
 import {
@@ -80,26 +81,33 @@ const TeamManagementPage: React.FC = () => {
 
   const companyUid = user?.company?.uid || "";
 
-  // Fetch data
-  const { data: members, isLoading: isLoadingMembers } =
-    useCompanyMembers(companyUid);
-  const { data: invitations, isLoading: isLoadingInvitations } =
-    useCompanyInvitations(companyUid);
-  const { data: connectionRequests, isLoading: isLoadingRequests } =
-    useCompanyConnectionRequests(companyUid, "PENDING");
-
-  const { mutate: cancelInvitation } = useCancelInvitation(companyUid);
-  const { mutate: removeUserFromCompany, isPending: isRemoving } =
-    useRemoveUserFromCompany(companyUid);
-  const { mutate: updateUserRole, isPending: isUpdatingRole } =
-    useUpdateUserRole(companyUid);
-
   // Check if user can manage team
   const canManage = Boolean(
     user?.roles?.includes(UserRoles.COMPANY_OWNER) ||
     user?.roles?.includes(UserRoles.COMPANY_ADMIN) ||
     user?.roles?.includes(UserRoles.ADMIN),
   );
+
+  // Fetch data
+  const { data: members, isLoading: isLoadingMembers } =
+    useCompanyMembers(companyUid);
+  const { data: invitations, isLoading: isLoadingInvitations } =
+    useCompanyInvitations(companyUid);
+  // Pending connection requests are an owner/admin-only endpoint (403 for
+  // anyone else), so only query when the viewer can actually manage them.
+  // Same query key as <ConnectionRequestsList />, so React Query dedupes it.
+  const { data: connectionRequests } = useCompanyConnectionRequests(
+    canManage ? companyUid : "",
+    {
+      status: ConnectionRequestStatus.PENDING,
+    },
+  );
+
+  const { mutate: cancelInvitation } = useCancelInvitation(companyUid);
+  const { mutate: removeUserFromCompany, isPending: isRemoving } =
+    useRemoveUserFromCompany(companyUid);
+  const { mutate: updateUserRole, isPending: isUpdatingRole } =
+    useUpdateUserRole(companyUid);
 
   const handleTabChange = (_event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
@@ -404,112 +412,15 @@ const TeamManagementPage: React.FC = () => {
 
       {/* Connection Requests Tab */}
       <TabPanel value={activeTab} index={2}>
-        {isLoadingRequests ? (
-          <CenteredLoadingSpinner minHeight="30vh" />
-        ) : !connectionRequests || connectionRequests.length === 0 ? (
+        {!canManage ? (
           <Alert severity="info" icon={<PendingIcon />}>
-            {t("team.no_connection_requests")}
+            {t("team.connection_requests_no_permission")}
           </Alert>
         ) : (
-          <Stack spacing={2}>
-            {connectionRequests.map((request) => (
-              <Card
-                key={request.uid}
-                elevation={2}
-                sx={{
-                  transition: "all 0.2s",
-                  "&:hover": {
-                    boxShadow: 4,
-                  },
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: { xs: "flex-start", sm: "center" },
-                      flexDirection: { xs: "column", sm: "row" },
-                      gap: 2,
-                    }}
-                  >
-                    <Box sx={{ flex: 1 }}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 1,
-                          mb: 1,
-                        }}
-                      >
-                        <PendingIcon color="warning" fontSize="small" />
-                        <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                          {request.userName}
-                        </Typography>
-                      </Box>
-                      <Stack spacing={0.5}>
-                        <Typography variant="body2" color="text.secondary">
-                          {request.userEmail}
-                        </Typography>
-                        <Chip
-                          label={t("team.requested_role", {
-                            role: t(
-                              `roles.${request.requestedRole.toLowerCase()}`,
-                            ),
-                          })}
-                          size="small"
-                          color="primary"
-                          sx={{ width: "fit-content" }}
-                        />
-                        {request.message && (
-                          <Box
-                            sx={{
-                              mt: 1,
-                              p: 1.5,
-                              backgroundColor: "action.hover",
-                              borderRadius: 1,
-                              borderLeft: 3,
-                              borderColor: "primary.main",
-                            }}
-                          >
-                            <Typography variant="caption" fontStyle="italic">
-                              "{request.message}"
-                            </Typography>
-                          </Box>
-                        )}
-                      </Stack>
-                    </Box>
-                    {canManage && (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          gap: 1,
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <Button
-                          variant="contained"
-                          color="success"
-                          size="medium"
-                          startIcon={<CheckCircleIcon />}
-                        >
-                          {t("team.approve")}
-                        </Button>
-                        <Button
-                          variant="contained"
-                          color="error"
-                          size="medium"
-                          startIcon={<CancelIcon />}
-                        >
-                          {t("team.deny")}
-                        </Button>
-                      </Box>
-                    )}
-                  </Box>
-                </CardContent>
-              </Card>
-            ))}
-          </Stack>
+          // ConnectionRequestsList owns the list, the approve/deny dialogs and
+          // the mutations. The page previously inlined a copy of the cards whose
+          // Approve/Deny buttons had no onClick handler at all.
+          <ConnectionRequestsList companyUid={companyUid} />
         )}
       </TabPanel>
 

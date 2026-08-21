@@ -1,28 +1,27 @@
+import { authKeys, userKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { usersApi } from "../../api/users";
 import { CreateUserDto, UpdateUserDto } from "../../types/user.types";
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const USERS_KEY = "users";
-
 export const useListUsers = (params: PaginationParams) => {
   return useQuery({
-    queryKey: [USERS_KEY, "list", params],
+    queryKey: userKeys.list(params),
     queryFn: () => usersApi.list(params),
   });
 };
 
 export const useUsers = () => {
   return useQuery({
-    queryKey: [USERS_KEY],
+    queryKey: userKeys.all,
     queryFn: () => usersApi.getAll(),
   });
 };
 
 export const useUser = (uid: string) => {
   return useQuery({
-    queryKey: [USERS_KEY, uid],
+    queryKey: userKeys.detail(uid),
     queryFn: () => usersApi.getOne(uid),
     enabled: !!uid,
   });
@@ -34,7 +33,7 @@ export const useCreateUser = () => {
   return useMutation({
     mutationFn: (data: CreateUserDto) => usersApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       showSuccessToast("User created successfully!");
     },
     onError: (error) => {
@@ -50,9 +49,9 @@ export const useUpdateUser = () => {
     mutationFn: ({ uid, data }: { uid: string; data: UpdateUserDto }) =>
       usersApi.update(uid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       // Also invalidate the auth/me query to refresh the current user data
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
       showSuccessToast("User updated successfully!");
     },
     onError: (error) => {
@@ -67,7 +66,7 @@ export const useDeleteUser = () => {
   return useMutation({
     mutationFn: (uid: string) => usersApi.delete(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       showSuccessToast("User deleted successfully!");
     },
     onError: (error) => {
@@ -82,7 +81,7 @@ export const useDeactivateUser = () => {
   return useMutation({
     mutationFn: (uid: string) => usersApi.deactivate(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       showSuccessToast("User deactivated successfully!");
     },
     onError: (error) => {
@@ -97,7 +96,7 @@ export const useReactivateUser = () => {
   return useMutation({
     mutationFn: (uid: string) => usersApi.reactivate(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [USERS_KEY] });
+      queryClient.invalidateQueries({ queryKey: userKeys.all });
       showSuccessToast("User reactivated successfully!");
     },
     onError: (error) => {
@@ -108,7 +107,7 @@ export const useReactivateUser = () => {
 
 export const useUserActivity = (uid: string) => {
   return useQuery({
-    queryKey: [USERS_KEY, uid, "activity"],
+    queryKey: userKeys.activity(uid),
     queryFn: () => usersApi.getActivity(uid),
     enabled: !!uid,
   });
@@ -121,7 +120,7 @@ export const useUploadResume = () => {
     mutationFn: (file: File) => usersApi.uploadResume(file),
     onSuccess: () => {
       // Invalidate auth/me query to refresh user data with resume info
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
       showSuccessToast("Resume uploaded successfully!");
     },
     onError: (error) => {
@@ -132,7 +131,7 @@ export const useUploadResume = () => {
 
 export const useGetResumeDownloadUrl = () => {
   return useQuery({
-    queryKey: [USERS_KEY, "resume", "download"],
+    queryKey: userKeys.resumeDownload(),
     queryFn: () => usersApi.getResumeDownloadUrl(),
     enabled: false, // Manual fetch
   });
@@ -145,7 +144,7 @@ export const useDeleteResume = () => {
     mutationFn: () => usersApi.deleteResume(),
     onSuccess: () => {
       // Invalidate auth/me query to refresh user data
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
       showSuccessToast("Resume deleted successfully!");
     },
     onError: (error) => {

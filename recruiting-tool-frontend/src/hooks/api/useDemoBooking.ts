@@ -1,3 +1,4 @@
+import { demoBookingKeys } from "../../api/queryKeys";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   requestDemo,
@@ -13,14 +14,14 @@ export const useRequestDemo = () =>
 
 export const useDemoSlots = (token: string | null) =>
   useQuery({
-    queryKey: ["demo-slots", token],
+    queryKey: demoBookingKeys.slots(token),
     queryFn: () => getDemoSlots(token!),
     enabled: !!token,
   });
 
 export const useDemoSettings = (token: string | null) =>
   useQuery({
-    queryKey: ["demo-settings", token],
+    queryKey: demoBookingKeys.settings(token),
     queryFn: () => getDemoSettings(token!),
     enabled: !!token,
   });

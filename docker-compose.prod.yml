@@ -1,0 +1,40 @@
+# ============================================
+# Production overlay
+#
+# Usage (always together with the base file, base first):
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#
+# The base docker-compose.yml is the LOCAL DEV configuration: it pins
+# NODE_ENV=development and boots the backend through ts-node so that hot
+# source edits are picked up from the bind mount. Running that file on the
+# public host is what made HttpExceptionFilter / PrismaExceptionFilter attach
+# raw exception messages and full stack traces to API error responses.
+#
+# This overlay flips the backend to a real production runtime:
+#   - NODE_ENV=production  -> exception filters stop leaking internals
+#   - node dist/main.js    -> runs the compiled JavaScript, not ts-node
+#
+# IMPORTANT: recruiting-tool-backend/Dockerfile does NOT compile the project
+# (it ships src + ts-node and its CMD is `npx ts-node --transpile-only`).
+# `dist/` is produced by the deploy pipeline into the ./recruiting-tool-backend
+# bind mount before containers are swapped -- see the "Compiling backend" step
+# in .github/workflows/deploy-prod.yml. If you bring this stack up by hand you
+# must compile first:
+#
+#   docker-compose -f docker-compose.yml -f docker-compose.prod.yml \
+#     run --rm --no-deps -e NODE_ENV=development --entrypoint sh backend \
+#     -c "yarn install && yarn build"
+#
+# See the report / follow-up: the durable fix is a multi-stage Dockerfile that
+# builds dist inside the image, after which this overlay's build+command
+# comments can be dropped.
+# ============================================
+services:
+  backend:
+    environment:
+      # Production runtime. Read by HttpExceptionFilter and PrismaExceptionFilter
+      # to decide whether to include exception.message / stack in the response.
+      - NODE_ENV=production
+    # Run the compiled output. The entrypoint still runs `prisma migrate deploy`
+    # and then exec's this command.
+    command: ["node", "dist/main.js"]

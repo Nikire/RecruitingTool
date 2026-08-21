@@ -4,9 +4,20 @@ import DodoPayments from 'dodopayments';
 import type { Subscription as DodoSubscription } from 'dodopayments/resources/subscriptions';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { SubscriptionPlan, SubscriptionStatus, NotificationType, RolesType } from '@prisma/client';
-import { SubscriptionResponseDto } from '../stripe/dto/stripe.dto';
 import { NotificationsService } from '../notifications/notifications.service';
-import { DoCreateCheckoutDto, DoCheckoutResponseDto, DoCancelResponseDto, DoBillingPortalResponseDto, DoInvoiceDto, DoInvoicesResponseDto } from './dto/dodo-payments.dto';
+import {
+  DoCreateCheckoutDto,
+  DoCheckoutResponseDto,
+  DoCancelResponseDto,
+  DoBillingPortalResponseDto,
+  DoInvoiceDto,
+  DoInvoicesResponseDto,
+  DoSubscriptionResponseDto,
+  DoAdminSubscriptionsResponseDto,
+  DoListSubscriptionsQueryDto,
+  DoSubscriptionsListResponseDto,
+  DoSubscriptionWithCompanyDto,
+} from './dto/dodo-payments.dto';
 
 @Injectable()
 export class DodoPaymentsService {
@@ -43,6 +54,26 @@ export class DodoPaymentsService {
   }
 
   /**
+   * Length of the self-serve Professional trial, in days.
+   *
+   * The landing page advertises a 14-day Professional trial, so the trial has to
+   * be applied here rather than left to per-product configuration in the Dodo
+   * dashboard — otherwise the claim on the pricing card is only true if someone
+   * remembers to tick a box. `subscription_data.trial_period_days` overrides
+   * whatever the product's price carries, so this is authoritative.
+   *
+   * Override with DODO_PAYMENTS_PRO_TRIAL_DAYS; set it to 0 to sell without a trial.
+   */
+  private get proTrialDays(): number {
+    const raw = this.configService.get<string>('DODO_PAYMENTS_PRO_TRIAL_DAYS');
+    if (raw === undefined || raw === null || raw === '') {
+      return 14;
+    }
+    const parsed = Number.parseInt(raw, 10);
+    return Number.isFinite(parsed) && parsed >= 0 ? parsed : 14;
+  }
+
+  /**
    * Create a Dodo Payments checkout session URL
    */
   async createCheckout(companyId: number, dto: DoCreateCheckoutDto): Promise<DoCheckoutResponseDto> {
@@ -70,11 +101,19 @@ export class DodoPaymentsService {
 
       const storedCustomerId = company.subscription?.doCustomerId;
       const newCustomerPayload = { email: user.email, name: company.name };
+
+      // Trial is offered on Professional only, and only to a company that has
+      // never held a Dodo subscription. Without the second condition a company
+      // could cancel and re-check-out for a fresh free fortnight every month.
+      const isFirstSubscription = !company.subscription?.doSubscriptionId;
+      const trialDays = dto.plan === 'PROFESSIONAL' && isFirstSubscription ? this.proTrialDays : 0;
+
       const checkoutParams = {
         product_cart: [{ product_id: productId, quantity: 1 }],
         return_url: dto.successUrl,
         cancel_url: dto.cancelUrl,
         metadata: { companyId: String(companyId), companyUid: company.uid },
+        ...(trialDays > 0 ? { subscription_data: { trial_period_days: trialDays } } : {}),
         customization: {
           theme_config: {
             light: {
@@ -115,7 +154,7 @@ export class DodoPaymentsService {
         throw new InternalServerErrorException('No checkout URL returned from Dodo Payments');
       }
 
-      this.logger.log(`Created Dodo Payments checkout session for company ${company.uid}`);
+      this.logger.log(`Created Dodo Payments checkout session for company ${company.uid} ` + `(plan=${dto.plan}, interval=${dto.interval ?? 'monthly'}, trialDays=${trialDays})`);
       return { url: checkoutUrl };
     } catch (error) {
       this.logger.error(`Failed to create Dodo checkout: ${error.message}`, error.stack);
@@ -129,7 +168,7 @@ export class DodoPaymentsService {
   /**
    * Get subscription details for a company, syncing with Dodo if available
    */
-  async getSubscription(companyId: number): Promise<SubscriptionResponseDto> {
+  async getSubscription(companyId: number): Promise<DoSubscriptionResponseDto> {
     try {
       const company = await this.databaseService.company.findUnique({
         where: { id: companyId },
@@ -140,15 +179,21 @@ export class DodoPaymentsService {
         throw new NotFoundException('Company not found');
       }
 
-      // If no subscription exists, create a FREE trial subscription
+      // If no subscription row exists yet, materialise the implicit FREE plan.
+      //
+      // This used to be written as TRIALING with trialEnd 30 days out, which
+      // described a trial that did not exist: nothing ever expired it, and FREE
+      // is not a paid plan, so the countdown shown to the user led nowhere.
+      // FREE is now a permanent tier, so the row is ACTIVE with no trial end.
+      // The real trial is the 14 days applied at Professional checkout.
       let subscription = company.subscription;
       if (!subscription) {
         subscription = await this.databaseService.subscription.create({
           data: {
             companyId,
-            status: SubscriptionStatus.TRIALING,
+            status: SubscriptionStatus.ACTIVE,
             plan: SubscriptionPlan.FREE,
-            trialEnd: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
+            trialEnd: null,
           },
         });
       }
@@ -540,6 +585,7 @@ export class DodoPaymentsService {
       status,
       currentPeriodStart: data.previous_billing_date ? new Date(data.previous_billing_date) : null,
       currentPeriodEnd: data.next_billing_date ? new Date(data.next_billing_date) : null,
+      trialEnd: this.resolveTrialEnd(data),
       cancelAtPeriodEnd: data.cancel_at_next_billing_date,
       subscriptionEndsAt: data.expires_at ? new Date(data.expires_at) : null,
     };
@@ -567,6 +613,29 @@ export class DodoPaymentsService {
     if (doStatus === 'failed') return SubscriptionStatus.PAST_DUE;
     if (doStatus === 'expired') return SubscriptionStatus.EXPIRED;
     return SubscriptionStatus.CANCELED;
+  }
+
+  /**
+   * Work out when a trial ends from the Dodo subscription payload.
+   *
+   * Dodo reports the trial as a length in days on the subscription plus the
+   * creation timestamp; it has no `trial_end` field and no `trialing` status
+   * (a subscription inside its trial is reported as `active`). Storing the
+   * computed end date is what lets the app tell a trialing company how long it
+   * has left.
+   */
+  private resolveTrialEnd(data: DodoSubscription): Date | null {
+    const days = data.trial_period_days;
+    if (!days || days <= 0 || !data.created_at) {
+      return null;
+    }
+
+    const createdAt = new Date(data.created_at);
+    if (Number.isNaN(createdAt.getTime())) {
+      return null;
+    }
+
+    return new Date(createdAt.getTime() + days * 24 * 60 * 60 * 1000);
   }
 
   /**
@@ -650,6 +719,177 @@ export class DodoPaymentsService {
     } catch (error) {
       // Don't throw — notification failures shouldn't break subscription operations
       this.logger.error(`Failed to create subscription notification: ${error.message}`, error.stack);
+    }
+  }
+
+  // ─── Admin reporting ────────────────────────────────────────────────────────
+
+  /**
+   * Monthly list price per plan, in cents.
+   *
+   * Deliberately the same numbers the admin revenue dashboard uses
+   * (`AdminService.getRevenueStats`, PROFESSIONAL $49 / ENTERPRISE $149) so the
+   * two admin screens cannot disagree about MRR. The Stripe implementation this
+   * replaces used $29.99/$99.99, which never matched the dashboard.
+   *
+   * These are list prices, not amounts actually charged: Dodo does not expose a
+   * per-subscription amount on our stored record, and custom-plan pricing is
+   * negotiated outside the provider. Treat the figures as an estimate.
+   */
+  private static readonly PLAN_MONTHLY_PRICE_CENTS: Record<SubscriptionPlan, number> = {
+    [SubscriptionPlan.FREE]: 0,
+    [SubscriptionPlan.PROFESSIONAL]: 4900,
+    [SubscriptionPlan.ENTERPRISE]: 14900,
+  };
+
+  private monthlyPriceCents(plan: SubscriptionPlan): number {
+    return DodoPaymentsService.PLAN_MONTHLY_PRICE_CENTS[plan] ?? 0;
+  }
+
+  /**
+   * Yearly list price in cents. Annual plans are sold at 10x the monthly price
+   * (two months free), matching the annual product configuration in Dodo.
+   */
+  private yearlyPriceCents(plan: SubscriptionPlan): number {
+    return this.monthlyPriceCents(plan) * 10;
+  }
+
+  /**
+   * Every subscription in the system, with company and owner details, for the
+   * admin subscriptions screen. Reads only from our own database — no calls out
+   * to Dodo — so it stays fast and keeps working when the provider is down or
+   * unconfigured.
+   */
+  async getAllSubscriptionsAdmin(): Promise<DoAdminSubscriptionsResponseDto> {
+    try {
+      const subscriptions = await this.databaseService.subscription.findMany({
+        include: {
+          company: {
+            select: {
+              uid: true,
+              name: true,
+              users: {
+                where: { roles: { has: RolesType.COMPANY_OWNER }, isActive: true },
+                take: 1,
+                select: { uid: true, name: true, email: true },
+              },
+            },
+          },
+        },
+        orderBy: { createdAt: 'desc' },
+      });
+
+      const items = subscriptions.map((sub) => {
+        const owner = sub.company.users[0];
+        return {
+          subscriptionUid: sub.uid,
+          companyUid: sub.company.uid,
+          companyName: sub.company.name,
+          ownerUid: owner?.uid,
+          ownerName: owner?.name,
+          ownerEmail: owner?.email,
+          plan: sub.plan,
+          status: sub.status,
+          hasProviderSubscription: Boolean(sub.doSubscriptionId),
+          currentPeriodStart: sub.currentPeriodStart ?? undefined,
+          currentPeriodEnd: sub.currentPeriodEnd ?? undefined,
+          trialEnd: sub.trialEnd ?? undefined,
+          cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+          mrr: sub.status === SubscriptionStatus.ACTIVE ? this.monthlyPriceCents(sub.plan) : 0,
+          createdAt: sub.createdAt,
+          updatedAt: sub.updatedAt,
+        };
+      });
+
+      return {
+        subscriptions: items,
+        total: items.length,
+        totalActive: items.filter((i) => i.status === SubscriptionStatus.ACTIVE).length,
+        totalTrialing: items.filter((i) => i.status === SubscriptionStatus.TRIALING).length,
+        totalPastDue: items.filter((i) => i.status === SubscriptionStatus.PAST_DUE).length,
+        totalMrr: items.reduce((sum, i) => sum + i.mrr, 0),
+      };
+    } catch (error) {
+      this.logger.error(`Failed to fetch all subscriptions: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to fetch subscriptions');
+    }
+  }
+
+  /**
+   * Paginated + filterable subscriptions list for admin.
+   *
+   * `stats` are computed across the whole table, not the current page, so the
+   * summary cards do not change as the admin pages through the grid.
+   */
+  async listAllSubscriptions(query: DoListSubscriptionsQueryDto): Promise<DoSubscriptionsListResponseDto> {
+    const page = query.page && query.page > 0 ? query.page : 1;
+    const limit = query.limit && query.limit > 0 ? Math.min(query.limit, 100) : 20;
+    const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+    if (query.status) {
+      where.status = query.status;
+    }
+    if (query.plan) {
+      where.plan = query.plan;
+    }
+    if (query.search?.trim()) {
+      where.company = { name: { contains: query.search.trim(), mode: 'insensitive' } };
+    }
+
+    try {
+      const [subscriptions, total, allForStats] = await Promise.all([
+        this.databaseService.subscription.findMany({
+          where,
+          skip,
+          take: limit,
+          include: {
+            company: {
+              select: { uid: true, name: true, _count: { select: { users: true } } },
+            },
+          },
+          orderBy: { createdAt: 'desc' },
+        }),
+        this.databaseService.subscription.count({ where }),
+        this.databaseService.subscription.findMany({ select: { status: true, plan: true } }),
+      ]);
+
+      const items: DoSubscriptionWithCompanyDto[] = subscriptions.map((sub) => ({
+        uid: sub.uid,
+        companyUid: sub.company.uid,
+        companyName: sub.company.name,
+        userCount: sub.company._count.users,
+        plan: sub.plan,
+        status: sub.status,
+        currentPeriodStart: sub.currentPeriodStart ?? undefined,
+        currentPeriodEnd: sub.currentPeriodEnd ?? undefined,
+        trialEnd: sub.trialEnd ?? undefined,
+        cancelAtPeriodEnd: sub.cancelAtPeriodEnd,
+        gracePeriodEndsAt: sub.gracePeriodEndsAt ?? undefined,
+        subscriptionEndsAt: sub.subscriptionEndsAt ?? undefined,
+        monthlyRevenue: this.monthlyPriceCents(sub.plan),
+        yearlyRevenue: this.yearlyPriceCents(sub.plan),
+      }));
+
+      const active = allForStats.filter((s) => s.status === SubscriptionStatus.ACTIVE);
+
+      return {
+        subscriptions: items,
+        total,
+        page,
+        limit,
+        stats: {
+          totalActive: active.length,
+          totalTrialing: allForStats.filter((s) => s.status === SubscriptionStatus.TRIALING).length,
+          totalCanceled: allForStats.filter((s) => s.status === SubscriptionStatus.CANCELED).length,
+          totalPastDue: allForStats.filter((s) => s.status === SubscriptionStatus.PAST_DUE).length,
+          totalMonthlyRevenue: active.reduce((sum, s) => sum + this.monthlyPriceCents(s.plan), 0),
+          totalYearlyRevenue: active.reduce((sum, s) => sum + this.yearlyPriceCents(s.plan), 0),
+        },
+      };
+    } catch (error) {
+      this.logger.error(`Failed to list subscriptions: ${error.message}`, error.stack);
+      throw new InternalServerErrorException('Failed to list subscriptions');
     }
   }
 }

@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -15,6 +14,7 @@ import {
   FormControlLabel,
   FormHelperText,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useUpdateUser } from "../../hooks/api/useUsers";
@@ -51,7 +51,7 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
     handleSubmit,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UserFormData>({
     defaultValues: {
       name: "",
@@ -132,7 +132,13 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={isDirty}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{t("users.update_title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -260,7 +266,7 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

@@ -6,7 +6,7 @@ import { CandidateMapper } from './entities/candidate.entity';
 import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
 import { CandidateNoteResponseDto, CreateCandidateNoteDto, UpdateCandidateNoteDto } from './dto/candidate-note.dto';
 import { User, ApplicationSource, StageStatus, NotificationType, RolesType } from '@prisma/client';
-import { getUserCompanyId } from 'src/utils/company-access.helper';
+import { getUserCompanyId, assertCandidateTenancy, TenantScopedCandidate } from 'src/utils/company-access.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 import { CandidateJourneyResponseDto, CandidateJourneyStepDto } from '../stages/dto/stage-time-tracking.dto';
 import { HiringProcessResponseDto } from '../../dto/hiring-process.dto';
@@ -16,6 +16,7 @@ import { CandidateActivityType } from '@prisma/client';
 import { StorageService } from 'src/modules/storage/storage.service';
 import { AuditLogService } from 'src/modules/audit-log/audit-log.service';
 import { NotificationsService } from 'src/modules/notifications/notifications.service';
+import { ActivationEventsService } from 'src/modules/tracking/activation-events.service';
 
 @Injectable()
 export class CandidateService {
@@ -28,7 +29,25 @@ export class CandidateService {
     private storageService: StorageService,
     private auditLogService: AuditLogService,
     private notificationsService: NotificationsService,
+    private activationEvents: ActivationEventsService,
   ) {}
+
+  /**
+   * Tenancy gate for a single Candidate reached by UID.
+   *
+   * Delegates to the shared `assertCandidateTenancy` so this rule has exactly
+   * one implementation across CandidateService, CandidateActivityService and
+   * StageNotesService.
+   *
+   * The previous inline form of this check only ran
+   * `if (candidate.hiringProcesses.length > 0)`, so a candidate with no hiring
+   * process yet — every manually created, CSV imported or public-API created
+   * row until it is put into a process — was readable AND writable by ANY
+   * authenticated tenant that knew its UID.
+   */
+  private assertCandidateCompanyAccess(candidate: TenantScopedCandidate, uid: string, user?: User): void {
+    assertCandidateTenancy(candidate, uid, user);
+  }
 
   async create(createCandidateDto: CreateCandidateDto, user?: User): Promise<CandidateResponseDto> {
     try {
@@ -64,13 +83,23 @@ export class CandidateService {
         this.logger.error('Failed to log candidate creation activity:', error.message);
       }
 
+      // Activation event (fire-and-forget - never awaited, never throws)
+      if (companyId !== null && user?.id) {
+        this.activationEvents.candidateCreated({
+          userId: user.id,
+          companyId,
+          candidateUid: candidate.uid,
+          source: candidate.source,
+        });
+      }
+
       return CandidateMapper(candidate);
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
       }
       if (error?.code === 'P2002') {
-        throw new ConflictException('A candidate with this email already exists');
+        throw new ConflictException('A candidate with this email already exists for this company');
       }
       throw new InternalServerErrorException(`Failed to create: ${error.message}`);
     }
@@ -112,19 +141,18 @@ export class CandidateService {
         throw new EntityNotFoundException('JobPosition', jobPositionUid);
       }
 
-      // Check if candidate with this email already exists for this company
+      // Check if candidate with this email already exists FOR THIS COMPANY.
+      // Candidate.email is unique per tenant (@@unique([email, companyId])), so this must
+      // be scoped by companyId - an unscoped lookup would return another tenant's candidate.
       const existingCandidate = await this.databaseService.candidate.findUnique({
-        where: { email },
-        include: {
-          hiringProcesses: {
-            where: {
-              companyId: jobPosition.companyId,
-            },
-          },
+        where: {
+          email_companyId: { email, companyId: jobPosition.companyId },
         },
       });
 
-      if (existingCandidate && existingCandidate.hiringProcesses.length > 0) {
+      // Any existing candidate row for this company is a conflict: the composite unique
+      // index would reject the insert below anyway, so fail with a 409 instead of a 500.
+      if (existingCandidate) {
         throw new ConflictException(`A candidate with email ${email} already exists for this company`);
       }
 
@@ -135,9 +163,20 @@ export class CandidateService {
           email,
           source: ApplicationSource.MANUAL,
           sourceDetails: sourceDetails || 'Manual entry by HR',
+          // Candidates are tenant-scoped: without companyId the row is unclaimed and
+          // the per-tenant unique index cannot dedupe it (NULLs are distinct in Postgres).
+          companyId: jobPosition.companyId,
           createdByUserId: user.id,
         },
         include: { createdByUser: true },
+      });
+
+      // Activation event (fire-and-forget - never awaited, never throws)
+      this.activationEvents.candidateCreated({
+        userId: user.id,
+        companyId: jobPosition.companyId,
+        candidateUid: candidate.uid,
+        source: candidate.source,
       });
 
       // Auto-create hiring process
@@ -242,17 +281,7 @@ export class CandidateService {
         throw new EntityNotFoundException('Candidate', uid);
       }
 
-      // Verify company access if user is provided (through hiring processes)
-      if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
-        const userCompanyId = getUserCompanyId(user);
-        if (userCompanyId !== null) {
-          // Check if candidate has at least one hiring process for this company
-          const hasAccessToCandidate = candidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
-          if (!hasAccessToCandidate) {
-            throw new EntityNotFoundException('Candidate', uid);
-          }
-        }
-      }
+      this.assertCandidateCompanyAccess(candidate, uid, user);
 
       return CandidateMapper(candidate);
     } catch (error) {
@@ -415,16 +444,7 @@ export class CandidateService {
         throw new EntityNotFoundException('Candidate', uid);
       }
 
-      // Check if user has access to this candidate through any hiring process
-      if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
-        const userCompanyId = getUserCompanyId(user);
-        if (userCompanyId !== null) {
-          const hasAccessToCandidate = existingCandidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
-          if (!hasAccessToCandidate) {
-            throw new EntityNotFoundException('Candidate', uid);
-          }
-        }
-      }
+      this.assertCandidateCompanyAccess(existingCandidate, uid, user);
 
       const candidate = await this.databaseService.candidate.update({
         where: { uid },
@@ -456,16 +476,7 @@ export class CandidateService {
         throw new EntityNotFoundException('Candidate', uid);
       }
 
-      // Check if user has access to this candidate through any hiring process
-      if (existingCandidate.hiringProcesses && existingCandidate.hiringProcesses.length > 0) {
-        const userCompanyId = getUserCompanyId(user);
-        if (userCompanyId !== null) {
-          const hasAccessToCandidate = existingCandidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
-          if (!hasAccessToCandidate) {
-            throw new EntityNotFoundException('Candidate', uid);
-          }
-        }
-      }
+      this.assertCandidateCompanyAccess(existingCandidate, uid, user);
 
       // Soft delete: Set deletedAt instead of hard delete
       await this.databaseService.candidate.update({
@@ -559,6 +570,12 @@ export class CandidateService {
           resumeFileId: {
             not: null, // Only applications with resumes
           },
+          // Candidate emails are no longer globally unique, so an email match alone can
+          // hit another tenant's application. Restrict the purge to applications posted
+          // by the company that owns this candidate record.
+          ...(existingCandidate.companyId !== null && {
+            jobPosition: { companyId: existingCandidate.companyId },
+          }),
         },
         include: {
           resumeFile: true,
@@ -641,7 +658,7 @@ export class CandidateService {
   }
 
   // Candidate Notes methods
-  async createNote(createNoteDto: CreateCandidateNoteDto, authorUserId: number): Promise<CandidateNoteResponseDto> {
+  async createNote(createNoteDto: CreateCandidateNoteDto, authorUserId: number, user?: User): Promise<CandidateNoteResponseDto> {
     try {
       // Find candidate by UID to get the numeric ID
       const candidate = await this.databaseService.candidate.findFirst({
@@ -658,6 +675,10 @@ export class CandidateService {
       if (!candidate) {
         throw new NotFoundException(`Candidate ${createNoteDto.candidateUid} not found`);
       }
+
+      // Recruiter notes are private company data. Without this gate any
+      // authenticated tenant could attach a note to another tenant's candidate.
+      this.assertCandidateCompanyAccess(candidate, createNoteDto.candidateUid, user);
 
       const note = await this.databaseService.candidateNote.create({
         data: {
@@ -728,15 +749,21 @@ export class CandidateService {
     }
   }
 
-  async findNotesByCandidateUid(candidateUid: string): Promise<CandidateNoteResponseDto[]> {
+  async findNotesByCandidateUid(candidateUid: string, user?: User): Promise<CandidateNoteResponseDto[]> {
     try {
       const candidate = await this.databaseService.candidate.findFirst({
         where: { uid: candidateUid, deletedAt: null },
+        include: { hiringProcesses: true },
       });
 
       if (!candidate) {
         throw new EntityNotFoundException('Candidate', candidateUid);
       }
+
+      // Recruiter notes are private company data and this endpoint had no
+      // tenancy check at all: any authenticated user could read another
+      // tenant's notes by UID.
+      this.assertCandidateCompanyAccess(candidate, candidateUid, user);
 
       const notes = await this.databaseService.candidateNote.findMany({
         where: { candidateId: candidate.id },
@@ -869,16 +896,7 @@ export class CandidateService {
         throw new EntityNotFoundException('Candidate', candidateUid);
       }
 
-      // Verify company access if user is provided
-      if (user && candidate.hiringProcesses && candidate.hiringProcesses.length > 0) {
-        const userCompanyId = getUserCompanyId(user);
-        if (userCompanyId !== null) {
-          const hasAccessToCandidate = candidate.hiringProcesses.some((hp) => hp.companyId === userCompanyId);
-          if (!hasAccessToCandidate) {
-            throw new EntityNotFoundException('Candidate', candidateUid);
-          }
-        }
-      }
+      this.assertCandidateCompanyAccess(candidate, candidateUid, user);
 
       // Build journey for each hiring process
       const journeys: CandidateJourneyResponseDto[] = candidate.hiringProcesses.map((hiringProcess) => {

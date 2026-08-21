@@ -13,7 +13,6 @@ import {
   Stack,
   CircularProgress,
   Alert,
-  Paper,
   Divider,
   MenuItem,
 } from "@mui/material";
@@ -31,6 +30,7 @@ import {
   EmailTemplateType,
 } from "../../types/emailTemplate.types";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
+import { EmailTemplateRenderedPreview } from "../dialogs/EmailTemplatePreviewDialog";
 
 interface DefaultTemplateContent {
   name: string;
@@ -334,6 +334,34 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, DefaultTemplateContent> = {
   },
 };
 
+/**
+ * Escapes a substituted sample value the same way Handlebars escapes `{{var}}`
+ * on the backend, so a client-side preview cannot break the surrounding markup.
+ */
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+/**
+ * Minimal client-side stand-in for the backend Handlebars render.
+ *
+ * The backend preview endpoint (`POST /email-templates/:uid/preview`) can only
+ * render a template that is already persisted, so unsaved content (a brand new
+ * template, or edits not yet submitted) has to be substituted locally. Unknown
+ * variables resolve to an empty string, matching Handlebars behaviour.
+ */
+const renderWithSampleData = (
+  source: string,
+  variables: Record<string, string>,
+): string =>
+  source.replace(/\{\{\s*([\w.]+)\s*\}\}/g, (_match, key: string) =>
+    escapeHtml(variables[key] ?? ""),
+  );
+
 interface EmailTemplateDialogProps {
   open: boolean;
   onClose: () => void;
@@ -360,6 +388,30 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
     renderedSubject: string;
     renderedBody: string;
   } | null>(null);
+  const [isUnsavedPreview, setIsUnsavedPreview] = useState(false);
+
+  // Sample values mirroring the backend preview sample data
+  // (email-templates.service.ts -> preview()).
+  const SAMPLE_VARIABLES: Record<string, string> = {
+    candidateName: t("email_template.sample_candidate_name"),
+    positionTitle: t("email_template.sample_position_title"),
+    jobTitle: t("email_template.sample_position_title"),
+    companyName: t("email_template.sample_company_name"),
+    hrName: t("email_template.sample_hr_name"),
+    interviewerName: t("email_template.sample_hr_name"),
+    interviewDate: new Date().toLocaleDateString(),
+    interviewTime: t("email_template.sample_interview_time"),
+    meetingLink: "https://meet.google.com/example",
+    newStage: t("email_template.sample_new_stage"),
+    previousStage: t("email_template.sample_previous_stage"),
+    stageName: t("email_template.sample_new_stage"),
+    status: t("email_template.sample_status"),
+    deadline: new Date(
+      Date.now() + 7 * 24 * 60 * 60 * 1000,
+    ).toLocaleDateString(),
+    hiringProcessUrl: "https://app.borderlessats.com/hiring-process/sample-uid",
+    submissionUrl: "https://app.borderlessats.com/async-stage/sample-uid",
+  };
 
   const AVAILABLE_VARIABLES = [
     {
@@ -428,7 +480,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
     watch,
     control,
     getValues,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<EmailTemplateFormData>({
     defaultValues: {
       name: template?.name || "",
@@ -447,6 +499,10 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       type: template?.type || "",
       isDefault: template?.isDefault || false,
     });
+    // Drop any preview belonging to the previously opened template
+    setShowPreview(false);
+    setPreviewData(null);
+    setIsUnsavedPreview(false);
   }, [template, reset]);
 
   const { mutate: createTemplate, isPending: isCreating } =
@@ -505,20 +561,36 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
 
   const handleClose = () => {
     reset();
+    setShowPreview(false);
+    setPreviewData(null);
+    setIsUnsavedPreview(false);
     onClose();
   };
 
   const insertVariable = (variable: string) => {
     const currentBody = watch("body") || "";
-    setValue("body", currentBody + variable);
+    // shouldDirty so the preview knows the form no longer matches the saved
+    // template and renders the current content locally instead.
+    setValue("body", currentBody + variable, { shouldDirty: true });
   };
 
   const handlePreview = () => {
-    if (!template?.uid) {
-      // For new templates, can't preview until saved
+    // The backend preview endpoint renders the *persisted* template, so it can
+    // only be used for a saved template with no pending edits. Otherwise render
+    // the current form values locally with the same sample variables.
+    const hasUnsavedContent = !template?.uid || isDirty;
+
+    if (hasUnsavedContent) {
+      setIsUnsavedPreview(true);
       setPreviewData({
-        renderedSubject: watch("subject") || "",
-        renderedBody: watch("body") || "",
+        renderedSubject: renderWithSampleData(
+          getValues("subject") || "",
+          SAMPLE_VARIABLES,
+        ),
+        renderedBody: renderWithSampleData(
+          getValues("body") || "",
+          SAMPLE_VARIABLES,
+        ),
       });
       setShowPreview(true);
       return;
@@ -528,6 +600,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
       { uid: template.uid },
       {
         onSuccess: (data) => {
+          setIsUnsavedPreview(false);
           setPreviewData(data);
           setShowPreview(true);
         },
@@ -708,35 +781,23 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
               <Typography variant="h6" gutterBottom>
                 {t("email_template.preview_title")}
               </Typography>
-              <Alert severity="info" sx={{ mb: 2 }}>
-                {t("email_template.preview_info")}
-              </Alert>
-              <Paper
-                variant="outlined"
-                sx={{ p: 2, mb: 2, backgroundColor: "background.default" }}
+              <Alert
+                severity={isUnsavedPreview ? "warning" : "info"}
+                sx={{ mb: 2 }}
               >
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  {t("email_template.preview_subject")}:
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: "bold", mb: 2 }}>
-                  {previewData.renderedSubject}
-                </Typography>
-                <Typography
-                  variant="subtitle2"
-                  color="text.secondary"
-                  gutterBottom
-                >
-                  {t("email_template.preview_body")}:
-                </Typography>
-                <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
-                  {previewData.renderedBody}
-                </Typography>
-              </Paper>
-              <Button size="small" onClick={() => setShowPreview(false)}>
+                {isUnsavedPreview
+                  ? t("email_template.preview_unsaved_info")
+                  : t("email_template.preview_info")}
+              </Alert>
+              <EmailTemplateRenderedPreview
+                renderedSubject={previewData.renderedSubject}
+                renderedBody={previewData.renderedBody}
+              />
+              <Button
+                size="small"
+                sx={{ mt: 2 }}
+                onClick={() => setShowPreview(false)}
+              >
                 {t("email_template.hide_preview")}
               </Button>
             </Box>
@@ -747,19 +808,17 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
           <Button onClick={handleClose} disabled={isPending}>
             {t("common.cancel")}
           </Button>
-          {isEditMode && (
-            <Button
-              onClick={handlePreview}
-              disabled={isPreviewing}
-              startIcon={
-                isPreviewing ? <CircularProgress size={20} /> : <Visibility />
-              }
-            >
-              {isPreviewing
-                ? t("email_template.previewing")
-                : t("email_template.preview")}
-            </Button>
-          )}
+          <Button
+            onClick={handlePreview}
+            disabled={isPreviewing}
+            startIcon={
+              isPreviewing ? <CircularProgress size={20} /> : <Visibility />
+            }
+          >
+            {isPreviewing
+              ? t("email_template.previewing")
+              : t("email_template.preview")}
+          </Button>
           <Button
             type="submit"
             variant="contained"

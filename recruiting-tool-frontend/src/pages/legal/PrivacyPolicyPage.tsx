@@ -1,11 +1,19 @@
 import { Box, Container, Typography, Divider, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import Seo from "../../components/common/Seo";
 
 const PrivacyPolicyPage = () => {
   const { t } = useTranslation();
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
+      {/* Left indexable on purpose: legal pages carry brand queries and are a
+          trust signal both buyers and Google look for. */}
+      <Seo
+        title={t("seo.legal.privacy.title")}
+        description={t("seo.legal.privacy.description")}
+      />
+
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="h3"
@@ -27,7 +35,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Introduction */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.introduction.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -37,7 +50,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Information We Collect */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.information_collected.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -46,6 +64,7 @@ const PrivacyPolicyPage = () => {
 
         <Typography
           variant="h6"
+          component="h3"
           gutterBottom
           sx={{ fontWeight: 600, mt: 3, mb: 1 }}
         >
@@ -65,6 +84,7 @@ const PrivacyPolicyPage = () => {
 
         <Typography
           variant="h6"
+          component="h3"
           gutterBottom
           sx={{ fontWeight: 600, mt: 3, mb: 1 }}
         >
@@ -85,7 +105,12 @@ const PrivacyPolicyPage = () => {
 
       {/* How We Use Your Information */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.how_we_use.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -112,7 +137,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Data Sharing and Disclosure */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.data_sharing.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -133,7 +163,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Data Security */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.data_security.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -147,7 +182,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Data Retention */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.data_retention.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -157,7 +197,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Your Rights */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.your_rights.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -184,7 +229,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Cookies and Tracking */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.cookies.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -194,7 +244,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Third-Party Links */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.third_party_links.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -204,7 +259,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Children's Privacy */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.childrens_privacy.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -214,7 +274,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Changes to Privacy Policy */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.changes.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -224,7 +289,12 @@ const PrivacyPolicyPage = () => {
 
       {/* Contact Us */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.privacy.contact.title")}
         </Typography>
         <Typography variant="body1" paragraph>

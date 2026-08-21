@@ -18,6 +18,7 @@ import {
   usePublicJobPositions,
 } from "../../hooks/api/useJobPositions";
 import { JobPosition, PublicJobPosition } from "../../types/jobPosition.types";
+import StatusLabel from "../StatusLabel";
 import { useNavigate } from "react-router-dom";
 import { ApplyToJobDialog } from "../dialogs/ApplyToJobDialog";
 import { useDialog } from "../../hooks/useDialog";
@@ -98,7 +99,14 @@ const JobPositionCardView: React.FC<{
               label={jobPosition.status}
               color={jobPositionStatusColors[jobPosition.status] || "default"}
               size="small"
+              variant="filled"
               sx={{ fontSize: "0.85rem" }}
+            />
+          )}
+          {!publicMode && (jobPosition as JobPosition).moderationStatus && (
+            <StatusLabel
+              status={(jobPosition as JobPosition).moderationStatus!}
+              size="small"
             />
           )}
           <Chip
@@ -296,6 +304,27 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
       width: 100,
       valueGetter: (value: unknown[]) => value?.length || 0,
     },
+    ...(!publicMode
+      ? [
+          {
+            // Platform moderation state - only meaningful on company-owned views
+            field: "moderationStatus",
+            headerName: t("job_positions_table.header_visibility"),
+            width: 170,
+            renderCell: (params: GridRenderCellParams) =>
+              params.row.moderationStatus ? (
+                <CellRow centered>
+                  <StatusLabel
+                    status={params.row.moderationStatus}
+                    size="small"
+                  />
+                </CellRow>
+              ) : (
+                t("common.n_a")
+              ),
+          } as GridColDef,
+        ]
+      : []),
     ...(!publicMode
       ? [
           {

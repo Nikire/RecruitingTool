@@ -261,6 +261,11 @@ const ContactMessagesPage = () => {
           loading={isLoading}
           error={isError}
           emptyMessage="admin_contact.no_messages"
+          emptyIcon={
+            <EmailIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+          }
+          emptyTitle="admin_contact.no_messages"
+          emptyDescription="admin_contact.empty_description"
           errorMessage="admin_contact.loading_error"
           onboardingKey="contact-messages-list"
           page={page}

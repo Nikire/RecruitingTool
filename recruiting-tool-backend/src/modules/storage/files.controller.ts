@@ -2,7 +2,7 @@ import { Body, Controller, Delete, Get, HttpCode, Post, Param, Query, UploadedFi
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { FilesService } from './files.service';
-import { CompanyStorageResponseDto, DeleteManyFilesDto, DownloadZipDto, FileUploadResponseDto, FileListQueryDto } from './dto/file-upload.dto';
+import { CompanyStorageResponseDto, DeleteManyFilesDto, DownloadZipDto, FileUploadResponseDto, FileListQueryDto, FileViewUrlResponseDto } from './dto/file-upload.dto';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { RolesType } from '@prisma/client';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
@@ -127,38 +127,66 @@ export class FilesController {
 
   @Get()
   @Auth([RolesType.USER])
-  @ApiOperation({ summary: 'Get all files, optionally filtered by candidate' })
-  async getFiles(@Query() query: FileListQueryDto): Promise<FileUploadResponseDto[]> {
-    return this.filesService.getFiles(query.candidateUid);
+  @ApiOperation({ summary: "Get files visible to the current user's company, optionally filtered by candidate" })
+  async getFiles(@Query() query: FileListQueryDto, @CurrentUser() currentUser: any): Promise<FileUploadResponseDto[]> {
+    return this.filesService.getFiles(currentUser, query.candidateUid);
   }
 
   @Get(':uid')
   @Auth([RolesType.USER])
-  @ApiOperation({ summary: 'Get file metadata by UID' })
-  async getFile(@Param('uid') uid: string): Promise<FileUploadResponseDto> {
-    return this.filesService.getFileByUid(uid);
+  @ApiOperation({ summary: 'Get file metadata by UID (company-scoped)' })
+  async getFile(@Param('uid') uid: string, @CurrentUser() currentUser: any): Promise<FileUploadResponseDto> {
+    return this.filesService.getFileByUid(uid, currentUser);
   }
 
+  /**
+   * PUBLIC ASSETS ONLY.
+   *
+   * This route is intentionally unauthenticated because avatars and other
+   * decorative images are rendered with a bare <img src>, which cannot carry an
+   * Authorization header. FilesService.getPublicViewableFile() enforces that only
+   * images with no candidate / application / submission link are served here;
+   * every private document returns 404. Private files are viewed via
+   * GET :uid/view-url instead.
+   */
   @Get(':uid/view')
-  @ApiOperation({ summary: 'View a file (e.g., display images) - No auth required for public access' })
+  @ApiOperation({
+    summary: 'View a public asset (avatars and other unattached images) - no auth required',
+    description: 'Serves ONLY publicly viewable images. Private documents (resumes, cover letters, candidate attachments) return 404 here; use GET /files/:uid/view-url instead.',
+  })
   async viewFile(@Param('uid') uid: string, @Res() res: Response): Promise<void> {
-    const { stream, filename, mimetype } = await this.filesService.downloadFile(uid);
+    const { stream, filename, mimetype } = await this.filesService.getPublicViewableFile(uid);
 
     res.setHeader('Content-Type', mimetype);
     res.setHeader('Content-Disposition', `inline; filename="${filename}"`);
-    res.setHeader('Cache-Control', 'public, max-age=31536000'); // Cache for 1 year
+    // Safe: this route can only ever serve public assets.
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
 
     stream.pipe(res);
   }
 
+  @Get(':uid/view-url')
+  @Auth([RolesType.USER])
+  @ApiOperation({
+    summary: 'Get a short-lived presigned URL to view a private file inline',
+    description: "Requires authentication AND that the file belongs to the caller's company. The URL expires in 5 minutes and is served directly by object storage.",
+  })
+  async getViewUrl(@Param('uid') uid: string, @CurrentUser() currentUser: any, @Res({ passthrough: true }) res: Response): Promise<FileViewUrlResponseDto> {
+    res.setHeader('Cache-Control', 'private, no-store');
+    return this.filesService.getViewUrl(uid, currentUser);
+  }
+
   @Get(':uid/download')
   @Auth([RolesType.USER])
-  @ApiOperation({ summary: 'Download a file' })
-  async downloadFile(@Param('uid') uid: string, @Res() res: Response): Promise<void> {
-    const { stream, filename, mimetype } = await this.filesService.downloadFile(uid);
+  @ApiOperation({ summary: "Download a file (must belong to the caller's company)" })
+  async downloadFile(@Param('uid') uid: string, @CurrentUser() currentUser: any, @Res() res: Response): Promise<void> {
+    const { stream, filename, mimetype } = await this.filesService.downloadFile(uid, currentUser);
 
     res.setHeader('Content-Type', mimetype);
     res.setHeader('Content-Disposition', `attachment; filename="${filename}"`);
+    // Never let a shared proxy retain candidate personal data.
+    res.setHeader('Cache-Control', 'private, no-store');
+    res.setHeader('Pragma', 'no-cache');
 
     stream.pipe(res);
   }
@@ -172,9 +200,9 @@ export class FilesController {
 
   @Delete(':uid')
   @Auth([RolesType.ADMIN])
-  @ApiOperation({ summary: 'Delete a file' })
-  async deleteFile(@Param('uid') uid: string): Promise<{ message: string }> {
-    await this.filesService.deleteFile(uid);
+  @ApiOperation({ summary: "Delete a file (must belong to the caller's company; platform admins may delete any)" })
+  async deleteFile(@Param('uid') uid: string, @CurrentUser() currentUser: any): Promise<{ message: string }> {
+    await this.filesService.deleteFile(uid, currentUser);
     return { message: 'File deleted successfully' };
   }
 }

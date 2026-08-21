@@ -137,7 +137,7 @@
           "parameters": [
             {
               "name": "x-api-key",
-              "value": "changeme"
+              "value": "SET_IN_N8N_UI_SEE_INTERNAL_API_KEY_ENV"
             },
             {
               "name": "Content-Type",

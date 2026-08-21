@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -11,6 +10,7 @@ import {
   Grid,
   CircularProgress,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { User, UpdateUserDto } from "../../types/user.types";
@@ -35,7 +35,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     reset,
   } = useForm<UpdateUserDto>({
     defaultValues: {
@@ -79,9 +79,10 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({
   };
 
   return (
-    <Dialog
+    <FormDialog
       open={open}
       onClose={handleClose}
+      isDirty={isDirty}
       maxWidth="md"
       fullWidth
       PaperProps={{ sx: { borderRadius: 2 } }}
@@ -243,7 +244,7 @@ const UpdateProfileDialog: React.FC<UpdateProfileDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

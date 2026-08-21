@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -16,6 +15,7 @@ import {
   FormHelperText,
   Autocomplete,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useCreateUser } from "../../hooks/api/useUsers";
@@ -54,7 +54,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
     reset,
     control,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<UserFormData>({
     defaultValues: {
       name: "",
@@ -118,7 +118,13 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
   }
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={isDirty}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{t("users.create_title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -252,7 +258,7 @@ const CreateUserDialog: React.FC<CreateUserDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

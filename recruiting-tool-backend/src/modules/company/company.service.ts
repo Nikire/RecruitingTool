@@ -128,6 +128,7 @@ export class CompanyService {
           jobPositions: {
             some: {
               status: 'OPEN',
+              moderationStatus: 'APPROVED', // Anti-spam: only companies with an approved public posting
               deletedAt: null, // Exclude soft-deleted job positions
             },
           },

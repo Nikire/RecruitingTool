@@ -1,22 +1,18 @@
 import { Chip } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { ApplicationStatus } from "../../types/application.types";
-import { HiringProcessStatus } from "../../types/hiringProcess.types";
-import { UserRoles } from "../../types/user.types";
 import {
-  getApplicationStatusColor,
-  getHiringProcessStatusColor,
-  getUserRoleColor,
-} from "../../utils/statusColors";
+  getStatusColor,
+  getStatusTranslationKey,
+  type StatusDomain,
+} from "../../theme/statusPalette";
 
 /**
- * Supported status types for the StatusChip component
+ * Supported status types for the StatusChip component.
+ *
+ * Aliased to `StatusDomain` so this component and `StatusLabel` speak the exact
+ * same vocabulary — there is one list of domains, in `theme/statusPalette.ts`.
  */
-export type StatusType =
-  | "application"
-  | "hiringProcess"
-  | "userRole"
-  | "jobPosition";
+export type StatusType = StatusDomain;
 
 /**
  * Props for the StatusChip component
@@ -24,7 +20,7 @@ export type StatusType =
 export interface StatusChipProps {
   /** The status value to display */
   status: string;
-  /** The type of status (determines color mapping) */
+  /** The type of status (selects the domain-specific colour overrides) */
   type: StatusType;
   /** Size of the chip */
   size?: "small" | "medium";
@@ -37,10 +33,11 @@ export interface StatusChipProps {
 }
 
 /**
- * StatusChip - Reusable status chip component with type-based color logic
+ * StatusChip - Reusable status chip component with type-based color logic.
  *
- * Automatically applies the correct MUI color based on status type and value.
- * Supports multiple status types: applications, hiring processes, user roles, job positions.
+ * Colours come from `theme/statusPalette.ts`, the single source of truth shared
+ * with `StatusLabel`. This component owns *presentation* only; it must never
+ * re-derive a colour locally.
  *
  * @example
  * ```tsx
@@ -72,50 +69,11 @@ const StatusChip: React.FC<StatusChipProps> = ({
   const { t } = useTranslation();
 
   /**
-   * Get the appropriate MUI color based on status type and value
-   */
-  const getColor = ():
-    | "primary"
-    | "secondary"
-    | "error"
-    | "warning"
-    | "info"
-    | "success"
-    | "default" => {
-    switch (type) {
-      case "application":
-        return getApplicationStatusColor(status as ApplicationStatus);
-      case "hiringProcess":
-        return getHiringProcessStatusColor(status as HiringProcessStatus);
-      case "userRole":
-        return getUserRoleColor(status as UserRoles);
-      case "jobPosition":
-        // Job position status mapping (OPEN, CLOSED, ARCHIVED)
-        switch (status) {
-          case "OPEN":
-            return "success";
-          case "CLOSED":
-            return "default";
-          case "ARCHIVED":
-            return "warning";
-          default:
-            return "default";
-        }
-      default:
-        return "default";
-    }
-  };
-
-  /**
    * Get the display label for the status
    */
   const getLabel = () => {
     if (translate) {
-      // Try with prefix first, then fallback to status key
-      const translationKey = translationPrefix
-        ? `${translationPrefix}${status.toLowerCase()}`
-        : status.toLowerCase();
-      return t(translationKey);
+      return t(getStatusTranslationKey(status, translationPrefix));
     }
     return status;
   };
@@ -123,7 +81,7 @@ const StatusChip: React.FC<StatusChipProps> = ({
   return (
     <Chip
       label={getLabel()}
-      color={getColor()}
+      color={getStatusColor(status, type)}
       size={size}
       variant={variant}
       aria-label={`${t("aria.status")}: ${getLabel()}`}

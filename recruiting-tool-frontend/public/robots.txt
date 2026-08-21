@@ -1,0 +1,46 @@
+# https://borderlessats.com/robots.txt
+# Borderless ATS — crawl policy
+# Public marketing, careers, contact and legal pages are indexable.
+# Everything behind authentication or behind a single-use token is not.
+
+User-agent: *
+Allow: /$
+Allow: /careers
+Allow: /contact
+Allow: /terms
+Allow: /privacy
+Allow: /security
+Allow: /check-status
+
+# Authenticated application surfaces
+Disallow: /hr/
+Disallow: /admin
+Disallow: /profile
+Disallow: /settings/
+Disallow: /notifications
+Disallow: /onboarding
+Disallow: /applicant/
+Disallow: /invitations/
+Disallow: /pending-email-verification
+
+# Single-use / tokenised candidate & demo links — never index
+Disallow: /hiring-process/
+Disallow: /book-interview/
+Disallow: /booking-confirmed/
+Disallow: /booking-confirmed-demo/
+Disallow: /book-demo/
+Disallow: /submit/
+Disallow: /unsubscribe/
+
+# Auth flows and OAuth callbacks — no indexable content
+Disallow: /login
+Disallow: /logout
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /oauth/
+
+# Dev-only routes
+Disallow: /test/
+
+Sitemap: https://borderlessats.com/sitemap.xml

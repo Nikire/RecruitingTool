@@ -28,6 +28,9 @@ import { CandidateStageNotesResponseDto } from 'src/modules/stage-notes/dto/stag
   description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
 })
 @ApiNotFoundResponse({ description: 'Candidate not found' })
+// Class-level default = HR (level 6) and above. Read-only handlers below opt
+// RECRUITER (level 7) in explicitly; every write handler inherits this list and
+// therefore stays HR+.
 @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
 export class CandidateController {
   constructor(
@@ -66,6 +69,7 @@ export class CandidateController {
     return this.candidateService.createManual(createManualCandidateDto, currentUser);
   }
 
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get('list')
   @ApiOperation({ summary: 'Get paginated candidates list with advanced filtering and search' })
   @ApiResponse({
@@ -76,6 +80,7 @@ export class CandidateController {
     return this.candidateService.list(filterDto, currentUser);
   }
 
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get()
   @ApiOperation({ summary: 'Get all candidates' })
   @ApiResponse({
@@ -87,6 +92,7 @@ export class CandidateController {
     return this.candidateService.findAll(currentUser);
   }
 
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':uid')
   @ApiOperation({ summary: 'Get a candidate by UID' })
   @ApiResponse({
@@ -158,9 +164,12 @@ export class CandidateController {
 
     // Override candidateUid from path param to ensure consistency
     createNoteDto.candidateUid = candidateUid;
-    return this.candidateService.createNote(createNoteDto, dbUser.id);
+    // `dbUser` (not the token payload) is passed as the tenancy subject so the
+    // service can scope the candidate to the caller's company.
+    return this.candidateService.createNote(createNoteDto, dbUser.id, dbUser);
   }
 
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':candidateUid/notes')
   @ApiOperation({ summary: 'Get all notes for a candidate' })
   @ApiResponse({
@@ -169,8 +178,8 @@ export class CandidateController {
     type: [CandidateNoteResponseDto],
   })
   @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
-  findNotesByCandidateUid(@Param('candidateUid') candidateUid: string): Promise<CandidateNoteResponseDto[]> {
-    return this.candidateService.findNotesByCandidateUid(candidateUid);
+  findNotesByCandidateUid(@Param('candidateUid') candidateUid: string, @CurrentUser() currentUser: User): Promise<CandidateNoteResponseDto[]> {
+    return this.candidateService.findNotesByCandidateUid(candidateUid, currentUser);
   }
 
   @Put('notes/:noteUid')
@@ -207,6 +216,7 @@ export class CandidateController {
   }
 
   // Candidate Journey Tracking endpoint
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':uid/journey')
   @ApiOperation({ summary: 'Get candidate journey through all stages with time tracking' })
   @ApiResponse({
@@ -220,6 +230,7 @@ export class CandidateController {
   }
 
   // Candidate Activity Timeline endpoint
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':uid/activities')
   @ApiOperation({ summary: 'Get candidate activity timeline/history' })
   @ApiResponse({
@@ -228,11 +239,12 @@ export class CandidateController {
     type: [CandidateActivityResponseDto],
   })
   @ApiParam({ name: 'uid', required: true, description: 'UID of the candidate' })
-  getCandidateActivities(@Param('uid') uid: string): Promise<CandidateActivityResponseDto[]> {
-    return this.candidateActivityService.getCandidateActivities(uid);
+  getCandidateActivities(@Param('uid') uid: string, @CurrentUser() currentUser: User): Promise<CandidateActivityResponseDto[]> {
+    return this.candidateActivityService.getCandidateActivities(uid, currentUser);
   }
 
   // Stage Eval Notes for candidate endpoint
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':candidateUid/stage-eval-notes')
   @ApiOperation({ summary: 'Get all stage evaluation notes for a candidate' })
   @ApiResponse({
@@ -241,8 +253,8 @@ export class CandidateController {
     type: [CandidateStageNotesResponseDto],
   })
   @ApiParam({ name: 'candidateUid', required: true, description: 'UID of the candidate' })
-  getCandidateStageEvalNotes(@Param('candidateUid') candidateUid: string): Promise<CandidateStageNotesResponseDto[]> {
-    return this.stageNotesService.findByCandidateUid(candidateUid);
+  getCandidateStageEvalNotes(@Param('candidateUid') candidateUid: string, @CurrentUser() currentUser: User): Promise<CandidateStageNotesResponseDto[]> {
+    return this.stageNotesService.findByCandidateUid(candidateUid, currentUser);
   }
 
   // Bulk Import endpoints

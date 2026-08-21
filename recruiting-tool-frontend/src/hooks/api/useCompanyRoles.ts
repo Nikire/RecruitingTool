@@ -1,17 +1,16 @@
+import { companyRoleKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { companyRolesApi } from "../../api/companyRoles";
 import { AssignRoleDto, UpdateRoleDto } from "../../types/user.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useTranslation } from "react-i18next";
 
-const COMPANY_ROLES_KEY = "company-roles";
-
 /**
  * Hook to fetch all company members
  */
 export const useCompanyMembers = (companyUid: string) => {
   return useQuery({
-    queryKey: [COMPANY_ROLES_KEY, companyUid, "members"],
+    queryKey: companyRoleKeys.members(companyUid),
     queryFn: () => companyRolesApi.getCompanyMembers(companyUid),
     enabled: !!companyUid,
   });
@@ -22,7 +21,7 @@ export const useCompanyMembers = (companyUid: string) => {
  */
 export const useDelegatableRoles = (companyUid: string) => {
   return useQuery({
-    queryKey: [COMPANY_ROLES_KEY, companyUid, "delegatable"],
+    queryKey: companyRoleKeys.delegatable(companyUid),
     queryFn: () => companyRolesApi.getDelegatableRoles(companyUid),
     enabled: !!companyUid,
   });
@@ -40,7 +39,7 @@ export const useAssignRole = (companyUid: string) => {
       companyRolesApi.assignRole(companyUid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [COMPANY_ROLES_KEY, companyUid],
+        queryKey: companyRoleKeys.byCompany(companyUid),
       });
       showSuccessToast(t("company_roles.role_assigned_success"));
     },
@@ -62,7 +61,7 @@ export const useUpdateUserRole = (companyUid: string) => {
       companyRolesApi.updateUserRole(companyUid, userUid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [COMPANY_ROLES_KEY, companyUid],
+        queryKey: companyRoleKeys.byCompany(companyUid),
       });
       showSuccessToast(t("company_roles.role_updated_success"));
     },
@@ -84,7 +83,7 @@ export const useRemoveUserFromCompany = (companyUid: string) => {
       companyRolesApi.removeUserFromCompany(companyUid, userUid),
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: [COMPANY_ROLES_KEY, companyUid],
+        queryKey: companyRoleKeys.byCompany(companyUid),
       });
       showSuccessToast(t("company_roles.user_removed_success"));
     },

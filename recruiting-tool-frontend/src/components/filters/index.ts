@@ -16,3 +16,6 @@ export type { DateRange } from "./DateRangePicker";
 
 export { default as FilterChips } from "./FilterChips";
 export type { ActiveFilter } from "./FilterChips";
+
+export { default as ClientFilterSelect } from "./ClientFilterSelect";
+export type { ClientFilterSelectProps } from "./ClientFilterSelect";

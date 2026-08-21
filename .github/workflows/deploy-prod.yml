@@ -6,9 +6,32 @@ on:
       - production
 
 jobs:
+  # Until now nothing verified that the app even compiled before it shipped.
+  # code-quality.yml runs lint / typecheck / format / build for both projects
+  # plus the frontend unit tests, and it is invoked here as a REUSABLE workflow
+  # (it declares `on: workflow_call`) rather than left to its own triggers.
+  # That is deliberate and necessary: `needs:` can only reference another job
+  # in the SAME workflow run, so a job cannot depend on a separate workflow.
+  # Calling it with `uses:` pulls its jobs into this run, which is what makes
+  # the `needs:` below real rather than decorative.
+  #
+  # Not circular: code-quality.yml calls no workflow, so the graph is
+  # deploy-prod -> code-quality and stops there.
+  # Not never-satisfied: `workflow_call` is listed alongside its own triggers,
+  # and a called workflow runs against this same commit, so it always starts
+  # and always reaches a terminal state.
+  quality-gates:
+    name: Quality Gates
+    uses: ./.github/workflows/code-quality.yml
+    permissions:
+      contents: read
+
   build-frontend:
     name: Build Frontend Image (GitHub Actions)
     runs-on: ubuntu-latest
+    # A failing build or test must stop the deploy here, before the image is
+    # pushed to GHCR - not after, when a broken tag is already `:latest`.
+    needs: quality-gates
     permissions:
       contents: read
       packages: write
@@ -24,6 +47,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Vite inlines every import.meta.env.VITE_* value at BUILD time, so the
+      # telemetry configuration has to be supplied here as build args. Setting
+      # these on the EC2 host has no effect - by then the bundle is compiled.
+      # All of them are optional: an unset repository secret expands to an
+      # empty string, which is exactly the "PostHog/Sentry disabled" path the
+      # frontend is written to degrade into.
       - name: Build and push frontend image
         uses: docker/build-push-action@v5
         with:
@@ -35,11 +64,20 @@ jobs:
             VITE_AUTH0_DOMAIN=${{ secrets.VITE_AUTH0_DOMAIN }}
             VITE_AUTH0_CLIENT_ID=${{ secrets.VITE_AUTH0_CLIENT_ID }}
             VITE_AUTH0_AUDIENCE=${{ secrets.VITE_AUTH0_AUDIENCE }}
+            VITE_POSTHOG_KEY=${{ secrets.VITE_POSTHOG_KEY }}
+            VITE_POSTHOG_HOST=${{ secrets.VITE_POSTHOG_HOST }}
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
+            VITE_SENTRY_ENVIRONMENT=production
+            VITE_SENTRY_TRACES_SAMPLE_RATE=${{ secrets.VITE_SENTRY_TRACES_SAMPLE_RATE }}
+            VITE_APP_VERSION=${{ github.sha }}
 
   deploy:
     name: SSH Deploy to EC2 (Production)
     runs-on: ubuntu-latest
-    needs: build-frontend
+    # quality-gates is already an ancestor via build-frontend; naming it here
+    # too is intentional, so that reordering or removing build-frontend later
+    # cannot silently drop the gate from the deploy path.
+    needs: [quality-gates, build-frontend]
     permissions:
       packages: read
 
@@ -62,6 +100,14 @@ jobs:
             echo "==> Navigating to project directory..."
             cd ~/borderless
 
+            # docker-compose.yml on its own is the LOCAL DEV config: it pins
+            # NODE_ENV=development and boots the backend through ts-node, which
+            # makes the exception filters attach raw messages and stack traces
+            # to public API responses. The prod overlay flips the backend to
+            # NODE_ENV=production and `node dist/main.js`.
+            # Order matters: base first, overlay second.
+            COMPOSE_FILES="-f docker-compose.yml -f docker-compose.prod.yml"
+
             echo "==> Pulling latest code from production branch..."
             git fetch origin production
             git reset --hard origin/production
@@ -78,15 +124,28 @@ jobs:
             echo "==> Ensuring SELinux allows nginx connections..."
             timeout 10 sudo setsebool -P httpd_can_network_connect 1 || true
 
-            echo "==> Building backend..."
-            DOCKER_BUILDKIT=0 docker-compose build backend
+            echo "==> Building backend image..."
+            DOCKER_BUILDKIT=0 docker-compose $COMPOSE_FILES build backend
+
+            echo "==> Compiling backend TypeScript to dist/..."
+            # The backend image ships src + ts-node, it does NOT contain a
+            # compiled build, and the prod overlay boots `node dist/main.js`.
+            # Compile here, into the ./recruiting-tool-backend bind mount,
+            # BEFORE the running containers are swapped: if the build fails,
+            # `set -e` aborts the deploy and the live containers are untouched.
+            # NODE_ENV=development is forced for this one-off container only --
+            # yarn 1 skips devDependencies (@nestjs/cli, typescript) when
+            # NODE_ENV=production, and those are required by `nest build`.
+            docker-compose $COMPOSE_FILES run --rm --no-deps \
+              -e NODE_ENV=development --entrypoint sh backend \
+              -c "yarn install && yarn build"
 
             echo "==> Pulling pre-built frontend image from GitHub Container Registry..."
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
             docker pull ghcr.io/nikire/borderless-frontend:latest
 
-            echo "==> Starting all containers..."
-            docker-compose up -d
+            echo "==> Starting all containers (production overlay)..."
+            docker-compose $COMPOSE_FILES up -d
 
             echo "==> Pruning dangling images after build..."
             docker image prune -f || true
@@ -98,35 +157,55 @@ jobs:
             sudo nginx -s reload || sudo systemctl reload nginx || true
 
             echo "==> Verifying container health..."
-            docker-compose ps
+            docker-compose $COMPOSE_FILES ps
 
             echo "==> Smoke testing public endpoints..."
-            curl -sf https://borderlessats.com > /dev/null \
-              && echo "✅ Frontend: OK" \
-              || echo "❌ Frontend: FAILED"
-            curl -sf https://api.borderlessats.com/api/health/liveness > /dev/null \
-              && echo "✅ Backend API: OK" \
-              || echo "❌ Backend API: FAILED"
+            # These MUST fail the job. The previous `|| echo "FAILED"` form
+            # swallowed curl's non-zero exit status, so every broken deploy
+            # still reported green and still sent a "success" email.
+            curl -sf --retry 5 --retry-delay 5 --retry-connrefused --max-time 30 \
+              https://borderlessats.com > /dev/null \
+              || { echo "Frontend: FAILED"; exit 1; }
+            echo "Frontend: OK"
+
+            curl -sf --retry 5 --retry-delay 5 --retry-connrefused --max-time 30 \
+              https://api.borderlessats.com/api/health/liveness > /dev/null \
+              || { echo "Backend liveness: FAILED"; exit 1; }
+            echo "Backend liveness: OK"
+
+            curl -sf --retry 5 --retry-delay 5 --retry-connrefused --max-time 30 \
+              https://api.borderlessats.com/api/health/readiness > /dev/null \
+              || { echo "Backend readiness: FAILED"; exit 1; }
+            echo "Backend readiness: OK"
 
             echo "==> Production deployment complete."
 
       - name: Send deployment notification email
-        if: success()
+        # Always run so a FAILED deploy is reported too. The payload now carries
+        # the real job status instead of a hardcoded "success".
+        if: always()
         env:
+          JOB_STATUS: ${{ job.status }}
           COMMIT_SHA: ${{ github.sha }}
           COMMIT_MSG: ${{ github.event.head_commit.message }}
           ACTOR: ${{ github.actor }}
-          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY || 'changeme' }}
+          INTERNAL_API_KEY: ${{ secrets.INTERNAL_API_KEY }}
         run: |
+          if [ -z "$INTERNAL_API_KEY" ]; then
+            echo "INTERNAL_API_KEY secret is not set - skipping notification."
+            exit 0
+          fi
+
           PAYLOAD=$(jq -n \
             --arg sha "${COMMIT_SHA:0:7}" \
             --arg msg "$COMMIT_MSG" \
             --arg actor "$ACTOR" \
-            '{commitSha: $sha, commitMessage: $msg, actor: $actor, environment: "production", status: "success"}')
+            --arg status "$JOB_STATUS" \
+            '{commitSha: $sha, commitMessage: $msg, actor: $actor, environment: "production", status: $status}')
 
           curl -sf -X POST https://api.borderlessats.com/api/internal/deployment-notification \
             -H "Content-Type: application/json" \
             -H "x-api-key: $INTERNAL_API_KEY" \
             -d "$PAYLOAD" \
-          && echo "📧 Production deployment notification sent." \
-          || echo "⚠️ Notification failed"
+          && echo "Production deployment notification sent." \
+          || echo "Notification failed"

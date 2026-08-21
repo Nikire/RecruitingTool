@@ -1,8 +1,7 @@
+import { planLimitKeys } from "../../api/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import { getPlanLimits } from "../../api/quota";
 import { PlanLimitsMap } from "../../types/subscription.types";
-
-const PLAN_LIMITS_KEY = "planLimits";
 
 /**
  * Hook to fetch plan limits for all subscription tiers.
@@ -16,7 +15,7 @@ export function usePlanLimits(): ReturnType<
   typeof useQuery<PlanLimitsMap | undefined>
 > {
   return useQuery<PlanLimitsMap | undefined>({
-    queryKey: [PLAN_LIMITS_KEY],
+    queryKey: planLimitKeys.all,
     queryFn: async () => {
       const response = await getPlanLimits();
       return response.plans;

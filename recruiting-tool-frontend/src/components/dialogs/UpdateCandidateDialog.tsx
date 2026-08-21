@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -13,6 +12,7 @@ import {
   CircularProgress,
   InputAdornment,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -49,7 +49,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<CandidateFormData>({
     defaultValues: {
       name: "",
@@ -94,7 +94,13 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={isDirty}
+      maxWidth="md"
+      fullWidth
+    >
       <DialogTitle>{t("candidates.update_title")}</DialogTitle>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
@@ -212,7 +218,7 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
           </DialogActions>
         </>
       )}
-    </Dialog>
+    </FormDialog>
   );
 };
 

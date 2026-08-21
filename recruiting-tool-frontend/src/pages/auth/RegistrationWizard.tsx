@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 import {
   Box,
@@ -15,6 +15,12 @@ import RoleSelectionStep from "./wizard-steps/RoleSelectionStep";
 import AccountCreationStep from "./wizard-steps/AccountCreationStep";
 import RoleInfoStep from "./wizard-steps/RoleInfoStep";
 import ConfirmationStep from "./wizard-steps/ConfirmationStep";
+import { ANALYTICS_EVENTS, track } from "../../analytics";
+import {
+  buildAttributionEventProps,
+  SIGNUP_STEP_NAMES,
+  trackSignupStepCompleted,
+} from "./signupFunnel";
 
 export type UserRole = "HR" | "USER" | "COMPANY_OWNER";
 
@@ -53,6 +59,8 @@ const RegistrationWizard: React.FC = () => {
     termsAccepted: false,
   });
 
+  // Visible labels. Their ANALYTICS identifiers live in SIGNUP_STEP_NAMES and
+  // are deliberately not translated (see signupFunnel.ts).
   const steps = [
     t("registration_wizard.steps.role_selection"),
     t("registration_wizard.steps.account_creation"),
@@ -60,7 +68,32 @@ const RegistrationWizard: React.FC = () => {
     t("registration_wizard.steps.confirmation"),
   ];
 
-  const handleNext = () => {
+  // Fire `signup_started` exactly once per mount. A ref guard, not an empty
+  // dependency array alone, because React StrictMode re-runs mount effects in
+  // development and would otherwise double-count the top of the funnel.
+  const hasTrackedStart = useRef(false);
+  useEffect(() => {
+    if (hasTrackedStart.current) return;
+    hasTrackedStart.current = true;
+    track(ANALYTICS_EVENTS.SIGNUP_STARTED, {
+      step: 0,
+      stepName: SIGNUP_STEP_NAMES[0],
+      ...buildAttributionEventProps(),
+    });
+  }, []);
+
+  /**
+   * Advances the wizard and records the step that was just completed.
+   *
+   * Every forward transition funnels through here, which is the whole point:
+   * the drop-off between two consecutive `signup_step_completed` events is what
+   * identifies the leaking step. The final (confirmation) step is instrumented
+   * inside ConfirmationStep, since it advances by submitting, not by onNext.
+   */
+  const handleNext = (extraProps?: Record<string, unknown>) => {
+    // Tracked outside the state updater on purpose: React may invoke an updater
+    // twice (StrictMode / concurrent re-render) and would double-count the event.
+    trackSignupStepCompleted(activeStep, extraProps);
     setActiveStep((prev) => prev + 1);
   };
 
@@ -86,7 +119,7 @@ const RegistrationWizard: React.FC = () => {
             selectedRole={formData.selectedRole}
             onNext={(role) => {
               handleUpdateFormData({ selectedRole: role });
-              handleNext();
+              handleNext({ role });
             }}
           />
         );
@@ -96,7 +129,7 @@ const RegistrationWizard: React.FC = () => {
             formData={formData}
             onNext={(data) => {
               handleUpdateFormData(data);
-              handleNext();
+              handleNext({ role: formData.selectedRole });
             }}
             onBack={handleBack}
           />
@@ -107,7 +140,7 @@ const RegistrationWizard: React.FC = () => {
             formData={formData}
             onNext={(data) => {
               handleUpdateFormData(data);
-              handleNext();
+              handleNext({ role: formData.selectedRole });
             }}
             onBack={handleBack}
           />

@@ -12,31 +12,108 @@ import TranslateIcon from "@mui/icons-material/Translate";
 import { useTranslation } from "react-i18next";
 
 /**
+ * Shared props for the inline flag glyphs below.
+ *
+ * The flags are purely decorative — every menu item is already labelled with
+ * the language name — so they are hidden from assistive technology.
+ */
+const FLAG_SVG_PROPS = {
+  xmlns: "http://www.w3.org/2000/svg",
+  width: "100%",
+  height: "100%",
+  preserveAspectRatio: "xMidYMid meet",
+  role: "presentation",
+  "aria-hidden": true,
+  focusable: false,
+} as const;
+
+/**
+ * Star field of the US canton: 9 rows alternating 6 and 5 stars on an 11-column
+ * grid. Rendered as dots because five-pointed stars are indistinguishable from
+ * dots at the 24px this component draws at, and cost far more markup.
+ */
+const US_CANTON_WIDTH = 7.6;
+const US_CANTON_HEIGHT = 5.3846;
+const US_STAR_STEP_X = US_CANTON_WIDTH / 12;
+const US_STAR_STEP_Y = US_CANTON_HEIGHT / 10;
+
+const US_STAR_POSITIONS: Array<{ cx: number; cy: number }> = Array.from(
+  { length: 9 },
+  (_, row) => {
+    const isLongRow = row % 2 === 0;
+    return Array.from({ length: isLongRow ? 6 : 5 }, (__, col) => ({
+      cx: (isLongRow ? 1 : 2) * US_STAR_STEP_X + col * US_STAR_STEP_X * 2,
+      cy: (row + 1) * US_STAR_STEP_Y,
+    }));
+  },
+).flat();
+
+/**
+ * Flag of the United States (19:10), drawn inline.
+ *
+ * Replaces the `flag-icons` stylesheet, which shipped 543 `.fi-*` rules
+ * (~420KB of the built CSS) plus 142 SVG assets to render this one glyph.
+ */
+const UsFlagIcon: React.FC = () => (
+  <svg {...FLAG_SVG_PROPS} viewBox="0 0 19 10">
+    <rect width="19" height="10" fill="#fff" />
+    <g fill="#b22234">
+      {[0, 2, 4, 6, 8, 10, 12].map((stripe) => (
+        <rect key={stripe} y={(stripe * 10) / 13} width="19" height={10 / 13} />
+      ))}
+    </g>
+    <rect width={US_CANTON_WIDTH} height={US_CANTON_HEIGHT} fill="#3c3b6e" />
+    <g fill="#fff">
+      {US_STAR_POSITIONS.map((star) => (
+        <circle
+          key={`${star.cx}-${star.cy}`}
+          cx={star.cx}
+          cy={star.cy}
+          r={0.19}
+        />
+      ))}
+    </g>
+  </svg>
+);
+
+/**
+ * Flag of Spain (3:2), civil variant — the coat of arms is omitted because it
+ * is an illegible smudge below ~64px and would dominate the file size.
+ */
+const EsFlagIcon: React.FC = () => (
+  <svg {...FLAG_SVG_PROPS} viewBox="0 0 3 2">
+    <rect width="3" height="2" fill="#c60b1e" />
+    <rect y="0.5" width="3" height="1" fill="#ffc400" />
+  </svg>
+);
+
+/**
  * Language option configuration
  */
 interface LanguageOption {
   code: string;
-  label: string;
-  flagClass: string;
+  /** i18n key for the language's own name (endonym). */
+  labelKey: string;
+  Flag: React.FC;
 }
 
 /**
- * Available languages with flag icon CSS classes
+ * Available languages with their inline flag glyphs
  */
 const LANGUAGES: LanguageOption[] = [
-  { code: "en", label: "English", flagClass: "fi fi-us" },
-  { code: "es", label: "Español", flagClass: "fi fi-es" },
+  { code: "en", labelKey: "language.english", Flag: UsFlagIcon },
+  { code: "es", labelKey: "language.spanish", Flag: EsFlagIcon },
 ];
 
 /**
  * LanguageSelector - Component for switching between English and Spanish
  *
  * Features:
- * - Material-UI design with SVG flag icons (flag-icons library)
+ * - Material-UI design with inline SVG flag icons (no external icon font/CSS)
  * - IconButton with dropdown menu
  * - Persists language preference to localStorage
  * - Uses react-i18next for language switching
- * - Accessible (ARIA labels, keyboard navigation)
+ * - Accessible (ARIA labels, keyboard navigation, decorative flags hidden)
  * - Compact design suitable for AppBar
  *
  * @example
@@ -148,21 +225,25 @@ const LanguageSelector: React.FC = () => {
             key={language.code}
             selected={language.code === currentLanguage.code}
             onClick={() => handleLanguageChange(language.code)}
-            aria-label={`${t("language.switch_to")} ${language.label}`}
+            aria-label={`${t("language.switch_to")} ${t(language.labelKey)}`}
           >
             <ListItemIcon sx={{ minWidth: 36 }}>
               <Box
                 component="span"
-                className={language.flagClass}
                 sx={{
                   width: "1.5em",
                   height: "1.5em",
-                  display: "inline-block",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  lineHeight: 0,
                 }}
-              />
+              >
+                <language.Flag />
+              </Box>
             </ListItemIcon>
             <ListItemText
-              primary={language.label}
+              primary={t(language.labelKey)}
               primaryTypographyProps={{
                 fontWeight: language.code === currentLanguage.code ? 600 : 400,
               }}

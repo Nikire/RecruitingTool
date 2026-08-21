@@ -28,6 +28,7 @@ import EventIcon from "@mui/icons-material/Event";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import NewReleasesIcon from "@mui/icons-material/NewReleases";
 import AssignmentIcon from "@mui/icons-material/Assignment";
+import GavelIcon from "@mui/icons-material/Gavel";
 import { useUserAtom } from "../hooks/api/state/useUserAtom";
 import { hasRole } from "../utils/permissions";
 import { UserRoles } from "../types/user.types";
@@ -165,6 +166,12 @@ const AdminLayout: React.FC = () => {
       label: t("admin_layout.group_operations"),
       icon: <BuildIcon />,
       items: [
+        {
+          text: t("admin_layout.job_moderation"),
+          icon: <GavelIcon />,
+          path: "/admin/job-moderation",
+          requiresSuperAdmin: true,
+        },
         {
           text: t("admin_layout.demo_bookings"),
           icon: <EventIcon />,

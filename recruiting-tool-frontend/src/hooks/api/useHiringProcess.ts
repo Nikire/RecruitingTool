@@ -1,3 +1,4 @@
+import { hiringProcessKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
@@ -17,12 +18,13 @@ import {
 import { PaginationParams } from "../../types/pagination.types";
 import { HiringProcessGroupedFilterDto } from "../../types/hiringProcess.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
-
-const HIRING_PROCESS_KEY = "hiringProcess";
+import { useTranslation } from "react-i18next";
+import { ANALYTICS_EVENTS } from "../../analytics";
+import { useActivationEvents } from "./useActivationEvents";
 
 export function useHiringProcesses(uid?: string) {
   return useQuery({
-    queryKey: uid ? [HIRING_PROCESS_KEY, uid] : [HIRING_PROCESS_KEY],
+    queryKey: uid ? hiringProcessKeys.detail(uid) : hiringProcessKeys.all,
     queryFn: () => getHiringProcesses(uid),
   });
 }
@@ -31,7 +33,7 @@ export function useListHiringProcesses(
   params: PaginationParams & { status?: string },
 ) {
   return useQuery({
-    queryKey: [HIRING_PROCESS_KEY, "list", params],
+    queryKey: hiringProcessKeys.list(params),
     queryFn: () => listHiringProcesses(params),
   });
 }
@@ -40,7 +42,7 @@ export function useListHiringProcessesGrouped(
   params: HiringProcessGroupedFilterDto,
 ) {
   return useQuery({
-    queryKey: [HIRING_PROCESS_KEY, "list-grouped", params],
+    queryKey: hiringProcessKeys.listGrouped(params),
     queryFn: () => listHiringProcessesGrouped(params),
   });
 }
@@ -51,7 +53,7 @@ export function useCreateHiringProcess() {
   return useMutation({
     mutationFn: (data: CreateHiringProcessDto) => createHiringProcess(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIRING_PROCESS_KEY] });
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
       showSuccessToast("Hiring process created successfully!");
     },
     onError: (error) => {
@@ -72,7 +74,7 @@ export function useUpdateHiringProcess() {
       data: Partial<HiringProcess>;
     }) => updateHiringProcess(data, uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIRING_PROCESS_KEY] });
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
       showSuccessToast("Hiring process updated successfully!");
     },
     onError: (error) => {
@@ -87,7 +89,7 @@ export function useDeleteHiringProcess() {
   return useMutation({
     mutationFn: (uid: string) => deleteHiringProcess(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIRING_PROCESS_KEY] });
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
       showSuccessToast("Hiring process deleted successfully!");
     },
     onError: (error) => {
@@ -98,31 +100,46 @@ export function useDeleteHiringProcess() {
 
 export function useProgressStage() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { trackFirstTime } = useActivationEvents();
 
   return useMutation({
     mutationFn: (uid: string) => progressStage(uid),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIRING_PROCESS_KEY] });
-      showSuccessToast("Stage progressed successfully!");
+    onSuccess: (_data, uid) => {
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
+      showSuccessToast(t("hiring_processes.stage_progressed_success"));
+      // Activation milestone. Mirrored server-side as APPLICATION_STAGE_ADVANCED.
+      trackFirstTime(ANALYTICS_EVENTS.FIRST_APPLICATION_ADVANCED, {
+        hiringProcessUid: uid,
+        mode: "NEXT",
+      });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to progress stage");
+      showErrorToast(error, t("hiring_processes.stage_progress_error"));
     },
   });
 }
 
 export function useMoveToStage() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { trackFirstTime } = useActivationEvents();
 
   return useMutation({
     mutationFn: ({ uid, stageUid }: { uid: string; stageUid: string }) =>
       moveToStage(uid, stageUid),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [HIRING_PROCESS_KEY] });
-      showSuccessToast("Candidate moved to stage successfully!");
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
+      showSuccessToast(t("hiring_processes.moved_to_stage_success"));
+      // Activation milestone. Mirrored server-side as APPLICATION_STAGE_ADVANCED.
+      trackFirstTime(ANALYTICS_EVENTS.FIRST_APPLICATION_ADVANCED, {
+        hiringProcessUid: variables.uid,
+        targetStageUid: variables.stageUid,
+        mode: "SPECIFIC",
+      });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to move candidate to stage");
+      showErrorToast(error, t("hiring_processes.move_to_stage_error"));
     },
   });
 }

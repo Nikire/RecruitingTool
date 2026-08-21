@@ -1,3 +1,4 @@
+import { unsubscribeKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -8,7 +9,7 @@ export interface UnsubscribeResult {
 
 export function useConsumeUnsubscribeToken(token: string) {
   return useQuery<UnsubscribeResult>({
-    queryKey: ["unsubscribe", token],
+    queryKey: unsubscribeKeys.byToken(token),
     queryFn: () =>
       api.get<UnsubscribeResult>(`/unsubscribe/${token}`).then((r) => r.data),
     retry: false,

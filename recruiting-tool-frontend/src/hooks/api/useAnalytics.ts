@@ -1,3 +1,4 @@
+import { analyticsKeys } from "../../api/queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../api/axios";
 
@@ -127,7 +128,6 @@ const buildQueryParams = (dateRange?: DateRange): string => {
 // React Query Hooks
 // =====================
 
-const ANALYTICS_KEY = "analytics";
 const STALE_TIME = 10 * 60 * 1000; // 10 minutes (match backend cache)
 const GC_TIME = 15 * 60 * 1000; // 15 minutes
 
@@ -137,7 +137,7 @@ const GC_TIME = 15 * 60 * 1000; // 15 minutes
  */
 export function useAnalyticsOverview(dateRange?: DateRange) {
   return useQuery<OverviewMetricsDto>({
-    queryKey: [ANALYTICS_KEY, "overview", dateRange],
+    queryKey: analyticsKeys.overview(dateRange),
     queryFn: async () => {
       const { data } = await api.get<OverviewMetricsDto>(
         `/analytics/overview${buildQueryParams(dateRange)}`,
@@ -155,7 +155,7 @@ export function useAnalyticsOverview(dateRange?: DateRange) {
  */
 export function useAnalyticsTimeMetrics(dateRange?: DateRange) {
   return useQuery<TimeMetricsDto>({
-    queryKey: [ANALYTICS_KEY, "time-metrics", dateRange],
+    queryKey: analyticsKeys.timeMetrics(dateRange),
     queryFn: async () => {
       const { data } = await api.get<TimeMetricsDto>(
         `/analytics/time-metrics${buildQueryParams(dateRange)}`,
@@ -173,7 +173,7 @@ export function useAnalyticsTimeMetrics(dateRange?: DateRange) {
  */
 export function useAnalyticsConversion(dateRange?: DateRange) {
   return useQuery<ConversionMetricsDto>({
-    queryKey: [ANALYTICS_KEY, "conversion", dateRange],
+    queryKey: analyticsKeys.conversion(dateRange),
     queryFn: async () => {
       const { data } = await api.get<ConversionMetricsDto>(
         `/analytics/conversion${buildQueryParams(dateRange)}`,
@@ -191,7 +191,7 @@ export function useAnalyticsConversion(dateRange?: DateRange) {
  */
 export function useAnalyticsVolume(dateRange?: DateRange) {
   return useQuery<VolumeMetricsDto>({
-    queryKey: [ANALYTICS_KEY, "volume", dateRange],
+    queryKey: analyticsKeys.volume(dateRange),
     queryFn: async () => {
       const { data } = await api.get<VolumeMetricsDto>(
         `/analytics/volume${buildQueryParams(dateRange)}`,
@@ -209,7 +209,7 @@ export function useAnalyticsVolume(dateRange?: DateRange) {
  */
 export function useAnalyticsSources(dateRange?: DateRange) {
   return useQuery<SourceAnalyticsDto[]>({
-    queryKey: [ANALYTICS_KEY, "sources", dateRange],
+    queryKey: analyticsKeys.sources(dateRange),
     queryFn: async () => {
       const { data } = await api.get<SourceAnalyticsDto[]>(
         `/analytics/sources${buildQueryParams(dateRange)}`,
@@ -227,7 +227,7 @@ export function useAnalyticsSources(dateRange?: DateRange) {
  */
 export function useAnalyticsPipeline(dateRange?: DateRange) {
   return useQuery<PipelineFunnelDto>({
-    queryKey: [ANALYTICS_KEY, "pipeline", dateRange],
+    queryKey: analyticsKeys.pipeline(dateRange),
     queryFn: async () => {
       const { data } = await api.get<PipelineFunnelDto>(
         `/analytics/pipeline${buildQueryParams(dateRange)}`,
@@ -245,7 +245,7 @@ export function useAnalyticsPipeline(dateRange?: DateRange) {
  */
 export function useAnalyticsTimeToHire(dateRange?: DateRange) {
   return useQuery<TimeToHireDto>({
-    queryKey: [ANALYTICS_KEY, "time-to-hire", dateRange],
+    queryKey: analyticsKeys.timeToHire(dateRange),
     queryFn: async () => {
       const { data } = await api.get<TimeToHireDto>(
         `/analytics/time-to-hire${buildQueryParams(dateRange)}`,
@@ -263,7 +263,7 @@ export function useAnalyticsTimeToHire(dateRange?: DateRange) {
  */
 export function useAnalyticsSourceEffectiveness(dateRange?: DateRange) {
   return useQuery<SourceEffectivenessDto[]>({
-    queryKey: [ANALYTICS_KEY, "source-effectiveness", dateRange],
+    queryKey: analyticsKeys.sourceEffectiveness(dateRange),
     queryFn: async () => {
       const { data } = await api.get<SourceEffectivenessDto[]>(
         `/analytics/source-effectiveness${buildQueryParams(dateRange)}`,
@@ -281,7 +281,7 @@ export function useAnalyticsSourceEffectiveness(dateRange?: DateRange) {
  */
 export function useAnalyticsStageDuration(dateRange?: DateRange) {
   return useQuery<StageDurationDto[]>({
-    queryKey: [ANALYTICS_KEY, "stage-duration", dateRange],
+    queryKey: analyticsKeys.stageDuration(dateRange),
     queryFn: async () => {
       const { data } = await api.get<StageDurationDto[]>(
         `/analytics/stage-duration${buildQueryParams(dateRange)}`,

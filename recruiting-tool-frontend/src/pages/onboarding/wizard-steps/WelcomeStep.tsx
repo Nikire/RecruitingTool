@@ -8,61 +8,77 @@ import {
   Grid,
   List,
   ListItem,
+  ListItemButton,
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RocketLaunchIcon from "@mui/icons-material/RocketLaunch";
 import PeopleIcon from "@mui/icons-material/People";
 import WorkIcon from "@mui/icons-material/Work";
-import AssessmentIcon from "@mui/icons-material/Assessment";
 import EmailIcon from "@mui/icons-material/Email";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 
 interface WelcomeStepProps {
-  onComplete: () => void;
+  /**
+   * Finishes onboarding and navigates. Defaults to the HR dashboard when no
+   * destination is given. Every exit from this step goes through here so the
+   * `onboarding_completed` event fires exactly once, wherever the user lands.
+   */
+  onComplete: (destination?: string) => void;
 }
+
+/**
+ * Quick-start actions. Every `path` is a route that exists in App.tsx:
+ *   /hr/job-positions   App.tsx:444
+ *   /settings/team      App.tsx:501
+ *   /settings/calendar  App.tsx:464
+ *   /hr/email-templates App.tsx:460
+ */
+const QUICK_START_ACTIONS: Array<{
+  key: string;
+  path: string;
+  icon: React.ReactNode;
+  labelKey: string;
+  descriptionKey: string;
+}> = [
+  {
+    key: "first_job",
+    path: "/hr/job-positions",
+    icon: <WorkIcon color="primary" />,
+    labelKey: "onboarding.welcome.quick_steps.create_first_job",
+    descriptionKey:
+      "onboarding.welcome.quick_steps.create_first_job_description",
+  },
+  {
+    key: "invite_team",
+    path: "/settings/team",
+    icon: <PeopleIcon color="primary" />,
+    labelKey: "onboarding.welcome.quick_steps.add_team_members",
+    descriptionKey:
+      "onboarding.welcome.quick_steps.add_team_members_description",
+  },
+  {
+    key: "connect_calendar",
+    path: "/settings/calendar",
+    icon: <CalendarTodayIcon color="primary" />,
+    labelKey: "onboarding.welcome.quick_steps.connect_calendar",
+    descriptionKey:
+      "onboarding.welcome.quick_steps.connect_calendar_description",
+  },
+  {
+    key: "email_templates",
+    path: "/hr/email-templates",
+    icon: <EmailIcon color="primary" />,
+    labelKey: "onboarding.welcome.quick_steps.setup_email_templates",
+    descriptionKey:
+      "onboarding.welcome.quick_steps.setup_email_templates_description",
+  },
+];
 
 const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
   const { t } = useTranslation();
-
-  const features = [
-    {
-      icon: <PeopleIcon color="primary" />,
-      titleKey: "onboarding.welcome.features.candidate_management.title",
-      descriptionKey:
-        "onboarding.welcome.features.candidate_management.description",
-    },
-    {
-      icon: <WorkIcon color="primary" />,
-      titleKey: "onboarding.welcome.features.job_postings.title",
-      descriptionKey: "onboarding.welcome.features.job_postings.description",
-    },
-    {
-      icon: <AssessmentIcon color="primary" />,
-      titleKey: "onboarding.welcome.features.analytics.title",
-      descriptionKey: "onboarding.welcome.features.analytics.description",
-    },
-    {
-      icon: <EmailIcon color="primary" />,
-      titleKey: "onboarding.welcome.features.email_templates.title",
-      descriptionKey: "onboarding.welcome.features.email_templates.description",
-    },
-    {
-      icon: <CalendarTodayIcon color="primary" />,
-      titleKey: "onboarding.welcome.features.interview_scheduling.title",
-      descriptionKey:
-        "onboarding.welcome.features.interview_scheduling.description",
-    },
-  ];
-
-  const quickSteps = [
-    "onboarding.welcome.quick_steps.create_first_job",
-    "onboarding.welcome.quick_steps.add_team_members",
-    "onboarding.welcome.quick_steps.setup_email_templates",
-    "onboarding.welcome.quick_steps.explore_dashboard",
-  ];
 
   return (
     <Box>
@@ -82,58 +98,31 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
       <Card sx={{ mb: 3 }}>
         <CardContent>
           <Typography variant="h6" gutterBottom fontWeight="bold">
-            {t("onboarding.welcome.features_title")}
-          </Typography>
-          <Grid container spacing={3}>
-            {features.map((feature, index) => (
-              <Grid size={{ xs: 12, sm: 6, md: 4 }} key={index}>
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                    textAlign: "center",
-                    p: 2,
-                    height: "100%",
-                    borderRadius: 1,
-                    bgcolor: "action.hover",
-                  }}
-                >
-                  <Box sx={{ mb: 1.5 }}>{feature.icon}</Box>
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight="bold"
-                    gutterBottom
-                  >
-                    {t(feature.titleKey)}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {t(feature.descriptionKey)}
-                  </Typography>
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </CardContent>
-      </Card>
-
-      <Card
-        sx={{ mb: 3, bgcolor: "primary.light", color: "primary.contrastText" }}
-      >
-        <CardContent>
-          <Typography variant="h6" gutterBottom fontWeight="bold">
             {t("onboarding.welcome.quick_start_title")}
           </Typography>
-          <List>
-            {quickSteps.map((step, index) => (
-              <ListItem key={index} disablePadding sx={{ mb: 1 }}>
-                <ListItemIcon sx={{ minWidth: 36 }}>
-                  <CheckCircleIcon sx={{ color: "success.main" }} />
-                </ListItemIcon>
-                <ListItemText
-                  primary={t(step)}
-                  primaryTypographyProps={{ variant: "body1", fontWeight: 500 }}
-                />
+          <Typography variant="body2" color="textSecondary">
+            {t("onboarding.welcome.quick_start_hint")}
+          </Typography>
+          <List sx={{ mt: 1 }}>
+            {QUICK_START_ACTIONS.map((action) => (
+              <ListItem key={action.key} disablePadding sx={{ mb: 1 }}>
+                <ListItemButton
+                  onClick={() => onComplete(action.path)}
+                  sx={{ borderRadius: 1, bgcolor: "action.hover" }}
+                >
+                  <ListItemIcon sx={{ minWidth: 44 }}>
+                    {action.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={t(action.labelKey)}
+                    secondary={t(action.descriptionKey)}
+                    primaryTypographyProps={{
+                      variant: "body1",
+                      fontWeight: 600,
+                    }}
+                  />
+                  <ChevronRightIcon color="action" />
+                </ListItemButton>
               </ListItem>
             ))}
           </List>
@@ -147,23 +136,21 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
           </Typography>
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6 }}>
+              {/* In-app HR guide - App.tsx:480 */}
               <Button
                 fullWidth
-                variant="contained"
-                href="https://docs.borderlessats.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                variant="outlined"
+                onClick={() => onComplete("/hr/guide")}
               >
-                {t("onboarding.welcome.resources.documentation")}
+                {t("onboarding.welcome.resources.guide")}
               </Button>
             </Grid>
             <Grid size={{ xs: 12, sm: 6 }}>
+              {/* Contact form - App.tsx:321 */}
               <Button
                 fullWidth
-                variant="contained"
-                href="https://support.borderlessats.com"
-                target="_blank"
-                rel="noopener noreferrer"
+                variant="outlined"
+                onClick={() => onComplete("/contact")}
               >
                 {t("onboarding.welcome.resources.support")}
               </Button>
@@ -176,7 +163,7 @@ const WelcomeStep: React.FC<WelcomeStepProps> = ({ onComplete }) => {
         <Button
           variant="contained"
           size="large"
-          onClick={onComplete}
+          onClick={() => onComplete()}
           sx={{ px: 6, py: 1.5 }}
         >
           {t("onboarding.welcome.complete_setup")}

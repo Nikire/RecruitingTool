@@ -62,7 +62,12 @@
     "not_applicable": "N/A",
     "search_placeholder": "Search...",
     "company_logo_alt": "Company Logo",
-    "error_occurred": "An error occurred. Please try again."
+    "error_occurred": "An error occurred. Please try again.",
+    "all": "All",
+    "copy": "Copy",
+    "uploading": "Uploading...",
+    "expand": "Expand",
+    "collapse": "Collapse"
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -148,7 +153,11 @@
   "dialogs": {
     "delete_confirmation": "Confirm Deletion",
     "delete_message": "Are you sure you want to delete this item?",
-    "action_irreversible": "This action cannot be undone."
+    "action_irreversible": "This action cannot be undone.",
+    "discard_changes_title": "Discard unsaved changes?",
+    "discard_changes_message": "You have unsaved changes. If you close this window now, everything you entered will be lost.",
+    "keep_editing": "Keep editing",
+    "discard_changes": "Discard changes"
   },
   "empty": {
     "no_items": "No items to display",
@@ -170,7 +179,9 @@
     "accepted": "Accepted",
     "rejected": "Rejected",
     "done": "Done",
-    "current": "Current"
+    "current": "Current",
+    "pending_approval": "Pending review",
+    "approved": "Approved"
   },
   "candidates": {
     "title": "Candidates",
@@ -243,7 +254,9 @@
     "ai_analysis": "AI Analysis",
     "summary": "Summary",
     "key_differentiators": "Key Differentiators",
-    "final_recommendation": "Final Recommendation"
+    "final_recommendation": "Final Recommendation",
+    "created_success": "Candidate created successfully!",
+    "create_error": "Failed to create candidate"
   },
   "job_positions": {
     "title": "Job Positions",
@@ -449,7 +462,15 @@
     },
     "stage_notes_btn": "Stage notes",
     "no_stage_notes": "No stage notes yet",
-    "no_current_stage": "No active stage"
+    "no_current_stage": "No active stage",
+    "stage_progressed_success": "Stage progressed successfully!",
+    "stage_progress_error": "Failed to progress stage",
+    "moved_to_stage_success": "Candidate moved to stage successfully!",
+    "move_to_stage_error": "Failed to move candidate to stage",
+    "empty_title": "No hiring processes yet",
+    "empty_description": "A hiring process defines the stages a candidate moves through for a job position. Create your first one to start moving candidates forward.",
+    "empty_filtered_title": "No hiring processes match your filters",
+    "empty_filtered_description": "Try another search term or status, or clear the filters to see every process."
   },
   "companies": {
     "title": "Companies",
@@ -462,7 +483,11 @@
     "search_placeholder": "Search companies...",
     "creating": "Creating...",
     "delete_title": "Delete Company",
-    "delete_message": "Are you sure you want to delete this company?"
+    "delete_message": "Are you sure you want to delete this company?",
+    "empty_title": "No companies yet",
+    "empty_description": "Add your first company to start posting jobs and tracking candidates under it.",
+    "empty_filtered_title": "No companies match your search",
+    "empty_filtered_description": "Try a different company name, or clear the search to see them all."
   },
   "company_detail": {
     "back_to_companies": "Back to Companies",
@@ -531,7 +556,11 @@
     "activity_user_updated": "User profile updated",
     "activity_user_login": "User logged in",
     "activity_user_deactivated": "User account deactivated",
-    "activity_user_reactivated": "User account reactivated"
+    "activity_user_reactivated": "User account reactivated",
+    "empty_title": "No users yet",
+    "empty_description": "Create the first user account so your team can start working in the platform.",
+    "empty_filtered_title": "No users match your search",
+    "empty_filtered_description": "Try a different name or email, or clear the search to see everyone."
   },
   "stages": {
     "title": "Stages",
@@ -634,7 +663,12 @@
     "job_position": "Job Position",
     "status": "Status",
     "applied_date": "Applied Date",
-    "view_details": "View Details"
+    "view_details": "View Details",
+    "empty_title": "No applications yet",
+    "empty_description": "Applications appear here as soon as candidates apply. Publish a job position to start receiving them.",
+    "empty_action": "Post a job position",
+    "empty_filtered_title": "No applications with this status",
+    "empty_filtered_description": "Nothing matches the selected status. Clear the filter to see every application."
   },
   "interviews": {
     "title": "Interviews",
@@ -741,7 +775,8 @@
     "noFiles": "No files found",
     "downloadError": "Failed to download files",
     "deleteSuccess": "{{count}} file(s) deleted successfully",
-    "selectedCount": "{{count}} file(s) selected"
+    "selectedCount": "{{count}} file(s) selected",
+    "view_error": "Could not open this file. You may not have access to it."
   },
   "profile": {
     "title": "Profile",
@@ -843,7 +878,15 @@
     "empty_title": "No email templates yet",
     "empty_description": "Get started by creating your first template, or generate all default templates at once.",
     "create_defaults": "Create Default Templates",
-    "creating_defaults": "Creating..."
+    "creating_defaults": "Creating...",
+    "default_templates": {
+      "application_rejection": "Application Rejection",
+      "interview_invitation": "Interview Invitation",
+      "job_offer": "Job Offer",
+      "application_confirmation": "Application Confirmation",
+      "status_update": "Status Update",
+      "interview_reminder": "Interview Reminder"
+    }
   },
   "forms": {
     "custom_questions": "Custom Questions",
@@ -999,7 +1042,20 @@
     "variable_meeting_link": "{{meetingLink}} - Video call link",
     "variable_submission_url": "Submission URL",
     "variable_deadline": "Deadline",
-    "variable_stage_name": "Stage Name"
+    "variable_stage_name": "Stage Name",
+    "preview_unsaved_info": "This is a preview of your unsaved content, rendered locally with sample values. Save the template to preview the stored version.",
+    "sample_candidate_name": "John Doe",
+    "sample_position_title": "Senior Software Engineer",
+    "sample_company_name": "Tech Corp",
+    "sample_hr_name": "Jane Smith",
+    "sample_interview_time": "10:00 AM",
+    "sample_new_stage": "Technical Interview",
+    "sample_previous_stage": "Phone Screen",
+    "sample_status": "Under Review",
+    "variable_new_stage": "New stage",
+    "variable_previous_stage": "Previous stage",
+    "variable_status": "Application status",
+    "variable_hiring_process_url": "Hiring process link"
   },
   "add_stage": {
     "add_title": "Add New Stage",
@@ -1233,7 +1289,8 @@
     "header_actions": "Actions",
     "edit_tooltip": "Edit job position",
     "delete_tooltip": "Delete job position",
-    "delete_title": "Delete Job Position"
+    "delete_title": "Delete Job Position",
+    "header_visibility": "Visibility"
   },
   "profile_page": {
     "no_user_data": "No user data available",
@@ -2065,7 +2122,8 @@
         "used": "Used / Limit",
         "remaining": "Remaining",
         "reset_date": "Reset Date",
-        "actions": "Actions"
+        "actions": "Actions",
+        "company_uid": "Company UID"
       },
       "edit_dialog": {
         "title": "Edit AI Quota Limit",
@@ -2076,7 +2134,8 @@
       },
       "usage_label": "{{used}} / {{limit}}",
       "updated_success": "Quota limit updated successfully",
-      "load_error": "Failed to load AI quotas"
+      "load_error": "Failed to load AI quotas",
+      "companies_load_error": "Could not load the list of companies. Please try again."
     },
     "subscriptions": {
       "title": "Subscriptions Management",
@@ -2099,7 +2158,9 @@
         "trialing_subscriptions": "Trial Subscriptions",
         "past_due_subscriptions": "Past Due Subscriptions",
         "total_mrr": "Total MRR"
-      }
+      },
+      "empty": "No subscriptions yet. Companies appear here once they sign up.",
+      "mrr_estimate_note": "MRR is estimated from each plan's list price, not from amounts charged by the payment provider."
     }
   },
   "status_editor": {
@@ -2500,7 +2561,12 @@
     "no_slots_this_day": "No available slots for this day",
     "available_times": "Available times",
     "date_unavailable": "Unavailable",
-    "timezone_label": "Timezone"
+    "timezone_label": "Timezone",
+    "scroll_dates_back": "Show earlier dates",
+    "scroll_dates_forward": "Show later dates",
+    "date_option_unavailable": "{{date}} — unavailable",
+    "times_available_for_date": "{{date}} selected. Available times: {{total}}.",
+    "slot_selected_announcement": "Selected {{time}} on {{date}}."
   },
   "booking_link": {
     "send_tooltip": "Send booking link to candidate",
@@ -2831,7 +2897,7 @@
     "welcome": {
       "title": "Welcome to BorderLess!",
       "subtitle": "Your setup is complete",
-      "description": "You're all set! Let's explore the key features that will help you streamline your hiring process.",
+      "description": "Your workspace is ready. Pick where to start — you can come back to any of these from the sidebar at any time.",
       "features_title": "Key Features at Your Fingertips",
       "features": {
         "candidate_management": {
@@ -2860,14 +2926,21 @@
         "create_first_job": "Create your first job posting",
         "add_team_members": "Invite team members to collaborate",
         "setup_email_templates": "Customize your email templates",
-        "explore_dashboard": "Explore the analytics dashboard"
+        "explore_dashboard": "Explore the analytics dashboard",
+        "create_first_job_description": "Publish a role and start receiving applications",
+        "add_team_members_description": "Invite hiring managers and recruiters to your workspace",
+        "connect_calendar": "Connect your calendar",
+        "connect_calendar_description": "Let candidates book interviews on your real availability",
+        "setup_email_templates_description": "Set up the messages sent at each stage of your pipeline"
       },
       "resources_title": "Helpful Resources",
       "resources": {
         "documentation": "View Documentation",
-        "support": "Contact Support"
+        "support": "Contact Support",
+        "guide": "Open the HR guide"
       },
-      "complete_setup": "Go to Dashboard"
+      "complete_setup": "Go to Dashboard",
+      "quick_start_hint": "Each step takes a couple of minutes and takes you straight to the right screen."
     }
   },
   "hr_onboarding": {
@@ -2909,19 +2982,20 @@
       "headline": "Streamline Your Hiring Process with Modern Recruiting Software",
       "subheadline": "Track candidates, manage interviews, and build amazing teams with our all-in-one recruiting platform",
       "cta_primary": "Start Free Trial",
-      "cta_secondary": "Watch Demo",
+      "cta_secondary": "Book a live demo",
       "image_placeholder": "Hero Image",
       "coming_soon": "Product preview coming soon",
-      "new_headline": "Break Hiring Barriers",
-      "new_subheadline": "Streamline recruiting with AI-powered screening, automated scheduling, and collaborative hiring. Built for small and medium businesses and recruiting agencies.",
+      "new_headline": "One ATS for every client you recruit for.",
+      "new_subheadline": "Run multi-client hiring pipelines, screen resumes with AI in English and Spanish, and track the client accounts you're pitching — in one bilingual platform. $79/month flat for your whole firm, not $150 per recruiter.",
       "cta_start_free": "Start Free",
-      "cta_start_now": "Start Now",
+      "cta_start_now": "Start free — no credit card",
       "cta_view_pricing": "View Pricing",
       "cta_learn_more": "Learn More",
       "cta_browse_jobs": "Browse Jobs",
       "welcome_back": "Welcome back, {{name}}!",
       "founding_teaser": "Founding Companies Program — Limited spots open",
-      "founding_subtitle": "Join now and lock in a permanent discount. We just need your honest feedback in return."
+      "founding_subtitle": "Join now and lock in a permanent discount. We just need your honest feedback in return.",
+      "eyebrow": "For LATAM staffing & recruiting agencies"
     },
     "stats": {
       "candidates_processed": "Candidates Processed",
@@ -2933,8 +3007,8 @@
       "section_title": "Everything You Need to Hire Better",
       "section_subtitle": "Powerful features designed to make recruiting easier and more effective",
       "section_label": "FEATURES",
-      "section_new_title": "Everything you need to hire smarter",
-      "section_new_subtitle": "Powerful tools designed to streamline your entire hiring process",
+      "section_new_title": "Three things an agency ATS has to get right",
+      "section_new_subtitle": "Built for firms placing candidates across multiple clients, in two languages.",
       "multi_stage_hiring": {
         "title": "Multi-Stage Hiring Pipelines",
         "description": "Create customizable hiring workflows with multiple stages to match your process"
@@ -2966,6 +3040,18 @@
       "self_hosted": {
         "title": "Self-Hosted Option",
         "description": "Data privacy and control - no vendor lock-in"
+      },
+      "multi_client_pipelines": {
+        "title": "Multi-client hiring pipelines",
+        "description": "Run a separate pipeline, careers page and stage flow for every client account — without a separate ATS login for each one."
+      },
+      "bilingual_ai_screening": {
+        "title": "Bilingual AI resume screening",
+        "description": "Score and rank résumés written in English or Spanish against the role, so a bilingual shortlist takes minutes instead of an afternoon."
+      },
+      "careers_and_scheduling": {
+        "title": "Hosted careers page & scheduling",
+        "description": "Publish openings on a branded careers page and let candidates book interviews straight into your calendar — no extra tools to pay for."
       }
     },
     "how_it_works": {
@@ -2986,15 +3072,15 @@
     },
     "pricing": {
       "section_title": "Simple, Transparent Pricing",
-      "section_subtitle": "Choose the plan that fits your team size and hiring needs",
+      "section_subtitle": "One flat price for your whole firm. No per-recruiter fees, no seat math at renewal. Pay yearly and save around 16%.",
       "section_label": "PRICING",
       "per_month": "mo",
       "recommended": "Recommended",
       "cta": "Get Started",
       "free": {
-        "name": "Free Trial",
+        "name": "Free",
         "price": "$0",
-        "description": "30 days to explore the full platform",
+        "description": "Free forever. Post a job, host your careers page, hire your first candidate.",
         "features": {
           "ats": "Full applicant tracking system",
           "email_templates": "Email templates library",
@@ -3005,7 +3091,7 @@
       "professional": {
         "name": "Professional",
         "price": "$79",
-        "description": "Everything your hiring team needs to move fast",
+        "description": "Everything a hiring team needs to move fast. Starts with a 14-day free trial.",
         "features": {
           "ats": "Full applicant tracking system",
           "email_templates": "Email templates library",
@@ -3027,7 +3113,27 @@
           "support": "Priority support & SLA guarantee",
           "api": "API access & custom integrations"
         }
-      }
+      },
+      "unlimited_recruiters": "Unlimited recruiters. We don't charge per seat.",
+      "free_forever_note": "Free forever. No credit card.",
+      "billed_annually_note": "Billed annually at {{total}} — save {{percent}}%.",
+      "billed_monthly_note": "Billed monthly. Cancel any time.",
+      "agency": {
+        "name": "Agency",
+        "description": "For staffing firms recruiting for many clients at once",
+        "features": {
+          "positions": "Up to 50 active job positions",
+          "candidates": "Up to 500 candidates per position",
+          "seats": "Unlimited team members",
+          "storage": "50 GB storage",
+          "ai": "AI candidate scoring (750 credits/month)",
+          "analytics": "Analytics dashboard & pipeline insights",
+          "templates": "Email templates library"
+        }
+      },
+      "cta_free": "Start free",
+      "cta_trial": "Start 14-day trial",
+      "cta_talk": "Talk to us"
     },
     "social_proof": {
       "section_title": "Trusted by Recruiting Teams Worldwide",
@@ -3057,7 +3163,7 @@
     },
     "footer": {
       "brand_name": "Borderless ATS",
-      "brand_description": "Modern recruiting software designed to help you build amazing teams faster and more efficiently.",
+      "brand_description": "One bilingual ATS for staffing and recruiting agencies placing candidates across multiple clients in LATAM and the US.",
       "product": "Product",
       "features": "Features",
       "pricing": "Pricing",
@@ -3088,23 +3194,75 @@
       "cta_secondary": "Talk to us first",
       "card_title": "How It Works",
       "card_description": "No long-term commitment. No credit card required to start. Just use the platform, tell us what you think, and help us make it better for everyone.",
-      "step_1_title": "Sign up and try Borderless free for 30 days",
-      "step_1_desc": "Full access to every feature — no restrictions during your trial.",
+      "step_1_title": "Sign up and start on the Free plan",
+      "step_1_desc": "No credit card. Post a job, host a careers page, and find out whether it fits the way you actually work.",
       "step_2_title": "Share your feedback with us",
       "step_2_desc": "A quick monthly check-in via email or call. What's working, what's not, what you'd love to see.",
       "step_3_title": "Keep your founding discount forever",
-      "step_3_desc": "Once your trial ends, you lock in a permanent discount that follows your account indefinitely.",
-      "spots_label": "Limited spots available — founding program closes once filled"
+      "step_3_desc": "When you move onto a paid plan you lock in a permanent discount that follows your account, whatever we charge later.",
+      "spots_label": "Limited spots available — founding program closes once filled",
+      "honesty_note": "Straight with you: we're signing our first companies right now. No case studies, no customer logos, nothing to point at yet. What there is: a product you can use today, a price that doesn't move when you hire another recruiter, and a founder who answers his own email."
     },
     "final_cta": {
       "title": "Ready to streamline your hiring?",
-      "subtitle": "Be among the first to hire smarter with BorderLess",
+      "subtitle": "Be among the first to hire smarter with Borderless",
       "button": "Start Free Today"
     },
     "product_preview": {
       "title": "See Borderless in Action",
-      "subtitle": "A powerful, intuitive platform built for modern HR teams.",
-      "coming_soon": "Product screenshots coming soon"
+      "subtitle": "Four screens from the running product. Click any screenshot to open it full size.",
+      "coming_soon": "Product screenshots coming soon",
+      "demo_data_note": "Screenshots of the live product. The people and companies shown are sample data from a demo account.",
+      "slides": {
+        "analytics": {
+          "title": "Pipeline analytics",
+          "caption": "Total applications, hires this month, average time to hire and conversion rate — plus a stage-by-stage funnel and a breakdown of where applications actually came from: LinkedIn, referral, Indeed, your careers page."
+        },
+        "calendar": {
+          "title": "Shared hiring calendar",
+          "caption": "Month, week and day views of every interview and meeting. Filter down to your own meetings or show the whole team, with each member colour-coded."
+        },
+        "process_detail": {
+          "title": "One candidate, every stage",
+          "caption": "A single hiring process end to end — recruiter call, technical assessment, final interview, offer — with scheduled times, a join-meeting link, interview notes and a rating saved on each stage."
+        },
+        "process_list": {
+          "title": "Processes grouped by role",
+          "caption": "Every open process grouped by position, showing how many candidates have been scored by AI and the average score for that role, so you can see at a glance which pipelines are moving."
+        }
+      }
+    },
+    "integrations": {
+      "section_label": "WHAT IT CONNECTS TO",
+      "section_title": "Already wired to the tools you use",
+      "section_subtitle": "Not a roadmap. Each of these is built and running in the product today.",
+      "google_calendar": {
+        "name": "Google Calendar",
+        "description": "Connect with Google and interviews you schedule appear on the interviewer's calendar, with a meeting link."
+      },
+      "dodo": {
+        "name": "Dodo Payments",
+        "description": "Hosted checkout, subscriptions and invoices. Your card details never touch our servers."
+      },
+      "resend": {
+        "name": "Resend",
+        "description": "Invitations, candidate updates and notifications go out over Resend, from your own sending domain."
+      },
+      "storage": {
+        "name": "S3-compatible storage",
+        "description": "Résumés and attachments live in S3-compatible object storage and are served through expiring signed links."
+      }
+    },
+    "founder": {
+      "section_label": "WHO'S BEHIND THIS",
+      "section_title": "No customer logos yet. A real person, though.",
+      "name": "Erik Pastuszek",
+      "initials": "EP",
+      "role": "Founder — Borderless",
+      "bio": "I built Borderless after watching LATAM staffing agencies run hiring for a dozen clients out of spreadsheets, while paying per-recruiter for an ATS that punished them every time the team grew. Every screenshot on this page is a screen I shipped.",
+      "commitment": "Borderless is new, and I'd rather say that than dress it up. If you sign up you'll be one of the first companies on it, and you'll be dealing with me directly — support email included. That's the trade: an unproven product with a named person behind it instead of a ticket queue.",
+      "linkedin_cta": "Borderless on LinkedIn",
+      "contact_cta": "Email me directly"
     }
   },
   "applicant_onboarding": {
@@ -3529,7 +3687,8 @@
       "COMPANY_ADMIN": "Company Admin",
       "COMPANY_OWNER": "Company Owner",
       "SUPER_ADMIN": "Super Admin"
-    }
+    },
+    "connection_requests_no_permission": "Only the company owner or a company admin can review requests to join this company."
   },
   "check_status": {
     "title": "Check Application Status",
@@ -3955,7 +4114,8 @@
     "no_messages": "No contact messages yet",
     "message_preview": "{{preview}}...",
     "loading_error": "Failed to load contact messages",
-    "unread_count": "{{count}} unread"
+    "unread_count": "{{count}} unread",
+    "empty_description": "Messages sent through the public contact form land here. Nothing has come in yet."
   },
   "contact_messages": {
     "detail_title": "Contact Message",
@@ -3998,7 +4158,8 @@
     "demo_bookings": "Demo Bookings",
     "email_deliverability": "Email Health",
     "changelog": "Changelog",
-    "task_tracker": "Task Tracker"
+    "task_tracker": "Task Tracker",
+    "job_moderation": "Job Moderation"
   },
   "admin_email_logs": {
     "title": "Email Logs",
@@ -4337,7 +4498,9 @@
       "review_failed": "Failed to save review",
       "revoke_failed": "Failed to revoke link",
       "submission_failed": "Failed to submit"
-    }
+    },
+    "removeFileNamed": "Remove {{name}}",
+    "attachedFilesCount": "Attached files: {{total}}"
   },
   "quota_banner": {
     "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
@@ -4970,6 +5133,264 @@
       "jobPositions": "Job Positions — list, create, update",
       "applications": "Applications — list, submit, update status",
       "webhooks": "Webhooks — register, list, delete"
+    }
+  },
+  "job_moderation": {
+    "title": "Job Moderation",
+    "subtitle": "Review job postings before they reach the public careers board",
+    "description": "Postings from companies without an active paid subscription stay hidden from the public careers board until you approve them. Companies on a paid plan are approved automatically.",
+    "stat_pending": "Pending",
+    "stat_pending_subtitle": "Awaiting your review",
+    "stat_approved": "Approved",
+    "stat_approved_subtitle": "Live on the careers board",
+    "stat_rejected": "Rejected",
+    "stat_rejected_subtitle": "Blocked from publication",
+    "stat_total": "Total postings",
+    "stat_total_subtitle": "Across every company",
+    "search_placeholder": "Search by job title or company...",
+    "filter_status": "Moderation status",
+    "table_posting": "Posting",
+    "table_company": "Company",
+    "table_subscription": "Subscription",
+    "table_moderation_status": "Moderation",
+    "table_submitted": "Submitted",
+    "empty": "No job postings match this filter",
+    "error_loading": "Could not load the moderation queue",
+    "review": "Review posting",
+    "reject": "Reject",
+    "confirm_reject": "Reject posting",
+    "rejecting": "Rejecting...",
+    "company_paid": "Paid plan",
+    "company_unpaid": "No paid plan",
+    "created_by": "Created by",
+    "submitted_at": "Submitted",
+    "moderated_at": "Moderated",
+    "lifecycle_status": "Posting status",
+    "description_label": "Job description",
+    "no_description": "This posting has no description.",
+    "previous_reason_label": "Previous moderation note",
+    "reason_label": "Reason for rejection",
+    "reason_helper": "Shown to the company. Explain what needs to change.",
+    "reason_required": "A reason is required to reject a posting",
+    "reason_too_short": "The reason must be at least {{min}} characters",
+    "approved_success": "Job posting approved and published",
+    "approve_error": "Could not approve the job posting",
+    "rejected_success": "Job posting rejected",
+    "reject_error": "Could not reject the job posting",
+    "notice_pending_title": "Waiting for review",
+    "notice_pending_body": "This posting is being reviewed by our team and is not on the public careers board yet.",
+    "notice_pending_body_count": "{{total}} of your postings are being reviewed by our team and are not on the public careers board yet.",
+    "notice_rejected_title": "Posting rejected",
+    "notice_rejected_body": "This posting was not approved, so it is not visible on the public careers board.",
+    "notice_rejected_reason": "Reason: {{reason}}",
+    "notice_upgrade_prompt": "Postings from paid plans publish instantly, with no review wait.",
+    "notice_upgrade_link": "See plans",
+    "empty_queue_title": "Nothing waiting for review",
+    "empty_queue_description": "Every job posting has been reviewed. New submissions from companies without a paid plan will show up here automatically.",
+    "empty_filtered_description": "No job postings match this search or moderation status. Try clearing the filters."
+  },
+  "emailTemplates": {
+    "variable_submission_url": "Submission URL",
+    "variable_deadline": "Deadline",
+    "variable_stage_name": "Stage name"
+  },
+  "seo": {
+    "landing": {
+      "title": "Applicant Tracking System for Recruiting Agencies | Borderless ATS",
+      "description": "Run multi-client hiring pipelines, screen resumes with AI in English and Spanish, and track client accounts. $79/month flat for your whole firm."
+    },
+    "careers": {
+      "title": "Open Jobs Hiring Now — Remote, Hybrid & On-Site | Borderless",
+      "description": "Browse open positions from companies hiring on Borderless. Filter roles by category, job type, location, experience level and salary, then apply online."
+    },
+    "job_detail": {
+      "title": "{{title}} at {{company}} | Borderless",
+      "description": "Apply for {{title}} at {{company}} on Borderless. Read the full role description, requirements, benefits and hiring stages, then apply online in minutes.",
+      "not_found_title": "Job Posting Not Available | Borderless",
+      "not_found_description": "This job posting is no longer available. Browse the roles companies are hiring for right now on the Borderless job board."
+    },
+    "contact": {
+      "title": "Contact Borderless — Talk to Sales or Book an ATS Demo",
+      "description": "Get in touch with the Borderless team. Email support, book a live demo of the applicant tracking system, or read answers to the most common questions."
+    },
+    "legal": {
+      "terms": {
+        "title": "Terms of Service | Borderless ATS",
+        "description": "The terms that govern your use of Borderless, the applicant tracking system for recruiting teams: accounts, subscriptions, acceptable use and liability."
+      },
+      "privacy": {
+        "title": "Privacy Policy | Borderless ATS",
+        "description": "How Borderless collects, uses, stores and protects personal data from recruiters and candidates, plus the privacy rights you can exercise at any time."
+      },
+      "security": {
+        "title": "Security Policy | Borderless ATS",
+        "description": "How Borderless protects your recruiting data: encryption in transit and at rest, access controls, backups, monitoring and responsible disclosure."
+      }
+    },
+    "candidate_detail": {
+      "title": "{{name}} — Candidate | Borderless",
+      "description": "Internal candidate profile: pipeline progress, interviews, notes, activity history and files. Visible only to your team.",
+      "not_found_title": "Candidate Not Found | Borderless",
+      "not_found_description": "This candidate profile is not available. It may have been deleted, or it may belong to another company."
+    },
+    "jobs_facet": {
+      "title": "{{facet}} Jobs — Open Roles Hiring Now | Borderless",
+      "description": "Browse open {{facet}} roles from companies hiring on Borderless. Filter by category, contract type, experience and salary, then apply online in minutes.",
+      "pair_title": "{{role}} Jobs in {{country}} — Hiring Now | Borderless",
+      "pair_description": "Open {{role}} roles in {{country}} from companies hiring on Borderless. See the salary, work setup and requirements for each one, then apply online.",
+      "not_found_title": "Job Filter Not Found | Borderless",
+      "not_found_description": "This job filter does not exist. Browse every role companies are hiring for right now on the Borderless job board."
+    },
+    "company_careers": {
+      "title": "Jobs at {{company}} — Open Positions | Borderless",
+      "description": "Every open role at {{company}}, updated the moment the team posts one. Read the full description, salary and requirements, then apply online in minutes.",
+      "not_found_title": "Careers Page Not Found | Borderless",
+      "not_found_description": "This company careers page is not available. Browse every role companies are hiring for right now on the Borderless job board."
+    },
+    "blog": {
+      "title": "Recruiting & ATS Guides for Agencies | Borderless Blog",
+      "description": "Practical guides on applicant tracking systems, careers-page SEO and running a staffing agency in Latin America — written in English and Spanish.",
+      "post_title": "{{title}} | Borderless",
+      "not_found_title": "Article Not Found | Borderless",
+      "not_found_description": "This article is not available. Read the rest of the Borderless guides on recruiting, applicant tracking and careers-page SEO."
+    }
+  },
+  "not_found": {
+    "seo_title": "Page Not Found (404) | Borderless ATS",
+    "seo_description": "The page you are looking for does not exist or has been moved. Head back to the Borderless ATS homepage or browse our current open roles instead.",
+    "code": "404",
+    "title": "We couldn't find that page",
+    "message": "The link may be broken, or the page may have been moved or removed. Check the address, or use one of the links below to get back on track.",
+    "go_home": "Go to homepage",
+    "browse_jobs": "Browse open roles"
+  },
+  "candidate_detail": {
+    "back_to_candidates": "Back to Candidates",
+    "error_loading": "This candidate could not be loaded. They may have been deleted, or you may not have access to them.",
+    "edit_candidate": "Edit candidate",
+    "open_profile": "Open profile of {{name}}",
+    "tabs_aria": "Candidate sections",
+    "tab_overview": "Pipeline",
+    "tab_interviews": "Interviews",
+    "tab_notes": "Notes",
+    "tab_activity": "Activity",
+    "tab_files": "Files",
+    "journey_error": "Failed to load this candidate's hiring processes.",
+    "no_processes": "This candidate is not in any hiring process yet.",
+    "processes_count": "Hiring Processes ({{count}})",
+    "stages_count": "Stages: {{count}}",
+    "total_time": "Total time: {{duration}}",
+    "view_process": "Open process",
+    "no_stages": "No stages have been defined for this hiring process yet.",
+    "stage_column": "Stage",
+    "entered_column": "Entered",
+    "exited_column": "Exited",
+    "duration_column": "Time in stage",
+    "stage_current": "Current",
+    "stage_in_progress": "Still here",
+    "duration_minutes": "{{count}} min",
+    "duration_hours": "{{count}} h",
+    "duration_days": "{{count}} d",
+    "interviews_error": "Failed to load this candidate's interviews.",
+    "interviews_count": "Interviews ({{count}})"
+  },
+  "careersBoard": {
+    "all_roles_heading": "All open roles on this page",
+    "all_roles_nav_label": "Open roles",
+    "powered_by": "Powered by Borderless ATS"
+  },
+  "careersCompany": {
+    "heading": "Careers at {{company}}",
+    "not_found_title": "We could not find that company",
+    "not_found_body": "This careers page does not exist, or the company has no open roles right now."
+  },
+  "careersFacets": {
+    "nav_label": "Browse jobs",
+    "browse_by_work_location": "Browse by work setup",
+    "browse_by_country": "Browse by country",
+    "browse_by_category": "Browse by category",
+    "browse_by_job_type": "Browse by contract type",
+    "single_heading": "{{facet}} jobs",
+    "pair_heading": "{{role}} jobs in {{country}}",
+    "not_found_title": "That job filter does not exist",
+    "not_found_body": "The full board has every open role, and you can filter it any way you like.",
+    "remote": "Remote",
+    "hybrid": "Hybrid",
+    "onsite": "On-site",
+    "engineering": "Engineering",
+    "design": "Design",
+    "marketing": "Marketing",
+    "sales": "Sales",
+    "product": "Product",
+    "full_time": "Full-time",
+    "part_time": "Part-time",
+    "contract": "Contract",
+    "internship": "Internship",
+    "temporary": "Temporary",
+    "argentina": "Argentina",
+    "brazil": "Brazil",
+    "chile": "Chile",
+    "colombia": "Colombia",
+    "mexico": "Mexico",
+    "peru": "Peru",
+    "uruguay": "Uruguay",
+    "united_states": "United States"
+  },
+  "blog": {
+    "index_title": "Recruiting and ATS guides",
+    "index_subtitle": "Practical writing on applicant tracking, careers-page SEO and running a recruiting agency across Latin America.",
+    "empty": "No articles published yet.",
+    "reading_time": "{{minutes}} min read",
+    "back_to_index": "All articles",
+    "cta_start_free": "Try Borderless free",
+    "draft_badge": "Draft",
+    "not_found_title": "Article not found",
+    "not_found_body": "This article does not exist, or it has not been published yet.",
+    "category": {
+      "guide": "Guide",
+      "comparison": "Comparison",
+      "technical": "Technical"
+    },
+    "lang": {
+      "en": "English",
+      "es": "Spanish"
+    },
+    "index": {
+      "title": "Blog",
+      "subtitle": "Guides on recruiting, hiring pipelines and careers page SEO.",
+      "empty": "No articles published yet."
+    },
+    "card": {
+      "read_more": "Read article"
+    },
+    "post": {
+      "published_on": "Published {{date}}",
+      "updated_on": "Updated {{date}}",
+      "reading_time": "{{count}} min read",
+      "back_to_index": "Back to all articles"
+    },
+    "cta": {
+      "trial_title": "Try Borderless free for 30 days",
+      "trial_body": "The full platform, no credit card required.",
+      "trial_button": "Start free trial"
+    }
+  },
+  "clients": {
+    "filter_label": "Client",
+    "filter_all": "All clients",
+    "filter_aria": "Filter by client",
+    "title": "Clients",
+    "created_success": "Client created successfully",
+    "create_error": "Failed to create client",
+    "updated_success": "Client updated successfully",
+    "update_error": "Failed to update client",
+    "deleted_success": "Client deleted successfully",
+    "delete_error": "Failed to delete client",
+    "none": "No client",
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "archived": "Archived"
     }
   }
 }

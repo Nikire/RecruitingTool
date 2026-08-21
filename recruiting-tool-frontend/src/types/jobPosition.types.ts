@@ -11,6 +11,12 @@ export interface JobPosition {
   description?: string;
   companyUid?: string;
   companyName?: string;
+  /**
+   * The end client this role is being filled for. Null for direct-employer roles and for
+   * postings created before clients existed — never assume it is present.
+   */
+  clientUid?: string | null;
+  clientName?: string | null;
   companyLogoUrl?: string;
   companyWebsite?: string;
   companyIndustry?: string;
@@ -51,6 +57,11 @@ export interface JobPosition {
   viewCount?: number;
   applicationCount?: number;
   candidateSource?: string;
+  // Platform moderation (anti-spam gate) - only present on authenticated,
+  // company-owned views. Never exposed on the public careers board.
+  moderationStatus?: JobModerationStatus;
+  moderationReason?: string | null;
+  moderatedAt?: Date | string | null;
 }
 
 export type JobType =
@@ -118,3 +129,80 @@ export const JOB_POSITION_STATUS = {
 
 export type JobPositionStatus =
   (typeof JOB_POSITION_STATUS)[keyof typeof JOB_POSITION_STATUS];
+
+/**
+ * Platform-level moderation state of a job posting.
+ * Deliberately separate from `JobPositionStatus` (OPEN/CLOSED/CANCELLED):
+ * a posting can be APPROVED and CLOSED at the same time.
+ */
+export const JOB_MODERATION_STATUS = {
+  PENDING_APPROVAL: "PENDING_APPROVAL",
+  APPROVED: "APPROVED",
+  REJECTED: "REJECTED",
+} as const;
+
+export type JobModerationStatus =
+  (typeof JOB_MODERATION_STATUS)[keyof typeof JOB_MODERATION_STATUS];
+
+/** A single posting as returned by the SUPER_ADMIN moderation queue. */
+export interface ModerationJobPositionItem {
+  uid: string;
+  title: string;
+  description: string | null;
+  status: JobPositionStatus;
+  moderationStatus: JobModerationStatus;
+  moderationReason: string | null;
+  moderatedAt: string | null;
+  moderatedByUid: string | null;
+  moderatedByName: string | null;
+  companyUid: string;
+  companyName: string;
+  companyLogoUrl: string | null;
+  companyPlan: string;
+  companyHasActiveSubscription: boolean;
+  createdByUid: string;
+  createdByName: string;
+  createdByEmail: string | null;
+  jobType: JobType | null;
+  workLocation: WorkLocation | null;
+  experienceLevel: ExperienceLevel | null;
+  city: string | null;
+  country: string | null;
+  createdAt: string;
+}
+
+/** Counters rendered above the moderation queue. */
+export interface JobModerationStats {
+  pending: number;
+  approved: number;
+  rejected: number;
+  total: number;
+}
+
+/** Query params accepted by GET /admin/job-moderation/pending. */
+export interface JobModerationQueueParams {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: "createdAt" | "title" | "moderatedAt";
+  sortOrder?: "asc" | "desc";
+  moderationStatus?: JobModerationStatus;
+  companyUid?: string;
+}
+
+/**
+ * The moderation endpoints return the backend's standard `PaginatedResponse`
+ * shape (`{ data, pagination }`), not the `{ data, meta }` shape used by the
+ * frontend's `PaginatedResponse<T>` helper - so it is typed explicitly here.
+ */
+export interface JobModerationQueueResponse {
+  data: ModerationJobPositionItem[];
+  pagination: {
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+}

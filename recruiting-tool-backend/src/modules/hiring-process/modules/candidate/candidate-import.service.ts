@@ -175,19 +175,21 @@ export class CandidateImportService {
         }
 
         try {
-          // Check if candidate with this email already exists
-          const existingCandidate = await this.databaseService.candidate.findUnique({
-            where: { email: validation.data.email },
-            include: {
-              hiringProcesses: companyId
-                ? {
-                    where: { companyId },
-                  }
-                : true,
-            },
-          });
+          // Check if candidate with this email already exists WITHIN THE SAME TENANT.
+          // Candidate.email is unique per company (@@unique([email, companyId])), so the
+          // same address belonging to another agency is not a duplicate here.
+          // findUnique on the compound unique needs the `email_companyId` input shape;
+          // when the importer has no company (SUPER_ADMIN), fall back to the unclaimed
+          // (companyId IS NULL) bucket, which is not addressable via the compound key.
+          const existingCandidate = companyId
+            ? await this.databaseService.candidate.findUnique({
+                where: { email_companyId: { email: validation.data.email, companyId } },
+              })
+            : await this.databaseService.candidate.findFirst({
+                where: { email: validation.data.email, companyId: null },
+              });
 
-          if (existingCandidate && (!companyId || existingCandidate.hiringProcesses.length > 0)) {
+          if (existingCandidate) {
             errors.push({
               row: i + 2,
               name: validation.data.name,
@@ -205,6 +207,9 @@ export class CandidateImportService {
               source: ApplicationSource.CSV_IMPORT,
               sourceDetails: validation.data.notes || 'Imported from CSV',
               sourceUrl: validation.data.linkedin,
+              // Stamp the owning tenant so the per-company unique index applies and the
+              // imported rows are visible to that company's scoped queries.
+              companyId: companyId ?? null,
             },
           });
 

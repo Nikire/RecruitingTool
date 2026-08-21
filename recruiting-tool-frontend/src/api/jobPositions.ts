@@ -1,4 +1,10 @@
-import { JobPosition } from "../types/jobPosition.types";
+import {
+  JobModerationQueueParams,
+  JobModerationQueueResponse,
+  JobModerationStats,
+  JobPosition,
+  ModerationJobPositionItem,
+} from "../types/jobPosition.types";
 import { MessageResponse } from "../types/responses";
 import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
 import api from "./axios";
@@ -67,4 +73,42 @@ export function updateJobPosition(
 
 export function deleteJobPosition(uid: string): Promise<MessageResponse> {
   return api.delete("/job-position/" + uid).then((res) => res.data);
+}
+
+// ─── Platform job posting moderation (SUPER_ADMIN only) ──────────────────────
+
+export function getJobModerationStats(): Promise<JobModerationStats> {
+  return api.get("/admin/job-moderation/stats").then((res) => res.data);
+}
+
+export function getJobModerationQueue(
+  params?: JobModerationQueueParams,
+): Promise<JobModerationQueueResponse> {
+  return api
+    .get("/admin/job-moderation/pending", { params })
+    .then((res) => res.data);
+}
+
+export function getJobModerationItem(
+  uid: string,
+): Promise<ModerationJobPositionItem> {
+  return api.get(`/admin/job-moderation/${uid}`).then((res) => res.data);
+}
+
+export function approveJobPosition(
+  uid: string,
+  reason?: string,
+): Promise<ModerationJobPositionItem> {
+  return api
+    .post(`/admin/job-moderation/${uid}/approve`, reason ? { reason } : {})
+    .then((res) => res.data);
+}
+
+export function rejectJobPosition(
+  uid: string,
+  reason: string,
+): Promise<ModerationJobPositionItem> {
+  return api
+    .post(`/admin/job-moderation/${uid}/reject`, { reason })
+    .then((res) => res.data);
 }

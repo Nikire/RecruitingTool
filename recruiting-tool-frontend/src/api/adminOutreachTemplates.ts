@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -17,11 +18,9 @@ export interface UpsertOutreachTemplatePayload {
   body: string;
 }
 
-const QUERY_KEY = ["outreach-template-overrides"];
-
 export function useOutreachTemplateOverrides() {
   return useQuery<OutreachTemplateOverride[]>({
-    queryKey: QUERY_KEY,
+    queryKey: adminKeys.outreachTemplateOverrides(),
     queryFn: async () => {
       const { data } = await api.get<OutreachTemplateOverride[]>(
         "/admin/outreach-templates",
@@ -46,7 +45,8 @@ export function useUpsertOutreachTemplateOverride() {
       );
       return data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: adminKeys.outreachTemplateOverrides() }),
   });
 }
 
@@ -70,6 +70,7 @@ export function useDeleteOutreachTemplateOverride() {
         `/admin/outreach-templates/${templateId}/${lang}/${variantIndex}`,
       );
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: QUERY_KEY }),
+    onSuccess: () =>
+      qc.invalidateQueries({ queryKey: adminKeys.outreachTemplateOverrides() }),
   });
 }

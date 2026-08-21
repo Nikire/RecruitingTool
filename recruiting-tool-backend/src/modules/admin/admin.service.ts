@@ -50,6 +50,18 @@ import {
 import { PLAN_LIMITS } from '../quota/config/plan-limits.config';
 import { DemoOutcome, QuotaType, SubscriptionPlan } from '@prisma/client';
 
+/**
+ * One company's four health signals plus the derived score/tier.
+ *
+ * Identical to `CompanyHealthItemDto` except that it also carries the numeric
+ * `companyId`. That field exists only so background jobs can write a snapshot row
+ * without a second uid -> id lookup per company. It is stripped before anything is
+ * returned from a controller — never put `companyId` on an external DTO.
+ */
+export interface CompanyHealthSignalRow extends CompanyHealthItemDto {
+  companyId: number;
+}
+
 @Injectable()
 export class AdminService {
   constructor(private databaseService: DatabaseService) {}
@@ -843,13 +855,35 @@ export class AdminService {
 
   // ─── Company Health Monitor ──────────────────────────────────────────────────
 
-  async getCompanyHealthScores(page: number, limit: number, riskTier?: string): Promise<CompanyHealthResponseDto> {
-    try {
-      const now = new Date();
-      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+  /** Tier ordering, best to worst. Index doubles as the severity rank. */
+  private static readonly HEALTH_TIER_ORDER: RiskTier[] = ['HEALTHY', 'AT_RISK', 'CHURNING', 'CRITICAL'];
 
-      // Fetch all companies with their subscription info
-      const companies = await this.databaseService.company.findMany({
+  /**
+   * Rank a tier so two readings can be compared. Higher number == worse health.
+   * Returns -1 for an unknown/absent tier so callers can treat it as "no reading".
+   */
+  static rankHealthTier(tier: RiskTier | string | null | undefined): number {
+    return AdminService.HEALTH_TIER_ORDER.indexOf(tier as RiskTier);
+  }
+
+  /**
+   * Compute the four health signals for EVERY company.
+   *
+   * Previously this was a `company.findMany()` with no take/skip followed by four
+   * awaited queries inside `Promise.all(companies.map(...))` — 1 + 4N round trips, so
+   * 801 queries at 200 companies, all executed before pagination threw most of the
+   * result away. The nightly snapshot job runs this unattended, which turns that cost
+   * from a one-off page load into a recurring one.
+   *
+   * It is now a fixed handful of queries regardless of company count: one company
+   * scan, three `groupBy` aggregates keyed by companyId, and one bounded lookup that
+   * maps the job positions which received applications this month back to their owner.
+   */
+  async collectCompanyHealthSignals(now: Date = new Date()): Promise<CompanyHealthSignalRow[]> {
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const [companies, loginRows, openPositionRows, applicationRows, hiringRows] = await Promise.all([
+      this.databaseService.company.findMany({
         select: {
           id: true,
           uid: true,
@@ -861,98 +895,147 @@ export class AdminService {
             },
           },
         },
-      });
+      }),
+      // Signal 1: most recent lastLoginAt of any user, per company.
+      this.databaseService.user.groupBy({
+        by: ['companyId'],
+        where: { companyId: { not: null }, lastLoginAt: { not: null } },
+        _max: { lastLoginAt: true },
+      }),
+      // Signal 2: open job positions, per company.
+      this.databaseService.jobPosition.groupBy({
+        by: ['companyId'],
+        where: { status: 'OPEN' },
+        _count: { _all: true },
+      }),
+      // Signal 3 (part 1): applications this month, per job position. Grouping straight
+      // to companyId is not possible — Application has no companyId, only a nullable
+      // jobPositionId — so ownership is resolved below.
+      this.databaseService.application.groupBy({
+        by: ['jobPositionId'],
+        where: {
+          createdAt: { gte: startOfMonth },
+          deletedAt: null,
+          jobPositionId: { not: null },
+        },
+        _count: { _all: true },
+      }),
+      // Signal 4: hiring processes touched this month, per company.
+      this.databaseService.hiringProcess.groupBy({
+        by: ['companyId'],
+        where: { updatedAt: { gte: startOfMonth } },
+        _count: { _all: true },
+      }),
+    ]);
 
-      // Compute health signals for each company in parallel batches
-      const allItems: CompanyHealthItemDto[] = await Promise.all(
-        companies.map(async (company) => {
-          // Signal 1: Last login recency — most recent lastLoginAt of any user in company
-          const mostRecentUser = await this.databaseService.user.findFirst({
-            where: {
-              companyId: company.id,
-              lastLoginAt: { not: null },
-            },
-            orderBy: { lastLoginAt: 'desc' },
-            select: { lastLoginAt: true },
-          });
+    // Signal 3 (part 2): map the job positions that actually received an application
+    // this month back to their company. Bounded by "positions with activity this
+    // month", not by the total number of positions in the database.
+    const activeJobPositionIds = applicationRows.map((row) => row.jobPositionId).filter((id): id is number => id !== null);
 
-          const lastLoginAt = mostRecentUser?.lastLoginAt ?? null;
-          let lastLoginDaysAgo: number | null = null;
-          let loginSignal = 0;
+    const jobPositionOwners = activeJobPositionIds.length
+      ? await this.databaseService.jobPosition.findMany({
+          where: { id: { in: activeJobPositionIds } },
+          select: { id: true, companyId: true },
+        })
+      : [];
 
-          if (lastLoginAt) {
-            const diffMs = now.getTime() - lastLoginAt.getTime();
-            lastLoginDaysAgo = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const ownerByJobPositionId = new Map<number, number>(jobPositionOwners.map((jp) => [jp.id, jp.companyId]));
 
-            if (lastLoginDaysAgo <= 7) loginSignal = 25;
-            else if (lastLoginDaysAgo <= 14) loginSignal = 15;
-            else if (lastLoginDaysAgo <= 30) loginSignal = 5;
-            else loginSignal = 0;
-          }
+    const lastLoginByCompanyId = new Map<number, Date | null>();
+    for (const row of loginRows) {
+      if (row.companyId !== null) lastLoginByCompanyId.set(row.companyId, row._max.lastLoginAt);
+    }
 
-          // Signal 2: Active job positions
-          const activeJobPositions = await this.databaseService.jobPosition.count({
-            where: {
-              companyId: company.id,
-              status: 'OPEN',
-            },
-          });
+    const openPositionsByCompanyId = new Map<number, number>();
+    for (const row of openPositionRows) {
+      openPositionsByCompanyId.set(row.companyId, row._count._all);
+    }
 
-          let jobSignal = 0;
-          if (activeJobPositions >= 3) jobSignal = 25;
-          else if (activeJobPositions >= 1) jobSignal = 15;
-          else jobSignal = 0;
+    const applicationsByCompanyId = new Map<number, number>();
+    for (const row of applicationRows) {
+      if (row.jobPositionId === null) continue;
+      const companyId = ownerByJobPositionId.get(row.jobPositionId);
+      if (companyId === undefined) continue;
+      applicationsByCompanyId.set(companyId, (applicationsByCompanyId.get(companyId) ?? 0) + row._count._all);
+    }
 
-          // Signal 3: Applications this month
-          const applicationsThisMonth = await this.databaseService.application.count({
-            where: {
-              createdAt: { gte: startOfMonth },
-              jobPosition: { companyId: company.id },
-              deletedAt: null,
-            },
-          });
+    const hiringByCompanyId = new Map<number, number>();
+    for (const row of hiringRows) {
+      hiringByCompanyId.set(row.companyId, row._count._all);
+    }
 
-          let appsSignal = 0;
-          if (applicationsThisMonth >= 10) appsSignal = 25;
-          else if (applicationsThisMonth >= 5) appsSignal = 15;
-          else if (applicationsThisMonth >= 1) appsSignal = 5;
-          else appsSignal = 0;
+    return companies.map((company) => {
+      const lastLoginAt = lastLoginByCompanyId.get(company.id) ?? null;
+      const activeJobPositions = openPositionsByCompanyId.get(company.id) ?? 0;
+      const applicationsThisMonth = applicationsByCompanyId.get(company.id) ?? 0;
+      const hiringActivitiesThisMonth = hiringByCompanyId.get(company.id) ?? 0;
 
-          // Signal 4: Hiring activity this month
-          const hiringActivitiesThisMonth = await this.databaseService.hiringProcess.count({
-            where: {
-              companyId: company.id,
-              updatedAt: { gte: startOfMonth },
-            },
-          });
+      let lastLoginDaysAgo: number | null = null;
+      let loginSignal = 0;
+      if (lastLoginAt) {
+        lastLoginDaysAgo = Math.floor((now.getTime() - lastLoginAt.getTime()) / (1000 * 60 * 60 * 24));
+        if (lastLoginDaysAgo <= 7) loginSignal = 25;
+        else if (lastLoginDaysAgo <= 14) loginSignal = 15;
+        else if (lastLoginDaysAgo <= 30) loginSignal = 5;
+        else loginSignal = 0;
+      }
 
-          let hiringSignal = 0;
-          if (hiringActivitiesThisMonth >= 5) hiringSignal = 25;
-          else if (hiringActivitiesThisMonth >= 1) hiringSignal = 10;
-          else hiringSignal = 0;
+      let jobSignal = 0;
+      if (activeJobPositions >= 3) jobSignal = 25;
+      else if (activeJobPositions >= 1) jobSignal = 15;
 
-          const healthScore = loginSignal + jobSignal + appsSignal + hiringSignal;
+      let appsSignal = 0;
+      if (applicationsThisMonth >= 10) appsSignal = 25;
+      else if (applicationsThisMonth >= 5) appsSignal = 15;
+      else if (applicationsThisMonth >= 1) appsSignal = 5;
 
-          let riskTierValue: RiskTier;
-          if (healthScore >= 80) riskTierValue = 'HEALTHY';
-          else if (healthScore >= 50) riskTierValue = 'AT_RISK';
-          else if (healthScore >= 20) riskTierValue = 'CHURNING';
-          else riskTierValue = 'CRITICAL';
+      let hiringSignal = 0;
+      if (hiringActivitiesThisMonth >= 5) hiringSignal = 25;
+      else if (hiringActivitiesThisMonth >= 1) hiringSignal = 10;
 
-          return {
-            uid: company.uid,
-            name: company.name,
-            plan: company.subscription?.plan ?? 'FREE',
-            subscriptionStatus: company.subscription?.status ?? 'ACTIVE',
-            healthScore,
-            riskTier: riskTierValue,
-            lastLoginDaysAgo,
-            activeJobPositions,
-            applicationsThisMonth,
-            hiringActivitiesThisMonth,
-          };
-        }),
-      );
+      const healthScore = loginSignal + jobSignal + appsSignal + hiringSignal;
+
+      let riskTier: RiskTier;
+      if (healthScore >= 80) riskTier = 'HEALTHY';
+      else if (healthScore >= 50) riskTier = 'AT_RISK';
+      else if (healthScore >= 20) riskTier = 'CHURNING';
+      else riskTier = 'CRITICAL';
+
+      return {
+        companyId: company.id,
+        uid: company.uid,
+        name: company.name,
+        plan: company.subscription?.plan ?? 'FREE',
+        subscriptionStatus: company.subscription?.status ?? 'ACTIVE',
+        healthScore,
+        riskTier,
+        lastLoginDaysAgo,
+        activeJobPositions,
+        applicationsThisMonth,
+        hiringActivitiesThisMonth,
+      };
+    });
+  }
+
+  async getCompanyHealthScores(page: number, limit: number, riskTier?: string): Promise<CompanyHealthResponseDto> {
+    try {
+      const rows = await this.collectCompanyHealthSignals();
+
+      // Projected field by field rather than spread, so the numeric companyId carried
+      // by CompanyHealthSignalRow can never leak into an external payload by accident.
+      const allItems: CompanyHealthItemDto[] = rows.map((row) => ({
+        uid: row.uid,
+        name: row.name,
+        plan: row.plan,
+        subscriptionStatus: row.subscriptionStatus,
+        healthScore: row.healthScore,
+        riskTier: row.riskTier,
+        lastLoginDaysAgo: row.lastLoginDaysAgo,
+        activeJobPositions: row.activeJobPositions,
+        applicationsThisMonth: row.applicationsThisMonth,
+        hiringActivitiesThisMonth: row.hiringActivitiesThisMonth,
+      }));
 
       // Sort by healthScore ascending (most at-risk first)
       allItems.sort((a, b) => a.healthScore - b.healthScore);

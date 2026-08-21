@@ -1,12 +1,21 @@
-import { Controller, Post, Get, Body, HttpCode, HttpStatus, Headers, RawBodyRequest, Req, BadRequestException } from '@nestjs/common';
+import { Controller, Post, Get, Body, Query, HttpCode, HttpStatus, Headers, RawBodyRequest, Req, BadRequestException } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiExcludeEndpoint } from '@nestjs/swagger';
 import { Request } from 'express';
 import { DodoPaymentsService } from './dodo-payments.service';
 import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { CurrentUser } from '../shared/modules/auth/decorators/current-user.decorator';
 import { RolesType } from '@prisma/client';
-import { SubscriptionResponseDto } from '../stripe/dto/stripe.dto';
-import { DoCreateCheckoutDto, DoCheckoutResponseDto, DoCancelResponseDto, DoBillingPortalResponseDto, DoInvoicesResponseDto } from './dto/dodo-payments.dto';
+import {
+  DoCreateCheckoutDto,
+  DoCheckoutResponseDto,
+  DoCancelResponseDto,
+  DoBillingPortalResponseDto,
+  DoInvoicesResponseDto,
+  DoSubscriptionResponseDto,
+  DoAdminSubscriptionsResponseDto,
+  DoListSubscriptionsQueryDto,
+  DoSubscriptionsListResponseDto,
+} from './dto/dodo-payments.dto';
 
 @ApiTags('Billing (Dodo Payments)')
 @Controller('billing')
@@ -37,10 +46,10 @@ export class DodoPaymentsController {
     summary: 'Get current subscription',
     description: 'Retrieves the current subscription details for the company, syncing with Dodo Payments if needed.',
   })
-  @ApiResponse({ status: 200, description: 'Subscription details', type: SubscriptionResponseDto })
+  @ApiResponse({ status: 200, description: 'Subscription details', type: DoSubscriptionResponseDto })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   @ApiResponse({ status: 404, description: 'Company not found' })
-  async getSubscription(@CurrentUser() user: any): Promise<SubscriptionResponseDto> {
+  async getSubscription(@CurrentUser() user: any): Promise<DoSubscriptionResponseDto> {
     return this.dodoService.getSubscription(user.companyId);
   }
 
@@ -118,5 +127,34 @@ export class DodoPaymentsController {
     });
 
     return { received: true };
+  }
+
+  @Get('admin/subscriptions')
+  @Auth([RolesType.SUPER_ADMIN, RolesType.ADMIN])
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Get all subscriptions (Admin only)',
+    description:
+      'Returns every subscription with company and owner details plus headline counters, for the admin subscriptions screen. Read from the local database only, so it works even when Dodo Payments is unreachable or unconfigured.',
+  })
+  @ApiResponse({ status: 200, description: 'All subscriptions retrieved successfully', type: DoAdminSubscriptionsResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - user is not an admin' })
+  async getAllSubscriptionsAdmin(): Promise<DoAdminSubscriptionsResponseDto> {
+    return this.dodoService.getAllSubscriptionsAdmin();
+  }
+
+  @Get('admin/subscriptions/list')
+  @Auth([RolesType.SUPER_ADMIN, RolesType.ADMIN])
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'List subscriptions with pagination and filters (Admin only)',
+    description: 'Paginated, filterable list of subscriptions with company information and aggregate statistics.',
+  })
+  @ApiResponse({ status: 200, description: 'Subscriptions list retrieved successfully', type: DoSubscriptionsListResponseDto })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 403, description: 'Forbidden - user is not an admin' })
+  async listAllSubscriptions(@Query() query: DoListSubscriptionsQueryDto): Promise<DoSubscriptionsListResponseDto> {
+    return this.dodoService.listAllSubscriptions(query);
   }
 }

@@ -1,10 +1,11 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { JobPositionStatus } from '@prisma/client';
+import { JobModerationStatus, JobPositionStatus } from '@prisma/client';
 import { DatabaseService } from '../../modules/shared/modules/database/database.service';
 import { CreatePublicJobPositionDto } from './dto/create-public-job-position.dto';
 import { UpdatePublicJobPositionDto } from './dto/update-public-job-position.dto';
 import { PublicApiJobPositionResponseDto } from './dto/public-job-position-response.dto';
 import { PublicJobPositionsListResponseDto } from './dto/public-job-positions-list-response.dto';
+import { hasActivePaidSubscription } from '../../utils/subscription-status.helper';
 
 @Injectable()
 export class PublicJobPositionsService {
@@ -74,8 +75,18 @@ export class PublicJobPositionsService {
       throw new NotFoundException('No user found for this company to associate with the job position');
     }
 
+    // Anti-spam moderation gate: postings created through the API key follow the same
+    // rule as the UI — only companies with an active paid subscription publish instantly.
+    const subscription = await this.db.subscription.findUnique({
+      where: { companyId },
+      select: { status: true, plan: true, currentPeriodEnd: true, gracePeriodEndsAt: true },
+    });
+    const autoApproved = hasActivePaidSubscription(subscription);
+
     const item = await this.db.jobPosition.create({
       data: {
+        moderationStatus: autoApproved ? JobModerationStatus.APPROVED : JobModerationStatus.PENDING_APPROVAL,
+        moderatedAt: autoApproved ? new Date() : null,
         title: dto.title,
         description: dto.description,
         status: dto.status ?? JobPositionStatus.OPEN,
@@ -185,6 +196,9 @@ export class PublicJobPositionsService {
     applicationCount: number;
     viewCount: number;
     candidateSource: string | null;
+    moderationStatus: JobModerationStatus;
+    moderationReason: string | null;
+    moderatedAt: Date | null;
     createdAt: Date;
     updatedAt: Date;
   }): PublicApiJobPositionResponseDto {
@@ -218,6 +232,9 @@ export class PublicJobPositionsService {
       applicationCount: item.applicationCount,
       viewCount: item.viewCount,
       candidateSource: item.candidateSource,
+      moderationStatus: item.moderationStatus,
+      moderationReason: item.moderationReason,
+      moderatedAt: item.moderatedAt,
       createdAt: item.createdAt,
       updatedAt: item.updatedAt,
     };

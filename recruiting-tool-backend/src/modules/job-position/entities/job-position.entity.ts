@@ -16,6 +16,9 @@ export const includeJobPosition = {
   },
   createdBy: true,
   company: true,
+  // The end client the role is being filled for. Optional relation, so this is null on
+  // direct-employer roles and on everything created before the Client model existed.
+  client: true,
 };
 
 type JobPositionWithRelations = Prisma.JobPositionGetPayload<{
@@ -58,6 +61,11 @@ export function JobPositionMapper(jobPosition: JobPosition | JobPositionWithRela
     viewCount: jobPosition.viewCount,
     applicationCount: jobPosition.applicationCount,
     candidateSource: jobPosition.candidateSource,
+    moderationStatus: jobPosition.moderationStatus,
+    moderationReason: jobPosition.moderationReason,
+    moderatedAt: jobPosition.moderatedAt,
+    clientUid: (jobPosition as any).client?.uid ?? null,
+    clientName: (jobPosition as any).client?.name ?? null,
     companyUid: (jobPosition as any).company?.uid,
     companyName: (jobPosition as any).company?.name,
     createdAt: jobPosition.createdAt,
@@ -103,6 +111,11 @@ export function JobPositionOneMapper(jobPosition: JobPositionWithRelations) {
     viewCount: jobPosition.viewCount,
     applicationCount: jobPosition.applicationCount,
     candidateSource: jobPosition.candidateSource,
+    moderationStatus: jobPosition.moderationStatus,
+    moderationReason: jobPosition.moderationReason,
+    moderatedAt: jobPosition.moderatedAt,
+    clientUid: (jobPosition as any).client?.uid ?? null,
+    clientName: (jobPosition as any).client?.name ?? null,
     companyUid: (jobPosition as any).company?.uid,
     companyName: (jobPosition as any).company?.name,
     createdAt: jobPosition.createdAt,

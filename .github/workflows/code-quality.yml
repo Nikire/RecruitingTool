@@ -1,32 +1,67 @@
 name: Code Quality
 
+# Gates that must be green before code is allowed near production.
+#
+# Trigger design:
+#   pull_request  -> every PR into development or production is gated.
+#   push          -> development only. Pushes to `production` are gated too,
+#                    but via deploy-prod.yml, which calls this workflow with
+#                    `uses:` so its deploy job can `needs:` it. Listing
+#                    `production` here as well would run every check twice on
+#                    each production push (two identically named check runs,
+#                    double the minutes) without adding any coverage.
+#   workflow_call -> makes this workflow reusable, which is the ONLY way a job
+#                    in another workflow can depend on these checks. `needs:`
+#                    cannot cross workflow boundaries.
+#
+# This workflow calls no other workflow, so it is a leaf and cannot form a
+# dependency cycle with its caller.
 on:
   pull_request:
     branches: [development, production]
   push:
-    branches: [development, production]
+    branches: [development]
+  workflow_call:
+
+permissions:
+  contents: read
 
 jobs:
   backend:
     name: Backend Quality Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: recruiting-tool-backend
+    env:
+      # `prisma generate` resolves the datasource url = env("DATABASE_URL")
+      # even though it never opens a connection. No step in this job talks to a
+      # database; this value only has to parse as a Postgres URL.
+      DATABASE_URL: postgresql://ci:ci@localhost:5432/ci?schema=public
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      # `cache: yarn` restores the Yarn global cache keyed on yarn.lock, so a
+      # `--frozen-lockfile` install resolves from disk instead of the network.
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: "20"
+          cache: "yarn"
           cache-dependency-path: recruiting-tool-backend/yarn.lock
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
+
+      # MUST run before lint / typecheck / build. Every one of them resolves
+      # types out of the generated client in node_modules/.prisma, and a client
+      # generated from a stale schema is exactly the drift these gates exist to
+      # catch. Do not reorder.
+      - name: Generate Prisma client
+        run: yarn db:generate
 
       - name: Run ESLint
         run: yarn lint:check
@@ -37,9 +72,16 @@ jobs:
       - name: Check Prettier formatting
         run: yarn format:check
 
+      # `nest build` compiles against tsconfig.build.json, which excludes specs
+      # and emits to dist/. deploy-prod.yml boots `node dist/main.js`, so this
+      # step is the closest thing CI has to the artifact production runs.
+      - name: Build backend
+        run: yarn build
+
   frontend:
     name: Frontend Quality Checks
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: recruiting-tool-frontend
@@ -51,8 +93,8 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          cache: 'yarn'
+          node-version: "20"
+          cache: "yarn"
           cache-dependency-path: recruiting-tool-frontend/yarn.lock
 
       - name: Install dependencies
@@ -66,3 +108,83 @@ jobs:
 
       - name: Check Prettier formatting
         run: yarn format:check
+
+      # The real proof. `yarn build` is `tsc -b && vite build`, so it catches
+      # what `yarn typecheck` alone cannot: bad imports that only resolve at
+      # bundle time, missing assets, a lazy route pointing at a file that no
+      # longer exists, Rollup failing on a circular import.
+      #
+      # Deliberately built WITHOUT any VITE_* values. Vite inlines them at build
+      # time, and the frontend is written to degrade into a telemetry-disabled
+      # path when they are absent - so an unconfigured build is a valid build,
+      # and proving it compiles needs no secrets. The bundle that actually ships
+      # is built in deploy-prod.yml, where the real VITE_* secrets are supplied.
+      - name: Build frontend
+        run: yarn build
+
+      # -- Unit tests: blocking gate ---------------------------------------
+      #
+      # CHOICE MADE, AND WHY: the suite is gated (a failure fails the job)
+      # rather than run as a non-blocking report. A report nobody has to act on
+      # is a report nobody reads. The cost of that choice is that the gate must
+      # not be red on the day it lands, so five spec files are carved out BY
+      # NAME below and run in the reporting step underneath instead. Nothing is
+      # deleted, skipped, or weakened - all 20 suites still execute on every
+      # run, 15 of them blocking.
+      #
+      # Carved out - genuinely failing, a product decision to fix (3 assertions
+      # across 2 files):
+      #   src/components/common/ErrorMessage.test.tsx
+      #     "Styling > should render retry button as outlined error variant"
+      #     (ErrorMessage.test.tsx:106) - queries a DOM node the current
+      #     ErrorMessage no longer renders, so the matcher receives undefined.
+      #   src/components/common/PageHeader.test.tsx
+      #     "Styling > should render header as flexbox with space-between"
+      #     (PageHeader.test.tsx:190)
+      #     "Layout > should center align items vertically"
+      #     (PageHeader.test.tsx:299) - both assert alignItems/justifyContent
+      #     that PageHeader no longer sets.
+      #   Fixing these means deciding whether the component or the test states
+      #   the intended behaviour. That is a product call, not a CI call, and
+      #   guessing at it here would quietly rewrite the spec.
+      #
+      # Carved out - never observed on their merits, NOT known-bad:
+      #   src/__tests__/pages/AdminDashboard.test.tsx
+      #   src/__tests__/pages/CandidatesPage.test.tsx
+      #   src/__tests__/pages/HRDashboard.test.tsx
+      #   All three abort during collection with EMFILE (too many open files)
+      #   while resolving @mui/icons-material - a Windows file-descriptor limit,
+      #   not a defect in the tests. Linux runners have a far higher limit and
+      #   these are expected to pass here, but expected is not verified, and a
+      #   gate that fails the first time it runs trains everyone to ignore CI.
+      #   They report non-blocking until one green run proves them; then move
+      #   them into the gate (delete their --exclude lines and the positional
+      #   filters below).
+      #
+      # `--exclude` is ADDITIVE in Vitest 2.x ("Additional file globs to be
+      # excluded from test"), so the excludes in vitest.config.ts still apply.
+      - name: Run unit tests (blocking gate)
+        run: |
+          yarn test:run \
+            --reporter=default \
+            --reporter=github-actions \
+            --exclude 'src/components/common/ErrorMessage.test.tsx' \
+            --exclude 'src/components/common/PageHeader.test.tsx' \
+            --exclude 'src/__tests__/pages/AdminDashboard.test.tsx' \
+            --exclude 'src/__tests__/pages/CandidatesPage.test.tsx' \
+            --exclude 'src/__tests__/pages/HRDashboard.test.tsx'
+
+      # -- Unit tests: quarantine, reporting only --------------------------
+      # The five files excluded above, run so their status stays visible in the
+      # log. `continue-on-error` keeps them from failing the job. Positional
+      # arguments are Vitest path filters; basenames are used because they are
+      # unique across this suite and contain no path separator to normalise.
+      - name: Run quarantined unit tests (reporting only, never blocks)
+        continue-on-error: true
+        run: |
+          yarn test:run --reporter=default \
+            ErrorMessage.test.tsx \
+            PageHeader.test.tsx \
+            AdminDashboard.test.tsx \
+            CandidatesPage.test.tsx \
+            HRDashboard.test.tsx

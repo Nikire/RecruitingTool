@@ -1,3 +1,4 @@
+import { aiKeys, aiRankingKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import * as aiApi from "../../api/ai";
@@ -10,8 +11,6 @@ import {
   UpdateScoringWeightsPayload,
 } from "../../types/ai-ranking";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
-
-const AI_RANKINGS_KEY = "aiRankings";
 
 /**
  * Hook to compare multiple candidates for a job position using AI
@@ -40,7 +39,7 @@ export const useCompareCandidates = () => {
  */
 export const useRankings = (jobPositionUid: string | undefined) => {
   return useQuery<RankedCandidateDto[], Error>({
-    queryKey: [AI_RANKINGS_KEY, jobPositionUid],
+    queryKey: aiRankingKeys.byJobPosition(jobPositionUid),
     queryFn: () => aiApi.getRankings(jobPositionUid!),
     enabled: !!jobPositionUid,
     staleTime: 5 * 60 * 1000, // 5 minutes
@@ -62,7 +61,7 @@ export const useScoreCandidate = () => {
     mutationFn: aiApi.scoreCandidate,
     onSuccess: (_, vars) => {
       queryClient.invalidateQueries({
-        queryKey: [AI_RANKINGS_KEY, vars.jobPositionUid],
+        queryKey: aiRankingKeys.byJobPosition(vars.jobPositionUid),
       });
       showSuccessToast(t("ai_scoring.scored_success"));
     },
@@ -72,14 +71,12 @@ export const useScoreCandidate = () => {
   });
 };
 
-const AI_SCORING_WEIGHTS_KEY = ["ai", "scoring-weights"] as const;
-
 /**
  * Hook to fetch the company AI scoring weights
  */
 export const useGetScoringWeights = () => {
   return useQuery<ScoringWeightsResponse, Error>({
-    queryKey: AI_SCORING_WEIGHTS_KEY,
+    queryKey: aiKeys.scoringWeights(),
     queryFn: aiApi.getScoringWeights,
     staleTime: 5 * 60 * 1000,
   });
@@ -99,7 +96,7 @@ export const useUpdateScoringWeights = () => {
   >({
     mutationFn: aiApi.updateScoringWeights,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: AI_SCORING_WEIGHTS_KEY });
+      queryClient.invalidateQueries({ queryKey: aiKeys.scoringWeights() });
       showSuccessToast(t("aiScoringWeights.saveSuccess"));
     },
     onError: (error) => {

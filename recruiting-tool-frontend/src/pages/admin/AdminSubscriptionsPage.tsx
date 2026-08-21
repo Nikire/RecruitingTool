@@ -377,6 +377,9 @@ const AdminSubscriptionsPage: React.FC = () => {
     }
   };
 
+  const hasNoSubscriptions =
+    !isLoading && !isError && (data?.subscriptions.length ?? 0) === 0;
+
   // Helper to format MRR
   const formatMRR = (mrr: number | undefined): string => {
     if (!mrr) return "$0.00";
@@ -587,9 +590,23 @@ const AdminSubscriptionsPage: React.FC = () => {
       {/* Subscriptions Table */}
       <Card>
         <CardContent>
-          <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+          <Typography variant="h6" gutterBottom>
             {t("admin.subscriptions.table_title")}
           </Typography>
+          {/*
+            MRR is derived from the plan's list price, not from an amount the
+            payment provider reports per subscription. Say so rather than let
+            the number read as billed revenue.
+          */}
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            {t("admin.subscriptions.mrr_estimate_note")}
+          </Typography>
+
+          {hasNoSubscriptions && (
+            <Alert severity="info" sx={{ mb: 2 }}>
+              {t("admin.subscriptions.empty")}
+            </Alert>
+          )}
 
           <Box sx={{ height: 600, width: "100%" }}>
             <DataGrid

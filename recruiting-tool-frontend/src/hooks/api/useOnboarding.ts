@@ -1,3 +1,4 @@
+import { authKeys, onboardingKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "../../api/axios";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
@@ -30,7 +31,7 @@ export interface HROnboardingCompleteResponse {
  */
 export function useHROnboardingStatus() {
   return useQuery<HROnboardingStatus>({
-    queryKey: ["onboarding", "hr", "status"],
+    queryKey: onboardingKeys.hrStatus(),
     queryFn: async () => {
       const response = await axios.get("/users/onboarding/hr/status");
       return response.data;
@@ -57,10 +58,10 @@ export function useCompleteHROnboarding() {
     onSuccess: (data) => {
       // Invalidate onboarding status
       queryClient.invalidateQueries({
-        queryKey: ["onboarding", "hr", "status"],
+        queryKey: onboardingKeys.hrStatus(),
       });
       // Invalidate user data
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
 
       showSuccessToast(data.message);
     },

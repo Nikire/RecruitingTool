@@ -1,3 +1,4 @@
+import { authKeys } from "../../api/queryKeys";
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -19,8 +20,34 @@ import {
 import { LinkedAccountsResponse, User } from "../../types/user.types";
 import { useUserAtom } from "./state/useUserAtom";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import { identify, reset } from "../../analytics";
+import { clearAttribution } from "../../utils/attribution";
 
-const AUTH_KEY = "auth";
+/**
+ * Binds the analytics + error-reporting identity to the user that just
+ * authenticated.
+ *
+ * ALWAYS the public string `uid` — never the numeric database id. Exposing a
+ * numeric id is a project-law violation, and the analytics wrapper rejects one
+ * at runtime anyway.
+ *
+ * Wrapped in try/catch: analytics is best-effort telemetry and must never be
+ * able to break a login or a signup.
+ */
+function identifyAuthenticatedUser(user: User | undefined | null): void {
+  if (!user || typeof user.uid !== "string" || !user.uid) return;
+  try {
+    identify(user.uid, {
+      companyUid: user.companyUid ?? user.company?.uid,
+      // Primary role drives most cohort splits; the full list is kept for
+      // multi-role accounts.
+      role: user.roles?.[0],
+      roles: user.roles,
+    });
+  } catch {
+    // Telemetry only — swallow.
+  }
+}
 
 export function useAuthMe() {
   const { setUser } = useUserAtom();
@@ -31,7 +58,7 @@ export function useAuthMe() {
     isLoading,
     isError,
   } = useQuery<User>({
-    queryKey: ["auth", "me"],
+    queryKey: authKeys.me(),
     queryFn: getCurrentUser,
     retry: 0,
     enabled: !!token, // Only fetch if token exists
@@ -97,8 +124,11 @@ export function useLogin() {
       localStorage.setItem("authToken", data.token);
       localStorage.setItem("refreshToken", data.refreshToken);
 
+      // Bind the analytics identity as soon as the session is real.
+      identifyAuthenticatedUser(data.user);
+
       // Invalidate to fetch user data
-      queryClient.invalidateQueries({ queryKey: [AUTH_KEY, "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
       showSuccessToast("Login successful! Welcome back.");
     },
     onError: (error) => {
@@ -113,6 +143,16 @@ export function useRegister() {
   return useMutation({
     mutationFn: register,
     onSuccess: (data) => {
+      // The account now exists server-side, so the identity and the attribution
+      // stash are settled BEFORE the token sanity checks below — a malformed
+      // token must not silently lose the conversion.
+      identifyAuthenticatedUser(data.user);
+
+      // The first-touch attribution has been persisted onto the User row by the
+      // register call, so drop the stash: a second signup in the same tab must
+      // not be credited to the same campaign twice.
+      clearAttribution();
+
       // Validate tokens before storing
       if (
         !data.token ||
@@ -153,7 +193,7 @@ export function useRegister() {
       localStorage.setItem("refreshToken", data.refreshToken);
 
       // Invalidate to fetch user data
-      queryClient.invalidateQueries({ queryKey: [AUTH_KEY, "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
       showSuccessToast("Account created successfully! Welcome aboard.");
     },
     onError: (error) => {
@@ -167,11 +207,19 @@ export function useLogout() {
   const { setUser } = useUserAtom();
 
   return () => {
+    // Drop the analytics + Sentry identity first, so nothing captured after
+    // this point is attributed to the user who just signed out.
+    try {
+      reset();
+    } catch {
+      // Telemetry only — swallow.
+    }
+
     // Clear both tokens
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
     setUser(null);
-    queryClient.removeQueries({ queryKey: [AUTH_KEY, "me"] });
+    queryClient.removeQueries({ queryKey: authKeys.me() });
   };
 }
 
@@ -207,7 +255,7 @@ export function useUpdateProfile() {
     mutationFn: updateProfile,
     onSuccess: (updatedUser) => {
       // Update user in cache and atom
-      queryClient.setQueryData([AUTH_KEY, "me"], updatedUser);
+      queryClient.setQueryData(authKeys.me(), updatedUser);
       setUser(updatedUser);
       showSuccessToast("Profile updated successfully!");
     },
@@ -224,7 +272,7 @@ export function useAddEmail() {
     mutationFn: addEmail,
     onSuccess: () => {
       // Refresh user data so email field updates
-      queryClient.invalidateQueries({ queryKey: [AUTH_KEY, "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
     },
   });
 }
@@ -233,7 +281,7 @@ export function useLinkedAccounts() {
   const token = localStorage.getItem("authToken");
 
   return useQuery<LinkedAccountsResponse>({
-    queryKey: [AUTH_KEY, "linked-accounts"],
+    queryKey: authKeys.linkedAccounts(),
     queryFn: getLinkedAccounts,
     enabled: !!token,
     staleTime: 5 * 60 * 1000,
@@ -252,7 +300,7 @@ export function useConfirmEmailChange() {
   return useMutation({
     mutationFn: confirmEmailChange,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [AUTH_KEY, "me"] });
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
     },
   });
 }

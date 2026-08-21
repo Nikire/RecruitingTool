@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { RolesType } from '@prisma/client';
 import { IsArray, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from 'class-validator';
 
@@ -49,6 +49,53 @@ export class CreateUserDto {
   @IsArray()
   @IsEnum(RolesType, { each: true })
   roles?: Array<RolesType>;
+
+  // --- Signup attribution -------------------------------------------------
+  // These values originate from the open internet (query string / document.referrer)
+  // and are therefore unvalidated user input. They are optional, never required for a
+  // signup to succeed, and length-capped so an attacker cannot store unbounded blobs.
+
+  @ApiPropertyOptional({ description: 'UTM source captured at signup', example: 'linkedin' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  utmSource?: string;
+
+  @ApiPropertyOptional({ description: 'UTM medium captured at signup', example: 'social' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  utmMedium?: string;
+
+  @ApiPropertyOptional({ description: 'UTM campaign captured at signup', example: 'relaunch-2026' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  utmCampaign?: string;
+
+  @ApiPropertyOptional({ description: 'UTM term captured at signup', example: 'applicant+tracking+system' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  utmTerm?: string;
+
+  @ApiPropertyOptional({ description: 'UTM content captured at signup', example: 'hero-cta-variant-b' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(255)
+  utmContent?: string;
+
+  @ApiPropertyOptional({ description: 'Referrer URL captured at signup', example: 'https://www.google.com/' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  referrerUrl?: string;
+
+  @ApiPropertyOptional({ description: 'First landing path on the site before signup', example: '/pricing' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  landingPath?: string;
 }
 export class UpdateUserDto {
   @ApiProperty({ description: 'The name of the user', example: 'John Doe 2' })

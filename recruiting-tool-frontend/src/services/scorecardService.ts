@@ -1,6 +1,50 @@
 /**
- * Scorecard Service
- * Mock API service for scorecard templates and submissions
+ * Scorecard Service — DELIBERATELY NON-FUNCTIONAL.
+ *
+ * ## Why every function here rejects
+ *
+ * Each function below used to `await` a `setTimeout` and then read from a
+ * module-level `mockTemplates` array — hardcoded fixtures such as "Technical
+ * Interview Scorecard", complete with an invented `evaluatorName: "Current
+ * User"`. None of it ever touched the network.
+ *
+ * Meanwhile `ScorecardModule` is registered in the backend (`app.module.ts`)
+ * and exposes nine real, authenticated, company-scoped endpoints. The polished
+ * scorecard components in `src/components/scorecard/` are complete, but no
+ * route renders them, so today nothing calls any of this.
+ *
+ * That combination is more dangerous than the feature simply being absent. The
+ * moment anyone adds a route pointing at `<ScorecardTemplateList />`, the
+ * screen would render — convincingly, with no error, no empty state and no
+ * console warning — and show a customer INVENTED evaluation data as if it were
+ * their own hiring records. Silent fabrication in an HR product is a
+ * correctness and trust failure, not a missing feature.
+ *
+ * So the fixtures are gone and every entry point rejects instead. This is
+ * intentional and must NOT be "fixed" by restoring mock data. It fails in every
+ * environment rather than only under `import.meta.env.DEV`, because the entire
+ * point is that it cannot reach a customer by accident: a build that wires the
+ * UI up fails loudly on the first call, in development, in CI and in preview.
+ *
+ * Rejection (rather than a synchronous `throw`) keeps the declared
+ * `Promise`-returning contract intact, so a caller that only attaches
+ * `.catch()` still observes the failure. Every consumer awaits these, and the
+ * `queryCache` / `mutationCache` handlers in `main.tsx` forward anything thrown
+ * inside React Query to Sentry, so a mis-wire surfaces in telemetry too.
+ *
+ * ## How to actually finish this feature
+ *
+ * Delete this file and replace it with a React Query hook module
+ * (`src/hooks/api/useScorecards.ts`) following the convention already used by
+ * `hooks/api/useAnalytics.ts` and `hooks/api/useAi.ts`: call `api.*` directly
+ * inside `useQuery` / `useMutation`, key the caches through `api/queryKeys.ts`,
+ * and let React Query own loading and error state. The endpoints already exist
+ * and are named per-function below. The backend speaks UIDs only — keep it that
+ * way; never surface a numeric `id`.
+ *
+ * Structured scorecards are a real paid-tier differentiator, which is why the
+ * backend module stays. The frontend should remain unrouted until a customer
+ * asks for it — see the handover notes for this decision.
  */
 
 import {
@@ -11,327 +55,162 @@ import {
   UpdateScorecardTemplateDto,
 } from "../types/scorecard";
 
-// Mock data storage
-let mockTemplates: ScorecardTemplate[] = [
-  {
-    uid: "template-1",
-    name: "Technical Interview Scorecard",
-    description: "Standard scorecard for technical interviews",
-    categories: [
-      {
-        uid: "cat-1",
-        name: "Technical Skills",
-        weight: 40,
-        criteria: [
-          {
-            uid: "crit-1",
-            name: "Problem Solving",
-            description: "Ability to analyze and solve complex problems",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-2",
-            name: "Code Quality",
-            description: "Writing clean, maintainable code",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-3",
-            name: "Technical Knowledge",
-            description: "Depth of technical expertise",
-            maxScore: 5,
-          },
-        ],
-      },
-      {
-        uid: "cat-2",
-        name: "Communication",
-        weight: 30,
-        criteria: [
-          {
-            uid: "crit-4",
-            name: "Verbal Communication",
-            description: "Clarity and effectiveness in verbal communication",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-5",
-            name: "Listening Skills",
-            description: "Active listening and understanding",
-            maxScore: 5,
-          },
-        ],
-      },
-      {
-        uid: "cat-3",
-        name: "Cultural Fit",
-        weight: 30,
-        criteria: [
-          {
-            uid: "crit-6",
-            name: "Team Collaboration",
-            description: "Ability to work effectively in a team",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-7",
-            name: "Values Alignment",
-            description: "Alignment with company values",
-            maxScore: 5,
-          },
-        ],
-      },
-    ],
-    createdAt: new Date("2025-01-15").toISOString(),
-    createdByName: "John Doe",
-  },
-  {
-    uid: "template-2",
-    name: "Behavioral Interview Scorecard",
-    description: "Scorecard for behavioral and cultural fit assessment",
-    categories: [
-      {
-        uid: "cat-4",
-        name: "Leadership",
-        weight: 35,
-        criteria: [
-          {
-            uid: "crit-8",
-            name: "Decision Making",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-9",
-            name: "Team Management",
-            maxScore: 5,
-          },
-        ],
-      },
-      {
-        uid: "cat-5",
-        name: "Adaptability",
-        weight: 35,
-        criteria: [
-          {
-            uid: "crit-10",
-            name: "Learning Agility",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-11",
-            name: "Change Management",
-            maxScore: 5,
-          },
-        ],
-      },
-      {
-        uid: "cat-6",
-        name: "Motivation",
-        weight: 30,
-        criteria: [
-          {
-            uid: "crit-12",
-            name: "Career Goals",
-            maxScore: 5,
-          },
-          {
-            uid: "crit-13",
-            name: "Company Interest",
-            maxScore: 5,
-          },
-        ],
-      },
-    ],
-    createdAt: new Date("2025-01-20").toISOString(),
-    createdByName: "Jane Smith",
-  },
-];
-
-const mockSubmissions: ScorecardSubmission[] = [];
-
-// Generate unique IDs
-const generateUid = () =>
-  `scorecard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+/**
+ * Base path of the live backend controller: `@Controller('scorecard')` behind
+ * the global `api` prefix set in `main.ts`.
+ */
+const SCORECARD_API_BASE = "/api/scorecard";
 
 /**
- * Get all scorecard templates
+ * Raised by every entry point in this module.
+ *
+ * A named class rather than a bare `Error`, so the failure is unmistakable in
+ * Sentry instead of being lost among generic errors.
  */
-export const getTemplates = async (): Promise<ScorecardTemplate[]> => {
-  // Simulate API delay
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return [...mockTemplates];
-};
+export class ScorecardServiceNotImplementedError extends Error {
+  /** The service function that was called, e.g. `getTemplate`. */
+  readonly operation: string;
+  /** The real endpoint that should have been called instead. */
+  readonly endpoint: string;
+
+  constructor(operation: string, endpoint: string, requested: string) {
+    super(
+      `Scorecard feature is not wired to the API. \`${operation}(${requested})\` has no ` +
+        `implementation: it previously returned HARDCODED MOCK DATA, which would have shown ` +
+        `a customer fabricated evaluation results as if they were their own records. ` +
+        `The real, authenticated endpoint is \`${endpoint}\`. ` +
+        `Do not restore the mock — implement \`src/hooks/api/useScorecards.ts\` against the live ` +
+        `\`${SCORECARD_API_BASE}\` controller (see the docblock in src/services/scorecardService.ts), ` +
+        `or leave the scorecard UI unrouted.`,
+    );
+    this.name = "ScorecardServiceNotImplementedError";
+    this.operation = operation;
+    this.endpoint = endpoint;
+  }
+}
 
 /**
- * Get a single scorecard template by UID
+ * Builds the rejected promise returned by every function in this module.
+ *
+ * `args` is echoed into the message purely so the failure names what was
+ * actually requested, which makes a stray call site obvious from the log line
+ * alone.
  */
-export const getTemplate = async (
-  uid: string,
-): Promise<ScorecardTemplate | null> => {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  const template = mockTemplates.find((t) => t.uid === uid);
-  return template ? { ...template } : null;
-};
+const notImplemented = (
+  operation: string,
+  endpoint: string,
+  ...args: unknown[]
+): Promise<never> =>
+  Promise.reject(
+    new ScorecardServiceNotImplementedError(
+      operation,
+      endpoint,
+      args.map((a) => JSON.stringify(a) ?? "undefined").join(", "),
+    ),
+  );
 
 /**
- * Create a new scorecard template
+ * List scorecard templates.
+ * Real endpoint: `GET /api/scorecard/templates?companyUid=` (HR, ADMIN, SUPER_ADMIN)
  */
-export const createTemplate = async (
+export const getTemplates = (): Promise<ScorecardTemplate[]> =>
+  notImplemented("getTemplates", `GET ${SCORECARD_API_BASE}/templates`);
+
+/**
+ * Fetch one scorecard template.
+ * Real endpoint: `GET /api/scorecard/templates/:uid` (HR, ADMIN, SUPER_ADMIN, USER)
+ */
+export const getTemplate = (uid: string): Promise<ScorecardTemplate | null> =>
+  notImplemented(
+    "getTemplate",
+    `GET ${SCORECARD_API_BASE}/templates/:uid`,
+    uid,
+  );
+
+/**
+ * Create a scorecard template.
+ * Real endpoint: `POST /api/scorecard/templates` (HR, ADMIN, SUPER_ADMIN)
+ */
+export const createTemplate = (
   data: CreateScorecardTemplateDto,
-): Promise<ScorecardTemplate> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const newTemplate: ScorecardTemplate = {
-    uid: generateUid(),
-    name: data.name,
-    description: data.description,
-    categories: data.categories.map((cat) => ({
-      uid: generateUid(),
-      name: cat.name,
-      weight: cat.weight,
-      criteria: cat.criteria.map((crit) => ({
-        uid: generateUid(),
-        name: crit.name,
-        description: crit.description,
-        maxScore: crit.maxScore,
-      })),
-    })),
-    createdAt: new Date().toISOString(),
-    createdByName: "Current User", // Would come from auth context
-  };
-
-  mockTemplates.push(newTemplate);
-  return newTemplate;
-};
+): Promise<ScorecardTemplate> =>
+  notImplemented(
+    "createTemplate",
+    `POST ${SCORECARD_API_BASE}/templates`,
+    data,
+  );
 
 /**
- * Update an existing scorecard template
+ * Update a scorecard template.
+ * Real endpoint: `PUT /api/scorecard/templates/:uid` (HR, ADMIN, SUPER_ADMIN)
  */
-export const updateTemplate = async (
+export const updateTemplate = (
   uid: string,
   data: UpdateScorecardTemplateDto,
-): Promise<ScorecardTemplate> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const index = mockTemplates.findIndex((t) => t.uid === uid);
-  if (index === -1) {
-    throw new Error("Template not found");
-  }
-
-  const updatedTemplate: ScorecardTemplate = {
-    ...mockTemplates[index],
-    name: data.name ?? mockTemplates[index].name,
-    description: data.description ?? mockTemplates[index].description,
-    categories: data.categories
-      ? data.categories.map((cat) => ({
-          uid: generateUid(),
-          name: cat.name,
-          weight: cat.weight,
-          criteria: cat.criteria.map((crit) => ({
-            uid: generateUid(),
-            name: crit.name,
-            description: crit.description,
-            maxScore: crit.maxScore,
-          })),
-        }))
-      : mockTemplates[index].categories,
-    updatedAt: new Date().toISOString(),
-  };
-
-  mockTemplates[index] = updatedTemplate;
-  return updatedTemplate;
-};
+): Promise<ScorecardTemplate> =>
+  notImplemented(
+    "updateTemplate",
+    `PUT ${SCORECARD_API_BASE}/templates/:uid`,
+    uid,
+    data,
+  );
 
 /**
- * Delete a scorecard template
+ * Delete a scorecard template.
+ * Real endpoint: `DELETE /api/scorecard/templates/:uid` → 204 (HR, ADMIN, SUPER_ADMIN)
  */
-export const deleteTemplate = async (uid: string): Promise<void> => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  mockTemplates = mockTemplates.filter((t) => t.uid !== uid);
-};
+export const deleteTemplate = (uid: string): Promise<void> =>
+  notImplemented(
+    "deleteTemplate",
+    `DELETE ${SCORECARD_API_BASE}/templates/:uid`,
+    uid,
+  );
 
 /**
- * Submit a scorecard for an interview
+ * Submit a completed scorecard for an interview.
+ * Real endpoint: `POST /api/scorecard/submit` (HR, ADMIN, SUPER_ADMIN, USER)
+ *
+ * The backend derives the evaluator from the authenticated user. The old mock
+ * invented `evaluatorName: "Current User"` — exactly the kind of fabricated
+ * attribution that must never be written onto an evaluation record.
  */
-export const submitScorecard = async (
+export const submitScorecard = (
   data: SubmitScorecardDto,
-): Promise<ScorecardSubmission> => {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const template = mockTemplates.find((t) => t.uid === data.templateUid);
-  if (!template) {
-    throw new Error("Template not found");
-  }
-
-  // Calculate overall score based on weighted categories
-  let totalWeightedScore = 0;
-  const enrichedScores = data.scores.map((score) => {
-    // Find criterion and category
-    let categoryName = "";
-    let criterionName = "";
-    let categoryWeight = 0;
-    let maxScore = 5;
-
-    for (const category of template.categories) {
-      const criterion = category.criteria.find(
-        (c) => c.uid === score.criterionUid,
-      );
-      if (criterion) {
-        categoryName = category.name;
-        criterionName = criterion.name;
-        categoryWeight = category.weight;
-        maxScore = criterion.maxScore;
-
-        // Calculate weighted contribution
-        const normalizedScore = (score.score / maxScore) * 100;
-        const criteriaCount = category.criteria.length;
-        const weightPerCriterion = categoryWeight / criteriaCount;
-        totalWeightedScore += (normalizedScore * weightPerCriterion) / 100;
-        break;
-      }
-    }
-
-    return {
-      ...score,
-      criterionName,
-      categoryName,
-    };
-  });
-
-  const newSubmission: ScorecardSubmission = {
-    uid: generateUid(),
-    templateUid: data.templateUid,
-    templateName: template.name,
-    interviewUid: data.interviewUid,
-    evaluatorUid: "current-user-uid", // Would come from auth context
-    evaluatorName: "Current User",
-    scores: enrichedScores,
-    overallScore: Math.round(totalWeightedScore * 100) / 100,
-    notes: data.notes,
-    submittedAt: new Date().toISOString(),
-  };
-
-  mockSubmissions.push(newSubmission);
-  return newSubmission;
-};
+): Promise<ScorecardSubmission> =>
+  notImplemented("submitScorecard", `POST ${SCORECARD_API_BASE}/submit`, data);
 
 /**
- * Get all scorecards for a specific interview
+ * List every scorecard submitted for one interview.
+ * Real endpoint: `GET /api/scorecard/interview/:interviewUid` (HR, ADMIN, SUPER_ADMIN)
  */
-export const getScorecardsByInterview = async (
+export const getScorecardsByInterview = (
   interviewUid: string,
-): Promise<ScorecardSubmission[]> => {
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  return mockSubmissions.filter((s) => s.interviewUid === interviewUid);
-};
+): Promise<ScorecardSubmission[]> =>
+  notImplemented(
+    "getScorecardsByInterview",
+    `GET ${SCORECARD_API_BASE}/interview/:interviewUid`,
+    interviewUid,
+  );
 
 /**
- * Get a single scorecard submission
+ * Fetch one scorecard submission.
+ * Real endpoint: `GET /api/scorecard/:uid` (HR, ADMIN, SUPER_ADMIN, USER)
  */
-export const getScorecard = async (
+export const getScorecard = (
   uid: string,
-): Promise<ScorecardSubmission | null> => {
-  await new Promise((resolve) => setTimeout(resolve, 200));
-  const submission = mockSubmissions.find((s) => s.uid === uid);
-  return submission ? { ...submission } : null;
-};
+): Promise<ScorecardSubmission | null> =>
+  notImplemented("getScorecard", `GET ${SCORECARD_API_BASE}/:uid`, uid);
+
+/**
+ * Aggregate scorecard summary for an interview.
+ * Real endpoint: `GET /api/scorecard/interview/:interviewUid/summary` (HR, ADMIN, SUPER_ADMIN)
+ *
+ * Had no mock counterpart at all — included so the whole controller surface is
+ * documented in one place for whoever wires this up.
+ */
+export const getInterviewSummary = (interviewUid: string): Promise<never> =>
+  notImplemented(
+    "getInterviewSummary",
+    `GET ${SCORECARD_API_BASE}/interview/:interviewUid/summary`,
+    interviewUid,
+  );

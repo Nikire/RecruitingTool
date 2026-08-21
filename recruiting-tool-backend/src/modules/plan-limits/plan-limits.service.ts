@@ -23,18 +23,34 @@ interface PlanLimitRecord {
 }
 
 /**
- * Default plan limit values sourced from the legacy plan-limits.config.ts.
- * These are used to seed the database on first boot if the PlanLimit table is empty.
+ * Default plan limit values for every tier Borderless sells.
+ *
+ * Kept deliberately in the same shape as `src/modules/quota/config/plan-limits.config.ts`,
+ * which is the file the *enforcement* path and the public `GET /quota/plan-limits`
+ * endpoint actually read. The table seeded here backs the SUPER_ADMIN plan-limits
+ * screen. If the two ever disagree, the config file wins at runtime — see the
+ * note on `seedDefaults`.
+ *
+ * Tier design (relaunch):
+ *  - FREE is a permanent tier, not a trial. One active position, one seat, and a
+ *    hosted careers page. It exists so a company can publish a real job for $0,
+ *    which is what feeds the indexed careers pages the SEO loop depends on.
+ *    No AI scoring — that is the first thing worth paying for.
+ *  - PROFESSIONAL / AGENCY / ENTERPRISE carry `maxUsers: -1` because the public
+ *    pricing promise is "unlimited recruiters, we don't charge per seat". A seat
+ *    cap on a paid tier would make that claim false.
+ *  - AGENCY sits between Professional and Enterprise for multi-client staffing
+ *    firms that outgrow 15 positions but do not need an unlimited contract.
  */
 const DEFAULT_PLAN_LIMITS: Array<Omit<PlanLimitRecord, 'id' | 'uid' | 'createdAt' | 'updatedAt'>> = [
   {
     planType: 'FREE',
-    maxJobPositions: 3,
+    maxJobPositions: 1,
     maxCandidatesPerPosition: 50,
-    maxUsers: 3,
+    maxUsers: 1,
     maxStorageMB: 500,
-    aiScoringEnabled: true,
-    aiScoringCreditsPerMonth: 20,
+    aiScoringEnabled: false,
+    aiScoringCreditsPerMonth: 0,
     emailTemplatesEnabled: true,
     analyticsEnabled: false,
   },
@@ -42,10 +58,21 @@ const DEFAULT_PLAN_LIMITS: Array<Omit<PlanLimitRecord, 'id' | 'uid' | 'createdAt
     planType: 'PROFESSIONAL',
     maxJobPositions: 15,
     maxCandidatesPerPosition: 200,
-    maxUsers: 10,
+    maxUsers: -1,
     maxStorageMB: 10000,
     aiScoringEnabled: true,
     aiScoringCreditsPerMonth: 200,
+    emailTemplatesEnabled: true,
+    analyticsEnabled: true,
+  },
+  {
+    planType: 'AGENCY',
+    maxJobPositions: 50,
+    maxCandidatesPerPosition: 500,
+    maxUsers: -1,
+    maxStorageMB: 50000,
+    aiScoringEnabled: true,
+    aiScoringCreditsPerMonth: 750,
     emailTemplatesEnabled: true,
     analyticsEnabled: true,
   },
@@ -70,20 +97,38 @@ export class PlanLimitsService {
 
   /**
    * Called during application bootstrap.
-   * Seeds the PlanLimit table with default values if it is empty.
-   * Uses upsert on planType so the operation is fully idempotent.
+   *
+   * Creates any plan tier that is missing from the PlanLimit table and leaves
+   * every existing row untouched.
+   *
+   * The previous implementation bailed out entirely once the table had a single
+   * row, which meant a newly added tier (AGENCY) would never appear on an
+   * already-deployed database. Creating only the missing tiers gets new plans
+   * onto production without silently reverting limits a SUPER_ADMIN tuned by
+   * hand on the admin screen.
+   *
+   * NOTE: changing a value in DEFAULT_PLAN_LIMITS does NOT update an existing
+   * row, and does NOT change enforcement — quota enforcement and the public
+   * `GET /quota/plan-limits` endpoint both read
+   * `src/modules/quota/config/plan-limits.config.ts`. Editing that file (or the
+   * row on the admin screen) is a separate, deliberate step.
    */
   async seedDefaults(): Promise<void> {
-    const count = await this.databaseService.planLimit.count();
+    const existing = (await this.databaseService.planLimit.findMany({
+      select: { planType: true },
+    })) as Array<{ planType: string }>;
 
-    if (count > 0) {
-      this.logger.log(`PlanLimit table already has ${count} record(s). Skipping seed.`);
+    const existingTypes = new Set(existing.map((r) => r.planType));
+    const missing = DEFAULT_PLAN_LIMITS.filter((d) => !existingTypes.has(d.planType));
+
+    if (missing.length === 0) {
+      this.logger.log(`PlanLimit table already has all ${existingTypes.size} known tier(s). Nothing to seed.`);
       return;
     }
 
-    this.logger.log('Seeding default plan limits...');
+    this.logger.log(`Seeding ${missing.length} missing plan tier(s): ${missing.map((m) => m.planType).join(', ')}`);
 
-    for (const defaults of DEFAULT_PLAN_LIMITS) {
+    for (const defaults of missing) {
       await this.databaseService.planLimit.upsert({
         where: { planType: defaults.planType },
         update: {},
@@ -91,7 +136,7 @@ export class PlanLimitsService {
       });
     }
 
-    this.logger.log('Default plan limits seeded successfully.');
+    this.logger.log('Missing plan limits seeded successfully.');
   }
 
   /**

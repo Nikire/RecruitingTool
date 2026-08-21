@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -59,7 +60,7 @@ const fetchAdminQuotaOverview = async (
 
 export function useAdminQuotaOverview(params: AdminQuotaOverviewParams) {
   return useQuery<QuotaOverviewResponse>({
-    queryKey: ["admin", "quota", "overview", params],
+    queryKey: adminKeys.quotaOverview(params),
     queryFn: () => fetchAdminQuotaOverview(params),
     staleTime: 3 * 60 * 1000, // 3 minutes
     retry: 2,

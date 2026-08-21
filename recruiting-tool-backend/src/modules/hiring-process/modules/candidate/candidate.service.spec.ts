@@ -5,6 +5,8 @@ import { EmailService } from 'src/modules/email/email.service';
 import { StorageService } from 'src/modules/storage/storage.service';
 import { AuditLogService } from 'src/modules/audit-log/audit-log.service';
 import { CandidateActivityService } from './services/candidate-activity.service';
+import { NotificationsService } from 'src/modules/notifications/notifications.service';
+import { ActivationEventsService } from 'src/modules/tracking/activation-events.service';
 import { CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from './dto/candidate.dto';
 import { ApplicationSource, RolesType, User } from '@prisma/client';
 import { ConflictException, NotFoundException } from '@nestjs/common';
@@ -29,6 +31,10 @@ describe('CandidateService', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: null,
+    // Candidates are tenant-scoped since @@unique([email, companyId]); every
+    // write path sets companyId. The fixture models a candidate owned by the
+    // same company as `mockUser` (companyId 1).
+    companyId: 1,
   };
 
   const mockUser = {
@@ -130,6 +136,14 @@ describe('CandidateService', () => {
     logAction: jest.fn(),
   };
 
+  const mockNotificationsService = {
+    create: jest.fn(),
+  };
+
+  const mockActivationEventsService = {
+    candidateCreated: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -139,6 +153,8 @@ describe('CandidateService', () => {
         { provide: EmailService, useValue: mockEmailService },
         { provide: StorageService, useValue: mockStorageService },
         { provide: AuditLogService, useValue: mockAuditLogService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
+        { provide: ActivationEventsService, useValue: mockActivationEventsService },
       ],
     }).compile();
 
@@ -182,6 +198,8 @@ describe('CandidateService', () => {
           utmMedium: createDto.utmMedium,
           utmCampaign: createDto.utmCampaign,
         },
+        // The service now hydrates the createdByUser relation so the mapper can expose it.
+        include: { createdByUser: true },
       });
     });
 
@@ -268,13 +286,23 @@ describe('CandidateService', () => {
         where: { uid: createManualDto.jobPositionUid },
         include: expect.any(Object),
       });
+      // The existing-candidate lookup must be scoped to the hiring company: Candidate.email
+      // is unique per tenant, so an unscoped lookup would read another company's record.
+      expect(databaseService.candidate.findUnique).toHaveBeenCalledWith({
+        where: {
+          email_companyId: { email: createManualDto.email, companyId: mockJobPosition.companyId },
+        },
+      });
       expect(databaseService.candidate.create).toHaveBeenCalledWith({
         data: {
           name: createManualDto.name,
           email: createManualDto.email,
           source: ApplicationSource.MANUAL,
           sourceDetails: createManualDto.sourceDetails,
+          companyId: mockJobPosition.companyId,
+          createdByUserId: mockUser.id,
         },
+        include: { createdByUser: true },
       });
     });
 
@@ -313,9 +341,11 @@ describe('CandidateService', () => {
       };
 
       mockDatabaseService.jobPosition.findUnique.mockResolvedValue(mockJobPosition);
+      // A candidate row already scoped to this company is itself the conflict now -
+      // the per-tenant unique index would reject the insert.
       mockDatabaseService.candidate.findUnique.mockResolvedValue({
         ...mockCandidate,
-        hiringProcesses: [{ id: 1, companyId: 1 }], // Existing hiring process for this company
+        companyId: 1,
       });
 
       await expect(service.createManual(createManualDto, mockUser)).rejects.toThrow(ConflictException);
@@ -342,6 +372,28 @@ describe('CandidateService', () => {
       mockDatabaseService.candidate.findFirst.mockResolvedValue(null);
 
       await expect(service.findOne('invalid-uid', mockUser)).rejects.toThrow(EntityNotFoundException);
+    });
+
+    it('should hide a candidate owned by another company', async () => {
+      mockDatabaseService.candidate.findFirst.mockResolvedValue({
+        ...mockCandidate,
+        companyId: 99,
+        hiringProcesses: [{ id: 1, companyId: 99 }],
+      });
+
+      await expect(service.findOne('cand-uid-123', mockUser)).rejects.toThrow(EntityNotFoundException);
+    });
+
+    it('should hide another company candidate that has no hiring process yet', async () => {
+      // Regression guard: the old check only ran when hiringProcesses.length > 0,
+      // so a freshly created / imported candidate was visible to every tenant.
+      mockDatabaseService.candidate.findFirst.mockResolvedValue({
+        ...mockCandidate,
+        companyId: 99,
+        hiringProcesses: [],
+      });
+
+      await expect(service.findOne('cand-uid-123', mockUser)).rejects.toThrow(EntityNotFoundException);
     });
   });
 
@@ -376,6 +428,17 @@ describe('CandidateService', () => {
 
       await expect(service.update('invalid-uid', { name: 'Test' }, mockUser)).rejects.toThrow(EntityNotFoundException);
     });
+
+    it('should refuse to update a candidate owned by another company', async () => {
+      mockDatabaseService.candidate.findUnique.mockResolvedValue({
+        ...mockCandidate,
+        companyId: 99,
+        hiringProcesses: [],
+      });
+
+      await expect(service.update('cand-uid-123', { name: 'Test' }, mockUser)).rejects.toThrow(EntityNotFoundException);
+      expect(databaseService.candidate.update).not.toHaveBeenCalled();
+    });
   });
 
   describe('remove', () => {
@@ -400,6 +463,32 @@ describe('CandidateService', () => {
       mockDatabaseService.candidate.findUnique.mockResolvedValue(null);
 
       await expect(service.remove('invalid-uid', mockUser)).rejects.toThrow(EntityNotFoundException);
+    });
+
+    it('should refuse to soft delete a candidate owned by another company', async () => {
+      mockDatabaseService.candidate.findUnique.mockResolvedValue({
+        ...mockCandidate,
+        companyId: 99,
+        hiringProcesses: [],
+      });
+
+      await expect(service.remove('cand-uid-123', mockUser)).rejects.toThrow(EntityNotFoundException);
+      expect(databaseService.candidate.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findNotesByCandidateUid', () => {
+    it("should refuse to read another company's candidate notes", async () => {
+      // This endpoint previously took no user at all and performed no tenancy
+      // check, so any authenticated caller could read private recruiter notes.
+      mockDatabaseService.candidate.findFirst.mockResolvedValue({
+        ...mockCandidate,
+        companyId: 99,
+        hiringProcesses: [],
+      });
+
+      await expect(service.findNotesByCandidateUid('cand-uid-123', mockUser)).rejects.toThrow(EntityNotFoundException);
+      expect(databaseService.candidateNote.findMany).not.toHaveBeenCalled();
     });
   });
 });

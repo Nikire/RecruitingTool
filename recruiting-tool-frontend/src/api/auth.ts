@@ -18,13 +18,45 @@ export function login(data: {
   return api.post("/auth/sign-in", data).then((res) => res.data);
 }
 
-export function register(data: {
+/**
+ * First-touch marketing attribution accepted by `POST /auth/register`.
+ *
+ * Every field is optional: omitting all of them never fails the request, which
+ * is deliberate — a visitor with sessionStorage blocked must still be able to
+ * sign up. The fields are WRITE-ONLY server-side (they are not part of
+ * `UserResponseDto`), so nothing here is ever read back from the API.
+ *
+ * Populate with `buildRegistrationAttribution()` from
+ * `src/pages/auth/signupFunnel.ts` rather than mapping the stash by hand.
+ */
+export interface RegistrationAttribution {
+  /** Max 255 chars server-side. */
+  utmSource?: string;
+  /** Max 255 chars server-side. */
+  utmMedium?: string;
+  /** Max 255 chars server-side. */
+  utmCampaign?: string;
+  /** Max 255 chars server-side. */
+  utmTerm?: string;
+  /** Max 255 chars server-side. */
+  utmContent?: string;
+  /** Raw `document.referrer` of the first touch. Max 2048 chars server-side. */
+  referrerUrl?: string;
+  /** Pathname of the session's first page. Max 2048 chars server-side. */
+  landingPath?: string;
+}
+
+export interface RegisterPayload extends RegistrationAttribution {
   name: string;
   email: string;
   password: string;
   roles?: string[];
   companyName?: string;
-}): Promise<{ user: User; token: string; refreshToken: string }> {
+}
+
+export function register(
+  data: RegisterPayload,
+): Promise<{ user: User; token: string; refreshToken: string }> {
   return api.post("/auth/register", data).then((res) => res.data);
 }
 

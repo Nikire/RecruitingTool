@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ExperienceLevel, JobPositionStatus, JobType, SalaryPeriod, WorkLocation } from '@prisma/client';
+import { ExperienceLevel, JobModerationStatus, JobPositionStatus, JobType, SalaryPeriod, WorkLocation } from '@prisma/client';
 
 export class PublicApiJobPositionResponseDto {
   @ApiProperty({
@@ -221,4 +221,26 @@ export class PublicApiJobPositionResponseDto {
     example: '2025-06-01T08:00:00Z',
   })
   updatedAt: Date;
+
+  @ApiProperty({
+    description:
+      'Platform moderation state. Independent from `status`. Only APPROVED postings are visible on the public job board. Postings created by a company without an active paid subscription start as PENDING_APPROVAL and require administrator approval.',
+    enum: JobModerationStatus,
+    example: JobModerationStatus.APPROVED,
+  })
+  moderationStatus: JobModerationStatus;
+
+  @ApiProperty({
+    description: 'Reason supplied by the administrator when the posting was rejected',
+    required: false,
+    nullable: true,
+  })
+  moderationReason?: string | null;
+
+  @ApiProperty({
+    description: 'When the posting was approved or rejected',
+    required: false,
+    nullable: true,
+  })
+  moderatedAt?: Date | null;
 }

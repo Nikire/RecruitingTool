@@ -1,11 +1,19 @@
 import { Box, Container, Typography, Divider, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import Seo from "../../components/common/Seo";
 
 const TermsOfServicePage = () => {
   const { t } = useTranslation();
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
+      {/* Left indexable on purpose: legal pages carry brand queries and are a
+          trust signal both buyers and Google look for. */}
+      <Seo
+        title={t("seo.legal.terms.title")}
+        description={t("seo.legal.terms.description")}
+      />
+
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="h3"
@@ -27,7 +35,12 @@ const TermsOfServicePage = () => {
 
       {/* Introduction */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.introduction.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -37,7 +50,12 @@ const TermsOfServicePage = () => {
 
       {/* Acceptance of Terms */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.acceptance.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -47,7 +65,12 @@ const TermsOfServicePage = () => {
 
       {/* User Accounts */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.user_accounts.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -68,7 +91,12 @@ const TermsOfServicePage = () => {
 
       {/* Services Provided */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.services.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -78,7 +106,12 @@ const TermsOfServicePage = () => {
 
       {/* Subscription and Payment */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.payment.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -99,7 +132,12 @@ const TermsOfServicePage = () => {
 
       {/* User Conduct */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.conduct.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -123,7 +161,12 @@ const TermsOfServicePage = () => {
 
       {/* Intellectual Property */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.intellectual_property.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -133,7 +176,12 @@ const TermsOfServicePage = () => {
 
       {/* Data Privacy */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.data_privacy.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -147,7 +195,12 @@ const TermsOfServicePage = () => {
 
       {/* Termination */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.termination.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -157,7 +210,12 @@ const TermsOfServicePage = () => {
 
       {/* Limitation of Liability */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.liability.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -167,7 +225,12 @@ const TermsOfServicePage = () => {
 
       {/* Changes to Terms */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.changes.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -177,7 +240,12 @@ const TermsOfServicePage = () => {
 
       {/* Contact Information */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.terms.contact.title")}
         </Typography>
         <Typography variant="body1" paragraph>

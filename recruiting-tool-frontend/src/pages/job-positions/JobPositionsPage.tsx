@@ -35,6 +35,8 @@ import JobPositionCard from "../../components/job-positions/JobPositionCard";
 import JobPositionFilters, {
   JobPositionFiltersState,
 } from "../../components/job-positions/JobPositionFilters";
+import JobModerationNotice from "../../components/job-positions/JobModerationNotice";
+import StatusLabel from "../../components/StatusLabel";
 import { useListJobPositions } from "../../hooks/api/useJobPositions";
 import { useNavigate } from "react-router-dom";
 import { useAuthMe } from "../../hooks/api/useAuth";
@@ -46,6 +48,8 @@ import {
   QuotaBanner,
 } from "../../components/common";
 import { formatRelativeTime } from "../../utils/dateFormatters";
+import { ClientFilterSelect } from "../../components/filters";
+import { PaginationParams } from "../../types/pagination.types";
 
 const JobPositionsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -82,18 +86,32 @@ const JobPositionsPage: React.FC = () => {
     sortOrder: "desc",
   });
 
-  // Fetch job positions with server-side pagination and filtering
-  const { data, isLoading, error } = useListJobPositions({
+  // End-client filter — "show me every open role for Acme". Held separately from the
+  // JobPositionFilters state so that component keeps its existing contract.
+  const [clientUid, setClientUid] = useState("");
+
+  // Typed as a const rather than inlined so the extra `clientUid` query param passes
+  // through without widening the shared PaginationParams type.
+  const listParams: PaginationParams & { clientUid?: string } = {
     page: page + 1, // Convert to 1-based for API
     limit: pageSize,
     search: filters.search || undefined,
     status: filters.status !== "ALL" ? filters.status : undefined,
+    clientUid: clientUid || undefined,
     sortBy: filters.sortBy,
     sortOrder: filters.sortOrder,
-  });
+  };
+
+  // Fetch job positions with server-side pagination and filtering
+  const { data, isLoading, error } = useListJobPositions(listParams);
 
   const jobPositions = data?.data || [];
   const totalCount = data?.meta?.total || 0;
+
+  // Postings on this page still waiting for platform approval
+  const pendingModerationCount = jobPositions.filter(
+    (position: JobPosition) => position.moderationStatus === "PENDING_APPROVAL",
+  ).length;
 
   // Wait for user data to load before rendering (fixes race condition)
   if (userLoading) {
@@ -123,6 +141,11 @@ const JobPositionsPage: React.FC = () => {
   const handleFilterChange = (newFilters: JobPositionFiltersState) => {
     setFilters(newFilters);
     setPage(0); // Reset to first page when filters change
+  };
+
+  const handleClientChange = (nextClientUid: string) => {
+    setClientUid(nextClientUid);
+    setPage(0); // Reset to first page when the client filter changes
   };
 
   const handleCloseStagesDialog = () => {
@@ -182,7 +205,8 @@ const JobPositionsPage: React.FC = () => {
         filters.status !== "ALL" ||
         filters.location ||
         filters.dateFrom ||
-        filters.dateTo
+        filters.dateTo ||
+        clientUid
           ? t("job_position_card.no_results")
           : t("job_position_card.no_positions")}
       </Typography>
@@ -191,6 +215,7 @@ const JobPositionsPage: React.FC = () => {
         !filters.location &&
         !filters.dateFrom &&
         !filters.dateTo &&
+        !clientUid &&
         canManage && (
           <Button
             variant="contained"
@@ -276,8 +301,25 @@ const JobPositionsPage: React.FC = () => {
         labelKey="subscription.quota.job_positions"
       />
 
+      {/* Why some postings are not on the public careers board yet */}
+      {pendingModerationCount > 0 && (
+        <JobModerationNotice
+          moderationStatus="PENDING_APPROVAL"
+          count={pendingModerationCount}
+        />
+      )}
+
       {/* Filters */}
       <JobPositionFilters filters={filters} onChange={handleFilterChange} />
+
+      {/* End-client filter — the agency question "every open role for Acme" */}
+      <Box sx={{ mb: 2 }}>
+        <ClientFilterSelect
+          value={clientUid}
+          onChange={handleClientChange}
+          size="small"
+        />
+      </Box>
 
       {/* Pagination Info */}
       {!isLoading && totalCount > 0 && (
@@ -418,7 +460,15 @@ const JobPositionsPage: React.FC = () => {
                             label={t(`status.${position.status.toLowerCase()}`)}
                             color={statusColor}
                             size="small"
+                            variant="filled"
                           />
+                          {position.moderationStatus &&
+                            position.moderationStatus !== "APPROVED" && (
+                              <StatusLabel
+                                status={position.moderationStatus}
+                                size="small"
+                              />
+                            )}
                         </Box>
                       </TableCell>
 

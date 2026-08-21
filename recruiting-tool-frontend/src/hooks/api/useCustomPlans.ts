@@ -1,3 +1,4 @@
+import { customPlanKeys, stripeConfigKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,14 +16,12 @@ import type {
 } from "../../types/customPlans.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const CUSTOM_PLANS_KEY = "adminCustomPlans";
-
 /**
  * Fetch all custom plans (SUPER_ADMIN only)
  */
 export function useCustomPlans() {
   return useQuery({
-    queryKey: [CUSTOM_PLANS_KEY],
+    queryKey: customPlanKeys.all,
     queryFn: getCustomPlans,
     staleTime: 2 * 60 * 1000, // 2 minutes
   });
@@ -38,7 +37,7 @@ export function useCreateCustomPlan() {
   return useMutation({
     mutationFn: (dto: CreateCustomPlanDto) => createCustomPlan(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CUSTOM_PLANS_KEY] });
+      queryClient.invalidateQueries({ queryKey: customPlanKeys.all });
       showSuccessToast(t("custom_plans.create_success"));
     },
     onError: (error) => {
@@ -58,7 +57,7 @@ export function useUpdateCustomPlan() {
     mutationFn: ({ uid, dto }: { uid: string; dto: UpdateCustomPlanDto }) =>
       updateCustomPlan(uid, dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CUSTOM_PLANS_KEY] });
+      queryClient.invalidateQueries({ queryKey: customPlanKeys.all });
       showSuccessToast(t("custom_plans.update_success"));
     },
     onError: (error) => {
@@ -77,7 +76,7 @@ export function useDeleteCustomPlan() {
   return useMutation({
     mutationFn: (uid: string) => deleteCustomPlan(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CUSTOM_PLANS_KEY] });
+      queryClient.invalidateQueries({ queryKey: customPlanKeys.all });
       showSuccessToast(t("custom_plans.delete_success"));
     },
     onError: (error) => {
@@ -97,7 +96,7 @@ export function useAssignCustomPlan() {
     mutationFn: ({ uid, companyUid }: { uid: string; companyUid: string }) =>
       assignCustomPlan(uid, companyUid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CUSTOM_PLANS_KEY] });
+      queryClient.invalidateQueries({ queryKey: customPlanKeys.all });
       showSuccessToast(t("custom_plans.assign_success"));
     },
     onError: (error) => {
@@ -111,7 +110,7 @@ export function useAssignCustomPlan() {
  */
 export function useStripeConfig() {
   return useQuery({
-    queryKey: ["stripeConfig"],
+    queryKey: stripeConfigKeys.all,
     queryFn: getStripeConfig,
     staleTime: 10 * 60 * 1000, // 10 minutes — rarely changes
   });
@@ -127,7 +126,7 @@ export function useSyncCustomPlanToStripe() {
   return useMutation({
     mutationFn: (uid: string) => syncCustomPlanToStripe(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CUSTOM_PLANS_KEY] });
+      queryClient.invalidateQueries({ queryKey: customPlanKeys.all });
       showSuccessToast(t("custom_plans.stripe_sync_success"));
     },
     onError: (error) => {
