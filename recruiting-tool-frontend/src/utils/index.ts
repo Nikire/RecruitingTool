@@ -49,3 +49,9 @@ export * from "./permissions";
 
 // Plan Feature Builder
 export { buildPlanFeatures } from "./buildPlanFeatures";
+
+// Subscription Status Helpers
+export {
+  hasActivePaidSubscription,
+  PAID_SUBSCRIPTION_PLANS,
+} from "./subscriptionStatus";

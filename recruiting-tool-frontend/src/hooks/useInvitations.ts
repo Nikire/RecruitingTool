@@ -3,6 +3,8 @@ import { invitationsService } from "../services/invitations.service";
 import { CreateInvitationDto, InvitationStatus } from "../types/invitations";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { ANALYTICS_EVENTS } from "../analytics";
+import { useActivationEvents } from "./api/useActivationEvents";
 
 /**
  * Hook to fetch company invitations
@@ -24,15 +26,22 @@ export const useCompanyInvitations = (
 export const useCreateInvitation = (companyUid: string) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
+  const { trackAlways } = useActivationEvents();
 
   return useMutation({
     mutationFn: (data: CreateInvitationDto) =>
       invitationsService.createInvitation(companyUid, data),
-    onSuccess: () => {
+    onSuccess: (created, variables) => {
       queryClient.invalidateQueries({
         queryKey: ["companyInvitations", companyUid],
       });
       toast.success(t("team.invitation_sent"));
+      // Expansion signal - every invite counts, not just the first.
+      // Mirrored server-side as TEAMMATE_INVITED.
+      trackAlways(ANALYTICS_EVENTS.TEAMMATE_INVITED, {
+        invitationUid: created?.uid,
+        role: variables?.role,
+      });
     },
     onError: (error: unknown) => {
       const axiosError = error as {
@@ -82,7 +91,7 @@ export const useAcceptInvitation = () => {
   return useMutation({
     mutationFn: (token: string) => invitationsService.acceptInvitation(token),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["currentUser"] });
+      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
       queryClient.invalidateQueries({ queryKey: ["companyInvitations"] });
       toast.success(t("team.invitation_accepted"));
     },

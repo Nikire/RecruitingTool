@@ -1,3 +1,8 @@
+import {
+  interviewKeys,
+  publicCalendarSettingsKeys,
+  timeSlotKeys,
+} from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   generateTimeSlots,
@@ -34,7 +39,7 @@ import { useTranslation } from "react-i18next";
  */
 export const useTimeSlotsByInterview = (interviewUid: string | null) => {
   return useQuery<TimeSlotResponse[]>({
-    queryKey: ["timeSlots", "interview", interviewUid],
+    queryKey: timeSlotKeys.byInterview(interviewUid),
     queryFn: () => getTimeSlotsByInterview(interviewUid!),
     enabled: !!interviewUid,
   });
@@ -51,7 +56,7 @@ export const useGenerateTimeSlots = () => {
     mutationFn: generateTimeSlots,
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["timeSlots", "interview", variables.interviewUid],
+        queryKey: timeSlotKeys.byInterview(variables.interviewUid),
       });
       toast.success(t("time_slots.generated"));
     },
@@ -73,7 +78,7 @@ export const useGenerateCustomTimeSlots = () => {
       mutationFn: generateCustomTimeSlots,
       onSuccess: (_, variables) => {
         queryClient.invalidateQueries({
-          queryKey: ["timeSlots", "interview", variables.interviewUid],
+          queryKey: timeSlotKeys.byInterview(variables.interviewUid),
         });
         toast.success(t("time_slots.custom_generated"));
       },
@@ -111,11 +116,9 @@ export const useCancelSlotSelection = () => {
     mutationFn: cancelSlotSelection,
     onSuccess: (_, interviewUid) => {
       queryClient.invalidateQueries({
-        queryKey: ["timeSlots", "interview", interviewUid],
+        queryKey: timeSlotKeys.byInterview(interviewUid),
       });
-      queryClient.invalidateQueries({
-        queryKey: ["interviews"],
-      });
+      queryClient.invalidateQueries({ queryKey: interviewKeys.all });
       toast.success(t("time_slots.selection_cancelled"));
     },
     onError: (error) => {
@@ -131,7 +134,7 @@ export const useCancelSlotSelection = () => {
  */
 export const useAvailableSlots = (token: string | null) => {
   return useQuery<TimeSlotResponse[]>({
-    queryKey: ["timeSlots", "available", token],
+    queryKey: timeSlotKeys.available(token),
     queryFn: () => getAvailableSlots(token!),
     enabled: !!token,
     retry: false, // Don't retry on 404/403
@@ -186,7 +189,7 @@ export const useSendStageBookingLink = () => {
  */
 export const useCalendarSettingsByToken = (token: string | null) => {
   return useQuery<CalendarSettingsPublic>({
-    queryKey: ["calendarSettings", "token", token],
+    queryKey: publicCalendarSettingsKeys.byToken(token),
     queryFn: () => getCalendarSettingsByToken(token!),
     enabled: !!token,
     retry: false,
@@ -208,7 +211,7 @@ export const useSelectTimeSlot = () => {
     mutationFn: ({ token, data }) => selectTimeSlot(token, data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["timeSlots", "available", variables.token],
+        queryKey: timeSlotKeys.available(variables.token),
       });
       toast.success(t("time_slots.interview_selected"));
     },

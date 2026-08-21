@@ -29,6 +29,11 @@ if (!i18n.isInitialized) {
             submit: "Submit",
             actions: "Actions",
             search: "Search",
+            // Must stay in sync with `common.search_placeholder` in
+            // src/i18n/locales/en.json. SearchBar renders it as its default
+            // placeholder; without the key here i18next falls back to printing
+            // the raw dotted key and every placeholder assertion fails.
+            search_placeholder: "Search...",
             filter: "Filter",
             reset: "Reset",
             apply: "Apply",

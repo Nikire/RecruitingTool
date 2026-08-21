@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -36,7 +37,7 @@ const fetchRevenueStats = async (): Promise<RevenueStatsResponse> => {
 
 export const useAdminRevenueStats = () => {
   return useQuery<RevenueStatsResponse>({
-    queryKey: ["admin", "revenue", "stats"],
+    queryKey: adminKeys.revenueStats(),
     queryFn: fetchRevenueStats,
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,

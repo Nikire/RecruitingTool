@@ -1,3 +1,4 @@
+import { googleCalendarKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../api/axios";
 
@@ -85,7 +86,7 @@ export interface AvailabilityResponse {
  */
 export const useCalendarConnectionStatus = () => {
   return useQuery<CalendarConnectionStatus>({
-    queryKey: ["google-calendar", "status"],
+    queryKey: googleCalendarKeys.status(),
     queryFn: async () => {
       const response = await api.get<CalendarConnectionStatus>(
         "/google-calendar/status",
@@ -125,7 +126,7 @@ export const useDisconnectCalendar = () => {
     onSuccess: () => {
       // Invalidate calendar status query
       queryClient.invalidateQueries({
-        queryKey: ["google-calendar", "status"],
+        queryKey: googleCalendarKeys.status(),
       });
     },
   });
@@ -188,7 +189,7 @@ export const useGetAvailability = (params: {
   timeZone?: string;
 }) => {
   return useQuery<AvailabilityResponse>({
-    queryKey: ["google-calendar", "availability", params],
+    queryKey: googleCalendarKeys.availability(params),
     queryFn: async () => {
       const response = await api.get<AvailabilityResponse>(
         "/google-calendar/availability",
@@ -207,7 +208,7 @@ export const useGetAvailability = (params: {
  */
 export const useGetCalendarSettings = () => {
   return useQuery<CalendarSettingsResponse>({
-    queryKey: ["google-calendar", "settings"],
+    queryKey: googleCalendarKeys.settings(),
     queryFn: async () => {
       const response = await api.get<CalendarSettingsResponse>(
         "/google-calendar/settings",

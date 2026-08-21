@@ -1,3 +1,4 @@
+import { interviewKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -43,10 +44,6 @@ export interface CalendarInterview {
   organizer?: CalendarInterviewOrganizer;
 }
 
-// ─── Query Keys ──────────────────────────────────────────────────────────────
-
-export const CALENDAR_INTERVIEWS_QUERY_KEY = "interviews";
-
 // ─── Hooks ───────────────────────────────────────────────────────────────────
 
 /**
@@ -59,13 +56,7 @@ export const useCompanyCalendarInterviews = (
   memberUids?: string[],
 ) => {
   return useQuery<CalendarInterview[]>({
-    queryKey: [
-      CALENDAR_INTERVIEWS_QUERY_KEY,
-      "calendar",
-      startDate,
-      endDate,
-      memberUids,
-    ],
+    queryKey: interviewKeys.calendar(startDate, endDate, memberUids),
     queryFn: async () => {
       const params: Record<string, string> = {
         startDate,
@@ -102,12 +93,7 @@ export const useRescheduleInterview = () => {
         .then((res) => res.data),
     onSuccess: () => {
       toast.success(t("success.interview_rescheduled"));
-      queryClient.invalidateQueries({
-        queryKey: [CALENDAR_INTERVIEWS_QUERY_KEY, "calendar"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [CALENDAR_INTERVIEWS_QUERY_KEY],
-      });
+      queryClient.invalidateQueries({ queryKey: interviewKeys.all });
     },
     onError: (error: unknown) => {
       toast.error(
@@ -136,9 +122,7 @@ export const useUpdateInterviewNotes = () => {
           ? t("interviews.notes_cleared")
           : t("interviews.notes_saved"),
       );
-      queryClient.invalidateQueries({
-        queryKey: [CALENDAR_INTERVIEWS_QUERY_KEY],
-      });
+      queryClient.invalidateQueries({ queryKey: interviewKeys.all });
     },
     onError: (error: unknown) => {
       toast.error(
@@ -164,12 +148,7 @@ export const useCancelCalendarInterview = () => {
         .then((res) => res.data),
     onSuccess: () => {
       toast.success(t("success.interview_cancelled"));
-      queryClient.invalidateQueries({
-        queryKey: [CALENDAR_INTERVIEWS_QUERY_KEY, "calendar"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: [CALENDAR_INTERVIEWS_QUERY_KEY],
-      });
+      queryClient.invalidateQueries({ queryKey: interviewKeys.all });
     },
     onError: (error: unknown) => {
       toast.error(

@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -90,7 +91,7 @@ const linkDemoProspect = async (
 
 export function useAdminDemos(params: AdminDemosParams) {
   return useQuery<DemoBookingListResponse>({
-    queryKey: ["admin", "demos", params],
+    queryKey: adminKeys.demosList(params),
     queryFn: () => fetchAdminDemos(params),
     staleTime: 3 * 60 * 1000,
     retry: 2,
@@ -102,7 +103,7 @@ export function useSetDemoOutcome() {
   return useMutation<DemoBookingAdminItem, Error, SetDemoOutcomePayload>({
     mutationFn: setDemoOutcome,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "demos"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.demos() });
     },
   });
 }
@@ -112,7 +113,7 @@ export function useLinkDemoProspect() {
   return useMutation<DemoBookingAdminItem, Error, LinkDemoProspectPayload>({
     mutationFn: linkDemoProspect,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "demos"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.demos() });
     },
   });
 }

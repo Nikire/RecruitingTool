@@ -1,3 +1,4 @@
+import { outreachKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 import type {
@@ -15,19 +16,11 @@ import type {
   SendTestEmailResult,
 } from "../types/outreach-campaigns.types";
 
-// ─── Query keys ───────────────────────────────────────────────────────────────
-
-export const CAMPAIGNS_QK = ["outreach-campaigns"] as const;
-export const leadsQK = (
-  campaignUid: string,
-  filters?: Record<string, string>,
-) => ["outreach-leads", campaignUid, filters ?? {}] as const;
-
 // ─── Campaign hooks ───────────────────────────────────────────────────────────
 
 export function useOutreachCampaigns() {
   return useQuery<OutreachCampaign[]>({
-    queryKey: CAMPAIGNS_QK,
+    queryKey: outreachKeys.campaigns,
     queryFn: async () => {
       const res = await api.get<OutreachCampaign[]>("/outreach-campaigns");
       return res.data;
@@ -45,7 +38,7 @@ export function useCreateCampaign() {
       );
       return res.data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: CAMPAIGNS_QK }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: outreachKeys.campaigns }),
   });
 }
 
@@ -55,7 +48,7 @@ export function useDeleteCampaign() {
     mutationFn: async (uid) => {
       await api.delete(`/outreach-campaigns/${uid}`);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: CAMPAIGNS_QK }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: outreachKeys.campaigns }),
   });
 }
 
@@ -72,7 +65,7 @@ export function useOutreachLeads(
     filters?.status || filters?.channel ? { ...filters } : undefined;
 
   return useQuery<OutreachLead[]>({
-    queryKey: leadsQK(campaignUid ?? "", filterObj),
+    queryKey: outreachKeys.leads(campaignUid ?? "", filterObj),
     queryFn: async () => {
       const res = await api.get<OutreachLead[]>(
         `/outreach-campaigns/${campaignUid}/leads`,
@@ -97,7 +90,10 @@ export function useImportLeads(campaignUid: string) {
       );
       return res.data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: leadsQK(campaignUid) }),
+    onSuccess: () =>
+      qc.invalidateQueries({
+        queryKey: outreachKeys.leadsByCampaign(campaignUid),
+      }),
   });
 }
 
@@ -116,8 +112,10 @@ export function useUpdateLead(campaignUid: string) {
       return res.data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: leadsQK(campaignUid) });
-      qc.invalidateQueries({ queryKey: CAMPAIGNS_QK });
+      qc.invalidateQueries({
+        queryKey: outreachKeys.leadsByCampaign(campaignUid),
+      });
+      qc.invalidateQueries({ queryKey: outreachKeys.campaigns });
     },
   });
 }
@@ -137,8 +135,10 @@ export function useConvertLead(campaignUid: string) {
       return res.data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: leadsQK(campaignUid) });
-      qc.invalidateQueries({ queryKey: CAMPAIGNS_QK });
+      qc.invalidateQueries({
+        queryKey: outreachKeys.leadsByCampaign(campaignUid),
+      });
+      qc.invalidateQueries({ queryKey: outreachKeys.campaigns });
     },
   });
 }
@@ -158,8 +158,10 @@ export function useSendLeadEmail(campaignUid: string) {
       return res.data;
     },
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: leadsQK(campaignUid) });
-      qc.invalidateQueries({ queryKey: CAMPAIGNS_QK });
+      qc.invalidateQueries({
+        queryKey: outreachKeys.leadsByCampaign(campaignUid),
+      });
+      qc.invalidateQueries({ queryKey: outreachKeys.campaigns });
     },
   });
 }
@@ -170,7 +172,7 @@ export function usePreviewLeadEmail(
   enabled: boolean,
 ) {
   return useQuery<PreviewEmailResult>({
-    queryKey: ["outreach-preview-email", campaignUid, leadUid],
+    queryKey: outreachKeys.previewEmail(campaignUid, leadUid),
     queryFn: async () => {
       const res = await api.get<PreviewEmailResult>(
         `/outreach-campaigns/${campaignUid}/leads/${leadUid}/preview-email`,

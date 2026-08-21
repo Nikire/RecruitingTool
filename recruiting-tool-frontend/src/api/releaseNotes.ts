@@ -1,8 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
-import { useUserAtom } from "../store";
-import { UserRoles } from "../types/user.types";
-import { useLocation } from "react-router-dom";
 
 export interface ReleaseNoteUserItem {
   uid: string;
@@ -21,7 +17,7 @@ export interface MarkSeenResponse {
   ok: boolean;
 }
 
-const fetchUnreadReleaseNotes =
+export const fetchUnreadReleaseNotes =
   async (): Promise<UnreadReleaseNotesResponse> => {
     const response = await api.get<UnreadReleaseNotesResponse>(
       "/release-notes/unread",
@@ -29,39 +25,26 @@ const fetchUnreadReleaseNotes =
     return response.data;
   };
 
-const markReleaseNoteSeen = async (uid: string): Promise<MarkSeenResponse> => {
+export const markReleaseNoteSeen = async (
+  uid: string,
+): Promise<MarkSeenResponse> => {
   const response = await api.post<MarkSeenResponse>(
     `/release-notes/${uid}/mark-seen`,
   );
   return response.data;
 };
 
-export function useUnreadReleaseNotes() {
-  const { user, isAuthenticated } = useUserAtom();
-  const location = useLocation();
-
-  const isAdmin = user?.roles?.some(
-    (role) => role === UserRoles.ADMIN || role === UserRoles.SUPER_ADMIN,
-  );
-  const isAdminPath = location.pathname.startsWith("/admin");
-
-  const enabled = isAuthenticated && !isAdmin && !isAdminPath;
-
-  return useQuery<UnreadReleaseNotesResponse>({
-    queryKey: ["release-notes", "unread"],
-    queryFn: fetchUnreadReleaseNotes,
-    enabled,
-    staleTime: 30 * 60 * 1000,
-    retry: 1,
-  });
-}
-
-export function useMarkReleaseNoteSeen() {
-  const queryClient = useQueryClient();
-  return useMutation<MarkSeenResponse, Error, string>({
-    mutationFn: markReleaseNoteSeen,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["release-notes", "unread"] });
-    },
-  });
-}
+/**
+ * @deprecated Import these from `hooks/api/useReleaseNotes` instead.
+ *
+ * This module used to hold transport + React Query + Jotai + react-router in
+ * one file — the worst instance of the api/ vs hooks/api/ boundary erosion.
+ * The hooks now live in `src/hooks/api/useReleaseNotes.ts`; this re-export
+ * only exists so the single remaining consumer
+ * (`components/common/WhatsNewModal.tsx`) keeps compiling. Point that import at
+ * `hooks/api/useReleaseNotes` and delete the two lines below.
+ */
+export {
+  useUnreadReleaseNotes,
+  useMarkReleaseNoteSeen,
+} from "../hooks/api/useReleaseNotes";

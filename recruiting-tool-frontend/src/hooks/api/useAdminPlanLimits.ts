@@ -1,17 +1,16 @@
+import { adminPlanLimitKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import { getPlanLimits, updatePlanLimit } from "../../api/planLimits";
 import type { UpdatePlanLimitDto } from "../../types/planLimits.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const ADMIN_PLAN_LIMITS_KEY = "adminPlanLimits";
-
 /**
  * Hook for fetching all plan limits from admin endpoint (SUPER_ADMIN only)
  */
 export function useAdminPlanLimits() {
   return useQuery({
-    queryKey: [ADMIN_PLAN_LIMITS_KEY],
+    queryKey: adminPlanLimitKeys.all,
     queryFn: getPlanLimits,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -29,7 +28,7 @@ export function useUpdatePlanLimit() {
     mutationFn: ({ uid, dto }: { uid: string; dto: UpdatePlanLimitDto }) =>
       updatePlanLimit(uid, dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [ADMIN_PLAN_LIMITS_KEY] });
+      queryClient.invalidateQueries({ queryKey: adminPlanLimitKeys.all });
       showSuccessToast(t("plan_limits.save_success"));
     },
     onError: (error) => {

@@ -1,3 +1,4 @@
+import { candidateKeys } from "../../api/queryKeys";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "../../api/axios";
 import {
@@ -62,7 +63,7 @@ export const useImportCandidates = () => {
     },
     onSuccess: (data) => {
       // Invalidate candidates query to refresh the list
-      queryClient.invalidateQueries({ queryKey: ["candidates"] });
+      queryClient.invalidateQueries({ queryKey: candidateKeys.all });
 
       if (data.successCount > 0) {
         toast.success(

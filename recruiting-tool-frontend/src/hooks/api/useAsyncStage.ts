@@ -1,3 +1,8 @@
+import {
+  asyncStageKeys,
+  asyncSubmissionKeys,
+  publicAsyncStageKeys,
+} from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -15,10 +20,6 @@ import {
 } from "../../types/asyncStage.types";
 import { showErrorToast, showSuccessToast } from "../../utils/toast";
 
-const ASYNC_STAGE_STATUS_KEY = "async-stage-status";
-const ASYNC_SUBMISSION_KEY = "async-submission";
-const PUBLIC_ASYNC_STAGE_KEY = "public-async-stage";
-
 // ─── Protected hooks ─────────────────────────────────────────────────────────
 
 export const useSendAsyncInvitation = () => {
@@ -30,11 +31,10 @@ export const useSendAsyncInvitation = () => {
     onSuccess: (_, variables) => {
       showSuccessToast(t("asyncStage.invitation_sent"));
       queryClient.invalidateQueries({
-        queryKey: [
-          ASYNC_STAGE_STATUS_KEY,
+        queryKey: asyncStageKeys.status(
           variables.stageUid,
           variables.hiringProcessUid,
-        ],
+        ),
       });
     },
     onError: (error) => {
@@ -49,7 +49,7 @@ export const useAsyncStageStatus = (
   enabled = true,
 ) => {
   return useQuery({
-    queryKey: [ASYNC_STAGE_STATUS_KEY, stageUid, hiringProcessUid],
+    queryKey: asyncStageKeys.status(stageUid, hiringProcessUid),
     queryFn: () => getAsyncStageStatus(stageUid, hiringProcessUid),
     enabled: enabled && !!stageUid && !!hiringProcessUid,
   });
@@ -57,7 +57,7 @@ export const useAsyncStageStatus = (
 
 export const useAsyncSubmission = (submissionUid: string | undefined) => {
   return useQuery({
-    queryKey: [ASYNC_SUBMISSION_KEY, submissionUid],
+    queryKey: asyncSubmissionKeys.detail(submissionUid),
     queryFn: () => getAsyncSubmission(submissionUid!),
     enabled: !!submissionUid,
   });
@@ -78,14 +78,10 @@ export const useReviewSubmission = () => {
     onSuccess: (data) => {
       showSuccessToast(t("asyncStage.review_saved"));
       queryClient.invalidateQueries({
-        queryKey: [ASYNC_SUBMISSION_KEY, data.uid],
+        queryKey: asyncSubmissionKeys.detail(data.uid),
       });
       queryClient.invalidateQueries({
-        queryKey: [
-          ASYNC_STAGE_STATUS_KEY,
-          data.stageUid,
-          data.hiringProcessUid,
-        ],
+        queryKey: asyncStageKeys.status(data.stageUid, data.hiringProcessUid),
       });
     },
     onError: (error) => {
@@ -109,11 +105,10 @@ export const useRevokeAsyncToken = () => {
     onSuccess: (_, variables) => {
       showSuccessToast(t("asyncStage.token_revoked"));
       queryClient.invalidateQueries({
-        queryKey: [
-          ASYNC_STAGE_STATUS_KEY,
+        queryKey: asyncStageKeys.status(
           variables.stageUid,
           variables.hiringProcessUid,
-        ],
+        ),
       });
     },
     onError: (error) => {
@@ -126,7 +121,7 @@ export const useRevokeAsyncToken = () => {
 
 export const usePublicAsyncStageInfo = (token: string) => {
   return useQuery({
-    queryKey: [PUBLIC_ASYNC_STAGE_KEY, token],
+    queryKey: publicAsyncStageKeys.byToken(token),
     queryFn: () => getPublicAsyncStageInfo(token),
     enabled: !!token,
   });

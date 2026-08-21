@@ -1,3 +1,4 @@
+import { adminKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getCompanyAIQuotas, setCompanyAIQuotaLimit } from "../../api/aiQuota";
 import type {
@@ -10,7 +11,7 @@ import type {
  */
 export const useCompanyAIQuotas = (companyUid: string | null) => {
   return useQuery<AIQuotaResponseDto[]>({
-    queryKey: ["admin", "ai-quota", companyUid],
+    queryKey: adminKeys.aiQuota(companyUid),
     queryFn: () => getCompanyAIQuotas(companyUid!),
     enabled: !!companyUid,
     staleTime: 2 * 60 * 1000,
@@ -33,7 +34,7 @@ export const useSetAIQuotaLimit = () => {
       setCompanyAIQuotaLimit(companyUid, data),
     onSuccess: (_result, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ["admin", "ai-quota", variables.companyUid],
+        queryKey: adminKeys.aiQuota(variables.companyUid),
       });
     },
   });

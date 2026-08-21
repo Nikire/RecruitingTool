@@ -71,6 +71,13 @@ export interface CompanyMember {
   position?: string;
   department?: string;
   lastLoginAt?: string;
+  /**
+   * Mirrors `CompanyMemberResponseDto.profilePicture` on the backend
+   * (company-roles.service.ts populates it). It was missing here only because a
+   * second, now-deleted copy of this interface in `hooks/useCompanyRoles.ts`
+   * declared it instead.
+   */
+  profilePicture?: string;
   createdAt: string;
 }
 

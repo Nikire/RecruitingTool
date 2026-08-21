@@ -1,3 +1,4 @@
+import { companyKeys, companyProfileKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { companiesApi } from "../../api/companies";
 import {
@@ -10,11 +11,12 @@ import {
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const COMPANIES_KEY = "companies";
-
 export const useCompanies = (uid?: string) => {
   return useQuery({
-    queryKey: uid ? [COMPANIES_KEY, uid] : [COMPANIES_KEY],
+    // Always the collection key. This hook is disabled whenever a uid is
+    // supplied, and keying it by uid collided with useCompany(uid), which
+    // caches a single Company in the same slot.
+    queryKey: companyKeys.all,
     queryFn: () => companiesApi.getAll(),
     enabled: !uid,
   });
@@ -22,7 +24,7 @@ export const useCompanies = (uid?: string) => {
 
 export const usePublicCompaniesWithJobs = () => {
   return useQuery({
-    queryKey: [COMPANIES_KEY, "public", "with-jobs"],
+    queryKey: companyKeys.publicWithJobs(),
     queryFn: () => companiesApi.getPublicWithJobs(),
     staleTime: 10 * 60 * 1000, // 10 minutes (matches backend cache)
   });
@@ -30,14 +32,14 @@ export const usePublicCompaniesWithJobs = () => {
 
 export const useListCompanies = (params: PaginationParams) => {
   return useQuery({
-    queryKey: [COMPANIES_KEY, "list", params],
+    queryKey: companyKeys.list(params),
     queryFn: () => companiesApi.list(params),
   });
 };
 
 export const useCompany = (uid: string) => {
   return useQuery({
-    queryKey: [COMPANIES_KEY, uid],
+    queryKey: companyKeys.detail(uid),
     queryFn: () => companiesApi.getOne(uid),
     enabled: !!uid,
   });
@@ -49,7 +51,7 @@ export const useCreateCompany = () => {
   return useMutation({
     mutationFn: (data: CreateCompanyDto) => companiesApi.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
       showSuccessToast("Company created successfully!");
     },
     onError: (error) => {
@@ -65,7 +67,7 @@ export const useUpdateCompany = () => {
     mutationFn: ({ uid, data }: { uid: string; data: UpdateCompanyDto }) =>
       companiesApi.update(uid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
       showSuccessToast("Company updated successfully!");
     },
     onError: (error) => {
@@ -80,7 +82,7 @@ export const useDeleteCompany = () => {
   return useMutation({
     mutationFn: (uid: string) => companiesApi.delete(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
       showSuccessToast("Company deleted successfully!");
     },
     onError: (error) => {
@@ -94,7 +96,7 @@ export const useCompanyUsers = (
   params: PaginationParams,
 ) => {
   return useQuery({
-    queryKey: [COMPANIES_KEY, companyUid, "users", params],
+    queryKey: companyKeys.usersList(companyUid, params),
     queryFn: () => companiesApi.getCompanyUsers(companyUid, params),
     enabled: !!companyUid,
   });
@@ -107,9 +109,9 @@ export const useTransferOwnership = (companyUid: string) => {
     mutationFn: (data: TransferOwnershipDto) =>
       companiesApi.transferOwnership(companyUid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
       queryClient.invalidateQueries({
-        queryKey: [COMPANIES_KEY, companyUid, "users"],
+        queryKey: companyKeys.users(companyUid),
       });
       showSuccessToast("Ownership transferred successfully!");
     },
@@ -126,9 +128,9 @@ export const useForceJoinUser = (companyUid: string) => {
     mutationFn: (data: ForceJoinDto) =>
       companiesApi.forceJoinUser(companyUid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
       queryClient.invalidateQueries({
-        queryKey: [COMPANIES_KEY, companyUid, "users"],
+        queryKey: companyKeys.users(companyUid),
       });
       showSuccessToast("User successfully joined the company!");
     },
@@ -138,11 +140,9 @@ export const useForceJoinUser = (companyUid: string) => {
   });
 };
 
-const COMPANY_PROFILE_KEY = "company-profile";
-
 export const useMyCompanyProfile = () => {
   return useQuery({
-    queryKey: [COMPANY_PROFILE_KEY],
+    queryKey: companyProfileKeys.mine(),
     queryFn: () => companiesApi.getMyProfile(),
     staleTime: 5 * 60 * 1000,
   });
@@ -155,8 +155,8 @@ export const useUpdateMyCompanyProfile = () => {
     mutationFn: (data: UpdateCompanyProfileDto) =>
       companiesApi.updateMyProfile(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANY_PROFILE_KEY] });
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyProfileKeys.all });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
     },
     onError: (error) => {
       showErrorToast(error, "Failed to update company profile");
@@ -170,8 +170,8 @@ export const useUploadCompanyLogo = () => {
   return useMutation({
     mutationFn: (file: File) => companiesApi.uploadLogo(file),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [COMPANY_PROFILE_KEY] });
-      queryClient.invalidateQueries({ queryKey: [COMPANIES_KEY] });
+      queryClient.invalidateQueries({ queryKey: companyProfileKeys.all });
+      queryClient.invalidateQueries({ queryKey: companyKeys.all });
     },
     onError: (error) => {
       showErrorToast(error, "Failed to upload logo");

@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -40,7 +41,7 @@ const fetchPipelineAnalytics = async (): Promise<PipelineAnalyticsResponse> => {
 
 export const useAdminPipelineAnalytics = () => {
   return useQuery<PipelineAnalyticsResponse>({
-    queryKey: ["admin", "pipeline-analytics"],
+    queryKey: adminKeys.pipelineAnalytics(),
     queryFn: fetchPipelineAnalytics,
     staleTime: 10 * 60 * 1000, // 10 minutes
     retry: 2,

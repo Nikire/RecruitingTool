@@ -1,3 +1,4 @@
+import { fileKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as filesApi from "../../api/files";
 import toast from "react-hot-toast";
@@ -8,7 +9,7 @@ import { useTranslation } from "react-i18next";
  */
 export function useFiles(candidateUid?: string) {
   return useQuery({
-    queryKey: candidateUid ? ["files", candidateUid] : ["files"],
+    queryKey: candidateUid ? fileKeys.byCandidate(candidateUid) : fileKeys.all,
     queryFn: () =>
       filesApi.getFiles(candidateUid ? { candidateUid } : undefined),
   });
@@ -19,7 +20,7 @@ export function useFiles(candidateUid?: string) {
  */
 export function useFile(uid: string) {
   return useQuery({
-    queryKey: ["files", uid],
+    queryKey: fileKeys.detail(uid),
     queryFn: () => filesApi.getFile(uid),
     enabled: !!uid,
   });
@@ -35,12 +36,12 @@ export function useUploadFile() {
     mutationFn: filesApi.uploadFile,
     onSuccess: (data) => {
       // Invalidate all file queries
-      queryClient.invalidateQueries({ queryKey: ["files"] });
+      queryClient.invalidateQueries({ queryKey: fileKeys.all });
 
       // If file is associated with a candidate, invalidate that specific query
       if (data.candidateUid) {
         queryClient.invalidateQueries({
-          queryKey: ["files", data.candidateUid],
+          queryKey: fileKeys.byCandidate(data.candidateUid),
         });
       }
 
@@ -95,6 +96,27 @@ export function useDownloadFile() {
 }
 
 /**
+ * Hook to open a private file (resume, cover letter, attachment) in a new tab.
+ *
+ * Private files can no longer be linked to directly: the backend requires an
+ * authenticated, company-scoped request and answers with a short-lived
+ * presigned storage URL. Use this instead of building `/files/:uid/view` by hand.
+ */
+export function useOpenFileView() {
+  const { t } = useTranslation();
+
+  return useMutation({
+    mutationFn: (uid: string) => filesApi.openFileInNewTab(uid),
+    onError: (error: unknown) => {
+      const errorMessage =
+        (error as { response?: { data?: { message?: string } } })?.response
+          ?.data?.message || t("files.view_error");
+      toast.error(errorMessage);
+    },
+  });
+}
+
+/**
  * Hook to delete a file
  */
 export function useDeleteFile() {
@@ -105,9 +127,9 @@ export function useDeleteFile() {
     mutationFn: filesApi.deleteFile,
     onSuccess: () => {
       // Invalidate all file queries
-      queryClient.invalidateQueries({ queryKey: ["files"] });
-      queryClient.invalidateQueries({ queryKey: ["company-files"] });
-      queryClient.invalidateQueries({ queryKey: ["company-storage"] });
+      queryClient.invalidateQueries({ queryKey: fileKeys.all });
+      queryClient.invalidateQueries({ queryKey: fileKeys.companyList() });
+      queryClient.invalidateQueries({ queryKey: fileKeys.companyStorage() });
       toast.success(t("files.file_deleted"));
     },
     onError: (error: unknown) => {
@@ -124,7 +146,7 @@ export function useDeleteFile() {
  */
 export function useCompanyFiles() {
   return useQuery({
-    queryKey: ["company-files"],
+    queryKey: fileKeys.companyList(),
     queryFn: filesApi.getCompanyFiles,
   });
 }
@@ -134,7 +156,7 @@ export function useCompanyFiles() {
  */
 export function useCompanyStorageUsage() {
   return useQuery({
-    queryKey: ["company-storage"],
+    queryKey: fileKeys.companyStorage(),
     queryFn: filesApi.getCompanyStorageUsage,
   });
 }
@@ -162,9 +184,9 @@ export function useDeleteManyFiles() {
   return useMutation({
     mutationFn: (uids: string[]) => filesApi.deleteManyFiles(uids),
     onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: ["company-files"] });
-      queryClient.invalidateQueries({ queryKey: ["company-storage"] });
-      queryClient.invalidateQueries({ queryKey: ["files"] });
+      queryClient.invalidateQueries({ queryKey: fileKeys.companyList() });
+      queryClient.invalidateQueries({ queryKey: fileKeys.companyStorage() });
+      queryClient.invalidateQueries({ queryKey: fileKeys.all });
       toast.success(t("files.deleteSuccess", { count: data.deleted }));
     },
     onError: (error: unknown) => {

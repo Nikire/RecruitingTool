@@ -28,6 +28,15 @@ export interface CompanyFile {
   candidateName?: string;
 }
 
+export interface FileViewUrlResponse {
+  uid: string;
+  /** Short-lived (5 min) presigned URL served directly by object storage */
+  url: string;
+  expiresIn: number;
+  originalName: string;
+  mimetype: string;
+}
+
 export interface CompanyStorageUsage {
   usedMB: number;
   limitMB: number;
@@ -152,6 +161,62 @@ export const downloadFile = async (
   link.click();
   document.body.removeChild(link);
   window.URL.revokeObjectURL(url);
+};
+
+/**
+ * Build the URL of a PUBLIC asset served without authentication.
+ *
+ * ONLY valid for genuinely public assets - avatars / profile pictures and other
+ * images that are not attached to a candidate, application or submission. The
+ * backend serves 404 on this route for every private document, so never use it
+ * for resumes, cover letters or candidate attachments; use `getFileViewUrl()`
+ * (or `openFileInNewTab()`) for those.
+ *
+ * @param uid - File UID (already a full URL values are returned untouched)
+ */
+export const buildPublicAssetUrl = (uid?: string): string | undefined => {
+  if (!uid) return undefined;
+  if (uid.startsWith("http")) return uid;
+  return `${import.meta.env.VITE_API_URL}/files/${uid}/view`;
+};
+
+/**
+ * Request a short-lived presigned URL to view a PRIVATE file inline.
+ *
+ * The request is authenticated (axios attaches the bearer token) and the backend
+ * asserts the file belongs to the caller's company before signing.
+ */
+export const getFileViewUrl = async (
+  uid: string,
+): Promise<FileViewUrlResponse> => {
+  const response = await axios.get<FileViewUrlResponse>(
+    `/files/${uid}/view-url`,
+  );
+  return response.data;
+};
+
+/**
+ * Open a private file in a new tab.
+ *
+ * The tab is opened synchronously (before the await) so that popup blockers do
+ * not swallow it, then pointed at the presigned URL once it comes back.
+ */
+export const openFileInNewTab = async (uid: string): Promise<void> => {
+  const tab = window.open("", "_blank", "noopener,noreferrer");
+
+  try {
+    const { url } = await getFileViewUrl(uid);
+
+    if (tab) {
+      tab.location.href = url;
+    } else {
+      // Popup blocked - fall back to navigating the current tab.
+      window.location.href = url;
+    }
+  } catch (error) {
+    tab?.close();
+    throw error;
+  }
 };
 
 /**

@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -54,7 +55,7 @@ const fetchEmailDeliverabilityPerType =
 
 export function useEmailDeliverabilityStats() {
   return useQuery<EmailDeliverabilityStats>({
-    queryKey: ["admin", "email", "deliverability", "stats"],
+    queryKey: adminKeys.emailDeliverabilityStats(),
     queryFn: fetchEmailDeliverabilityStats,
     staleTime: 5 * 60 * 1000,
     retry: 2,
@@ -63,7 +64,7 @@ export function useEmailDeliverabilityStats() {
 
 export function useEmailDeliverabilityPerType() {
   return useQuery<EmailDeliverabilityPerType>({
-    queryKey: ["admin", "email", "deliverability", "per-type"],
+    queryKey: adminKeys.emailDeliverabilityPerType(),
     queryFn: fetchEmailDeliverabilityPerType,
     staleTime: 5 * 60 * 1000,
     retry: 2,

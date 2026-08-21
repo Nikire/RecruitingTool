@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 import {
@@ -90,7 +91,7 @@ export const useChangePlan = (companyUid: string) => {
   return useMutation<UpdatedSubscription, Error, ChangePlanPayload>({
     mutationFn: (payload) => changePlan(companyUid, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "subscriptions"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.subscriptions() });
     },
   });
 };
@@ -100,7 +101,7 @@ export const useChangeStatus = (companyUid: string) => {
   return useMutation<UpdatedSubscription, Error, ChangeStatusPayload>({
     mutationFn: (payload) => changeStatus(companyUid, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "subscriptions"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.subscriptions() });
     },
   });
 };
@@ -110,7 +111,7 @@ export const useExtendTrial = (companyUid: string) => {
   return useMutation<UpdatedSubscription, Error, ExtendTrialPayload>({
     mutationFn: (payload) => extendTrial(companyUid, payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "subscriptions"] });
+      queryClient.invalidateQueries({ queryKey: adminKeys.subscriptions() });
     },
   });
 };
@@ -120,7 +121,7 @@ export const useSubscriptionAuditLog = (
   enabled: boolean,
 ) => {
   return useQuery<SubscriptionAuditLogItem[]>({
-    queryKey: ["admin", "subscription-audit-log", companyUid],
+    queryKey: adminKeys.subscriptionAuditLog(companyUid),
     queryFn: () => fetchAuditLog(companyUid!),
     enabled: enabled && !!companyUid,
     staleTime: 0,

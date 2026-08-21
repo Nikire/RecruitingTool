@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -43,11 +44,9 @@ export interface CreateAdminTaskPayload {
 
 export type UpdateAdminTaskPayload = Partial<CreateAdminTaskPayload>;
 
-const QK = ["admin-tasks"];
-
 export function useAdminTasks() {
   return useQuery<AdminTask[]>({
-    queryKey: QK,
+    queryKey: adminKeys.tasks(),
     queryFn: async () => {
       const res = await api.get<AdminTask[]>("/admin-tasks");
       return res.data;
@@ -62,7 +61,7 @@ export function useCreateAdminTask() {
       const res = await api.post<AdminTask>("/admin-tasks", p);
       return res.data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.tasks() }),
   });
 }
 
@@ -77,7 +76,7 @@ export function useUpdateAdminTask() {
       const res = await api.patch<AdminTask>(`/admin-tasks/${uid}`, p);
       return res.data;
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.tasks() }),
   });
 }
 
@@ -87,6 +86,6 @@ export function useDeleteAdminTask() {
     mutationFn: async (uid) => {
       await api.delete(`/admin-tasks/${uid}`);
     },
-    onSuccess: () => qc.invalidateQueries({ queryKey: QK }),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminKeys.tasks() }),
   });
 }

@@ -1,3 +1,4 @@
+import { contactMessageKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -8,14 +9,12 @@ import {
 import { CreateContactMessageDto } from "../../types/contact-message.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const CONTACT_MESSAGES_KEY = "contactMessages";
-
 /**
  * Hook for fetching contact messages (admin only)
  */
 export function useContactMessages(page: number = 1, limit: number = 20) {
   return useQuery({
-    queryKey: [CONTACT_MESSAGES_KEY, { page, limit }],
+    queryKey: contactMessageKeys.list({ page, limit }),
     queryFn: () => getContactMessages(page, limit),
   });
 }
@@ -44,7 +43,7 @@ export function useMarkContactMessageAsRead() {
   return useMutation({
     mutationFn: (uid: string) => markContactMessageAsRead(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CONTACT_MESSAGES_KEY] });
+      queryClient.invalidateQueries({ queryKey: contactMessageKeys.all });
       showSuccessToast(t("admin_contact.mark_as_read_success"));
     },
     onError: () => {

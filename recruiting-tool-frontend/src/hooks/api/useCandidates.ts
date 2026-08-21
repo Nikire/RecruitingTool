@@ -1,3 +1,4 @@
+import { candidateKeys, candidateNoteKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getCandidates,
@@ -18,26 +19,27 @@ import {
 } from "../../types/candidate";
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
-
-const CANDIDATES_KEY = "candidates";
+import { useTranslation } from "react-i18next";
+import { ANALYTICS_EVENTS } from "../../analytics";
+import { useActivationEvents } from "./useActivationEvents";
 
 export function useCandidates() {
   return useQuery({
-    queryKey: [CANDIDATES_KEY],
+    queryKey: candidateKeys.all,
     queryFn: getCandidates,
   });
 }
 
 export function useListCandidates(params: PaginationParams) {
   return useQuery({
-    queryKey: [CANDIDATES_KEY, "list", params],
+    queryKey: candidateKeys.list(params),
     queryFn: () => listCandidates(params),
   });
 }
 
 export function useCandidate(uid: string) {
   return useQuery({
-    queryKey: [CANDIDATES_KEY, uid],
+    queryKey: candidateKeys.detail(uid),
     queryFn: () => getCandidate(uid),
     enabled: !!uid,
   });
@@ -45,15 +47,21 @@ export function useCandidate(uid: string) {
 
 export function useCreateCandidate() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const { trackFirstTime } = useActivationEvents();
 
   return useMutation({
     mutationFn: (data: Partial<Candidate>) => createCandidate(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CANDIDATES_KEY] });
-      showSuccessToast("Candidate created successfully!");
+    onSuccess: (created) => {
+      queryClient.invalidateQueries({ queryKey: candidateKeys.all });
+      showSuccessToast(t("candidates.created_success"));
+      // Activation milestone. Mirrored server-side as CANDIDATE_CREATED.
+      trackFirstTime(ANALYTICS_EVENTS.FIRST_CANDIDATE_ADDED, {
+        candidateUid: created?.uid,
+      });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create candidate");
+      showErrorToast(error, t("candidates.create_error"));
     },
   });
 }
@@ -65,7 +73,7 @@ export function useUpdateCandidate() {
     mutationFn: ({ uid, data }: { uid: string; data: Partial<Candidate> }) =>
       updateCandidate(data, uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CANDIDATES_KEY] });
+      queryClient.invalidateQueries({ queryKey: candidateKeys.all });
       showSuccessToast("Candidate updated successfully!");
     },
     onError: (error) => {
@@ -80,7 +88,7 @@ export function useDeleteCandidate() {
   return useMutation({
     mutationFn: (uid: string) => deleteCandidate(uid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CANDIDATES_KEY] });
+      queryClient.invalidateQueries({ queryKey: candidateKeys.all });
       showSuccessToast("Candidate deleted successfully!");
     },
     onError: (error) => {
@@ -90,11 +98,9 @@ export function useDeleteCandidate() {
 }
 
 // Candidate Notes hooks
-const CANDIDATE_NOTES_KEY = "candidate-notes";
-
 export function useCandidateNotes(candidateUid: string) {
   return useQuery({
-    queryKey: [CANDIDATE_NOTES_KEY, candidateUid],
+    queryKey: candidateNoteKeys.byCandidate(candidateUid),
     queryFn: () => getCandidateNotes(candidateUid),
     enabled: !!candidateUid,
   });
@@ -107,7 +113,7 @@ export function useCreateCandidateNote() {
     mutationFn: (data: CreateCandidateNoteDto) => createCandidateNote(data),
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: [CANDIDATE_NOTES_KEY, variables.candidateUid],
+        queryKey: candidateNoteKeys.byCandidate(variables.candidateUid),
       });
       showSuccessToast("Note created successfully!");
     },
@@ -129,7 +135,7 @@ export function useUpdateCandidateNote() {
       data: UpdateCandidateNoteDto;
     }) => updateCandidateNote(noteUid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CANDIDATE_NOTES_KEY] });
+      queryClient.invalidateQueries({ queryKey: candidateNoteKeys.all });
       showSuccessToast("Note updated successfully!");
     },
     onError: (error) => {
@@ -144,7 +150,7 @@ export function useDeleteCandidateNote() {
   return useMutation({
     mutationFn: (noteUid: string) => deleteCandidateNote(noteUid),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [CANDIDATE_NOTES_KEY] });
+      queryClient.invalidateQueries({ queryKey: candidateNoteKeys.all });
       showSuccessToast("Note deleted successfully!");
     },
     onError: (error) => {

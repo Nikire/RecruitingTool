@@ -1,3 +1,4 @@
+import { adminKeys } from "./queryKeys";
 import { useQuery } from "@tanstack/react-query";
 import api from "./axios";
 
@@ -59,7 +60,7 @@ const fetchAdminTrialOverview = async (
 
 export function useAdminTrialOverview(params: AdminTrialOverviewParams) {
   return useQuery<TrialOverviewResponse>({
-    queryKey: ["admin", "trials", "overview", params],
+    queryKey: adminKeys.trialOverview(params),
     queryFn: () => fetchAdminTrialOverview(params),
     staleTime: 3 * 60 * 1000, // 3 minutes
     retry: 2,

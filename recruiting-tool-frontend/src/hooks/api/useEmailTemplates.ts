@@ -1,3 +1,4 @@
+import { emailTemplateKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getEmailTemplates,
@@ -16,18 +17,16 @@ import {
 } from "../../types/emailTemplate.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const EMAIL_TEMPLATES_KEY = "email-templates";
-
 export function useEmailTemplates(companyUid?: string) {
   return useQuery({
-    queryKey: [EMAIL_TEMPLATES_KEY, companyUid],
+    queryKey: emailTemplateKeys.byCompany(companyUid),
     queryFn: () => getEmailTemplates(companyUid),
   });
 }
 
 export function useEmailTemplate(uid: string) {
   return useQuery({
-    queryKey: [EMAIL_TEMPLATES_KEY, uid],
+    queryKey: emailTemplateKeys.detail(uid),
     queryFn: () => getEmailTemplate(uid),
     enabled: !!uid,
   });
@@ -39,7 +38,7 @@ export function useCreateEmailTemplate() {
   return useMutation({
     mutationFn: (data: CreateEmailTemplateDto) => createEmailTemplate(data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
+      queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
       showSuccessToast("Email template created successfully!");
     },
     onError: (error) => {
@@ -60,7 +59,7 @@ export function useUpdateEmailTemplate() {
       data: UpdateEmailTemplateDto;
     }) => updateEmailTemplate(uid, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
+      queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
       showSuccessToast("Email template updated successfully!");
     },
     onError: (error) => {
@@ -75,12 +74,14 @@ export function useDeleteEmailTemplate() {
   return useMutation({
     mutationFn: (uid: string) => deleteEmailTemplate(uid),
     onSuccess: (_, uid) => {
+      // Lists only. Keyed on `all` this updater also matched the single-template
+      // detail queries and called .filter() on a non-array.
       queryClient.setQueriesData(
-        { queryKey: [EMAIL_TEMPLATES_KEY] },
+        { queryKey: emailTemplateKeys.lists() },
         (old: EmailTemplate[] | undefined) =>
           old?.filter((t) => t.uid !== uid) ?? [],
       );
-      queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
+      queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
       showSuccessToast("Email template deleted successfully!");
     },
     onError: (error) => {
@@ -95,7 +96,7 @@ export function useCreateDefaultEmailTemplates() {
   return useMutation({
     mutationFn: () => createDefaultEmailTemplates(),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [EMAIL_TEMPLATES_KEY] });
+      queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
       showSuccessToast("Default email templates created successfully!");
     },
     onError: (error) => {

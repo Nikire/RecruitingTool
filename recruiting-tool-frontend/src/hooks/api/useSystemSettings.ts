@@ -1,3 +1,4 @@
+import { systemSettingsKeys } from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
@@ -10,14 +11,12 @@ import {
 import { UpdateSystemSettingsDto } from "../../types/systemSettings.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
-const SYSTEM_SETTINGS_KEY = "systemSettings";
-
 /**
  * Hook for fetching system settings (SUPER_ADMIN only)
  */
 export function useSystemSettings() {
   return useQuery({
-    queryKey: [SYSTEM_SETTINGS_KEY],
+    queryKey: systemSettingsKeys.all,
     queryFn: getSystemSettings,
     staleTime: 5 * 60 * 1000, // 5 minutes — settings don't change often
   });
@@ -34,7 +33,7 @@ export function useUpdateSystemSettings() {
   return useMutation({
     mutationFn: (dto: UpdateSystemSettingsDto) => updateSystemSettings(dto),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [SYSTEM_SETTINGS_KEY] });
+      queryClient.invalidateQueries({ queryKey: systemSettingsKeys.all });
       showSuccessToast(t("settings.update_success"));
     },
     onError: (error) => {
@@ -48,7 +47,7 @@ export function useUpdateSystemSettings() {
  */
 export function useEmailStats() {
   return useQuery({
-    queryKey: ["emailStats"],
+    queryKey: systemSettingsKeys.emailStats(),
     queryFn: getEmailStats,
     staleTime: 5 * 60 * 1000, // 5 minutes
   });
@@ -65,7 +64,7 @@ export function useEmailLogs(params: {
   search?: string;
 }) {
   return useQuery({
-    queryKey: ["emailLogs", params],
+    queryKey: systemSettingsKeys.emailLogs(params),
     queryFn: () => getEmailLogs(params),
     staleTime: 60 * 1000, // 1 minute
   });

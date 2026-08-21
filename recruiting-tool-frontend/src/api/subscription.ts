@@ -1,3 +1,4 @@
+import { adminKeys, quotaKeys, subscriptionKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "./axios";
 import {
@@ -51,7 +52,9 @@ export const subscriptionApi = {
   listAllSubscriptions: async (
     query: ListSubscriptionsQuery,
   ): Promise<SubscriptionsListResponse> => {
-    const response = await api.get("/stripe/subscriptions/all", {
+    // Served by the Dodo Payments module (the live provider). The previous
+    // `/stripe/subscriptions/all` route disappeared with StripeModule.
+    const response = await api.get("/billing/admin/subscriptions/list", {
       params: query,
     });
     return response.data;
@@ -65,7 +68,7 @@ export const subscriptionApi = {
  */
 export const useSubscription = () => {
   return useQuery({
-    queryKey: ["subscription"],
+    queryKey: subscriptionKeys.current(),
     queryFn: subscriptionApi.getSubscription,
     staleTime: 1000 * 30, // 30 seconds - keeps UI fresh after checkout redirect
   });
@@ -76,35 +79,35 @@ export const useSubscription = () => {
  */
 export const useQuota = () => {
   return useQuery({
-    queryKey: ["quota"],
+    queryKey: quotaKeys.current(),
     queryFn: subscriptionApi.getQuota,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
 /**
- * Hook to create a Stripe Checkout session
- * Redirects to Stripe Checkout on success
+ * Hook to create a provider checkout session
+ * Redirects to the hosted checkout page on success
  */
 export const useCheckout = () => {
   return useMutation({
     mutationFn: subscriptionApi.createCheckoutSession,
     onSuccess: (data) => {
-      // Redirect to Stripe Checkout
+      // Redirect to the provider-hosted checkout page
       window.location.href = data.url;
     },
   });
 };
 
 /**
- * Hook to get Stripe Billing Portal URL
- * Redirects to billing portal on success
+ * Hook to get the billing portal URL
+ * Redirects to the customer portal on success
  */
 export const useBillingPortal = () => {
   return useMutation({
     mutationFn: subscriptionApi.getBillingPortal,
     onSuccess: (data) => {
-      // Redirect to Stripe Billing Portal
+      // Redirect to the provider-hosted customer portal
       window.location.href = data.url;
     },
   });
@@ -121,7 +124,7 @@ export const useCancelSubscription = () => {
     mutationFn: subscriptionApi.cancelSubscription,
     onSuccess: () => {
       // Invalidate and refetch subscription data
-      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      queryClient.invalidateQueries({ queryKey: subscriptionKeys.current() });
     },
   });
 };
@@ -131,7 +134,7 @@ export const useCancelSubscription = () => {
  */
 export const useInvoices = () => {
   return useQuery({
-    queryKey: ["invoices"],
+    queryKey: subscriptionKeys.invoices(),
     queryFn: subscriptionApi.getInvoices,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
@@ -142,7 +145,7 @@ export const useInvoices = () => {
  */
 export const useListAllSubscriptions = (query: ListSubscriptionsQuery) => {
   return useQuery({
-    queryKey: ["subscriptions", "all", query],
+    queryKey: adminKeys.subscriptionsList(query),
     queryFn: () => subscriptionApi.listAllSubscriptions(query),
     staleTime: 1000 * 60 * 2, // 2 minutes
   });
