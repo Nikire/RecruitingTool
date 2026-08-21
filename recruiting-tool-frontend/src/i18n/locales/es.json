@@ -62,7 +62,12 @@
     "not_applicable": "N/A",
     "search_placeholder": "Buscar...",
     "company_logo_alt": "Logo de Empresa",
-    "error_occurred": "Se produjo un error. Por favor, inténtalo de nuevo."
+    "error_occurred": "Se produjo un error. Por favor, inténtalo de nuevo.",
+    "all": "Todos",
+    "copy": "Copiar",
+    "uploading": "Subiendo...",
+    "expand": "Expandir",
+    "collapse": "Contraer"
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -148,7 +153,11 @@
   "dialogs": {
     "delete_confirmation": "Confirmar Eliminación",
     "delete_message": "¿Está seguro que desea eliminar este elemento?",
-    "action_irreversible": "Esta acción no se puede deshacer."
+    "action_irreversible": "Esta acción no se puede deshacer.",
+    "discard_changes_title": "¿Descartar los cambios sin guardar?",
+    "discard_changes_message": "Tienes cambios sin guardar. Si cierras esta ventana ahora, se perderá todo lo que escribiste.",
+    "keep_editing": "Seguir editando",
+    "discard_changes": "Descartar cambios"
   },
   "empty": {
     "no_items": "No hay elementos para mostrar",
@@ -170,7 +179,9 @@
     "accepted": "Aceptado",
     "rejected": "Rechazado",
     "done": "Completado",
-    "current": "Actual"
+    "current": "Actual",
+    "pending_approval": "Pendiente de revisión",
+    "approved": "Aprobada"
   },
   "candidates": {
     "title": "Candidatos",
@@ -243,7 +254,9 @@
     "ai_analysis": "Análisis de IA",
     "summary": "Resumen",
     "key_differentiators": "Diferenciadores Clave",
-    "final_recommendation": "Recomendación Final"
+    "final_recommendation": "Recomendación Final",
+    "created_success": "¡Candidato creado exitosamente!",
+    "create_error": "No se pudo crear el candidato"
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -449,7 +462,15 @@
     },
     "stage_notes_btn": "Notas de etapa",
     "no_stage_notes": "Sin notas de etapa aún",
-    "no_current_stage": "Sin etapa activa"
+    "no_current_stage": "Sin etapa activa",
+    "stage_progressed_success": "¡El proceso avanzó a la siguiente etapa!",
+    "stage_progress_error": "No se pudo avanzar de etapa",
+    "moved_to_stage_success": "¡Candidato movido a la etapa exitosamente!",
+    "move_to_stage_error": "No se pudo mover el candidato a la etapa",
+    "empty_title": "Aún no hay procesos de contratación",
+    "empty_description": "Un proceso de contratación define las etapas por las que avanza un candidato para una posición de trabajo. Crea el primero para empezar a mover candidatos.",
+    "empty_filtered_title": "Ningún proceso de contratación coincide con tus filtros",
+    "empty_filtered_description": "Prueba con otro término de búsqueda o estado, o limpia los filtros para ver todos los procesos."
   },
   "companies": {
     "title": "Empresas",
@@ -462,7 +483,11 @@
     "search_placeholder": "Buscar empresas...",
     "creating": "Creando...",
     "delete_title": "Eliminar Empresa",
-    "delete_message": "¿Está seguro que desea eliminar esta empresa?"
+    "delete_message": "¿Está seguro que desea eliminar esta empresa?",
+    "empty_title": "Aún no hay empresas",
+    "empty_description": "Agrega tu primera empresa para empezar a publicar ofertas y gestionar candidatos con ella.",
+    "empty_filtered_title": "Ninguna empresa coincide con tu búsqueda",
+    "empty_filtered_description": "Prueba con otro nombre de empresa, o limpia la búsqueda para verlas todas."
   },
   "company_detail": {
     "back_to_companies": "Volver a Empresas",
@@ -531,7 +556,11 @@
     "activity_user_updated": "Perfil de usuario actualizado",
     "activity_user_login": "Usuario inició sesión",
     "activity_user_deactivated": "Cuenta de usuario desactivada",
-    "activity_user_reactivated": "Cuenta de usuario reactivada"
+    "activity_user_reactivated": "Cuenta de usuario reactivada",
+    "empty_title": "Aún no hay usuarios",
+    "empty_description": "Crea la primera cuenta de usuario para que tu equipo pueda empezar a trabajar en la plataforma.",
+    "empty_filtered_title": "Ningún usuario coincide con tu búsqueda",
+    "empty_filtered_description": "Prueba con otro nombre o correo, o limpia la búsqueda para ver a todos."
   },
   "stages": {
     "title": "Etapas",
@@ -634,7 +663,12 @@
     "job_position": "Posición de Trabajo",
     "status": "Estado",
     "applied_date": "Fecha de Aplicación",
-    "view_details": "Ver Detalles"
+    "view_details": "Ver Detalles",
+    "empty_title": "Aún no hay aplicaciones",
+    "empty_description": "Las aplicaciones aparecen aquí en cuanto un candidato se postula. Publica una oferta para empezar a recibirlas.",
+    "empty_action": "Publicar una oferta",
+    "empty_filtered_title": "No hay aplicaciones con este estado",
+    "empty_filtered_description": "Nada coincide con el estado seleccionado. Limpia el filtro para ver todas las aplicaciones."
   },
   "interviews": {
     "title": "Entrevistas",
@@ -741,7 +775,8 @@
     "noFiles": "No se encontraron archivos",
     "downloadError": "Error al descargar archivos",
     "deleteSuccess": "{{count}} archivo(s) eliminados correctamente",
-    "selectedCount": "{{count}} archivo(s) seleccionados"
+    "selectedCount": "{{count}} archivo(s) seleccionados",
+    "view_error": "No se pudo abrir este archivo. Puede que no tengas acceso a él."
   },
   "profile": {
     "title": "Perfil",
@@ -1007,7 +1042,20 @@
     "variable_meeting_link": "{{meetingLink}} - Enlace de videollamada",
     "variable_submission_url": "URL de Entrega",
     "variable_deadline": "Fecha Límite",
-    "variable_stage_name": "Nombre de la Etapa"
+    "variable_stage_name": "Nombre de la Etapa",
+    "preview_unsaved_info": "Esta es una vista previa de tu contenido sin guardar, renderizada localmente con valores de ejemplo. Guarda la plantilla para ver la versión almacenada.",
+    "sample_candidate_name": "Juan Pérez",
+    "sample_position_title": "Ingeniero de Software Senior",
+    "sample_company_name": "Tech Corp",
+    "sample_hr_name": "Ana García",
+    "sample_interview_time": "10:00",
+    "sample_new_stage": "Entrevista técnica",
+    "sample_previous_stage": "Entrevista telefónica",
+    "sample_status": "En revisión",
+    "variable_new_stage": "Nueva etapa",
+    "variable_previous_stage": "Etapa anterior",
+    "variable_status": "Estado de la postulación",
+    "variable_hiring_process_url": "Enlace del proceso de selección"
   },
   "add_stage": {
     "add_title": "Agregar Nueva Etapa",
@@ -1241,7 +1289,8 @@
     "header_actions": "Acciones",
     "edit_tooltip": "Editar posición de trabajo",
     "delete_tooltip": "Eliminar posición de trabajo",
-    "delete_title": "Eliminar Posición de Trabajo"
+    "delete_title": "Eliminar Posición de Trabajo",
+    "header_visibility": "Visibilidad"
   },
   "profile_page": {
     "no_user_data": "No hay datos de usuario disponibles",
@@ -1576,27 +1625,27 @@
     "table_status": "Estado",
     "table_candidate": "Candidato",
     "table_actions": "Acciones",
-    "error_loading": "Error al cargar la posición de trabajo. Por favor intente nuevamente.",
-    "back_to_positions": "Volver a Posiciones de Trabajo",
-    "hiring_overview": "Resumen de Procesos de Contratación",
-    "job_posting": "Oferta de Trabajo",
-    "job_description": "Descripción del Puesto",
-    "apply_now": "Postular Ahora",
+    "error_loading": "No pudimos cargar la vacante. Vuelve a intentarlo.",
+    "back_to_positions": "Volver a las vacantes",
+    "hiring_overview": "Resumen de procesos de contratación",
+    "job_posting": "Oferta de empleo",
+    "job_description": "Descripción del puesto",
+    "apply_now": "Postularme",
     "company": "Empresa",
-    "created_by_hr": "Creado Por (RRHH)",
+    "created_by_hr": "Creada por (RRHH)",
     "unknown": "Desconocido",
-    "total_stages": "Etapas Totales",
-    "active_processes": "Procesos de Contratación Activos",
+    "total_stages": "Total de etapas",
+    "active_processes": "Procesos de contratación activos",
     "hiring_processes_count": "Procesos de Contratación ({{filtered}} de {{total}})",
-    "no_processes": "No hay procesos de contratación activos para esta posición.",
+    "no_processes": "No hay procesos de contratación activos para esta vacante.",
     "no_processes_with_status": "No hay procesos de contratación con estado: {{status}}",
-    "stage_template": "Plantilla de Etapas",
+    "stage_template": "Plantilla de etapas",
     "stage_type": "Tipo",
-    "no_stages": "No hay etapas definidas para esta posición todavía.",
-    "custom_questions": "Preguntas de Selección Personalizadas",
-    "no_custom_questions": "No se han agregado preguntas de selección personalizadas a esta posición de trabajo. Los postulantes solo necesitarán proporcionar información estándar.",
-    "hr_detail_title": "Gestión de Posición de Trabajo",
-    "access_denied_message": "No tiene permiso para acceder a esta posición de trabajo. Solo puede ver posiciones de trabajo de su propia empresa.",
+    "no_stages": "Todavía no hay etapas definidas para esta vacante.",
+    "custom_questions": "Preguntas personalizadas",
+    "no_custom_questions": "Esta vacante no tiene preguntas personalizadas. Los postulantes solo tendrán que completar la información estándar.",
+    "hr_detail_title": "Gestión de la vacante",
+    "access_denied_message": "No tienes permiso para ver esta vacante. Solo puedes ver las vacantes de tu propia empresa.",
     "urgent_badge": "Urgente",
     "location_section": "Ubicación",
     "salary_section": "Salario",
@@ -1606,12 +1655,12 @@
     "salary_period_hourly": "hora",
     "salary_period_monthly": "mes",
     "salary_period_yearly": "año",
-    "deadline_section": "Fecha Límite de Aplicación",
+    "deadline_section": "Fecha límite para postularse",
     "skills_section": "Habilidades",
     "requirements_section": "Requisitos",
     "responsibilities_section": "Responsabilidades",
     "benefits_section": "Beneficios",
-    "education_section": "Nivel Educativo",
+    "education_section": "Nivel educativo",
     "tags_section": "Etiquetas"
   },
   "file_list": {
@@ -1743,7 +1792,8 @@
     "demo_bookings": "Demos Agendadas",
     "email_deliverability": "Salud del Email",
     "changelog": "Changelog",
-    "task_tracker": "Gestor de Tareas"
+    "task_tracker": "Gestor de Tareas",
+    "job_moderation": "Moderación de ofertas"
   },
   "language": {
     "select_language": "Seleccionar Idioma",
@@ -1904,73 +1954,73 @@
     "import_errors": "Errores de Importación"
   },
   "careers": {
-    "title": "Posiciones Abiertas",
-    "subtitle": "Explora nuestras ofertas de trabajo actuales y aplica hoy",
-    "search_placeholder": "Buscar por puesto o empresa...",
+    "title": "Vacantes disponibles",
+    "subtitle": "Explora las vacantes abiertas y postúlate hoy",
+    "search_placeholder": "Busca por puesto o empresa...",
     "posted": "Publicado",
-    "posted_date": "Fecha de Publicación",
-    "hero_title": "Únete a Nuestro Equipo",
-    "hero_subtitle": "Descubre oportunidades profesionales emocionantes y sé parte de algo increíble",
-    "open_positions_count": "{{count}} Posición Abierta",
-    "open_positions_count_plural": "{{count}} Posiciones Abiertas",
+    "posted_date": "Fecha de publicación",
+    "hero_title": "Súmate a nuestro equipo",
+    "hero_subtitle": "Conoce las vacantes que tenemos abiertas y súmate a un equipo que está creciendo",
+    "open_positions_count": "{{count}} vacante disponible",
+    "open_positions_count_plural": "{{count}} vacantes disponibles",
     "company_name": "Empresa",
-    "apply_now": "Aplicar Ahora",
+    "apply_now": "Postularme",
     "new_position": "Nuevo",
     "posted_today": "Publicado hoy",
     "posted_yesterday": "Publicado ayer",
-    "posted_days_ago": "Publicado hace {{days}}d",
-    "posted_weeks_ago": "Publicado hace {{weeks}}sem",
-    "posted_months_ago": "Publicado hace {{months}}m",
-    "no_positions_yet": "No Hay Posiciones Abiertas Aún",
-    "check_back_soon": "Vuelve pronto para nuevas oportunidades",
-    "no_results_found": "No Se Encontraron Trabajos",
-    "try_different_keywords": "Intenta ajustar tu búsqueda o vuelve más tarde para nuevas posiciones"
+    "posted_days_ago": "Publicado hace {{days}} d",
+    "posted_weeks_ago": "Publicado hace {{weeks}} sem",
+    "posted_months_ago": "Publicado hace {{months}} m",
+    "no_positions_yet": "Todavía no hay vacantes abiertas",
+    "check_back_soon": "Vuelve pronto: publicamos vacantes nuevas seguido",
+    "no_results_found": "No encontramos vacantes",
+    "try_different_keywords": "Ajusta tu búsqueda o vuelve más tarde, cuando haya vacantes nuevas"
   },
   "careersHero": {
-    "title": "Encuentra Tu Próxima Oportunidad",
-    "subtitle": "Explora ofertas de trabajo de las mejores empresas y da el siguiente paso en tu carrera"
+    "title": "Encuentra tu próxima oportunidad",
+    "subtitle": "Explora vacantes de empresas que están contratando y da el siguiente paso en tu carrera"
   },
   "careersFilters": {
     "filters": "Filtros",
-    "clear_all": "Limpiar Todo",
+    "clear_all": "Limpiar todo",
     "company": "Empresa",
-    "all_companies": "Todas las Empresas",
+    "all_companies": "Todas las empresas",
     "company_search_placeholder": "Buscar empresas...",
-    "category": "Categoría de Trabajo",
-    "all_categories": "Todas las Categorías",
+    "category": "Categoría",
+    "all_categories": "Todas las categorías",
     "engineering": "Ingeniería",
     "marketing": "Marketing",
     "sales": "Ventas",
     "design": "Diseño",
     "product": "Producto",
-    "job_type": "Tipo de Trabajo",
-    "all_types": "Todos los Tipos",
-    "full_time": "Tiempo Completo",
-    "part_time": "Tiempo Parcial",
+    "job_type": "Tipo de contrato",
+    "all_types": "Todos los tipos",
+    "full_time": "Tiempo completo",
+    "part_time": "Medio tiempo",
     "contract": "Contrato",
     "internship": "Pasantía",
     "temporary": "Temporal",
-    "work_location": "Ubicación de Trabajo",
-    "all_locations": "Todas las Ubicaciones",
+    "work_location": "Modalidad",
+    "all_locations": "Todas las modalidades",
     "remote": "Remoto",
     "hybrid": "Híbrido",
     "onsite": "Presencial",
-    "experience_level": "Nivel de Experiencia",
-    "all_levels": "Todos los Niveles",
-    "entry_level": "Nivel de Entrada",
-    "mid_level": "Nivel Medio",
-    "senior_level": "Nivel Senior",
-    "lead_level": "Líder / Gerente",
-    "executive_level": "Ejecutivo",
-    "salary_range": "Rango Salarial",
-    "salary_min": "Salario Mínimo",
-    "salary_max": "Salario Máximo",
-    "salary_range_label": "Rango Salarial"
+    "experience_level": "Nivel de experiencia",
+    "all_levels": "Todos los niveles",
+    "entry_level": "Junior / sin experiencia",
+    "mid_level": "Semi senior",
+    "senior_level": "Senior",
+    "lead_level": "Líder / gerente",
+    "executive_level": "Directivo",
+    "salary_range": "Rango salarial",
+    "salary_min": "Salario mínimo",
+    "salary_max": "Salario máximo",
+    "salary_range_label": "Rango salarial"
   },
   "careersResults": {
-    "showing_results": "Mostrando {{count}} de {{total}} trabajos",
-    "showing_results_plural": "Mostrando {{count}} de {{total}} trabajos",
-    "showing_range": "Mostrando {{start}}-{{end}} de {{total}} trabajos",
+    "showing_results": "Mostrando {{count}} de {{total}} vacantes",
+    "showing_results_plural": "Mostrando {{count}} de {{total}} vacantes",
+    "showing_range": "Mostrando {{start}}-{{end}} de {{total}} vacantes",
     "page_of_total": "Página {{page}} de {{total}}"
   },
   "careersSort": {
@@ -2109,7 +2159,8 @@
         "used": "Usado / Límite",
         "remaining": "Restante",
         "reset_date": "Fecha de Reinicio",
-        "actions": "Acciones"
+        "actions": "Acciones",
+        "company_uid": "UID de empresa"
       },
       "edit_dialog": {
         "title": "Editar Límite de Cuota de IA",
@@ -2120,7 +2171,8 @@
       },
       "usage_label": "{{used}} / {{limit}}",
       "updated_success": "Límite de cuota actualizado correctamente",
-      "load_error": "Error al cargar las cuotas de IA"
+      "load_error": "Error al cargar las cuotas de IA",
+      "companies_load_error": "No se pudo cargar la lista de empresas. Inténtalo de nuevo."
     },
     "subscriptions": {
       "title": "Gestión de Suscripciones",
@@ -2143,7 +2195,9 @@
         "trialing_subscriptions": "Suscripciones de Prueba",
         "past_due_subscriptions": "Suscripciones Vencidas",
         "total_mrr": "MRR Total"
-      }
+      },
+      "empty": "Aún no hay suscripciones. Las empresas aparecen aquí en cuanto se registran.",
+      "mrr_estimate_note": "El MRR se estima con el precio de lista de cada plan, no con los montos cobrados por el proveedor de pagos."
     }
   },
   "status_editor": {
@@ -2544,7 +2598,12 @@
     "no_slots_this_day": "No hay horarios disponibles para este día",
     "available_times": "Horarios disponibles",
     "date_unavailable": "No disponible",
-    "timezone_label": "Zona horaria"
+    "timezone_label": "Zona horaria",
+    "scroll_dates_back": "Mostrar fechas anteriores",
+    "scroll_dates_forward": "Mostrar fechas posteriores",
+    "date_option_unavailable": "{{date}} — no disponible",
+    "times_available_for_date": "{{date}} seleccionado. Horarios disponibles: {{total}}.",
+    "slot_selected_announcement": "Seleccionaste {{time}} el {{date}}."
   },
   "booking_link": {
     "send_tooltip": "Enviar enlace de reserva al candidato",
@@ -2875,7 +2934,7 @@
     "welcome": {
       "title": "¡Bienvenido a BorderLess!",
       "subtitle": "Tu configuración está completa",
-      "description": "¡Todo listo! Exploremos las características clave que te ayudarán a optimizar tu proceso de contratación.",
+      "description": "Tu espacio de trabajo está listo. Elige por dónde empezar: puedes volver a cualquiera de estas opciones desde el menú lateral cuando quieras.",
       "features_title": "Características Clave al Alcance",
       "features": {
         "candidate_management": {
@@ -2904,14 +2963,21 @@
         "create_first_job": "Crea tu primera oferta de empleo",
         "add_team_members": "Invita a miembros del equipo a colaborar",
         "setup_email_templates": "Personaliza tus plantillas de email",
-        "explore_dashboard": "Explora el panel de análisis"
+        "explore_dashboard": "Explora el panel de análisis",
+        "create_first_job_description": "Publica una oferta y empieza a recibir aplicaciones",
+        "add_team_members_description": "Invita a gerentes de contratación y reclutadores a tu espacio de trabajo",
+        "connect_calendar": "Conecta tu calendario",
+        "connect_calendar_description": "Permite que los candidatos agenden entrevistas según tu disponibilidad real",
+        "setup_email_templates_description": "Configura los mensajes que se envían en cada etapa de tu proceso"
       },
       "resources_title": "Recursos Útiles",
       "resources": {
         "documentation": "Ver Documentación",
-        "support": "Contactar Soporte"
+        "support": "Contactar Soporte",
+        "guide": "Abrir la guía de RRHH"
       },
-      "complete_setup": "Ir al Panel"
+      "complete_setup": "Ir al Panel",
+      "quick_start_hint": "Cada paso toma un par de minutos y te lleva directo a la pantalla correcta."
     }
   },
   "hr_onboarding": {
@@ -2953,19 +3019,20 @@
       "headline": "Optimiza tu Proceso de Contratación con Software de Reclutamiento Moderno",
       "subheadline": "Rastrea candidatos, gestiona entrevistas y construye equipos increíbles con nuestra plataforma todo-en-uno",
       "cta_primary": "Iniciar Prueba Gratuita",
-      "cta_secondary": "Ver Demo",
+      "cta_secondary": "Agenda una demo",
       "image_placeholder": "Imagen Principal",
       "coming_soon": "Vista previa del producto próximamente",
-      "new_headline": "Rompe las Barreras de Contratación",
-      "new_subheadline": "Optimiza el reclutamiento con filtrado por IA, programación automatizada y contratación colaborativa. Diseñado para pequeñas y medianas empresas y agencias de reclutamiento.",
+      "new_headline": "Un solo ATS para todos tus clientes.",
+      "new_subheadline": "Gestiona el pipeline de cada cliente, filtra CVs con IA en inglés y español y da seguimiento a las cuentas que estás prospectando, todo en una sola plataforma bilingüe. US$79 al mes por toda tu agencia, no US$150 por reclutador.",
       "cta_start_free": "Comenzar Gratis",
-      "cta_start_now": "Comenzar Ahora",
+      "cta_start_now": "Empieza gratis — sin tarjeta",
       "cta_view_pricing": "Ver Precios",
       "cta_learn_more": "Saber Más",
       "cta_browse_jobs": "Ver Empleos",
       "welcome_back": "¡Bienvenido de nuevo, {{name}}!",
       "founding_teaser": "Programa de Empresas Fundadoras — Plazas limitadas disponibles",
-      "founding_subtitle": "Únete ahora y asegura un descuento permanente. Solo necesitamos tu feedback honesto a cambio."
+      "founding_subtitle": "Únete ahora y asegura un descuento permanente. Solo necesitamos tu feedback honesto a cambio.",
+      "eyebrow": "Para agencias de staffing y reclutamiento en LATAM"
     },
     "stats": {
       "candidates_processed": "Candidatos Procesados",
@@ -2977,8 +3044,8 @@
       "section_title": "Todo lo que Necesitas para Contratar Mejor",
       "section_subtitle": "Funciones potentes diseñadas para hacer el reclutamiento más fácil y efectivo",
       "section_label": "CARACTERÍSTICAS",
-      "section_new_title": "Todo lo que necesitas para contratar de forma más inteligente",
-      "section_new_subtitle": "Herramientas poderosas diseñadas para optimizar todo tu proceso de contratación",
+      "section_new_title": "Tres cosas que un ATS para agencias tiene que resolver",
+      "section_new_subtitle": "Hecho para agencias que colocan candidatos en varios clientes, en dos idiomas.",
       "multi_stage_hiring": {
         "title": "Procesos de Contratación Multi-Etapa",
         "description": "Crea flujos de trabajo personalizables con múltiples etapas para tu proceso"
@@ -3010,6 +3077,18 @@
       "self_hosted": {
         "title": "Opción Auto-Alojada",
         "description": "Privacidad de datos y control - sin dependencia de proveedores"
+      },
+      "multi_client_pipelines": {
+        "title": "Pipelines por cliente",
+        "description": "Maneja un pipeline, una página de empleos y un flujo de etapas independientes para cada cliente, sin tener que entrar a un ATS distinto por cada cuenta."
+      },
+      "bilingual_ai_screening": {
+        "title": "Filtrado bilingüe de CVs con IA",
+        "description": "Puntúa y ordena CVs en inglés o español según los requisitos del puesto, para armar shortlists bilingües en minutos y no en toda una tarde."
+      },
+      "careers_and_scheduling": {
+        "title": "Página de empleos y agenda de entrevistas",
+        "description": "Publica vacantes en una página de empleos con tu marca y deja que los candidatos agenden entrevistas directo en tu calendario, sin pagar herramientas extra."
       }
     },
     "how_it_works": {
@@ -3029,34 +3108,34 @@
       }
     },
     "pricing": {
-      "section_title": "Precios Simples y Transparentes",
-      "section_subtitle": "Elige el plan que se ajuste al tamaño de tu equipo y necesidades de contratación",
+      "section_title": "Precios simples y transparentes",
+      "section_subtitle": "Un precio único para toda tu agencia. Sin cargos por reclutador ni cálculos de asientos en la renovación. Pagá por año y ahorrá cerca de un 16%.",
       "section_label": "PRECIOS",
       "per_month": "mes",
       "recommended": "Recomendado",
-      "cta": "Comenzar",
+      "cta": "Empezar",
       "free": {
-        "name": "Prueba Gratuita",
+        "name": "Gratis",
         "price": "$0",
-        "description": "30 días para explorar la plataforma completa",
+        "description": "Gratis para siempre. Publica una vacante, aloja tu página de empleo y contrata a tu primer candidato.",
         "features": {
           "ats": "Sistema completo de seguimiento de candidatos",
-          "email_templates": "Biblioteca de plantillas de email",
-          "limits": "3 posiciones de trabajo · 3 miembros del equipo",
+          "email_templates": "Biblioteca de plantillas de correo",
+          "limits": "3 vacantes · 3 miembros del equipo",
           "storage": "500 MB de almacenamiento · 20 créditos IA"
         }
       },
       "professional": {
         "name": "Profesional",
         "price": "$79",
-        "description": "Todo lo que tu equipo de contratación necesita para moverse rápido",
+        "description": "Todo lo que tu equipo de contratación necesita para avanzar rápido. Incluye 14 días de prueba gratis.",
         "features": {
           "ats": "Sistema completo de seguimiento de candidatos",
-          "email_templates": "Biblioteca de plantillas de email",
-          "positions": "Hasta 15 posiciones de trabajo activas",
+          "email_templates": "Biblioteca de plantillas de correo",
+          "positions": "Hasta 15 vacantes activas",
           "team": "Hasta 10 miembros del equipo · 10 GB de almacenamiento",
-          "ai": "Puntuación IA de candidatos (200 créditos/mes)",
-          "analytics": "Panel de análisis e insights de pipeline"
+          "ai": "Evaluación de candidatos con IA (200 créditos/mes)",
+          "analytics": "Panel de analítica y métricas del pipeline"
         }
       },
       "enterprise": {
@@ -3064,14 +3143,34 @@
         "price": "$249",
         "description": "Escala ilimitada para equipos de alto crecimiento",
         "features": {
-          "positions": "Posiciones de trabajo y candidatos ilimitados",
+          "positions": "Vacantes y candidatos ilimitados",
           "team": "Miembros del equipo y almacenamiento ilimitados",
-          "ai": "Créditos de puntuación IA ilimitados",
-          "analytics": "Análisis avanzado e informes",
+          "ai": "Créditos de evaluación con IA ilimitados",
+          "analytics": "Analítica e informes avanzados",
           "support": "Soporte prioritario y garantía SLA",
           "api": "Acceso a API e integraciones personalizadas"
         }
-      }
+      },
+      "unlimited_recruiters": "Reclutadores ilimitados. No cobramos por usuario.",
+      "free_forever_note": "Gratis para siempre. Sin tarjeta de crédito.",
+      "billed_annually_note": "Facturación anual de {{total}} — ahorrás un {{percent}}%.",
+      "billed_monthly_note": "Facturación mensual. Cancela cuando quieras.",
+      "agency": {
+        "name": "Agencia",
+        "description": "Para firmas de staffing que reclutan para varios clientes a la vez",
+        "features": {
+          "positions": "Hasta 50 vacantes activas",
+          "candidates": "Hasta 500 candidatos por vacante",
+          "seats": "Miembros del equipo ilimitados",
+          "storage": "50 GB de almacenamiento",
+          "ai": "Evaluación de candidatos con IA (750 créditos/mes)",
+          "analytics": "Panel de analítica y métricas del pipeline",
+          "templates": "Biblioteca de plantillas de correo"
+        }
+      },
+      "cta_free": "Empezar gratis",
+      "cta_trial": "Probar 14 días gratis",
+      "cta_talk": "Hablemos"
     },
     "social_proof": {
       "section_title": "Confiado por Equipos de Reclutamiento en Todo el Mundo",
@@ -3101,7 +3200,7 @@
     },
     "footer": {
       "brand_name": "Borderless ATS",
-      "brand_description": "Software de reclutamiento moderno diseñado para ayudarte a construir equipos increíbles más rápido y eficientemente.",
+      "brand_description": "Un ATS bilingüe para agencias de staffing y reclutamiento que colocan candidatos en varios clientes de LATAM y Estados Unidos.",
       "product": "Producto",
       "features": "Características",
       "pricing": "Precios",
@@ -3122,33 +3221,85 @@
     },
     "founding": {
       "badge": "Programa de Empresas Fundadoras",
-      "title": "Sé de las primeras. Forma parte del futuro del reclutamiento.",
-      "description": "Abrimos Borderless a un grupo limitado de empresas que quieren ayudarnos a construir la mejor plataforma de reclutamiento. A cambio de tu feedback honesto, obtendrás beneficios permanentes que los usuarios regulares nunca tendrán.",
+      "title": "Sé de las primeras. Ayuda a definir el futuro del reclutamiento.",
+      "description": "Estamos abriendo Borderless a un grupo limitado de empresas que quieren ayudarnos a construir la mejor plataforma de reclutamiento. A cambio de tu feedback honesto, obtienes beneficios permanentes que nadie que llegue después va a tener.",
       "perk_1": "Descuento permanente — garantizado para siempre, sin importar cambios de precios futuros",
       "perk_2": "Contacto directo con el equipo de producto — tu feedback define lo que construimos",
-      "perk_3": "Soporte prioritario y asistencia de incorporación sin coste adicional",
+      "perk_3": "Soporte prioritario y ayuda con la puesta en marcha, sin costo adicional",
       "perk_4": "Insignia de Miembro Fundador visible en el perfil de tu empresa",
-      "cta_primary": "Unirte al Programa — Gratis",
+      "cta_primary": "Únete al programa — gratis",
       "cta_secondary": "Habla con nosotros primero",
-      "card_title": "Cómo Funciona",
+      "card_title": "Cómo funciona",
       "card_description": "Sin compromisos a largo plazo. Sin tarjeta de crédito para empezar. Solo usa la plataforma, cuéntanos qué piensas y ayúdanos a mejorarla para todos.",
-      "step_1_title": "Regístrate y prueba Borderless gratis durante 30 días",
-      "step_1_desc": "Acceso completo a todas las funciones sin restricciones durante tu prueba.",
+      "step_1_title": "Regístrate y empieza en el plan Gratis",
+      "step_1_desc": "Sin tarjeta de crédito. Publica una vacante, arma tu página de empleos y fíjate si encaja con la forma en que ya trabajas.",
       "step_2_title": "Comparte tu feedback con nosotros",
-      "step_2_desc": "Una breve revisión mensual por email o llamada. Qué funciona, qué no, qué te gustaría ver.",
-      "step_3_title": "Mantén tu descuento fundador para siempre",
-      "step_3_desc": "Al finalizar el período de prueba, fijas un descuento permanente vinculado a tu cuenta indefinidamente.",
-      "spots_label": "Plazas limitadas — el programa fundador cierra al completarse"
+      "step_2_desc": "Una charla breve al mes, por correo o llamada. Qué funciona, qué no y qué te gustaría ver.",
+      "step_3_title": "Conserva tu descuento fundador para siempre",
+      "step_3_desc": "Cuando pases a un plan de pago fijas un descuento permanente que acompaña a tu cuenta, cobremos lo que cobremos más adelante.",
+      "spots_label": "Cupos limitados — el programa fundador cierra cuando se llene",
+      "honesty_note": "Te lo digo de frente: estamos firmando nuestras primeras empresas ahora mismo. No hay casos de éxito ni logos de clientes, nada que mostrarte todavía. Lo que sí hay: un producto que puedes usar hoy, un precio que no cambia cuando sumas otro reclutador, y un fundador que contesta su propio correo."
     },
     "final_cta": {
       "title": "¿Listo para optimizar tu contratación?",
-      "subtitle": "Sé de los primeros en contratar de forma más inteligente con BorderLess",
-      "button": "Comenzar Gratis Hoy"
+      "subtitle": "Sé de los primeros en contratar mejor con Borderless",
+      "button": "Empieza gratis hoy"
     },
     "product_preview": {
       "title": "Borderless en acción",
-      "subtitle": "Una plataforma potente e intuitiva para equipos de RRHH modernos.",
-      "coming_soon": "Capturas de pantalla del producto próximamente"
+      "subtitle": "Cuatro pantallas del producto en funcionamiento. Haz clic en cualquier captura para verla en tamaño completo.",
+      "coming_soon": "Capturas de pantalla del producto próximamente",
+      "demo_data_note": "Capturas del producto real. Las personas y empresas que aparecen son datos de ejemplo de una cuenta de demostración.",
+      "slides": {
+        "analytics": {
+          "title": "Analítica del pipeline",
+          "caption": "Postulaciones totales, contrataciones del mes, tiempo promedio de contratación y tasa de conversión — más un embudo etapa por etapa y el desglose real del origen de cada postulación: LinkedIn, referidos, Indeed, tu página de empleos."
+        },
+        "calendar": {
+          "title": "Calendario de contratación compartido",
+          "caption": "Vistas de mes, semana y día de cada entrevista y reunión. Filtra solo tus reuniones o muestra las de todo el equipo, con un color por persona."
+        },
+        "process_detail": {
+          "title": "Un candidato, todas las etapas",
+          "caption": "Un proceso de selección completo — llamada con el reclutador, evaluación técnica, entrevista final, oferta — con horarios agendados, enlace para unirse a la reunión, notas de entrevista y una calificación guardada en cada etapa."
+        },
+        "process_list": {
+          "title": "Procesos agrupados por puesto",
+          "caption": "Cada proceso abierto agrupado por puesto, con cuántos candidatos ya evaluó la IA y la puntuación promedio de ese puesto, para ver de un vistazo qué pipelines avanzan."
+        }
+      }
+    },
+    "integrations": {
+      "section_label": "CON QUÉ SE CONECTA",
+      "section_title": "Ya conectado con las herramientas que usas",
+      "section_subtitle": "No es una promesa a futuro: todas están construidas y funcionando hoy en el producto.",
+      "google_calendar": {
+        "name": "Google Calendar",
+        "description": "Conecta tu cuenta de Google y las entrevistas que agendes aparecen en el calendario del entrevistador, con enlace a la reunión."
+      },
+      "dodo": {
+        "name": "Dodo Payments",
+        "description": "Checkout alojado, suscripciones y facturas. Los datos de tu tarjeta nunca pasan por nuestros servidores."
+      },
+      "resend": {
+        "name": "Resend",
+        "description": "Invitaciones, avisos a candidatos y notificaciones salen por Resend, desde tu propio dominio de envío."
+      },
+      "storage": {
+        "name": "Almacenamiento compatible con S3",
+        "description": "Los CV y adjuntos se guardan en almacenamiento de objetos compatible con S3 y se entregan con enlaces firmados que caducan."
+      }
+    },
+    "founder": {
+      "section_label": "QUIÉN ESTÁ DETRÁS",
+      "section_title": "Todavía no hay logos de clientes. Pero sí una persona real.",
+      "name": "Erik Pastuszek",
+      "initials": "EP",
+      "role": "Fundador — Borderless",
+      "bio": "Construí Borderless después de ver a agencias de staffing en LATAM llevando la contratación de una docena de clientes en hojas de cálculo, mientras pagaban un ATS por cada reclutador que las castigaba justo cuando el equipo crecía. Cada captura de esta página es una pantalla que desarrollé yo mismo.",
+      "commitment": "Borderless es nuevo, y prefiero decirlo antes que disimularlo. Si te registras vas a ser una de las primeras empresas en usarlo, y vas a tratar directamente conmigo: el correo de soporte lo contesto yo. Ese es el trato: un producto sin trayectoria, pero con una persona con nombre y apellido detrás en lugar de una cola de tickets.",
+      "linkedin_cta": "Borderless en LinkedIn",
+      "contact_cta": "Escríbeme directamente"
     }
   },
   "applicant_onboarding": {
@@ -3234,9 +3385,9 @@
     "per_year": "/año",
     "per_month": "/mes",
     "per_hour": "/hora",
-    "apply_by": "Aplicar antes del {{date}}",
-    "visit_website": "Visitar Sitio Web",
-    "company_header_jobs": "Posiciones Abiertas"
+    "apply_by": "Postúlate antes del {{date}}",
+    "visit_website": "Visitar sitio web",
+    "company_header_jobs": "Vacantes disponibles"
   },
   "calendar_settings": {
     "title": "Calendario y Configuración de Reservas",
@@ -3573,7 +3724,8 @@
       "COMPANY_ADMIN": "Administrador de Empresa",
       "COMPANY_OWNER": "Propietario de Empresa",
       "SUPER_ADMIN": "Super Administrador"
-    }
+    },
+    "connection_requests_no_permission": "Solo el propietario o un administrador de la empresa pueden revisar las solicitudes de conexión."
   },
   "check_status": {
     "title": "Verificar Estado de Solicitud",
@@ -3999,7 +4151,8 @@
     "no_messages": "No hay mensajes de contacto aún",
     "message_preview": "{{preview}}...",
     "loading_error": "Error al cargar los mensajes de contacto",
-    "unread_count": "{{count}} no leídos"
+    "unread_count": "{{count}} no leídos",
+    "empty_description": "Los mensajes enviados desde el formulario de contacto público aparecen aquí. Aún no ha llegado ninguno."
   },
   "contact_messages": {
     "detail_title": "Mensaje de Contacto",
@@ -4345,7 +4498,9 @@
       "review_failed": "Error al guardar la revisión",
       "revoke_failed": "Error al revocar el enlace",
       "submission_failed": "Error al enviar la entrega"
-    }
+    },
+    "removeFileNamed": "Quitar {{name}}",
+    "attachedFilesCount": "Archivos adjuntos: {{total}}"
   },
   "quota_banner": {
     "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",
@@ -4978,6 +5133,264 @@
       "jobPositions": "Puestos de trabajo — listar, crear, actualizar",
       "applications": "Aplicaciones — listar, enviar, actualizar estado",
       "webhooks": "Webhooks — registrar, listar, eliminar"
+    }
+  },
+  "job_moderation": {
+    "title": "Moderación de ofertas",
+    "subtitle": "Revisa las ofertas de empleo antes de que lleguen al portal público",
+    "description": "Las ofertas de empresas sin una suscripción de pago activa permanecen ocultas del portal público hasta que las apruebes. Las empresas con plan de pago se aprueban automáticamente.",
+    "stat_pending": "Pendientes",
+    "stat_pending_subtitle": "Esperando tu revisión",
+    "stat_approved": "Aprobadas",
+    "stat_approved_subtitle": "Publicadas en el portal de empleo",
+    "stat_rejected": "Rechazadas",
+    "stat_rejected_subtitle": "Bloqueadas para publicación",
+    "stat_total": "Ofertas totales",
+    "stat_total_subtitle": "De todas las empresas",
+    "search_placeholder": "Buscar por título de oferta o empresa...",
+    "filter_status": "Estado de moderación",
+    "table_posting": "Oferta",
+    "table_company": "Empresa",
+    "table_subscription": "Suscripción",
+    "table_moderation_status": "Moderación",
+    "table_submitted": "Enviada",
+    "empty": "Ninguna oferta coincide con este filtro",
+    "error_loading": "No se pudo cargar la cola de moderación",
+    "review": "Revisar oferta",
+    "reject": "Rechazar",
+    "confirm_reject": "Rechazar oferta",
+    "rejecting": "Rechazando...",
+    "company_paid": "Plan de pago",
+    "company_unpaid": "Sin plan de pago",
+    "created_by": "Creada por",
+    "submitted_at": "Enviada",
+    "moderated_at": "Moderada",
+    "lifecycle_status": "Estado de la oferta",
+    "description_label": "Descripción del puesto",
+    "no_description": "Esta oferta no tiene descripción.",
+    "previous_reason_label": "Nota de moderación anterior",
+    "reason_label": "Motivo del rechazo",
+    "reason_helper": "Se muestra a la empresa. Explica qué debe cambiar.",
+    "reason_required": "Se requiere un motivo para rechazar una oferta",
+    "reason_too_short": "El motivo debe tener al menos {{min}} caracteres",
+    "approved_success": "Oferta aprobada y publicada",
+    "approve_error": "No se pudo aprobar la oferta",
+    "rejected_success": "Oferta rechazada",
+    "reject_error": "No se pudo rechazar la oferta",
+    "notice_pending_title": "Pendiente de revisión",
+    "notice_pending_body": "Nuestro equipo está revisando esta oferta y todavía no aparece en el portal público de empleo.",
+    "notice_pending_body_count": "{{total}} de tus ofertas están siendo revisadas por nuestro equipo y todavía no aparecen en el portal público de empleo.",
+    "notice_rejected_title": "Oferta rechazada",
+    "notice_rejected_body": "Esta oferta no fue aprobada, por lo que no es visible en el portal público de empleo.",
+    "notice_rejected_reason": "Motivo: {{reason}}",
+    "notice_upgrade_prompt": "Las ofertas de los planes de pago se publican al instante, sin esperar revisión.",
+    "notice_upgrade_link": "Ver planes",
+    "empty_queue_title": "No hay nada pendiente de revisión",
+    "empty_queue_description": "Ya revisaste todas las ofertas. Las nuevas solicitudes de empresas sin plan de pago aparecen aquí automáticamente.",
+    "empty_filtered_description": "Ninguna oferta coincide con esta búsqueda o estado de moderación. Prueba limpiando los filtros."
+  },
+  "emailTemplates": {
+    "variable_submission_url": "URL de entrega",
+    "variable_deadline": "Fecha límite",
+    "variable_stage_name": "Nombre de la etapa"
+  },
+  "seo": {
+    "landing": {
+      "title": "Software ATS para agencias de reclutamiento | Borderless ATS",
+      "description": "Pipelines de contratación multicliente, filtrado de CVs con IA en inglés y español y seguimiento de cuentas. US$79 al mes por toda tu agencia."
+    },
+    "careers": {
+      "title": "Empleos disponibles ahora — remoto, híbrido y presencial | Borderless",
+      "description": "Explora las vacantes de las empresas que contratan en Borderless. Filtra por categoría, tipo de empleo, ubicación, experiencia y salario, y postúlate en línea."
+    },
+    "job_detail": {
+      "title": "{{title}} en {{company}} | Borderless",
+      "description": "Conoce la vacante de {{title}} en {{company}} en Borderless: descripción del puesto, requisitos, beneficios y etapas del proceso. Postúlate en línea en minutos.",
+      "not_found_title": "Vacante no disponible | Borderless",
+      "not_found_description": "Esta vacante ya no está disponible. Mira las demás vacantes que las empresas están publicando ahora en Borderless."
+    },
+    "contact": {
+      "title": "Contacta a Borderless — habla con ventas o agenda una demo del ATS",
+      "description": "Ponte en contacto con el equipo de Borderless. Escríbenos, agenda una demo en vivo del ATS o consulta las respuestas a las preguntas frecuentes."
+    },
+    "legal": {
+      "terms": {
+        "title": "Términos de Servicio | Borderless ATS",
+        "description": "Los términos que rigen el uso de Borderless, el ATS para equipos de reclutamiento: cuentas, suscripciones, uso aceptable y limitación de responsabilidad."
+      },
+      "privacy": {
+        "title": "Política de Privacidad | Borderless ATS",
+        "description": "Cómo Borderless recopila, usa, almacena y protege los datos personales de reclutadores y candidatos, y los derechos que puedes ejercer sobre ellos."
+      },
+      "security": {
+        "title": "Política de Seguridad | Borderless ATS",
+        "description": "Cómo Borderless protege tus datos de reclutamiento: cifrado en tránsito y en reposo, control de accesos, copias de seguridad y monitoreo continuo."
+      }
+    },
+    "candidate_detail": {
+      "title": "{{name}} — Candidato | Borderless",
+      "description": "Perfil interno del candidato: avance en el pipeline, entrevistas, notas, historial de actividad y archivos. Visible solo para tu equipo.",
+      "not_found_title": "Candidato no encontrado | Borderless",
+      "not_found_description": "Este perfil de candidato no está disponible. Puede haber sido eliminado o pertenecer a otra empresa."
+    },
+    "jobs_facet": {
+      "title": "Ofertas de empleo: {{facet}} — vacantes abiertas | Borderless",
+      "description": "Explora vacantes de {{facet}} en empresas que contratan con Borderless. Filtra por categoría, tipo de contrato, experiencia y salario, y postúlate en minutos.",
+      "pair_title": "Empleos de {{role}} en {{country}} — vacantes abiertas | Borderless",
+      "pair_description": "Vacantes de {{role}} en {{country}} publicadas por empresas que contratan con Borderless. Consulta el salario, la modalidad y los requisitos, y postúlate en línea.",
+      "not_found_title": "Filtro de empleos no encontrado | Borderless",
+      "not_found_description": "Este filtro de empleos no existe. Explora todas las vacantes abiertas en el listado de empleos de Borderless."
+    },
+    "company_careers": {
+      "title": "Empleos en {{company}} — vacantes abiertas | Borderless",
+      "description": "Todas las vacantes abiertas de {{company}}, actualizadas apenas el equipo las publica. Lee la descripción, el salario y los requisitos, y postúlate en minutos.",
+      "not_found_title": "Página de empleos no encontrada | Borderless",
+      "not_found_description": "Esta página de empleos no está disponible. Explora todas las vacantes abiertas en el listado de empleos de Borderless."
+    },
+    "blog": {
+      "title": "Guías de reclutamiento y ATS para agencias | Blog de Borderless",
+      "description": "Guías prácticas sobre ATS (sistemas de seguimiento de candidatos), SEO para páginas de empleo y cómo llevar una agencia de reclutamiento en LATAM, en español y en inglés.",
+      "post_title": "{{title}} | Borderless",
+      "not_found_title": "Artículo no encontrado | Borderless",
+      "not_found_description": "Este artículo no está disponible. Lee el resto de las guías de Borderless sobre reclutamiento, ATS y SEO para páginas de empleo."
+    }
+  },
+  "not_found": {
+    "seo_title": "Página no encontrada (404) | Borderless ATS",
+    "seo_description": "La página que buscas no existe o fue movida. Vuelve a la página principal de Borderless ATS o explora nuestras vacantes disponibles ahora.",
+    "code": "404",
+    "title": "No encontramos esa página",
+    "message": "Puede que el enlace esté roto o que la página se haya movido o eliminado. Revisa la dirección o usa uno de los enlaces de abajo para continuar.",
+    "go_home": "Ir al inicio",
+    "browse_jobs": "Ver vacantes"
+  },
+  "candidate_detail": {
+    "back_to_candidates": "Volver a Candidatos",
+    "error_loading": "No se pudo cargar este candidato. Puede que haya sido eliminado o que no tengas acceso.",
+    "edit_candidate": "Editar candidato",
+    "open_profile": "Abrir el perfil de {{name}}",
+    "tabs_aria": "Secciones del candidato",
+    "tab_overview": "Pipeline",
+    "tab_interviews": "Entrevistas",
+    "tab_notes": "Notas",
+    "tab_activity": "Actividad",
+    "tab_files": "Archivos",
+    "journey_error": "No se pudieron cargar los procesos de contratación de este candidato.",
+    "no_processes": "Este candidato aún no participa en ningún proceso de contratación.",
+    "processes_count": "Procesos de contratación ({{count}})",
+    "stages_count": "Etapas: {{count}}",
+    "total_time": "Tiempo total: {{duration}}",
+    "view_process": "Abrir proceso",
+    "no_stages": "Aún no se han definido etapas para este proceso de contratación.",
+    "stage_column": "Etapa",
+    "entered_column": "Ingresó",
+    "exited_column": "Salió",
+    "duration_column": "Tiempo en la etapa",
+    "stage_current": "Actual",
+    "stage_in_progress": "Aún aquí",
+    "duration_minutes": "{{count}} min",
+    "duration_hours": "{{count}} h",
+    "duration_days": "{{count}} d",
+    "interviews_error": "No se pudieron cargar las entrevistas de este candidato.",
+    "interviews_count": "Entrevistas ({{count}})"
+  },
+  "careersBoard": {
+    "all_roles_heading": "Todos los puestos de esta página",
+    "all_roles_nav_label": "Puestos abiertos",
+    "powered_by": "Con tecnología de Borderless ATS"
+  },
+  "careersCompany": {
+    "heading": "Trabaja en {{company}}",
+    "not_found_title": "No encontramos esa empresa",
+    "not_found_body": "Esta página de empleos no existe, o la empresa no tiene vacantes abiertas en este momento."
+  },
+  "careersFacets": {
+    "nav_label": "Explorar empleos",
+    "browse_by_work_location": "Explorar por modalidad",
+    "browse_by_country": "Explorar por país",
+    "browse_by_category": "Explorar por categoría",
+    "browse_by_job_type": "Explorar por tipo de contrato",
+    "single_heading": "Ofertas de empleo: {{facet}}",
+    "pair_heading": "Ofertas de {{role}} en {{country}}",
+    "not_found_title": "Ese filtro de empleos no existe",
+    "not_found_body": "En el listado completo están todas las vacantes abiertas, y puedes filtrarlo como quieras.",
+    "remote": "Remoto",
+    "hybrid": "Híbrido",
+    "onsite": "Presencial",
+    "engineering": "Ingeniería",
+    "design": "Diseño",
+    "marketing": "Marketing",
+    "sales": "Ventas",
+    "product": "Producto",
+    "full_time": "Tiempo completo",
+    "part_time": "Medio tiempo",
+    "contract": "Contrato",
+    "internship": "Pasantía",
+    "temporary": "Temporal",
+    "argentina": "Argentina",
+    "brazil": "Brasil",
+    "chile": "Chile",
+    "colombia": "Colombia",
+    "mexico": "México",
+    "peru": "Perú",
+    "uruguay": "Uruguay",
+    "united_states": "Estados Unidos"
+  },
+  "blog": {
+    "index_title": "Guías de reclutamiento y ATS",
+    "index_subtitle": "Notas prácticas sobre seguimiento de candidatos, SEO para tu página de empleos y cómo llevar una agencia de reclutamiento en LATAM.",
+    "empty": "Todavía no hay artículos publicados.",
+    "reading_time": "{{minutes}} min de lectura",
+    "back_to_index": "Todos los artículos",
+    "cta_start_free": "Prueba Borderless gratis",
+    "draft_badge": "Borrador",
+    "not_found_title": "Artículo no encontrado",
+    "not_found_body": "Este artículo no existe, o todavía no se publicó.",
+    "category": {
+      "guide": "Guía",
+      "comparison": "Comparativa",
+      "technical": "Técnico"
+    },
+    "lang": {
+      "en": "Inglés",
+      "es": "Español"
+    },
+    "index": {
+      "title": "Blog",
+      "subtitle": "Guías sobre reclutamiento, procesos de selección y SEO para tu página de empleos.",
+      "empty": "Todavía no hay artículos publicados."
+    },
+    "card": {
+      "read_more": "Leer artículo"
+    },
+    "post": {
+      "published_on": "Publicado el {{date}}",
+      "updated_on": "Actualizado el {{date}}",
+      "reading_time": "{{count}} min de lectura",
+      "back_to_index": "Volver a todos los artículos"
+    },
+    "cta": {
+      "trial_title": "Prueba Borderless gratis 30 días",
+      "trial_body": "La plataforma completa, sin tarjeta de crédito.",
+      "trial_button": "Empezar prueba gratis"
+    }
+  },
+  "clients": {
+    "filter_label": "Cliente",
+    "filter_all": "Todos los clientes",
+    "filter_aria": "Filtrar por cliente",
+    "title": "Clientes",
+    "created_success": "Cliente creado correctamente",
+    "create_error": "No se pudo crear el cliente",
+    "updated_success": "Cliente actualizado correctamente",
+    "update_error": "No se pudo actualizar el cliente",
+    "deleted_success": "Cliente eliminado correctamente",
+    "delete_error": "No se pudo eliminar el cliente",
+    "none": "Sin cliente",
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo",
+      "archived": "Archivado"
     }
   }
 }
