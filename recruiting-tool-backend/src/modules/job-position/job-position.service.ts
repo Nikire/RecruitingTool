@@ -23,6 +23,7 @@ import { PaginatedResponse } from 'src/dto/pagination.dto';
 import { getUserCompanyId, isSuperAdminRole, verifyCompanyAccess } from 'src/utils/company-access.helper';
 import { hasActivePaidSubscription } from 'src/utils/subscription-status.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { isValidUid } from '../../common/utils/uid.util';
 
 export class JobPositionService {
   constructor(
@@ -190,6 +191,9 @@ export class JobPositionService {
   }
 
   async findOne(uid: string, user?: User): Promise<JobPositionResponseDto> {
+    if (!isValidUid(uid)) {
+      throw new EntityNotFoundException('Job position', uid);
+    }
     try {
       const jobPosition = await this.databaseService.jobPosition.findFirst({
         where: { uid, deletedAt: null }, // Exclude soft-deleted records
@@ -619,6 +623,11 @@ export class JobPositionService {
   }
 
   async findOnePublic(uid: string): Promise<PublicJobPositionResponseDto> {
+    // A malformed uid reaches Prisma and dies as a 500. This route is public
+    // and indexed, so a typo or a stale link must be a 404 instead.
+    if (!isValidUid(uid)) {
+      throw new EntityNotFoundException('Job position', uid);
+    }
     try {
       const jobPosition = await this.databaseService.jobPosition.findFirst({
         where: {

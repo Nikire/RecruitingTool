@@ -34,6 +34,29 @@ export class HttpExceptionFilter implements ExceptionFilter {
       error = this.isProduction ? 'InternalServerError' : exception.name;
     }
 
+    // Redact 5xx bodies in production, INCLUDING explicitly-thrown HttpExceptions.
+    //
+    // The branch above only sanitised raw `Error`s, on the assumption that an
+    // HttpException message is deliberate developer-authored copy. That is true
+    // for 4xx — validation failures, conflicts, "not found" — and those must
+    // survive, because they are the user-facing half of the API contract.
+    //
+    // It is NOT true for 5xx. 165 call sites across 24 services use the shape
+    //     catch (error) { throw new InternalServerErrorException(`Failed to X: ${error.message}`) }
+    // which embeds the raw underlying message into the exception, so the
+    // sanitiser above never saw it. In production that shipped Prisma
+    // invocation details, column names and query shapes to any caller — e.g. a
+    // malformed uid returned the full `prisma.jobPosition.findFirst()` error.
+    //
+    // Redacting centrally here rather than editing 165 throws means no call
+    // site can be missed, and a future careless `InternalServerErrorException`
+    // carrying sensitive detail is covered by default. The full message and
+    // stack are still logged server-side below and still sent to Sentry.
+    if (this.isProduction && status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      message = 'An unexpected error occurred. Please try again later.';
+      error = 'InternalServerError';
+    }
+
     // Log full error details server-side (always, regardless of environment)
     this.logger.error(
       `[${new Date().toISOString()}] ${request.method} ${request.url}`,
