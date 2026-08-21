@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Box,
@@ -100,6 +100,30 @@ const formatDuration = (minutes: number): string => {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 };
 
+// ─── Accessibility helpers ────────────────────────────────────────────────────
+
+/** Hides content visually while keeping it available to screen readers. */
+const srOnly = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+} as const;
+
+/** Consistent, always-visible keyboard focus ring for the card-style options. */
+const focusRing = {
+  "&:focus-visible": {
+    outline: "3px solid",
+    outlineColor: "primary.main",
+    outlineOffset: "2px",
+  },
+} as const;
+
 // ─── Day card ─────────────────────────────────────────────────────────────────
 
 interface DayCardProps {
@@ -107,36 +131,61 @@ interface DayCardProps {
   dateStr: string;
   isSelected: boolean;
   isDisabled: boolean;
+  /** Roving tabindex: only one day card is in the tab order at a time. */
+  isTabStop: boolean;
   onClick: () => void;
+  onKeyDown: (event: React.KeyboardEvent<HTMLButtonElement>) => void;
+  registerRef: (element: HTMLButtonElement | null) => void;
 }
 
 const DayCard: React.FC<DayCardProps> = ({
   date,
   isSelected,
   isDisabled,
+  isTabStop,
   onClick,
+  onKeyDown,
+  registerRef,
 }) => {
+  const { t } = useTranslation();
   const dayName = format(date, "EEE");
   const dayNum = format(date, "d");
   const month = format(date, "MMM");
+  const fullDate = format(date, "EEEE, MMMM d, yyyy");
 
   return (
     <Paper
+      component="button"
+      type="button"
+      ref={registerRef}
       elevation={isSelected ? 4 : 1}
-      onClick={isDisabled ? undefined : onClick}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+      disabled={isDisabled}
+      tabIndex={isTabStop ? 0 : -1}
+      aria-pressed={isSelected}
+      aria-label={
+        isDisabled
+          ? t("booking.date_option_unavailable", { date: fullDate })
+          : fullDate
+      }
       sx={{
         minWidth: 64,
         width: 64,
         py: 1.5,
         px: 1,
+        display: "block",
+        fontFamily: "inherit",
         textAlign: "center",
         cursor: isDisabled ? "not-allowed" : "pointer",
         opacity: isDisabled ? 0.4 : 1,
         border: isSelected ? 2 : 1,
+        borderStyle: "solid",
         borderColor: isSelected ? "primary.main" : "divider",
         bgcolor: isSelected ? "primary.50" : "background.paper",
         transition: "all 0.2s",
         flexShrink: 0,
+        ...focusRing,
         "&:hover": isDisabled
           ? {}
           : {
@@ -179,6 +228,10 @@ const BookDemoPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const dayRefs = useRef<Record<string, HTMLButtonElement | null>>({});
+  const timeSectionRef = useRef<HTMLDivElement>(null);
+  /** Set when the user picks a date, so focus only advances on a real interaction. */
+  const shouldFocusTimesRef = useRef(false);
 
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlotUid, setSelectedSlotUid] = useState<string | null>(null);
@@ -237,6 +290,47 @@ const BookDemoPage: React.FC = () => {
       ) ?? [])
     : [];
 
+  /** Days a keyboard user can actually land on — drives the roving tabindex. */
+  const enabledDateStrs = dateRange
+    .map((date) => toDateStr(date))
+    .filter(
+      (dateStr, index) => !isDateDisabled(dateStr, dateRange[index].getDay()),
+    );
+
+  const tabStopDate =
+    selectedDate && enabledDateStrs.includes(selectedDate)
+      ? selectedDate
+      : enabledDateStrs[0];
+
+  const selectedSlot = slotsForSelectedDate.find(
+    (slot) => slot.uid === selectedSlotUid,
+  );
+
+  /** Politely announced to screen readers as the funnel progresses. */
+  const liveAnnouncement = selectedSlot
+    ? t("booking.slot_selected_announcement", {
+        time: formatSlotTime(
+          selectedSlot.startTime,
+          selectedSlot.endTime,
+          timezone,
+        ),
+        date: selectedDate,
+      })
+    : selectedDate
+      ? t("booking.times_available_for_date", {
+          total: slotsForSelectedDate.length,
+          date: selectedDate,
+        })
+      : "";
+
+  // Move focus into the time-slot step once the visitor picks a day.
+  useEffect(() => {
+    if (selectedDate && shouldFocusTimesRef.current) {
+      shouldFocusTimesRef.current = false;
+      timeSectionRef.current?.focus();
+    }
+  }, [selectedDate]);
+
   const handleConfirm = () => {
     if (!selectedSlotUid || !token) return;
     confirmSlot(
@@ -250,8 +344,48 @@ const BookDemoPage: React.FC = () => {
   };
 
   const handleDateClick = (dateStr: string) => {
+    shouldFocusTimesRef.current = true;
     setSelectedDate(dateStr);
     setSelectedSlotUid(null);
+  };
+
+  const focusDay = (dateStr: string) => {
+    const element = dayRefs.current[dateStr];
+    if (!element) return;
+    element.focus();
+    element.scrollIntoView({ block: "nearest", inline: "nearest" });
+  };
+
+  /** Arrow / Home / End move focus across the day strip without selecting. */
+  const handleDayKeyDown = (
+    event: React.KeyboardEvent<HTMLButtonElement>,
+    dateStr: string,
+  ) => {
+    const index = enabledDateStrs.indexOf(dateStr);
+    if (index === -1) return;
+
+    let target: string | undefined;
+    switch (event.key) {
+      case "ArrowRight":
+      case "ArrowDown":
+        target = enabledDateStrs[index + 1];
+        break;
+      case "ArrowLeft":
+      case "ArrowUp":
+        target = enabledDateStrs[index - 1];
+        break;
+      case "Home":
+        target = enabledDateStrs[0];
+        break;
+      case "End":
+        target = enabledDateStrs[enabledDateStrs.length - 1];
+        break;
+      default:
+        return;
+    }
+
+    event.preventDefault();
+    if (target) focusDay(target);
   };
 
   const scrollDates = (direction: "left" | "right") => {
@@ -265,7 +399,12 @@ const BookDemoPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <Container maxWidth="md" sx={{ mt: 8, textAlign: "center" }}>
+      <Container
+        maxWidth="md"
+        sx={{ mt: 8, textAlign: "center" }}
+        role="status"
+        aria-live="polite"
+      >
         <CircularProgress size={60} />
         <Typography variant="h6" sx={{ mt: 2 }}>
           {t("booking.loading_slots")}
@@ -303,6 +442,7 @@ const BookDemoPage: React.FC = () => {
       {/* Header */}
       <Box sx={{ textAlign: "center", mb: 4 }}>
         <EventAvailableIcon
+          aria-hidden="true"
           sx={{ fontSize: 56, color: "primary.main", mb: 1.5 }}
         />
         <Typography variant="h4" component="h1" gutterBottom fontWeight={700}>
@@ -325,8 +465,9 @@ const BookDemoPage: React.FC = () => {
           bgcolor: "action.hover",
         }}
       >
-        <PublicIcon fontSize="small" color="action" />
+        <PublicIcon fontSize="small" color="action" aria-hidden="true" />
         <Typography
+          id="booking-timezone-label"
           variant="body2"
           color="text.secondary"
           sx={{ flexShrink: 0 }}
@@ -343,7 +484,8 @@ const BookDemoPage: React.FC = () => {
           size="small"
           variant="standard"
           disableUnderline
-          sx={{ fontSize: "0.875rem", flex: 1, maxWidth: 320 }}
+          inputProps={{ "aria-labelledby": "booking-timezone-label" }}
+          sx={{ fontSize: "0.875rem", flex: 1, maxWidth: 320, ...focusRing }}
         >
           {tzOptions.map((tz) => (
             <MenuItem
@@ -358,7 +500,13 @@ const BookDemoPage: React.FC = () => {
       </Box>
 
       {/* Date selector */}
-      <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5 }}>
+      <Typography
+        id="booking-date-heading"
+        variant="subtitle1"
+        component="h2"
+        fontWeight={600}
+        sx={{ mb: 1.5 }}
+      >
         {t("booking.select_date")}
       </Typography>
 
@@ -366,19 +514,22 @@ const BookDemoPage: React.FC = () => {
         <IconButton
           size="small"
           onClick={() => scrollDates("left")}
-          aria-label={t("common.back")}
+          aria-label={t("booking.scroll_dates_back")}
         >
           <ChevronLeftIcon />
         </IconButton>
 
         <Box
           ref={scrollRef}
+          role="group"
+          aria-labelledby="booking-date-heading"
           sx={{
             display: "flex",
             gap: 1,
             overflowX: "hidden",
             flex: 1,
             scrollBehavior: "smooth",
+            p: "3px",
           }}
         >
           {isLoading
@@ -402,7 +553,12 @@ const BookDemoPage: React.FC = () => {
                     dateStr={dateStr}
                     isSelected={selectedDate === dateStr}
                     isDisabled={disabled}
+                    isTabStop={dateStr === tabStopDate}
                     onClick={() => handleDateClick(dateStr)}
+                    onKeyDown={(event) => handleDayKeyDown(event, dateStr)}
+                    registerRef={(element) => {
+                      dayRefs.current[dateStr] = element;
+                    }}
                   />
                 );
               })}
@@ -411,16 +567,29 @@ const BookDemoPage: React.FC = () => {
         <IconButton
           size="small"
           onClick={() => scrollDates("right")}
-          aria-label={t("common.next")}
+          aria-label={t("booking.scroll_dates_forward")}
         >
           <ChevronRightIcon />
         </IconButton>
       </Box>
 
+      {/* Screen-reader announcement of funnel progress */}
+      <Box aria-live="polite" sx={srOnly}>
+        {liveAnnouncement}
+      </Box>
+
       {/* Time slots */}
       {selectedDate ? (
         <>
-          <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1.5 }}>
+          <Typography
+            id="booking-time-heading"
+            ref={timeSectionRef}
+            tabIndex={-1}
+            variant="subtitle1"
+            component="h2"
+            fontWeight={600}
+            sx={{ mb: 1.5, ...focusRing }}
+          >
             {t("booking.select_time")}
           </Typography>
 
@@ -429,7 +598,13 @@ const BookDemoPage: React.FC = () => {
               {t("booking.no_slots_this_day")}
             </Alert>
           ) : (
-            <Grid container spacing={2} sx={{ mb: 4 }}>
+            <Grid
+              container
+              spacing={2}
+              sx={{ mb: 4 }}
+              role="group"
+              aria-labelledby="booking-time-heading"
+            >
               {slotsForSelectedDate.map((slot) => {
                 const isSelected = selectedSlotUid === slot.uid;
                 const duration = getDurationMinutes(
@@ -439,16 +614,24 @@ const BookDemoPage: React.FC = () => {
                 return (
                   <Grid size={{ xs: 12, sm: 6, md: 4 }} key={slot.uid}>
                     <Paper
+                      component="button"
+                      type="button"
                       elevation={isSelected ? 6 : 1}
                       onClick={() => setSelectedSlotUid(slot.uid)}
+                      aria-pressed={isSelected}
                       sx={{
                         p: 2,
+                        width: "100%",
+                        display: "block",
+                        fontFamily: "inherit",
                         cursor: "pointer",
                         border: isSelected ? 2 : 1,
+                        borderStyle: "solid",
                         borderColor: isSelected ? "primary.main" : "divider",
                         bgcolor: isSelected ? "primary.50" : "background.paper",
                         transition: "all 0.2s",
                         textAlign: "center",
+                        ...focusRing,
                         "&:hover": {
                           borderColor: "primary.main",
                           transform: "translateY(-2px)",
@@ -457,10 +640,12 @@ const BookDemoPage: React.FC = () => {
                     >
                       {isSelected && (
                         <CheckCircleIcon
+                          aria-hidden="true"
                           sx={{ color: "primary.main", mb: 0.5 }}
                         />
                       )}
                       <AccessTimeIcon
+                        aria-hidden="true"
                         sx={{
                           color: isSelected ? "primary.main" : "text.secondary",
                           display: "block",
@@ -510,12 +695,19 @@ const BookDemoPage: React.FC = () => {
           size="large"
           onClick={handleConfirm}
           disabled={!selectedSlotUid || isConfirming}
-          endIcon={isConfirming ? undefined : <CheckCircleIcon />}
+          aria-busy={isConfirming}
+          endIcon={
+            isConfirming ? undefined : <CheckCircleIcon aria-hidden="true" />
+          }
           sx={{ px: 6, py: 1.5, minWidth: 220 }}
         >
           {isConfirming ? (
             <>
-              <CircularProgress size={20} sx={{ mr: 1, color: "inherit" }} />
+              <CircularProgress
+                size={20}
+                aria-hidden="true"
+                sx={{ mr: 1, color: "inherit" }}
+              />
               {t("booking.confirming")}
             </>
           ) : (

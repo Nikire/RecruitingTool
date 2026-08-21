@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -13,6 +12,7 @@ import {
   FormHelperText,
   Chip,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import {
   LocalizationProvider,
   DatePicker,
@@ -84,7 +84,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
     handleSubmit,
     reset,
     watch,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<FormData>({
     defaultValues: {
       scheduledDate: null,
@@ -203,7 +203,13 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={isDirty}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>
         {isEditMode
           ? t("schedule_interview.edit_title")
@@ -380,7 +386,7 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
           )}
         </Button>
       </DialogActions>
-    </Dialog>
+    </FormDialog>
   );
 };
 

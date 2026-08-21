@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -12,6 +11,7 @@ import {
   Alert,
   CircularProgress,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useUpdateJobPosition } from "../../hooks/api/useJobPositions";
@@ -57,7 +57,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
     reset,
     watch,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<JobPositionFormData>({
     defaultValues: {
       title: "",
@@ -113,8 +113,22 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
     onClose();
   };
 
+  // The status badge and the custom-question builder live outside react-hook-form,
+  // so compare them against the loaded position to know whether work would be lost.
+  const hasUnsavedChanges =
+    isDirty ||
+    (jobPosition != null && currentStatus !== jobPosition.status) ||
+    JSON.stringify(customQuestions) !==
+      JSON.stringify(jobPosition?.customQuestions ?? []);
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={hasUnsavedChanges}
+      maxWidth="md"
+      fullWidth
+    >
       <DialogTitle>{t("update_job_position.title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -230,7 +244,7 @@ const UpdateJobPositionDialog: React.FC<UpdateJobPositionDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

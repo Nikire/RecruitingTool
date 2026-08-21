@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -10,6 +9,7 @@ import {
   CircularProgress,
   Divider,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useUpdateHiringProcess } from "../../hooks/api/useHiringProcess";
@@ -52,7 +52,7 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<HiringProcessFormData>({
     defaultValues: {
       title: "",
@@ -101,7 +101,13 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={isDirty}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{t("update_hiring_process.title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -165,7 +171,7 @@ const UpdateHiringProcessDialog: React.FC<UpdateHiringProcessDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

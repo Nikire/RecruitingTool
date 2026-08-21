@@ -7,6 +7,7 @@ import {
   Alert,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import Seo from "../../components/common/Seo";
 import ShieldIcon from "@mui/icons-material/Shield";
 
 const SecurityPolicyPage = () => {
@@ -14,6 +15,13 @@ const SecurityPolicyPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 6 }}>
+      {/* Left indexable on purpose: legal pages carry brand queries and are a
+          trust signal both buyers and Google look for. */}
+      <Seo
+        title={t("seo.legal.security.title")}
+        description={t("seo.legal.security.description")}
+      />
+
       <Box sx={{ mb: 4 }}>
         <Typography
           variant="h3"
@@ -46,7 +54,12 @@ const SecurityPolicyPage = () => {
 
       {/* Introduction */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.introduction.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -56,7 +69,12 @@ const SecurityPolicyPage = () => {
 
       {/* Data Encryption */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.encryption.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -77,7 +95,12 @@ const SecurityPolicyPage = () => {
 
       {/* Access Controls */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.access_controls.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -101,7 +124,12 @@ const SecurityPolicyPage = () => {
 
       {/* Infrastructure Security */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.infrastructure.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -125,7 +153,12 @@ const SecurityPolicyPage = () => {
 
       {/* Application Security */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.application_security.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -149,7 +182,12 @@ const SecurityPolicyPage = () => {
 
       {/* Data Backup and Recovery */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.backup.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -159,7 +197,12 @@ const SecurityPolicyPage = () => {
 
       {/* Incident Response */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.incident_response.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -183,7 +226,12 @@ const SecurityPolicyPage = () => {
 
       {/* Employee Training */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.employee_training.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -193,7 +241,12 @@ const SecurityPolicyPage = () => {
 
       {/* Third-Party Security */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.third_party.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -203,7 +256,12 @@ const SecurityPolicyPage = () => {
 
       {/* Compliance */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.compliance.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -224,7 +282,12 @@ const SecurityPolicyPage = () => {
 
       {/* Your Responsibilities */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.user_responsibilities.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -251,7 +314,12 @@ const SecurityPolicyPage = () => {
         <Alert severity="warning" sx={{ mb: 2 }}>
           {t("legal.security.reporting.alert")}
         </Alert>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.reporting.title")}
         </Typography>
         <Typography variant="body1" paragraph>
@@ -271,7 +339,12 @@ const SecurityPolicyPage = () => {
 
       {/* Updates to Security Policy */}
       <Box sx={{ mb: 4 }}>
-        <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, mb: 2 }}>
+        <Typography
+          variant="h5"
+          component="h2"
+          gutterBottom
+          sx={{ fontWeight: 600, mb: 2 }}
+        >
           {t("legal.security.updates.title")}
         </Typography>
         <Typography variant="body1" paragraph>

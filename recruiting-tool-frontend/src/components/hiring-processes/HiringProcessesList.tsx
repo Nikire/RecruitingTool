@@ -1,4 +1,6 @@
 import { Box, Typography, Button, Chip, Tooltip } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import AccountTreeOutlinedIcon from "@mui/icons-material/AccountTreeOutlined";
 import { useTranslation } from "react-i18next";
 import {
   useListHiringProcesses,
@@ -15,14 +17,21 @@ import { useDialog } from "../../hooks/useDialog";
 import { useConfirmDelete } from "../../hooks/useConfirmDelete";
 import { ActionsCell, CellRow, CellColumn } from "../tables";
 import { DataTable, DataTableColumn } from "../shared/DataTable";
+import { PaginationParams } from "../../types/pagination.types";
 
 interface HiringProcessesListProps {
   page: number;
   limit: number;
   search: string;
   status?: string;
+  /** End-client UID to narrow the list to a single account. Empty string = all clients. */
+  clientUid?: string;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
+  /** Opens the create-hiring-process dialog from the empty state CTA */
+  onCreate?: () => void;
+  /** Clears the active search/status filters from the "no results" empty state */
+  onClearFilters?: () => void;
 }
 
 const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
@@ -30,8 +39,11 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
   limit,
   search,
   status,
+  clientUid,
   onPageChange,
   onLimitChange,
+  onCreate,
+  onClearFilters,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -43,14 +55,20 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
   const deleteMutation = useDeleteHiringProcess();
   const deleteConfirm = useConfirmDelete<HiringProcess>(deleteMutation);
 
-  const { data, isLoading, error } = useListHiringProcesses({
-    page,
-    limit,
-    search,
-    status,
-    sortBy: "createdAt",
-    sortOrder: "desc",
-  });
+  // Typed as a const rather than inlined so the extra `clientUid` query param is allowed
+  // through without widening the shared PaginationParams type.
+  const listParams: PaginationParams & { status?: string; clientUid?: string } =
+    {
+      page,
+      limit,
+      search,
+      status,
+      clientUid: clientUid || undefined,
+      sortBy: "createdAt",
+      sortOrder: "desc",
+    };
+
+  const { data, isLoading, error } = useListHiringProcesses(listParams);
 
   const processes = (data?.data as HiringProcess[] | undefined) || [];
   const totalRows = data?.meta?.total || 0;
@@ -234,6 +252,34 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
         loading={isLoading}
         error={!!error}
         emptyMessage="hiring_processes.no_processes"
+        emptyIcon={
+          <AccountTreeOutlinedIcon
+            sx={{ fontSize: 40, color: "text.secondary" }}
+          />
+        }
+        emptyTitle="hiring_processes.empty_title"
+        emptyDescription="hiring_processes.empty_description"
+        emptyAction={
+          canManage && onCreate
+            ? {
+                label: "hiring_processes.create_title",
+                onClick: onCreate,
+                startIcon: <AddIcon />,
+              }
+            : undefined
+        }
+        isFiltered={
+          Boolean(search) ||
+          (Boolean(status) && status !== "all") ||
+          Boolean(clientUid)
+        }
+        filteredEmptyTitle="hiring_processes.empty_filtered_title"
+        filteredEmptyDescription="hiring_processes.empty_filtered_description"
+        filteredEmptyAction={
+          onClearFilters
+            ? { label: "search.clear_filters", onClick: onClearFilters }
+            : undefined
+        }
         errorMessage="errors.fetch_failed"
         onboardingKey="hiring-processes-list"
         page={page}

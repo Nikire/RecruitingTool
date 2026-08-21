@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -16,6 +15,7 @@ import {
   MenuItem,
   FormHelperText,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
 import PersonIcon from "@mui/icons-material/Person";
 import { useTranslation } from "react-i18next";
@@ -240,10 +240,22 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
     }
   };
 
+  // This dialog manages its own state instead of react-hook-form, so "dirty" is
+  // derived from the fields a candidate may have filled in. Losing an application
+  // draft on a stray backdrop click is the most expensive misclick in the product.
+  const hasUnsavedChanges =
+    !success &&
+    (resumeFile !== null ||
+      Object.values(formData).some((value) => value.trim() !== "") ||
+      Object.values(customAnswers).some((value) =>
+        Array.isArray(value) ? value.length > 0 : (value ?? "").trim() !== "",
+      ));
+
   return (
-    <Dialog
+    <FormDialog
       open={open}
       onClose={handleClose}
+      isDirty={hasUnsavedChanges}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -510,6 +522,6 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
           </Button>
         </DialogActions>
       )}
-    </Dialog>
+    </FormDialog>
   );
 };

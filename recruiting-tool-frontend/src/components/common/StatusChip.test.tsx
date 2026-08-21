@@ -83,13 +83,18 @@ describe("StatusChip", () => {
     });
   });
 
+  // Colours below are asserted against `theme/statusPalette.ts`, which is the
+  // single source of truth shared by StatusChip and StatusLabel. StatusChip no
+  // longer carries its own inline jobPosition mapping, so OPEN and ARCHIVED now
+  // follow the canonical taxonomy (in-flight -> info, neutral terminal ->
+  // default) instead of the pre-unification success/warning pair.
   describe("Job Position Status Colors", () => {
-    it("should apply success color for OPEN status", () => {
+    it("should apply info color for OPEN status", () => {
       const { container } = renderWithProviders(
         <StatusChip status="OPEN" type="jobPosition" />,
       );
 
-      const chip = container.querySelector(".MuiChip-colorSuccess");
+      const chip = container.querySelector(".MuiChip-colorInfo");
       expect(chip).toBeInTheDocument();
     });
 
@@ -102,12 +107,12 @@ describe("StatusChip", () => {
       expect(chip).toBeInTheDocument();
     });
 
-    it("should apply warning color for ARCHIVED status", () => {
+    it("should apply default color for ARCHIVED status", () => {
       const { container } = renderWithProviders(
         <StatusChip status="ARCHIVED" type="jobPosition" />,
       );
 
-      const chip = container.querySelector(".MuiChip-colorWarning");
+      const chip = container.querySelector(".MuiChip-colorDefault");
       expect(chip).toBeInTheDocument();
     });
   });

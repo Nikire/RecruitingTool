@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -13,6 +12,7 @@ import {
   FormControl,
   InputLabel,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -63,7 +63,7 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
     handleSubmit,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<CandidateFormData>({
     defaultValues: {
       name: "",
@@ -91,9 +91,10 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
   };
 
   return (
-    <Dialog
+    <FormDialog
       open={open}
       onClose={handleClose}
+      isDirty={isDirty}
       maxWidth="sm"
       fullWidth
       aria-labelledby="create-candidate-dialog-title"
@@ -237,7 +238,7 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Typography, Box, Paper } from "@mui/material";
 import { GridRenderCellParams } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import WorkOutlineIcon from "@mui/icons-material/WorkOutline";
 import { useApplications } from "../../hooks/api/useApplications";
 import { Application, ApplicationStatus } from "../../types/application.types";
 import ApplicationDetailDialog from "../dialogs/ApplicationDetailDialog";
@@ -16,12 +18,16 @@ import { DataTable, DataTableColumn } from "../shared/DataTable";
 
 interface ApplicationsTableProps {
   statusFilter?: ApplicationStatus;
+  /** Clears the status filter from the "no results" empty state */
+  onClearStatusFilter?: () => void;
 }
 
 const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
   statusFilter,
+  onClearStatusFilter,
 }) => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const {
     data: applications,
     isLoading,
@@ -183,6 +189,23 @@ const ApplicationsTable: React.FC<ApplicationsTableProps> = ({
         loading={isLoading}
         error={isError}
         emptyMessage={emptyMessage}
+        emptyIcon={
+          <WorkOutlineIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+        }
+        emptyTitle="applications.empty_title"
+        emptyDescription="applications.empty_description"
+        emptyAction={{
+          label: "applications.empty_action",
+          onClick: () => navigate("/hr/job-positions"),
+        }}
+        isFiltered={Boolean(statusFilter)}
+        filteredEmptyTitle="applications.empty_filtered_title"
+        filteredEmptyDescription="applications.empty_filtered_description"
+        filteredEmptyAction={
+          onClearStatusFilter
+            ? { label: "search.clear_filters", onClick: onClearStatusFilter }
+            : undefined
+        }
         errorMessage="applications.error_loading"
         onboardingKey="applications-table"
         dataGridProps={{

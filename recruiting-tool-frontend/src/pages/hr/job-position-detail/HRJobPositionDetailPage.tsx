@@ -39,6 +39,7 @@ import {
   StagesList,
   CustomQuestionsList,
 } from "../../../components/job-position";
+import JobModerationNotice from "../../../components/job-positions/JobModerationNotice";
 import {
   CenteredLoadingSpinner,
   MetadataDisplay,
@@ -168,6 +169,15 @@ const HRJobPositionDetailPage: React.FC = () => {
         {t("job_position_detail.back_to_positions")}
       </Button>
 
+      {/* Why this posting is not on the public careers board yet */}
+      {jobPosition.moderationStatus &&
+        jobPosition.moderationStatus !== "APPROVED" && (
+          <JobModerationNotice
+            moderationStatus={jobPosition.moderationStatus}
+            moderationReason={jobPosition.moderationReason}
+          />
+        )}
+
       <Paper sx={{ p: { xs: 2, sm: 3 }, mb: { xs: 2, sm: 3 } }}>
         <Box
           sx={{
@@ -200,6 +210,9 @@ const HRJobPositionDetailPage: React.FC = () => {
             }}
           >
             <StatusLabel status={jobPosition.status} />
+            {jobPosition.moderationStatus && (
+              <StatusLabel status={jobPosition.moderationStatus} />
+            )}
             {canManage && (
               <>
                 <Button

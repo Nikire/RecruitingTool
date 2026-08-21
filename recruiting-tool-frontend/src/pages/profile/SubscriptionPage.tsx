@@ -42,6 +42,19 @@ import {
 } from "../../types/subscription.types";
 import { usePlanLimits } from "../../hooks/api/usePlanLimits";
 import { buildPlanFeatures } from "../../utils/buildPlanFeatures";
+import { ANNUAL_DISCOUNT_PERCENT, PLAN_PRICING } from "../../config/pricing";
+
+/**
+ * Prices are imported from src/config/pricing.ts, which mirrors the live Dodo
+ * products. They used to be derived here from a ten-for-twelve multiplier that
+ * produced $790/$2,490 while Dodo billed $799/$2,499 — the card and the
+ * checkout disagreed. There is now one source of truth shared with the landing
+ * page, so the two pages cannot drift apart again.
+ */
+const PROFESSIONAL_MONTHLY_PRICE = PLAN_PRICING.PROFESSIONAL.monthly;
+const PROFESSIONAL_ANNUAL_PRICE = PLAN_PRICING.PROFESSIONAL.annual;
+const ENTERPRISE_MONTHLY_PRICE = PLAN_PRICING.ENTERPRISE.monthly;
+const ENTERPRISE_ANNUAL_PRICE = PLAN_PRICING.ENTERPRISE.annual;
 
 // Helper functions for data validation
 const formatDate = (dateString: string | null): string | null => {
@@ -94,8 +107,13 @@ const SubscriptionPage: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
     null,
   );
+  /**
+   * Annual by default, matching the landing page. Annual prepay puts a year of
+   * revenue in the bank on the day someone upgrades and removes month-2 churn;
+   * monthly is one click away.
+   */
   const [billingInterval, setBillingInterval] =
-    useState<BillingInterval>("monthly");
+    useState<BillingInterval>("annual");
 
   const {
     data: subscription,
@@ -457,7 +475,7 @@ const SubscriptionPage: React.FC = () => {
           <BillingToggle
             value={billingInterval}
             onChange={setBillingInterval}
-            discount={20}
+            discount={ANNUAL_DISCOUNT_PERCENT}
           />
         </Box>
       </Box>
@@ -486,8 +504,8 @@ const SubscriptionPage: React.FC = () => {
           <Grid size={{ xs: 12, md: 4 }} sx={{ overflow: "visible" }}>
             <PricingCard
               plan={SubscriptionPlan.PROFESSIONAL}
-              monthlyPrice={79}
-              annualPrice={799}
+              monthlyPrice={PROFESSIONAL_MONTHLY_PRICE}
+              annualPrice={PROFESSIONAL_ANNUAL_PRICE}
               interval={billingInterval}
               features={getPlanFeatures(SubscriptionPlan.PROFESSIONAL)}
               isCurrentPlan={
@@ -506,8 +524,8 @@ const SubscriptionPage: React.FC = () => {
           <Grid size={{ xs: 12, md: 4 }} sx={{ overflow: "visible" }}>
             <PricingCard
               plan={SubscriptionPlan.ENTERPRISE}
-              monthlyPrice={249}
-              annualPrice={2499}
+              monthlyPrice={ENTERPRISE_MONTHLY_PRICE}
+              annualPrice={ENTERPRISE_ANNUAL_PRICE}
               interval={billingInterval}
               features={getPlanFeatures(SubscriptionPlan.ENTERPRISE)}
               isCurrentPlan={subscription?.plan === SubscriptionPlan.ENTERPRISE}

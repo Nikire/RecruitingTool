@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -12,6 +11,7 @@ import {
   Box,
   Chip,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useForm, Controller } from "react-hook-form";
@@ -59,7 +59,7 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
     handleSubmit,
     reset,
     control,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<ManualCandidateFormData>({
     defaultValues: {
       name: "",
@@ -108,9 +108,10 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
   };
 
   return (
-    <Dialog
+    <FormDialog
       open={open}
       onClose={handleClose}
+      isDirty={isDirty}
       maxWidth="sm"
       fullWidth
       aria-labelledby="manual-candidate-dialog-title"
@@ -316,7 +317,7 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

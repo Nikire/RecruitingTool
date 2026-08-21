@@ -3,6 +3,8 @@ import { Box, Typography, Chip, IconButton, Tooltip } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import VisibilityIcon from "@mui/icons-material/Visibility";
+import AddIcon from "@mui/icons-material/Add";
+import BusinessOutlinedIcon from "@mui/icons-material/BusinessOutlined";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useListCompanies } from "../../hooks/api/useCompanies";
@@ -18,6 +20,10 @@ interface CompaniesListProps {
   onLimitChange: (limit: number) => void;
   onEdit: (company: Company) => void;
   onDelete: (company: Company) => void;
+  /** Opens the create-company dialog from the empty state CTA */
+  onCreate?: () => void;
+  /** Clears the active search from the "no results" empty state */
+  onClearSearch?: () => void;
 }
 
 const CompaniesList: React.FC<CompaniesListProps> = ({
@@ -28,6 +34,8 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
   onLimitChange,
   onEdit,
   onDelete,
+  onCreate,
+  onClearSearch,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -181,6 +189,28 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       getRowId={(row) => row.uid}
       loading={isLoading}
       emptyMessage="companies.no_companies"
+      emptyIcon={
+        <BusinessOutlinedIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+      }
+      emptyTitle="companies.empty_title"
+      emptyDescription="companies.empty_description"
+      emptyAction={
+        onCreate
+          ? {
+              label: "companies.add_company",
+              onClick: onCreate,
+              startIcon: <AddIcon />,
+            }
+          : undefined
+      }
+      isFiltered={Boolean(search)}
+      filteredEmptyTitle="companies.empty_filtered_title"
+      filteredEmptyDescription="companies.empty_filtered_description"
+      filteredEmptyAction={
+        onClearSearch
+          ? { label: "search.clear_filters", onClick: onClearSearch }
+          : undefined
+      }
       onboardingKey="companies-list"
       page={page}
       limit={limit}

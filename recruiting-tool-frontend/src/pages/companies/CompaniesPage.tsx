@@ -102,6 +102,8 @@ export const CompaniesPage: React.FC = () => {
         onLimitChange={handleLimitChange}
         onEdit={editDialog.openWith}
         onDelete={deleteDialog.openWith}
+        onCreate={createDialog.open}
+        onClearSearch={() => handleSearch("")}
       />
 
       {/* Create Dialog */}

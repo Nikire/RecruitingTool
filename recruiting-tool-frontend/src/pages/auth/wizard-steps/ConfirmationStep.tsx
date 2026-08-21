@@ -15,6 +15,14 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { RegistrationFormData } from "../RegistrationWizard";
 import { useRegister, useAuthMe } from "../../../hooks/api/useAuth";
 import { getDefaultDashboard } from "../../../utils/permissions";
+import { ANALYTICS_EVENTS, track } from "../../../analytics";
+import type { RegisterPayload } from "../../../api/auth";
+import {
+  buildAttributionEventProps,
+  buildRegistrationAttribution,
+  SIGNUP_CONFIRMATION_STEP,
+  trackSignupStepCompleted,
+} from "../signupFunnel";
 
 interface ConfirmationStepProps {
   formData: RegistrationFormData;
@@ -62,18 +70,24 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
   }, [isRegistered, isAuthenticated, user, formData.selectedRole, navigate]);
 
   const handleRegister = () => {
+    // Snapshot the first-touch attribution BEFORE firing the mutation: a
+    // successful register clears the stash (in useRegister), so reading it in
+    // onSuccess would come back empty.
+    //
+    // Both helpers are internally defensive and return `{}` when nothing was
+    // captured or sessionStorage is blocked — signup must never fail because
+    // attribution is missing or malformed.
+    const attribution = buildRegistrationAttribution();
+    const attributionEventProps = buildAttributionEventProps();
+
     // Prepare registration data based on role
-    const registrationData: {
-      name: string;
-      email: string;
-      password: string;
-      roles?: string[];
-      companyName?: string;
-    } = {
+    const registrationData: RegisterPayload = {
       name: formData.name,
       email: formData.email,
       password: formData.password,
       roles: formData.selectedRole ? [formData.selectedRole] : undefined,
+      // Optional, write-only campaign fields. Absent keys are simply omitted.
+      ...attribution,
     };
 
     // For COMPANY_OWNER, include company name if provided
@@ -92,6 +106,20 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
     registerUser(registrationData, {
       onSuccess: () => {
+        // Final step of the funnel, then the conversion itself.
+        trackSignupStepCompleted(SIGNUP_CONFIRMATION_STEP, {
+          role: formData.selectedRole,
+        });
+        track(ANALYTICS_EVENTS.SIGNUP_COMPLETED, {
+          role: formData.selectedRole,
+          // The plan is chosen later, during onboarding — an account has no
+          // plan at creation time. Sent explicitly so the property exists on
+          // every event and the funnel can be broken down by it once the
+          // onboarding step starts populating it.
+          plan: null,
+          ...attributionEventProps,
+        });
+
         setIsRegistered(true);
         setShowSuccess(true);
       },

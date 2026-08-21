@@ -14,6 +14,8 @@ import HomeIcon from "@mui/icons-material/Home";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
+import * as Sentry from "@sentry/react";
+import { isSentryEnabled } from "../../analytics";
 
 interface Props {
   children: ReactNode;
@@ -55,8 +57,22 @@ class ErrorBoundary extends Component<Props, State> {
       errorInfo,
     });
 
-    // TODO: In production, send error to logging service (e.g., Sentry, LogRocket)
-    // Example: logErrorToService(error, errorInfo);
+    // Report to Sentry. No-ops when VITE_SENTRY_DSN is absent, so a developer
+    // without a Sentry account runs the app unchanged and offline.
+    if (isSentryEnabled()) {
+      try {
+        Sentry.captureException(error, {
+          contexts: {
+            react: {
+              componentStack: errorInfo.componentStack,
+            },
+          },
+        });
+      } catch {
+        // Error reporting must never mask the original error or break the
+        // fallback UI - the user still sees the recovery screen either way.
+      }
+    }
   }
 
   handleReload = () => {

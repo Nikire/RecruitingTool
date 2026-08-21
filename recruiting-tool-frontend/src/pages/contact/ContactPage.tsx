@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Accordion,
   AccordionDetails,
@@ -29,6 +29,8 @@ import { useCreateContactMessage } from "../../hooks/api/useContactMessages";
 import { CreateContactMessageDto } from "../../types/contact-message.types";
 import { useValidationRules } from "../../utils/validation";
 import BookDemoDialog from "../../components/contact/BookDemoDialog";
+import Seo from "../../components/common/Seo";
+import { buildFaqPageLd } from "../../utils/structuredData";
 
 const fadeInUp = keyframes`
   from {
@@ -147,31 +149,49 @@ const ContactPage = () => {
     },
   ];
 
-  const faqItems = [
-    {
-      id: "faq1",
-      question: t("contact.faq_1_question"),
-      answer: t("contact.faq_1_answer"),
-    },
-    {
-      id: "faq2",
-      question: t("contact.faq_2_question"),
-      answer: t("contact.faq_2_answer"),
-    },
-    {
-      id: "faq3",
-      question: t("contact.faq_3_question"),
-      answer: t("contact.faq_3_answer"),
-    },
-    {
-      id: "faq4",
-      question: t("contact.faq_4_question"),
-      answer: t("contact.faq_4_answer"),
-    },
-  ];
+  /**
+   * Single source of truth for the FAQ: the accordions below and the
+   * `FAQPage` JSON-LD both read this array, so the structured data can never
+   * drift away from the copy a visitor actually sees — which is exactly what
+   * Google penalises FAQ markup for.
+   */
+  const faqItems = useMemo(
+    () => [
+      {
+        id: "faq1",
+        question: t("contact.faq_1_question"),
+        answer: t("contact.faq_1_answer"),
+      },
+      {
+        id: "faq2",
+        question: t("contact.faq_2_question"),
+        answer: t("contact.faq_2_answer"),
+      },
+      {
+        id: "faq3",
+        question: t("contact.faq_3_question"),
+        answer: t("contact.faq_3_answer"),
+      },
+      {
+        id: "faq4",
+        question: t("contact.faq_4_question"),
+        answer: t("contact.faq_4_answer"),
+      },
+    ],
+    [t],
+  );
+
+  // Memoised: `<Seo>` keys its head entry on `jsonLd` by reference.
+  const faqLd = useMemo(() => buildFaqPageLd(faqItems), [faqItems]);
 
   return (
     <>
+      <Seo
+        title={t("seo.contact.title")}
+        description={t("seo.contact.description")}
+        jsonLd={faqLd}
+      />
+
       <Box sx={{ minHeight: "80vh", py: { xs: 5, md: 8 } }}>
         <Container maxWidth="lg">
           {/* Hero Section */}
@@ -197,6 +217,7 @@ const ContactPage = () => {
             </Typography>
             <Typography
               variant="h6"
+              component="p"
               color="text.secondary"
               sx={{
                 maxWidth: 520,
@@ -254,6 +275,7 @@ const ContactPage = () => {
                     </Box>
                     <Typography
                       variant="subtitle1"
+                      component="h2"
                       sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}
                     >
                       {method.title}
@@ -305,6 +327,7 @@ const ContactPage = () => {
                   />
                   <Typography
                     variant="h4"
+                    component="h2"
                     gutterBottom
                     sx={{ fontWeight: 800, mb: 1.5 }}
                   >
@@ -338,6 +361,7 @@ const ContactPage = () => {
                   <Box sx={{ mb: 3.5 }}>
                     <Typography
                       variant="h5"
+                      component="h2"
                       sx={{
                         fontWeight: 800,
                         letterSpacing: "-0.01em",
@@ -478,6 +502,7 @@ const ContactPage = () => {
             <Box sx={{ textAlign: "center", mb: 4 }}>
               <Typography
                 variant="h4"
+                component="h2"
                 sx={{
                   fontWeight: 800,
                   letterSpacing: "-0.02em",
@@ -526,6 +551,7 @@ const ContactPage = () => {
                   >
                     <Typography
                       variant="subtitle1"
+                      component="h3"
                       sx={{ fontWeight: 700, letterSpacing: "-0.01em" }}
                     >
                       {item.question}
@@ -568,6 +594,7 @@ const ContactPage = () => {
                 <Box>
                   <Typography
                     variant="subtitle2"
+                    component="p"
                     sx={{ fontWeight: 700, mb: 0.25 }}
                   >
                     {t("contact.cta_title")}

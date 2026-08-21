@@ -1,6 +1,5 @@
 import {
   Box,
-  Paper,
   Typography,
   Card,
   CardContent,
@@ -12,7 +11,8 @@ import {
 import { GridColDef, DataGridProps } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import { EnhancedDataGrid } from "../../tables";
-import { ReactNode } from "react";
+import EmptyState, { EmptyStateAction } from "../../common/EmptyState";
+import { ReactNode, useCallback, useMemo } from "react";
 
 /**
  * Column configuration for DataTable<T>
@@ -58,7 +58,8 @@ export interface DataTableProps<T> {
    */
   error?: boolean;
   /**
-   * i18n key for empty state message
+   * i18n key for empty state message.
+   * Acts as the fallback headline when `emptyTitle` is not provided.
    * @example "candidates.no_candidates"
    */
   emptyMessage: string;
@@ -67,6 +68,49 @@ export interface DataTableProps<T> {
    * @default "errors.fetch_failed"
    */
   errorMessage?: string;
+  /**
+   * Icon shown in the empty state (defaults to an inbox icon)
+   */
+  emptyIcon?: ReactNode;
+  /**
+   * i18n key for the empty state headline when NO filter is active
+   * ("you have nothing yet"). Falls back to `emptyMessage`.
+   */
+  emptyTitle?: string;
+  /**
+   * i18n key for the supporting sentence when NO filter is active
+   */
+  emptyDescription?: string;
+  /**
+   * Primary call-to-action that resolves the emptiness
+   * ("Post your first job", "Invite your team").
+   */
+  emptyAction?: EmptyStateAction;
+  /**
+   * Whether the current list is narrowed by a search term / filter.
+   * When true the empty state switches to the "your filter matched nothing"
+   * copy, which is a completely different user situation from "you have
+   * nothing yet" and needs a different CTA.
+   * @default false
+   */
+  isFiltered?: boolean;
+  /**
+   * Icon shown in the filtered empty state
+   */
+  filteredEmptyIcon?: ReactNode;
+  /**
+   * i18n key for the empty state headline when a filter IS active
+   * @default "empty.no_results"
+   */
+  filteredEmptyTitle?: string;
+  /**
+   * i18n key for the supporting sentence when a filter IS active
+   */
+  filteredEmptyDescription?: string;
+  /**
+   * CTA shown when a filter is active (usually "Clear filters")
+   */
+  filteredEmptyAction?: EmptyStateAction;
   /**
    * Unique key for onboarding state storage
    */
@@ -111,6 +155,12 @@ export interface DataTableProps<T> {
    * @default 600
    */
   height?: number | string;
+  /**
+   * Height of the DataGrid container while there are no rows.
+   * Keeps a brand new account from staring at 600px of nothing.
+   * @default 380
+   */
+  emptyHeight?: number | string;
   /**
    * Additional DataGrid props to pass through
    */
@@ -194,28 +244,16 @@ const DefaultMobileCard = <T,>({
  *
  * @example
  * ```tsx
- * interface Candidate {
- *   uid: string;
- *   name: string;
- *   email: string;
- * }
- *
- * const columns: DataTableColumn<Candidate>[] = [
- *   {
- *     field: "name",
- *     headerName: t("candidates.name_label"),
- *     flex: 1,
- *     mobileRender: (candidate) => (
- *       <Typography variant="h6">{candidate.name}</Typography>
- *     ),
- *   },
- * ];
- *
  * <DataTable
  *   data={candidates}
  *   columns={columns}
  *   getRowId={(row) => row.uid}
  *   emptyMessage="candidates.no_candidates"
+ *   emptyTitle="candidates.empty_title"
+ *   emptyDescription="candidates.empty_description"
+ *   emptyAction={{ label: "candidates.create", onClick: openCreateDialog }}
+ *   isFiltered={Boolean(search)}
+ *   filteredEmptyAction={{ label: "search.clear_filters", onClick: reset }}
  *   onboardingKey="candidates-list"
  * />
  * ```
@@ -228,6 +266,15 @@ export const DataTable = <T,>({
   error = false,
   emptyMessage,
   errorMessage = "errors.fetch_failed",
+  emptyIcon,
+  emptyTitle,
+  emptyDescription,
+  emptyAction,
+  isFiltered = false,
+  filteredEmptyIcon,
+  filteredEmptyTitle,
+  filteredEmptyDescription,
+  filteredEmptyAction,
   onboardingKey,
   page,
   limit = 10,
@@ -238,12 +285,71 @@ export const DataTable = <T,>({
   renderMobileCard,
   enableMobileView = true,
   height = 600,
+  emptyHeight = 380,
   dataGridProps = {},
 }: DataTableProps<T>) => {
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const showMobile = enableMobileView && isMobile;
+
+  const isEmpty = !loading && data.length === 0;
+
+  /**
+   * "You have nothing yet" and "your filter matched nothing" are two
+   * completely different situations and need different copy and CTAs.
+   */
+  const emptyConfig = useMemo(() => {
+    if (isFiltered) {
+      return {
+        icon: filteredEmptyIcon ?? emptyIcon,
+        title: filteredEmptyTitle ?? "empty.no_results",
+        description: filteredEmptyDescription,
+        action: filteredEmptyAction,
+      };
+    }
+    return {
+      icon: emptyIcon,
+      title: emptyTitle ?? emptyMessage,
+      description: emptyDescription,
+      action: emptyAction,
+    };
+  }, [
+    isFiltered,
+    emptyIcon,
+    emptyTitle,
+    emptyDescription,
+    emptyAction,
+    emptyMessage,
+    filteredEmptyIcon,
+    filteredEmptyTitle,
+    filteredEmptyDescription,
+    filteredEmptyAction,
+  ]);
+
+  const NoRowsOverlay = useCallback(
+    () => (
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          height: "100%",
+          width: "100%",
+        }}
+      >
+        <EmptyState
+          variant="plain"
+          dense
+          icon={emptyConfig.icon}
+          message={emptyConfig.title}
+          description={emptyConfig.description}
+          action={emptyConfig.action}
+        />
+      </Box>
+    ),
+    [emptyConfig],
+  );
 
   // Mobile loading state
   if (showMobile && loading && data.length === 0) {
@@ -274,11 +380,12 @@ export const DataTable = <T,>({
   if (showMobile) {
     if (data.length === 0) {
       return (
-        <Paper sx={{ p: { xs: 2, sm: 4 }, textAlign: "center" }}>
-          <Typography variant="body1" color="textSecondary">
-            {t(emptyMessage)}
-          </Typography>
-        </Paper>
+        <EmptyState
+          icon={emptyConfig.icon}
+          message={emptyConfig.title}
+          description={emptyConfig.description}
+          action={emptyConfig.action}
+        />
       );
     }
 
@@ -300,9 +407,13 @@ export const DataTable = <T,>({
     );
   }
 
+  // `slots` from callers must be merged, not clobbered, so our noRowsOverlay
+  // survives while a caller-supplied toolbar keeps working.
+  const { slots: callerSlots, ...restGridProps } = dataGridProps;
+
   // Desktop view with DataGrid
   return (
-    <Box sx={{ height, width: "100%" }}>
+    <Box sx={{ height: isEmpty ? emptyHeight : height, width: "100%" }}>
       <EnhancedDataGrid
         rows={data}
         columns={columns as GridColDef[]}
@@ -331,9 +442,10 @@ export const DataTable = <T,>({
         disableRowSelectionOnClick
         onboardingKey={onboardingKey}
         localeText={{
-          noRowsLabel: t(emptyMessage),
+          noRowsLabel: t(emptyConfig.title),
         }}
-        {...dataGridProps}
+        slots={{ noRowsOverlay: NoRowsOverlay, ...callerSlots }}
+        {...restGridProps}
       />
     </Box>
   );

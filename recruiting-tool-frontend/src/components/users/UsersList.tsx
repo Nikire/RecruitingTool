@@ -2,6 +2,8 @@ import { GridRenderCellParams } from "@mui/x-data-grid";
 import { Box, Typography, IconButton } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import { useTranslation } from "react-i18next";
 import { useListUsers, useDeleteUser } from "../../hooks/api/useUsers";
 import { User, UserRoles } from "../../types/user.types";
@@ -21,6 +23,10 @@ interface UsersListProps {
   search: string;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
+  /** Opens the create-user dialog from the empty state CTA */
+  onCreate?: () => void;
+  /** Clears the active search from the "no results" empty state */
+  onClearSearch?: () => void;
 }
 
 const UsersList: React.FC<UsersListProps> = ({
@@ -29,6 +35,8 @@ const UsersList: React.FC<UsersListProps> = ({
   search,
   onPageChange,
   onLimitChange,
+  onCreate,
+  onClearSearch,
 }) => {
   const { t } = useTranslation();
   const { user: currentUser } = useUserAtom();
@@ -190,6 +198,28 @@ const UsersList: React.FC<UsersListProps> = ({
         loading={isLoading}
         error={!!error}
         emptyMessage="users.no_users"
+        emptyIcon={
+          <PeopleOutlineIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+        }
+        emptyTitle="users.empty_title"
+        emptyDescription="users.empty_description"
+        emptyAction={
+          onCreate
+            ? {
+                label: "users.create_user",
+                onClick: onCreate,
+                startIcon: <AddIcon />,
+              }
+            : undefined
+        }
+        isFiltered={Boolean(search)}
+        filteredEmptyTitle="users.empty_filtered_title"
+        filteredEmptyDescription="users.empty_filtered_description"
+        filteredEmptyAction={
+          onClearSearch
+            ? { label: "search.clear_filters", onClick: onClearSearch }
+            : undefined
+        }
         errorMessage="users.error_loading"
         onboardingKey="users-list"
         page={page}

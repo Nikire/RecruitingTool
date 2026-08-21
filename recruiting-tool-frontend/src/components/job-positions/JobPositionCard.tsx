@@ -11,6 +11,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { JobPosition } from "../../types/jobPosition.types";
+import StatusLabel from "../StatusLabel";
 import { formatRelativeTime } from "../../utils/dateFormatters";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import EditIcon from "@mui/icons-material/Edit";
@@ -80,6 +81,7 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
           label={t(`status.${jobPosition.status.toLowerCase()}`)}
           color={getStatusColor(jobPosition.status)}
           size="small"
+          variant="filled"
         />
       </Box>
 
@@ -97,6 +99,19 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
         >
           {jobPosition.title}
         </Typography>
+
+        {/* Platform moderation state - hidden once the posting is approved */}
+        {jobPosition.moderationStatus &&
+          jobPosition.moderationStatus !== "APPROVED" && (
+            <Tooltip title={jobPosition.moderationReason ?? ""}>
+              <Box sx={{ mb: 1.5 }}>
+                <StatusLabel
+                  status={jobPosition.moderationStatus}
+                  size="small"
+                />
+              </Box>
+            </Tooltip>
+          )}
 
         {/* Company/Department */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>

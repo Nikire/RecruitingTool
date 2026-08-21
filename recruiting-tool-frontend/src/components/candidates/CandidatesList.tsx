@@ -1,8 +1,9 @@
-import { GridRenderCellParams } from "@mui/x-data-grid";
-import { Box, Typography, IconButton } from "@mui/material";
+import { GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
+import { Box, Typography, IconButton, Link as MuiLink } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useListCandidates } from "../../hooks/api/useCandidates";
 import { useDialog } from "../../hooks/useDialog";
 import { Candidate } from "../../types/candidate";
@@ -22,9 +23,13 @@ const CandidatesList: React.FC<SearchableListProps> = ({
 }) => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
+  const navigate = useNavigate();
   const canManage = canManageResources(user);
 
   const updateDialog = useDialog<Candidate>();
+
+  const openCandidate = (candidateUid: string) =>
+    navigate(`/hr/candidates/${candidateUid}`);
 
   const { data, isLoading, error } = useListCandidates({
     page,
@@ -43,13 +48,29 @@ const CandidatesList: React.FC<SearchableListProps> = ({
       headerName: t("candidates.name_label"),
       flex: 1,
       minWidth: 150,
+      // The mobile card has no row-click affordance of its own, so the name
+      // itself is the link into the candidate profile.
       mobileRender: (candidate: Candidate) => (
-        <Typography
-          variant="h6"
-          sx={{ mb: 1, fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+        <MuiLink
+          component="button"
+          type="button"
+          underline="hover"
+          onClick={() => openCandidate(candidate.uid)}
+          sx={{ display: "block", textAlign: "left", mb: 1 }}
+          aria-label={t("candidate_detail.open_profile", {
+            name: candidate.name,
+          })}
         >
-          {candidate.name}
-        </Typography>
+          {/* `component="span"` keeps the label phrasing content — a heading
+              element is not valid inside a <button>. */}
+          <Typography
+            variant="h6"
+            component="span"
+            sx={{ fontSize: { xs: "1.1rem", sm: "1.25rem" } }}
+          >
+            {candidate.name}
+          </Typography>
+        </MuiLink>
       ),
     },
     {
@@ -117,7 +138,13 @@ const CandidatesList: React.FC<SearchableListProps> = ({
               <IconButton
                 size="small"
                 color="primary"
-                onClick={() => updateDialog.openWith(params.row)}
+                // The row itself navigates to the candidate profile. Without
+                // stopping propagation here the pencil would open the edit
+                // dialog AND navigate away from underneath it.
+                onClick={(event) => {
+                  event.stopPropagation();
+                  updateDialog.openWith(params.row);
+                }}
                 aria-label={t("common.edit")}
               >
                 <EditIcon fontSize="small" />
@@ -158,6 +185,11 @@ const CandidatesList: React.FC<SearchableListProps> = ({
         onPageChange={onPageChange}
         onLimitChange={onLimitChange}
         serverPagination={true}
+        dataGridProps={{
+          onRowClick: (params: GridRowParams) =>
+            openCandidate((params.row as Candidate).uid),
+          sx: { "& .MuiDataGrid-row": { cursor: "pointer" } },
+        }}
       />
 
       <UpdateCandidateDialog

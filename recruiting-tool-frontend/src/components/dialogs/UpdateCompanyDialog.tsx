@@ -1,5 +1,4 @@
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -10,6 +9,7 @@ import {
   CircularProgress,
   InputAdornment,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import ErrorIcon from "@mui/icons-material/Error";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -41,7 +41,7 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<CompanyFormData>({
     defaultValues: {
       name: "",
@@ -81,7 +81,13 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={isDirty}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{t("companies.update_title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -154,7 +160,7 @@ const UpdateCompanyDialog: React.FC<UpdateCompanyDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

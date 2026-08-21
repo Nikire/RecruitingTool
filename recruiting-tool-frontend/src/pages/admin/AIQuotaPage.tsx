@@ -55,8 +55,11 @@ const AIQuotaPage: React.FC = () => {
   });
   const [newLimit, setNewLimit] = useState<string>("");
 
-  const { data: subscriptionsData, isLoading: isLoadingCompanies } =
-    useAdminSubscriptions();
+  const {
+    data: subscriptionsData,
+    isLoading: isLoadingCompanies,
+    isError: isCompaniesError,
+  } = useAdminSubscriptions();
 
   const {
     data: quotas,
@@ -155,7 +158,7 @@ const AIQuotaPage: React.FC = () => {
     },
     {
       field: "companyUid",
-      headerName: "Company UID",
+      headerName: t("admin.ai_quota.columns.company_uid"),
       width: 170,
       renderCell: (params) => (
         <Tooltip title={params.value}>
@@ -250,6 +253,10 @@ const AIQuotaPage: React.FC = () => {
         <CardContent>
           {isLoadingCompanies ? (
             <Skeleton variant="rectangular" height={56} />
+          ) : isCompaniesError ? (
+            <Alert severity="error">
+              {t("admin.ai_quota.companies_load_error")}
+            </Alert>
           ) : (
             <Autocomplete<CompanyOption>
               options={companyOptions}

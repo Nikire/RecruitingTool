@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   Box,
@@ -44,24 +44,80 @@ const formatDeadline = (isoString: string): string => {
   }
 };
 
+// ─── Accessibility helpers ────────────────────────────────────────────────────
+
+/** Hides content visually while keeping it available to screen readers. */
+const srOnly = {
+  position: "absolute",
+  width: 1,
+  height: 1,
+  padding: 0,
+  margin: -1,
+  overflow: "hidden",
+  clip: "rect(0 0 0 0)",
+  whiteSpace: "nowrap",
+  border: 0,
+} as const;
+
+/**
+ * Moves keyboard focus onto the heading of a terminal state as soon as it
+ * replaces the form, so screen-reader and keyboard users are told what happened
+ * instead of being left on a control that no longer exists.
+ */
+const useFocusOnMount = () => {
+  const ref = useRef<HTMLHeadingElement>(null);
+  useEffect(() => {
+    ref.current?.focus();
+  }, []);
+  return ref;
+};
+
+const outcomeHeadingSx = {
+  "&:focus-visible": {
+    outline: "3px solid",
+    outlineColor: "primary.main",
+    outlineOffset: "2px",
+  },
+};
+
 // ─── State: Loading ───────────────────────────────────────────────────────────
 
-const LoadingState: React.FC = () => (
-  <Container maxWidth="sm" sx={{ mt: 10, textAlign: "center" }}>
-    <CircularProgress size={60} />
-  </Container>
-);
+const LoadingState: React.FC = () => {
+  const { t } = useTranslation();
+  return (
+    <Container
+      maxWidth="sm"
+      sx={{ mt: 10, textAlign: "center" }}
+      role="status"
+      aria-live="polite"
+    >
+      <CircularProgress size={60} aria-label={t("common.loading")} />
+    </Container>
+  );
+};
 
 // ─── State: Invalid link ──────────────────────────────────────────────────────
 
 const InvalidLinkState: React.FC = () => {
   const { t } = useTranslation();
+  const headingRef = useFocusOnMount();
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
       <Card elevation={3}>
-        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }}>
-          <ErrorOutlineIcon sx={{ fontSize: 80, color: "error.main", mb: 2 }} />
-          <Typography variant="h5" fontWeight={700} gutterBottom>
+        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }} role="alert">
+          <ErrorOutlineIcon
+            aria-hidden="true"
+            sx={{ fontSize: 80, color: "error.main", mb: 2 }}
+          />
+          <Typography
+            ref={headingRef}
+            tabIndex={-1}
+            component="h1"
+            variant="h5"
+            fontWeight={700}
+            gutterBottom
+            sx={outcomeHeadingSx}
+          >
             {t("asyncStage.invalidLink")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -77,14 +133,24 @@ const InvalidLinkState: React.FC = () => {
 
 const AlreadySubmittedState: React.FC = () => {
   const { t } = useTranslation();
+  const headingRef = useFocusOnMount();
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
       <Card elevation={3}>
-        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }}>
+        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }} role="status">
           <CheckCircleIcon
+            aria-hidden="true"
             sx={{ fontSize: 80, color: "success.main", mb: 2 }}
           />
-          <Typography variant="h5" fontWeight={700} gutterBottom>
+          <Typography
+            ref={headingRef}
+            tabIndex={-1}
+            component="h1"
+            variant="h5"
+            fontWeight={700}
+            gutterBottom
+            sx={outcomeHeadingSx}
+          >
             {t("asyncStage.alreadySubmitted")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -100,14 +166,24 @@ const AlreadySubmittedState: React.FC = () => {
 
 const SuccessState: React.FC = () => {
   const { t } = useTranslation();
+  const headingRef = useFocusOnMount();
   return (
     <Container maxWidth="sm" sx={{ mt: 10 }}>
       <Card elevation={3}>
-        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }}>
+        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }} role="status">
           <CheckCircleIcon
+            aria-hidden="true"
             sx={{ fontSize: 80, color: "success.main", mb: 2 }}
           />
-          <Typography variant="h5" fontWeight={700} gutterBottom>
+          <Typography
+            ref={headingRef}
+            tabIndex={-1}
+            component="h1"
+            variant="h5"
+            fontWeight={700}
+            gutterBottom
+            sx={outcomeHeadingSx}
+          >
             {t("asyncStage.submittedSuccess")}
           </Typography>
           <Typography variant="body1" color="text.secondary">
@@ -203,8 +279,11 @@ const AsyncStageSubmissionPage: React.FC = () => {
     <Container maxWidth="sm" sx={{ mt: 6, mb: 8 }}>
       {/* Header */}
       <Box sx={{ textAlign: "center", mb: 4 }}>
-        <AssignmentIcon sx={{ fontSize: 56, color: "primary.main", mb: 1.5 }} />
-        <Typography variant="h5" fontWeight={700} gutterBottom>
+        <AssignmentIcon
+          aria-hidden="true"
+          sx={{ fontSize: 56, color: "primary.main", mb: 1.5 }}
+        />
+        <Typography component="h1" variant="h5" fontWeight={700} gutterBottom>
           {stageInfo.companyName}
         </Typography>
         <Typography variant="body1" color="text.secondary">
@@ -245,12 +324,18 @@ const AsyncStageSubmissionPage: React.FC = () => {
       {/* Submission form */}
       <Card elevation={2}>
         <CardContent>
-          <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 2 }}>
+          <Typography
+            component="h2"
+            variant="subtitle1"
+            fontWeight={600}
+            sx={{ mb: 2 }}
+          >
             {t("asyncStage.stageInstructions")}
           </Typography>
 
           {/* Text response */}
           <TextField
+            id="async-stage-text-response"
             label={t("asyncStage.textResponse")}
             multiline
             rows={6}
@@ -265,20 +350,24 @@ const AsyncStageSubmissionPage: React.FC = () => {
             ref={fileInputRef}
             type="file"
             multiple
+            tabIndex={-1}
+            aria-hidden="true"
             style={{ display: "none" }}
             onChange={handleFileChange}
           />
 
           <Button
             variant="outlined"
-            startIcon={<AttachFileIcon />}
+            startIcon={<AttachFileIcon aria-hidden="true" />}
             onClick={() => fileInputRef.current?.click()}
+            aria-describedby="async-stage-file-hint"
             sx={{ mb: 0.5 }}
           >
             {t("asyncStage.attachFiles")}
           </Button>
 
           <Typography
+            id="async-stage-file-hint"
             variant="caption"
             color="text.secondary"
             sx={{ display: "block", mb: fileSizeError ? 1 : 2 }}
@@ -288,6 +377,7 @@ const AsyncStageSubmissionPage: React.FC = () => {
 
           {fileSizeError && (
             <Box
+              role="alert"
               sx={{
                 mb: 2,
                 px: 1.5,
@@ -302,17 +392,29 @@ const AsyncStageSubmissionPage: React.FC = () => {
             </Box>
           )}
 
+          {/* Announces attachments being added or removed */}
+          <Box aria-live="polite" sx={srOnly}>
+            {t("asyncStage.attachedFilesCount", {
+              total: selectedFiles.length,
+            })}
+          </Box>
+
           {/* Selected files list */}
           {selectedFiles.length > 0 && (
             <Box sx={{ mb: 2 }}>
               <Typography
+                id="async-stage-selected-files"
                 variant="caption"
                 color="text.secondary"
                 sx={{ mb: 0.5, display: "block" }}
               >
                 {t("asyncStage.selectedFiles")}
               </Typography>
-              <List dense disablePadding>
+              <List
+                dense
+                disablePadding
+                aria-labelledby="async-stage-selected-files"
+              >
                 {selectedFiles.map((file, index) => (
                   <ListItem
                     key={index}
@@ -328,10 +430,12 @@ const AsyncStageSubmissionPage: React.FC = () => {
                       <IconButton
                         edge="end"
                         size="small"
-                        aria-label={t("asyncStage.removeFile")}
+                        aria-label={t("asyncStage.removeFileNamed", {
+                          name: file.name,
+                        })}
                         onClick={() => handleRemoveFile(index)}
                       >
-                        <CloseIcon fontSize="small" />
+                        <CloseIcon fontSize="small" aria-hidden="true" />
                       </IconButton>
                     }
                   >
@@ -358,12 +462,14 @@ const AsyncStageSubmissionPage: React.FC = () => {
               size="large"
               onClick={handleSubmit}
               disabled={isSubmitting}
+              aria-busy={isSubmitting}
               sx={{ minWidth: 140 }}
             >
               {isSubmitting ? (
                 <>
                   <CircularProgress
                     size={18}
+                    aria-hidden="true"
                     sx={{ mr: 1, color: "inherit" }}
                   />
                   {t("common.submitting")}

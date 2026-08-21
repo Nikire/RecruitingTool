@@ -1,6 +1,5 @@
 import { useState, useRef } from "react";
 import {
-  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -14,6 +13,7 @@ import {
   Divider,
   InputAdornment,
 } from "@mui/material";
+import FormDialog from "./FormDialog";
 import Autocomplete from "@mui/material/Autocomplete";
 import AddIcon from "@mui/icons-material/Add";
 import PersonIcon from "@mui/icons-material/Person";
@@ -67,7 +67,7 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
     handleSubmit,
     reset,
     register,
-    formState: { errors },
+    formState: { errors, isDirty },
   } = useForm<HiringProcessFormData>({
     defaultValues: {
       candidateUid: "",
@@ -170,8 +170,17 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
   const isLoading = loadingCandidates || loadingJobPositions;
   const isSubmitting = isPending || isCreatingCandidate || isUploadingCv;
 
+  // The attached CV is not part of react-hook-form state.
+  const hasUnsavedChanges = isDirty || cvFile !== null;
+
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <FormDialog
+      open={open}
+      onClose={handleClose}
+      isDirty={hasUnsavedChanges}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle>{t("hiring_processes.create_title")}</DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
         <DialogContent>
@@ -408,7 +417,7 @@ const CreateHiringProcessDialog: React.FC<CreateHiringProcessDialogProps> = ({
           </Button>
         </DialogActions>
       </form>
-    </Dialog>
+    </FormDialog>
   );
 };
 

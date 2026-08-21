@@ -10,7 +10,11 @@ import { useSearchPaginationHandlers } from "../../hooks/useSearchPaginationHand
 import { useDialog } from "../../hooks/useDialog";
 import CreateHiringProcessDialog from "../../components/dialogs/CreateHiringProcessDialog";
 import { canManageResources } from "../../utils/permissions";
-import { FilterBar, FilterBarFilters } from "../../components/filters";
+import {
+  ClientFilterSelect,
+  FilterBar,
+  FilterBarFilters,
+} from "../../components/filters";
 import HiringProcessesList from "../../components/hiring-processes/HiringProcessesList";
 import HiringProcessesGroupedList from "../../components/hiring-processes/HiringProcessesGroupedList";
 import {
@@ -27,6 +31,9 @@ const HiringProcessesPage: React.FC = () => {
   const [searchState, setSearchState] = useHiringProcessesSearch();
   const { page, limit, search, status } = searchState;
   const [groupByPosition, setGroupByPosition] = useState(true);
+  // End-client filter. Kept in local state rather than the shared search atom so it does
+  // not change the shape of a store other pages read.
+  const [clientUid, setClientUid] = useState("");
   const [searchParams] = useSearchParams();
   const highlightUid = searchParams.get("highlight") ?? undefined;
 
@@ -55,6 +62,23 @@ const HiringProcessesPage: React.FC = () => {
       search: filters.search,
       status: filters.status as typeof searchState.status,
     });
+  };
+
+  // Resets every filter so the "no results" empty state has a way out
+  const handleClearFilters = () => {
+    setSearchState({
+      ...searchState,
+      search: "",
+      status: "all",
+      page: 1,
+    });
+    setClientUid("");
+  };
+
+  // Changing the client changes the result set, so go back to the first page.
+  const handleClientChange = (nextClientUid: string) => {
+    setClientUid(nextClientUid);
+    setSearchState({ ...searchState, page: 1 });
   };
 
   const statusOptions = [
@@ -100,17 +124,24 @@ const HiringProcessesPage: React.FC = () => {
         showStatusFilter
       />
 
-      {/* Group-by toggle */}
+      {/* Client filter + group-by toggle */}
       <Box
         sx={{
           display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "stretch", sm: "center" },
+          justifyContent: "space-between",
+          gap: 1,
           mt: 1,
           mb: 0.5,
           px: 0.5,
         }}
       >
+        <ClientFilterSelect
+          value={clientUid}
+          onChange={handleClientChange}
+          size="small"
+        />
         <Tooltip title={t("hiring_processes.group.toggle_tooltip")}>
           <FormControlLabel
             control={
@@ -147,6 +178,7 @@ const HiringProcessesPage: React.FC = () => {
         <HiringProcessesGroupedList
           search={search}
           status={status}
+          clientUid={clientUid}
           highlightUid={highlightUid}
         />
       ) : (
@@ -155,8 +187,11 @@ const HiringProcessesPage: React.FC = () => {
           limit={limit}
           search={search}
           status={status}
+          clientUid={clientUid}
           onPageChange={handlePageChange}
           onLimitChange={handleLimitChange}
+          onCreate={createDialog.open}
+          onClearFilters={handleClearFilters}
         />
       )}
 
