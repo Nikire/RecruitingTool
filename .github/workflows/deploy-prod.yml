@@ -136,8 +136,16 @@ jobs:
             # NODE_ENV=development is forced for this one-off container only --
             # yarn 1 skips devDependencies (@nestjs/cli, typescript) when
             # NODE_ENV=production, and those are required by `nest build`.
+            # NODE_OPTIONS raises the V8 heap for this build only. Node sizes
+            # its default old-space from available memory, which on this 3.8 GB
+            # / 2 vCPU host lands near 2 GB -- and `nest build` died at
+            # 1,916 MB with "Ineffective mark-compacts near heap limit" on the
+            # first run of this step. The host also carries a 3 GB swapfile so
+            # a 3 GB heap cannot push it into the OOM killer.
             docker-compose $COMPOSE_FILES run --rm --no-deps \
-              -e NODE_ENV=development --entrypoint sh backend \
+              -e NODE_ENV=development \
+              -e NODE_OPTIONS=--max-old-space-size=3072 \
+              --entrypoint sh backend \
               -c "yarn install && yarn build"
 
             echo "==> Pulling pre-built frontend image from GitHub Container Registry..."
