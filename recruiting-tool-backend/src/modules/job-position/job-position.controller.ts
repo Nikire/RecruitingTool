@@ -11,10 +11,11 @@ import {
   UpdateJobPositionDto,
   PublicJobPositionResponseDto,
   JobPositionFiltersDto,
+  JobPositionListFiltersDto,
   PaginatedPublicJobPositionResponseDto,
 } from './dto/job-position.dto';
 import { MessageResponseDto } from 'src/dto/responses.dto';
-import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { PaginatedResponse } from 'src/dto/pagination.dto';
 import { CheckQuota } from '../quota/decorators/check-quota.decorator';
 
 @ApiTags('Job Position')
@@ -96,7 +97,12 @@ export class JobPositionController {
     status: 200,
     description: 'Returns paginated job positions list',
   })
-  list(@Query() paginationDto: PaginationDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<JobPositionResponseDto>> {
+  @ApiQuery({
+    name: 'clientUid',
+    required: false,
+    description: 'Filter to roles being filled for this end client (UID). Answers "show me every open role for Acme".',
+  })
+  list(@Query() paginationDto: JobPositionListFiltersDto, @CurrentUser() currentUser: User): Promise<PaginatedResponse<JobPositionResponseDto>> {
     return this.jobPositionService.list(paginationDto, currentUser);
   }
 

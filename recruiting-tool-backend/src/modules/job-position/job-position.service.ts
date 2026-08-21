@@ -6,6 +6,7 @@ import {
   UpdateJobPositionDto,
   PublicJobPositionResponseDto,
   JobPositionFiltersDto,
+  JobPositionListFiltersDto,
   PaginatedPublicJobPositionResponseDto,
 } from './dto/job-position.dto';
 import { includeJobPosition, JobPositionMapper, JobPositionOneMapper } from './entities/job-position.entity';
@@ -16,9 +17,11 @@ import { StagesService } from '../hiring-process/modules/stages/stages.service';
 import { AuditLogService } from '../audit-log/audit-log.service';
 import { CacheService } from '../cache/cache.service';
 import { QuotaService } from '../quota/quota.service';
-import { Prisma, User } from '@prisma/client';
-import { PaginationDto, PaginatedResponse } from 'src/dto/pagination.dto';
+import { ActivationEventsService } from '../tracking/activation-events.service';
+import { JobModerationStatus, Prisma, User } from '@prisma/client';
+import { PaginatedResponse } from 'src/dto/pagination.dto';
 import { getUserCompanyId, isSuperAdminRole, verifyCompanyAccess } from 'src/utils/company-access.helper';
+import { hasActivePaidSubscription } from 'src/utils/subscription-status.helper';
 import { EntityNotFoundException } from 'src/common/exceptions';
 
 export class JobPositionService {
@@ -30,7 +33,29 @@ export class JobPositionService {
     private readonly auditLogService: AuditLogService,
     private readonly cacheService: CacheService,
     private readonly quotaService: QuotaService,
+    private readonly activationEvents: ActivationEventsService,
   ) {}
+
+  /**
+   * Decide the moderation state a brand new posting must start in.
+   *
+   * - Companies with an ACTIVE PAID subscription auto-approve (paid-plan perk).
+   * - Postings created by a platform SUPER_ADMIN auto-approve (they are the moderators).
+   * - Everyone else lands in the PENDING_APPROVAL queue and stays off the public board
+   *   until a SUPER_ADMIN approves it. This is the anti-spam gate.
+   */
+  private async resolveModerationStatusForNewPosting(companyId: number, creator: User): Promise<JobModerationStatus> {
+    if (isSuperAdminRole(creator)) {
+      return JobModerationStatus.APPROVED;
+    }
+
+    const subscription = await this.databaseService.subscription.findUnique({
+      where: { companyId },
+      select: { status: true, plan: true, currentPeriodEnd: true, gracePeriodEndsAt: true },
+    });
+
+    return hasActivePaidSubscription(subscription) ? JobModerationStatus.APPROVED : JobModerationStatus.PENDING_APPROVAL;
+  }
 
   async find(where: Prisma.JobPositionWhereInput): Promise<Array<JobPositionResponseDto>> {
     try {
@@ -47,9 +72,28 @@ export class JobPositionService {
     }
   }
 
-  async list(paginationDto: PaginationDto, user: User): Promise<PaginatedResponse<JobPositionResponseDto>> {
+  /**
+   * Resolve a client UID to a numeric id inside one company.
+   *
+   * Scoped to `companyId` on purpose: a client UID belonging to another agency must not
+   * be attachable to this company's postings, and must not resolve at all.
+   */
+  private async resolveClientId(clientUid: string, companyId: number): Promise<number> {
+    const client = await this.databaseService.client.findFirst({
+      where: { uid: clientUid, companyId, deletedAt: null },
+      select: { id: true },
+    });
+
+    if (!client) {
+      throw new EntityNotFoundException('Client', clientUid);
+    }
+
+    return client.id;
+  }
+
+  async list(paginationDto: JobPositionListFiltersDto, user: User): Promise<PaginatedResponse<JobPositionResponseDto>> {
     try {
-      const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc' } = paginationDto;
+      const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', clientUid } = paginationDto;
       const skip = (page - 1) * pageSize;
 
       // Build where clause for search
@@ -66,6 +110,13 @@ export class JobPositionService {
       const userCompanyId = getUserCompanyId(user);
       if (userCompanyId !== null) {
         where.companyId = userCompanyId;
+      }
+
+      // "Show me every open role for Acme". Matching on the related client's UID rather
+      // than resolving it to an id first means a UID from another agency simply matches
+      // nothing — the tenant filter above already fenced the query to one company.
+      if (clientUid) {
+        where.client = { uid: clientUid };
       }
 
       // Get total count
@@ -193,8 +244,19 @@ export class JobPositionService {
       // Enforce job position quota for the company's plan
       await this.quotaService.checkQuota(targetCompanyId, 'jobPositions');
 
+      // Anti-spam moderation gate: only paid companies (and SUPER_ADMINs) publish instantly
+      const moderationStatus = await this.resolveModerationStatusForNewPosting(targetCompanyId, user);
+      const autoApproved = moderationStatus === JobModerationStatus.APPROVED;
+
+      // Optional end client. Resolved inside the target company so one agency can never
+      // attribute a role to another agency's client.
+      const clientId = createJobPositionDto.clientUid ? await this.resolveClientId(createJobPositionDto.clientUid, targetCompanyId) : null;
+
       const newJobPosition = await this.databaseService.jobPosition.create({
         data: {
+          moderationStatus,
+          ...(clientId !== null ? { client: { connect: { id: clientId } } } : {}),
+          moderatedAt: autoApproved ? new Date() : null,
           title: createJobPositionDto.title,
           description: createJobPositionDto.description,
           customQuestions: (createJobPositionDto.customQuestions ? createJobPositionDto.customQuestions : []) as unknown as Prisma.JsonValue,
@@ -234,6 +296,14 @@ export class JobPositionService {
 
       // Invalidate job positions cache after creation
       await this.cacheService.invalidatePattern('job-position');
+
+      // Activation event (fire-and-forget - never awaited, never throws)
+      this.activationEvents.jobPositionCreated({
+        userId: user.id,
+        companyId: targetCompanyId,
+        jobPositionUid: newJobPosition.uid,
+        title: newJobPosition.title,
+      });
 
       return JobPositionMapper(newJobPosition);
     } catch (error) {
@@ -289,6 +359,12 @@ export class JobPositionService {
       if (updateJobPositionDto.tags !== undefined) updateData.tags = updateJobPositionDto.tags;
       if (updateJobPositionDto.isHighlighted !== undefined) updateData.isHighlighted = updateJobPositionDto.isHighlighted;
       if (updateJobPositionDto.candidateSource !== undefined) updateData.candidateSource = updateJobPositionDto.candidateSource;
+
+      // Client re-attribution. `null` detaches the role from its client; a UID is resolved
+      // inside the posting's own company so it cannot be pointed at another agency's client.
+      if (updateJobPositionDto.clientUid !== undefined) {
+        updateData.clientId = updateJobPositionDto.clientUid ? await this.resolveClientId(updateJobPositionDto.clientUid, existingJobPosition.companyId) : null;
+      }
 
       const jobPosition = await this.databaseService.jobPosition.update({
         where: { uid },
@@ -372,6 +448,7 @@ export class JobPositionService {
       // Build where clause
       const where: Prisma.JobPositionWhereInput = {
         status: 'OPEN',
+        moderationStatus: JobModerationStatus.APPROVED, // Anti-spam: never expose unmoderated postings publicly
         deletedAt: null, // Exclude soft-deleted records
       };
 
@@ -547,6 +624,7 @@ export class JobPositionService {
         where: {
           uid,
           status: 'OPEN',
+          moderationStatus: JobModerationStatus.APPROVED, // Anti-spam: never expose unmoderated postings publicly
           deletedAt: null, // Exclude soft-deleted records
         },
         include: {

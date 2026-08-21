@@ -453,6 +453,9 @@ export class DummyService implements OnApplicationBootstrap {
               applicationDeadline: jobPosition.applicationDeadline ? new Date(jobPosition.applicationDeadline) : null,
               isUrgent: jobPosition.isUrgent || false,
               isFeatured: jobPosition.isFeatured || false,
+              // Seeded demo postings bypass the moderation queue so they stay visible publicly
+              moderationStatus: 'APPROVED',
+              moderatedAt: new Date(),
               companyId: createdCompanies[jobPosition.companyIndex].id,
               createdById: createdUsers[jobPosition.createdByUserIndex].id,
             },

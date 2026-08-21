@@ -1,4 +1,5 @@
-import { Module, NestModule, MiddlewareConsumer } from '@nestjs/common';
+import { Module, NestModule, MiddlewareConsumer, ExecutionContext } from '@nestjs/common';
+import { APP_GUARD, Reflector } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { SharedModule } from './modules/shared/shared.module';
@@ -9,6 +10,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { HiringProcessModule } from './modules/hiring-process/hiring-process.module';
 import { StagesModule } from './modules/hiring-process/modules/stages/stages.module';
 import { CandidateModule } from './modules/hiring-process/modules/candidate/candidate.module';
+import { ClientModule } from './modules/client/client.module';
 import { JobPositionModule } from './modules/job-position/job-position.module';
 import { CompanyModule } from './modules/company/company.module';
 import { StorageModule } from './modules/storage/storage.module';
@@ -32,11 +34,10 @@ import { AuditLogModule } from './modules/audit-log/audit-log.module';
 import { HealthModule } from './modules/health/health.module';
 import { MetricsModule } from './modules/metrics/metrics.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { CustomThrottlerGuard } from './common/guards/throttler.guard';
 import { CacheModule } from './modules/cache/cache.module';
 import { LoggingMiddleware } from './common/middleware/logging.middleware';
 import { PerformanceMiddleware } from './common/middleware/performance.middleware';
-// import { StripeModule } from './modules/stripe/stripe.module';
-// import { LemonSqueezyModule } from './modules/lemon-squeezy/lemon-squeezy.module';
 import { DodoPaymentsModule } from './modules/dodo-payments/dodo-payments.module';
 import { QuotaModule } from './modules/quota/quota.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
@@ -65,6 +66,76 @@ import { TrackingModule } from './modules/tracking/tracking.module';
 import { PublicApiModule } from './public-api/public-api.module';
 import { ApiKeyManagementModule } from './modules/api-key-management/api-key-management.module';
 
+/**
+ * Route prefixes exempted from the global IP rate limiter.
+ *
+ * Each of these is either already authenticated by its own guard, or is a
+ * machine-to-machine caller whose whole traffic arrives from a single IP —
+ * exactly the shape that per-IP throttling misfires on.
+ */
+const THROTTLE_EXEMPT_PREFIXES = [
+  // Long-lived SSE stream. A client that drops its connection reconnects
+  // immediately; a reconnect storm across a few browser tabs would otherwise
+  // trip the limit and lock the user out of live updates.
+  '/api/sse',
+  // Inbound Dodo Payments webhook. Already signature-verified. Every retry and
+  // burst arrives from the provider's IPs; dropping one means losing
+  // subscription state, which is far worse than the abuse it would prevent.
+  '/api/billing/webhook',
+  // Inbound automation webhooks, already gated by WebhookAuthGuard (X-API-Key).
+  '/api/webhooks',
+  // Email open/click pixels. A corporate mail gateway prefetching links for
+  // many recipients hits these from one IP in a burst.
+  '/api/tracking',
+  // Uptime monitors and the Prometheus scraper poll these on a fixed interval.
+  // /api/metrics is bearer-token protected; liveness/readiness are trivial.
+  '/api/health/liveness',
+  '/api/health/readiness',
+  '/api/metrics',
+];
+
+/**
+ * Decides whether the global throttler should stand down for this request.
+ *
+ * Three reasons to skip, in order:
+ *
+ * 1. Test runs. The E2E suites make 17 login and 7 register calls, against
+ *    limits of 5-per-15-minutes and 3-per-hour. This is why the global guard
+ *    was commented out as "temporarily disabled for E2E tests" — turning it
+ *    back on without this escape hatch would just break the suite again.
+ *
+ * 2. The project's own @SkipThrottle() decorator. It lives in
+ *    common/decorators/throttle.decorator.ts and sets a 'skipThrottle'
+ *    metadata key that @nestjs/throttler does not know about — the library
+ *    reads its own THROTTLER_SKIP key. With the global guard off this was
+ *    harmless; with it on, the ~13 auth routes marked @SkipThrottle() (token
+ *    verification, refresh, logout) would silently start being throttled.
+ *    Honouring the metadata here makes the existing decorator do what every
+ *    call site already assumes it does.
+ *
+ * 3. The exempt prefixes above.
+ */
+function shouldSkipThrottling(context: ExecutionContext, config: ConfigService, reflector: Reflector): boolean {
+  if (config.get('NODE_ENV') === 'test' || config.get('THROTTLE_DISABLED') === 'true') {
+    return true;
+  }
+
+  // Non-HTTP contexts have no IP to track; never throttle them.
+  if (context.getType() !== 'http') {
+    return true;
+  }
+
+  const skipMetadata = reflector.getAllAndOverride<boolean>('skipThrottle', [context.getHandler(), context.getClass()]);
+  if (skipMetadata) {
+    return true;
+  }
+
+  const request = context.switchToHttp().getRequest();
+  const path: string = request?.route?.path || request?.path || request?.url || '';
+
+  return THROTTLE_EXEMPT_PREFIXES.some((prefix) => path.startsWith(prefix));
+}
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -72,8 +143,8 @@ import { ApiKeyManagementModule } from './modules/api-key-management/api-key-man
     EventEmitterModule.forRoot(),
     CacheModule,
     ThrottlerModule.forRootAsync({
-      inject: [ConfigService],
-      useFactory: (config: ConfigService) => ({
+      inject: [ConfigService, Reflector],
+      useFactory: (config: ConfigService, reflector: Reflector) => ({
         throttlers: [
           {
             name: 'default',
@@ -81,6 +152,7 @@ import { ApiKeyManagementModule } from './modules/api-key-management/api-key-man
             limit: parseInt(config.get('THROTTLE_LIMIT', '100')), // Max requests per TTL window
           },
         ],
+        skipIf: (context: ExecutionContext) => shouldSkipThrottling(context, config, reflector),
       }),
     }),
     UsersModule,
@@ -90,6 +162,7 @@ import { ApiKeyManagementModule } from './modules/api-key-management/api-key-man
     StagesModule,
     CandidateModule,
     JobPositionModule,
+    ClientModule,
     ...(process.env.DUMMY_DATA_ENABLED === 'true' ? [DummyModule] : []),
     StorageModule,
     ApplicationModule,
@@ -111,8 +184,6 @@ import { ApiKeyManagementModule } from './modules/api-key-management/api-key-man
     AuditLogModule,
     HealthModule,
     MetricsModule,
-    // StripeModule,
-    // LemonSqueezyModule,
     DodoPaymentsModule,
     QuotaModule,
     NotificationsModule,
@@ -143,11 +214,16 @@ import { ApiKeyManagementModule } from './modules/api-key-management/api-key-man
   controllers: [AppController],
   providers: [
     AppService,
-    // Temporarily disabled for E2E tests
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: CustomThrottlerGuard,
-    // },
+    // Global IP rate limiting. Previously commented out as "temporarily
+    // disabled for E2E tests", which meant every per-route @Throttle in the
+    // codebase — login attempts, registration, AI spend, public application
+    // submissions — was inert in production, because those decorators only
+    // configure a guard that was never installed. The E2E problem is handled
+    // by shouldSkipThrottling() above rather than by leaving this off.
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard,
+    },
   ],
 })
 export class AppModule implements NestModule {

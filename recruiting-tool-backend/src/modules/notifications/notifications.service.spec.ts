@@ -106,6 +106,7 @@ describe('NotificationsService', () => {
       expect(result).toHaveProperty('isRead', false);
       expect(databaseService.user.findUnique).toHaveBeenCalledWith({
         where: { uid: 'user-uid-123' },
+        include: { company: { select: { uid: true } } },
       });
       expect(databaseService.notification.create).toHaveBeenCalledWith({
         data: {
@@ -194,6 +195,7 @@ describe('NotificationsService', () => {
       await expect(service.create(createDto)).rejects.toThrow(NotFoundException);
       expect(databaseService.user.findUnique).toHaveBeenCalledWith({
         where: { uid: 'invalid-uid' },
+        include: { company: { select: { uid: true } } },
       });
       expect(databaseService.notification.create).not.toHaveBeenCalled();
     });

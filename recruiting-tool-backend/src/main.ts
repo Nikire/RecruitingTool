@@ -8,10 +8,18 @@ import { ResponseInterceptor } from './common/interceptors/response.interceptor'
 import { PlanLimitsService } from './modules/plan-limits/plan-limits.service';
 import { FeatureFlagsService } from './modules/feature-flags/feature-flags.service';
 import { PublicApiModule } from './public-api/public-api.module';
+import { initSentry } from './common/filters/sentry';
 
 const { PORT, FRONTEND_URL } = process.env;
 
 async function bootstrap() {
+  // Error monitoring. No-ops entirely when SENTRY_DSN is unset, so the app
+  // runs unchanged for a developer with no Sentry account. Initialised before
+  // the Nest app is created so that failures during bootstrap are captured.
+  if (initSentry()) {
+    console.log('[bootstrap] Sentry error monitoring enabled');
+  }
+
   const app = await NestFactory.create(AppModule, {
     rawBody: true, // Enable raw body for webhook signature verification
   });

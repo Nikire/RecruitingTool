@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { JobPositionStatus, JobType, WorkLocation, SalaryPeriod, ExperienceLevel } from '@prisma/client';
+import { JobPositionStatus, JobType, WorkLocation, SalaryPeriod, ExperienceLevel, JobModerationStatus } from '@prisma/client';
 import { IsNotEmpty, IsOptional, IsString, MaxLength, MinLength, IsArray, ValidateNested, IsEnum, IsBoolean, IsInt, IsDate, Min, Max } from 'class-validator';
 import { Type } from 'class-transformer';
 import { HiringProcessResponseDto } from 'src/modules/hiring-process/dto/hiring-process.dto';
 import { CreateStageDto, StageResponseDto } from 'src/modules/hiring-process/modules/stages/dto/stages.dto';
+import { PaginationDto } from 'src/dto/pagination.dto';
 
 export enum QuestionType {
   TEXT = 'TEXT',
@@ -176,6 +177,17 @@ export class JobPositionResponseDto {
   @IsString()
   candidateSource?: string;
 
+  @ApiProperty({
+    description: 'UID of the end client this role is being filled for. Null for direct employers and for postings created before clients existed.',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+    nullable: true,
+  })
+  clientUid?: string | null;
+
+  @ApiProperty({ description: 'Name of the end client this role is being filled for', example: 'Acme Corporation', required: false, nullable: true })
+  clientName?: string | null;
+
   @ApiProperty({ description: 'The company UID', example: '123e4567-e89b-12d3-a456-426614174000' })
   companyUid: string;
 
@@ -197,6 +209,25 @@ export class JobPositionResponseDto {
 
   @ApiProperty({ description: 'The hiring processes of the job position' })
   hiringProcesses?: Array<HiringProcessResponseDto>;
+
+  @ApiProperty({
+    description:
+      'Platform moderation state of the posting. Independent from `status`. Only APPROVED postings appear on the public careers board. Companies with an active paid subscription are approved automatically on creation.',
+    enum: JobModerationStatus,
+    example: JobModerationStatus.APPROVED,
+  })
+  @IsEnum(JobModerationStatus)
+  moderationStatus: JobModerationStatus;
+
+  @ApiProperty({ description: 'Reason supplied by the administrator when the posting was rejected', required: false, nullable: true })
+  @IsOptional()
+  @IsString()
+  moderationReason?: string | null;
+
+  @ApiProperty({ description: 'When the posting was approved or rejected', required: false, nullable: true })
+  @IsOptional()
+  @IsDate()
+  moderatedAt?: Date | null;
 }
 
 export class CreateJobPositionDto {
@@ -342,6 +373,15 @@ export class CreateJobPositionDto {
   @IsOptional()
   @IsString()
   candidateSource?: string;
+
+  @ApiProperty({
+    description: 'UID of the end client this role is being filled for. Omit for a direct-employer role.',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  clientUid?: string;
 
   @ApiProperty({ description: 'The stages of the job position', type: [CreateStageDto] })
   stages?: Array<CreateStageDto>;
@@ -491,6 +531,34 @@ export class UpdateJobPositionDto {
   @IsOptional()
   @IsString()
   candidateSource?: string;
+
+  @ApiProperty({
+    description: 'UID of the end client this role is being filled for. Send null to detach the role from its client.',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+    nullable: true,
+  })
+  @IsOptional()
+  @IsString()
+  clientUid?: string | null;
+}
+
+/**
+ * Query parameters accepted by GET /job-position/list.
+ *
+ * Extends PaginationDto (page / pageSize / search / sortBy / sortOrder / status) with the
+ * agency-facing client filter, which is the whole point of P3-6: "show me every open role
+ * for Acme".
+ */
+export class JobPositionListFiltersDto extends PaginationDto {
+  @ApiProperty({
+    description: 'Filter to roles being filled for this end client (UID)',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  clientUid?: string;
 }
 
 export class PublicJobPositionResponseDto {
