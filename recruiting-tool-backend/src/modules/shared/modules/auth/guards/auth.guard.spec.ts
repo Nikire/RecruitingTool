@@ -1,7 +1,9 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { Reflector } from '@nestjs/core';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from '../auth.service';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { IS_PUBLIC_KEY } from '../decorators/skip-auth.decorator';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
@@ -11,21 +13,37 @@ describe('AuthGuard', () => {
     verifyToken: jest.fn(),
   };
 
+  // The guard reads route metadata through the Reflector, so the mock context must expose
+  // getHandler()/getClass() exactly like a real ExecutionContext does.
   const mockExecutionContext = {
     switchToHttp: jest.fn().mockReturnValue({
       getRequest: jest.fn(),
     }),
+    getHandler: jest.fn().mockReturnValue(function handler() {}),
+    getClass: jest.fn().mockReturnValue(class TestController {}),
+    getType: jest.fn().mockReturnValue('http'),
+    getArgs: jest.fn().mockReturnValue([]),
+    getArgByIndex: jest.fn(),
+    switchToRpc: jest.fn(),
+    switchToWs: jest.fn(),
   } as unknown as ExecutionContext;
+
+  const mockReflector = {
+    getAllAndOverride: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthGuard, { provide: AuthService, useValue: mockAuthService }],
+      providers: [AuthGuard, { provide: AuthService, useValue: mockAuthService }, { provide: Reflector, useValue: mockReflector }],
     }).compile();
 
     guard = module.get<AuthGuard>(AuthGuard);
     authService = module.get<AuthService>(AuthService);
 
     jest.clearAllMocks();
+
+    // Default: the route under test is NOT decorated with @SkipAuth().
+    mockReflector.getAllAndOverride.mockImplementation((key: string) => (key === IS_PUBLIC_KEY ? false : undefined));
   });
 
   it('should be defined', () => {
@@ -80,6 +98,16 @@ describe('AuthGuard', () => {
 
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow(UnauthorizedException);
       await expect(guard.canActivate(mockExecutionContext)).rejects.toThrow('Invalid token');
+    });
+
+    it('should return true without checking the token for @SkipAuth() routes', async () => {
+      const mockRequest = { headers: {} };
+
+      mockReflector.getAllAndOverride.mockImplementation((key: string) => key === IS_PUBLIC_KEY);
+      (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
+
+      await expect(guard.canActivate(mockExecutionContext)).resolves.toBe(true);
+      expect(authService.verifyToken).not.toHaveBeenCalled();
     });
 
     it('should handle malformed authorization header', async () => {

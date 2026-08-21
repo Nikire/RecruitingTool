@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
 import { BatchSummaryDto } from './dto/batch-summary.dto';
 import { DeploymentNotificationDto, DeploymentStatus } from './dto/deployment-notification.dto';
+import { CompanyHealthDegradationDto } from './dto/company-health-digest.dto';
 
 @Injectable()
 export class InternalService {
@@ -153,6 +154,57 @@ export class InternalService {
     `.trim();
 
     return { text, html };
+  }
+
+  /**
+   * P3-9 — Monday morning "which accounts got worse" email.
+   *
+   * Deliberately NOT a second mail implementation. It projects the health digest onto
+   * the `BatchSummaryDto` shape and hands it to `sendBatchSummary`, so the digest
+   * inherits the existing transport, the existing developer address, the existing
+   * HTML shell and the existing escaping. One email template to maintain, not two.
+   *
+   *   issue "number"  -> rank in the list (1 = worst)
+   *   issue "title"   -> "Acme Corp · HEALTHY -> AT_RISK · score 85 -> 60"
+   *   issue "status"  -> the current tier, rendered as the status pill
+   *   checklist item  -> the concrete reason plus the account link to act on
+   */
+  async sendCompanyHealthDigest(degradations: CompanyHealthDegradationDto[], now: Date = new Date()): Promise<{ message: string }> {
+    const frontendUrl = this.configService.get<string>('FRONTEND_URL', 'https://borderlessats.com');
+    const weekOf = now.toISOString().substring(0, 10);
+
+    const dto: BatchSummaryDto = {
+      batchName: `Company Health — ${degradations.length} account${degradations.length === 1 ? '' : 's'} degraded (week of ${weekOf})`,
+      issues: degradations.map((d, idx) => ({
+        number: idx + 1,
+        title: `${d.companyName} · ${d.previousTier} → ${d.currentTier} · score ${d.previousScore ?? '—'} → ${d.currentScore ?? '—'} · ${d.plan}`,
+        status: d.currentTier,
+      })),
+      testingChecklist: degradations.map((d) => `${d.companyName} — ${this.describeHealthSignals(d)} · ${frontendUrl}/admin/health`),
+      additionalNotes: [
+        'Each line is a company whose risk tier is WORSE than it was seven days ago, worst first.',
+        'Tiers, best to worst: HEALTHY → AT_RISK → CHURNING → CRITICAL.',
+        'The score is the sum of four signals (login recency, open positions, applications this month, hiring activity this month), 25 points each.',
+        'Accounts with no reading from a week ago are not listed — there is no trend to compare yet.',
+        `Full board: ${frontendUrl}/admin/health`,
+      ].join('\n'),
+    };
+
+    this.logger.log(`Sending company health digest for ${degradations.length} degraded company/companies`);
+
+    return this.sendBatchSummary(dto);
+  }
+
+  /** Turn the four raw signals into the one sentence that says why the tier dropped. */
+  private describeHealthSignals(d: CompanyHealthDegradationDto): string {
+    const parts: string[] = [];
+
+    parts.push(d.lastLoginDaysAgo === null ? 'never logged in' : `last login ${d.lastLoginDaysAgo}d ago`);
+    parts.push(`${d.activeJobPositions ?? 0} open role${(d.activeJobPositions ?? 0) === 1 ? '' : 's'}`);
+    parts.push(`${d.applicationsThisMonth ?? 0} application${(d.applicationsThisMonth ?? 0) === 1 ? '' : 's'} this month`);
+    parts.push(`${d.hiringActivitiesThisMonth ?? 0} hiring update${(d.hiringActivitiesThisMonth ?? 0) === 1 ? '' : 's'} this month`);
+
+    return parts.join(', ');
   }
 
   async sendDeploymentNotification(dto: DeploymentNotificationDto): Promise<{ message: string }> {

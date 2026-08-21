@@ -28,7 +28,21 @@ export class AuthService {
     private readonly emailService: EmailService,
   ) {}
 
-  async register({ name, email, password, roles, companyUid, companyName }: CreateUserDto): Promise<RegisteredUserDto> {
+  async register({
+    name,
+    email,
+    password,
+    roles,
+    companyUid,
+    companyName,
+    utmSource,
+    utmMedium,
+    utmCampaign,
+    utmTerm,
+    utmContent,
+    referrerUrl,
+    landingPath,
+  }: CreateUserDto): Promise<RegisteredUserDto> {
     const foundUser = await this.usersService.findByEmail(email);
     if (foundUser) {
       throw new BadRequestException('User already exists');
@@ -61,12 +75,25 @@ export class AuthService {
       finalCompanyUid = newCompany.uid;
     }
 
+    // Signup attribution — best effort only. Every field is optional and a missing or
+    // malformed value must never block a registration.
+    const attribution = {
+      utmSource,
+      utmMedium,
+      utmCampaign,
+      utmTerm,
+      utmContent,
+      referrerUrl,
+      landingPath,
+    };
+
     const user = await this.usersService.create({
       name,
       email,
       password,
       roles,
       companyUid: finalCompanyUid,
+      ...attribution,
     });
 
     // Generate email verification token and send verification email

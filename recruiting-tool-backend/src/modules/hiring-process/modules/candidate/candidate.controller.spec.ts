@@ -8,6 +8,7 @@ import { CreateCandidateDto, UpdateCandidateDto, CreateManualCandidateDto } from
 import { ApplicationSource, RolesType, User } from '@prisma/client';
 import { AuthGuard } from 'src/modules/shared/modules/auth/guards/auth.guard';
 import { RolesGuard } from 'src/modules/shared/modules/auth/guards/roles.guard';
+import { StageNotesService } from 'src/modules/stage-notes/stage-notes.service';
 
 describe('CandidateController', () => {
   let controller: CandidateController;
@@ -72,6 +73,10 @@ describe('CandidateController', () => {
     },
   };
 
+  const mockStageNotesService = {
+    findByCandidateUid: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [CandidateController],
@@ -80,6 +85,7 @@ describe('CandidateController', () => {
         { provide: CandidateActivityService, useValue: mockCandidateActivityService },
         { provide: CandidateImportService, useValue: mockCandidateImportService },
         { provide: DatabaseService, useValue: mockDatabaseService },
+        { provide: StageNotesService, useValue: mockStageNotesService },
       ],
     })
       .overrideGuard(AuthGuard)

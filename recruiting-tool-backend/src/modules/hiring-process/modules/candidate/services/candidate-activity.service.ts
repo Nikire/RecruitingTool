@@ -1,8 +1,9 @@
 import { Injectable, HttpException, InternalServerErrorException } from '@nestjs/common';
 import { DatabaseService } from 'src/modules/shared/modules/database/database.service';
 import { CandidateActivityResponseDto } from '../dto/candidate-activity.dto';
-import { CandidateActivityType } from '@prisma/client';
+import { CandidateActivityType, User } from '@prisma/client';
 import { EntityNotFoundException } from 'src/common/exceptions';
+import { assertCandidateTenancy } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class CandidateActivityService {
@@ -44,18 +45,28 @@ export class CandidateActivityService {
 
   /**
    * Get all activities for a specific candidate
+   *
+   * `user` is the tenancy subject. The activity timeline names interviewers,
+   * stage moves and internal comments, so it is private company data; without
+   * this gate any authenticated caller could read another tenant's timeline
+   * by UID.
+   *
    * @param candidateUid - Candidate UID
+   * @param user - Caller, used to scope the candidate to their company
    * @returns Promise<CandidateActivityResponseDto[]>
    */
-  async getCandidateActivities(candidateUid: string): Promise<CandidateActivityResponseDto[]> {
+  async getCandidateActivities(candidateUid: string, user?: User): Promise<CandidateActivityResponseDto[]> {
     try {
       const candidate = await this.databaseService.candidate.findUnique({
         where: { uid: candidateUid },
+        include: { hiringProcesses: { select: { companyId: true } } },
       });
 
       if (!candidate) {
         throw new EntityNotFoundException('Candidate', candidateUid);
       }
+
+      assertCandidateTenancy(candidate, candidateUid, user);
 
       const activities = await this.databaseService.candidateActivity.findMany({
         where: { candidateId: candidate.id },

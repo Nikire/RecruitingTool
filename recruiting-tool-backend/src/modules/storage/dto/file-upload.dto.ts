@@ -30,6 +30,17 @@ export class DeleteManyFilesDto {
   uids: string[];
 }
 
+export class FileViewUrlResponseDto {
+  /** UID of the file the URL points at */
+  uid: string;
+  /** Short-lived presigned URL served straight from object storage */
+  url: string;
+  /** Lifetime of the URL in seconds */
+  expiresIn: number;
+  originalName: string;
+  mimetype: string;
+}
+
 export class CompanyStorageResponseDto {
   usedMB: number;
   limitMB: number;

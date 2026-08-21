@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException, Logger } from '@nestjs/common';
 import { DatabaseService } from '../shared/modules/database/database.service';
 import { UpsertStageNoteDto, StageNoteResponseDto, CandidateStageNotesResponseDto } from './dto/stage-note.dto';
+import { User } from '@prisma/client';
+import { getUserCompanyId } from 'src/utils/company-access.helper';
 
 @Injectable()
 export class StageNotesService {
@@ -139,12 +141,22 @@ export class StageNotesService {
    * Get all stage evaluation notes for a candidate (across all hiring processes and stages).
    * Excludes soft-deleted notes.
    */
-  async findByCandidateUid(candidateUid: string): Promise<CandidateStageNotesResponseDto[]> {
+  /**
+   * Stage evaluation notes are interviewer scorecards - private company data.
+   * `user` scopes the query to hiring processes owned by the caller's company;
+   * without it any authenticated caller could read another tenant's evaluation
+   * notes by passing that tenant's candidate UID.
+   */
+  async findByCandidateUid(candidateUid: string, user?: User): Promise<CandidateStageNotesResponseDto[]> {
+    // null => SUPER_ADMIN, the only role with cross-company visibility.
+    const userCompanyId = user ? getUserCompanyId(user) : null;
+
     const notes = await this.databaseService.stageNote.findMany({
       where: {
         deletedAt: null,
         hiringProcess: {
           candidate: { uid: candidateUid },
+          ...(userCompanyId !== null && { companyId: userCompanyId }),
         },
       },
       include: {

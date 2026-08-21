@@ -1,6 +1,7 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpStatus, Logger } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Prisma } from '@prisma/client';
+import { captureServerError } from './sentry';
 
 /**
  * Filter to handle Prisma errors and return user-friendly messages
@@ -110,6 +111,20 @@ export class PrismaExceptionFilter implements ExceptionFilter {
         ip: request.ip,
       }),
     );
+
+    // Report to Sentry — server faults only. Mapped Prisma errors (P2002 ->
+    // 409, P2025 -> 404, ...) are expected user-driven outcomes and are not
+    // reported. Only unmapped codes, which fall through to a 500, are bugs.
+    if (status >= HttpStatus.INTERNAL_SERVER_ERROR) {
+      const user = request['user'] as { uid?: string } | undefined;
+      captureServerError(exception, {
+        correlationId: request['correlationId'] as string | undefined,
+        method: request.method,
+        url: request.url,
+        statusCode: status,
+        userUid: user?.uid,
+      });
+    }
 
     // Build response object
     const errorResponse: any = {

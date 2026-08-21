@@ -22,6 +22,7 @@ import { EntityNotFoundException } from 'src/common/exceptions';
 import { QuotaService } from '../quota/quota.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { EmailService } from '../email/email.service';
+import { ActivationEventsService } from '../tracking/activation-events.service';
 
 @Injectable()
 export class HiringProcessService {
@@ -35,6 +36,7 @@ export class HiringProcessService {
     private readonly quotaService: QuotaService,
     private readonly notificationsService: NotificationsService,
     private readonly emailService: EmailService,
+    private readonly activationEvents: ActivationEventsService,
   ) {}
 
   async create(createHiringProcessDto: CreateHiringProcessDto): Promise<HiringProcessResponseDto> {
@@ -174,11 +176,32 @@ export class HiringProcessService {
   }
 
   async list(
-    paginationDto: PaginationDto & { status?: string; companyUid?: string; positionUid?: string; candidateUid?: string; startDate?: string; endDate?: string },
+    paginationDto: PaginationDto & {
+      status?: string;
+      companyUid?: string;
+      positionUid?: string;
+      candidateUid?: string;
+      clientUid?: string;
+      startDate?: string;
+      endDate?: string;
+    },
     user: User,
   ): Promise<PaginatedResponse<HiringProcessResponseDto>> {
     try {
-      const { page = 1, pageSize = 10, search, sortBy = 'createdAt', sortOrder = 'desc', status, companyUid, positionUid, candidateUid, startDate, endDate } = paginationDto;
+      const {
+        page = 1,
+        pageSize = 10,
+        search,
+        sortBy = 'createdAt',
+        sortOrder = 'desc',
+        status,
+        companyUid,
+        positionUid,
+        candidateUid,
+        clientUid,
+        startDate,
+        endDate,
+      } = paginationDto;
       const skip = (page - 1) * pageSize;
 
       // Build where clause for search
@@ -243,6 +266,13 @@ export class HiringProcessService {
         where.companyId = userCompanyId;
       }
 
+      // Client filter: a hiring process inherits its client from its job position.
+      // Matched by UID through the relation, so a UID from another agency matches nothing
+      // (the tenant filter above already fenced the query to one company).
+      if (clientUid) {
+        where.jobPosition = { ...(where.jobPosition ?? {}), client: { uid: clientUid } };
+      }
+
       // Get total count
       const total = await this.databaseService.hiringProcess.count({ where });
 
@@ -280,7 +310,7 @@ export class HiringProcessService {
     try {
       const page = Number(filterDto.page) || 1;
       const limit = Number(filterDto.limit) || 10;
-      const { search, status } = filterDto;
+      const { search, status, clientUid } = filterDto;
 
       const where: any = { deletedAt: null };
 
@@ -296,6 +326,11 @@ export class HiringProcessService {
       const userCompanyId = getUserCompanyId(user);
       if (userCompanyId !== null) {
         where.companyId = userCompanyId;
+      }
+
+      // Same client filter as the flat list, so both views of this page agree.
+      if (clientUid) {
+        where.jobPosition = { ...(where.jobPosition ?? {}), client: { uid: clientUid } };
       }
 
       // Fetch all matching hiring processes to group by job position
@@ -648,7 +683,17 @@ export class HiringProcessService {
 
       verifyCompanyAccess(user, hiringProcess.companyId);
 
-      return this.stagesService.progressToNextStage(hiringProcessUid);
+      const result = await this.stagesService.progressToNextStage(hiringProcessUid);
+
+      // Activation event (fire-and-forget - never awaited, never throws)
+      this.activationEvents.applicationStageAdvanced({
+        userId: user.id,
+        companyId: hiringProcess.companyId,
+        hiringProcessUid,
+        mode: 'NEXT',
+      });
+
+      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;
@@ -670,7 +715,18 @@ export class HiringProcessService {
 
       verifyCompanyAccess(user, hiringProcess.companyId);
 
-      return this.stagesService.moveToSpecificStage(hiringProcessUid, targetStageUid);
+      const result = await this.stagesService.moveToSpecificStage(hiringProcessUid, targetStageUid);
+
+      // Activation event (fire-and-forget - never awaited, never throws)
+      this.activationEvents.applicationStageAdvanced({
+        userId: user.id,
+        companyId: hiringProcess.companyId,
+        hiringProcessUid,
+        mode: 'SPECIFIC',
+        targetStageUid,
+      });
+
+      return result;
     } catch (error) {
       if (error instanceof HttpException) {
         throw error;

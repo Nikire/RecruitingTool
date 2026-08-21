@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth, ApiUnauthorizedResponse, ApiForbiddenResponse } from '@nestjs/swagger';
+import { Auth } from '../shared/modules/auth/decorators/auth.decorator';
 import { HealthCheck, HealthCheckService } from '@nestjs/terminus';
 import { DatabaseHealthIndicator } from './indicators/database.health';
 import { StorageHealthIndicator } from './indicators/storage.health';
@@ -72,9 +73,19 @@ export class HealthController {
     return this.health.check([() => this.db.isHealthy('database')]);
   }
 
+  // Gated behind SUPER_ADMIN: this response leaks NODE_ENV, the package
+  // version and process uptime, which is reconnaissance material for an
+  // unauthenticated caller. /liveness and /readiness stay public so external
+  // uptime monitors can poll them.
   @Get('detailed')
+  @Auth(['SUPER_ADMIN'])
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({
+    description: "Unauthorized - Bearer is missing / is expired / you don't have enough permissions",
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden - SUPER_ADMIN role required' })
   @HealthCheck()
-  @ApiOperation({ summary: 'Detailed health status with all system information' })
+  @ApiOperation({ summary: 'Detailed health status with all system information - SUPER_ADMIN role required' })
   @ApiResponse({ status: 200, description: 'Detailed system health information' })
   @ApiResponse({ status: 503, description: 'One or more services are unhealthy' })
   async getDetailedHealth() {

@@ -92,6 +92,15 @@ export class HiringProcessGroupedFilterDto {
   @ApiProperty({ description: 'Number of job position groups per page', example: 10, required: false })
   @IsOptional()
   limit?: number;
+
+  @ApiProperty({
+    description: 'Filter to processes whose job position is being filled for this end client (UID)',
+    example: '123e4567-e89b-12d3-a456-426614174000',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  clientUid?: string;
 }
 
 export class HiringProcessGroupedResponseDto {

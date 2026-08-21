@@ -36,7 +36,7 @@ export class ApplicationController {
     return this.applicationService.create(createApplicationDto);
   }
 
-  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get('grouped')
   @ApiOperation({ summary: 'Get applications grouped by job position with pagination (HR/ADMIN only)' })
   @ApiResponse({
@@ -48,7 +48,7 @@ export class ApplicationController {
     return this.applicationService.findAllGrouped(filterDto, currentUser);
   }
 
-  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get()
   @ApiOperation({ summary: 'Get all applications (HR/ADMIN only)' })
   @ApiResponse({
@@ -60,7 +60,7 @@ export class ApplicationController {
     return this.applicationService.findAll(filterDto, currentUser);
   }
 
-  @Auth(['HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
+  @Auth(['RECRUITER', 'HR', 'COMPANY_OWNER', 'ADMIN', 'SUPER_ADMIN'])
   @Get(':uid')
   @ApiOperation({ summary: 'Get single application (HR/ADMIN only)' })
   @ApiResponse({

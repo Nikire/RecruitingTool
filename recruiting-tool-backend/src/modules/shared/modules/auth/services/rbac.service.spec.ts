@@ -3,6 +3,7 @@ import { RolesGuard } from '../guards/roles.guard';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { RolesType } from '@prisma/client';
+import { IS_PUBLIC_KEY } from '../decorators/skip-auth.decorator';
 
 /**
  * Unit tests for RBAC (Role-Based Access Control) logic
@@ -15,6 +16,16 @@ describe('RBAC Service Logic', () => {
     getAllAndOverride: jest.fn(),
   };
 
+  /**
+   * RolesGuard queries the Reflector twice per request: once for IS_PUBLIC_KEY (@SkipAuth)
+   * and once for the 'roles' metadata. A blanket mockReturnValue answers the IS_PUBLIC_KEY
+   * lookup with a truthy role array, which makes the guard return true before any role check
+   * ever runs. The mock must therefore dispatch on the metadata key.
+   */
+  const setRequiredRoles = (requiredRoles: RolesType[], isPublic = false) => {
+    mockReflector.getAllAndOverride.mockImplementation((key: string) => (key === IS_PUBLIC_KEY ? isPublic : requiredRoles));
+  };
+
   const createMockExecutionContext = (user: any): ExecutionContext => {
     return {
       switchToHttp: jest.fn().mockReturnValue({
@@ -22,8 +33,8 @@ describe('RBAC Service Logic', () => {
           currentUser: user,
         }),
       }),
-      getHandler: jest.fn(),
-      getClass: jest.fn(),
+      getHandler: jest.fn().mockReturnValue(function handler() {}),
+      getClass: jest.fn().mockReturnValue(class TestController {}),
     } as unknown as ExecutionContext;
   };
 
@@ -39,11 +50,19 @@ describe('RBAC Service Logic', () => {
 
   describe('Role Hierarchy', () => {
     /**
-     * Role hierarchy (from highest to lowest):
-     * 1. SUPER_ADMIN (level 1)
-     * 2. ADMIN (level 2)
-     * 3. HR, HR_MANAGER, RECRUITER, COMPANY_OWNER, COMPANY_ADMIN (level 3)
-     * 4. USER (level 4)
+     * Role hierarchy (from highest to lowest), as defined by `ROLE_LEVELS` in roles.guard.ts.
+     * Every role now sits on its own level - there are no shared levels any more:
+     * 1. SUPER_ADMIN
+     * 2. ADMIN
+     * 3. COMPANY_ADMIN
+     * 4. COMPANY_OWNER
+     * 5. HR_MANAGER
+     * 6. HR
+     * 7. RECRUITER
+     * 8. USER
+     *
+     * A lower number means more authority; access is granted when the user's best (lowest)
+     * level is <= the weakest (highest) level the route accepts.
      */
 
     it('should allow SUPER_ADMIN to access any role-protected endpoint', () => {
@@ -56,7 +75,7 @@ describe('RBAC Service Logic', () => {
           roles: [RolesType.SUPER_ADMIN],
         });
 
-        mockReflector.getAllAndOverride.mockReturnValue(requiredRoles);
+        setRequiredRoles(requiredRoles);
 
         const result = guard.canActivate(mockContext);
         expect(result).toBe(true);
@@ -77,7 +96,7 @@ describe('RBAC Service Logic', () => {
           roles: [RolesType.ADMIN],
         });
 
-        mockReflector.getAllAndOverride.mockReturnValue(requiredRoles);
+        setRequiredRoles(requiredRoles);
 
         const result = guard.canActivate(mockContext);
         expect(result).toBe(shouldAllow);
@@ -91,7 +110,7 @@ describe('RBAC Service Logic', () => {
         roles: [RolesType.ADMIN],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.SUPER_ADMIN]);
+      setRequiredRoles([RolesType.SUPER_ADMIN]);
 
       expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
       expect(() => guard.canActivate(mockContext)).toThrow('Access Denied: Insufficient Permissions');
@@ -104,7 +123,7 @@ describe('RBAC Service Logic', () => {
         roles: [RolesType.HR],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.USER]);
+      setRequiredRoles([RolesType.USER]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -117,7 +136,7 @@ describe('RBAC Service Logic', () => {
         roles: [RolesType.HR],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.ADMIN]);
+      setRequiredRoles([RolesType.ADMIN]);
 
       expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
     });
@@ -129,7 +148,7 @@ describe('RBAC Service Logic', () => {
         roles: [RolesType.USER],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
     });
@@ -144,7 +163,7 @@ describe('RBAC Service Logic', () => {
       });
 
       // ADMIN is higher than HR, so should have access to HR-only endpoints
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -158,7 +177,7 @@ describe('RBAC Service Logic', () => {
       });
 
       // User has HR role, which is required
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -172,7 +191,7 @@ describe('RBAC Service Logic', () => {
       });
 
       // User has HR and USER, but ADMIN is required
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.ADMIN]);
+      setRequiredRoles([RolesType.ADMIN]);
 
       expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
     });
@@ -187,7 +206,7 @@ describe('RBAC Service Logic', () => {
       });
 
       // Endpoint requires either USER or HR (lower required role level is HR)
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.USER, RolesType.HR]);
+      setRequiredRoles([RolesType.USER, RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -201,7 +220,7 @@ describe('RBAC Service Logic', () => {
       });
 
       // Endpoint requires USER or HR - USER should have access
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.USER, RolesType.HR]);
+      setRequiredRoles([RolesType.USER, RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -216,10 +235,12 @@ describe('RBAC Service Logic', () => {
         roles: undefined,
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
-      // Guard will fail when trying to map over undefined roles
-      expect(() => guard.canActivate(mockContext)).toThrow();
+      // BEHAVIOUR CHANGE: the guard now validates `roles` BEFORE mapping over it, so a
+      // roleless principal produces a clean 403 instead of a TypeError surfaced as a 500.
+      expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
+      expect(() => guard.canActivate(mockContext)).toThrow('Access Denied: Insufficient Permissions');
     });
 
     it('should throw error when user has empty roles array', () => {
@@ -229,7 +250,7 @@ describe('RBAC Service Logic', () => {
         roles: [],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       // Math.min on empty array returns Infinity
       expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
@@ -242,7 +263,7 @@ describe('RBAC Service Logic', () => {
         roles: ['UNKNOWN_ROLE' as any],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       // Unknown role gets Infinity level, should deny access
       expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
@@ -250,7 +271,7 @@ describe('RBAC Service Logic', () => {
   });
 
   describe('Special Roles', () => {
-    it('should treat COMPANY_OWNER as same level as HR', () => {
+    it('should let COMPANY_OWNER (level 4) reach HR endpoints', () => {
       const mockContext = createMockExecutionContext({
         id: 1,
         email: 'owner@example.com',
@@ -258,46 +279,59 @@ describe('RBAC Service Logic', () => {
       });
 
       // COMPANY_OWNER should have access to HR endpoints
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
     });
 
-    it('should treat HR_MANAGER as same level as HR', () => {
+    it('should let HR_MANAGER (level 5) reach HR endpoints', () => {
       const mockContext = createMockExecutionContext({
         id: 1,
         email: 'hrmanager@example.com',
         roles: [RolesType.HR_MANAGER],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
     });
 
-    it('should treat RECRUITER as same level as HR', () => {
+    // BEHAVIOUR CHANGE: RECRUITER is level 7, one step BELOW HR (level 6), so it can no
+    // longer reach HR-only endpoints. It used to share HR's level under the old 4-level map.
+    it('should deny RECRUITER (level 7) access to HR endpoints', () => {
       const mockContext = createMockExecutionContext({
         id: 1,
         email: 'recruiter@example.com',
         roles: [RolesType.RECRUITER],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
-      const result = guard.canActivate(mockContext);
-      expect(result).toBe(true);
+      expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
     });
 
-    it('should treat COMPANY_ADMIN as same level as HR', () => {
+    it('should allow RECRUITER (level 7) to reach USER endpoints', () => {
+      const mockContext = createMockExecutionContext({
+        id: 1,
+        email: 'recruiter@example.com',
+        roles: [RolesType.RECRUITER],
+      });
+
+      setRequiredRoles([RolesType.USER]);
+
+      expect(guard.canActivate(mockContext)).toBe(true);
+    });
+
+    it('should let COMPANY_ADMIN (level 3) reach HR endpoints', () => {
       const mockContext = createMockExecutionContext({
         id: 1,
         email: 'companyadmin@example.com',
         roles: [RolesType.COMPANY_ADMIN],
       });
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
       const result = guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -316,14 +350,34 @@ describe('RBAC Service Logic', () => {
       expect(getRoleLevel(RolesType.ADMIN)).toBe(2);
     });
 
-    it('should correctly calculate HR as level 3', () => {
+    it('should correctly calculate COMPANY_ADMIN as level 3', () => {
       const getRoleLevel = (guard as any).getRoleLevel.bind(guard);
-      expect(getRoleLevel(RolesType.HR)).toBe(3);
+      expect(getRoleLevel(RolesType.COMPANY_ADMIN)).toBe(3);
     });
 
-    it('should correctly calculate USER as level 4', () => {
+    it('should correctly calculate COMPANY_OWNER as level 4', () => {
       const getRoleLevel = (guard as any).getRoleLevel.bind(guard);
-      expect(getRoleLevel(RolesType.USER)).toBe(4);
+      expect(getRoleLevel(RolesType.COMPANY_OWNER)).toBe(4);
+    });
+
+    it('should correctly calculate HR_MANAGER as level 5', () => {
+      const getRoleLevel = (guard as any).getRoleLevel.bind(guard);
+      expect(getRoleLevel(RolesType.HR_MANAGER)).toBe(5);
+    });
+
+    it('should correctly calculate HR as level 6', () => {
+      const getRoleLevel = (guard as any).getRoleLevel.bind(guard);
+      expect(getRoleLevel(RolesType.HR)).toBe(6);
+    });
+
+    it('should correctly calculate RECRUITER as level 7', () => {
+      const getRoleLevel = (guard as any).getRoleLevel.bind(guard);
+      expect(getRoleLevel(RolesType.RECRUITER)).toBe(7);
+    });
+
+    it('should correctly calculate USER as level 8', () => {
+      const getRoleLevel = (guard as any).getRoleLevel.bind(guard);
+      expect(getRoleLevel(RolesType.USER)).toBe(8);
     });
 
     it('should return Infinity for unknown roles', () => {
@@ -422,10 +476,17 @@ describe('RBAC Service Logic', () => {
         requiredRoles: [RolesType.USER],
         shouldAllow: true,
       },
+      // BEHAVIOUR CHANGE: RECRUITER (7) now sits below HR (6) in the 8-level hierarchy.
       {
         description: 'RECRUITER accessing HR endpoint',
         userRoles: [RolesType.RECRUITER],
         requiredRoles: [RolesType.HR],
+        shouldAllow: false,
+      },
+      {
+        description: 'RECRUITER accessing USER endpoint',
+        userRoles: [RolesType.RECRUITER],
+        requiredRoles: [RolesType.USER],
         shouldAllow: true,
       },
     ];
@@ -438,7 +499,7 @@ describe('RBAC Service Logic', () => {
           roles: userRoles,
         });
 
-        mockReflector.getAllAndOverride.mockReturnValue(requiredRoles);
+        setRequiredRoles(requiredRoles);
 
         if (shouldAllow) {
           const result = guard.canActivate(mockContext);
@@ -454,16 +515,34 @@ describe('RBAC Service Logic', () => {
   describe('Security Validations', () => {
     it('should not allow null or undefined user', () => {
       const mockContext = createMockExecutionContext(null);
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
 
-      expect(() => guard.canActivate(mockContext)).toThrow();
+      expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
+    });
+
+    // BEHAVIOUR CHANGE: a guarded handler that declares no @Auth roles now fails CLOSED.
+    it('should deny access when the handler declares no required roles', () => {
+      const mockContext = createMockExecutionContext({
+        id: 1,
+        email: 'superadmin@example.com',
+        roles: [RolesType.SUPER_ADMIN],
+      });
+
+      mockReflector.getAllAndOverride.mockImplementation((key: string) => (key === IS_PUBLIC_KEY ? false : undefined));
+
+      expect(() => guard.canActivate(mockContext)).toThrow(ForbiddenException);
     });
 
     it('should consistently enforce role hierarchy', () => {
+      // Mirrors `ROLE_LEVELS` in roles.guard.ts: one role per level, most authoritative first.
       const rolesByLevel = [
         [RolesType.SUPER_ADMIN],
         [RolesType.ADMIN],
-        [RolesType.HR, RolesType.HR_MANAGER, RolesType.RECRUITER, RolesType.COMPANY_OWNER, RolesType.COMPANY_ADMIN],
+        [RolesType.COMPANY_ADMIN],
+        [RolesType.COMPANY_OWNER],
+        [RolesType.HR_MANAGER],
+        [RolesType.HR],
+        [RolesType.RECRUITER],
         [RolesType.USER],
       ];
 
@@ -479,7 +558,7 @@ describe('RBAC Service Logic', () => {
                 roles: [role],
               });
 
-              mockReflector.getAllAndOverride.mockReturnValue([requiredRole]);
+              setRequiredRoles([requiredRole]);
 
               const result = guard.canActivate(mockContext);
               expect(result).toBe(true);

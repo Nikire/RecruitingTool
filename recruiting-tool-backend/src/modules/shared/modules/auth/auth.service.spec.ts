@@ -4,6 +4,7 @@ import { UsersService } from 'src/modules/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { UserActivityService } from 'src/modules/users/services/user-activity.service';
 import { DatabaseService } from '../database/database.service';
+import { EmailService } from 'src/modules/email/email.service';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { RolesType } from '@prisma/client';
 import * as bcrypt from 'bcryptjs';
@@ -49,6 +50,18 @@ describe('AuthService', () => {
   const mockDatabaseService = {
     company: {
       create: jest.fn(),
+      findUnique: jest.fn(),
+    },
+    // register() now stamps an email-verification token onto the freshly created user
+    // and re-reads it to seed the company's default email templates.
+    user: {
+      update: jest.fn(),
+      findUnique: jest.fn(),
+    },
+    emailTemplate: {
+      createMany: jest.fn(),
+      create: jest.fn(),
+      findFirst: jest.fn(),
     },
     refreshToken: {
       create: jest.fn(),
@@ -59,6 +72,11 @@ describe('AuthService', () => {
     },
   };
 
+  const mockEmailService = {
+    sendVerificationEmail: jest.fn(),
+    sendEmail: jest.fn(),
+  };
+
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
@@ -67,6 +85,7 @@ describe('AuthService', () => {
         { provide: JwtService, useValue: mockJwtService },
         { provide: UserActivityService, useValue: mockUserActivityService },
         { provide: DatabaseService, useValue: mockDatabaseService },
+        { provide: EmailService, useValue: mockEmailService },
       ],
     }).compile();
 
@@ -121,7 +140,93 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('token');
       expect(result).toHaveProperty('refreshToken');
       expect(usersService.findByEmail).toHaveBeenCalledWith(createUserDto.email);
-      expect(usersService.create).toHaveBeenCalledWith(createUserDto);
+      expect(usersService.create).toHaveBeenCalledWith(expect.objectContaining(createUserDto));
+    });
+
+    // BEHAVIOUR CHANGE: register() now forwards signup attribution to usersService.create(),
+    // stores an email-verification token on the new user, and sends a verification email.
+    it('should forward signup attribution and send a verification email', async () => {
+      const createUserDto = {
+        name: 'Attributed User',
+        email: 'attributed@example.com',
+        password: 'password123',
+        roles: [RolesType.HR],
+        companyUid: 'company-uid-123',
+        utmSource: 'google',
+        utmMedium: 'cpc',
+        utmCampaign: 'launch',
+        utmTerm: 'ats',
+        utmContent: 'variant-b',
+        referrerUrl: 'https://news.ycombinator.com/',
+        landingPath: '/pricing',
+      };
+
+      const createdUser = { ...mockUser, uid: 'user-uid-attributed', email: createUserDto.email };
+
+      mockUsersService.findByEmail.mockResolvedValueOnce(null).mockResolvedValueOnce(createdUser);
+      mockUsersService.create.mockResolvedValue(createdUser);
+      mockDatabaseService.user.update.mockResolvedValue(createdUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockJwtService.signAsync.mockResolvedValue('mock-access-token');
+      mockDatabaseService.refreshToken.create.mockResolvedValue({ id: 1, token: 'mock-refresh-token' });
+      mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+      mockUserActivityService.logActivity.mockResolvedValue(undefined);
+      mockEmailService.sendVerificationEmail.mockResolvedValue(undefined);
+
+      await service.register(createUserDto);
+
+      expect(usersService.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          utmSource: 'google',
+          utmMedium: 'cpc',
+          utmCampaign: 'launch',
+          utmTerm: 'ats',
+          utmContent: 'variant-b',
+          referrerUrl: 'https://news.ycombinator.com/',
+          landingPath: '/pricing',
+        }),
+      );
+
+      // A verification token is persisted against the new user...
+      expect(mockDatabaseService.user.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { uid: createdUser.uid },
+          data: expect.objectContaining({
+            emailVerificationToken: expect.any(String),
+            emailVerificationSentAt: expect.any(Date),
+          }),
+        }),
+      );
+
+      // ...and the verification link is emailed to the address that just registered.
+      expect(mockEmailService.sendVerificationEmail).toHaveBeenCalledWith(createUserDto.email, expect.stringContaining('/verify-email?token='));
+    });
+
+    it('should still register the user when the verification email fails to send', async () => {
+      const createUserDto = {
+        name: 'Resilient User',
+        email: 'resilient@example.com',
+        password: 'password123',
+        roles: [RolesType.HR],
+        companyUid: 'company-uid-123',
+      };
+
+      const createdUser = { ...mockUser, uid: 'user-uid-resilient', email: createUserDto.email };
+
+      mockUsersService.findByEmail.mockResolvedValueOnce(null).mockResolvedValueOnce(createdUser);
+      mockUsersService.create.mockResolvedValue(createdUser);
+      mockDatabaseService.user.update.mockResolvedValue(createdUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      mockJwtService.signAsync.mockResolvedValue('mock-access-token');
+      mockDatabaseService.refreshToken.create.mockResolvedValue({ id: 1, token: 'mock-refresh-token' });
+      mockUsersService.updateLastLogin.mockResolvedValue(undefined);
+      mockUserActivityService.logActivity.mockResolvedValue(undefined);
+      mockEmailService.sendVerificationEmail.mockRejectedValue(new Error('SMTP down'));
+
+      const result = await service.register(createUserDto);
+
+      expect(result).toHaveProperty('token');
+      expect(result).toHaveProperty('refreshToken');
     });
 
     it('should throw BadRequestException if user already exists', async () => {

@@ -50,6 +50,12 @@ export class ApplicationService {
         throw new BadRequestException('This job position is not accepting applications');
       }
 
+      // Anti-spam: a posting that has not been approved by a platform administrator
+      // is not publicly listed and must not accept applications either.
+      if (jobPosition.moderationStatus !== 'APPROVED') {
+        throw new BadRequestException('This job position is not accepting applications');
+      }
+
       let resumeFileId: number | undefined = undefined;
       if (createApplicationDto.resumeFileUid) {
         const resumeFile = await this.databaseService.fileUpload.findUnique({
@@ -546,9 +552,17 @@ export class ApplicationService {
         throw new BadRequestException('Application is already accepted');
       }
 
-      // Check if candidate exists by email
-      let candidate = await this.databaseService.candidate.findFirst({
-        where: { email: application.applicantEmail },
+      // Check if candidate exists by email WITHIN THE HIRING COMPANY.
+      // Candidate.email is unique per tenant (@@unique([email, companyId])), not globally:
+      // the same person can legitimately exist in several agencies' databases. An unscoped
+      // lookup here would attach this company's hiring process to another tenant's
+      // candidate record - a cross-tenant data leak.
+      const hiringCompanyId = application.jobPosition.companyId;
+
+      let candidate = await this.databaseService.candidate.findUnique({
+        where: {
+          email_companyId: { email: application.applicantEmail, companyId: hiringCompanyId },
+        },
       });
 
       // Create candidate if doesn't exist
@@ -558,6 +572,7 @@ export class ApplicationService {
             name: application.applicantName,
             email: application.applicantEmail,
             source: (application as any).applicationSource ?? undefined,
+            companyId: hiringCompanyId,
           },
         });
       } else if ((application as any).applicationSource && !candidate.source) {

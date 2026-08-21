@@ -3,6 +3,7 @@ import { RolesGuard } from './roles.guard';
 import { Reflector } from '@nestjs/core';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { RolesType } from '@prisma/client';
+import { IS_PUBLIC_KEY } from '../decorators/skip-auth.decorator';
 
 describe('RolesGuard', () => {
   let guard: RolesGuard;
@@ -15,9 +16,18 @@ describe('RolesGuard', () => {
     switchToHttp: jest.fn().mockReturnValue({
       getRequest: jest.fn(),
     }),
-    getHandler: jest.fn(),
-    getClass: jest.fn(),
+    getHandler: jest.fn().mockReturnValue(function handler() {}),
+    getClass: jest.fn().mockReturnValue(class TestController {}),
   } as unknown as ExecutionContext;
+
+  /**
+   * The guard asks the Reflector twice: once for IS_PUBLIC_KEY (@SkipAuth) and once for 'roles'.
+   * A single mockReturnValue would answer the IS_PUBLIC_KEY lookup with a truthy role array and
+   * short-circuit the guard, so the mock has to dispatch on the metadata key.
+   */
+  const setRequiredRoles = (requiredRoles: RolesType[], isPublic = false) => {
+    mockReflector.getAllAndOverride.mockImplementation((key: string) => (key === IS_PUBLIC_KEY ? isPublic : requiredRoles));
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -43,7 +53,7 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       const result = guard.canActivate(mockExecutionContext);
@@ -60,7 +70,7 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       const result = guard.canActivate(mockExecutionContext);
@@ -77,7 +87,7 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       const result = guard.canActivate(mockExecutionContext);
@@ -94,7 +104,7 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
@@ -110,7 +120,7 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR, RolesType.USER]);
+      setRequiredRoles([RolesType.HR, RolesType.USER]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       const result = guard.canActivate(mockExecutionContext);
@@ -127,11 +137,12 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.HR]);
+      setRequiredRoles([RolesType.HR]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
-      // The guard will fail when trying to map over undefined roles
-      expect(() => guard.canActivate(mockExecutionContext)).toThrow();
+      // BEHAVIOUR CHANGE: roles are validated before being mapped, so a roleless
+      // principal now yields a clean ForbiddenException (403) rather than a TypeError (500).
+      expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
     });
 
     it('should allow SUPER_ADMIN access to ADMIN-only routes', () => {
@@ -143,12 +154,21 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.ADMIN]);
+      setRequiredRoles([RolesType.ADMIN]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       const result = guard.canActivate(mockExecutionContext);
 
       expect(result).toBe(true);
+    });
+
+    it('should allow access to @SkipAuth() routes without evaluating roles', () => {
+      const mockRequest = { currentUser: undefined };
+
+      setRequiredRoles([RolesType.SUPER_ADMIN], true);
+      (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
+
+      expect(guard.canActivate(mockExecutionContext)).toBe(true);
     });
 
     it('should deny ADMIN access to SUPER_ADMIN-only routes', () => {
@@ -160,7 +180,7 @@ describe('RolesGuard', () => {
         },
       };
 
-      mockReflector.getAllAndOverride.mockReturnValue([RolesType.SUPER_ADMIN]);
+      setRequiredRoles([RolesType.SUPER_ADMIN]);
       (mockExecutionContext.switchToHttp().getRequest as jest.Mock).mockReturnValue(mockRequest);
 
       expect(() => guard.canActivate(mockExecutionContext)).toThrow(ForbiddenException);
