@@ -30,6 +30,7 @@ model Company {
   aiQuotas           AIQuota[]
   aiUsageLogs        AIUsageLog[]
   candidates         Candidate[]              @relation("CandidateCompany")
+  clients            Client[]                 @relation("CompanyClients")
   invitations        CompanyInvitation[]      @relation("CompanyInvitations")
   connectionRequests ConnectionRequest[]
   customPlans        CustomPlan[]             @relation("CompanyCustomPlan")
@@ -47,6 +48,7 @@ model Company {
   adminTasks         AdminTask[]              @relation("AdminTaskLinkedCompany")
   apiKeys            ApiKey[]
   webhookEndpoints   WebhookEndpoint[]
+  healthSnapshots    CompanyHealthSnapshot[]  @relation("CompanyHealthSnapshots")
 
   @@index([uid])
   @@index([name])
@@ -105,6 +107,13 @@ model User {
   isActive                   Boolean                 @default(true)
   deactivatedAt              DateTime?
   lastLoginAt                DateTime?
+  utmSource                  String?
+  utmMedium                  String?
+  utmCampaign                String?
+  utmTerm                    String?
+  utmContent                 String?
+  referrerUrl                String?
+  landingPath                String?
   aiUsageLogs                AIUsageLog[]            @relation("UserAIUsageLogs")
   reviewedApplications       Application[]           @relation("ApplicationReviewer")
   auditLogs                  AuditLog[]              @relation("UserAuditLogs")
@@ -142,6 +151,7 @@ model User {
   createdAdminTasks          AdminTask[]             @relation("AdminTaskCreatedBy")
   createdOutreachCampaigns   OutreachCampaign[]      @relation("OutreachCampaignCreatedBy")
   createdOutreachLeads       OutreachLead[]          @relation("OutreachLeadCreatedBy")
+  moderatedJobPositions      JobPosition[]           @relation("JobPositionModeratedBy")
 
   @@unique([email, companyId])
   @@index([roles])
@@ -150,6 +160,7 @@ model User {
   @@index([provider])
   @@index([isActive])
   @@index([lastLoginAt])
+  @@index([utmSource])
   @@map("User")
 }
 
@@ -201,7 +212,7 @@ model Candidate {
   id              Int                 @id @default(autoincrement())
   uid             String              @unique @default(uuid()) @db.Uuid
   name            String
-  email           String              @unique
+  email           String
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
   source          ApplicationSource?  @default(DIRECT_APPLY)
@@ -222,6 +233,10 @@ model Candidate {
   hiringProcesses HiringProcess[]     @relation("HiringProcessCandidate")
   stageTimeLogs   StageTimeLog[]      @relation("CandidateStageTimeLogs")
 
+  // Candidate email is unique PER TENANT, not globally. The same person may legitimately
+  // exist in many agencies' databases at once (nearshore staffing is a shared talent pool),
+  // so this mirrors the User model's `@@unique([email, companyId])` convention.
+  @@unique([email, companyId])
   @@index([source])
   @@index([companyId])
   @@index([deletedAt])
@@ -247,49 +262,91 @@ model CandidateNote {
   @@index([uid])
 }
 
+/// An end client / account of an agency.
+///
+/// Agencies (the tenant, `Company`) recruit ON BEHALF OF their clients. Without this
+/// model a JobPosition could only be attributed to the agency itself, so "show me every
+/// open role for Acme" was unanswerable. `companyId` is the OWNING AGENCY — a Client is
+/// tenant-scoped exactly like Candidate/JobPosition and is never shared across companies.
+model Client {
+  id           Int           @id @default(autoincrement())
+  uid          String        @unique @default(uuid()) @db.Uuid
+  name         String
+  slug         String?
+  logoUrl      String?
+  contactName  String?
+  contactEmail String?
+  status       ClientStatus  @default(ACTIVE)
+  notes        String?
+  companyId    Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  company      Company       @relation("CompanyClients", fields: [companyId], references: [id])
+  jobPositions JobPosition[] @relation("JobPositionClient")
+
+  // Slug is unique PER AGENCY, not globally: two agencies may both have an "acme" client.
+  @@unique([slug, companyId])
+  @@index([companyId])
+  @@index([uid])
+  @@index([deletedAt])
+  @@index([companyId, deletedAt])
+  @@index([status])
+  @@map("Client")
+}
+
 model JobPosition {
-  id                  Int               @id @default(autoincrement())
-  uid                 String            @unique @default(uuid()) @db.Uuid
+  id                  Int                 @id @default(autoincrement())
+  uid                 String              @unique @default(uuid()) @db.Uuid
   title               String
-  createdAt           DateTime          @default(now())
-  updatedAt           DateTime          @updatedAt
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
   createdById         Int
-  status              JobPositionStatus @default(OPEN)
+  status              JobPositionStatus   @default(OPEN)
   companyId           Int
   description         String?
-  customQuestions     Json?             @default("[]")
+  customQuestions     Json?               @default("[]")
   deletedAt           DateTime?
   applicationDeadline DateTime?
-  benefits            String[]          @default([])
+  benefits            String[]            @default([])
   educationLevel      String?
   experienceLevel     ExperienceLevel?
-  isFeatured          Boolean           @default(false)
-  isUrgent            Boolean           @default(false)
+  isFeatured          Boolean             @default(false)
+  isUrgent            Boolean             @default(false)
   jobCategory         String?
   jobType             JobType?
-  requirements        String[]          @default([])
-  responsibilities    String[]          @default([])
-  salaryCurrency      String            @default("USD")
+  requirements        String[]            @default([])
+  responsibilities    String[]            @default([])
+  salaryCurrency      String              @default("USD")
   salaryMax           Int?
   salaryMin           Int?
   salaryPeriod        SalaryPeriod?
-  skills              String[]          @default([])
+  skills              String[]            @default([])
   workLocation        WorkLocation?
-  applicationCount    Int               @default(0)
+  applicationCount    Int                 @default(0)
   city                String?
   country             String?
-  isHighlighted       Boolean           @default(false)
-  showSalary          Boolean           @default(false)
+  isHighlighted       Boolean             @default(false)
+  showSalary          Boolean             @default(false)
   state               String?
-  tags                String[]          @default([])
-  viewCount           Int               @default(0)
+  tags                String[]            @default([])
+  viewCount           Int                 @default(0)
   candidateSource     String?
+  moderationStatus    JobModerationStatus @default(PENDING_APPROVAL)
+  moderationReason    String?
+  moderatedAt         DateTime?
+  moderatedById       Int?
+  /// Optional end client this role is being filled for. NULLABLE on purpose: direct
+  /// employers have no client, and every posting that predates the Client model has none.
+  clientId            Int?
   applications        Application[]
-  batchScoringJobs    BatchScoringJob[] @relation("BatchScoringJobs")
-  candidateScores     CandidateScore[]  @relation("JobPositionScores")
+  batchScoringJobs    BatchScoringJob[]   @relation("BatchScoringJobs")
+  candidateScores     CandidateScore[]    @relation("JobPositionScores")
   hiringProcesses     HiringProcess[]
-  company             Company           @relation(fields: [companyId], references: [id])
-  createdBy           User              @relation("JobPositionsUser", fields: [createdById], references: [id])
+  company             Company             @relation(fields: [companyId], references: [id])
+  client              Client?             @relation("JobPositionClient", fields: [clientId], references: [id])
+  createdBy           User                @relation("JobPositionsUser", fields: [createdById], references: [id])
+  moderatedBy         User?               @relation("JobPositionModeratedBy", fields: [moderatedById], references: [id])
   stages              Stage[]
 
   @@index([deletedAt])
@@ -308,6 +365,10 @@ model JobPosition {
   @@index([isHighlighted])
   @@index([viewCount])
   @@index([applicationCount])
+  @@index([moderationStatus])
+  @@index([status, moderationStatus, deletedAt])
+  @@index([clientId])
+  @@index([clientId, deletedAt])
 }
 
 model HiringProcess {
@@ -1194,6 +1255,23 @@ enum JobPositionStatus {
   CANCELLED
 }
 
+/// Platform moderation state of a job posting.
+/// Independent from JobPositionStatus: a posting can be APPROVED and CLOSED at the same time.
+/// Only APPROVED postings are visible on the public careers board / public job detail endpoint.
+enum JobModerationStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+}
+
+/// Lifecycle of an agency's end client.
+/// ACTIVE clients appear in pickers; INACTIVE/ARCHIVED stay filterable for history.
+enum ClientStatus {
+  ACTIVE
+  INACTIVE
+  ARCHIVED
+}
+
 enum StageStatus {
   OPEN
   CANCELLED
@@ -1365,6 +1443,9 @@ enum NotificationType {
   JOB_POSITION_PUBLISHED
   JOB_POSITION_CLOSED
   JOB_POSITION_UPDATED
+  JOB_POSITION_PENDING_APPROVAL
+  JOB_POSITION_APPROVED
+  JOB_POSITION_REJECTED
   SYSTEM_MAINTENANCE
   SYSTEM_ANNOUNCEMENT
   SYSTEM_FEATURE_UPDATE
@@ -1847,4 +1928,33 @@ model WebhookEndpoint {
   updatedAt DateTime @updatedAt
 
   @@index([companyId])
+}
+
+/// P3-9: a point-in-time reading of the admin Company Health scorer.
+///
+/// getCompanyHealthScores() only ever answered "how is this account doing RIGHT NOW".
+/// A nightly job writes one row per company here so the same four signals become a
+/// TREND, which is what the weekly degradation digest compares against.
+///
+/// Every signal column is nullable on purpose: a snapshot taken while one of the
+/// underlying queries returned nothing is still a useful row, and a future signal can
+/// be added without a NOT NULL backfill.
+model CompanyHealthSnapshot {
+  id                        Int      @id @default(autoincrement())
+  uid                       String   @unique @default(uuid()) @db.Uuid
+  companyId                 Int
+  /// HEALTHY | AT_RISK | CHURNING | CRITICAL — kept as text, not an enum, so the
+  /// scorer's buckets can be re-tuned without a migration on historical rows.
+  tier                      String?
+  score                     Int?
+  lastLoginDaysAgo          Int?
+  activeJobPositions        Int?
+  applicationsThisMonth     Int?
+  hiringActivitiesThisMonth Int?
+  createdAt                 DateTime @default(now())
+  company                   Company  @relation("CompanyHealthSnapshots", fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, createdAt])
+  @@index([createdAt])
+  @@index([uid])
 }
