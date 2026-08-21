@@ -150,6 +150,16 @@ services:
         VITE_AUTH0_DOMAIN: ${VITE_AUTH0_DOMAIN:-}
         VITE_AUTH0_CLIENT_ID: ${VITE_AUTH0_CLIENT_ID:-}
         VITE_AUTH0_AUDIENCE: ${VITE_AUTH0_AUDIENCE:-}
+        # Telemetry is baked in at build time (Vite inlines import.meta.env),
+        # so it MUST be passed here and not through env_file below - env_file
+        # only reaches the nginx runtime container, which serves static assets
+        # that were already compiled. Empty default = analytics disabled.
+        VITE_POSTHOG_KEY: ${VITE_POSTHOG_KEY:-}
+        VITE_POSTHOG_HOST: ${VITE_POSTHOG_HOST:-}
+        VITE_SENTRY_DSN: ${VITE_SENTRY_DSN:-}
+        VITE_SENTRY_ENVIRONMENT: ${VITE_SENTRY_ENVIRONMENT:-}
+        VITE_SENTRY_TRACES_SAMPLE_RATE: ${VITE_SENTRY_TRACES_SAMPLE_RATE:-}
+        VITE_APP_VERSION: ${VITE_APP_VERSION:-}
     env_file:
       - ./recruiting-tool-frontend/.env
     ports:
