@@ -30,6 +30,7 @@ import {
 } from "@tanstack/react-query";
 import { UnheadProvider, createHead } from "@unhead/react/client";
 import * as Sentry from "@sentry/react";
+import { isAxiosError, isCancel } from "axios";
 import ErrorBoundary from "./components/error/ErrorBoundary.tsx";
 import Auth0ProviderWithNavigate from "./providers/Auth0ProviderWithNavigate.tsx";
 import ThemeWrapper from "./providers/ThemeWrapper.tsx";
@@ -73,10 +74,35 @@ const reportDataLayerError = (
 
   if (!isSentryEnabled()) return;
 
+  // Expected, already-handled failures are not bugs and only add noise:
+  //  - a cancelled request (component unmounted mid-flight);
+  //  - no response at all (visitor offline, request timed out);
+  //  - 401: the session expired. The axios interceptor has already tried the
+  //    refresh token, cleared the stale session and redirected if needed.
+  if (isCancel(error)) return;
+  if (isAxiosError(error)) {
+    if (!error.response) return;
+    if (error.response.status === 401) return;
+  }
+
   try {
     Sentry.captureException(error, {
-      tags: { source: `react-query.${source}` },
-      extra: { key },
+      tags: {
+        source: `react-query.${source}`,
+        ...(isAxiosError(error) && error.response
+          ? { http_status: String(error.response.status) }
+          : {}),
+      },
+      extra: {
+        key,
+        // Path only — never the query string, which may carry tokens.
+        ...(isAxiosError(error) && error.config?.url
+          ? {
+              method: error.config.method?.toUpperCase(),
+              path: error.config.url.split("?")[0],
+            }
+          : {}),
+      },
     });
   } catch {
     // Ignore — a telemetry failure must never surface to the user.

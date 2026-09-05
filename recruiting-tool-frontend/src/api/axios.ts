@@ -31,19 +31,33 @@ function isValidRefreshToken(token: string | null): boolean {
   return token.length >= 32;
 }
 
-// Helper to check if current page is a public route (should not redirect to login)
-function isPublicRoute(): boolean {
+/**
+ * Route prefixes that live behind `<ProtectedRoute>` / `<RoleGuard>` in App.tsx.
+ *
+ * An expired session is only worth a hard redirect to `/login` when the visitor
+ * is on one of these. Everywhere else (landing, careers, blog, legal pages,
+ * public booking links, ...) the page renders fine anonymously, and bouncing a
+ * returning visitor with a stale token off the landing page to the login form
+ * is exactly the wrong behaviour. Denylist rather than allowlist so a new
+ * public route can never regress this by being forgotten here.
+ */
+const PROTECTED_ROUTE_PREFIXES = [
+  "/hr",
+  "/admin",
+  "/profile",
+  "/settings",
+  "/notifications",
+  "/onboarding",
+  "/applicant",
+  "/invitations",
+  "/pending-email-verification",
+];
+
+function isProtectedRoute(): boolean {
   const currentPath = window.location.pathname;
-  const publicRoutes = [
-    "/careers",
-    "/login",
-    "/register",
-    "/book-interview",
-    "/booking-confirmed",
-    "/hiring-process",
-    "/unsubscribe",
-  ];
-  return publicRoutes.some((route) => currentPath.startsWith(route));
+  return PROTECTED_ROUTE_PREFIXES.some(
+    (prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`),
+  );
 }
 
 // Flag to prevent multiple simultaneous refresh attempts
@@ -111,11 +125,11 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
     originalRequest?.url?.match(/\/hiring-process\/[^/]+\/public$/) ||
     originalRequest?.url?.startsWith("/unsubscribe/");
   if (isPublicEndpoint) {
-    console.warn(
-      "[AUTH] Public endpoint error, not redirecting to login:",
-      error,
-    );
-    return Promise.reject(errorNormalizerInterceptor(error));
+    // `errorNormalizerInterceptor` already returns a rejected promise. Wrapping
+    // it in another `Promise.reject` rejected with the *promise* as the reason,
+    // so React Query saw `[object Promise]` and the inner rejection surfaced
+    // to Sentry as an unhandled AxiosError.
+    return errorNormalizerInterceptor(error);
   }
 
   // If error is 401 and we haven't tried to refresh yet
@@ -148,8 +162,8 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
       isRefreshing = false;
       localStorage.removeItem("authToken");
       localStorage.removeItem("refreshToken");
-      // Only redirect to login if NOT on a public route
-      if (!isPublicRoute()) {
+      // Only redirect to login when the visitor is on a protected page
+      if (isProtectedRoute()) {
         window.location.href = "/login";
       }
       return Promise.reject(error);
@@ -210,8 +224,8 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
 
       localStorage.removeItem("authToken");
       localStorage.removeItem("refreshToken");
-      // Only redirect to login if NOT on a public route
-      if (!isPublicRoute()) {
+      // Only redirect to login when the visitor is on a protected page
+      if (isProtectedRoute()) {
         window.location.href = "/login";
       }
 
