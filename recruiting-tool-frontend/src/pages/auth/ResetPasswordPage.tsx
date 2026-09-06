@@ -57,6 +57,19 @@ const ResetPasswordPage: React.FC = () => {
     doReset({ token, newPassword: data.newPassword });
   };
 
+  // Backend replies with an English-only message for expired/used tokens;
+  // map it to the translated copy and normalise array validation messages.
+  const getErrorMessage = (): string => {
+    const raw = (
+      error as { response?: { data?: { message?: string | string[] } } } | null
+    )?.response?.data?.message;
+    const serverMessage = Array.isArray(raw) ? raw.join(", ") : raw;
+    if (!serverMessage || serverMessage === "Invalid or expired reset token") {
+      return t("reset_password.error_message");
+    }
+    return serverMessage;
+  };
+
   if (!token) {
     return (
       <AuthPageWrapper>
@@ -96,13 +109,7 @@ const ResetPasswordPage: React.FC = () => {
               {t("reset_password.description")}
             </Typography>
 
-            {isError && (
-              <Alert severity="error">
-                {(error as { response?: { data?: { message?: string } } })
-                  ?.response?.data?.message ||
-                  t("reset_password.error_message")}
-              </Alert>
-            )}
+            {isError && <Alert severity="error">{getErrorMessage()}</Alert>}
 
             <FormWrapper onSubmit={handleSubmit(onSubmit)}>
               <TextField

@@ -125,6 +125,12 @@ const AccountCreationStep: React.FC<AccountCreationStepProps> = ({
                 value: 8,
                 message: t("validation.password_min_length", { min: 8 }),
               },
+              // Backend CreateUserDto enforces @MaxLength(20); validate here so
+              // the user is not told two steps later via an opaque 400.
+              maxLength: {
+                value: 20,
+                message: t("validation.password_max_length", { max: 20 }),
+              },
             })}
             error={!!errors.password}
             helperText={errors.password?.message}

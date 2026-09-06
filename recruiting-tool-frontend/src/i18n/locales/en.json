@@ -791,7 +791,11 @@
     "upload": "Upload",
     "supported_formats": "Supported formats: JPG, PNG, GIF, WebP (Max 2MB)",
     "invalid_image_type": "Please select a valid image file (JPG, PNG, GIF, or WebP)",
-    "image_size_limit": "Image size must be less than 2MB"
+    "image_size_limit": "Image size must be less than 2MB",
+    "toast": {
+      "updated": "Profile updated successfully!",
+      "update_failed": "Failed to update profile. Please try again."
+    }
   },
   "linked_accounts": {
     "title": "Linked Accounts",
@@ -1425,7 +1429,16 @@
     "change_password_confirm_btn": "Update Password",
     "change_password_success": "Password updated successfully!",
     "change_password_code_sent": "Verification code sent. Check your inbox.",
-    "change_password_mismatch": "Passwords do not match"
+    "change_password_mismatch": "Passwords do not match",
+    "toast": {
+      "login_success": "Login successful! Welcome back.",
+      "login_failed": "Login failed. Please check your credentials.",
+      "auth_failed": "Authentication failed",
+      "invalid_token": "Invalid authentication token received",
+      "invalid_refresh_token": "Invalid refresh token received",
+      "register_success": "Account created successfully! Welcome aboard.",
+      "register_failed": "Registration failed. Please try again."
+    }
   },
   "forgot_password": {
     "title": "Forgot Password",
@@ -1434,7 +1447,8 @@
     "sending": "Sending...",
     "success_message": "If an account with that email exists, you will receive a password reset link shortly.",
     "back_to_login": "Back to Login",
-    "link_label": "Forgot password?"
+    "link_label": "Forgot password?",
+    "error_message": "Something went wrong. Please try again in a few minutes."
   },
   "reset_password": {
     "title": "Reset Password",
@@ -1477,14 +1491,19 @@
     "resend_success": "Verification email sent! Please check your inbox.",
     "resend_error": "Failed to send verification email. Please try again.",
     "logout": "Logout",
-    "already_verified": "Already verified? Try refreshing the page."
+    "already_verified": "Already verified? Try refreshing the page.",
+    "check_status_button": "I've verified my email",
+    "checking_status": "Checking...",
+    "not_verified_yet": "We couldn't confirm your email yet. Click the link in the email, then try again.",
+    "auto_check_hint": "This page updates automatically once your email is verified."
   },
   "registration_wizard": {
     "steps": {
       "role_selection": "Choose Your Role",
       "account_creation": "Create Account",
       "role_information": "Additional Information",
-      "confirmation": "Confirm & Complete"
+      "confirmation": "Confirm & Complete",
+      "step_of": "Step {{current}} of {{total}}: {{label}}"
     },
     "role_selection": {
       "title": "How do you want to use our platform?",
@@ -1532,7 +1551,8 @@
       "company_name": "Company Name",
       "company_name_required": "Company name is required",
       "company_name_helper": "Your company name will be visible to candidates",
-      "company_owner_subtitle": "Enter your company name. You'll configure additional details after registration."
+      "company_owner_subtitle": "Enter your company name. You'll configure additional details after registration.",
+      "applicant_onboarding_note": "You'll be able to upload your resume and complete your profile right after creating your account. No extra information is needed here."
     },
     "confirmation": {
       "title": "Review & Complete Registration",
@@ -1548,7 +1568,8 @@
       "redirecting": "Redirecting to your dashboard...",
       "setting_up": "Setting up your account...",
       "creating_account": "Creating Account...",
-      "error_message": "Registration failed. Please try again"
+      "error_message": "Registration failed. Please try again",
+      "email_taken": "This email is already registered. Go back to change it, or sign in instead:"
     }
   },
   "companies_page": {
@@ -3454,7 +3475,8 @@
       "60": "1 hour",
       "90": "1.5 hours",
       "120": "2 hours"
-    }
+    },
+    "oauth_connected_closing": "Connected. Closing..."
   },
   "notifications": {
     "title": "Notifications",

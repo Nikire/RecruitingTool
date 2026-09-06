@@ -30,8 +30,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Status page: date respects the selected language and the page has SEO meta (noindex)
 - Hero "Book a live demo" button uses an outlined variant so it is visible on the gradient
 
+### 🔐 Auth flow (20 verified findings)
+- Registration no longer ends on the marketing page: the auth layout skips its signed-in redirect on /register, /verify-email, /reset-password and /logout and otherwise sends users to their role dashboard
+- Email verification invalidates the cached user, the pending-verification gate polls every 10 s and offers an "I've verified my email" button, and guards show a spinner instead of a blank screen while auth loads
+- Auth pages scroll (registration wizard no longer clipped) and the login/forgot/reset card fits phone widths (max-width instead of min-width 450px)
+- Wizard: password max length validated on step 2; duplicate-email registration shows a dedicated message with a sign-in link and backend reasons replace axios status text; review rows wrap long emails/company names; stepper collapses to "Step X of 4" on phones; unused applicant skills/resume fields removed
+- Forgot/login/reset forms give inline validation; forgot-password distinguishes request failures from "link sent"; reset-password errors translated; social-login shows a "completing login" state and its error overlay has a focusable action; social buttons use readable contrast
+- Login/register/profile toasts translated (auth.toast.*, profile.toast.*)
+
 ### 🌐 i18n
-- 22 new keys in `en.json` / `es.json` (contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking); apply-flow toasts translated
+- 40 new keys in `en.json` / `es.json` (contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

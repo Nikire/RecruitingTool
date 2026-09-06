@@ -3,6 +3,7 @@ import { useAuthMe } from "../../hooks/api/useAuth";
 import { UserRoles } from "../../types/user.types";
 import { hasAnyRole, getDefaultDashboard } from "../../utils/permissions";
 import UnauthorizedAccess from "../../pages/errors/UnauthorizedAccess";
+import CenteredLoadingSpinner from "../../components/common/CenteredLoadingSpinner";
 
 interface RoleGuardProps {
   allowedRoles: UserRoles[];
@@ -27,8 +28,8 @@ export function RoleGuard({
   const { user, isLoading } = useAuthMe();
   const location = useLocation();
 
-  // Show nothing while loading
-  if (isLoading) return null;
+  // Show a spinner while the auth query resolves (blank screen otherwise)
+  if (isLoading) return <CenteredLoadingSpinner />;
 
   // Check if user has any of the allowed roles
   const hasAccess = hasAnyRole(user, allowedRoles);

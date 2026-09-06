@@ -20,17 +20,25 @@ interface ForgotPasswordFormData {
 const ForgotPasswordPage: React.FC = () => {
   const { t } = useTranslation();
   const [submitted, setSubmitted] = useState(false);
-  const { register, handleSubmit } = useForm<ForgotPasswordFormData>();
+  const [failed, setFailed] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<ForgotPasswordFormData>();
   const { mutate: requestReset, isPending } = useForgotPassword();
 
   const onSubmit = (data: ForgotPasswordFormData) => {
+    setFailed(false);
     requestReset(data, {
       onSuccess: () => {
         setSubmitted(true);
       },
       onError: () => {
-        // Even on error we show the success message to prevent email enumeration
-        setSubmitted(true);
+        // The backend already returns a generic 200 for unknown emails, so an
+        // error here is a real failure (network, rate limit, 5xx). Show a
+        // generic message that does not reveal whether the email exists.
+        setFailed(true);
       },
     });
   };
@@ -55,6 +63,11 @@ const ForgotPasswordPage: React.FC = () => {
             <Typography variant="body2" color="text.secondary">
               {t("forgot_password.description")}
             </Typography>
+            {failed && (
+              <Alert severity="error">
+                {t("forgot_password.error_message")}
+              </Alert>
+            )}
             <FormWrapper onSubmit={handleSubmit(onSubmit)}>
               <TextField
                 label={t("auth.email")}
@@ -62,7 +75,15 @@ const ForgotPasswordPage: React.FC = () => {
                 fullWidth
                 type="email"
                 margin="none"
-                {...register("email", { required: true })}
+                error={!!errors.email}
+                helperText={errors.email?.message}
+                {...register("email", {
+                  required: t("validation.email_required"),
+                  pattern: {
+                    value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                    message: t("validation.email_invalid"),
+                  },
+                })}
               />
               <Button
                 type="submit"

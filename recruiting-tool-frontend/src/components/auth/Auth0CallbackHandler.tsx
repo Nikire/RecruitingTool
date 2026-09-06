@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
-import { Box, Typography } from "@mui/material";
+import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { socialCallback } from "../../api/auth";
 import { useUserAtom } from "../../store";
@@ -20,6 +20,7 @@ const Auth0CallbackHandlerInner: React.FC = () => {
   const isAuth0Configured = useAuth0Configured();
 
   const [error, setError] = useState<string | null>(null);
+  const [isExchanging, setIsExchanging] = useState(false);
 
   // Guard against double-invocation in React StrictMode
   const handledRef = useRef(false);
@@ -52,6 +53,7 @@ const Auth0CallbackHandlerInner: React.FC = () => {
 
     const exchangeToken = async () => {
       setError(null);
+      setIsExchanging(true);
 
       try {
         const idTokenClaims = await getIdTokenClaims();
@@ -83,6 +85,8 @@ const Auth0CallbackHandlerInner: React.FC = () => {
         setError(t("auth.social.callback_error"));
         // Reset guard so user can retry if they re-authenticate
         handledRef.current = false;
+      } finally {
+        setIsExchanging(false);
       }
     };
 
@@ -97,32 +101,39 @@ const Auth0CallbackHandlerInner: React.FC = () => {
     t,
   ]);
 
+  const overlaySx = {
+    position: "fixed",
+    inset: 0,
+    zIndex: 9999,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 2,
+    bgcolor: "background.default",
+  } as const;
+
   // Show a brief error state — user can navigate away
   if (error) {
     return (
-      <Box
-        sx={{
-          position: "fixed",
-          inset: 0,
-          zIndex: 9999,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 2,
-          bgcolor: "background.default",
-        }}
-      >
+      <Box role="alert" sx={overlaySx}>
         <Typography variant="body1" color="error">
           {error}
         </Typography>
-        <Typography
-          variant="body2"
-          color="primary"
-          sx={{ cursor: "pointer", textDecoration: "underline" }}
-          onClick={() => navigate("/login", { replace: true })}
-        >
+        <Button component={RouterLink} to="/login" replace variant="contained">
           {t("auth.sign_in_link")}
+        </Button>
+      </Box>
+    );
+  }
+
+  // Full-screen loading state while the social token is exchanged for a JWT
+  if (isExchanging) {
+    return (
+      <Box role="status" aria-live="polite" sx={overlaySx}>
+        <CircularProgress />
+        <Typography variant="body1" color="text.secondary">
+          {t("auth.social.completing_login")}
         </Typography>
       </Box>
     );

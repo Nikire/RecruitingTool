@@ -91,15 +91,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           startIcon={
             isLoading ? <CircularProgress size={20} /> : <GoogleIcon />
           }
-          sx={{
-            textTransform: "none",
-            borderColor: "divider",
-            color: "text.primary",
-            "&:hover": {
-              borderColor: "primary.main",
-              backgroundColor: "action.hover",
-            },
-          }}
+          sx={{ textTransform: "none" }}
         >
           {isLoading
             ? t("auth.social.redirecting")
@@ -115,15 +107,7 @@ const SocialLoginButtons: React.FC<SocialLoginButtonsProps> = ({
           startIcon={
             isLoading ? <CircularProgress size={20} /> : <LinkedInIcon />
           }
-          sx={{
-            textTransform: "none",
-            borderColor: "divider",
-            color: "text.primary",
-            "&:hover": {
-              borderColor: "primary.main",
-              backgroundColor: "action.hover",
-            },
-          }}
+          sx={{ textTransform: "none" }}
         >
           {isLoading
             ? t("auth.social.redirecting")

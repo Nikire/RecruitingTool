@@ -6,15 +6,17 @@ import {
   Alert,
   CircularProgress,
   Divider,
+  Link,
   Paper,
   Stack,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { RegistrationFormData } from "../RegistrationWizard";
 import { useRegister, useAuthMe } from "../../../hooks/api/useAuth";
 import { getDefaultDashboard } from "../../../utils/permissions";
+import { wrapLongText } from "../../../utils/textOverflow";
 import { ANALYTICS_EVENTS, track } from "../../../analytics";
 import type { RegisterPayload } from "../../../api/auth";
 import {
@@ -30,6 +32,66 @@ interface ConfirmationStepProps {
   onComplete?: () => void;
 }
 
+/**
+ * Pulls the human-readable reason out of a failed /auth/register call.
+ * The axios error's own `.message` is just "Request failed with status code
+ * 400"; the backend reason (e.g. "User already exists" or class-validator
+ * messages) lives in `response.data.message`, as a string or a string array.
+ */
+const getServerErrorMessage = (err: unknown): string | undefined => {
+  if (!err || typeof err !== "object") return undefined;
+  const message = (
+    err as { response?: { data?: { message?: string | string[] } } }
+  ).response?.data?.message;
+  if (Array.isArray(message)) return message.join(", ");
+  return typeof message === "string" && message.trim() ? message : undefined;
+};
+
+/** Backend wording for a duplicate email (auth.service `BadRequestException`). */
+const isEmailTakenMessage = (message?: string): boolean =>
+  !!message && /already exists/i.test(message);
+
+interface ReviewRowProps {
+  label: string;
+  value: string;
+}
+
+/**
+ * One label/value line of the review card. Stacks vertically on phones and
+ * lets long unbroken values (emails, company names) wrap instead of being
+ * clipped by the card's `overflow: hidden`.
+ */
+const ReviewRow: React.FC<ReviewRowProps> = ({ label, value }) => (
+  <Box
+    sx={{
+      px: 3,
+      py: 2.5,
+      display: "flex",
+      flexDirection: { xs: "column", sm: "row" },
+      gap: { xs: 0.5, sm: 2 },
+      alignItems: { xs: "stretch", sm: "baseline" },
+    }}
+  >
+    <Typography
+      variant="body2"
+      color="text.secondary"
+      sx={{
+        fontWeight: 600,
+        minWidth: 140,
+        flexShrink: 0,
+        textTransform: "uppercase",
+        fontSize: "0.75rem",
+        letterSpacing: 0.5,
+      }}
+    >
+      {label}
+    </Typography>
+    <Typography variant="body1" sx={{ fontWeight: 500, ...wrapLongText }}>
+      {value}
+    </Typography>
+  </Box>
+);
+
 const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
   formData,
   onBack,
@@ -42,6 +104,9 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
 
   // Use auth state to detect when authentication is confirmed
   const { isAuthenticated, user } = useAuthMe();
+
+  const serverMessage = isError ? getServerErrorMessage(error) : undefined;
+  const isEmailTaken = isEmailTakenMessage(serverMessage);
 
   // When authentication is confirmed after registration, navigate to onboarding or dashboard
   useEffect(() => {
@@ -190,154 +255,49 @@ const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
         sx={{ borderRadius: 2, mb: 3, overflow: "hidden" }}
       >
         <Stack divider={<Divider />}>
-          <Box
-            sx={{
-              px: 3,
-              py: 2.5,
-              display: "flex",
-              gap: 2,
-              alignItems: "baseline",
-            }}
-          >
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                fontWeight: 600,
-                minWidth: 140,
-                textTransform: "uppercase",
-                fontSize: "0.75rem",
-                letterSpacing: 0.5,
-              }}
-            >
-              {t("registration_wizard.confirmation.role_label")}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-              {getRoleTitle()}
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              px: 3,
-              py: 2.5,
-              display: "flex",
-              gap: 2,
-              alignItems: "baseline",
-            }}
-          >
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                fontWeight: 600,
-                minWidth: 140,
-                textTransform: "uppercase",
-                fontSize: "0.75rem",
-                letterSpacing: 0.5,
-              }}
-            >
-              {t("registration_wizard.confirmation.name_label")}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-              {formData.name}
-            </Typography>
-          </Box>
-
-          <Box
-            sx={{
-              px: 3,
-              py: 2.5,
-              display: "flex",
-              gap: 2,
-              alignItems: "baseline",
-            }}
-          >
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{
-                fontWeight: 600,
-                minWidth: 140,
-                textTransform: "uppercase",
-                fontSize: "0.75rem",
-                letterSpacing: 0.5,
-              }}
-            >
-              {t("registration_wizard.confirmation.email_label")}
-            </Typography>
-            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-              {formData.email}
-            </Typography>
-          </Box>
-
+          <ReviewRow
+            label={t("registration_wizard.confirmation.role_label")}
+            value={getRoleTitle()}
+          />
+          <ReviewRow
+            label={t("registration_wizard.confirmation.name_label")}
+            value={formData.name}
+          />
+          <ReviewRow
+            label={t("registration_wizard.confirmation.email_label")}
+            value={formData.email}
+          />
           {formData.selectedRole === "HR" && formData.jobTitle && (
-            <Box
-              sx={{
-                px: 3,
-                py: 2.5,
-                display: "flex",
-                gap: 2,
-                alignItems: "baseline",
-              }}
-            >
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{
-                  fontWeight: 600,
-                  minWidth: 140,
-                  textTransform: "uppercase",
-                  fontSize: "0.75rem",
-                  letterSpacing: 0.5,
-                }}
-              >
-                {t("registration_wizard.confirmation.job_title_label")}
-              </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                {formData.jobTitle}
-              </Typography>
-            </Box>
+            <ReviewRow
+              label={t("registration_wizard.confirmation.job_title_label")}
+              value={formData.jobTitle}
+            />
           )}
-
           {formData.selectedRole === "COMPANY_OWNER" &&
             formData.companyName && (
-              <Box
-                sx={{
-                  px: 3,
-                  py: 2.5,
-                  display: "flex",
-                  gap: 2,
-                  alignItems: "baseline",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  color="text.secondary"
-                  sx={{
-                    fontWeight: 600,
-                    minWidth: 140,
-                    textTransform: "uppercase",
-                    fontSize: "0.75rem",
-                    letterSpacing: 0.5,
-                  }}
-                >
-                  {t("registration_wizard.confirmation.company_name_label")}
-                </Typography>
-                <Typography variant="body1" sx={{ fontWeight: 500 }}>
-                  {formData.companyName}
-                </Typography>
-              </Box>
+              <ReviewRow
+                label={t("registration_wizard.confirmation.company_name_label")}
+                value={formData.companyName}
+              />
             )}
         </Stack>
       </Paper>
 
-      {isError && (
-        <Alert severity="error" sx={{ mb: 3 }}>
-          {t("registration_wizard.confirmation.error_message")}
-          {error && `: ${error.message}`}
-        </Alert>
-      )}
+      {isError &&
+        (isEmailTaken ? (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {t("registration_wizard.confirmation.email_taken")}{" "}
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid -- RouterLink renders <a href> from `to` */}
+            <Link component={RouterLink} to="/login" underline="hover">
+              {t("auth.sign_in_link")}
+            </Link>
+          </Alert>
+        ) : (
+          <Alert severity="error" sx={{ mb: 3 }}>
+            {t("registration_wizard.confirmation.error_message")}
+            {serverMessage && `: ${serverMessage}`}
+          </Alert>
+        ))}
 
       <Alert severity="info" sx={{ mb: 4 }}>
         {t("registration_wizard.confirmation.next_steps")}

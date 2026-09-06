@@ -2,6 +2,7 @@ import { Navigate, Outlet, useLocation } from "react-router";
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
+import CenteredLoadingSpinner from "../../components/common/CenteredLoadingSpinner";
 
 // Roles that require email verification before accessing the HR panel.
 // ADMIN and SUPER_ADMIN are excluded — they are platform-level accounts
@@ -52,7 +53,7 @@ export function ProtectedRoute() {
   // and see a null atom (useEffect hasn't fired yet), causing a spurious
   // redirect to /login → which AuthLayout then bounces to /.
   if (isLoading || (user && !atomUser)) {
-    return null;
+    return <CenteredLoadingSpinner />;
   }
 
   if (isError || !isAuthenticated) {

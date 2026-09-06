@@ -13,12 +13,14 @@ import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useTranslation } from "react-i18next";
 import { AuthGroupWrapper, AuthPageWrapper } from "./Auth.styles";
-import { useVerifyEmail } from "../../hooks/api/useAuth";
+import { useAuthMe, useVerifyEmail } from "../../hooks/api/useAuth";
+import { getDefaultDashboard } from "../../utils/permissions";
 
 const VerifyEmailPage: React.FC = () => {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") ?? "";
+  const { isAuthenticated, user } = useAuthMe();
 
   const { mutate: doVerify, isPending, isSuccess, isError } = useVerifyEmail();
 
@@ -82,11 +84,13 @@ const VerifyEmailPage: React.FC = () => {
             </Alert>
             <Button
               component={RouterLink}
-              to="/hr/dashboard"
+              to={isAuthenticated ? getDefaultDashboard(user) : "/login"}
               variant="contained"
               fullWidth
             >
-              {t("email_verification.go_to_dashboard")}
+              {isAuthenticated
+                ? t("email_verification.go_to_dashboard")
+                : t("email_verification.go_to_login")}
             </Button>
           </>
         )}

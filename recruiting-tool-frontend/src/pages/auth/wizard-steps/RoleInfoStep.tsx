@@ -45,47 +45,29 @@ const RoleInfoStep: React.FC<RoleInfoStepProps> = ({
     </>
   );
 
+  // The skills summary and resume inputs that used to live here were never
+  // sent to the backend (RegisterPayload has no such fields). The applicant
+  // onboarding flow collects the resume right after registration, so this step
+  // only explains what comes next instead of silently discarding input.
   const renderApplicantForm = () => (
     <>
       <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
         {t("registration_wizard.role_info.applicant_subtitle")}
       </Typography>
 
-      <TextField
-        label={t("registration_wizard.role_info.skills_summary")}
-        fullWidth
-        multiline
-        rows={5}
-        margin="normal"
-        {...register("skillsSummary")}
-        helperText={t("registration_wizard.role_info.skills_helper")}
-      />
-
       <Paper
         variant="outlined"
         sx={{
-          mt: 3,
+          mt: 1,
           p: 3,
           borderRadius: 2,
           bgcolor: "action.hover",
           borderColor: "divider",
         }}
       >
-        <Typography variant="subtitle2" gutterBottom sx={{ fontWeight: 600 }}>
-          {t("registration_wizard.role_info.resume_upload")}
+        <Typography variant="body2" color="text.secondary">
+          {t("registration_wizard.role_info.applicant_onboarding_note")}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          {t("registration_wizard.role_info.resume_helper")}
-        </Typography>
-        <Button variant="contained" component="label" size="medium">
-          {t("registration_wizard.role_info.choose_file")}
-          <input
-            type="file"
-            hidden
-            accept=".pdf,.doc,.docx"
-            {...register("resumeFile")}
-          />
-        </Button>
       </Paper>
     </>
   );

@@ -791,7 +791,11 @@
     "upload": "Subir",
     "supported_formats": "Formatos soportados: JPG, PNG, GIF, WebP (Máx 2MB)",
     "invalid_image_type": "Por favor seleccione un archivo de imagen válido (JPG, PNG, GIF o WebP)",
-    "image_size_limit": "El tamaño de la imagen debe ser menor a 2MB"
+    "image_size_limit": "El tamaño de la imagen debe ser menor a 2MB",
+    "toast": {
+      "updated": "¡Perfil actualizado exitosamente!",
+      "update_failed": "No se pudo actualizar el perfil. Por favor intenta nuevamente."
+    }
   },
   "linked_accounts": {
     "title": "Cuentas Vinculadas",
@@ -1425,7 +1429,16 @@
     "change_password_confirm_btn": "Actualizar Contraseña",
     "change_password_success": "¡Contraseña actualizada exitosamente!",
     "change_password_code_sent": "Código de verificación enviado. Revisa tu bandeja de entrada.",
-    "change_password_mismatch": "Las contraseñas no coinciden"
+    "change_password_mismatch": "Las contraseñas no coinciden",
+    "toast": {
+      "login_success": "¡Inicio de sesión exitoso! Bienvenido de nuevo.",
+      "login_failed": "Error al iniciar sesión. Revisa tus credenciales.",
+      "auth_failed": "Error de autenticación",
+      "invalid_token": "Se recibió un token de autenticación inválido",
+      "invalid_refresh_token": "Se recibió un token de actualización inválido",
+      "register_success": "¡Cuenta creada exitosamente! Bienvenido a bordo.",
+      "register_failed": "Error al registrarse. Por favor intenta nuevamente."
+    }
   },
   "forgot_password": {
     "title": "Olvidé mi Contraseña",
@@ -1434,7 +1447,8 @@
     "sending": "Enviando...",
     "success_message": "Si existe una cuenta con ese correo, recibirás un enlace para restablecer tu contraseña en breve.",
     "back_to_login": "Volver al Inicio de Sesión",
-    "link_label": "¿Olvidaste tu contraseña?"
+    "link_label": "¿Olvidaste tu contraseña?",
+    "error_message": "Algo salió mal. Por favor, inténtalo de nuevo en unos minutos."
   },
   "reset_password": {
     "title": "Restablecer Contraseña",
@@ -1477,14 +1491,19 @@
     "resend_success": "¡Correo de verificación enviado! Revisa tu bandeja de entrada.",
     "resend_error": "No se pudo enviar el correo de verificación. Inténtalo de nuevo.",
     "logout": "Cerrar sesión",
-    "already_verified": "¿Ya verificaste? Intenta refrescar la página."
+    "already_verified": "¿Ya verificaste? Intenta refrescar la página.",
+    "check_status_button": "Ya verifiqué mi correo",
+    "checking_status": "Comprobando...",
+    "not_verified_yet": "Aún no pudimos confirmar tu correo. Haz clic en el enlace del correo y vuelve a intentarlo.",
+    "auto_check_hint": "Esta página se actualiza automáticamente cuando verifiques tu correo."
   },
   "registration_wizard": {
     "steps": {
       "role_selection": "Elige tu Rol",
       "account_creation": "Crear Cuenta",
       "role_information": "Información Adicional",
-      "confirmation": "Confirmar y Completar"
+      "confirmation": "Confirmar y Completar",
+      "step_of": "Paso {{current}} de {{total}}: {{label}}"
     },
     "role_selection": {
       "title": "¿Cómo quieres usar nuestra plataforma?",
@@ -1532,7 +1551,8 @@
       "company_name": "Nombre de la Empresa",
       "company_name_required": "El nombre de la empresa es requerido",
       "company_name_helper": "El nombre de tu empresa será visible para los candidatos",
-      "company_owner_subtitle": "Ingresa el nombre de tu empresa. Configurarás detalles adicionales después del registro."
+      "company_owner_subtitle": "Ingresa el nombre de tu empresa. Configurarás detalles adicionales después del registro.",
+      "applicant_onboarding_note": "Podrás subir tu CV y completar tu perfil justo después de crear tu cuenta. Aquí no necesitas ingresar información adicional."
     },
     "confirmation": {
       "title": "Revisar y Completar Registro",
@@ -1548,7 +1568,8 @@
       "redirecting": "Redirigiendo a tu panel...",
       "setting_up": "Configurando tu cuenta...",
       "creating_account": "Creando Cuenta...",
-      "error_message": "Error en el registro. Por favor intenta nuevamente"
+      "error_message": "Error en el registro. Por favor intenta nuevamente",
+      "email_taken": "Este correo ya está registrado. Vuelve atrás para cambiarlo o inicia sesión:"
     }
   },
   "companies_page": {
@@ -3491,7 +3512,8 @@
       "60": "1 hora",
       "90": "1.5 horas",
       "120": "2 horas"
-    }
+    },
+    "oauth_connected_closing": "Conectado. Cerrando..."
   },
   "notifications": {
     "title": "Notificaciones",

@@ -39,9 +39,8 @@ export interface RegistrationFormData {
   companyUid?: string;
   jobTitle?: string;
 
-  // For Job Applicant
-  resumeFile?: File;
-  skillsSummary?: string;
+  // For Job Applicant: nothing is collected here — the resume and profile are
+  // gathered by the applicant onboarding flow right after registration.
 
   // For Company Owner
   companyName?: string;
@@ -171,12 +170,20 @@ const RegistrationWizard: React.FC = () => {
           borderRadius: 3,
         }}
       >
+        {/*
+          Four labels do not fit beside their icons on phone widths (long
+          Spanish labels wrap into multi-line towers that overlap the
+          connectors), so on xs only the numbered icons are shown and the
+          current step is spelled out in a caption underneath.
+        */}
         <Stepper
           activeStep={activeStep}
+          alternativeLabel
           sx={{
-            mb: 5,
+            mb: { xs: 1.5, sm: 5 },
             "& .MuiStepLabel-label": {
-              fontSize: { xs: "0.7rem", sm: "0.875rem" },
+              display: { xs: "none", sm: "block" },
+              fontSize: "0.875rem",
               fontWeight: 500,
             },
             "& .MuiStepLabel-label.Mui-active": {
@@ -190,6 +197,22 @@ const RegistrationWizard: React.FC = () => {
             </Step>
           ))}
         </Stepper>
+        <Typography
+          variant="caption"
+          color="text.secondary"
+          sx={{
+            display: { xs: "block", sm: "none" },
+            textAlign: "center",
+            fontWeight: 600,
+            mb: 4,
+          }}
+        >
+          {t("registration_wizard.steps.step_of", {
+            current: activeStep + 1,
+            total: steps.length,
+            label: steps[activeStep],
+          })}
+        </Typography>
 
         <Box sx={{ mt: 2 }}>{renderStep()}</Box>
 

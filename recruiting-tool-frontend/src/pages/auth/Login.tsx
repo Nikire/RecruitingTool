@@ -15,7 +15,11 @@ interface LoginFormData {
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { register, handleSubmit } = useForm<LoginFormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>();
   const { mutate: login, isPending, isError } = useLogin();
 
   const onSubmit = (data: LoginFormData) => {
@@ -42,7 +46,11 @@ const Login: React.FC = () => {
             size="small"
             fullWidth
             margin="none"
-            {...register("email")}
+            error={!!errors.email}
+            helperText={errors.email?.message}
+            {...register("email", {
+              required: t("validation.email_required"),
+            })}
           />
           <TextField
             label={t("auth.password")}
@@ -50,7 +58,11 @@ const Login: React.FC = () => {
             type="password"
             fullWidth
             margin="none"
-            {...register("password")}
+            error={!!errors.password}
+            helperText={errors.password?.message}
+            {...register("password", {
+              required: t("validation.password_required"),
+            })}
           />
           <Link
             component={RouterLink}

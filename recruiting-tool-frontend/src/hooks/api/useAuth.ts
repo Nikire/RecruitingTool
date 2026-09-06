@@ -1,6 +1,7 @@
 import { authKeys } from "../../api/queryKeys";
 import { useEffect } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import i18n from "i18next";
 import {
   getCurrentUser,
   login,
@@ -97,8 +98,8 @@ export function useLogin() {
       ) {
         console.error("[AUTH] Invalid access token received:", data.token);
         showErrorToast(
-          new Error("Invalid authentication token received"),
-          "Authentication failed",
+          new Error(i18n.t("auth.toast.invalid_token")),
+          i18n.t("auth.toast.auth_failed"),
         );
         return;
       }
@@ -114,8 +115,8 @@ export function useLogin() {
           data.refreshToken,
         );
         showErrorToast(
-          new Error("Invalid refresh token received"),
-          "Authentication failed",
+          new Error(i18n.t("auth.toast.invalid_refresh_token")),
+          i18n.t("auth.toast.auth_failed"),
         );
         return;
       }
@@ -129,10 +130,10 @@ export function useLogin() {
 
       // Invalidate to fetch user data
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
-      showSuccessToast("Login successful! Welcome back.");
+      showSuccessToast(i18n.t("auth.toast.login_success"));
     },
     onError: (error) => {
-      showErrorToast(error, "Login failed. Please check your credentials.");
+      showErrorToast(error, i18n.t("auth.toast.login_failed"));
     },
   });
 }
@@ -165,8 +166,8 @@ export function useRegister() {
           data.token,
         );
         showErrorToast(
-          new Error("Invalid authentication token received"),
-          "Registration failed",
+          new Error(i18n.t("auth.toast.invalid_token")),
+          i18n.t("auth.toast.register_failed"),
         );
         return;
       }
@@ -182,8 +183,8 @@ export function useRegister() {
           data.refreshToken,
         );
         showErrorToast(
-          new Error("Invalid refresh token received"),
-          "Registration failed",
+          new Error(i18n.t("auth.toast.invalid_refresh_token")),
+          i18n.t("auth.toast.register_failed"),
         );
         return;
       }
@@ -194,10 +195,10 @@ export function useRegister() {
 
       // Invalidate to fetch user data
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
-      showSuccessToast("Account created successfully! Welcome aboard.");
+      showSuccessToast(i18n.t("auth.toast.register_success"));
     },
     onError: (error) => {
-      showErrorToast(error, "Registration failed. Please try again.");
+      showErrorToast(error, i18n.t("auth.toast.register_failed"));
     },
   });
 }
@@ -236,8 +237,15 @@ export function useResetPassword() {
 }
 
 export function useVerifyEmail() {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: (token: string) => verifyEmail(token),
+    onSuccess: () => {
+      // The cached /auth/me still says emailVerified=false (5 min staleTime);
+      // refresh it so ProtectedRoute stops sending the user back to the gate.
+      queryClient.invalidateQueries({ queryKey: authKeys.me() });
+    },
   });
 }
 
@@ -257,10 +265,10 @@ export function useUpdateProfile() {
       // Update user in cache and atom
       queryClient.setQueryData(authKeys.me(), updatedUser);
       setUser(updatedUser);
-      showSuccessToast("Profile updated successfully!");
+      showSuccessToast(i18n.t("profile.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update profile. Please try again.");
+      showErrorToast(error, i18n.t("profile.toast.update_failed"));
     },
   });
 }

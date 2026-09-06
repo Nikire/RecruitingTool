@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Box, CircularProgress, Typography } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 /**
  * This page is loaded inside the OAuth popup window after a successful
@@ -7,6 +8,8 @@ import { Box, CircularProgress, Typography } from "@mui/material";
  * the closure and refresh the connection status.
  */
 const OAuthSuccessPage = () => {
+  const { t } = useTranslation();
+
   useEffect(() => {
     window.close();
   }, []);
@@ -24,7 +27,7 @@ const OAuthSuccessPage = () => {
     >
       <CircularProgress size={32} />
       <Typography variant="body2" color="text.secondary">
-        Connected. Closing...
+        {t("calendar_settings.oauth_connected_closing")}
       </Typography>
     </Box>
   );
