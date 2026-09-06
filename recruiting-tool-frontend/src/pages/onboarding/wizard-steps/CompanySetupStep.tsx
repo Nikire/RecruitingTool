@@ -9,6 +9,7 @@ import {
   CardContent,
   Alert,
   Avatar,
+  CircularProgress,
 } from "@mui/material";
 import {
   CloudUpload as UploadIcon,
@@ -18,11 +19,14 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import { OnboardingFormData } from "../OnboardingWizard";
 import FormErrorSummary from "../../../components/common/FormErrorSummary";
+import { showErrorToast } from "../../../utils/toast";
 
 interface CompanySetupStepProps {
   formData: OnboardingFormData;
   onNext: (data: Partial<OnboardingFormData>) => void;
   onBack: () => void;
+  /** The wizard is persisting this step to the company profile. */
+  isSaving?: boolean;
 }
 
 interface CompanySetupFormData {
@@ -35,6 +39,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
   formData,
   onNext,
   onBack,
+  isSaving = false,
 }) => {
   const { t } = useTranslation();
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -53,11 +58,15 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
   });
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const input = event.target;
+    const file = input.files?.[0];
+    // Always clear the input so re-picking the same file after a rejection
+    // fires `change` again; without this the second attempt is a no-op.
+    input.value = "";
     if (file) {
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert(t("onboarding.company_setup.logo_size_limit"));
+        showErrorToast(t("onboarding.company_setup.logo_too_large"));
         return;
       }
 
@@ -69,7 +78,7 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
         "image/svg+xml",
       ];
       if (!validTypes.includes(file.type)) {
-        alert(t("onboarding.company_setup.logo_helper"));
+        showErrorToast(t("onboarding.company_setup.logo_invalid_type"));
         return;
       }
 
@@ -285,13 +294,20 @@ const CompanySetupStep: React.FC<CompanySetupStepProps> = ({
         </Card>
 
         <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>
-          <Button onClick={onBack}>{t("common.back")}</Button>
+          <Button onClick={onBack} disabled={isSaving}>
+            {t("common.back")}
+          </Button>
           <Box sx={{ display: "flex", gap: 2 }}>
-            <Button onClick={handleSkip}>
+            <Button onClick={handleSkip} disabled={isSaving}>
               {t("onboarding.company_setup.skip")}
             </Button>
-            <Button type="submit" variant="contained">
-              {t("common.next")}
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isSaving}
+              startIcon={isSaving ? <CircularProgress size={16} /> : undefined}
+            >
+              {isSaving ? t("common.saving") : t("common.next")}
             </Button>
           </Box>
         </Box>

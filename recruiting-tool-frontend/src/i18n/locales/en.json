@@ -560,7 +560,13 @@
     "empty_title": "No users yet",
     "empty_description": "Create the first user account so your team can start working in the platform.",
     "empty_filtered_title": "No users match your search",
-    "empty_filtered_description": "Try a different name or email, or clear the search to see everyone."
+    "empty_filtered_description": "Try a different name or email, or clear the search to see everyone.",
+    "toast": {
+      "updated": "User updated successfully!",
+      "update_failed": "Failed to update user. Please try again.",
+      "resume_uploaded": "Resume uploaded successfully!",
+      "resume_upload_failed": "Failed to upload resume. Please try again."
+    }
   },
   "stages": {
     "title": "Stages",
@@ -2796,7 +2802,8 @@
       "cancel": {
         "title": "Cancel Subscription",
         "message": "Are you sure you want to cancel your subscription? You will continue to have access until the end of your current billing period.",
-        "confirm": "Yes, Cancel Subscription"
+        "confirm": "Yes, Cancel Subscription",
+        "processing": "Cancelling..."
       }
     },
     "errors": {
@@ -2814,7 +2821,9 @@
       "save_percent": "Save {{percent}}%",
       "annual_savings": "Save {{percent}}% with annual billing",
       "billed_monthly": "Billed monthly",
-      "billed_annually": "Billed annually"
+      "billed_annually": "Billed annually",
+      "billed_annually_amount": "Billed annually — ${{amount}}/year",
+      "billed_monthly_amount": "Billed monthly — ${{amount}}/month"
     }
   },
   "onboarding": {
@@ -2834,17 +2843,14 @@
     "plans": {
       "free": {
         "name": "Free",
-        "price": "$0/month",
         "description": "Perfect for small teams getting started with recruitment"
       },
       "professional": {
         "name": "Professional",
-        "price": "$99/month",
         "description": "For growing teams with advanced hiring needs"
       },
       "enterprise": {
         "name": "Enterprise",
-        "price": "Custom",
         "description": "For large organizations with custom requirements"
       },
       "features": {
@@ -2866,7 +2872,8 @@
         "sla_guarantee": "SLA guarantee",
         "advanced_security": "Advanced security features",
         "custom_branding": "Custom branding"
-      }
+      },
+      "price_per_month": "${{price}}/month"
     },
     "payment": {
       "title": "Complete Your Payment",
@@ -2885,7 +2892,8 @@
         "no_setup_fees": "No setup fees or hidden charges",
         "secure_processing": "Secure payment processing",
         "instant_access": "Instant access after payment"
-      }
+      },
+      "cancelled_message": "Payment cancelled. Choose a plan to continue."
     },
     "company_setup": {
       "title": "Complete Your Company Profile",
@@ -2922,7 +2930,9 @@
         "real_estate": "Real Estate",
         "hospitality": "Hospitality",
         "other": "Other"
-      }
+      },
+      "logo_too_large": "That file is too large. The logo must be 5MB or smaller.",
+      "logo_invalid_type": "Unsupported file type. Upload a PNG, JPG, or SVG image."
     },
     "welcome": {
       "title": "Welcome to BorderLess!",
@@ -3005,6 +3015,9 @@
       "title": "Profile Complete!",
       "message": "Your HR profile has been set up successfully. Redirecting you to your dashboard...",
       "redirecting": "Redirecting to dashboard..."
+    },
+    "toast": {
+      "complete_failed": "Failed to complete onboarding. Please try again."
     }
   },
   "landing": {
@@ -3347,7 +3360,8 @@
       "preferred_locations": "Preferred Work Locations",
       "salary_expectation": "Salary Expectation (USD, Optional)",
       "salary_optional": "Optional - e.g., $50,000 - $70,000",
-      "select_multiple": "You can select multiple options"
+      "select_multiple": "You can select multiple options",
+      "salary_placeholder": "$50,000 - $70,000"
     },
     "completion": {
       "title": "You're All Set!",
@@ -3476,7 +3490,15 @@
       "90": "1.5 hours",
       "120": "2 hours"
     },
-    "oauth_connected_closing": "Connected. Closing..."
+    "oauth_connected_closing": "Connected. Closing...",
+    "errors": {
+      "no_working_days": "Select at least one working day.",
+      "hours_order": "The end time must be later than the start time.",
+      "advance_booking_range": "Enter a number of days between 1 and 365."
+    },
+    "popup_blocked": "Your browser blocked the Google authorization window. Allow pop-ups for this site and try again.",
+    "connected_success": "Google Calendar connected successfully.",
+    "connection_not_completed": "Authorization was not completed. Google Calendar is still not connected."
   },
   "notifications": {
     "title": "Notifications",
@@ -3509,13 +3531,17 @@
       "empty_all": "No notifications",
       "empty_unread": "No unread notifications",
       "empty_read": "No read notifications",
-      "empty_subtitle": "You're all caught up!"
+      "empty_subtitle": "You're all caught up!",
+      "pagination_aria": "Notification pages"
     },
     "invitation": {
       "accept": "Accept",
       "decline": "Decline",
       "accept_success": "Invitation accepted successfully",
-      "decline_success": "Invitation declined"
+      "decline_success": "Invitation declined",
+      "dismiss": "Dismiss",
+      "dismiss_confirm_title": "Dismiss invitation?",
+      "dismiss_confirm_message": "This only removes the notification from your inbox. The invitation stays open, so you can still accept it later from the email you received."
     },
     "types": {
       "application_received": "New Application",
@@ -5121,14 +5147,16 @@
     },
     "status": {
       "active": "Active",
-      "revoked": "Revoked"
+      "revoked": "Revoked",
+      "inactive": "Inactive"
     },
     "createDialog": {
       "title": "Create API Key",
       "namePlaceholder": "e.g. Production Integration",
       "nameLabel": "Key Name",
       "expiresLabel": "Expiration Date (optional)",
-      "submit": "Create Key"
+      "submit": "Create Key",
+      "expiresInPast": "The expiration date cannot be in the past."
     },
     "createdDialog": {
       "title": "API Key Created",
@@ -5171,7 +5199,8 @@
       "candidates": "Candidates — list, create, update, delete",
       "jobPositions": "Job Positions — list, create, update",
       "applications": "Applications — list, submit, update status",
-      "webhooks": "Webhooks — register, list, delete"
+      "webhooks": "Webhooks — register, list, delete",
+      "authAlternative": "or: Authorization: Bearer blss_live_..."
     }
   },
   "job_moderation": {

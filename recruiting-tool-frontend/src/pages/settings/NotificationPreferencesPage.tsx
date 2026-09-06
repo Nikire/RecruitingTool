@@ -64,8 +64,17 @@ const NotificationPreferencesPage: React.FC = () => {
     // Update local state immediately for responsive UI
     setLocalPreferences(updatedPreferences);
 
-    // Send update to backend
-    updatePreferences({ [field]: newValue });
+    // Send update to backend. On failure the switch must go back to the value
+    // the server still holds — otherwise the toast says the update failed while
+    // the UI keeps showing the new position.
+    updatePreferences(
+      { [field]: newValue },
+      {
+        onError: () => {
+          setLocalPreferences((prev) => ({ ...prev, [field]: !newValue }));
+        },
+      },
+    );
   };
 
   if (isLoading) {

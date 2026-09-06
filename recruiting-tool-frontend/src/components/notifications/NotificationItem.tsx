@@ -7,6 +7,7 @@ import {
   ListItemAvatar,
   Avatar,
   Box,
+  Tooltip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useTranslation } from "react-i18next";
@@ -72,18 +73,23 @@ const NotificationItem: React.FC<NotificationItemProps> = ({
               overflow: "hidden",
             }}
           >
-            <Typography
-              variant="body2"
-              fontWeight={notification.isRead ? "normal" : "bold"}
-              sx={{
-                flex: 1,
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {notification.title}
-            </Typography>
+            {/* The title is ellipsised in the narrow dropdown, so the full
+                text is only reachable through the tooltip. */}
+            <Tooltip title={notification.title} enterDelay={500}>
+              <Typography
+                variant="body2"
+                fontWeight={notification.isRead ? "normal" : "bold"}
+                sx={{
+                  flex: 1,
+                  minWidth: 0,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {notification.title}
+              </Typography>
+            </Tooltip>
             {!notification.isRead && (
               <Box
                 sx={{

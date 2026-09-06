@@ -8,9 +8,13 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
+import { useQueryClient } from "@tanstack/react-query";
 import axios from "../../../api/axios";
+import { authKeys } from "../../../api/queryKeys";
+import { usersApi } from "../../../api/users";
 import { OnboardingData } from "../ApplicantOnboarding";
 import { useUpdateProfile } from "../../../hooks/api/useAuth";
+import { useUserAtom } from "../../../store";
 
 interface CompletionStepProps {
   data: OnboardingData;
@@ -27,12 +31,21 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
   const [isCompleting, setIsCompleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { mutateAsync: updateProfile } = useUpdateProfile();
+  const { user, setUser } = useUserAtom();
+  const queryClient = useQueryClient();
 
   const handleComplete = async () => {
     setIsCompleting(true);
     setError(null);
 
     try {
+      // The name is required by the profile step but /users/profile does not
+      // accept it, so persist it through the user endpoint when it changed.
+      const fullName = data.fullName?.trim();
+      if (user && fullName && fullName !== user.name) {
+        await usersApi.update(user.uid, { name: fullName });
+      }
+
       // Save profile data to backend
       await updateProfile({
         phoneNumber: data.phoneNumber,
@@ -43,6 +56,19 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
 
       // Call backend to mark onboarding as complete
       await axios.post("/auth/complete-onboarding");
+
+      // The cached /auth/me still says onboardingCompleted=false (5 min
+      // staleTime) and useUpdateProfile just re-seeded it, so refresh both the
+      // cache and the atom - otherwise ProtectedRoute sends the applicant back
+      // into this wizard on the next protected route they open.
+      if (user) {
+        setUser({
+          ...user,
+          name: fullName || user.name,
+          onboardingCompleted: true,
+        });
+      }
+      await queryClient.invalidateQueries({ queryKey: authKeys.me() });
 
       // Navigate to careers page
       onComplete();
@@ -105,14 +131,6 @@ const CompletionStep: React.FC<CompletionStepProps> = ({
               : data.resumeSkipped
                 ? t("applicant_onboarding.completion.skipped")
                 : t("common.n_a")}
-          </Typography>
-          <Typography component="li" variant="body2">
-            <strong>{t("applicant_onboarding.completion.preferences")}:</strong>{" "}
-            {data.desiredJobTypes && data.desiredJobTypes.length > 0
-              ? data.desiredJobTypes
-                  .map((type) => t(`job_type.${type.toLowerCase()}`))
-                  .join(", ")
-              : t("common.n_a")}
           </Typography>
         </Box>
       </Box>

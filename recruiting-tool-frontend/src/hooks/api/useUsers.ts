@@ -4,6 +4,7 @@ import { usersApi } from "../../api/users";
 import { CreateUserDto, UpdateUserDto } from "../../types/user.types";
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import i18n from "i18next";
 
 export const useListUsers = (params: PaginationParams) => {
   return useQuery({
@@ -52,10 +53,10 @@ export const useUpdateUser = () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
       // Also invalidate the auth/me query to refresh the current user data
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
-      showSuccessToast("User updated successfully!");
+      showSuccessToast(i18n.t("users.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update user");
+      showErrorToast(error, i18n.t("users.toast.update_failed"));
     },
   });
 };
@@ -121,10 +122,10 @@ export const useUploadResume = () => {
     onSuccess: () => {
       // Invalidate auth/me query to refresh user data with resume info
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
-      showSuccessToast("Resume uploaded successfully!");
+      showSuccessToast(i18n.t("users.toast.resume_uploaded"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to upload resume");
+      showErrorToast(error, i18n.t("users.toast.resume_upload_failed"));
     },
   });
 };

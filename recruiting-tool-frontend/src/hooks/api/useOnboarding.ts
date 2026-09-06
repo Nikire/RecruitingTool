@@ -2,6 +2,7 @@ import { authKeys, onboardingKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "../../api/axios";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import i18n from "i18next";
 
 export interface HROnboardingStatus {
   isOnboardingComplete: boolean;
@@ -68,7 +69,7 @@ export function useCompleteHROnboarding() {
     onError: (error: unknown) => {
       const message =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to complete onboarding";
+          ?.data?.message || i18n.t("hr_onboarding.toast.complete_failed");
       showErrorToast(message);
     },
   });

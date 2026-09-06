@@ -38,8 +38,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Forgot/login/reset forms give inline validation; forgot-password distinguishes request failures from "link sent"; reset-password errors translated; social-login shows a "completing login" state and its error overlay has a focusable action; social buttons use readable contrast
 - Login/register/profile toasts translated (auth.toast.*, profile.toast.*)
 
+### 🧭 Onboarding, profile & account settings (24 verified findings)
+- Onboarding prices derive from the real pricing config (Professional $79, Enterprise $249) instead of stale "$99/month" / "Custom" strings; checkout sends the monthly interval explicitly; a cancelled checkout returns to plan selection instead of showing the Free plan
+- Company setup step (logo, industry, timezone, team size) is now persisted through the company profile endpoints; logo validation uses toasts instead of native alert()
+- HR onboarding completion screen is no longer cut short by the status redirect; long emails wrap in the user/company cards
+- Applicant onboarding saves the edited full name, drops the never-stored preferences step, refreshes the cached user after completion and lands on /careers
+- Profile fields can be cleared (empty strings are no longer stripped); user/resume toasts translated
+- Subscription: upgrade dialog quotes the price for the selected interval (annual by default was silently charging $799); cancel button no longer says "Deleting..."
+- Settings: Google Calendar connect reports blocked popups and cancelled authorisations correctly and clears its poll; advance-booking field can be cleared and retyped with start/end/days validation; notification toggles roll back on failure; API keys page wraps its actions column, labels deactivated keys correctly, validates expiry dates and translates its docs
+- Notifications: pagination works beyond 20 items (limit+1 probe); invitation decline asks for confirmation and accept navigates onward; truncated titles get tooltips; logged-out invitees return to the invitation after login
+
 ### 🌐 i18n
-- 40 new keys in `en.json` / `es.json` (contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 66 new keys in `en.json` / `es.json` (onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

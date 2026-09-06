@@ -159,7 +159,7 @@ const PreferencesStep: React.FC<PreferencesStepProps> = ({
           errors.salaryExpectation?.message ||
           t("applicant_onboarding.preferences.salary_optional")
         }
-        placeholder="$50,000 - $70,000"
+        placeholder={t("applicant_onboarding.preferences.salary_placeholder")}
       />
 
       <Box sx={{ display: "flex", justifyContent: "space-between", mt: 4 }}>

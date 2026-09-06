@@ -16,6 +16,11 @@ import CompanySetupStep from "./wizard-steps/CompanySetupStep";
 import WelcomeStep from "./wizard-steps/WelcomeStep";
 import { SubscriptionPlan } from "../../types/subscription.types";
 import { useSubscription } from "../../api/subscription";
+import {
+  useUpdateMyCompanyProfile,
+  useUploadCompanyLogo,
+} from "../../hooks/api/useCompanies";
+import { UpdateCompanyProfileDto } from "../../types/company.types";
 import { track, ANALYTICS_EVENTS } from "../../analytics";
 
 export interface OnboardingFormData {
@@ -47,6 +52,8 @@ const OnboardingWizard: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeStepId, setActiveStepId] = useState<StepId>("plan_selection");
   const [showPaymentSuccess, setShowPaymentSuccess] = useState(false);
+  const [showPaymentCancelled, setShowPaymentCancelled] = useState(false);
+  const [isSavingCompany, setIsSavingCompany] = useState(false);
   const [formData, setFormData] = useState<OnboardingFormData>({
     selectedPlan: null,
     paymentCompleted: false,
@@ -56,6 +63,8 @@ const OnboardingWizard: React.FC = () => {
   // registration or after a checkout redirect). Used as the source of truth
   // when the user has not yet picked a plan inside this wizard session.
   const { data: subscription } = useSubscription();
+  const { mutateAsync: updateCompanyProfile } = useUpdateMyCompanyProfile();
+  const { mutateAsync: uploadCompanyLogo } = useUploadCompanyLogo();
 
   const effectivePlan: SubscriptionPlan | null =
     formData.selectedPlan ?? subscription?.plan ?? null;
@@ -91,6 +100,15 @@ const OnboardingWizard: React.FC = () => {
     }
   }, [stepIds, activeStepId]);
 
+  // The payment step needs a concrete paid plan. `effectivePlan` is null only
+  // when a full page load wiped the in-session choice, so send the user back
+  // to plan selection rather than quoting the Free plan on a payment screen.
+  useEffect(() => {
+    if (activeStepId === "payment" && effectivePlan === null) {
+      setActiveStepId("plan_selection");
+    }
+  }, [activeStepId, effectivePlan]);
+
   const activeStepIndex = Math.max(0, stepIds.indexOf(activeStepId));
 
   // Handle Stripe redirect - check for payment success/cancelled in URL
@@ -105,8 +123,12 @@ const OnboardingWizard: React.FC = () => {
       // Clean up URL params
       setSearchParams({});
     } else if (payment === "cancelled") {
-      // Payment was cancelled - stay on payment step
-      setActiveStepId("payment");
+      // The provider redirect is a full page load, so the in-session plan
+      // choice is gone. Send the user back to pick one again instead of
+      // showing a payment summary with no plan (or silently continuing on
+      // FREE once the subscription query resolves).
+      setActiveStepId("plan_selection");
+      setShowPaymentCancelled(true);
       // Clean up URL params
       setSearchParams({});
     }
@@ -124,6 +146,40 @@ const OnboardingWizard: React.FC = () => {
 
   const handleUpdateFormData = (data: Partial<OnboardingFormData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
+  };
+
+  /**
+   * Persists the (optional) company setup step. Without this the logo,
+   * industry, timezone and team size the user just entered would be dropped
+   * on the floor when the wizard unmounts.
+   *
+   * Failures are surfaced by the hooks themselves (showErrorToast) and never
+   * block the wizard: the step is optional, so the user still moves on.
+   */
+  const persistCompanySetup = async (data: Partial<OnboardingFormData>) => {
+    const profile: UpdateCompanyProfileDto = {};
+    if (data.industry) profile.industry = data.industry;
+    if (data.timezone) profile.timezone = data.timezone;
+    // The wizard calls it "team size"; the company profile field is companySize.
+    if (data.teamSize) profile.companySize = data.teamSize;
+
+    if (Object.keys(profile).length === 0 && !data.companyLogo) {
+      return;
+    }
+
+    setIsSavingCompany(true);
+    try {
+      if (Object.keys(profile).length > 0) {
+        await updateCompanyProfile(profile);
+      }
+      if (data.companyLogo) {
+        await uploadCompanyLogo(data.companyLogo);
+      }
+    } catch {
+      // Already reported to the user by the mutation's onError handler.
+    } finally {
+      setIsSavingCompany(false);
+    }
   };
 
   /**
@@ -160,22 +216,26 @@ const OnboardingWizard: React.FC = () => {
           />
         );
       case "payment":
-        return (
+        // Guarded by the effect above; renders nothing for the single frame
+        // between a wiped plan choice and the redirect to plan selection.
+        return effectivePlan && effectivePlan !== SubscriptionPlan.FREE ? (
           <PaymentStep
-            selectedPlan={formData.selectedPlan!}
+            selectedPlan={effectivePlan}
             onNext={() => {
               handleUpdateFormData({ paymentCompleted: true });
               handleNext();
             }}
             onBack={handleBack}
           />
-        );
+        ) : null;
       case "company_setup":
         return (
           <CompanySetupStep
             formData={formData}
-            onNext={(data) => {
+            isSaving={isSavingCompany}
+            onNext={async (data) => {
               handleUpdateFormData(data);
+              await persistCompanySetup(data);
               handleNext();
             }}
             onBack={handleBack}
@@ -222,6 +282,23 @@ const OnboardingWizard: React.FC = () => {
           sx={{ width: "100%" }}
         >
           {t("onboarding.payment.success_message")}
+        </Alert>
+      </Snackbar>
+
+      {/* Payment cancelled notification */}
+      <Snackbar
+        open={showPaymentCancelled}
+        autoHideDuration={6000}
+        onClose={() => setShowPaymentCancelled(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert
+          onClose={() => setShowPaymentCancelled(false)}
+          severity="info"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {t("onboarding.payment.cancelled_message")}
         </Alert>
       </Snackbar>
     </>

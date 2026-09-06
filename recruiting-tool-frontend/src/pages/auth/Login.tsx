@@ -1,5 +1,10 @@
 import { useForm } from "react-hook-form";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+import {
+  useNavigate,
+  useLocation,
+  useSearchParams,
+  Link as RouterLink,
+} from "react-router-dom";
 import { Typography, TextField, Button, Divider, Link } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { useLogin } from "../../hooks/api/useAuth";
@@ -12,9 +17,18 @@ interface LoginFormData {
   password: string;
 }
 
+/**
+ * Only same-origin relative paths are honoured after login, so a crafted
+ * `returnUrl` (or router state) cannot bounce the user to another site.
+ */
+const isSafeInternalPath = (path?: string | null): path is string =>
+  !!path && path.startsWith("/") && !path.startsWith("//");
+
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
   const {
     register,
     handleSubmit,
@@ -25,8 +39,18 @@ const Login: React.FC = () => {
   const onSubmit = (data: LoginFormData) => {
     login(data, {
       onSuccess: (response) => {
-        // Navigate using the user data from the login response
-        navigate(getDefaultDashboard(response.user));
+        // Return the user to the protected page that sent them here
+        // (ProtectedRoute passes it as router state, emailed links may use a
+        // ?returnUrl param); otherwise use the role's default dashboard.
+        const fromState = (location.state as { from?: string } | null)?.from;
+        const returnUrl = searchParams.get("returnUrl");
+        const redirectTo = isSafeInternalPath(fromState)
+          ? fromState
+          : isSafeInternalPath(returnUrl)
+            ? returnUrl
+            : getDefaultDashboard(response.user);
+
+        navigate(redirectTo, { replace: true });
       },
     });
   };

@@ -34,10 +34,14 @@ const AcceptInvitationPage: React.FC = () => {
   } = useAcceptInvitation();
 
   useEffect(() => {
-    // If user is not logged in, redirect to login with return URL
+    // Fallback for a session that expires while the page is open: ProtectedRoute
+    // already sends logged-out users to /login. Pass the invitation path as
+    // router state so Login returns here instead of the default dashboard.
     if (!user) {
-      const returnUrl = `/invitations/accept/${token}`;
-      navigate(`/login?returnUrl=${encodeURIComponent(returnUrl)}`);
+      navigate("/login", {
+        replace: true,
+        state: { from: `/invitations/accept/${token}` },
+      });
     }
   }, [user, token, navigate]);
 

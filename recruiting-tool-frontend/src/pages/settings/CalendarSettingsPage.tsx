@@ -11,6 +11,7 @@ import {
   Tooltip,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { useEffect, useRef } from "react";
 import EventIcon from "@mui/icons-material/Event";
 import LinkIcon from "@mui/icons-material/Link";
 import LinkOffIcon from "@mui/icons-material/LinkOff";
@@ -40,29 +41,69 @@ const CalendarSettingsPage = () => {
 
   const isConnected = connectionStatus?.connected ?? false;
 
+  // Poll handle for the OAuth popup. Kept in a ref so it can be cleared on
+  // unmount — a leaked interval used to poll a closed window forever.
+  const pollRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (pollRef.current !== null) {
+        window.clearInterval(pollRef.current);
+        pollRef.current = null;
+      }
+    };
+  }, []);
+
   const handleConnect = () => {
+    const width = 600;
+    const height = 700;
+    const left = window.screen.width / 2 - width / 2;
+    const top = window.screen.height / 2 - height / 2;
+
+    // Opened synchronously, inside the click's user-activation window, so
+    // popup blockers do not swallow it while the auth URL request is in
+    // flight (same approach as api/files.ts#openFileInNewTab).
+    const popup = window.open(
+      "",
+      "Google Calendar Authorization",
+      `width=${width},height=${height},left=${left},top=${top}`,
+    );
+
+    if (!popup) {
+      toast.error(t("calendar_settings.popup_blocked"));
+      return;
+    }
+
     getAuthUrl(undefined, {
       onSuccess: (data) => {
-        const width = 600;
-        const height = 700;
-        const left = window.screen.width / 2 - width / 2;
-        const top = window.screen.height / 2 - height / 2;
+        popup.location.href = data.authUrl;
 
-        const popup = window.open(
-          data.authUrl,
-          "Google Calendar Authorization",
-          `width=${width},height=${height},left=${left},top=${top}`,
-        );
+        if (pollRef.current !== null) {
+          window.clearInterval(pollRef.current);
+        }
+        pollRef.current = window.setInterval(() => {
+          if (!popup.closed) return;
 
-        const checkClosed = setInterval(() => {
-          if (popup?.closed) {
-            clearInterval(checkClosed);
-            refetch();
-            toast.success(t("calendar_settings.connection_check"));
+          if (pollRef.current !== null) {
+            window.clearInterval(pollRef.current);
+            pollRef.current = null;
           }
+
+          // Closing the window is not proof of authorization, so only claim
+          // success once the refetched status says we are connected.
+          void refetch().then(({ data: status }) => {
+            if (status?.connected) {
+              toast.success(t("calendar_settings.connected_success"));
+            } else {
+              toast(t("calendar_settings.connection_not_completed"), {
+                icon: "ℹ️",
+              });
+            }
+          });
         }, 1000);
       },
       onError: () => {
+        popup.close();
         toast.error(t("calendar_settings.connect_error"));
       },
     });

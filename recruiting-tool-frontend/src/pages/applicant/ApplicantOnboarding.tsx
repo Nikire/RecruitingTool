@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import WelcomeStep from "./onboarding-steps/WelcomeStep";
 import ProfileStep from "./onboarding-steps/ProfileStep";
 import ResumeStep from "./onboarding-steps/ResumeStep";
-import PreferencesStep from "./onboarding-steps/PreferencesStep";
 import CompletionStep from "./onboarding-steps/CompletionStep";
 import { useAuthMe } from "../../hooks/api/useAuth";
 
@@ -21,7 +20,9 @@ export interface OnboardingData {
   resumeFile?: File;
   resumeSkipped?: boolean;
 
-  // Preferences
+  // Job preferences (desired job types, preferred locations, salary) are not
+  // stored by the API or the data model, so the wizard no longer asks for
+  // them; the step component is kept but is not part of the flow.
   desiredJobTypes?: string[];
   preferredLocations?: string[];
   salaryExpectation?: string;
@@ -57,7 +58,6 @@ const ApplicantOnboarding: React.FC = () => {
     t("applicant_onboarding.steps.welcome"),
     t("applicant_onboarding.steps.profile"),
     t("applicant_onboarding.steps.resume"),
-    t("applicant_onboarding.steps.preferences"),
     t("applicant_onboarding.steps.completion"),
   ];
 
@@ -74,8 +74,9 @@ const ApplicantOnboarding: React.FC = () => {
   };
 
   const handleComplete = () => {
-    // Navigate to careers page after onboarding completion
-    navigate("/careers");
+    // Navigate to careers page after onboarding completion. `replace` keeps the
+    // finished wizard out of the history stack.
+    navigate("/careers", { replace: true });
   };
 
   const renderStep = () => {
@@ -105,17 +106,6 @@ const ApplicantOnboarding: React.FC = () => {
           />
         );
       case 3:
-        return (
-          <PreferencesStep
-            data={onboardingData}
-            onNext={(data) => {
-              handleUpdateData(data);
-              handleNext();
-            }}
-            onBack={handleBack}
-          />
-        );
-      case 4:
         return (
           <CompletionStep
             data={onboardingData}

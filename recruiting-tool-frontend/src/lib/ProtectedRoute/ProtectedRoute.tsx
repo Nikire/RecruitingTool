@@ -57,7 +57,15 @@ export function ProtectedRoute() {
   }
 
   if (isError || !isAuthenticated) {
-    return <Navigate to="/login" replace />;
+    // Remember where the user was heading so Login can send them back there
+    // (e.g. an emailed invitation link opened while logged out).
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{ from: `${location.pathname}${location.search}` }}
+      />
+    );
   }
 
   // Check if user needs to complete onboarding (only for USER role / applicants)

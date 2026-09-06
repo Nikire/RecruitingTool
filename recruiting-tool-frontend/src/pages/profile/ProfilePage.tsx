@@ -122,10 +122,14 @@ const ProfilePage: React.FC = () => {
   const onSubmit = (data: UpdateUserDto) => {
     if (!user) return;
 
-    // Remove empty strings and convert to undefined
+    // Keep empty strings so optional fields (phone, position, department, bio,
+    // LinkedIn, timezone) can actually be cleared - dropping them left the old
+    // value on the server and the form re-filled it after the success toast.
+    // Only `undefined` is stripped, plus the picture, which has its own
+    // upload/remove flow and must not be resent by the profile form.
     const cleanedData: UpdateUserDto = Object.entries(data).reduce(
       (acc, [key, value]) => {
-        if (value !== "" && value !== undefined) {
+        if (key !== "profilePicture" && value !== undefined) {
           acc[key as keyof UpdateUserDto] = value;
         }
         return acc;
@@ -627,7 +631,7 @@ const ProfilePage: React.FC = () => {
                     <TextField
                       fullWidth
                       label={t("profile_page.phone_number")}
-                      placeholder="+1-555-0123"
+                      placeholder={t("edit_profile.phone_placeholder")}
                       {...register("phoneNumber")}
                       variant="outlined"
                       size="small"

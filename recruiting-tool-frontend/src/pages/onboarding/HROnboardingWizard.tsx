@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Box,
@@ -27,6 +27,7 @@ import {
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../../components/common/FormErrorSummary";
+import { wrapLongText } from "../../utils/textOverflow";
 import { track, ANALYTICS_EVENTS } from "../../analytics";
 
 const HROnboardingWizard: React.FC = () => {
@@ -40,6 +41,7 @@ const HROnboardingWizard: React.FC = () => {
 
   const [activeStep, setActiveStep] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const {
     register,
@@ -65,12 +67,25 @@ const HROnboardingWizard: React.FC = () => {
     t("hr_onboarding.steps.complete"),
   ];
 
-  // Redirect if onboarding already complete
+  // Redirect if onboarding was already complete before this visit. Skipped
+  // once the user has just finished here: completing invalidates the status
+  // query, and an immediate redirect would cut the success screen short.
   useEffect(() => {
-    if (onboardingStatus?.isOnboardingComplete) {
+    if (onboardingStatus?.isOnboardingComplete && !isCompleted && !isPending) {
       navigate("/hr/dashboard", { replace: true });
     }
-  }, [onboardingStatus, navigate]);
+  }, [onboardingStatus, isCompleted, isPending, navigate]);
+
+  // Never navigate from an unmounted wizard: the user may already have moved
+  // on before the success screen's 2s timer fires.
+  useEffect(
+    () => () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    },
+    [],
+  );
 
   const onSubmit = (data: CompleteHROnboardingData) => {
     completeOnboarding(data, {
@@ -86,7 +101,7 @@ const HROnboardingWizard: React.FC = () => {
           destination: response.redirectTo,
         });
         // Redirect after showing success message
-        setTimeout(() => {
+        redirectTimerRef.current = setTimeout(() => {
           navigate(response.redirectTo, { replace: true });
         }, 2000);
       },
@@ -206,9 +221,15 @@ const HROnboardingWizard: React.FC = () => {
                   sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}
                 >
                   <PersonIcon color="primary" sx={{ fontSize: 40 }} />
-                  <Box>
-                    <Typography variant="h6">{user?.name}</Typography>
-                    <Typography variant="body2" color="textSecondary">
+                  <Box sx={{ minWidth: 0 }}>
+                    <Typography variant="h6" sx={wrapLongText}>
+                      {user?.name}
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      color="textSecondary"
+                      sx={wrapLongText}
+                    >
                       {user?.email}
                     </Typography>
                   </Box>

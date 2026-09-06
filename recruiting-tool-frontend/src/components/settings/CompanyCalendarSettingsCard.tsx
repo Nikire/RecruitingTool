@@ -77,7 +77,13 @@ const CompanyCalendarSettingsCard: React.FC<
   const [workingHoursStart, setWorkingHoursStart] = useState("09:00");
   const [workingHoursEnd, setWorkingHoursEnd] = useState("18:00");
   const [bufferMinutes, setBufferMinutes] = useState(15);
-  const [advanceBookingDays, setAdvanceBookingDays] = useState(30);
+  /**
+   * Kept as the raw input string. Clamping a controlled number field on every
+   * keystroke made it impossible to clear and retype: emptying the box gave
+   * `Number("") === 0`, which snapped back to 1 and turned the next digit into
+   * "14" instead of "4". Parsing and clamping now happen on blur.
+   */
+  const [advanceBookingDaysInput, setAdvanceBookingDaysInput] = useState("30");
   const [blockedDates, setBlockedDates] = useState<string[]>([]);
   const [newDate, setNewDate] = useState("");
 
@@ -89,7 +95,7 @@ const CompanyCalendarSettingsCard: React.FC<
       setWorkingHoursStart(settings.workingHoursStart);
       setWorkingHoursEnd(settings.workingHoursEnd);
       setBufferMinutes(settings.bufferMinutes);
-      setAdvanceBookingDays(settings.advanceBookingDays);
+      setAdvanceBookingDaysInput(String(settings.advanceBookingDays));
       setBlockedDates(settings.blockedDates ?? []);
     }
   }, [settings]);
@@ -118,14 +124,40 @@ const CompanyCalendarSettingsCard: React.FC<
     setBlockedDates((prev) => prev.filter((d) => d !== date));
   };
 
+  // ── Validation ───────────────────────────────────────────────────────────
+  // Only enforced while booking is enabled: an empty working-day list or an
+  // end time before the start time is accepted by the backend and silently
+  // produces zero bookable slots.
+  const advanceBookingDays = Number(advanceBookingDaysInput);
+  const hasAdvanceBookingError =
+    !Number.isInteger(advanceBookingDays) ||
+    advanceBookingDays < 1 ||
+    advanceBookingDays > 365;
+  const hasNoWorkingDays = workingDays.length === 0;
+  const hasHoursOrderError = workingHoursStart >= workingHoursEnd;
+  const hasValidationErrors =
+    isBookingEnabled &&
+    (hasAdvanceBookingError || hasNoWorkingDays || hasHoursOrderError);
+
+  const handleAdvanceBookingBlur = () => {
+    const parsed = Number(advanceBookingDaysInput);
+    const safe = Number.isFinite(parsed) && parsed > 0 ? Math.round(parsed) : 1;
+    setAdvanceBookingDaysInput(String(Math.min(365, Math.max(1, safe))));
+  };
+
   const handleSave = () => {
+    if (hasValidationErrors) return;
     updateSettings({
       isBookingEnabled,
       workingDays,
       workingHoursStart,
       workingHoursEnd,
       bufferMinutes,
-      advanceBookingDays,
+      // Unreachable while booking is enabled (the save is blocked above); this
+      // only guards the "booking disabled" save, where the field is hidden.
+      advanceBookingDays: hasAdvanceBookingError
+        ? (settings?.advanceBookingDays ?? 30)
+        : advanceBookingDays,
       blockedDates,
     });
   };
@@ -247,6 +279,15 @@ const CompanyCalendarSettingsCard: React.FC<
                   </ToggleButton>
                 ))}
               </ToggleButtonGroup>
+              {hasNoWorkingDays && (
+                <Typography
+                  variant="caption"
+                  color="error"
+                  sx={{ display: "block", mt: 0.5 }}
+                >
+                  {t("calendar_settings.errors.no_working_days")}
+                </Typography>
+              )}
             </Box>
 
             {/* ── Working Hours ── */}
@@ -278,6 +319,12 @@ const CompanyCalendarSettingsCard: React.FC<
                   size="small"
                   InputLabelProps={{ shrink: true }}
                   inputProps={{ step: 300 }}
+                  error={hasHoursOrderError}
+                  helperText={
+                    hasHoursOrderError
+                      ? t("calendar_settings.errors.hours_order")
+                      : undefined
+                  }
                   sx={{ minWidth: 140 }}
                 />
               </Box>
@@ -300,21 +347,28 @@ const CompanyCalendarSettingsCard: React.FC<
             </FormControl>
 
             {/* ── Advance Booking Window ── */}
-            <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "flex-start", gap: 2 }}>
               <TextField
                 label={t("calendar_settings.advance_booking")}
                 type="number"
-                value={advanceBookingDays}
-                onChange={(e) =>
-                  setAdvanceBookingDays(
-                    Math.min(365, Math.max(1, Number(e.target.value))),
-                  )
-                }
+                value={advanceBookingDaysInput}
+                onChange={(e) => setAdvanceBookingDaysInput(e.target.value)}
+                onBlur={handleAdvanceBookingBlur}
                 size="small"
                 inputProps={{ min: 1, max: 365 }}
-                sx={{ width: 120 }}
+                error={hasAdvanceBookingError}
+                helperText={
+                  hasAdvanceBookingError
+                    ? t("calendar_settings.errors.advance_booking_range")
+                    : undefined
+                }
+                sx={{ width: 160 }}
               />
-              <Typography variant="body2" color="text.secondary">
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{ mt: 1.25 }}
+              >
                 {t("calendar_settings.advance_booking_unit")}
               </Typography>
             </Box>
@@ -388,7 +442,7 @@ const CompanyCalendarSettingsCard: React.FC<
                     <SaveIcon />
                   )
                 }
-                disabled={isPending}
+                disabled={isPending || hasValidationErrors}
                 onClick={handleSave}
               >
                 {isPending ? t("common.saving") : t("calendar_settings.save")}

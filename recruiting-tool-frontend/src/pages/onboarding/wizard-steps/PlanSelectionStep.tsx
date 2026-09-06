@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import StarIcon from "@mui/icons-material/Star";
 import { SubscriptionPlan } from "../../../types/subscription.types";
+import { PLAN_PRICING } from "../../../config/pricing";
 
 interface PlanSelectionStepProps {
   selectedPlan: SubscriptionPlan | null;
@@ -30,7 +31,12 @@ interface PlanFeature {
 interface PlanCard {
   plan: SubscriptionPlan;
   nameKey: string;
-  priceKey: string;
+  /**
+   * Advertised monthly rate in whole USD, taken from PLAN_PRICING (which
+   * mirrors the live Dodo products) instead of a static i18n string, so the
+   * card can never quote a price the checkout does not charge.
+   */
+  monthlyPrice: number;
   descriptionKey: string;
   features: PlanFeature[];
   recommended?: boolean;
@@ -44,7 +50,7 @@ const PlanSelectionStep: React.FC<PlanSelectionStepProps> = ({ onNext }) => {
     {
       plan: SubscriptionPlan.FREE,
       nameKey: "onboarding.plans.free.name",
-      priceKey: "onboarding.plans.free.price",
+      monthlyPrice: 0,
       descriptionKey: "onboarding.plans.free.description",
       color: "default",
       features: [
@@ -72,7 +78,7 @@ const PlanSelectionStep: React.FC<PlanSelectionStepProps> = ({ onNext }) => {
     {
       plan: SubscriptionPlan.PROFESSIONAL,
       nameKey: "onboarding.plans.professional.name",
-      priceKey: "onboarding.plans.professional.price",
+      monthlyPrice: PLAN_PRICING.PROFESSIONAL.monthly,
       descriptionKey: "onboarding.plans.professional.description",
       recommended: true,
       color: "primary",
@@ -101,7 +107,7 @@ const PlanSelectionStep: React.FC<PlanSelectionStepProps> = ({ onNext }) => {
     {
       plan: SubscriptionPlan.ENTERPRISE,
       nameKey: "onboarding.plans.enterprise.name",
-      priceKey: "onboarding.plans.enterprise.price",
+      monthlyPrice: PLAN_PRICING.ENTERPRISE.monthly,
       descriptionKey: "onboarding.plans.enterprise.description",
       color: "secondary",
       features: [
@@ -195,7 +201,9 @@ const PlanSelectionStep: React.FC<PlanSelectionStepProps> = ({ onNext }) => {
                   {t(planCard.nameKey)}
                 </Typography>
                 <Typography variant="h3" gutterBottom color="primary">
-                  {t(planCard.priceKey)}
+                  {t("onboarding.plans.price_per_month", {
+                    price: planCard.monthlyPrice,
+                  })}
                 </Typography>
                 <Typography
                   variant="body2"

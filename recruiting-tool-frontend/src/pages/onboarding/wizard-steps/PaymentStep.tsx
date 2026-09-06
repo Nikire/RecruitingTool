@@ -17,6 +17,7 @@ import CreditCardIcon from "@mui/icons-material/CreditCard";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { SubscriptionPlan } from "../../../types/subscription.types";
 import { useCheckout } from "../../../api/subscription";
+import { PLAN_PRICING } from "../../../config/pricing";
 
 interface PaymentStepProps {
   selectedPlan: SubscriptionPlan;
@@ -28,15 +29,18 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ selectedPlan, onBack }) => {
   const { t } = useTranslation();
   const { mutate: createCheckout, isPending, isError, error } = useCheckout();
 
+  /**
+   * Derived from PLAN_PRICING (mirrors the live Dodo products) rather than a
+   * static i18n string, so the summary can never quote a price different from
+   * the one the checkout actually charges.
+   */
   const getPlanPrice = () => {
-    switch (selectedPlan) {
-      case SubscriptionPlan.PROFESSIONAL:
-        return t("onboarding.plans.professional.price");
-      case SubscriptionPlan.ENTERPRISE:
-        return t("onboarding.plans.enterprise.price");
-      default:
-        return t("onboarding.plans.free.price");
-    }
+    const monthly =
+      selectedPlan === SubscriptionPlan.PROFESSIONAL ||
+      selectedPlan === SubscriptionPlan.ENTERPRISE
+        ? PLAN_PRICING[selectedPlan].monthly
+        : 0;
+    return t("onboarding.plans.price_per_month", { price: monthly });
   };
 
   const getPlanName = () => {
@@ -50,11 +54,20 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ selectedPlan, onBack }) => {
     }
   };
 
+  // Only the backend message is worth showing: axios' own `error.message`
+  // ("Request failed with status code 500") is untranslated technical noise.
+  const apiErrorMessage = (
+    error as { response?: { data?: { message?: string } } } | null
+  )?.response?.data?.message;
+
   const handleProceedToPayment = () => {
     // Create Stripe Checkout session
     const currentUrl = window.location.origin;
     createCheckout({
       plan: selectedPlan,
+      // Sent explicitly: the summary above quotes the monthly rate, and the
+      // backend would otherwise fall back to its own default interval.
+      interval: "monthly",
       successUrl: `${currentUrl}/onboarding?payment=success&step=2`,
       cancelUrl: `${currentUrl}/onboarding?payment=cancelled&step=1`,
     });
@@ -148,7 +161,7 @@ const PaymentStep: React.FC<PaymentStepProps> = ({ selectedPlan, onBack }) => {
       {isError && (
         <Alert severity="error" sx={{ mb: 3 }}>
           {t("onboarding.payment.error_message")}
-          {error && `: ${error.message}`}
+          {apiErrorMessage && `: ${apiErrorMessage}`}
         </Alert>
       )}
 

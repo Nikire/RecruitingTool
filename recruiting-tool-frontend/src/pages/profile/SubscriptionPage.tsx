@@ -42,7 +42,12 @@ import {
 } from "../../types/subscription.types";
 import { usePlanLimits } from "../../hooks/api/usePlanLimits";
 import { buildPlanFeatures } from "../../utils/buildPlanFeatures";
-import { ANNUAL_DISCOUNT_PERCENT, PLAN_PRICING } from "../../config/pricing";
+import {
+  ANNUAL_DISCOUNT_PERCENT,
+  PLAN_PRICING,
+  PlanPrice,
+  effectiveMonthlyRate,
+} from "../../config/pricing";
 
 /**
  * Prices are imported from src/config/pricing.ts, which mirrors the live Dodo
@@ -85,6 +90,23 @@ const canManageBilling = (subscription: Subscription | undefined): boolean => {
     subscription.plan !== SubscriptionPlan.FREE &&
     subscription.status === SubscriptionStatus.ACTIVE
   );
+};
+
+/**
+ * Live price for a paid plan, or null for FREE. The upgrade dialog must read
+ * from here rather than the static `subscription.plans.*.price` strings: those
+ * strings are monthly-only, while the dialog's confirm button checks out at the
+ * currently selected billing interval (annual by default).
+ */
+const getPlanPricing = (plan: SubscriptionPlan): PlanPrice | null => {
+  switch (plan) {
+    case SubscriptionPlan.PROFESSIONAL:
+      return PLAN_PRICING.PROFESSIONAL;
+    case SubscriptionPlan.ENTERPRISE:
+      return PLAN_PRICING.ENTERPRISE;
+    default:
+      return null;
+  }
 };
 
 const canCancelSubscription = (
@@ -148,6 +170,11 @@ const SubscriptionPage: React.FC = () => {
   const showCancelButton = useMemo(
     () => canCancelSubscription(subscription),
     [subscription],
+  );
+
+  const selectedPlanPricing = useMemo(
+    () => (selectedPlan ? getPlanPricing(selectedPlan) : null),
+    [selectedPlan],
   );
 
   // Handle Stripe checkout redirect with ?success=true or ?canceled=true
@@ -568,7 +595,7 @@ const SubscriptionPage: React.FC = () => {
             startIcon={isCanceling && <CircularProgress size={20} />}
           >
             {isCanceling
-              ? t("common.deleting")
+              ? t("subscription.dialogs.cancel.processing")
               : t("subscription.dialogs.cancel.confirm")}
           </Button>
         </DialogActions>
@@ -597,23 +624,39 @@ const SubscriptionPage: React.FC = () => {
                   `subscription.plans.${selectedPlan.toLowerCase()}.description`,
                 )}
               </DialogContentText>
-              <Box sx={{ mb: 2 }}>
-                <Typography
-                  variant="h4"
-                  fontWeight="bold"
-                  color="primary"
-                  gutterBottom
-                >
-                  {t(`subscription.plans.${selectedPlan.toLowerCase()}.price`)}
-                  <Typography
-                    component="span"
-                    variant="body1"
-                    color="text.secondary"
-                  >
-                    /{t("subscription.per_month")}
-                  </Typography>
-                </Typography>
+              <Box sx={{ mb: 2, display: "flex", justifyContent: "center" }}>
+                <BillingToggle
+                  value={billingInterval}
+                  onChange={setBillingInterval}
+                  discount={ANNUAL_DISCOUNT_PERCENT}
+                />
               </Box>
+              {selectedPlanPricing && (
+                <Box sx={{ mb: 2 }}>
+                  <Typography variant="h4" fontWeight="bold" color="primary">
+                    $
+                    {billingInterval === "annual"
+                      ? effectiveMonthlyRate(selectedPlanPricing.annual)
+                      : selectedPlanPricing.monthly}
+                    <Typography
+                      component="span"
+                      variant="body1"
+                      color="text.secondary"
+                    >
+                      /{t("subscription.per_month")}
+                    </Typography>
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {billingInterval === "annual"
+                      ? t("subscription.billing.billed_annually_amount", {
+                          amount: selectedPlanPricing.annual,
+                        })
+                      : t("subscription.billing.billed_monthly_amount", {
+                          amount: selectedPlanPricing.monthly,
+                        })}
+                  </Typography>
+                </Box>
+              )}
               <Typography variant="subtitle2" gutterBottom>
                 {t("subscription.quota.features")}:
               </Typography>

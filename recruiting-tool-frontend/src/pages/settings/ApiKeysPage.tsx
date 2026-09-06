@@ -35,6 +35,9 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MenuBookIcon from "@mui/icons-material/MenuBook";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import CircleIcon from "@mui/icons-material/Circle";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import PowerSettingsNewIcon from "@mui/icons-material/PowerSettingsNew";
 import { DataTable, DataTableColumn } from "../../components/shared/DataTable";
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import {
@@ -56,6 +59,14 @@ interface RenameApiKeyFormData {
 }
 
 const BASE_URL = "https://api.borderlessats.com";
+
+/** Today as YYYY-MM-DD in local time, for the expiry date field's lower bound. */
+const todayIso = (): string => {
+  const now = new Date();
+  return new Date(now.getTime() - now.getTimezoneOffset() * 60000)
+    .toISOString()
+    .slice(0, 10);
+};
 
 const CodeBlock = ({ children }: { children: string }) => (
   <Box
@@ -80,6 +91,8 @@ const CodeBlock = ({ children }: { children: string }) => (
 
 const ApiKeysPage = () => {
   const { t } = useTranslation();
+
+  const minExpiryDate = todayIso();
 
   const { data: apiKeys, isLoading, isError } = useApiKeys();
   const { mutate: createApiKey, isPending: isCreating } = useCreateApiKey();
@@ -278,7 +291,7 @@ const { data } = await res.json();`;
           label={
             params.value
               ? t("apiKeys.status.active")
-              : t("apiKeys.status.revoked")
+              : t("apiKeys.status.inactive")
           }
           color={params.value ? "success" : "default"}
           variant="filled"
@@ -290,7 +303,7 @@ const { data } = await res.json();`;
           label={
             key.isActive
               ? t("apiKeys.status.active")
-              : t("apiKeys.status.revoked")
+              : t("apiKeys.status.inactive")
           }
           color={key.isActive ? "success" : "default"}
           variant="filled"
@@ -307,6 +320,11 @@ const { data } = await res.json();`;
           {formatDate(params.value as string | null)}
         </Typography>
       ),
+      mobileRender: (key) => (
+        <Typography variant="body2" color="text.secondary">
+          {t("apiKeys.columns.lastUsed")}: {formatDate(key.lastUsedAt)}
+        </Typography>
+      ),
     },
     {
       field: "expiresAt",
@@ -317,66 +335,80 @@ const { data } = await res.json();`;
           {formatDate(params.value as string | null)}
         </Typography>
       ),
+      mobileRender: (key) => (
+        <Typography variant="body2" color="text.secondary">
+          {t("apiKeys.columns.expires")}: {formatDate(key.expiresAt)}
+        </Typography>
+      ),
     },
     {
       field: "actions",
       headerName: t("apiKeys.columns.actions"),
-      width: 200,
+      width: 160,
       sortable: false,
+      // Icon buttons rather than text buttons: three translated labels
+      // ("Desactivar", "Renombrar", "Revocar") overflowed the fixed-width
+      // DataGrid cell, which clips its content, hiding the last action.
       renderCell: (params) => {
         const key = params.row as ApiKey;
+        const toggleLabel = key.isActive
+          ? t("apiKeys.actions.deactivate")
+          : t("apiKeys.actions.activate");
         return (
           <Stack direction="row" spacing={0.5} alignItems="center">
-            <Tooltip
-              title={
-                key.isActive
-                  ? t("apiKeys.actions.deactivate")
-                  : t("apiKeys.actions.activate")
-              }
-            >
+            <Tooltip title={toggleLabel}>
               <span>
-                <Button
+                <IconButton
                   size="small"
-                  variant="outlined"
+                  aria-label={toggleLabel}
                   onClick={() => handleToggleActive(key)}
                   disabled={isUpdating}
-                  sx={{ fontSize: "0.7rem", px: 1 }}
+                  color={key.isActive ? "default" : "success"}
                 >
-                  {key.isActive
-                    ? t("apiKeys.actions.deactivate")
-                    : t("apiKeys.actions.activate")}
-                </Button>
+                  <PowerSettingsNewIcon fontSize="small" />
+                </IconButton>
               </span>
             </Tooltip>
             <Tooltip title={t("apiKeys.actions.rename")}>
               <IconButton
                 size="small"
+                aria-label={t("apiKeys.actions.rename")}
                 onClick={() => handleOpenRenameDialog(key)}
               >
-                <Typography sx={{ fontSize: "0.7rem", fontWeight: 600 }}>
-                  {t("apiKeys.actions.rename")}
-                </Typography>
+                <EditIcon fontSize="small" />
               </IconButton>
             </Tooltip>
-            <Tooltip title={t("apiKeys.actions.revoke")}>
-              <span>
-                <Button
-                  size="small"
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleOpenRevokeDialog(key)}
-                  disabled={isRevoking}
-                  sx={{ fontSize: "0.7rem", px: 1 }}
-                >
-                  {t("apiKeys.actions.revoke")}
-                </Button>
-              </span>
-            </Tooltip>
+            {/* Revoking is only meaningful while the key still grants access. */}
+            {key.isActive && (
+              <Tooltip title={t("apiKeys.actions.revoke")}>
+                <span>
+                  <IconButton
+                    size="small"
+                    color="error"
+                    aria-label={t("apiKeys.actions.revoke")}
+                    onClick={() => handleOpenRevokeDialog(key)}
+                    disabled={isRevoking}
+                  >
+                    <DeleteForeverIcon fontSize="small" />
+                  </IconButton>
+                </span>
+              </Tooltip>
+            )}
           </Stack>
         );
       },
       mobileRender: (key) => (
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => handleToggleActive(key)}
+            disabled={isUpdating}
+          >
+            {key.isActive
+              ? t("apiKeys.actions.deactivate")
+              : t("apiKeys.actions.activate")}
+          </Button>
           <Button
             size="small"
             variant="outlined"
@@ -384,14 +416,17 @@ const { data } = await res.json();`;
           >
             {t("apiKeys.actions.rename")}
           </Button>
-          <Button
-            size="small"
-            variant="outlined"
-            color="error"
-            onClick={() => handleOpenRevokeDialog(key)}
-          >
-            {t("apiKeys.actions.revoke")}
-          </Button>
+          {key.isActive && (
+            <Button
+              size="small"
+              variant="outlined"
+              color="error"
+              onClick={() => handleOpenRevokeDialog(key)}
+              disabled={isRevoking}
+            >
+              {t("apiKeys.actions.revoke")}
+            </Button>
+          )}
         </Stack>
       ),
     },
@@ -471,7 +506,7 @@ const { data } = await res.json();`;
                 color="text.secondary"
                 sx={{ mt: 0.5, mb: 1, fontSize: "0.75rem" }}
               >
-                or: Authorization: Bearer blss_live_...
+                {t("apiKeys.docs.authAlternative")}
               </Typography>
 
               <Typography variant="subtitle2" sx={{ mt: 2 }} gutterBottom>
@@ -662,7 +697,16 @@ const { data } = await res.json();`;
               fullWidth
               margin="normal"
               InputLabelProps={{ shrink: true }}
-              {...createForm.register("expiresAt")}
+              // A key that expires in the past would be born unusable.
+              inputProps={{ min: minExpiryDate }}
+              {...createForm.register("expiresAt", {
+                validate: (value) =>
+                  !value ||
+                  value >= minExpiryDate ||
+                  t("apiKeys.createDialog.expiresInPast"),
+              })}
+              error={!!createForm.formState.errors.expiresAt}
+              helperText={createForm.formState.errors.expiresAt?.message}
             />
           </DialogContent>
           <DialogActions>

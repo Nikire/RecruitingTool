@@ -28,11 +28,13 @@ import { format } from "date-fns";
 import { enUS, es } from "date-fns/locale";
 import {
   useNotifications,
+  useUnreadCount,
   useMarkAsRead,
   useMarkAllAsRead,
   useDeleteNotification,
 } from "../../hooks/useNotifications";
 import { useAcceptInvitation } from "../../hooks/useInvitations";
+import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import { Notification } from "../../types/notification";
 import {
   getNotificationIcon,
@@ -57,14 +59,18 @@ const NotificationsPage: React.FC = () => {
   // State
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
   const [page, setPage] = useState(1);
+  const [invitationToDismiss, setInvitationToDismiss] =
+    useState<Notification | null>(null);
 
-  // Build query based on filter
+  // Build query based on filter.
+  // One extra row is requested so we can tell whether a next page exists —
+  // the endpoint returns a plain array with no total count.
   const query =
     filter === "all"
-      ? { limit: ITEMS_PER_PAGE, skip: (page - 1) * ITEMS_PER_PAGE }
+      ? { limit: ITEMS_PER_PAGE + 1, skip: (page - 1) * ITEMS_PER_PAGE }
       : {
           isRead: filter === "read",
-          limit: ITEMS_PER_PAGE,
+          limit: ITEMS_PER_PAGE + 1,
           skip: (page - 1) * ITEMS_PER_PAGE,
         };
 
@@ -74,14 +80,19 @@ const NotificationsPage: React.FC = () => {
     isLoading,
     isError,
   } = useNotifications(query);
+  // Server-side count, so the chip and the "mark all as read" button agree with
+  // the bell badge instead of only reflecting the visible page.
+  const { data: unreadCount = 0 } = useUnreadCount();
   const { mutate: markAsRead } = useMarkAsRead();
   const { mutate: markAllAsRead, isPending: isMarkingAll } = useMarkAllAsRead();
   const { mutate: deleteNotification } = useDeleteNotification();
   const { mutate: acceptInvitation, isPending: isAcceptingInvitation } =
     useAcceptInvitation();
 
-  // Calculate unread count
-  const unreadCount = notifications.filter((n) => !n.isRead).length;
+  // The extra row is only a "has more" probe, never rendered
+  const pageItems = notifications.slice(0, ITEMS_PER_PAGE);
+  const hasNextPage = notifications.length > ITEMS_PER_PAGE;
+  const pageCount = hasNextPage ? page + 1 : page;
 
   // Handlers
   const handleFilterChange = (
@@ -139,21 +150,29 @@ const NotificationsPage: React.FC = () => {
       onSuccess: () => {
         // Delete the notification after successful acceptance
         deleteNotification(notification.uid);
+        // The user's company/role just changed — take them to the workspace,
+        // like AcceptInvitationPage does.
+        navigate("/hr/dashboard");
       },
     });
   };
 
-  const handleDeclineInvitation = (
+  const handleDismissInvitation = (
     notification: Notification,
     event: React.MouseEvent,
   ) => {
     event.stopPropagation();
-    // Simply delete the notification to decline
-    deleteNotification(notification.uid);
+    // There is no invitee-facing decline endpoint, so this only removes the
+    // notification — hence the confirmation and the "dismiss" wording.
+    setInvitationToDismiss(notification);
   };
 
-  // Calculate total pages (mock for now - ideally backend should return total count)
-  const totalPages = Math.ceil(notifications.length / ITEMS_PER_PAGE);
+  const handleConfirmDismissInvitation = () => {
+    if (invitationToDismiss) {
+      deleteNotification(invitationToDismiss.uid);
+    }
+    setInvitationToDismiss(null);
+  };
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
@@ -255,7 +274,7 @@ const NotificationsPage: React.FC = () => {
       )}
 
       {/* Empty State */}
-      {!isLoading && !isError && notifications.length === 0 && (
+      {!isLoading && !isError && pageItems.length === 0 && (
         <Card sx={{ p: 8, textAlign: "center" }}>
           <NotificationsIcon
             sx={{ fontSize: 80, color: "text.disabled", mb: 2 }}
@@ -272,11 +291,11 @@ const NotificationsPage: React.FC = () => {
       )}
 
       {/* Notifications List */}
-      {!isLoading && !isError && notifications.length > 0 && (
+      {!isLoading && !isError && pageItems.length > 0 && (
         <>
           <Card>
             <List sx={{ p: 0 }}>
-              {notifications.map((notification, index) => (
+              {pageItems.map((notification, index) => (
                 <React.Fragment key={notification.uid}>
                   <ListItemButton
                     onClick={() => handleNotificationClick(notification)}
@@ -388,14 +407,14 @@ const NotificationsPage: React.FC = () => {
                           </Button>
                           <Button
                             size="small"
-                            variant="contained"
-                            color="error"
+                            variant="outlined"
+                            color="inherit"
                             startIcon={<CloseIcon />}
                             onClick={(e) =>
-                              handleDeclineInvitation(notification, e)
+                              handleDismissInvitation(notification, e)
                             }
                           >
-                            {t("notifications.invitation.decline")}
+                            {t("notifications.invitation.dismiss")}
                           </Button>
                         </Box>
                       )}
@@ -414,28 +433,40 @@ const NotificationsPage: React.FC = () => {
                   </ListItemButton>
 
                   {/* Divider between items */}
-                  {index < notifications.length - 1 && <Divider />}
+                  {index < pageItems.length - 1 && <Divider />}
                 </React.Fragment>
               ))}
             </List>
           </Card>
-
-          {/* Pagination */}
-          {totalPages > 1 && (
-            <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handlePageChange}
-                color="primary"
-                size="large"
-                showFirstButton
-                showLastButton
-              />
-            </Box>
-          )}
         </>
       )}
+
+      {/* Pagination. The API returns no total count, so the last page is only
+          known once it is reached — hence no "last page" button. */}
+      {!isLoading && !isError && pageCount > 1 && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+          <Pagination
+            count={pageCount}
+            page={page}
+            onChange={handlePageChange}
+            color="primary"
+            size="large"
+            showFirstButton
+            aria-label={t("notifications.page.pagination_aria")}
+          />
+        </Box>
+      )}
+
+      {/* Dismissing an invitation only removes the notification, so confirm it */}
+      <ConfirmDeleteDialog
+        open={Boolean(invitationToDismiss)}
+        onClose={() => setInvitationToDismiss(null)}
+        onConfirm={handleConfirmDismissInvitation}
+        title={t("notifications.invitation.dismiss_confirm_title")}
+        message={t("notifications.invitation.dismiss_confirm_message")}
+        itemName={invitationToDismiss?.title}
+        confirmText={t("notifications.invitation.dismiss")}
+      />
     </Container>
   );
 };

@@ -12,6 +12,7 @@ import InsertDriveFileIcon from "@mui/icons-material/InsertDriveFile";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { OnboardingData } from "../ApplicantOnboarding";
 import { useUploadResume } from "../../../hooks/api/useUsers";
+import { wrapLongText } from "../../../utils/textOverflow";
 
 interface ResumeStepProps {
   data: OnboardingData;
@@ -137,8 +138,10 @@ const ResumeStep: React.FC<ResumeStepProps> = ({ data, onNext, onBack }) => {
           }}
         >
           <InsertDriveFileIcon sx={{ fontSize: 40, color: "primary.main" }} />
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="body1">{selectedFile.name}</Typography>
+          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+            <Typography variant="body1" sx={wrapLongText}>
+              {selectedFile.name}
+            </Typography>
             <Typography variant="caption" color="text.secondary">
               {(selectedFile.size / 1024).toFixed(2)} KB
             </Typography>
@@ -147,6 +150,7 @@ const ResumeStep: React.FC<ResumeStepProps> = ({ data, onNext, onBack }) => {
             startIcon={<DeleteIcon />}
             onClick={handleRemoveFile}
             color="error"
+            sx={{ flexShrink: 0 }}
           >
             {t("common.remove")}
           </Button>
