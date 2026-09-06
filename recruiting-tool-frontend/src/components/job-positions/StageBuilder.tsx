@@ -14,9 +14,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  IconButton,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AddIcon from "@mui/icons-material/Add";
+import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
+import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import AutoFixHighIcon from "@mui/icons-material/AutoFixHigh";
 import PersonSearchIcon from "@mui/icons-material/PersonSearch";
 import EngineeringIcon from "@mui/icons-material/Engineering";
@@ -372,49 +375,54 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
       {/* Stages List */}
       <Box>
         {stages.map((stage, index) => (
-          <Box key={index} sx={{ position: "relative" }}>
-            <StageItem
-              stage={stage}
-              index={index}
-              onEdit={() => {
-                setEditingIndex(index);
-                setDialogOpen(true);
-              }}
-              onDelete={canDeleteMore ? () => setDeleteIndex(index) : undefined}
-              showActions={true}
-            />
+          <Box
+            key={index}
+            sx={{ display: "flex", alignItems: "center", gap: 1 }}
+          >
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <StageItem
+                stage={stage}
+                index={index}
+                onEdit={() => {
+                  setEditingIndex(index);
+                  setDialogOpen(true);
+                }}
+                onDelete={
+                  canDeleteMore ? () => setDeleteIndex(index) : undefined
+                }
+                showActions={true}
+              />
+            </Box>
 
             {/* Reorder Buttons */}
             {stages.length > 1 && (
               <Box
                 sx={{
-                  position: "absolute",
-                  right: -60,
-                  top: "50%",
-                  transform: "translateY(-50%)",
                   display: "flex",
                   flexDirection: "column",
                   gap: 0.5,
+                  flexShrink: 0,
+                  mb: 2,
                 }}
               >
-                <Button
+                <IconButton
                   size="small"
-                  variant="contained"
                   onClick={() => handleMoveUp(index)}
                   disabled={index === 0}
-                  sx={{ minWidth: 40, px: 0 }}
+                  aria-label={t("manage_stages.move_up")}
+                  sx={{ p: 0.5 }}
                 >
-                  ↑
-                </Button>
-                <Button
+                  <ArrowUpwardIcon fontSize="small" />
+                </IconButton>
+                <IconButton
                   size="small"
-                  variant="contained"
                   onClick={() => handleMoveDown(index)}
                   disabled={index === stages.length - 1}
-                  sx={{ minWidth: 40, px: 0 }}
+                  aria-label={t("manage_stages.move_down")}
+                  sx={{ p: 0.5 }}
                 >
-                  ↓
-                </Button>
+                  <ArrowDownwardIcon fontSize="small" />
+                </IconButton>
               </Box>
             )}
           </Box>

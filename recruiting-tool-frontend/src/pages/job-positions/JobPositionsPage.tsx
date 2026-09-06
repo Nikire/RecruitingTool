@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -18,6 +18,8 @@ import {
   Skeleton,
   Tooltip,
   Typography,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import AddIcon from "@mui/icons-material/Add";
@@ -56,6 +58,11 @@ const JobPositionsPage: React.FC = () => {
   const navigate = useNavigate();
   const { user, isLoading: userLoading } = useAuthMe();
   const canManage = canManageResources(user);
+  const theme = useTheme();
+  // The grid/list toggle is hidden below `sm`, so honouring a persisted "list"
+  // choice there would strand the viewport in the stripped-down table with no
+  // visible control to get back to the cards.
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
   const [selectedJobPosition, setSelectedJobPosition] =
     useState<JobPosition | null>(null);
@@ -63,12 +70,16 @@ const JobPositionsPage: React.FC = () => {
   const updateDialog = useDialog<JobPosition>();
 
   // View mode state (grid or list) - saved to localStorage
-  const [viewMode, setViewMode] = useState<"grid" | "list">(() => {
+  const [storedViewMode, setStoredViewMode] = useState<"grid" | "list">(() => {
     return (
       (localStorage.getItem("jobPositions_viewMode") as "grid" | "list") ||
       "grid"
     );
   });
+
+  // Below `sm` the cards are the only usable layout, so the stored preference is
+  // kept but not applied.
+  const viewMode: "grid" | "list" = isMobile ? "grid" : storedViewMode;
 
   // Pagination state
   const [page, setPage] = useState(0); // MUI TablePagination uses 0-based indexing
@@ -86,32 +97,56 @@ const JobPositionsPage: React.FC = () => {
     sortOrder: "desc",
   });
 
+  // `filters.search` holds what the user is typing; only this debounced copy feeds
+  // the query key, so typing "developer" issues one request instead of nine.
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(filters.search), 300);
+    return () => clearTimeout(timer);
+  }, [filters.search]);
+
   // End-client filter — "show me every open role for Acme". Held separately from the
   // JobPositionFilters state so that component keeps its existing contract.
   const [clientUid, setClientUid] = useState("");
 
   // Typed as a const rather than inlined so the extra `clientUid` query param passes
   // through without widening the shared PaginationParams type.
-  const listParams: PaginationParams & { clientUid?: string } = {
+  const listParams: PaginationParams & {
+    clientUid?: string;
+    pageSize?: number;
+  } = {
     page: page + 1, // Convert to 1-based for API
-    limit: pageSize,
-    search: filters.search || undefined,
+    // The API's PaginationDto reads `pageSize`; a `limit` param is silently
+    // dropped, which pinned every page to the DTO default of 10 rows.
+    pageSize,
+    search: debouncedSearch || undefined,
     status: filters.status !== "ALL" ? filters.status : undefined,
     clientUid: clientUid || undefined,
     sortBy: filters.sortBy,
     sortOrder: filters.sortOrder,
   };
 
-  // Fetch job positions with server-side pagination and filtering
-  const { data, isLoading, error } = useListJobPositions(listParams);
+  // Fetch job positions with server-side pagination and filtering.
+  // `keepPreviousData` keeps the current page on screen while the next one loads
+  // instead of swapping the results for skeletons on every filter change.
+  const { data, isLoading, error, refetch } = useListJobPositions(listParams, {
+    keepPreviousData: true,
+  });
 
   const jobPositions = data?.data || [];
-  const totalCount = data?.meta?.total || 0;
+  const totalCount = data?.pagination?.total ?? 0;
 
   // Postings on this page still waiting for platform approval
   const pendingModerationCount = jobPositions.filter(
     (position: JobPosition) => position.moderationStatus === "PENDING_APPROVAL",
   ).length;
+  // Counting a page slice cannot speak for the whole account, so the exact number
+  // is only passed on when every posting fits on this page; otherwise the notice
+  // falls back to its count-free copy rather than under-reporting.
+  const pendingCountIsComplete = totalCount > 0 && totalCount <= pageSize;
+
+  const hasError = !!error;
 
   // Wait for user data to load before rendering (fixes race condition)
   if (userLoading) {
@@ -123,7 +158,7 @@ const JobPositionsPage: React.FC = () => {
     newMode: "grid" | "list" | null,
   ) => {
     if (newMode !== null) {
-      setViewMode(newMode);
+      setStoredViewMode(newMode);
       localStorage.setItem("jobPositions_viewMode", newMode);
     }
   };
@@ -201,7 +236,7 @@ const JobPositionsPage: React.FC = () => {
     <Paper sx={{ p: 8, textAlign: "center" }}>
       <InboxIcon sx={{ fontSize: 80, color: "text.disabled", mb: 2 }} />
       <Typography variant="h6" color="textSecondary" gutterBottom>
-        {filters.search ||
+        {debouncedSearch ||
         filters.status !== "ALL" ||
         filters.location ||
         filters.dateFrom ||
@@ -210,7 +245,7 @@ const JobPositionsPage: React.FC = () => {
           ? t("job_position_card.no_results")
           : t("job_position_card.no_positions")}
       </Typography>
-      {!filters.search &&
+      {!debouncedSearch &&
         filters.status === "ALL" &&
         !filters.location &&
         !filters.dateFrom &&
@@ -305,7 +340,7 @@ const JobPositionsPage: React.FC = () => {
       {pendingModerationCount > 0 && (
         <JobModerationNotice
           moderationStatus="PENDING_APPROVAL"
-          count={pendingModerationCount}
+          count={pendingCountIsComplete ? pendingModerationCount : undefined}
         />
       )}
 
@@ -331,19 +366,26 @@ const JobPositionsPage: React.FC = () => {
       )}
 
       {/* Error State */}
-      {error && !data && (
+      {hasError && (
         <Paper sx={{ p: 4, textAlign: "center" }}>
-          <Typography color="error">
+          <Typography color="error" sx={{ mb: 2 }}>
             {t("job_positions_table.error_loading")}
           </Typography>
+          <Button variant="outlined" onClick={() => refetch()}>
+            {t("common.retry")}
+          </Button>
         </Paper>
       )}
 
       {/* Loading State */}
       {isLoading && renderSkeletonCards()}
 
-      {/* Empty State */}
-      {!isLoading && jobPositions.length === 0 && renderEmptyState()}
+      {/* Empty State — never below the error, or a failed request reads as
+          "you have no positions yet" */}
+      {!isLoading &&
+        !hasError &&
+        jobPositions.length === 0 &&
+        renderEmptyState()}
 
       {/* Grid View */}
       {!isLoading && jobPositions.length > 0 && viewMode === "grid" && (

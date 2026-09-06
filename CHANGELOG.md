@@ -57,8 +57,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Document container and unsubscribe page no longer force 100vh under the navbar
 - Stale-token redirect in MainLayout now uses the shared protected-route denylist, so /submit, /book-demo, /unsubscribe and future public routes are never bounced to login
 
+### 💼 HR jobs, companies & dashboard (22 verified findings + pagination fix)
+- Server-side pagination fixed across every HR/admin list (candidates, companies, hiring processes, users, job positions, company members): the frontend read `meta.total` while the API returns `pagination.total`, and sent `limit` where the API binds `pageSize`, so totals were always 0 and every page was pinned to 10 rows. Shared `PaginatedResponse` type and a central `toListQuery` param mapper now match the backend
+- Job positions page: inert department/location/date filters hidden behind a flag until the API supports them; error state no longer stacked with the empty state and has Retry; debounced search with keepPreviousData; moderation banner no longer under-counts; mobile no longer trapped in the hidden list view
+- Job cards show the real job type instead of a hardcoded "Full-time"; status chip no longer overlaps the title
+- Stage builder: add-stage form resets between uses (no more accidental duplicates), reorder buttons no longer clipped and have labels, stage types translated
+- HR detail/dashboard: hiring-process status translated; deleting a position navigates away from the deleted record; dashboard and interviews page show errors instead of fake zeros/"no data"; long applicant emails wrap; interview durations and dates localised; candidate names get tooltips
+- Companies: create dialog resets after cancel; per-row transfer-ownership preselects the member; member list paginated instead of capped at 50; website/social URLs validated; role picker and dates translated
+
 ### 🌐 i18n
-- 81 new keys in `en.json` / `es.json` (booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 85 new keys in `en.json` / `es.json` (job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

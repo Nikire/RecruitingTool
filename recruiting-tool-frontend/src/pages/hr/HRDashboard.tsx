@@ -24,7 +24,11 @@ import {
   StatCardData,
 } from "../../components/dashboard";
 import SkeletonLoader from "../../components/common/SkeletonLoader";
-import { CenteredLoadingSpinner, PageHeader } from "../../components/common";
+import {
+  CenteredLoadingSpinner,
+  ErrorMessage,
+  PageHeader,
+} from "../../components/common";
 
 /**
  * HRDashboard - Main dashboard for HR users
@@ -39,11 +43,24 @@ const HRDashboard: React.FC = () => {
   const manualCandidateDialog = useDialog<never>();
 
   // Call all hooks before any early returns
-  const { data: applications, isLoading: applicationsLoading } =
-    useApplications();
-  const { data: candidates, isLoading: candidatesLoading } = useCandidates();
-  const { data: jobPositionsData, isLoading: jobPositionsLoading } =
-    useJobPositions();
+  const {
+    data: applications,
+    isLoading: applicationsLoading,
+    error: applicationsError,
+    refetch: refetchApplications,
+  } = useApplications();
+  const {
+    data: candidates,
+    isLoading: candidatesLoading,
+    error: candidatesError,
+    refetch: refetchCandidates,
+  } = useCandidates();
+  const {
+    data: jobPositionsData,
+    isLoading: jobPositionsLoading,
+    error: jobPositionsError,
+    refetch: refetchJobPositions,
+  } = useJobPositions();
   const jobPositions = Array.isArray(jobPositionsData)
     ? jobPositionsData
     : jobPositionsData
@@ -75,6 +92,20 @@ const HRDashboard: React.FC = () => {
 
   const isLoading =
     applicationsLoading || candidatesLoading || jobPositionsLoading;
+
+  // Without this the failed queries coalesce to 0 and the dashboard looks like
+  // an empty account instead of an outage.
+  const hasError = !!(
+    applicationsError ||
+    candidatesError ||
+    jobPositionsError
+  );
+
+  const handleRetry = () => {
+    if (applicationsError) refetchApplications();
+    if (candidatesError) refetchCandidates();
+    if (jobPositionsError) refetchJobPositions();
+  };
 
   // Dashboard stat cards data
   const statsData: StatCardData[] = [
@@ -153,6 +184,10 @@ const HRDashboard: React.FC = () => {
         }}
       />
 
+      {!isLoading && hasError && (
+        <ErrorMessage message="errors.fetch_failed" retry={handleRetry} />
+      )}
+
       {/* Statistics Cards - Enhanced with better spacing */}
       <StatisticsCards stats={statsData} isLoading={isLoading} />
 
@@ -206,6 +241,12 @@ const HRDashboard: React.FC = () => {
 
         {isLoading ? (
           <SkeletonLoader variant="list" count={5} />
+        ) : hasError ? (
+          <Box sx={{ py: 6, textAlign: "center" }}>
+            <Typography variant="body2" color="text.secondary">
+              {t("dashboard.applications_unavailable")}
+            </Typography>
+          </Box>
         ) : recentApplications.length === 0 ? (
           <Box
             sx={{

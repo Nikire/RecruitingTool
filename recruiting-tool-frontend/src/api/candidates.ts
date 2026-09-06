@@ -6,7 +6,11 @@ import {
   CreateCandidateNoteDto,
   UpdateCandidateNoteDto,
 } from "../types/candidate";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 
 export const getCandidates = async (): Promise<Candidate[]> => {
   const response = await axiosInstance.get("/candidate");
@@ -16,7 +20,9 @@ export const getCandidates = async (): Promise<Candidate[]> => {
 export const listCandidates = async (
   params: PaginationParams,
 ): Promise<PaginatedResponse<Candidate>> => {
-  const response = await axiosInstance.get("/candidate/list", { params });
+  const response = await axiosInstance.get("/candidate/list", {
+    params: toListQuery(params),
+  });
   return response.data;
 };
 

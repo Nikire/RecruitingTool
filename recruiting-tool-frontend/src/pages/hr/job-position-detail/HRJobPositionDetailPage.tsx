@@ -93,6 +93,19 @@ const HRJobPositionDetailPage: React.FC = () => {
 
   const canManage = canManageResources(user);
 
+  // Deleting the position invalidates the detail query for a record that no
+  // longer exists, so leave the page instead of falling into the error branch.
+  const handleConfirmDelete = () => {
+    const target = deleteConfirm.selectedItem;
+    if (!target) return;
+    deleteMutation.mutate(target.uid, {
+      onSuccess: () => {
+        deleteConfirm.handleCancel();
+        navigate("/hr/job-positions");
+      },
+    });
+  };
+
   const statusOptions: Array<HiringProcessStatus | "ALL"> = [
     "ALL",
     "OPEN",
@@ -358,7 +371,9 @@ const HRJobPositionDetailPage: React.FC = () => {
                   <TableCell>{process.title}</TableCell>
                   <TableCell>
                     <Chip
-                      label={process.status}
+                      label={t(
+                        `hiring_process_status.${process.status.toLowerCase()}`,
+                      )}
                       color={getStatusColor(process.status)}
                       size="small"
                     />
@@ -402,7 +417,9 @@ const HRJobPositionDetailPage: React.FC = () => {
             {statusFilter === "ALL"
               ? t("job_position_detail.no_processes")
               : t("job_position_detail.no_processes_with_status", {
-                  status: statusFilter.replace(/_/g, " "),
+                  status: t(
+                    `hiring_process_status.${statusFilter.toLowerCase()}`,
+                  ),
                 })}
           </Typography>
         </Paper>
@@ -463,7 +480,7 @@ const HRJobPositionDetailPage: React.FC = () => {
       <ConfirmDeleteDialog
         open={deleteConfirm.isOpen}
         onClose={deleteConfirm.handleCancel}
-        onConfirm={deleteConfirm.handleConfirm}
+        onConfirm={handleConfirmDelete}
         title={t("job_positions_table.delete_title")}
         message={t("job_positions_table.delete_message")}
         itemName={deleteConfirm.selectedItem?.title}

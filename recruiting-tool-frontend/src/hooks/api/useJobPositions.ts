@@ -75,12 +75,20 @@ export function useJobPositions(uid?: string) {
 
 export function useListJobPositions(
   params: PaginationParams,
-  options?: { enabled?: boolean },
+  options?: {
+    enabled?: boolean;
+    /**
+     * Keep the current page on screen while a new query key loads, so changing a
+     * filter or a page dims the list instead of replacing it with skeletons.
+     */
+    keepPreviousData?: boolean;
+  },
 ) {
   return useQuery({
     queryKey: jobPositionKeys.list(params),
     queryFn: () => listJobPositions(params),
     enabled: options?.enabled !== false,
+    placeholderData: options?.keepPreviousData ? keepPreviousData : undefined,
   });
 }
 

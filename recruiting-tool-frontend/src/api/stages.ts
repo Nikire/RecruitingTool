@@ -5,12 +5,18 @@ import {
   CreateStageNoteDto,
   UpdateStageNoteDto,
 } from "../types/stage.types";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 
 export const listStages = async (
   params: PaginationParams,
 ): Promise<PaginatedResponse<Stage>> => {
-  const response = await axiosInstance.get("/stages/list", { params });
+  const response = await axiosInstance.get("/stages/list", {
+    params: toListQuery(params),
+  });
   return response.data;
 };
 

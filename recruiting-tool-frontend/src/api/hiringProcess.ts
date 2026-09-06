@@ -5,7 +5,11 @@ import {
   PaginatedHiringProcessGroupsResponse,
 } from "../types/hiringProcess.types";
 import { MessageResponse } from "../types/responses";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 import api from "./axios";
 
 export function getHiringProcesses(
@@ -25,7 +29,7 @@ export function listHiringProcesses(
     delete filteredParams.status;
   }
   return api
-    .get("/hiring-process/list", { params: filteredParams })
+    .get("/hiring-process/list", { params: toListQuery(filteredParams) })
     .then((res) => res.data);
 }
 

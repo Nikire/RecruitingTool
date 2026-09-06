@@ -40,7 +40,7 @@ const CandidatesList: React.FC<SearchableListProps> = ({
   });
 
   const candidates = data?.data || [];
-  const totalRows = data?.meta?.total || 0;
+  const totalRows = data?.pagination?.total ?? 0;
 
   const columns: DataTableColumn<Candidate>[] = [
     {

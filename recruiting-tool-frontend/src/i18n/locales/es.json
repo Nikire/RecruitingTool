@@ -746,7 +746,10 @@
     "notes_cancel": "Cancelar",
     "notes_clear": "Limpiar",
     "notes_saved": "Notas guardadas exitosamente",
-    "notes_cleared": "Notas eliminadas"
+    "notes_cleared": "Notas eliminadas",
+    "duration_minutes_short": "{{minutes}} min",
+    "duration_hours_minutes": "{{hours}} h {{minutes}} min",
+    "duration_hours": "{{hours}} h"
   },
   "files": {
     "upload": "Subir Archivo",
@@ -1218,7 +1221,8 @@
       "active_in_hiring": "Activos en procesos de contratación",
       "currently_open": "{{count}} actualmente abiertas",
       "applications_need_attention": "Aplicaciones que requieren atención"
-    }
+    },
+    "applications_unavailable": "No se pudieron cargar las aplicaciones recientes."
   },
   "time_slots": {
     "generated": "Franjas horarias generadas exitosamente",

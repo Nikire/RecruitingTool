@@ -56,7 +56,7 @@ const UsersList: React.FC<UsersListProps> = ({
   });
 
   const users = data?.data || [];
-  const totalRows = data?.meta?.total || 0;
+  const totalRows = data?.pagination?.total ?? 0;
 
   const columns: DataTableColumn<User>[] = [
     {

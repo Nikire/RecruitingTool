@@ -52,7 +52,7 @@ export const createMockPaginationMeta = (
   overrides?: Partial<PaginationMeta>,
 ): PaginationMeta => ({
   page: 1,
-  limit: 10,
+  pageSize: 10,
   total: 100,
   totalPages: 10,
   hasNextPage: false,

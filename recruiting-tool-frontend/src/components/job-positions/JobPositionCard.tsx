@@ -75,30 +75,37 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
         },
       }}
     >
-      {/* Status Badge */}
-      <Box sx={{ position: "absolute", top: 16, right: 16 }}>
-        <Chip
-          label={t(`status.${jobPosition.status.toLowerCase()}`)}
-          color={getStatusColor(jobPosition.status)}
-          size="small"
-          variant="filled"
-        />
-      </Box>
-
       <CardContent sx={{ flexGrow: 1, pt: 3 }}>
-        {/* Job Title */}
-        <Typography
-          variant="h6"
-          component="div"
+        {/* Job Title + Status Badge */}
+        <Box
           sx={{
+            display: "flex",
+            alignItems: "flex-start",
+            gap: 1,
             mb: 2,
-            fontWeight: 600,
-            fontSize: "1.25rem",
-            pr: 8, // Space for status badge
           }}
         >
-          {jobPosition.title}
-        </Typography>
+          <Typography
+            variant="h6"
+            component="div"
+            sx={{
+              flex: 1,
+              minWidth: 0,
+              fontWeight: 600,
+              fontSize: "1.25rem",
+              overflowWrap: "anywhere",
+            }}
+          >
+            {jobPosition.title}
+          </Typography>
+          <Chip
+            label={t(`status.${jobPosition.status.toLowerCase()}`)}
+            color={getStatusColor(jobPosition.status)}
+            size="small"
+            variant="filled"
+            sx={{ flexShrink: 0 }}
+          />
+        </Box>
 
         {/* Platform moderation state - hidden once the posting is approved */}
         {jobPosition.moderationStatus &&
@@ -122,14 +129,18 @@ const JobPositionCard: React.FC<JobPositionCardProps> = ({
         </Box>
 
         {/* Employment Type Badge */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
-          <WorkIcon sx={{ fontSize: 18, color: "text.secondary" }} />
-          <Chip
-            label={t("job_position_card.full_time")}
-            size="small"
-            variant="filled"
-          />
-        </Box>
+        {jobPosition.jobType && (
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>
+            <WorkIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+            <Chip
+              label={t(
+                `job_position_card.job_type_${jobPosition.jobType.toLowerCase()}`,
+              )}
+              size="small"
+              variant="filled"
+            />
+          </Box>
+        )}
 
         {/* Posted Date */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1.5 }}>

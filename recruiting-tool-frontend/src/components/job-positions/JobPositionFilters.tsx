@@ -28,6 +28,15 @@ export interface JobPositionFiltersState {
   sortOrder: "asc" | "desc";
 }
 
+/**
+ * Department, location and created-date are collected by this component but the
+ * `/job-position/list` endpoint does not accept them, so the request comes back
+ * unfiltered while the chips and the "N active filters" counter claim otherwise.
+ * The controls stay in the code, hidden, until the API supports them — flip this
+ * to `true` on the same change that adds the query params.
+ */
+const EXTRA_FILTERS_SUPPORTED_BY_API: boolean = false;
+
 interface JobPositionFiltersProps {
   filters: JobPositionFiltersState;
   onChange: (filters: JobPositionFiltersState) => void;
@@ -112,22 +121,20 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
     });
   };
 
-  const hasActiveFilters =
-    filters.search !== "" ||
-    filters.status !== "ALL" ||
-    filters.department !== "ALL" ||
-    filters.location !== "" ||
-    filters.dateFrom !== null ||
-    filters.dateTo !== null;
-
   const activeFilterCount = [
     filters.search !== "",
     filters.status !== "ALL",
-    filters.department !== "ALL",
-    filters.location !== "",
-    filters.dateFrom !== null,
-    filters.dateTo !== null,
+    ...(EXTRA_FILTERS_SUPPORTED_BY_API
+      ? [
+          filters.department !== "ALL",
+          filters.location !== "",
+          filters.dateFrom !== null,
+          filters.dateTo !== null,
+        ]
+      : []),
   ].filter(Boolean).length;
+
+  const hasActiveFilters = activeFilterCount > 0;
 
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
@@ -180,48 +187,52 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Department Filter */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <TextField
-              select
-              fullWidth
-              label={t("job_position_filters.department_label")}
-              value={filters.department}
-              onChange={handleDepartmentChange}
-              size="small"
-            >
-              <MenuItem value="ALL">
-                {t("job_position_filters.all_departments")}
-              </MenuItem>
-              <MenuItem value="engineering">
-                {t("job_position_filters.engineering")}
-              </MenuItem>
-              <MenuItem value="marketing">
-                {t("job_position_filters.marketing")}
-              </MenuItem>
-              <MenuItem value="sales">
-                {t("job_position_filters.sales")}
-              </MenuItem>
-              <MenuItem value="hr">{t("job_position_filters.hr")}</MenuItem>
-              <MenuItem value="finance">
-                {t("job_position_filters.finance")}
-              </MenuItem>
-              <MenuItem value="operations">
-                {t("job_position_filters.operations")}
-              </MenuItem>
-            </TextField>
-          </Grid>
+          {EXTRA_FILTERS_SUPPORTED_BY_API && (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <TextField
+                select
+                fullWidth
+                label={t("job_position_filters.department_label")}
+                value={filters.department}
+                onChange={handleDepartmentChange}
+                size="small"
+              >
+                <MenuItem value="ALL">
+                  {t("job_position_filters.all_departments")}
+                </MenuItem>
+                <MenuItem value="engineering">
+                  {t("job_position_filters.engineering")}
+                </MenuItem>
+                <MenuItem value="marketing">
+                  {t("job_position_filters.marketing")}
+                </MenuItem>
+                <MenuItem value="sales">
+                  {t("job_position_filters.sales")}
+                </MenuItem>
+                <MenuItem value="hr">{t("job_position_filters.hr")}</MenuItem>
+                <MenuItem value="finance">
+                  {t("job_position_filters.finance")}
+                </MenuItem>
+                <MenuItem value="operations">
+                  {t("job_position_filters.operations")}
+                </MenuItem>
+              </TextField>
+            </Grid>
+          )}
 
           {/* Location Filter */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <TextField
-              fullWidth
-              label={t("job_position_filters.location_label")}
-              placeholder={t("job_position_filters.location_placeholder")}
-              value={filters.location}
-              onChange={handleLocationChange}
-              size="small"
-            />
-          </Grid>
+          {EXTRA_FILTERS_SUPPORTED_BY_API && (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <TextField
+                fullWidth
+                label={t("job_position_filters.location_label")}
+                placeholder={t("job_position_filters.location_placeholder")}
+                value={filters.location}
+                onChange={handleLocationChange}
+                size="small"
+              />
+            </Grid>
+          )}
 
           {/* Sort By */}
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -253,30 +264,34 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
           </Grid>
 
           {/* Date From */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <TextField
-              fullWidth
-              type="date"
-              label={t("job_position_filters.date_from_label")}
-              value={filters.dateFrom || ""}
-              onChange={handleDateFromChange}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
+          {EXTRA_FILTERS_SUPPORTED_BY_API && (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <TextField
+                fullWidth
+                type="date"
+                label={t("job_position_filters.date_from_label")}
+                value={filters.dateFrom || ""}
+                onChange={handleDateFromChange}
+                size="small"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+          )}
 
           {/* Date To */}
-          <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-            <TextField
-              fullWidth
-              type="date"
-              label={t("job_position_filters.date_to_label")}
-              value={filters.dateTo || ""}
-              onChange={handleDateToChange}
-              size="small"
-              InputLabelProps={{ shrink: true }}
-            />
-          </Grid>
+          {EXTRA_FILTERS_SUPPORTED_BY_API && (
+            <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+              <TextField
+                fullWidth
+                type="date"
+                label={t("job_position_filters.date_to_label")}
+                value={filters.dateTo || ""}
+                onChange={handleDateToChange}
+                size="small"
+                InputLabelProps={{ shrink: true }}
+              />
+            </Grid>
+          )}
 
           {/* Sort Order */}
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -345,30 +360,31 @@ const JobPositionFilters: React.FC<JobPositionFiltersProps> = ({
                   onDelete={() => onChange({ ...filters, status: "ALL" })}
                 />
               )}
-              {filters.department !== "ALL" && (
-                <Chip
-                  label={`${t("job_position_filters.department_label")}: ${t(
-                    `job_position_filters.${filters.department}`,
-                  )}`}
-                  size="small"
-                  onDelete={() => onChange({ ...filters, department: "ALL" })}
-                />
-              )}
-              {filters.location && (
+              {EXTRA_FILTERS_SUPPORTED_BY_API &&
+                filters.department !== "ALL" && (
+                  <Chip
+                    label={`${t("job_position_filters.department_label")}: ${t(
+                      `job_position_filters.${filters.department}`,
+                    )}`}
+                    size="small"
+                    onDelete={() => onChange({ ...filters, department: "ALL" })}
+                  />
+                )}
+              {EXTRA_FILTERS_SUPPORTED_BY_API && filters.location && (
                 <Chip
                   label={`${t("job_position_filters.location_label")}: ${filters.location}`}
                   size="small"
                   onDelete={() => onChange({ ...filters, location: "" })}
                 />
               )}
-              {filters.dateFrom && (
+              {EXTRA_FILTERS_SUPPORTED_BY_API && filters.dateFrom && (
                 <Chip
                   label={`${t("job_position_filters.date_from_label")}: ${filters.dateFrom}`}
                   size="small"
                   onDelete={() => onChange({ ...filters, dateFrom: null })}
                 />
               )}
-              {filters.dateTo && (
+              {EXTRA_FILTERS_SUPPORTED_BY_API && filters.dateTo && (
                 <Chip
                   label={`${t("job_position_filters.date_to_label")}: ${filters.dateTo}`}
                   size="small"

@@ -1,12 +1,16 @@
 import axiosInstance from "./axios";
 import { User, CreateUserDto, UpdateUserDto } from "../types/user.types";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 
 export const usersApi = {
   list: async (params: PaginationParams): Promise<PaginatedResponse<User>> => {
     const response = await axiosInstance.get<PaginatedResponse<User>>(
       "/users/list",
-      { params },
+      { params: toListQuery(params) },
     );
     return response.data;
   },

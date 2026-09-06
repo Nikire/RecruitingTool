@@ -51,6 +51,7 @@ import { useUserAtom } from "../../../hooks/api/state/useUserAtom";
 import { hasRole } from "../../../utils/permissions";
 import { UserRoles } from "../../../types/user.types";
 import { useCalendarConnectionStatus } from "../../../hooks/api/useGoogleCalendar";
+import { useValidationRules } from "../../../utils/validation";
 
 const INDUSTRY_OPTIONS = [
   "technology",
@@ -104,6 +105,7 @@ const COMMON_TIMEZONES = [
 
 const CompanyProfilePage: React.FC = () => {
   const { t } = useTranslation();
+  const validationRules = useValidationRules();
   const { user } = useUserAtom();
   const isAdmin =
     hasRole(user, UserRoles.COMPANY_OWNER) ||
@@ -403,7 +405,7 @@ const CompanyProfilePage: React.FC = () => {
                           />
                         ),
                       }}
-                      {...register("website")}
+                      {...register("website", validationRules.url())}
                     />
                   </Grid>
 
@@ -599,6 +601,8 @@ const CompanyProfilePage: React.FC = () => {
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://linkedin.com/company/..."
+                      error={!!errors.linkedinUrl}
+                      helperText={errors.linkedinUrl?.message}
                       InputProps={{
                         startAdornment: (
                           <LinkedInIcon
@@ -607,7 +611,10 @@ const CompanyProfilePage: React.FC = () => {
                           />
                         ),
                       }}
-                      {...register("linkedinUrl")}
+                      {...register(
+                        "linkedinUrl",
+                        validationRules.linkedinUrl(),
+                      )}
                     />
                   </Grid>
 
@@ -617,6 +624,8 @@ const CompanyProfilePage: React.FC = () => {
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://twitter.com/..."
+                      error={!!errors.twitterUrl}
+                      helperText={errors.twitterUrl?.message}
                       InputProps={{
                         startAdornment: (
                           <TwitterIcon
@@ -625,7 +634,7 @@ const CompanyProfilePage: React.FC = () => {
                           />
                         ),
                       }}
-                      {...register("twitterUrl")}
+                      {...register("twitterUrl", validationRules.url())}
                     />
                   </Grid>
 
@@ -635,6 +644,8 @@ const CompanyProfilePage: React.FC = () => {
                       fullWidth
                       disabled={!isAdmin}
                       placeholder="https://instagram.com/..."
+                      error={!!errors.instagramUrl}
+                      helperText={errors.instagramUrl?.message}
                       InputProps={{
                         startAdornment: (
                           <InstagramIcon
@@ -643,7 +654,7 @@ const CompanyProfilePage: React.FC = () => {
                           />
                         ),
                       }}
-                      {...register("instagramUrl")}
+                      {...register("instagramUrl", validationRules.url())}
                     />
                   </Grid>
                 </Grid>

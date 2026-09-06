@@ -252,7 +252,7 @@ const JobPositionsList: React.FC<JobPositionsListProps> = ({
   }
 
   const jobPositions = data?.data || [];
-  const totalRows = data?.meta?.total || 0;
+  const totalRows = data?.pagination?.total ?? 0;
 
   const handleApplyClick = (jobUid: string, jobTitle: string) => {
     applyDialog.openWith({ uid: jobUid, title: jobTitle });

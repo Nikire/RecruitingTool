@@ -18,6 +18,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useSearchParams } from "react-router-dom";
 import {
   CalendarInterview,
@@ -26,6 +27,8 @@ import {
 } from "../../../hooks/api/useCalendarInterviews";
 import { useCandidateStageNotes } from "../../../hooks/api/useStageNotes";
 import PageHeader from "../../../components/common/PageHeader";
+import ErrorMessage from "../../../components/common/ErrorMessage";
+import { formatDate } from "../../../utils/dateFormatters";
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
@@ -60,24 +63,25 @@ function statusColor(status: string): ChipColor {
   }
 }
 
-/** Format a duration (minutes) into a human-readable string */
-function formatDuration(minutes?: number): string {
+/** Format a duration (minutes) into a localized, human-readable string */
+function formatDuration(t: TFunction, minutes?: number): string {
   if (!minutes) return "";
-  if (minutes < 60) return `${minutes}m`;
+  if (minutes < 60) return t("interviews.duration_minutes_short", { minutes });
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
-  return m > 0 ? `${h}h ${m}m` : `${h}h`;
+  return m > 0
+    ? t("interviews.duration_hours_minutes", { hours: h, minutes: m })
+    : t("interviews.duration_hours", { hours: h });
 }
 
-/** Format a scheduled date + time into a readable string */
-function formatDateTime(date?: string, time?: string): string {
+/** Format a scheduled date + time into a readable string in the app language */
+function formatScheduledDateTime(
+  language: string,
+  date?: string,
+  time?: string,
+): string {
   if (!date) return "";
-  const d = new Date(date);
-  const dateStr = d.toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  const dateStr = formatDate(date, "MMM d, yyyy", language);
   return time ? `${dateStr} · ${time}` : dateStr;
 }
 
@@ -104,7 +108,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
   interview,
   highlighted,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [notesOpen, setNotesOpen] = useState(false);
   const [stageNotesOpen, setStageNotesOpen] = useState(false);
   const [draft, setDraft] = useState(interview.notes ?? "");
@@ -151,7 +155,11 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
           {/* Left: main info */}
           <Box sx={{ flex: 1, minWidth: 0 }}>
             {/* Candidate name */}
-            <Typography variant="h6" noWrap>
+            <Typography
+              variant="h6"
+              noWrap
+              title={interview.candidate?.name ?? undefined}
+            >
               {interview.candidate?.name ?? t("common.unknown")}
             </Typography>
 
@@ -186,14 +194,15 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
             {/* Date / time / duration */}
             <Stack direction="row" spacing={1} flexWrap="wrap" sx={{ mt: 0.5 }}>
               <Typography variant="body2" color="text.secondary">
-                {formatDateTime(
+                {formatScheduledDateTime(
+                  i18n.language,
                   interview.scheduledDate,
                   interview.scheduledTime,
                 )}
               </Typography>
               {interview.duration && (
                 <Typography variant="body2" color="text.secondary">
-                  · {formatDuration(interview.duration)}
+                  · {formatDuration(t, interview.duration)}
                 </Typography>
               )}
             </Stack>
@@ -349,7 +358,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({
                     sx={{ mt: 0.5, display: "block" }}
                   >
                     {note.author.name} ·{" "}
-                    {new Date(note.createdAt).toLocaleDateString()}
+                    {formatDate(note.createdAt, "MMM d, yyyy", i18n.language)}
                   </Typography>
                 </Box>
               ))}
@@ -413,10 +422,12 @@ const InterviewsPage: React.FC = () => {
   const startDate = useMemo(() => offsetDateString(-3), []);
   const endDate = useMemo(() => offsetDateString(3), []);
 
-  const { data: interviews, isLoading } = useCompanyCalendarInterviews(
-    startDate,
-    endDate,
-  );
+  const {
+    data: interviews,
+    isLoading,
+    error,
+    refetch,
+  } = useCompanyCalendarInterviews(startDate, endDate);
 
   // Sort descending by scheduledDate + scheduledTime (most recent first)
   const sorted = useMemo(() => {
@@ -452,7 +463,11 @@ const InterviewsPage: React.FC = () => {
         </Stack>
       )}
 
-      {!isLoading && sorted.length === 0 && (
+      {!isLoading && error && (
+        <ErrorMessage message="errors.fetch_failed" retry={() => refetch()} />
+      )}
+
+      {!isLoading && !error && sorted.length === 0 && (
         <Box
           sx={{
             display: "flex",

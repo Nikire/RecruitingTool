@@ -8,12 +8,7 @@ import CodeIcon from "@mui/icons-material/Code";
 import GroupIcon from "@mui/icons-material/Group";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import {
-  Stage,
-  StageType,
-  STAGE_TYPE_LABELS,
-  STAGE_TYPE_COLORS,
-} from "../../types/stage.types";
+import { Stage, StageType, STAGE_TYPE_COLORS } from "../../types/stage.types";
 import { useTranslation } from "react-i18next";
 
 interface StageItemProps {
@@ -123,7 +118,7 @@ const StageItem: React.FC<StageItemProps> = ({
         <Box>
           <Chip
             icon={<StageTypeIcon type={stage.type} />}
-            label={STAGE_TYPE_LABELS[stage.type]}
+            label={t(`stage_types.${stage.type.toLowerCase()}`)}
             size="small"
             sx={{
               bgcolor: `${stageColor}20`,

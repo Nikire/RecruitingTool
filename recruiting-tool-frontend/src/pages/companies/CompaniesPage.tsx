@@ -56,11 +56,17 @@ export const CompaniesPage: React.FC = () => {
     return <AccessDeniedMessage requiredRoles={["SUPER_ADMIN"]} />;
   }
 
+  // `useDialog.close` only flips the open flag; the draft lives in page state, so
+  // it has to be cleared here or a cancelled company reappears on the next open.
+  const handleCloseCreate = () => {
+    createDialog.close();
+    setFormData({ name: "", description: "" });
+  };
+
   const handleCreate = () => {
     createMutation.mutate(formData, {
       onSuccess: () => {
-        createDialog.close();
-        setFormData({ name: "", description: "" });
+        handleCloseCreate();
       },
     });
   };
@@ -109,7 +115,7 @@ export const CompaniesPage: React.FC = () => {
       {/* Create Dialog */}
       <Dialog
         open={createDialog.isOpen}
-        onClose={createDialog.close}
+        onClose={handleCloseCreate}
         maxWidth="sm"
         fullWidth
       >
@@ -138,7 +144,7 @@ export const CompaniesPage: React.FC = () => {
           </Box>
         </DialogContent>
         <DialogActions>
-          <Button onClick={createDialog.close}>{t("common.cancel")}</Button>
+          <Button onClick={handleCloseCreate}>{t("common.cancel")}</Button>
           <Button
             onClick={handleCreate}
             variant="contained"

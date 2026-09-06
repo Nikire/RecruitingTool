@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -45,9 +45,11 @@ import {
   useTransferOwnership,
 } from "../../hooks/api/useCompanies";
 import { CenteredLoadingSpinner, RoleBadge } from "../../components/common";
+import Pagination from "../../components/pagination/Pagination";
 import { CompanyUser } from "../../types/company.types";
+import { PaginationParams } from "../../types/pagination.types";
 import { UserRoles } from "../../types/user.types";
-import { format } from "date-fns";
+import { formatDate } from "../../utils/dateFormatters";
 
 const ASSIGNABLE_ROLES = [
   UserRoles.HR,
@@ -63,6 +65,8 @@ interface TransferOwnershipDialogProps {
   onClose: () => void;
   companyUid: string;
   users: CompanyUser[];
+  /** Member preselected as the new owner when the dialog is opened from a row. */
+  defaultUserUid?: string;
 }
 
 const TransferOwnershipDialog: React.FC<TransferOwnershipDialogProps> = ({
@@ -70,10 +74,19 @@ const TransferOwnershipDialog: React.FC<TransferOwnershipDialogProps> = ({
   onClose,
   companyUid,
   users,
+  defaultUserUid,
 }) => {
   const { t } = useTranslation();
   const [selectedUserUid, setSelectedUserUid] = useState("");
   const { mutate: transfer, isPending } = useTransferOwnership(companyUid);
+
+  // Seed the picker every time the dialog opens so the per-row "Transfer to X"
+  // action actually arrives with X selected instead of an empty, disabled form.
+  useEffect(() => {
+    if (open) {
+      setSelectedUserUid(defaultUserUid ?? "");
+    }
+  }, [open, defaultUserUid]);
 
   const currentOwner = users.find((u) => u.roles.includes("COMPANY_OWNER"));
   const eligibleMembers = users.filter(
@@ -227,7 +240,7 @@ const ForceJoinDialog: React.FC<ForceJoinDialogProps> = ({
             >
               {ASSIGNABLE_ROLES.map((r) => (
                 <MenuItem key={r} value={r}>
-                  {r}
+                  {t(`company_roles.roles.${r}`, { defaultValue: r })}
                 </MenuItem>
               ))}
             </Select>
@@ -327,23 +340,54 @@ const CompanyInfoCard: React.FC<CompanyInfoCardProps> = ({
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
 const CompanyDetailPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { uid } = useParams<{ uid: string }>();
 
-  const [page] = useState(1);
-  const [limit] = useState(50);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(25);
 
   const [transferDialogOpen, setTransferDialogOpen] = useState(false);
+  const [transferTargetUid, setTransferTargetUid] = useState<
+    string | undefined
+  >(undefined);
   const [forceJoinDialogOpen, setForceJoinDialogOpen] = useState(false);
+
+  // The API's PaginationDto reads `pageSize`; a bare `limit` is silently dropped
+  // and the page size falls back to the DTO default, so send both.
+  const usersParams: PaginationParams & { pageSize?: number } = {
+    page,
+    limit,
+    pageSize: limit,
+  };
 
   const { data: company, isLoading: companyLoading } = useCompany(uid ?? "");
   const { data: usersData, isLoading: usersLoading } = useCompanyUsers(
     uid ?? "",
-    { page, limit },
+    usersParams,
   );
 
   const users = usersData?.data ?? [];
+  const totalUsers = usersData?.pagination?.total ?? 0;
+  const totalUserPages = usersData?.pagination?.totalPages ?? 0;
+
+  // The ownership picker has to reach every member, not just the page currently
+  // rendered in the table — fetched only while the dialog is open.
+  const transferPickerParams: PaginationParams & { pageSize?: number } = {
+    page: 1,
+    limit: 200,
+    pageSize: 200,
+  };
+  const { data: transferPickerData } = useCompanyUsers(
+    transferDialogOpen ? (uid ?? "") : "",
+    transferPickerParams,
+  );
+  const transferCandidates = transferPickerData?.data ?? users;
+
+  const handleOpenTransfer = (userUid?: string) => {
+    setTransferTargetUid(userUid);
+    setTransferDialogOpen(true);
+  };
 
   if (companyLoading) {
     return <CenteredLoadingSpinner />;
@@ -366,13 +410,10 @@ const CompanyDetailPage: React.FC = () => {
       .slice(0, 2);
   };
 
-  const formatDate = (dateStr?: string) => {
+  const formatJoinedDate = (dateStr?: string) => {
     if (!dateStr) return t("common.n_a");
-    try {
-      return format(new Date(dateStr), "MMM d, yyyy");
-    } catch {
-      return t("common.n_a");
-    }
+    const formatted = formatDate(dateStr, "MMM d, yyyy", i18n.language);
+    return formatted === "-" ? t("common.n_a") : formatted;
   };
 
   return (
@@ -418,7 +459,7 @@ const CompanyDetailPage: React.FC = () => {
           <Button
             variant="contained"
             startIcon={<SwapHorizIcon />}
-            onClick={() => setTransferDialogOpen(true)}
+            onClick={() => handleOpenTransfer(undefined)}
             disabled={users.length < 2}
           >
             {t("company_detail.transfer_ownership")}
@@ -531,7 +572,7 @@ const CompanyDetailPage: React.FC = () => {
                       {/* Joined date */}
                       <TableCell>
                         <Typography variant="body2" color="text.secondary">
-                          {formatDate(user.createdAt)}
+                          {formatJoinedDate(user.createdAt)}
                         </Typography>
                       </TableCell>
 
@@ -546,7 +587,7 @@ const CompanyDetailPage: React.FC = () => {
                             <IconButton
                               size="small"
                               color="warning"
-                              onClick={() => setTransferDialogOpen(true)}
+                              onClick={() => handleOpenTransfer(user.uid)}
                               aria-label={t("company_detail.transfer_to_user", {
                                 name: user.name,
                               })}
@@ -565,12 +606,33 @@ const CompanyDetailPage: React.FC = () => {
         )}
       </Paper>
 
+      {/* Members are server-paginated; without these controls everything past the
+          first page was invisible and unreachable. */}
+      {!usersLoading && totalUsers > 0 && (
+        <Pagination
+          meta={{
+            total: totalUsers,
+            page,
+            pageSize: limit,
+            totalPages: totalUserPages,
+            hasNextPage: page < totalUserPages,
+            hasPreviousPage: page > 1,
+          }}
+          onPageChange={setPage}
+          onLimitChange={(newLimit) => {
+            setLimit(newLimit);
+            setPage(1);
+          }}
+        />
+      )}
+
       {/* Dialogs */}
       <TransferOwnershipDialog
         open={transferDialogOpen}
         onClose={() => setTransferDialogOpen(false)}
         companyUid={uid ?? ""}
-        users={users}
+        users={transferCandidates}
+        defaultUserUid={transferTargetUid}
       />
 
       <ForceJoinDialog

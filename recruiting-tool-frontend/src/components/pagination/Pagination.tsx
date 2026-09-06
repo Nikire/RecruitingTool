@@ -27,7 +27,7 @@ const Pagination: React.FC<PaginationProps> = ({
   const { t } = useTranslation();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const { page, totalPages, total, limit } = meta;
+  const { page, totalPages, total, pageSize: limit } = meta;
 
   const handlePageChange = (_: React.ChangeEvent<unknown>, value: number) => {
     onPageChange(value);

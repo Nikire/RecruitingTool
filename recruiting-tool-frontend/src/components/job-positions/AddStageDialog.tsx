@@ -14,7 +14,7 @@ import {
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { StageType, STAGE_TYPE_LABELS } from "../../types/stage.types";
+import { StageType, STAGE_TYPE } from "../../types/stage.types";
 
 interface AddStageDialogProps {
   open: boolean;
@@ -30,6 +30,13 @@ export interface StageFormData {
   description: string;
   estimatedTime: number;
 }
+
+const DEFAULT_STAGE_VALUES: StageFormData = {
+  title: "",
+  type: "INTERVIEW",
+  description: "",
+  estimatedTime: 60,
+};
 
 /**
  * Dialog for adding or editing a single stage.
@@ -49,29 +56,25 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
     reset,
     formState: { errors },
   } = useForm<StageFormData>({
-    defaultValues: initialData || {
-      title: "",
-      type: "INTERVIEW",
-      description: "",
-      estimatedTime: 60,
-    },
+    defaultValues: { ...DEFAULT_STAGE_VALUES, ...initialData },
   });
 
   const onSubmit = (data: StageFormData) => {
     onSave(data);
-    reset();
+    reset(DEFAULT_STAGE_VALUES);
     onClose();
   };
 
   const handleClose = () => {
-    reset();
+    reset(DEFAULT_STAGE_VALUES);
     onClose();
   };
 
+  // Seed the form whenever the dialog opens: with the edited stage when there
+  // is one, otherwise with empty defaults so a previous edit is not reused.
   React.useEffect(() => {
-    if (open && initialData) {
-      reset(initialData);
-    }
+    if (!open) return;
+    reset({ ...DEFAULT_STAGE_VALUES, ...initialData });
   }, [open, initialData, reset]);
 
   return (
@@ -120,9 +123,9 @@ const AddStageDialog: React.FC<AddStageDialogProps> = ({
                   label={t("add_stage.stage_type")}
                   error={!!errors.type}
                 >
-                  {Object.entries(STAGE_TYPE_LABELS).map(([value, label]) => (
+                  {Object.keys(STAGE_TYPE).map((value) => (
                     <MenuItem key={value} value={value}>
-                      {label}
+                      {t(`stage_types.${value.toLowerCase()}`)}
                     </MenuItem>
                   ))}
                 </Select>

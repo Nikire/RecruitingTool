@@ -6,7 +6,11 @@ import {
   ModerationJobPositionItem,
 } from "../types/jobPosition.types";
 import { MessageResponse } from "../types/responses";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 import api from "./axios";
 
 export interface PublicJobPositionFilters {
@@ -55,7 +59,9 @@ export function getJobPositions(
 export function listJobPositions(
   params: PaginationParams,
 ): Promise<PaginatedResponse<JobPosition>> {
-  return api.get("/job-position/list", { params }).then((res) => res.data);
+  return api
+    .get("/job-position/list", { params: toListQuery(params) })
+    .then((res) => res.data);
 }
 
 export function createJobPosition(

@@ -746,7 +746,10 @@
     "notes_cancel": "Cancel",
     "notes_clear": "Clear",
     "notes_saved": "Notes saved successfully",
-    "notes_cleared": "Notes cleared"
+    "notes_cleared": "Notes cleared",
+    "duration_minutes_short": "{{minutes}}m",
+    "duration_hours_minutes": "{{hours}}h {{minutes}}m",
+    "duration_hours": "{{hours}}h"
   },
   "files": {
     "upload": "Upload File",
@@ -1218,7 +1221,8 @@
       "active_in_hiring": "Active in hiring processes",
       "currently_open": "{{count}} currently open",
       "applications_need_attention": "Applications need attention"
-    }
+    },
+    "applications_unavailable": "Recent applications could not be loaded."
   },
   "time_slots": {
     "generated": "Time slots generated successfully",

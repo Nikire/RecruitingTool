@@ -32,7 +32,7 @@ describe("Pagination", () => {
     it("should display current page range", () => {
       const meta = createMockPaginationMeta({
         page: 1,
-        limit: 10,
+        pageSize: 10,
         total: 100,
       });
 
@@ -50,7 +50,7 @@ describe("Pagination", () => {
     it("should calculate correct range for middle pages", () => {
       const meta = createMockPaginationMeta({
         page: 5,
-        limit: 10,
+        pageSize: 10,
         total: 100,
       });
 
@@ -68,7 +68,7 @@ describe("Pagination", () => {
     it("should calculate correct range for last page", () => {
       const meta = createMockPaginationMeta({
         page: 10,
-        limit: 10,
+        pageSize: 10,
         total: 95,
         totalPages: 10,
       });
@@ -99,7 +99,7 @@ describe("Pagination", () => {
     });
 
     it("should display current limit value", () => {
-      const meta = createMockPaginationMeta({ limit: 25 });
+      const meta = createMockPaginationMeta({ pageSize: 25 });
 
       renderWithProviders(
         <Pagination
@@ -216,7 +216,7 @@ describe("Pagination", () => {
   describe("Limit Change", () => {
     it("should call onLimitChange when limit is changed", async () => {
       const user = userEvent.setup();
-      const meta = createMockPaginationMeta({ limit: 10 });
+      const meta = createMockPaginationMeta({ pageSize: 10 });
 
       renderWithProviders(
         <Pagination
@@ -237,7 +237,7 @@ describe("Pagination", () => {
 
     it("should convert limit to number", async () => {
       const user = userEvent.setup();
-      const meta = createMockPaginationMeta({ limit: 10 });
+      const meta = createMockPaginationMeta({ pageSize: 10 });
 
       renderWithProviders(
         <Pagination
@@ -262,7 +262,7 @@ describe("Pagination", () => {
     it("should handle single page correctly", () => {
       const meta = createMockPaginationMeta({
         page: 1,
-        limit: 100,
+        pageSize: 100,
         total: 50,
         totalPages: 1,
       });
@@ -281,7 +281,7 @@ describe("Pagination", () => {
     it("should handle empty results", () => {
       const meta = createMockPaginationMeta({
         page: 1,
-        limit: 10,
+        pageSize: 10,
         total: 0,
         totalPages: 0,
       });
@@ -300,7 +300,7 @@ describe("Pagination", () => {
     it("should handle large page numbers", () => {
       const meta = createMockPaginationMeta({
         page: 99,
-        limit: 10,
+        pageSize: 10,
         total: 1000,
         totalPages: 100,
       });

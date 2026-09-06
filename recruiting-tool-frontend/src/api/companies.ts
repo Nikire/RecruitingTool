@@ -11,7 +11,11 @@ import {
   UpdateCompanyDto,
   UpdateCompanyProfileDto,
 } from "../types/company.types";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 
 export interface PublicCompany {
   uid: string;
@@ -31,7 +35,9 @@ export const companiesApi = {
   list: async (
     params: PaginationParams,
   ): Promise<PaginatedResponse<Company>> => {
-    const response = await api.get("/company/list", { params });
+    const response = await api.get("/company/list", {
+      params: toListQuery(params),
+    });
     return response.data;
   },
 
@@ -64,7 +70,9 @@ export const companiesApi = {
     uid: string,
     params: PaginationParams,
   ): Promise<PaginatedResponse<CompanyUser>> => {
-    const response = await api.get(`/company/${uid}/users`, { params });
+    const response = await api.get(`/company/${uid}/users`, {
+      params: toListQuery(params),
+    });
     return response.data;
   },
 

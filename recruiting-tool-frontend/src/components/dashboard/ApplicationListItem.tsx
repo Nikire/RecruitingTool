@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import { Application } from "../../types/application.types";
 import { StatusChip } from "../common";
+import { wrapLongText } from "../../utils/textOverflow";
 
 /**
  * Props for the ApplicationListItem component
@@ -63,7 +64,7 @@ const ApplicationListItem: React.FC<ApplicationListItemProps> = ({
           mb: 1,
         }}
       >
-        <Box sx={{ flex: 1 }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
           <Typography variant="subtitle1" fontWeight="medium">
             {application.applicantName}
           </Typography>
@@ -73,7 +74,7 @@ const ApplicationListItem: React.FC<ApplicationListItemProps> = ({
           <Typography
             variant="caption"
             color="text.secondary"
-            sx={{ mt: 0.5, display: "block" }}
+            sx={{ mt: 0.5, display: "block", ...wrapLongText }}
           >
             {application.applicantEmail}
           </Typography>

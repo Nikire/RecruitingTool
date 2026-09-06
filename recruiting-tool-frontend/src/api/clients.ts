@@ -4,7 +4,11 @@ import {
   CreateClientDto,
   UpdateClientDto,
 } from "../types/client.types";
-import { PaginationParams, PaginatedResponse } from "../types/pagination.types";
+import {
+  PaginationParams,
+  PaginatedResponse,
+  toListQuery,
+} from "../types/pagination.types";
 import { MessageResponse } from "../types/responses";
 
 export interface ClientListParams extends PaginationParams {
@@ -21,7 +25,9 @@ export const clientsApi = {
   list: async (
     params: ClientListParams,
   ): Promise<PaginatedResponse<Client>> => {
-    const response = await api.get("/client/list", { params });
+    const response = await api.get("/client/list", {
+      params: toListQuery(params),
+    });
     return response.data;
   },
 

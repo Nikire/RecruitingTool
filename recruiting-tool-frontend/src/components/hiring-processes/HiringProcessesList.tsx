@@ -71,7 +71,7 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
   const { data, isLoading, error } = useListHiringProcesses(listParams);
 
   const processes = (data?.data as HiringProcess[] | undefined) || [];
-  const totalRows = data?.meta?.total || 0;
+  const totalRows = data?.pagination?.total ?? 0;
 
   const handleViewClick = (process: HiringProcess) => {
     navigate(`/hiring-process/${process.uid}`);
