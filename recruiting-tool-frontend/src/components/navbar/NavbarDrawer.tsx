@@ -8,6 +8,7 @@ import {
   Login as LoginIcon,
   PersonAdd as SignupIcon,
   Logout as LogoutIcon,
+  Notifications as NotificationsIcon,
 } from "@mui/icons-material";
 import {
   Drawer,
@@ -21,6 +22,7 @@ import {
   Typography,
   IconButton,
   Divider,
+  Tooltip,
   alpha,
   useTheme,
 } from "@mui/material";
@@ -136,29 +138,33 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
             >
               <UserAvatar name={user.name} avatarUrl={user.profilePicture} />
               <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                <Typography
-                  variant="subtitle1"
-                  sx={{
-                    fontWeight: 600,
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                  }}
-                >
-                  {user.name}
-                </Typography>
-                <Typography
-                  variant="caption"
-                  color="text.secondary"
-                  sx={{
-                    overflow: "hidden",
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    display: "block",
-                  }}
-                >
-                  {user.email}
-                </Typography>
+                <Tooltip title={user.name} enterTouchDelay={0}>
+                  <Typography
+                    variant="subtitle1"
+                    sx={{
+                      fontWeight: 600,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {user.name}
+                  </Typography>
+                </Tooltip>
+                <Tooltip title={user.email} enterTouchDelay={0}>
+                  <Typography
+                    variant="caption"
+                    color="text.secondary"
+                    sx={{
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                      display: "block",
+                    }}
+                  >
+                    {user.email}
+                  </Typography>
+                </Tooltip>
               </Box>
             </Box>
             <Divider />
@@ -194,19 +200,33 @@ const NavbarDrawer: React.FC<NavbarDrawerProps> = ({
             <ListItemText primary={t("navbar.careers")} />
           </ListItemButton>
 
-          {/* Contact (for unauthenticated users) */}
-          {!isAuthenticated && (
+          {/* Contact (matches the desktop navbar, shown to everyone) */}
+          <ListItemButton
+            component={NavLink}
+            sx={drawerLinkSx}
+            to="/contact"
+            onClick={handleMenuClick}
+            aria-label={t("navbar.contact")}
+          >
+            <ListItemIcon sx={{ minWidth: 40 }}>
+              <ContactIcon />
+            </ListItemIcon>
+            <ListItemText primary={t("navbar.contact")} />
+          </ListItemButton>
+
+          {/* Notifications (the bell is hidden at xs, so link it here) */}
+          {isAuthenticated && (
             <ListItemButton
               component={NavLink}
               sx={drawerLinkSx}
-              to="/contact"
+              to="/notifications"
               onClick={handleMenuClick}
-              aria-label={t("navbar.contact")}
+              aria-label={t("navbar.notifications")}
             >
               <ListItemIcon sx={{ minWidth: 40 }}>
-                <ContactIcon />
+                <NotificationsIcon />
               </ListItemIcon>
-              <ListItemText primary={t("navbar.contact")} />
+              <ListItemText primary={t("navbar.notifications")} />
             </ListItemButton>
           )}
 

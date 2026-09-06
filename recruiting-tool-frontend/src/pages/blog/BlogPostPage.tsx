@@ -11,7 +11,7 @@ import {
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { Link as RouterLink, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import ReactMarkdown from "react-markdown";
+import ReactMarkdown, { type Components } from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 import Seo from "../../components/common/Seo";
@@ -55,6 +55,21 @@ function buildBlogPostingLd(post: BlogPost): JsonLdObject {
 
   return node;
 }
+
+/**
+ * Markdown tables scroll inside their own container instead of squeezing
+ * every column into a phone-width viewport and breaking words mid-token.
+ */
+const markdownComponents: Components = {
+  table: ({ node, ...props }) => {
+    void node; // hast node is not a valid DOM attribute
+    return (
+      <Box sx={{ overflowX: "auto", mb: 3 }}>
+        <table {...props} />
+      </Box>
+    );
+  },
+};
 
 /** Locale-aware date, falling back to the raw ISO string if it will not parse. */
 const formatDate = (iso: string, locale: string): string => {
@@ -218,7 +233,12 @@ const BlogPostPage: React.FC = () => {
               borderRadius: 2,
               overflowX: "auto",
             },
-            "& table": { width: "100%", borderCollapse: "collapse", mb: 3 },
+            "& table": {
+              width: "100%",
+              minWidth: 560,
+              borderCollapse: "collapse",
+            },
+            "& th": { whiteSpace: "nowrap" },
             "& th, & td": {
               border: 1,
               borderColor: "divider",
@@ -229,7 +249,12 @@ const BlogPostPage: React.FC = () => {
             "& img": { maxWidth: "100%", height: "auto" },
           }}
         >
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>{post.body}</ReactMarkdown>
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            components={markdownComponents}
+          >
+            {post.body}
+          </ReactMarkdown>
         </Box>
 
         <Divider sx={{ my: 5 }} />

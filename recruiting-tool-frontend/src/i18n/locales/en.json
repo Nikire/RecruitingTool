@@ -949,7 +949,13 @@
     "autofilling": "Auto-filling...",
     "autofill_success": "Form filled with your profile data",
     "autofill_error": "Failed to load profile data",
-    "no_profile_data": "Please login to use auto-fill"
+    "no_profile_data": "Please login to use auto-fill",
+    "upload_failed": "We couldn't upload your resume. Please try again or remove the file.",
+    "name_length": "Name must be between {{min}} and {{max}} characters",
+    "phone_length": "Phone number must be between {{min}} and {{max}} characters",
+    "cover_letter_too_long": "Cover letter must be {{max}} characters or fewer",
+    "submit_success": "Application submitted successfully!",
+    "submit_failed": "Failed to submit application"
   },
   "application": {
     "source_question": "Where did you hear about us?",
@@ -1599,7 +1605,8 @@
     "stage_type_SALARY_NEGOTIATION": "Salary Negotiation",
     "stage_type_OFFER": "Offer",
     "stage_type_OTHER": "Other",
-    "no_description": "No additional details provided for this stage."
+    "no_description": "No additional details provided for this stage.",
+    "enter_different_code": "Enter a different code"
   },
   "hiring_process_page": {
     "no_data_found": "No data found",
@@ -1661,7 +1668,9 @@
     "responsibilities_section": "Responsibilities",
     "benefits_section": "Benefits",
     "education_section": "Education Level",
-    "tags_section": "Tags"
+    "tags_section": "Tags",
+    "no_longer_available": "This position is no longer available",
+    "no_longer_available_body": "This role has been closed or filled. Browse the other positions companies are hiring for right now."
   },
   "file_list": {
     "error_loading": "Failed to load files. Please try again later.",
@@ -2995,7 +3004,8 @@
       "welcome_back": "Welcome back, {{name}}!",
       "founding_teaser": "Founding Companies Program — Limited spots open",
       "founding_subtitle": "Join now and lock in a permanent discount. We just need your honest feedback in return.",
-      "eyebrow": "For LATAM staffing & recruiting agencies"
+      "eyebrow": "For LATAM staffing & recruiting agencies",
+      "play_video": "Play product video"
     },
     "stats": {
       "candidates_processed": "Candidates Processed",
@@ -3230,7 +3240,12 @@
           "title": "Processes grouped by role",
           "caption": "Every open process grouped by position, showing how many candidates have been scored by AI and the average score for that role, so you can see at a glance which pipelines are moving."
         }
-      }
+      },
+      "prev": "Previous screenshot",
+      "next": "Next screenshot",
+      "go_to_slide": "Go to screenshot {{n}}",
+      "zoom_in": "Zoom in",
+      "zoom_out": "Zoom out"
     },
     "integrations": {
       "section_label": "WHAT IT CONNECTS TO",
@@ -4094,7 +4109,9 @@
     "book_demo_page_subtitle": "Schedule a personalized meeting with the Borderless team",
     "book_demo_confirmed_title": "Demo Booked!",
     "book_demo_confirmed_subtitle": "We look forward to meeting you",
-    "book_demo_confirmed_message": "Your demo has been confirmed. Check your email for the meeting details and calendar invite."
+    "book_demo_confirmed_message": "Your demo has been confirmed. Check your email for the meeting details and calendar invite.",
+    "form_error": "We couldn't send your message. Please try again.",
+    "form_message_too_long": "Subject and message together must be under {{max}} characters."
   },
   "admin_contact": {
     "page_title": "Contact Messages",
@@ -5245,7 +5262,9 @@
       "title": "Jobs at {{company}} — Open Positions | Borderless",
       "description": "Every open role at {{company}}, updated the moment the team posts one. Read the full description, salary and requirements, then apply online in minutes.",
       "not_found_title": "Careers Page Not Found | Borderless",
-      "not_found_description": "This company careers page is not available. Browse every role companies are hiring for right now on the Borderless job board."
+      "not_found_description": "This company careers page is not available. Browse every role companies are hiring for right now on the Borderless job board.",
+      "error_title": "Careers Page Unavailable | Borderless",
+      "error_description": "This company careers page could not be loaded right now. Please retry, or browse every open role on the Borderless job board."
     },
     "blog": {
       "title": "Recruiting & ATS Guides for Agencies | Borderless Blog",
@@ -5253,6 +5272,10 @@
       "post_title": "{{title}} | Borderless",
       "not_found_title": "Article Not Found | Borderless",
       "not_found_description": "This article is not available. Read the rest of the Borderless guides on recruiting, applicant tracking and careers-page SEO."
+    },
+    "check_status": {
+      "title": "Check Your Application Status | Borderless",
+      "description": "Enter the access code from your email to see the current stage of your job application on Borderless."
     }
   },
   "not_found": {
@@ -5302,7 +5325,8 @@
   "careersCompany": {
     "heading": "Careers at {{company}}",
     "not_found_title": "We could not find that company",
-    "not_found_body": "This careers page does not exist, or the company has no open roles right now."
+    "not_found_body": "This careers page does not exist, or the company has no open roles right now.",
+    "load_error_title": "We could not load this careers page"
   },
   "careersFacets": {
     "nav_label": "Browse jobs",

@@ -50,7 +50,8 @@ const MainLayout = () => {
   return (
     <>
       <Navbar />
-      <Toolbar /> {/* Offset spacer for fixed AppBar */}
+      {/* Offset spacer - must match the Navbar toolbar height */}
+      <Toolbar sx={{ minHeight: { xs: 64, sm: 70 } }} />
       <AddEmailBanner />
       <Container sx={{ py: 2 }} maxWidth={maxWidth}>
         <Outlet />

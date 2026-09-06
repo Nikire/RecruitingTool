@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -121,7 +121,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   menuItems = [],
   menuGroups = [],
   children,
-  ariaLabel = "dashboard navigation",
+  ariaLabel,
   translate = false,
   canShowMenuItem,
 }) => {
@@ -129,6 +129,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
   const navigate = useNavigate();
   const { t } = useTranslation();
   const location = useLocation();
+  const navAriaLabel = ariaLabel ?? t("aria.navigation");
   const [mobileOpen, setMobileOpen] = useState(false);
   const { data: subscription } = useSubscription();
   const [themeMode, setThemeMode] = useAtom(themeModeAtom);
@@ -144,6 +145,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
     });
     return initial;
   });
+
+  // Keep the group that contains the active route open when navigation
+  // happens from outside the sidebar (dashboard cards, notifications, ...)
+  useEffect(() => {
+    setOpenGroups((prev) => {
+      const next = { ...prev };
+      menuGroups.forEach((group) => {
+        if (
+          group.items.some((item) => location.pathname.startsWith(item.path))
+        ) {
+          next[group.label] = true;
+        }
+      });
+      return next;
+    });
+  }, [location.pathname, menuGroups]);
 
   const toggleGroup = (label: string) => {
     setOpenGroups((prev) => ({ ...prev, [label]: !prev[label] }));
@@ -352,10 +369,11 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
         <Box
           component="nav"
           sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-          aria-label={ariaLabel}
+          aria-label={navAriaLabel}
         >
           {/* Mobile drawer */}
           <Drawer
+            id="dashboard-drawer"
             variant="temporary"
             open={mobileOpen}
             onClose={handleDrawerToggle}
@@ -369,7 +387,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                 width: drawerWidth,
               },
             }}
-            aria-label={ariaLabel}
+            aria-label={navAriaLabel}
           >
             {drawer}
           </Drawer>
@@ -385,7 +403,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
               },
             }}
             open
-            aria-label={ariaLabel}
+            aria-label={navAriaLabel}
           >
             {drawer}
           </Drawer>
@@ -417,11 +435,19 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
             </IconButton>
             <Typography
               variant="h6"
-              noWrap
               component="div"
               sx={{
                 flexGrow: 1,
+                minWidth: 0,
                 fontSize: { xs: "1rem", sm: "1.25rem" },
+                lineHeight: { xs: 1.25, sm: 1.6 },
+                overflow: "hidden",
+                // xs: wrap to two lines; sm+: single line with ellipsis
+                whiteSpace: { xs: "normal", sm: "nowrap" },
+                textOverflow: "ellipsis",
+                display: { xs: "-webkit-box", sm: "block" },
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
               }}
             >
               {displayTitle}
@@ -470,6 +496,9 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({
                     ? t("aria.switch_to_light_mode")
                     : t("aria.switch_to_dark_mode")
                 }
+                // Hidden on phones to leave room for the title; the toggle
+                // is still available on the public navbar and on sm+.
+                sx={{ display: { xs: "none", sm: "inline-flex" } }}
               >
                 {themeMode === "dark" ? <LightModeIcon /> : <DarkModeIcon />}
               </IconButton>

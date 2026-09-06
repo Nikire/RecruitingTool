@@ -106,16 +106,39 @@ const CATEGORY_LABEL_KEYS: Record<string, string> = {
 const getCategoryLabelKey = (category: string): string =>
   CATEGORY_LABEL_KEYS[category] ?? category;
 
+/** Select values → label keys, mirroring the options `FilterSidebar` offers. */
+const JOB_TYPE_LABEL_KEYS: Record<string, string> = {
+  FULL_TIME: "careersFilters.full_time",
+  PART_TIME: "careersFilters.part_time",
+  CONTRACT: "careersFilters.contract",
+  INTERNSHIP: "careersFilters.internship",
+  TEMPORARY: "careersFilters.temporary",
+  FREELANCE: "create_job_position.job_type_freelance",
+};
+
+const WORK_LOCATION_LABEL_KEYS: Record<string, string> = {
+  REMOTE: "careersFilters.remote",
+  HYBRID: "careersFilters.hybrid",
+  ON_SITE: "careersFilters.onsite",
+};
+
+const EXPERIENCE_LEVEL_LABEL_KEYS: Record<string, string> = {
+  ENTRY: "careersFilters.entry_level",
+  MID: "careersFilters.mid_level",
+  SENIOR: "careersFilters.senior_level",
+  LEAD: "careersFilters.lead_level",
+  EXECUTIVE: "careersFilters.executive_level",
+};
+
 /**
  * Filters whose input is continuous, so they must REPLACE the history entry
  * rather than push one.
  *
- * The search box calls back on every keystroke (its "debounce" returns a
- * cleanup function from `useCallback`, which nothing ever invokes) and the
- * salary slider fires while dragging. Pushing those would leave the back button
- * needing twenty presses to escape one search. Discrete choices — picking a
- * select value, clearing the filters — still push, so back undoes them one at
- * a time.
+ * The search box commits after a short debounce (and on Enter) and the salary
+ * slider fires once dragging settles. Pushing those would still leave the back
+ * button needing many presses to escape one search. Discrete choices — picking
+ * a select value, clearing the filters — push, so back undoes them one at a
+ * time.
  */
 const CONTINUOUS_FILTER_KEYS = new Set<BoardFilterKey>([
   "search",
@@ -282,10 +305,14 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
   );
 
   const commitFilters = useCallback(
-    (next: BoardFilters, replace = false) => {
+    (next: BoardFilters, replace = false, stayInPlace = false) => {
       // On a facet page every change carries the pinned values with it and
       // continues on the general board, leaving the indexed URL untouched.
-      if (escapeTo) {
+      // Typing in the search box is the exception: leaving the route would
+      // unmount the input mid-word, and `<Seo>` strips `?q=` from the
+      // canonical URL anyway, so the query stays on the facet page until the
+      // visitor touches a discrete filter.
+      if (escapeTo && !stayInPlace) {
         const merged = { ...next, ...(fixedFilters ?? {}) };
         navigate(`${escapeTo}?${toSearchParams(merged, 1).toString()}`, {
           replace,
@@ -303,10 +330,15 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
       commitFilters(
         { ...urlFilters, [filterKey]: value },
         CONTINUOUS_FILTER_KEYS.has(filterKey),
+        filterKey === "search",
       );
     },
     [commitFilters, urlFilters],
   );
+
+  const handleClearSalary = useCallback(() => {
+    commitFilters({ ...urlFilters, salaryMin: "", salaryMax: "" });
+  }, [commitFilters, urlFilters]);
 
   const handleClearFilters = useCallback(() => {
     commitFilters({ ...EMPTY_FILTERS });
@@ -370,17 +402,22 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
     return params;
   }, [effectiveFilters, page]);
 
-  const { data, isLoading, error } = usePublicJobPositions(apiFilters, {
-    enabled: true,
-  });
+  // Previous results stay on screen (dimmed) while a new filter set loads, so
+  // removing a chip does not swap the whole list for skeletons under the cursor.
+  const { data, isLoading, isPlaceholderData, error } = usePublicJobPositions(
+    apiFilters,
+    { enabled: true, keepPreviousData: true },
+  );
 
   const jobPositions = useMemo(() => data?.data ?? [], [data?.data]);
   const totalPages = data?.totalPages ?? 0;
   const openJobsCount = data?.total ?? 0;
+  const showSkeletons = isLoading && !data;
 
   useEffect(() => {
-    if (!isLoading && !error) onResultCountChange?.(openJobsCount);
-  }, [error, isLoading, onResultCountChange, openJobsCount]);
+    if (!isLoading && !isPlaceholderData && !error)
+      onResultCountChange?.(openJobsCount);
+  }, [error, isLoading, isPlaceholderData, onResultCountChange, openJobsCount]);
 
   /* ---------------------------------------------------------------------- */
   /* Derived UI state                                                       */
@@ -406,14 +443,24 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
     [fixedFilters, urlFilters],
   );
 
+  // Empty while the companies list is loading or the UID is unknown — the chip
+  // is skipped rather than echoing a raw UID to the visitor.
   const selectedCompanyName = useMemo(
     () =>
-      urlFilters.company
-        ? (companies.find((c) => c.uid === urlFilters.company)?.name ??
-          urlFilters.company)
+      urlFilters.company && !isLoadingCompanies
+        ? (companies.find((c) => c.uid === urlFilters.company)?.name ?? "")
         : "",
-    [companies, urlFilters.company],
+    [companies, isLoadingCompanies, urlFilters.company],
   );
+
+  const salaryChipLabel = useMemo(() => {
+    if (!urlFilters.salaryMin && !urlFilters.salaryMax) return "";
+    const min = Number.parseInt(urlFilters.salaryMin, 10);
+    const max = Number.parseInt(urlFilters.salaryMax, 10);
+    return `${t("careersFilters.salary_range")}: ${formatSalary(
+      Number.isFinite(min) ? min : MIN_SALARY,
+    )} - ${formatSalary(Number.isFinite(max) ? max : MAX_SALARY)}`;
+  }, [formatSalary, t, urlFilters.salaryMax, urlFilters.salaryMin]);
 
   const sidebar = (
     <FilterSidebar
@@ -487,7 +534,10 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
               <Typography variant="h6" component="h2" sx={{ fontWeight: 700 }}>
                 {t("careersFilters.filters")}
               </Typography>
-              <IconButton onClick={() => setFilterDrawerOpen(false)}>
+              <IconButton
+                aria-label={t("common.close")}
+                onClick={() => setFilterDrawerOpen(false)}
+              >
                 <CloseIcon />
               </IconButton>
             </Box>
@@ -495,7 +545,7 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
           </Drawer>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
-            {!isLoading && !error && (
+            {!showSkeletons && !error && (
               <Box sx={{ mb: 3 }}>
                 <Typography
                   variant="body2"
@@ -516,14 +566,16 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
 
                 {activeFilterCount > 0 && (
                   <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-                    {!fixedFilters?.company && urlFilters.company && (
-                      <Chip
-                        label={`${t("careersFilters.company")}: ${selectedCompanyName}`}
-                        onDelete={() => handleFilterChange("company", "")}
-                        size="small"
-                        sx={truncatingChipSx}
-                      />
-                    )}
+                    {!fixedFilters?.company &&
+                      urlFilters.company &&
+                      selectedCompanyName && (
+                        <Chip
+                          label={`${t("careersFilters.company")}: ${selectedCompanyName}`}
+                          onDelete={() => handleFilterChange("company", "")}
+                          size="small"
+                          sx={truncatingChipSx}
+                        />
+                      )}
                     {!fixedFilters?.category && urlFilters.category && (
                       <Chip
                         label={`${t("careersFilters.category")}: ${t(getCategoryLabelKey(urlFilters.category))}`}
@@ -532,35 +584,78 @@ const CareersBoard: React.FC<CareersBoardProps> = ({
                         sx={truncatingChipSx}
                       />
                     )}
+                    {!fixedFilters?.jobType && urlFilters.jobType && (
+                      <Chip
+                        label={`${t("careersFilters.job_type")}: ${t(JOB_TYPE_LABEL_KEYS[urlFilters.jobType] ?? urlFilters.jobType)}`}
+                        onDelete={() => handleFilterChange("jobType", "")}
+                        size="small"
+                        sx={truncatingChipSx}
+                      />
+                    )}
+                    {!fixedFilters?.workLocation && urlFilters.workLocation && (
+                      <Chip
+                        label={`${t("careersFilters.work_location")}: ${t(WORK_LOCATION_LABEL_KEYS[urlFilters.workLocation] ?? urlFilters.workLocation)}`}
+                        onDelete={() => handleFilterChange("workLocation", "")}
+                        size="small"
+                        sx={truncatingChipSx}
+                      />
+                    )}
+                    {!fixedFilters?.experienceLevel &&
+                      urlFilters.experienceLevel && (
+                        <Chip
+                          label={`${t("careersFilters.experience_level")}: ${t(EXPERIENCE_LEVEL_LABEL_KEYS[urlFilters.experienceLevel] ?? urlFilters.experienceLevel)}`}
+                          onDelete={() =>
+                            handleFilterChange("experienceLevel", "")
+                          }
+                          size="small"
+                          sx={truncatingChipSx}
+                        />
+                      )}
+                    {!fixedFilters?.salaryMin &&
+                      !fixedFilters?.salaryMax &&
+                      salaryChipLabel && (
+                        <Chip
+                          label={salaryChipLabel}
+                          onDelete={handleClearSalary}
+                          size="small"
+                          sx={truncatingChipSx}
+                        />
+                      )}
                   </Stack>
                 )}
               </Box>
             )}
 
-            {isLoading && <LoadingSkeletons count={9} />}
+            {showSkeletons && <LoadingSkeletons count={9} />}
 
-            <JobCardsGrid
-              jobPositions={jobPositions}
-              isLoading={isLoading}
-              error={error}
-              openJobsCount={openJobsCount}
-              hasActiveFilters={activeFilterCount > 0}
-              hasSearchQuery={!!effectiveFilters.search}
-              totalPages={totalPages}
-              currentPage={page}
-              isMobile={isMobile}
-              onApplyClick={handleApplyClick}
-              onPageChange={handlePageChange}
-              onClearFilters={handleClearFilters}
-            />
+            <Box
+              sx={{
+                opacity: isPlaceholderData ? 0.6 : 1,
+                transition: "opacity 0.2s ease",
+              }}
+              aria-busy={isPlaceholderData || undefined}
+            >
+              <JobCardsGrid
+                jobPositions={jobPositions}
+                isLoading={showSkeletons}
+                error={error}
+                openJobsCount={openJobsCount}
+                hasActiveFilters={activeFilterCount > 0}
+                hasSearchQuery={!!effectiveFilters.search}
+                totalPages={totalPages}
+                currentPage={page}
+                isMobile={isMobile}
+                onApplyClick={handleApplyClick}
+                onPageChange={handlePageChange}
+                onClearFilters={handleClearFilters}
+              />
+            </Box>
 
             {/*
-              The job cards navigate with `useNavigate`, i.e. an onClick handler
-              and no `href`, so a crawler cannot follow a single one of them.
-              Without this list the detail pages are orphans: listed in the
-              sitemap, unreachable by crawl, receiving no internal links at all.
+              A flat list of every role on this page, so crawlers get a plain
+              anchor per posting even when the card grid is dimmed or refetching.
             */}
-            {!isLoading && !error && jobPositions.length > 0 && (
+            {!showSkeletons && !error && jobPositions.length > 0 && (
               <Box
                 component="nav"
                 aria-label={t("careersBoard.all_roles_nav_label")}

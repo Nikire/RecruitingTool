@@ -1,5 +1,10 @@
 import { jobPositionKeys } from "../../api/queryKeys";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+  keepPreviousData,
+} from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   approveJobPosition,
@@ -27,12 +32,20 @@ import { useActivationEvents } from "./useActivationEvents";
 
 export function usePublicJobPositions(
   filters?: PublicJobPositionFilters,
-  options?: { enabled?: boolean },
+  options?: {
+    enabled?: boolean;
+    /**
+     * Keep showing the previous page of results while a new filter set loads,
+     * so changing a filter dims the list instead of swapping it for skeletons.
+     */
+    keepPreviousData?: boolean;
+  },
 ) {
   return useQuery({
     queryKey: jobPositionKeys.publicList(filters),
     queryFn: () => getPublicJobPositions(filters),
     enabled: options?.enabled !== false,
+    placeholderData: options?.keepPreviousData ? keepPreviousData : undefined,
     staleTime: 2 * 60 * 1000, // 2 minutes - data is considered fresh
     gcTime: 10 * 60 * 1000, // 10 minutes - cache retention time
     refetchOnWindowFocus: false, // Don't refetch when user returns to tab

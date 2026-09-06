@@ -18,9 +18,10 @@ import {
   getStatusByAccessCode,
   PublicStatusResponse,
 } from "../../api/hiringProcess";
+import Seo from "../../components/common/Seo";
 
 const CheckStatusPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [accessCode, setAccessCode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -76,6 +77,11 @@ const CheckStatusPage = () => {
 
   return (
     <Container maxWidth="md" sx={{ py: 8 }}>
+      <Seo
+        title={t("seo.check_status.title")}
+        description={t("seo.check_status.description")}
+        noindex
+      />
       <Box textAlign="center" mb={4}>
         <Typography variant="h3" component="h1" gutterBottom fontWeight="bold">
           {t("check_status.title")}
@@ -207,7 +213,9 @@ const CheckStatusPage = () => {
                   {t("check_status.last_updated")}
                 </Typography>
                 <Typography variant="body2">
-                  {new Date(status.lastUpdated).toLocaleDateString()}
+                  {new Date(status.lastUpdated).toLocaleDateString(
+                    i18n.language,
+                  )}
                 </Typography>
               </Box>
             </Box>

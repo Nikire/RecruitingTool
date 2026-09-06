@@ -161,7 +161,7 @@ const Navbar: React.FC = () => {
                 <Box
                   component="img"
                   src={logedUser.company.logoUrl}
-                  alt={logedUser.company.name || "Company Logo"}
+                  alt={logedUser.company.name || t("common.company_logo_alt")}
                   sx={{
                     height: { xs: 32, sm: 40 },
                     maxWidth: 150,

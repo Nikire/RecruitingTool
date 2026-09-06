@@ -16,6 +16,7 @@ import {
   UpdateApplicationDto,
 } from "../../types/application.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import { useTranslation } from "react-i18next";
 
 export function useApplications(filters?: ApplicationFilterDto) {
   return useQuery({
@@ -41,15 +42,16 @@ export function useApplication(uid: string) {
 
 export function useCreateApplication() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: (data: CreateApplicationDto) => createApplication(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
-      showSuccessToast("Application submitted successfully!");
+      showSuccessToast(t("apply_job.submit_success"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to submit application");
+      showErrorToast(error, t("apply_job.submit_failed"));
     },
   });
 }

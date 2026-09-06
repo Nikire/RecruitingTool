@@ -22,7 +22,8 @@ const LandingPageLayout = () => {
   return (
     <>
       <Navbar />
-      <Toolbar /> {/* Offset spacer for fixed AppBar */}
+      {/* Offset spacer - must match the Navbar toolbar height */}
+      <Toolbar sx={{ minHeight: { xs: 64, sm: 70 } }} />
       <Box sx={{ width: "100%" }}>
         <Outlet />
       </Box>

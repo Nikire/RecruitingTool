@@ -949,7 +949,13 @@
     "autofilling": "Autocompletando...",
     "autofill_success": "Formulario completado con tus datos de perfil",
     "autofill_error": "Error al cargar datos del perfil",
-    "no_profile_data": "Inicia sesión para usar el autocompletado"
+    "no_profile_data": "Inicia sesión para usar el autocompletado",
+    "upload_failed": "No pudimos subir tu currículum. Inténtalo de nuevo o quita el archivo.",
+    "name_length": "El nombre debe tener entre {{min}} y {{max}} caracteres",
+    "phone_length": "El número de teléfono debe tener entre {{min}} y {{max}} caracteres",
+    "cover_letter_too_long": "La carta de presentación debe tener como máximo {{max}} caracteres",
+    "submit_success": "¡Aplicación enviada exitosamente!",
+    "submit_failed": "Error al enviar la aplicación"
   },
   "application": {
     "source_question": "¿Dónde nos encontraste?",
@@ -1599,7 +1605,8 @@
     "stage_type_SALARY_NEGOTIATION": "Negociación Salarial",
     "stage_type_OFFER": "Oferta",
     "stage_type_OTHER": "Otro",
-    "no_description": "No se proporcionaron detalles adicionales para esta etapa."
+    "no_description": "No se proporcionaron detalles adicionales para esta etapa.",
+    "enter_different_code": "Ingresar otro código"
   },
   "hiring_process_page": {
     "no_data_found": "No se encontraron datos",
@@ -1661,7 +1668,9 @@
     "responsibilities_section": "Responsabilidades",
     "benefits_section": "Beneficios",
     "education_section": "Nivel educativo",
-    "tags_section": "Etiquetas"
+    "tags_section": "Etiquetas",
+    "no_longer_available": "Esta posición ya no está disponible",
+    "no_longer_available_body": "Esta vacante fue cerrada o ya se cubrió. Explora las otras posiciones que las empresas están buscando cubrir ahora."
   },
   "file_list": {
     "error_loading": "Error al cargar archivos. Por favor intente nuevamente más tarde.",
@@ -3032,7 +3041,8 @@
       "welcome_back": "¡Bienvenido de nuevo, {{name}}!",
       "founding_teaser": "Programa de Empresas Fundadoras — Plazas limitadas disponibles",
       "founding_subtitle": "Únete ahora y asegura un descuento permanente. Solo necesitamos tu feedback honesto a cambio.",
-      "eyebrow": "Para agencias de staffing y reclutamiento en LATAM"
+      "eyebrow": "Para agencias de staffing y reclutamiento en LATAM",
+      "play_video": "Reproducir el video del producto"
     },
     "stats": {
       "candidates_processed": "Candidatos Procesados",
@@ -3267,7 +3277,12 @@
           "title": "Procesos agrupados por puesto",
           "caption": "Cada proceso abierto agrupado por puesto, con cuántos candidatos ya evaluó la IA y la puntuación promedio de ese puesto, para ver de un vistazo qué pipelines avanzan."
         }
-      }
+      },
+      "prev": "Captura anterior",
+      "next": "Captura siguiente",
+      "go_to_slide": "Ir a la captura {{n}}",
+      "zoom_in": "Ampliar",
+      "zoom_out": "Reducir"
     },
     "integrations": {
       "section_label": "CON QUÉ SE CONECTA",
@@ -4131,7 +4146,9 @@
     "book_demo_page_subtitle": "Programa una reunión personalizada con el equipo de Borderless",
     "book_demo_confirmed_title": "¡Demo Reservada!",
     "book_demo_confirmed_subtitle": "Esperamos con ansias conocerte",
-    "book_demo_confirmed_message": "Tu demo ha sido confirmada. Revisa tu correo para ver los detalles de la reunión y la invitación al calendario."
+    "book_demo_confirmed_message": "Tu demo ha sido confirmada. Revisa tu correo para ver los detalles de la reunión y la invitación al calendario.",
+    "form_error": "No pudimos enviar tu mensaje. Por favor intenta de nuevo.",
+    "form_message_too_long": "El asunto y el mensaje juntos deben tener menos de {{max}} caracteres."
   },
   "admin_contact": {
     "page_title": "Mensajes de Contacto",
@@ -5245,7 +5262,9 @@
       "title": "Empleos en {{company}} — vacantes abiertas | Borderless",
       "description": "Todas las vacantes abiertas de {{company}}, actualizadas apenas el equipo las publica. Lee la descripción, el salario y los requisitos, y postúlate en minutos.",
       "not_found_title": "Página de empleos no encontrada | Borderless",
-      "not_found_description": "Esta página de empleos no está disponible. Explora todas las vacantes abiertas en el listado de empleos de Borderless."
+      "not_found_description": "Esta página de empleos no está disponible. Explora todas las vacantes abiertas en el listado de empleos de Borderless.",
+      "error_title": "Página de Carreras No Disponible | Borderless",
+      "error_description": "No se pudo cargar esta página de carreras en este momento. Reintenta o explora todas las vacantes abiertas en la bolsa de trabajo de Borderless."
     },
     "blog": {
       "title": "Guías de reclutamiento y ATS para agencias | Blog de Borderless",
@@ -5253,6 +5272,10 @@
       "post_title": "{{title}} | Borderless",
       "not_found_title": "Artículo no encontrado | Borderless",
       "not_found_description": "Este artículo no está disponible. Lee el resto de las guías de Borderless sobre reclutamiento, ATS y SEO para páginas de empleo."
+    },
+    "check_status": {
+      "title": "Consulta el estado de tu postulación | Borderless",
+      "description": "Ingresa el código de acceso que recibiste por correo para ver en qué etapa está tu postulación en Borderless."
     }
   },
   "not_found": {
@@ -5302,7 +5325,8 @@
   "careersCompany": {
     "heading": "Trabaja en {{company}}",
     "not_found_title": "No encontramos esa empresa",
-    "not_found_body": "Esta página de empleos no existe, o la empresa no tiene vacantes abiertas en este momento."
+    "not_found_body": "Esta página de empleos no existe, o la empresa no tiene vacantes abiertas en este momento.",
+    "load_error_title": "No pudimos cargar esta página de carreras"
   },
   "careersFacets": {
     "nav_label": "Explorar empleos",

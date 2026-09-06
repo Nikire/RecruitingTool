@@ -28,7 +28,12 @@ import { buildCompanyCareersPath, resolveCompanyBySlug } from "./careersUrls";
 const CompanyCareersPage: React.FC = () => {
   const { t } = useTranslation();
   const { companySlug } = useParams<{ companySlug: string }>();
-  const { data: companiesData, isLoading } = usePublicCompaniesWithJobs();
+  const {
+    data: companiesData,
+    isLoading,
+    isError,
+    refetch,
+  } = usePublicCompaniesWithJobs();
 
   const company = useMemo(
     () => resolveCompanyBySlug(companiesData ?? [], companySlug),
@@ -52,6 +57,32 @@ const CompanyCareersPage: React.FC = () => {
 
   if (isLoading) {
     return <CenteredLoadingSpinner />;
+  }
+
+  // A failed request is not a missing company: say so and offer a retry
+  // instead of telling the visitor the careers page does not exist.
+  if (isError) {
+    return (
+      <Container maxWidth="md" sx={{ py: 8, textAlign: "center" }}>
+        <Seo
+          title={t("seo.company_careers.error_title")}
+          description={t("seo.company_careers.error_description")}
+          noindex
+        />
+        <Typography variant="h5" component="h1" sx={{ fontWeight: 700, mb: 1 }}>
+          {t("careersCompany.load_error_title")}
+        </Typography>
+        <Typography color="text.secondary" sx={{ mb: 3 }}>
+          {t("errors.fetch_failed")}
+        </Typography>
+        <Button variant="contained" onClick={() => refetch()} sx={{ mr: 1 }}>
+          {t("common.retry")}
+        </Button>
+        <Button component={RouterLink} to="/careers" variant="outlined">
+          {t("common.back_to_careers")}
+        </Button>
+      </Container>
+    );
   }
 
   if (!company) {

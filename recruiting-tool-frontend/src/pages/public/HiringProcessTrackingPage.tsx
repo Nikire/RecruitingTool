@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -123,18 +123,51 @@ function getStatusChipProps(status: string): {
 }
 
 const STORAGE_KEY_PREFIX = "hp_access_";
+const TRACKING_QUERY_KEY = "public-hiring-process-tracking";
+
+/*
+ * Storage access can throw (Safari "Block all cookies", in-app webviews,
+ * enterprise policies). The stored code is only a convenience, so every
+ * failure falls back to in-memory state instead of crashing the page.
+ */
+const readStoredCode = (key: string | null): string => {
+  if (!key) return "";
+  try {
+    return localStorage.getItem(key) ?? "";
+  } catch {
+    return "";
+  }
+};
+
+const writeStoredCode = (key: string | null, code: string): void => {
+  if (!key) return;
+  try {
+    localStorage.setItem(key, code);
+  } catch {
+    // Storage unavailable — the code still lives in component state.
+  }
+};
+
+const clearStoredCode = (key: string | null): void => {
+  if (!key) return;
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Nothing to clear if storage is unavailable.
+  }
+};
 
 const HiringProcessTrackingPage: React.FC = () => {
   const { t } = useTranslation();
   const { uid } = useParams<{ uid: string }>();
   const theme = useTheme();
+  const queryClient = useQueryClient();
 
   const storageKey = uid ? `${STORAGE_KEY_PREFIX}${uid}` : null;
 
-  const [submittedCode, setSubmittedCode] = useState<string>(() => {
-    if (!storageKey) return "";
-    return localStorage.getItem(storageKey) ?? "";
-  });
+  const [submittedCode, setSubmittedCode] = useState<string>(() =>
+    readStoredCode(storageKey),
+  );
 
   const [codeInput, setCodeInput] = useState("");
   const [codeError, setCodeError] = useState(false);
@@ -145,7 +178,7 @@ const HiringProcessTrackingPage: React.FC = () => {
     error,
     refetch,
   } = useQuery({
-    queryKey: ["public-hiring-process-tracking", uid, submittedCode],
+    queryKey: [TRACKING_QUERY_KEY, uid, submittedCode],
     queryFn: () => getPublicHiringProcessTracking(uid!, submittedCode),
     enabled: !!uid && !!submittedCode,
     retry: false,
@@ -160,11 +193,23 @@ const HiringProcessTrackingPage: React.FC = () => {
     const normalized = codeInput.trim().toUpperCase();
     if (!normalized) return;
     setCodeError(false);
-    if (storageKey) {
-      localStorage.setItem(storageKey, normalized);
+    writeStoredCode(storageKey, normalized);
+    // Changing `submittedCode` changes the query key, which is what triggers
+    // the fetch. Calling `refetch()` here would fire a request with the
+    // previous (empty or rejected) code first. If this exact code was already
+    // tried and failed, reset that cached query so it is fetched again.
+    const queryKey = [TRACKING_QUERY_KEY, uid, normalized];
+    if (queryClient.getQueryState(queryKey)?.status === "error") {
+      queryClient.resetQueries({ queryKey, exact: true });
     }
     setSubmittedCode(normalized);
-    refetch();
+  };
+
+  const handleEnterDifferentCode = () => {
+    clearStoredCode(storageKey);
+    setCodeInput("");
+    setCodeError(false);
+    setSubmittedCode("");
   };
 
   const handleCodeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -180,9 +225,7 @@ const HiringProcessTrackingPage: React.FC = () => {
     ) {
       setCodeError(true);
       // Clear the stored code so user must re-enter
-      if (storageKey) {
-        localStorage.removeItem(storageKey);
-      }
+      clearStoredCode(storageKey);
       setSubmittedCode("");
     }
   }, [error, storageKey]);
@@ -291,6 +334,22 @@ const HiringProcessTrackingPage: React.FC = () => {
               ? t("hiring_process_tracking.not_found_message")
               : t("hiring_process_tracking.error_message")}
           </Typography>
+          {!is404 && (
+            <Box
+              display="flex"
+              justifyContent="center"
+              flexWrap="wrap"
+              gap={1.5}
+              mt={3}
+            >
+              <Button variant="contained" onClick={() => refetch()}>
+                {t("common.retry")}
+              </Button>
+              <Button variant="outlined" onClick={handleEnterDifferentCode}>
+                {t("hiring_process_tracking.enter_different_code")}
+              </Button>
+            </Box>
+          )}
         </Box>
       </Container>
     );

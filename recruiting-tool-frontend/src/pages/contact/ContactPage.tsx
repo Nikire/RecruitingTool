@@ -43,6 +43,9 @@ const fadeInUp = keyframes`
   }
 `;
 
+/** Backend `CreateContactMessageDto.message` is `@MaxLength(5000)`. */
+const CONTACT_MESSAGE_MAX_LENGTH = 5000;
+
 interface ContactFormData {
   name: string;
   email: string;
@@ -66,7 +69,11 @@ const ContactPage = () => {
     formState: { errors },
   } = useForm<ContactFormData>();
 
-  const { mutate: submitContact, isPending } = useCreateContactMessage();
+  const {
+    mutate: submitContact,
+    isPending,
+    isError,
+  } = useCreateContactMessage();
 
   const onSubmit = (data: ContactFormData) => {
     const dto: CreateContactMessageDto = {
@@ -375,7 +382,7 @@ const ContactPage = () => {
                     </Typography>
                   </Box>
 
-                  <form onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     <Grid container spacing={2.5}>
                       <Grid size={{ xs: 12, sm: 6 }}>
                         <TextField
@@ -450,13 +457,35 @@ const ContactPage = () => {
                                 t("contact.form_message"),
                               ),
                               validationRules.minLength(10),
-                              validationRules.maxLength(5000),
+                              validationRules.maxLength(
+                                CONTACT_MESSAGE_MAX_LENGTH,
+                              ),
+                              {
+                                // The subject is prepended to the message on
+                                // submit; the backend caps the combined string.
+                                validate: (
+                                  value: string,
+                                  formValues: ContactFormData,
+                                ) =>
+                                  `[${formValues.subject ?? ""}] ${value}`
+                                    .length <= CONTACT_MESSAGE_MAX_LENGTH ||
+                                  t("contact.form_message_too_long", {
+                                    max: CONTACT_MESSAGE_MAX_LENGTH,
+                                  }),
+                              },
                             ),
                           )}
                           error={!!errors.message}
                           helperText={errors.message?.message}
                         />
                       </Grid>
+                      {isError && (
+                        <Grid size={{ xs: 12 }}>
+                          <Alert severity="error" sx={{ borderRadius: 2 }}>
+                            {t("contact.form_error")}
+                          </Alert>
+                        </Grid>
+                      )}
                       <Grid size={{ xs: 12 }}>
                         <Button
                           type="submit"

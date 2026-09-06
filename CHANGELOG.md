@@ -7,6 +7,37 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## Version 1.1.0 - 2026-09-06
+
+**Public-surface audit: 45 verified findings fixed across landing, contact, navigation shell and the public careers flow.**
+
+### 🐛 Bug Fixes
+- Contact form: combined subject + message validated against the backend 5000-char limit; submit failures show a translated inline error instead of a toast with a raw `{{entity}}` placeholder
+- Apply dialog: CV upload failures are surfaced (inline error + toast) instead of silently submitting without a resume; client validation mirrors the backend DTO (name 2–100, phone 5–20, cover letter ≤ 5000); Enter submits; auto-fill clears stale errors; Cancel disabled while uploading/submitting
+- Careers board: real 300 ms search debounce (no navigation per keystroke); search text stays in sync after "Clear all" / back; results keep previous data while refetching instead of flashing 9 skeletons; jobs without a job type no longer labelled "Full-time"; company chip never shows a raw UUID
+- Job detail: closed/removed jobs render a dedicated "no longer available" state with a working back-to-careers link (previously a generic error linking to a 404 route)
+- Company careers page: no-open-roles no longer renders "Company not found"; real errors get a retry
+- Status tracking page: unlock no longer fires a request with the stale access code; non-401 errors get a retry; localStorage access wrapped in try/catch
+- Landing: pricing cards show skeletons then fallback plan limits while the plan-limits request loads or fails; founding-program pill keeps its amber fill; slider respects `prefers-reduced-motion` and pauses on touch/focus
+- Layout: toolbar spacer matches the fixed AppBar height so banners are not clipped; dashboard menu groups auto-open when navigating into them; app-bar title wraps to two lines on phones
+- Unauthorized page: "Request access" now goes to /contact instead of the role-gated team settings page
+
+### 💄 UI/UX & Accessibility
+- Keyboard/screen-reader access: footer nav items are real links; slider/lightbox controls, drawer close, search clear and file-upload button have translated `aria-label`s; job cards are link-based `CardActionArea`s
+- Notifications reachable on phones via the mobile drawer; Contact link visible to authenticated users in the drawer
+- Long text: tooltips on truncated drawer name/email, job card title/company and resume filename; markdown tables in blog posts scroll horizontally
+- Salary chips formatted with `Intl.NumberFormat` (e.g. "US$50,000") instead of "USD50,000"
+- Status page: date respects the selected language and the page has SEO meta (noindex)
+- Hero "Book a live demo" button uses an outlined variant so it is visible on the gradient
+
+### 🌐 i18n
+- 22 new keys in `en.json` / `es.json` (contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking); apply-flow toasts translated
+
+### Affected files
+`recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`
+
+---
+
 ## Version 1.0.0 - 2026-04-21
 
 **First stable production release of Borderless ATS.**

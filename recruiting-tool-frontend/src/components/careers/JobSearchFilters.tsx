@@ -1,13 +1,15 @@
-import { Box, TextField, InputAdornment } from "@mui/material";
+import { Box, TextField, InputAdornment, IconButton } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 interface JobSearchFiltersProps {
   search: string;
   onSearchChange: (value: string) => void;
 }
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
   search,
@@ -15,21 +17,48 @@ const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
 }) => {
   const { t } = useTranslation();
   const [localSearch, setLocalSearch] = useState(search);
+  const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const clearPendingCommit = useCallback(() => {
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+      debounceTimer.current = null;
+    }
+  }, []);
+
+  // Cancel any in-flight debounce when the component unmounts.
+  useEffect(() => clearPendingCommit, [clearPendingCommit]);
+
+  // Keep the box in step with the URL (Clear all, back button, pasted link)
+  // without clobbering text the visitor is still typing.
+  useEffect(() => {
+    if (debounceTimer.current) return;
+    setLocalSearch(search);
+  }, [search]);
 
   // Debounced search handler
   const handleSearchChange = useCallback(
     (value: string) => {
       setLocalSearch(value);
-      // Debounce search for better UX
-      const timeoutId = setTimeout(() => {
+      clearPendingCommit();
+      debounceTimer.current = setTimeout(() => {
+        debounceTimer.current = null;
         onSearchChange(value);
-      }, 300);
-      return () => clearTimeout(timeoutId);
+      }, SEARCH_DEBOUNCE_MS);
     },
-    [onSearchChange],
+    [clearPendingCommit, onSearchChange],
   );
 
+  // Enter commits immediately instead of waiting out the debounce.
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key !== "Enter") return;
+    event.preventDefault();
+    clearPendingCommit();
+    onSearchChange(localSearch);
+  };
+
   const handleClearSearch = () => {
+    clearPendingCommit();
     setLocalSearch("");
     onSearchChange("");
   };
@@ -42,6 +71,7 @@ const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
         placeholder={t("careers.search_placeholder")}
         value={localSearch}
         onChange={(e) => handleSearchChange(e.target.value)}
+        onKeyDown={handleKeyDown}
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -50,15 +80,18 @@ const JobSearchFilters: React.FC<JobSearchFiltersProps> = ({
           ),
           endAdornment: localSearch && (
             <InputAdornment position="end">
-              <CloseIcon
+              <IconButton
+                size="small"
+                edge="end"
+                aria-label={t("search.clear_search")}
+                onClick={handleClearSearch}
                 sx={{
                   color: "text.secondary",
-                  fontSize: 20,
-                  cursor: "pointer",
                   "&:hover": { color: "text.primary" },
                 }}
-                onClick={handleClearSearch}
-              />
+              >
+                <CloseIcon sx={{ fontSize: 20 }} />
+              </IconButton>
             </InputAdornment>
           ),
           sx: {

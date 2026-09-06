@@ -71,7 +71,12 @@ const BookDemoDialog: React.FC<BookDemoDialogProps> = ({ open, onClose }) => {
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={isPending ? undefined : handleClose}
+      maxWidth="sm"
+      fullWidth
+    >
       <DialogTitle
         sx={{
           display: "flex",
@@ -86,12 +91,17 @@ const BookDemoDialog: React.FC<BookDemoDialogProps> = ({ open, onClose }) => {
             {t("contact.book_demo_dialog_title")}
           </Typography>
         </Box>
-        <IconButton onClick={handleClose} size="small">
+        <IconButton
+          onClick={handleClose}
+          size="small"
+          disabled={isPending}
+          aria-label={t("common.close")}
+        >
           <CloseIcon />
         </IconButton>
       </DialogTitle>
 
-      <form onSubmit={handleSubmit(onSubmit)}>
+      <form onSubmit={handleSubmit(onSubmit)} noValidate>
         <DialogContent>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
             {t("contact.book_demo_dialog_description")}

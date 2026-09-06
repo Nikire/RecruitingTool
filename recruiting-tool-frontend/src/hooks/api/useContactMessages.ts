@@ -28,7 +28,7 @@ export function useCreateContactMessage() {
   return useMutation({
     mutationFn: (data: CreateContactMessageDto) => createContactMessage(data),
     onError: () => {
-      showErrorToast(t("errors.create_failed"));
+      showErrorToast(t("contact.form_error"));
     },
   });
 }

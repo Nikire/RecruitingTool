@@ -341,23 +341,47 @@ const JobPositionDetailPage: React.FC = () => {
   }
 
   if (error || !jobPositionData) {
+    // The public endpoint only serves OPEN postings, so a closed, filled or
+    // deleted role comes back as 404 — that is "no longer available", not a
+    // failure the candidate can fix by retrying.
+    const isNoLongerAvailable =
+      !error ||
+      (error as { response?: { status?: number } } | null)?.response?.status ===
+        404;
+
     return (
-      <Box sx={{ p: { xs: 2, sm: 3, md: 4 } }}>
+      <Box sx={{ p: { xs: 2, sm: 3, md: 4 }, textAlign: "center" }}>
         {/* A missing or unreachable posting is a soft 404 — keep it out of the index. */}
         <Seo
           title={t("seo.job_detail.not_found_title")}
           description={t("seo.job_detail.not_found_description")}
           noindex
         />
-        <Typography color="error">
-          {t("job_position_detail.error_loading")}
-        </Typography>
+        {isNoLongerAvailable ? (
+          <>
+            <Typography
+              variant="h5"
+              component="h1"
+              sx={{ fontWeight: 700, mb: 1 }}
+            >
+              {t("job_position_detail.no_longer_available")}
+            </Typography>
+            <Typography color="text.secondary">
+              {t("job_position_detail.no_longer_available_body")}
+            </Typography>
+          </>
+        ) : (
+          <Typography color="error">
+            {t("job_position_detail.error_loading")}
+          </Typography>
+        )}
         <Button
+          variant="contained"
           startIcon={<ArrowBackIcon />}
-          onClick={() => navigate("/job-positions")}
-          sx={{ mt: 2 }}
+          onClick={() => navigate("/careers")}
+          sx={{ mt: 3 }}
         >
-          {t("job_position_detail.back_to_positions")}
+          {t("common.back_to_careers")}
         </Button>
       </Box>
     );

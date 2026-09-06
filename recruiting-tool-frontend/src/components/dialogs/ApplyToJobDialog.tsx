@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   DialogTitle,
   DialogContent,
@@ -14,6 +14,7 @@ import {
   Select,
   MenuItem,
   FormHelperText,
+  Tooltip,
 } from "@mui/material";
 import FormDialog from "./FormDialog";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -48,6 +49,15 @@ const APPLICATION_SOURCES: { value: string; labelKey: string }[] = [
   { value: "OTHER", labelKey: "application.source_other" },
 ];
 
+// Mirrors the backend CreateApplicationDto limits so a rejected submission is
+// explained inline instead of surfacing as a generic toast.
+const NAME_MIN_LENGTH = 2;
+const NAME_MAX_LENGTH = 100;
+const PHONE_MIN_LENGTH = 5;
+const PHONE_MAX_LENGTH = 20;
+const COVER_LETTER_MAX_LENGTH = 5000;
+const APPLY_FORM_ID = "apply-to-job-form";
+
 export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
   open,
   onClose,
@@ -76,6 +86,17 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
     Record<string, string>
   >({});
   const [success, setSuccess] = useState(false);
+  const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isPending = submitting || uploading;
+
+  // Never let the delayed close fire on an unmounted / already-closed dialog.
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   // Initialize custom answers when job position loads
   useEffect(() => {
@@ -129,16 +150,37 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
     const errors: Record<string, string> = {};
     const customErrors: Record<string, string> = {};
 
-    if (!formData.applicantName.trim()) {
+    const name = formData.applicantName.trim();
+    const phone = formData.applicantPhone.trim();
+
+    if (!name) {
       errors.applicantName = t("apply_job.name_required");
+    } else if (name.length < NAME_MIN_LENGTH || name.length > NAME_MAX_LENGTH) {
+      errors.applicantName = t("apply_job.name_length", {
+        min: NAME_MIN_LENGTH,
+        max: NAME_MAX_LENGTH,
+      });
     }
     if (!formData.applicantEmail.trim()) {
       errors.applicantEmail = t("apply_job.email_required");
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.applicantEmail)) {
       errors.applicantEmail = t("apply_job.email_invalid");
     }
-    if (!formData.applicantPhone.trim()) {
+    if (!phone) {
       errors.applicantPhone = t("apply_job.phone_required");
+    } else if (
+      phone.length < PHONE_MIN_LENGTH ||
+      phone.length > PHONE_MAX_LENGTH
+    ) {
+      errors.applicantPhone = t("apply_job.phone_length", {
+        min: PHONE_MIN_LENGTH,
+        max: PHONE_MAX_LENGTH,
+      });
+    }
+    if (formData.coverLetter.length > COVER_LETTER_MAX_LENGTH) {
+      errors.coverLetter = t("apply_job.cover_letter_too_long", {
+        max: COVER_LETTER_MAX_LENGTH,
+      });
     }
 
     // Validate custom questions
@@ -163,21 +205,33 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
-    try {
-      let resumeFileUid: string | undefined;
+    let resumeFileUid: string | undefined;
 
-      if (resumeFile) {
-        setUploading(true);
+    // The upload has its own error handling: useCreateApplication's onError
+    // toast never runs when the upload step throws, so the candidate would
+    // otherwise get no feedback at all.
+    if (resumeFile) {
+      setUploading(true);
+      try {
         const uploadedFile = await uploadResumePublic(resumeFile);
         resumeFileUid = uploadedFile.uid;
+      } catch (error) {
+        console.error("Resume upload failed:", error);
+        const message = t("apply_job.upload_failed");
+        setFormErrors((prev) => ({ ...prev, resume: message }));
+        showErrorToast(error as Error, message);
+        return;
+      } finally {
         setUploading(false);
       }
+    }
 
+    try {
       await createApplication({
         jobPositionUid: jobUid,
-        applicantName: formData.applicantName,
-        applicantEmail: formData.applicantEmail,
-        applicantPhone: formData.applicantPhone,
+        applicantName: formData.applicantName.trim(),
+        applicantEmail: formData.applicantEmail.trim(),
+        applicantPhone: formData.applicantPhone.trim(),
         coverLetter: formData.coverLetter || undefined,
         resumeFileUid,
         applicationSource: formData.applicationSource || undefined,
@@ -186,16 +240,22 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
       });
 
       setSuccess(true);
-      setTimeout(() => {
+      closeTimeoutRef.current = setTimeout(() => {
+        closeTimeoutRef.current = null;
         handleClose();
       }, 2000);
     } catch (error) {
+      // useCreateApplication already surfaces the error toast.
       console.error("Application submission failed:", error);
-      setUploading(false);
     }
   };
 
   const handleClose = () => {
+    if (isPending) return;
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+      closeTimeoutRef.current = null;
+    }
     setFormData({
       applicantName: "",
       applicantEmail: "",
@@ -230,6 +290,14 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
         coverLetter: formData.coverLetter,
         applicationSource: formData.applicationSource,
       });
+      // The filled-in values supersede any "required" errors left by a
+      // previous submit attempt.
+      setFormErrors((prev) => ({
+        ...prev,
+        applicantName: "",
+        applicantEmail: "",
+        applicantPhone: "",
+      }));
 
       showSuccessToast(t("apply_job.autofill_success"));
     } catch (error) {
@@ -255,7 +323,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
     <FormDialog
       open={open}
       onClose={handleClose}
-      isDirty={hasUnsavedChanges}
+      isDirty={hasUnsavedChanges || isPending}
       maxWidth="sm"
       fullWidth
       PaperProps={{
@@ -291,6 +359,13 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
           </Alert>
         ) : (
           <Box
+            component="form"
+            id={APPLY_FORM_ID}
+            noValidate
+            onSubmit={(e: React.FormEvent<HTMLFormElement>) => {
+              e.preventDefault();
+              void handleSubmit();
+            }}
             sx={{
               pt: { xs: 1.5, sm: 2 },
               display: "flex",
@@ -331,8 +406,9 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
               error={!!formErrors.applicantName}
               helperText={formErrors.applicantName}
               required
+              autoComplete="name"
               inputProps={{
-                minLength: 2,
+                maxLength: NAME_MAX_LENGTH,
               }}
               sx={{
                 "& .MuiInputBase-input": {
@@ -352,6 +428,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
               error={!!formErrors.applicantEmail}
               helperText={formErrors.applicantEmail}
               required
+              autoComplete="email"
               sx={{
                 "& .MuiInputBase-input": {
                   fontSize: { xs: "1rem", sm: "1rem" },
@@ -364,11 +441,16 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
               fullWidth
               label={t("apply_job.phone_number")}
               name="applicantPhone"
+              type="tel"
+              autoComplete="tel"
               value={formData.applicantPhone}
               onChange={handleInputChange}
               error={!!formErrors.applicantPhone}
               helperText={formErrors.applicantPhone}
               required
+              inputProps={{
+                maxLength: PHONE_MAX_LENGTH,
+              }}
               sx={{
                 "& .MuiInputBase-input": {
                   fontSize: { xs: "1rem", sm: "1rem" },
@@ -382,6 +464,9 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
                 variant="contained"
                 color="secondary"
                 component="label"
+                aria-label={
+                  resumeFile ? resumeFile.name : t("apply_job.upload_resume")
+                }
                 startIcon={<AttachFileIcon />}
                 fullWidth
                 sx={{
@@ -395,7 +480,22 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
                   borderRadius: 1,
                 }}
               >
-                {resumeFile ? resumeFile.name : t("apply_job.upload_resume")}
+                <Tooltip title={resumeFile?.name ?? ""} disableInteractive>
+                  <Box
+                    component="span"
+                    sx={{
+                      minWidth: 0,
+                      flex: 1,
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    {resumeFile
+                      ? resumeFile.name
+                      : t("apply_job.upload_resume")}
+                  </Box>
+                </Tooltip>
                 <input
                   type="file"
                   hidden
@@ -427,6 +527,11 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
               multiline
               rows={4}
               placeholder={t("apply_job.cover_letter_placeholder")}
+              error={!!formErrors.coverLetter}
+              helperText={formErrors.coverLetter}
+              inputProps={{
+                maxLength: COVER_LETTER_MAX_LENGTH,
+              }}
               sx={{
                 "& .MuiInputBase-input": {
                   fontSize: { xs: "1rem", sm: "1rem" },
@@ -502,6 +607,7 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
         >
           <Button
             onClick={handleClose}
+            disabled={isPending}
             sx={{
               minWidth: { xs: "100%", sm: "auto" },
             }}
@@ -510,13 +616,14 @@ export const ApplyToJobDialog: React.FC<ApplyToJobDialogProps> = ({
           </Button>
           <Button
             variant="contained"
-            onClick={handleSubmit}
-            disabled={submitting || uploading}
+            type="submit"
+            form={APPLY_FORM_ID}
+            disabled={isPending}
             sx={{
               minWidth: { xs: "100%", sm: "auto" },
             }}
           >
-            {submitting || uploading
+            {isPending
               ? t("apply_job.submitting")
               : t("apply_job.submit_application")}
           </Button>

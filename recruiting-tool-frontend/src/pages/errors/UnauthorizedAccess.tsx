@@ -41,8 +41,9 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({
   };
 
   const handleRequestAccess = () => {
-    // Navigate to profile or team management where they can request access
-    navigate("/settings/team");
+    // /settings/team is itself role-gated, so send the user to the contact
+    // page, which every role can reach, to ask for access.
+    navigate("/contact");
   };
 
   return (
@@ -144,7 +145,7 @@ const UnauthorizedAccess: React.FC<UnauthorizedAccessProps> = ({
             {t("unauthorized.go_home")}
           </Button>
           <Button
-            variant="contained"
+            variant="outlined"
             startIcon={<ContactIcon />}
             onClick={handleRequestAccess}
           >

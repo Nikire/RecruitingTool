@@ -7,6 +7,7 @@ import {
   Container,
   Grid,
   Modal,
+  Skeleton,
   Typography,
   useTheme,
   alpha,
@@ -16,7 +17,7 @@ import {
   Avatar,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { keyframes } from "@mui/material/styles";
 import { useAuthMe } from "../../hooks/api/useAuth";
 import { usePlanLimits } from "../../hooks/api/usePlanLimits";
@@ -165,6 +166,50 @@ const AGENCY_FEATURE_KEYS = [
   "landing.pricing.agency.features.templates",
 ];
 
+/**
+ * Static limits for the tiers the API does serve, used only while
+ * `GET /quota/plan-limits` is still loading or has failed. They mirror the
+ * seeded rows in `plan-limits.service.ts` and run through the same
+ * `buildPlanFeatures` as the live data, so the fallback bullets read exactly
+ * like the real ones; once the request resolves the API values take over.
+ */
+const FALLBACK_PLAN_LIMITS: Record<string, PlanLimits> = {
+  FREE: {
+    maxJobPositions: 1,
+    maxCandidatesPerPosition: 50,
+    maxUsers: 1,
+    maxStorageMB: 500,
+    aiScoringEnabled: false,
+    aiScoringCreditsPerMonth: 0,
+    emailTemplatesEnabled: true,
+    analyticsEnabled: false,
+  },
+  PROFESSIONAL: {
+    maxJobPositions: 15,
+    maxCandidatesPerPosition: 200,
+    maxUsers: -1,
+    maxStorageMB: 10000,
+    aiScoringEnabled: true,
+    aiScoringCreditsPerMonth: 200,
+    emailTemplatesEnabled: true,
+    analyticsEnabled: true,
+  },
+  ENTERPRISE: {
+    maxJobPositions: -1,
+    maxCandidatesPerPosition: -1,
+    maxUsers: -1,
+    maxStorageMB: -1,
+    aiScoringEnabled: true,
+    aiScoringCreditsPerMonth: -1,
+    emailTemplatesEnabled: true,
+    analyticsEnabled: true,
+  },
+};
+
+/** Switches decorative motion off for visitors who asked the OS for it. */
+const REDUCED_MOTION = "@media (prefers-reduced-motion: reduce)";
+const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
+
 const FOUNDER = {
   photo: "/founder.jpg",
   linkedin: SOCIAL_LINKS.linkedin,
@@ -230,7 +275,7 @@ const LandingPage = () => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuthMe();
-  const { data: planLimits } = usePlanLimits();
+  const { data: planLimits, isLoading: planLimitsLoading } = usePlanLimits();
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoStarted, setVideoStarted] = useState(false);
   const [activeSlide, setActiveSlide] = useState(0);
@@ -249,6 +294,14 @@ const LandingPage = () => {
 
   useEffect(() => {
     if (sliderHovered) return;
+    // Respect the OS motion preference: no auto-advance, the visitor uses the
+    // arrows and dots instead.
+    if (
+      typeof window !== "undefined" &&
+      window.matchMedia?.(REDUCED_MOTION_QUERY).matches
+    ) {
+      return;
+    }
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % SLIDES.length);
     }, 4000);
@@ -313,8 +366,15 @@ const LandingPage = () => {
     | Record<string, PlanLimits | undefined>
     | undefined;
 
+  /**
+   * API row first, static mirror second: a slow, failed or rate-limited
+   * `GET /quota/plan-limits` must never leave a priced card with no bullets.
+   */
+  const resolvedLimits = (planType: string): PlanLimits | undefined =>
+    planLimitsByType?.[planType] ?? FALLBACK_PLAN_LIMITS[planType];
+
   const featuresForPlan = (planType: string): string[] => {
-    const limits = planLimitsByType?.[planType];
+    const limits = resolvedLimits(planType);
     return limits ? buildPlanFeatures(limits, t) : [];
   };
 
@@ -325,7 +385,7 @@ const LandingPage = () => {
    * three lines below it.
    */
   const seatsAreUnlimited = (planType: string, fallback: boolean): boolean => {
-    const limits = planLimitsByType?.[planType];
+    const limits = resolvedLimits(planType);
     return limits ? limits.maxUsers === -1 : fallback;
   };
 
@@ -511,6 +571,7 @@ const LandingPage = () => {
 						${theme.palette.secondary.main} 100%)`,
           backgroundSize: "200% 200%",
           animation: `${gradientShift} 5s ease infinite`,
+          [REDUCED_MOTION]: { animation: "none" },
           color: theme.palette.common.white,
           pt: { xs: 10, sm: 12, md: 14 },
           pb: { xs: 8, sm: 10, md: 14 },
@@ -535,6 +596,7 @@ const LandingPage = () => {
             borderRadius: "50%",
             background: alpha(theme.palette.common.white, 0.08),
             animation: `${float} 8s ease-in-out infinite`,
+            [REDUCED_MOTION]: { animation: "none" },
             filter: "blur(40px)",
           }}
         />
@@ -548,6 +610,7 @@ const LandingPage = () => {
             borderRadius: "50%",
             background: alpha(theme.palette.common.white, 0.06),
             animation: `${float} 10s ease-in-out infinite`,
+            [REDUCED_MOTION]: { animation: "none" },
             filter: "blur(30px)",
           }}
         />
@@ -561,6 +624,7 @@ const LandingPage = () => {
             borderRadius: "50%",
             background: alpha(theme.palette.common.white, 0.05),
             animation: `${float} 12s ease-in-out infinite`,
+            [REDUCED_MOTION]: { animation: "none" },
             filter: "blur(25px)",
           }}
         />
@@ -571,6 +635,7 @@ const LandingPage = () => {
               <Box
                 sx={{
                   animation: `${fadeInUp} 0.8s ease-out`,
+                  [REDUCED_MOTION]: { animation: "none" },
                 }}
               >
                 {/* Founding program teaser — amber pill */}
@@ -589,7 +654,6 @@ const LandingPage = () => {
                     bgcolor: alpha(theme.palette.warning.main, 0.15),
                     color: theme.palette.warning.light,
                     cursor: "pointer",
-                    background: "none",
                     transition: "all 0.2s ease",
                     "&:hover": {
                       bgcolor: alpha(theme.palette.warning.main, 0.25),
@@ -778,11 +842,12 @@ const LandingPage = () => {
                       {t("landing.hero.cta_start_now")}
                     </Button>
                     <Button
-                      variant="contained"
+                      variant="outlined"
                       size="large"
                       onClick={() => openBookDemo("hero")}
                       sx={{
                         borderColor: alpha(theme.palette.common.white, 0.8),
+                        bgcolor: "transparent",
                         color: theme.palette.common.white,
                         px: 5,
                         py: 2,
@@ -817,6 +882,7 @@ const LandingPage = () => {
                   boxShadow: `0 24px 64px ${alpha(theme.palette.common.black, 0.22)}`,
                   border: `1px solid ${alpha(theme.palette.common.white, 0.15)}`,
                   animation: `${scaleIn} 0.8s ease-out 0.3s both`,
+                  [REDUCED_MOTION]: { animation: "none" },
                   "& video": {
                     display: "block",
                     width: "100%",
@@ -839,10 +905,16 @@ const LandingPage = () => {
                 </video>
                 {!videoStarted && (
                   <Box
+                    component="button"
+                    type="button"
+                    aria-label={t("landing.hero.play_video")}
                     onClick={() => videoRef.current?.play()}
                     sx={{
                       position: "absolute",
                       inset: 0,
+                      width: "100%",
+                      border: "none",
+                      p: 0,
                       bgcolor: "black",
                       display: "flex",
                       flexDirection: "column",
@@ -920,6 +992,15 @@ const LandingPage = () => {
             }}
             onMouseEnter={() => setSliderHovered(true)}
             onMouseLeave={() => setSliderHovered(false)}
+            // Touch devices never hover: a tap parks the slider so the caption
+            // stays put while it is being read. Keyboard focus does the same.
+            onTouchStart={() => setSliderHovered(true)}
+            onFocus={() => setSliderHovered(true)}
+            onBlur={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+                setSliderHovered(false);
+              }
+            }}
           >
             {/* Slides strip */}
             <Box
@@ -956,6 +1037,7 @@ const LandingPage = () => {
 
             {/* Prev */}
             <IconButton
+              aria-label={t("landing.product_preview.prev")}
               onClick={() =>
                 setActiveSlide(
                   (prev) => (prev - 1 + SLIDES.length) % SLIDES.length,
@@ -978,6 +1060,7 @@ const LandingPage = () => {
 
             {/* Next */}
             <IconButton
+              aria-label={t("landing.product_preview.next")}
               onClick={() =>
                 setActiveSlide((prev) => (prev + 1) % SLIDES.length)
               }
@@ -1010,10 +1093,18 @@ const LandingPage = () => {
               {SLIDES.map((_, idx) => (
                 <Box
                   key={idx}
+                  component="button"
+                  type="button"
+                  aria-label={t("landing.product_preview.go_to_slide", {
+                    n: idx + 1,
+                  })}
+                  aria-current={idx === activeSlide ? "true" : undefined}
                   onClick={() => setActiveSlide(idx)}
                   sx={{
                     width: idx === activeSlide ? 20 : 8,
                     height: 8,
+                    p: 0,
+                    border: "none",
                     borderRadius: 4,
                     bgcolor:
                       idx === activeSlide
@@ -1072,6 +1163,7 @@ const LandingPage = () => {
       <Modal
         open={lightboxOpen}
         onClose={() => setLightboxOpen(false)}
+        aria-label={t(SLIDES[lightboxSlide].titleKey)}
         sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
         <Box
@@ -1094,6 +1186,11 @@ const LandingPage = () => {
           >
             <Box sx={{ display: "flex", gap: 1 }}>
               <IconButton
+                aria-label={
+                  zoomed
+                    ? t("landing.product_preview.zoom_out")
+                    : t("landing.product_preview.zoom_in")
+                }
                 onClick={() => setZoomed((z) => !z)}
                 sx={{
                   bgcolor: alpha("#000", 0.55),
@@ -1119,6 +1216,7 @@ const LandingPage = () => {
               </Box>
             </Box>
             <IconButton
+              aria-label={t("common.close")}
               onClick={() => setLightboxOpen(false)}
               sx={{
                 bgcolor: alpha("#000", 0.55),
@@ -1162,6 +1260,7 @@ const LandingPage = () => {
 
             {/* Prev */}
             <IconButton
+              aria-label={t("landing.product_preview.prev")}
               onClick={(e) => {
                 e.stopPropagation();
                 setZoomed(false);
@@ -1184,6 +1283,7 @@ const LandingPage = () => {
 
             {/* Next */}
             <IconButton
+              aria-label={t("landing.product_preview.next")}
               onClick={(e) => {
                 e.stopPropagation();
                 setZoomed(false);
@@ -1210,6 +1310,12 @@ const LandingPage = () => {
             {SLIDES.map((_, idx) => (
               <Box
                 key={idx}
+                component="button"
+                type="button"
+                aria-label={t("landing.product_preview.go_to_slide", {
+                  n: idx + 1,
+                })}
+                aria-current={idx === lightboxSlide ? "true" : undefined}
                 onClick={() => {
                   setZoomed(false);
                   setLightboxSlide(idx);
@@ -1217,6 +1323,8 @@ const LandingPage = () => {
                 sx={{
                   width: idx === lightboxSlide ? 20 : 8,
                   height: 8,
+                  p: 0,
+                  border: "none",
                   borderRadius: 4,
                   bgcolor: idx === lightboxSlide ? "white" : alpha("#fff", 0.4),
                   cursor: "pointer",
@@ -1373,6 +1481,7 @@ const LandingPage = () => {
                   animation: `${fadeInUp} 0.6s ease-out forwards`,
                   animationDelay: `${index * 0.15}s`,
                   opacity: 0,
+                  [REDUCED_MOTION]: { animation: "none", opacity: 1 },
                   "&:hover": {
                     transform: "translateY(-8px) scale(1.02)",
                     boxShadow: `0 25px 70px ${alpha(theme.palette.primary.main, 0.12)}`,
@@ -1492,6 +1601,7 @@ const LandingPage = () => {
                     animation: `${scaleIn} 0.6s ease-out forwards`,
                     animationDelay: `${index * 0.2}s`,
                     opacity: 0,
+                    [REDUCED_MOTION]: { animation: "none", opacity: 1 },
                     "&:hover": {
                       transform: "translateY(-8px) scale(1.03)",
                       boxShadow: `0 25px 70px ${alpha(theme.palette.primary.main, 0.12)}`,
@@ -1644,6 +1754,7 @@ const LandingPage = () => {
                     animation: `${slideInLeft} 0.6s ease-out forwards`,
                     animationDelay: `${index * 0.15}s`,
                     opacity: 0,
+                    [REDUCED_MOTION]: { animation: "none", opacity: 1 },
                     ...(plan.recommended && {
                       boxShadow: `0 20px 60px ${alpha(plan.color, 0.15)}`,
                     }),
@@ -1788,32 +1899,41 @@ const LandingPage = () => {
                       )}
                     </Box>
                     <Box sx={{ mb: 5, flexGrow: 1 }}>
-                      {plan.features.map((feature, idx) => (
-                        <Box
-                          key={idx}
-                          sx={{
-                            display: "flex",
-                            alignItems: "flex-start",
-                            mb: 2,
-                          }}
-                        >
-                          <CheckCircleIcon
-                            sx={{
-                              fontSize: 22,
-                              color: plan.color,
-                              mr: 2,
-                              mt: 0.2,
-                              flexShrink: 0,
-                            }}
+                      {planLimitsLoading &&
+                        Array.from({ length: 4 }, (_, idx) => (
+                          <Skeleton
+                            key={idx}
+                            variant="text"
+                            sx={{ fontSize: "0.95rem", mb: 2 }}
                           />
-                          <Typography
-                            variant="body2"
-                            sx={{ fontSize: "0.95rem", lineHeight: 1.6 }}
+                        ))}
+                      {!planLimitsLoading &&
+                        plan.features.map((feature, idx) => (
+                          <Box
+                            key={idx}
+                            sx={{
+                              display: "flex",
+                              alignItems: "flex-start",
+                              mb: 2,
+                            }}
                           >
-                            {feature}
-                          </Typography>
-                        </Box>
-                      ))}
+                            <CheckCircleIcon
+                              sx={{
+                                fontSize: 22,
+                                color: plan.color,
+                                mr: 2,
+                                mt: 0.2,
+                                flexShrink: 0,
+                              }}
+                            />
+                            <Typography
+                              variant="body2"
+                              sx={{ fontSize: "0.95rem", lineHeight: 1.6 }}
+                            >
+                              {feature}
+                            </Typography>
+                          </Box>
+                        ))}
                     </Box>
                   </CardContent>
                   <Box sx={{ p: { xs: 4, md: 3.5 }, pt: 0 }}>
@@ -2260,7 +2380,7 @@ const LandingPage = () => {
                   {t("landing.founding.cta_primary")}
                 </Button>
                 <Button
-                  variant="contained"
+                  variant="outlined"
                   size="large"
                   onClick={() => {
                     trackCtaClick("founding", "talk_to_us");
@@ -2433,6 +2553,7 @@ const LandingPage = () => {
 						${theme.palette.secondary.main} 100%)`,
           backgroundSize: "200% 200%",
           animation: `${gradientShift} 5s ease infinite`,
+          [REDUCED_MOTION]: { animation: "none" },
           color: "white",
           py: { xs: 10, md: 12 },
           textAlign: "center",
@@ -2451,6 +2572,7 @@ const LandingPage = () => {
             background: alpha(theme.palette.common.white, 0.06),
             filter: "blur(40px)",
             animation: `${float} 8s ease-in-out infinite`,
+            [REDUCED_MOTION]: { animation: "none" },
           }}
         />
         <Container maxWidth="md" sx={{ position: "relative", zIndex: 1 }}>
@@ -2569,36 +2691,57 @@ const LandingPage = () => {
                 {t("landing.footer.product")}
               </Typography>
               <Stack spacing={2}>
+                {/* Real anchors/links, not onClick handlers: keyboard users
+                    can tab to them and open them in a new tab. The in-page
+                    ones keep the smooth scroll on plain clicks. */}
                 <Typography
                   variant="body2"
-                  onClick={() => scrollToSection("features")}
+                  component="a"
+                  href="#features"
+                  onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                    e.preventDefault();
+                    scrollToSection("features");
+                  }}
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
                 >
                   {t("landing.footer.features")}
                 </Typography>
+                {/* The pricing section is not rendered for signed-in users,
+                    so the link goes with it rather than pointing at nothing. */}
+                {!isAuthenticated && (
+                  <Typography
+                    variant="body2"
+                    component="a"
+                    href="#pricing"
+                    onClick={(e: React.MouseEvent<HTMLAnchorElement>) => {
+                      e.preventDefault();
+                      scrollToSection("pricing");
+                    }}
+                    sx={{
+                      opacity: 0.7,
+                      color: "inherit",
+                      textDecoration: "none",
+                      transition: "all 0.2s ease",
+                      "&:hover": { opacity: 1, pl: 0.5 },
+                    }}
+                  >
+                    {t("landing.footer.pricing")}
+                  </Typography>
+                )}
                 <Typography
                   variant="body2"
-                  onClick={() => scrollToSection("pricing")}
+                  component={RouterLink}
+                  to="/careers"
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
-                    transition: "all 0.2s ease",
-                    "&:hover": { opacity: 1, pl: 0.5 },
-                  }}
-                >
-                  {t("landing.footer.pricing")}
-                </Typography>
-                <Typography
-                  variant="body2"
-                  onClick={() => navigate("/careers")}
-                  sx={{
-                    opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
@@ -2638,10 +2781,12 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  onClick={() => navigate("/contact")}
+                  component={RouterLink}
+                  to="/contact"
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
@@ -2650,10 +2795,12 @@ const LandingPage = () => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  onClick={() => navigate("/contact")}
+                  component={RouterLink}
+                  to="/contact"
                   sx={{
                     opacity: 0.7,
-                    cursor: "pointer",
+                    color: "inherit",
+                    textDecoration: "none",
                     transition: "all 0.2s ease",
                     "&:hover": { opacity: 1, pl: 0.5 },
                   }}
