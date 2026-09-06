@@ -62,8 +62,16 @@ export function useCreateHiringProcess() {
   });
 }
 
-export function useUpdateHiringProcess() {
+/**
+ * @param options.showToast Set to `false` when the call site renders its own,
+ * more specific feedback. React Query fires hook-level and `mutate`-level
+ * callbacks both, so without this a caller with its own toast would stack two
+ * notifications for a single update.
+ */
+export function useUpdateHiringProcess(options?: { showToast?: boolean }) {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
+  const showToast = options?.showToast ?? true;
 
   return useMutation({
     mutationFn: ({
@@ -75,10 +83,14 @@ export function useUpdateHiringProcess() {
     }) => updateHiringProcess(data, uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
-      showSuccessToast("Hiring process updated successfully!");
+      if (showToast) {
+        showSuccessToast(t("hiring_processes.updated_success"));
+      }
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update hiring process");
+      if (showToast) {
+        showErrorToast(error, t("hiring_processes.update_error"));
+      }
     },
   });
 }

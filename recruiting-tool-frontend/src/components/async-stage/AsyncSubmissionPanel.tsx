@@ -28,6 +28,7 @@ import {
   useReviewSubmission,
   useRevokeAsyncToken,
 } from "../../hooks/api/useAsyncStage";
+import { wrapLongText } from "../../utils/textOverflow";
 
 interface AsyncSubmissionPanelProps {
   stageUid: string;
@@ -38,7 +39,8 @@ interface AsyncSubmissionPanelProps {
 const formatBytes = (bytes: number): string => {
   if (bytes === 0) return "0 B";
   if (bytes < 1024) return `${bytes} B`;
-  return `${(bytes / 1024).toFixed(1)} KB`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
 const AsyncSubmissionPanel: React.FC<AsyncSubmissionPanelProps> = ({
@@ -342,7 +344,11 @@ const AsyncSubmissionPanel: React.FC<AsyncSubmissionPanelProps> = ({
                   <ListItemText
                     primary={file.originalName}
                     secondary={formatBytes(file.size)}
-                    primaryTypographyProps={{ variant: "body2" }}
+                    primaryTypographyProps={{
+                      variant: "body2",
+                      title: file.originalName,
+                      sx: wrapLongText,
+                    }}
                     secondaryTypographyProps={{ variant: "caption" }}
                   />
                 </ListItem>

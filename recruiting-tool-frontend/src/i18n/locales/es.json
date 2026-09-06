@@ -470,7 +470,9 @@
     "empty_title": "Aún no hay procesos de contratación",
     "empty_description": "Un proceso de contratación define las etapas por las que avanza un candidato para una posición de trabajo. Crea el primero para empezar a mover candidatos.",
     "empty_filtered_title": "Ningún proceso de contratación coincide con tus filtros",
-    "empty_filtered_description": "Prueba con otro término de búsqueda o estado, o limpia los filtros para ver todos los procesos."
+    "empty_filtered_description": "Prueba con otro término de búsqueda o estado, o limpia los filtros para ver todos los procesos.",
+    "updated_success": "¡Proceso de contratación actualizado exitosamente!",
+    "update_error": "No se pudo actualizar el proceso de contratación"
   },
   "companies": {
     "title": "Empresas",
@@ -1284,7 +1286,9 @@
     "delete_title": "Eliminar Entrevista",
     "delete_confirmation": "¿Está seguro que desea eliminar esta entrevista? Esta acción no se puede deshacer.",
     "cancel_title": "Cancelar Entrevista",
-    "cancel_confirmation": "¿Está seguro que desea cancelar esta entrevista? Se enviará una notificación por correo electrónico al candidato."
+    "cancel_confirmation": "¿Está seguro que desea cancelar esta entrevista? Se enviará una notificación por correo electrónico al candidato.",
+    "cancel_confirm_button": "Cancelar entrevista",
+    "mark_completed_confirmation": "¿Seguro que quieres marcar esta entrevista como completada? Ya no podrás editarla ni cancelarla."
   },
   "stage_item": {
     "edit_aria": "Editar etapa",
@@ -2639,7 +2643,9 @@
     "scroll_dates_forward": "Mostrar fechas posteriores",
     "date_option_unavailable": "{{date}} — no disponible",
     "times_available_for_date": "{{date}} seleccionado. Horarios disponibles: {{total}}.",
-    "slot_selected_announcement": "Seleccionaste {{time}} el {{date}}."
+    "slot_selected_announcement": "Seleccionaste {{time}} el {{date}}.",
+    "confirm_error_title": "No pudimos confirmar tu reserva",
+    "confirm_error_message": "No pudimos confirmar ese horario. Es posible que acaben de reservarlo o que tu enlace haya expirado. Elige otro horario o contáctanos."
   },
   "booking_link": {
     "send_tooltip": "Enviar enlace de reserva al candidato",
@@ -4565,7 +4571,16 @@
       "submission_failed": "Error al enviar la entrega"
     },
     "removeFileNamed": "Quitar {{name}}",
-    "attachedFilesCount": "Archivos adjuntos: {{total}}"
+    "attachedFilesCount": "Archivos adjuntos: {{total}}",
+    "submissionRequired": "Agrega una respuesta escrita o al menos un archivo antes de enviar.",
+    "filesTooLarge": "Estos archivos superan el límite de 100 MB y no se agregaron: {{names}}",
+    "tooManyFiles": "Puedes adjuntar hasta {{max}} archivos, así que estos no se agregaron: {{names}}",
+    "fileLimits": "Máximo {{max}} archivos, 100 MB cada uno",
+    "fileLimitReached": "Alcanzaste el límite de {{max}} archivos. Elimina uno para adjuntar otro.",
+    "expiredLink": "Este enlace ha expirado",
+    "expiredLinkDesc": "La fecha límite de esta prueba ya pasó. Contacta al reclutador si necesitas una extensión.",
+    "loadError": "No pudimos cargar tu prueba",
+    "loadErrorDesc": "Algo salió mal al cargar esta página. Revisa tu conexión e inténtalo de nuevo: tu enlace sigue siendo válido."
   },
   "quota_banner": {
     "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",

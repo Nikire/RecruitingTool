@@ -18,6 +18,7 @@ import {
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { format, addDays } from "date-fns";
+import { formatDate } from "../../utils/dateFormatters";
 import {
   useAvailableSlots,
   useSelectTimeSlot,
@@ -150,11 +151,11 @@ const DayCard: React.FC<DayCardProps> = ({
   onKeyDown,
   registerRef,
 }) => {
-  const { t } = useTranslation();
-  const dayName = format(date, "EEE");
-  const dayNum = format(date, "d");
-  const month = format(date, "MMM");
-  const fullDate = format(date, "EEEE, MMMM d, yyyy");
+  const { t, i18n } = useTranslation();
+  const dayName = formatDate(date, "EEE", i18n.language);
+  const dayNum = formatDate(date, "d", i18n.language);
+  const month = formatDate(date, "MMM", i18n.language);
+  const fullDate = formatDate(date, "EEEE, MMMM d, yyyy", i18n.language);
 
   return (
     <Paper
@@ -174,9 +175,10 @@ const DayCard: React.FC<DayCardProps> = ({
       }
       sx={{
         minWidth: 64,
-        width: 64,
+        width: "auto",
         py: 1.5,
-        px: 1,
+        px: 1.25,
+        scrollSnapAlign: "start",
         display: "block",
         fontFamily: "inherit",
         textAlign: "center",
@@ -253,7 +255,6 @@ const BookInterviewPage: React.FC = () => {
     data: availableSlots,
     isLoading: slotsLoading,
     isError,
-    error,
   } = useAvailableSlots(token || null);
 
   const { data: calendarSettings, isLoading: settingsLoading } =
@@ -425,9 +426,7 @@ const BookInterviewPage: React.FC = () => {
       <Container maxWidth="md" sx={{ mt: 8 }}>
         <Alert severity="error">
           <Typography variant="h6">{t("booking.error_title")}</Typography>
-          <Typography>
-            {error?.message || t("booking.error_invalid_token")}
-          </Typography>
+          <Typography>{t("booking.error_invalid_token")}</Typography>
         </Alert>
       </Container>
     );
@@ -537,9 +536,13 @@ const BookInterviewPage: React.FC = () => {
           sx={{
             display: "flex",
             gap: 1,
-            overflowX: "hidden",
+            overflowX: "auto",
             flex: 1,
             scrollBehavior: "smooth",
+            scrollSnapType: "x mandatory",
+            WebkitOverflowScrolling: "touch",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": { display: "none" },
             p: "3px",
           }}
         >

@@ -26,6 +26,7 @@ import { useTranslation } from "react-i18next";
 import { Interview, InterviewStatus } from "../../types/interview.types";
 import { useState } from "react";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import ConfirmationDialog from "../common/ConfirmationDialog";
 import {
   useCancelInterview,
   useDeleteInterview,
@@ -41,6 +42,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
   const { t } = useTranslation();
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [confirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
 
   const cancelMutation = useCancelInterview();
   const deleteMutation = useDeleteInterview();
@@ -80,6 +82,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
         uid: interview.uid,
         data: { status: InterviewStatus.COMPLETED },
       });
+      setConfirmCompleteOpen(false);
     } catch {
       // Error handled by mutation
     }
@@ -157,7 +160,9 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                   {t("interview.title")}
                 </Typography>
                 <Chip
-                  label={interview.status}
+                  label={t(
+                    `interviews.${interview.status?.toLowerCase() ?? "pending"}`,
+                  )}
                   color={getStatusColor(interview.status)}
                   size="small"
                 />
@@ -170,7 +175,7 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                   <IconButton
                     size="small"
                     color="success"
-                    onClick={handleMarkCompleted}
+                    onClick={() => setConfirmCompleteOpen(true)}
                     disabled={updateMutation.isPending}
                   >
                     <CheckCircleIcon />
@@ -270,7 +275,11 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
                   >
                     {t("interview.notes_label")}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ whiteSpace: "pre-wrap", overflowWrap: "anywhere" }}
+                  >
                     {interview.notes}
                   </Typography>
                 </Box>
@@ -296,14 +305,31 @@ const InterviewCard: React.FC<InterviewCardProps> = ({ interview, onEdit }) => {
         onConfirm={handleDelete}
         title={t("interview.delete_title")}
         message={t("interview.delete_confirmation")}
+        isDeleting={deleteMutation.isPending}
       />
 
-      <ConfirmDeleteDialog
+      <ConfirmationDialog
         open={confirmCancelOpen}
         onClose={() => setConfirmCancelOpen(false)}
         onConfirm={handleCancel}
         title={t("interview.cancel_title")}
         message={t("interview.cancel_confirmation")}
+        confirmText={t("interview.cancel_confirm_button")}
+        cancelText={t("common.back")}
+        severity="warning"
+        isLoading={cancelMutation.isPending}
+      />
+
+      <ConfirmationDialog
+        open={confirmCompleteOpen}
+        onClose={() => setConfirmCompleteOpen(false)}
+        onConfirm={handleMarkCompleted}
+        title={t("interview.mark_completed_tooltip")}
+        message={t("interview.mark_completed_confirmation")}
+        confirmText={t("common.confirm")}
+        cancelText={t("common.back")}
+        severity="info"
+        isLoading={updateMutation.isPending}
       />
     </>
   );

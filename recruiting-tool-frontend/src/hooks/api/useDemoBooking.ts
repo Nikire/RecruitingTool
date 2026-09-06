@@ -1,5 +1,7 @@
 import { demoBookingKeys } from "../../api/queryKeys";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { useTranslation } from "react-i18next";
+import { showErrorToast } from "../../utils/toast";
 import {
   requestDemo,
   getDemoSlots,
@@ -26,8 +28,14 @@ export const useDemoSettings = (token: string | null) =>
     enabled: !!token,
   });
 
-export const useConfirmDemoSlot = () =>
-  useMutation({
+export const useConfirmDemoSlot = () => {
+  const { t } = useTranslation();
+
+  return useMutation({
     mutationFn: ({ token, slotUid }: { token: string; slotUid: string }) =>
       confirmDemoSlot(token, slotUid),
+    onError: (error) => {
+      showErrorToast(error, t("booking.confirm_error_title"));
+    },
   });
+};

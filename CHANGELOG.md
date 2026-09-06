@@ -48,8 +48,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Settings: Google Calendar connect reports blocked popups and cancelled authorisations correctly and clears its poll; advance-booking field can be cleared and retyped with start/end/days validation; notification toggles roll back on failure; API keys page wraps its actions column, labels deactivated keys correctly, validates expiry dates and translates its docs
 - Notifications: pagination works beyond 20 items (limit+1 probe); invitation decline asks for confirmation and accept navigates onward; truncated titles get tooltips; logged-out invitees return to the invitation after login
 
+### 🔗 Public token flows: booking, async assignments, interviews (22 verified findings)
+- Demo booking: a failed slot confirmation now shows a translated inline error and toast instead of failing silently
+- Booking pages: dates localised to the UI language, date strip swipeable on touch, error screen no longer prints raw axios messages
+- Async assignment page: empty submissions blocked with a hint, oversized files reported by name without discarding the rest of the selection, 10-file cap enforced client-side, expired links (410) and load errors (5xx/offline) get dedicated states with retry; file names wrap and show tooltips; sizes shown in MB
+- Interview card: status chip translated; "Mark as completed" and cancel go through the shared confirmation dialog with correct copy; confirm buttons disabled while the request is pending; notes wrap
+- Hiring process page: single translated toast per status change; header and metadata rows wrap on narrow screens; route shows a spinner instead of a blank page while auth resolves
+- Document container and unsubscribe page no longer force 100vh under the navbar
+- Stale-token redirect in MainLayout now uses the shared protected-route denylist, so /submit, /book-demo, /unsubscribe and future public routes are never bounced to login
+
 ### 🌐 i18n
-- 66 new keys in `en.json` / `es.json` (onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 81 new keys in `en.json` / `es.json` (booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

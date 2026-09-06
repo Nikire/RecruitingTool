@@ -470,7 +470,9 @@
     "empty_title": "No hiring processes yet",
     "empty_description": "A hiring process defines the stages a candidate moves through for a job position. Create your first one to start moving candidates forward.",
     "empty_filtered_title": "No hiring processes match your filters",
-    "empty_filtered_description": "Try another search term or status, or clear the filters to see every process."
+    "empty_filtered_description": "Try another search term or status, or clear the filters to see every process.",
+    "updated_success": "Hiring process updated successfully!",
+    "update_error": "Failed to update hiring process"
   },
   "companies": {
     "title": "Companies",
@@ -1284,7 +1286,9 @@
     "delete_title": "Delete Interview",
     "delete_confirmation": "Are you sure you want to delete this interview? This action cannot be undone.",
     "cancel_title": "Cancel Interview",
-    "cancel_confirmation": "Are you sure you want to cancel this interview? An email notification will be sent to the candidate."
+    "cancel_confirmation": "Are you sure you want to cancel this interview? An email notification will be sent to the candidate.",
+    "cancel_confirm_button": "Cancel interview",
+    "mark_completed_confirmation": "Are you sure you want to mark this interview as completed? You will no longer be able to edit or cancel it."
   },
   "stage_item": {
     "edit_aria": "Edit stage",
@@ -2602,7 +2606,9 @@
     "scroll_dates_forward": "Show later dates",
     "date_option_unavailable": "{{date}} — unavailable",
     "times_available_for_date": "{{date}} selected. Available times: {{total}}.",
-    "slot_selected_announcement": "Selected {{time}} on {{date}}."
+    "slot_selected_announcement": "Selected {{time}} on {{date}}.",
+    "confirm_error_title": "Unable to confirm your booking",
+    "confirm_error_message": "We couldn't confirm that time slot. It may have just been taken, or your booking link may have expired. Please choose another time or contact us."
   },
   "booking_link": {
     "send_tooltip": "Send booking link to candidate",
@@ -4565,7 +4571,16 @@
       "submission_failed": "Failed to submit"
     },
     "removeFileNamed": "Remove {{name}}",
-    "attachedFilesCount": "Attached files: {{total}}"
+    "attachedFilesCount": "Attached files: {{total}}",
+    "submissionRequired": "Add a written response or at least one file before submitting.",
+    "filesTooLarge": "These files exceed the 100 MB limit and were not added: {{names}}",
+    "tooManyFiles": "You can attach up to {{max}} files, so these were not added: {{names}}",
+    "fileLimits": "Maximum {{max}} files, 100 MB each",
+    "fileLimitReached": "You have reached the limit of {{max}} files. Remove one to attach another.",
+    "expiredLink": "This Link Has Expired",
+    "expiredLinkDesc": "The deadline for this assignment has passed. Contact the recruiter if you need an extension.",
+    "loadError": "We Couldn't Load Your Assignment",
+    "loadErrorDesc": "Something went wrong while loading this page. Check your connection and try again — your link is still valid."
   },
   "quota_banner": {
     "used_of": "{{used}}{{unit}} / {{limit}}{{unit}} {{label}}",

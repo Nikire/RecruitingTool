@@ -16,12 +16,16 @@ const UnsubscribePage: React.FC = () => {
   return (
     <Box
       sx={{
-        minHeight: "100vh",
+        // Not 100vh: this page renders inside MainLayout, below the navbar and
+        // its toolbar spacer, so a full-viewport box would push the document
+        // past the viewport and mis-centre the card.
+        minHeight: { xs: "auto", sm: "60vh" },
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         bgcolor: "background.default",
         p: 2,
+        mt: { xs: 2, sm: 4 },
       }}
     >
       <Paper

@@ -5,6 +5,7 @@ import Navbar from "../components/navbar/Navbar";
 import AddEmailBanner from "../components/navbar/AddEmailBanner";
 import { useAuthMe } from "../hooks/api/useAuth";
 import { useNotificationSSE } from "../hooks/useNotificationSSE";
+import { isProtectedRoute } from "../api/axios";
 
 const MainLayout = () => {
   const location = useLocation();
@@ -21,15 +22,11 @@ const MainLayout = () => {
     const token = localStorage.getItem("authToken");
     const currentPath = window.location.pathname;
 
-    // Don't redirect on public routes
-    const publicRoutes = ["/careers", "/book-interview", "/booking-confirmed"];
-    const isPublicRoute = publicRoutes.some((route) =>
-      currentPath.startsWith(route),
-    );
-
-    // If there's a token but the auth query failed (401, 403, etc.), session is invalid
-    // Only redirect to login if we're NOT on a public route
-    if (token && isError && !isPublicRoute) {
+    // If there's a token but the auth query failed (401, 403, etc.), session is invalid.
+    // Only redirect to login on protected routes; public and token-based pages
+    // (/careers, /book-interview, /book-demo, /submit, /unsubscribe, ...) must keep
+    // working for visitors holding a stale token. Same denylist as the axios interceptor.
+    if (token && isError && isProtectedRoute(currentPath)) {
       localStorage.removeItem("authToken");
       navigate("/login", { replace: true });
     }

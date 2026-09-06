@@ -17,6 +17,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import { isAxiosError } from "axios";
 import { format, parseISO } from "date-fns";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -129,6 +130,99 @@ const InvalidLinkState: React.FC = () => {
   );
 };
 
+// ─── State: Expired link (410) ────────────────────────────────────────────────
+
+const ExpiredLinkState: React.FC = () => {
+  const { t } = useTranslation();
+  const headingRef = useFocusOnMount();
+  return (
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Card elevation={3}>
+        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }} role="alert">
+          <ErrorOutlineIcon
+            aria-hidden="true"
+            sx={{ fontSize: 80, color: "warning.main", mb: 2 }}
+          />
+          <Typography
+            ref={headingRef}
+            tabIndex={-1}
+            component="h1"
+            variant="h5"
+            fontWeight={700}
+            gutterBottom
+            sx={outcomeHeadingSx}
+          >
+            {t("asyncStage.expiredLink")}
+          </Typography>
+          <Typography variant="body1" color="text.secondary">
+            {t("asyncStage.expiredLinkDesc")}
+          </Typography>
+        </CardContent>
+      </Card>
+    </Container>
+  );
+};
+
+// ─── State: Load error (retryable) ────────────────────────────────────────────
+
+interface LoadErrorStateProps {
+  onRetry: () => void;
+  isRetrying: boolean;
+}
+
+const LoadErrorState: React.FC<LoadErrorStateProps> = ({
+  onRetry,
+  isRetrying,
+}) => {
+  const { t } = useTranslation();
+  const headingRef = useFocusOnMount();
+  return (
+    <Container maxWidth="sm" sx={{ mt: 10 }}>
+      <Card elevation={3}>
+        <CardContent sx={{ textAlign: "center", py: 6, px: 4 }} role="alert">
+          <ErrorOutlineIcon
+            aria-hidden="true"
+            sx={{ fontSize: 80, color: "error.main", mb: 2 }}
+          />
+          <Typography
+            ref={headingRef}
+            tabIndex={-1}
+            component="h1"
+            variant="h5"
+            fontWeight={700}
+            gutterBottom
+            sx={outcomeHeadingSx}
+          >
+            {t("asyncStage.loadError")}
+          </Typography>
+          <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
+            {t("asyncStage.loadErrorDesc")}
+          </Typography>
+          <Button
+            variant="contained"
+            onClick={onRetry}
+            disabled={isRetrying}
+            aria-busy={isRetrying}
+          >
+            {isRetrying ? (
+              <>
+                <CircularProgress
+                  size={18}
+                  aria-hidden="true"
+                  sx={{ mr: 1, color: "inherit" }}
+                />
+                {t("common.loading")}
+              </>
+            ) : (
+              t("common.retry")
+            )}
+          </Button>
+        </CardContent>
+      </Card>
+    </Container>
+  );
+};
+
 // ─── State: Already submitted ─────────────────────────────────────────────────
 
 const AlreadySubmittedState: React.FC = () => {
@@ -207,6 +301,9 @@ const AsyncStageSubmissionPage: React.FC = () => {
   const [fileSizeError, setFileSizeError] = useState<string | null>(null);
 
   const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100 MB
+  // Mirrors the backend's FilesInterceptor("files", 10) cap so the candidate
+  // is stopped here instead of by a raw "Unexpected field" 400 after uploading.
+  const MAX_FILES = 10;
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -214,6 +311,9 @@ const AsyncStageSubmissionPage: React.FC = () => {
     data: stageInfo,
     isLoading,
     isError,
+    error,
+    isFetching,
+    refetch,
   } = usePublicAsyncStageInfo(token ?? "");
 
   const { mutate: submitStage, isPending: isSubmitting } =
@@ -223,7 +323,25 @@ const AsyncStageSubmissionPage: React.FC = () => {
   if (isLoading) return <LoadingState />;
 
   // ─── Error / invalid token ──────────────────────────────────────────────────
-  if (isError || !stageInfo) return <InvalidLinkState />;
+  if (isError || !stageInfo) {
+    const status = isAxiosError(error) ? error.response?.status : undefined;
+    // 410 Gone — the deadline passed; the candidate needs an extension.
+    if (status === 410) return <ExpiredLinkState />;
+    // 401/403/404 — the link is genuinely revoked or unknown.
+    if (status === 401 || status === 403 || status === 404)
+      return <InvalidLinkState />;
+    // No request was made (missing token) — nothing to retry.
+    if (!isError) return <InvalidLinkState />;
+    // Server error or offline device — recoverable, offer a retry.
+    return (
+      <LoadErrorState
+        onRetry={() => {
+          void refetch();
+        }}
+        isRetrying={isFetching}
+      />
+    );
+  }
 
   // ─── Already submitted ──────────────────────────────────────────────────────
   if (stageInfo.alreadySubmitted) return <AlreadySubmittedState />;
@@ -236,15 +354,40 @@ const AsyncStageSubmissionPage: React.FC = () => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
-    const oversized = Array.from(files).filter((f) => f.size > MAX_FILE_SIZE);
-    if (oversized.length > 0) {
-      setFileSizeError(
-        t("asyncStage.fileTooLarge", { name: oversized[0].name }),
-      );
-    } else {
-      setFileSizeError(null);
-      setSelectedFiles((prev) => [...prev, ...Array.from(files)]);
+
+    const all = Array.from(files);
+    const oversized = all.filter((f) => f.size > MAX_FILE_SIZE);
+    const withinSize = all.filter((f) => f.size <= MAX_FILE_SIZE);
+
+    // Keep the valid files instead of discarding the whole selection.
+    const remaining = Math.max(0, MAX_FILES - selectedFiles.length);
+    const accepted = withinSize.slice(0, remaining);
+    const overCount = withinSize.slice(remaining);
+
+    if (accepted.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...accepted]);
     }
+
+    const messages: string[] = [];
+    if (oversized.length === 1) {
+      messages.push(t("asyncStage.fileTooLarge", { name: oversized[0].name }));
+    } else if (oversized.length > 1) {
+      messages.push(
+        t("asyncStage.filesTooLarge", {
+          names: oversized.map((f) => f.name).join(", "),
+        }),
+      );
+    }
+    if (overCount.length > 0) {
+      messages.push(
+        t("asyncStage.tooManyFiles", {
+          max: MAX_FILES,
+          names: overCount.map((f) => f.name).join(", "),
+        }),
+      );
+    }
+    setFileSizeError(messages.length > 0 ? messages.join(" ") : null);
+
     e.target.value = "";
   };
 
@@ -274,6 +417,11 @@ const AsyncStageSubmissionPage: React.FC = () => {
   };
 
   // ─── Pending (can submit) ────────────────────────────────────────────────────
+
+  // The backend rejects a submission with neither text nor files, so block it
+  // here rather than surfacing its untranslated 400 message.
+  const canSubmit = textContent.trim().length > 0 || selectedFiles.length > 0;
+  const fileLimitReached = selectedFiles.length >= MAX_FILES;
 
   return (
     <Container maxWidth="sm" sx={{ mt: 6, mb: 8 }}>
@@ -361,6 +509,7 @@ const AsyncStageSubmissionPage: React.FC = () => {
             startIcon={<AttachFileIcon aria-hidden="true" />}
             onClick={() => fileInputRef.current?.click()}
             aria-describedby="async-stage-file-hint"
+            disabled={fileLimitReached}
             sx={{ mb: 0.5 }}
           >
             {t("asyncStage.attachFiles")}
@@ -372,7 +521,9 @@ const AsyncStageSubmissionPage: React.FC = () => {
             color="text.secondary"
             sx={{ display: "block", mb: fileSizeError ? 1 : 2 }}
           >
-            {t("asyncStage.fileSizeLimit")}
+            {fileLimitReached
+              ? t("asyncStage.fileLimitReached", { max: MAX_FILES })
+              : t("asyncStage.fileLimits", { max: MAX_FILES })}
           </Typography>
 
           {fileSizeError && (
@@ -444,8 +595,11 @@ const AsyncStageSubmissionPage: React.FC = () => {
                       secondary={formatFileSize(file.size)}
                       primaryTypographyProps={{
                         variant: "body2",
-                        noWrap: true,
-                        sx: { maxWidth: "calc(100% - 40px)" },
+                        title: file.name,
+                        sx: {
+                          maxWidth: "calc(100% - 40px)",
+                          overflowWrap: "anywhere",
+                        },
                       }}
                       secondaryTypographyProps={{ variant: "caption" }}
                     />
@@ -456,13 +610,25 @@ const AsyncStageSubmissionPage: React.FC = () => {
           )}
 
           {/* Submit button */}
-          <Stack alignItems="flex-end">
+          <Stack alignItems="flex-end" spacing={0.5}>
+            {!canSubmit && (
+              <Typography
+                id="async-stage-submit-hint"
+                variant="caption"
+                color="text.secondary"
+              >
+                {t("asyncStage.submissionRequired")}
+              </Typography>
+            )}
             <Button
               variant="contained"
               size="large"
               onClick={handleSubmit}
-              disabled={isSubmitting}
+              disabled={isSubmitting || !canSubmit}
               aria-busy={isSubmitting}
+              aria-describedby={
+                !canSubmit ? "async-stage-submit-hint" : undefined
+              }
               sx={{ minWidth: 140 }}
             >
               {isSubmitting ? (

@@ -34,6 +34,7 @@ import StatusBadgeEditor, {
   StatusOption,
 } from "../../components/common/StatusBadgeEditor";
 import { toast } from "react-hot-toast";
+import { wrapLongText } from "../../utils/textOverflow";
 
 const HIRING_PROCESS_STATUS_OPTIONS: StatusOption[] = [
   { value: "OPEN", labelKey: "hiring_process_status.open", color: "success" },
@@ -65,7 +66,9 @@ const HiringProcessPage: React.FC = () => {
   const navigate = useNavigate();
   const [stageProgressionOpen, setStageProgressionOpen] = useState(false);
   const [markAsHiredOpen, setMarkAsHiredOpen] = useState(false);
-  const updateMutation = useUpdateHiringProcess();
+  // This page toasts its own, more specific messages per action, so the hook's
+  // generic update toast is suppressed to avoid two stacked notifications.
+  const updateMutation = useUpdateHiringProcess({ showToast: false });
   const {
     data: hiringProcessData,
     isLoading: isHiringProcessLoading,
@@ -139,20 +142,30 @@ const HiringProcessPage: React.FC = () => {
         <Box
           sx={{
             display: "flex",
+            flexWrap: "wrap",
             justifyContent: "space-between",
             alignItems: "flex-start",
+            gap: 2,
             mb: 3,
           }}
         >
-          <Box>
+          <Box sx={{ minWidth: 0, flex: "1 1 240px" }}>
             <Typography variant="body2" color="textSecondary" sx={{ mb: 0.5 }}>
               {t("hiring_process_page.hiring_process")}
             </Typography>
-            <Typography variant="h4" sx={{ fontWeight: 500 }}>
+            <Typography variant="h4" sx={{ fontWeight: 500, ...wrapLongText }}>
               {hiringProcess.title}
             </Typography>
           </Box>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              flexWrap: "wrap",
+              flexShrink: 0,
+              gap: 1,
+            }}
+          >
             {hiringProcess.candidate &&
               hiringProcess.status !== "CLOSED" &&
               hiringProcess.status !== "CANCELLED" &&
@@ -195,9 +208,16 @@ const HiringProcessPage: React.FC = () => {
 
         <Divider sx={{ my: 3 }} />
 
-        <Box sx={{ display: "flex", gap: 8, mb: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: { xs: 2, sm: 6 },
+            mb: 3,
+          }}
+        >
           {hiringProcess.company && (
-            <Box>
+            <Box sx={{ minWidth: 0 }}>
               <Typography
                 variant="body2"
                 color="textSecondary"
@@ -205,13 +225,16 @@ const HiringProcessPage: React.FC = () => {
               >
                 {t("hiring_process_page.company")}
               </Typography>
-              <Typography variant="body1" sx={{ fontWeight: 500 }}>
+              <Typography
+                variant="body1"
+                sx={{ fontWeight: 500, ...wrapLongText }}
+              >
                 {hiringProcess.company.name}
               </Typography>
             </Box>
           )}
           {hiringProcess.jobPosition?.createdBy && (
-            <Box>
+            <Box sx={{ minWidth: 0 }}>
               <Typography
                 variant="body2"
                 color="textSecondary"
@@ -219,10 +242,14 @@ const HiringProcessPage: React.FC = () => {
               >
                 {t("hiring_process_page.hr_manager")}
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" sx={wrapLongText}>
                 {hiringProcess.jobPosition.createdBy.name}
               </Typography>
-              <Typography variant="caption" color="textSecondary">
+              <Typography
+                variant="caption"
+                color="textSecondary"
+                sx={{ display: "block", ...wrapLongText }}
+              >
                 {hiringProcess.jobPosition.createdBy.email}
               </Typography>
             </Box>
@@ -236,8 +263,14 @@ const HiringProcessPage: React.FC = () => {
               <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
                 {t("hiring_process_page.candidate_information")}
               </Typography>
-              <Box sx={{ display: "flex", gap: 6 }}>
-                <Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: { xs: 2, sm: 6 },
+                }}
+              >
+                <Box sx={{ minWidth: 0 }}>
                   <Typography
                     variant="body2"
                     color="textSecondary"
@@ -245,11 +278,11 @@ const HiringProcessPage: React.FC = () => {
                   >
                     {t("hiring_process_page.name")}
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={wrapLongText}>
                     {hiringProcess.candidate.name}
                   </Typography>
                 </Box>
-                <Box>
+                <Box sx={{ minWidth: 0 }}>
                   <Typography
                     variant="body2"
                     color="textSecondary"
@@ -257,7 +290,7 @@ const HiringProcessPage: React.FC = () => {
                   >
                     {t("hiring_process_page.email")}
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={wrapLongText}>
                     {hiringProcess.candidate.email}
                   </Typography>
                 </Box>

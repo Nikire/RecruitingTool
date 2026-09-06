@@ -303,8 +303,10 @@ const HiringProcessRoute = () => {
   const token = localStorage.getItem("authToken");
   const { user, isLoading } = useAuthMe();
 
-  // While resolving auth with a token, avoid a flash to the wrong view
-  if (token && isLoading) return null;
+  // While resolving auth with a token, avoid a flash to the wrong view.
+  // Render the shared route-level spinner rather than `null`, which would leave
+  // the content area blank for the whole /auth/me round trip.
+  if (token && isLoading) return <CenteredLoadingSpinner minHeight="60vh" />;
 
   // HR / company staff → full HR management view
   if (user && HR_ROLES.some((role) => user.roles?.includes(role))) {

@@ -53,8 +53,9 @@ const PROTECTED_ROUTE_PREFIXES = [
   "/pending-email-verification",
 ];
 
-function isProtectedRoute(): boolean {
-  const currentPath = window.location.pathname;
+export function isProtectedRoute(
+  currentPath: string = window.location.pathname,
+): boolean {
   return PROTECTED_ROUTE_PREFIXES.some(
     (prefix) => currentPath === prefix || currentPath.startsWith(`${prefix}/`),
   );
