@@ -72,7 +72,9 @@ const Pagination: React.FC<PaginationProps> = ({
           flexDirection: { xs: "column-reverse", sm: "row" },
         }}
       >
-        <FormControl size="small" sx={{ minWidth: { xs: "100%", sm: 120 } }}>
+        {/* 170px so the longer Spanish label ("Elementos por página")
+            is not ellipsised inside the outlined notch */}
+        <FormControl size="small" sx={{ minWidth: { xs: "100%", sm: 170 } }}>
           <InputLabel
             id="items-per-page-label"
             sx={{ fontSize: { xs: "0.85rem", sm: "0.875rem" } }}

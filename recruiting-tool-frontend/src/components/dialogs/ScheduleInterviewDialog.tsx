@@ -22,6 +22,7 @@ import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { useForm, Controller } from "react-hook-form";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { getDateLocale } from "../../utils/dateFormatters";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import {
   useCreateInterview,
@@ -66,8 +67,12 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
   onClose,
   stageUid,
   interview,
+  candidate,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(
+    i18n.language.startsWith("es") ? "es" : "en",
+  );
   const isEditMode = !!interview;
   const createMutation = useCreateInterview();
   const updateMutation = useUpdateInterview();
@@ -214,6 +219,11 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
         {isEditMode
           ? t("schedule_interview.edit_title")
           : t("schedule_interview.title")}
+        {candidate?.name && (
+          <Typography variant="body2" color="text.secondary">
+            {t("schedule_interview.for_candidate", { name: candidate.name })}
+          </Typography>
+        )}
       </DialogTitle>
       <DialogContent>
         <Box component="form" sx={{ mt: 2 }}>
@@ -239,7 +249,10 @@ const ScheduleInterviewDialog: React.FC<ScheduleInterviewDialogProps> = ({
               )}
           </Box>
 
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <LocalizationProvider
+            dateAdapter={AdapterDateFns}
+            adapterLocale={dateLocale}
+          >
             <Grid container spacing={2}>
               <Grid size={{ xs: 12 }}>
                 <Controller

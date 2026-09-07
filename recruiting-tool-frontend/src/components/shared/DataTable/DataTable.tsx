@@ -441,6 +441,8 @@ export const DataTable = <T,>({
         pageSizeOptions={[10, 25, 50, 100]}
         disableRowSelectionOnClick
         onboardingKey={onboardingKey}
+        // EnhancedDataGrid supplies MUI's translated grid chrome as the base;
+        // this only overrides the empty-state label.
         localeText={{
           noRowsLabel: t(emptyConfig.title),
         }}

@@ -43,10 +43,10 @@ export interface StatusFilterChipsProps<T extends string> {
   /** Function to get the count for each status (including 'ALL') */
   getCount: (status: T | "ALL") => number;
 
-  /** If true, translates status labels using i18n. If false, displays status as-is with formatting */
+  /** If true (default), translates status labels using i18n. If false, displays status as-is with formatting */
   translateStatus?: boolean;
 
-  /** Translation prefix for status labels (e.g., 'hiring_process_status.') */
+  /** Translation prefix for status labels (defaults to the shared 'status.' namespace) */
   translationPrefix?: string;
 }
 
@@ -68,8 +68,8 @@ const StatusFilterChips = <T extends string>({
   currentFilter,
   onFilterChange,
   getCount,
-  translateStatus = false,
-  translationPrefix = "",
+  translateStatus = true,
+  translationPrefix = "status.",
 }: StatusFilterChipsProps<T>) => {
   const { t } = useTranslation();
 
@@ -78,14 +78,18 @@ const StatusFilterChips = <T extends string>({
 
   /**
    * Formats a status label for display
-   * - If translateStatus=true: Uses i18n translation
+   * - If translateStatus=true (default): Uses i18n translation, falling back to
+   *   the formatted raw status when the key is missing
    * - If translateStatus=false: Formats the raw status (e.g., 'IN_PROGRESS' → 'IN PROGRESS')
    */
   const formatStatusLabel = (status: T | "ALL"): string => {
+    const rawLabel = status.replace(/_/g, " ");
     if (translateStatus && translationPrefix) {
-      return t(`${translationPrefix}${status.toLowerCase()}`);
+      return t(`${translationPrefix}${status.toLowerCase()}`, {
+        defaultValue: rawLabel,
+      });
     }
-    return status.replace(/_/g, " ");
+    return rawLabel;
   };
 
   return (

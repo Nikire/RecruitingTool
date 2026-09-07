@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Fab, Tooltip, Zoom } from "@mui/material";
+import { Box, ButtonBase, Fab, IconButton, Tooltip, Zoom } from "@mui/material";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import CloseIcon from "@mui/icons-material/Close";
 import { useTranslation } from "react-i18next";
@@ -33,8 +33,9 @@ const FeedbackButton: React.FC = () => {
   if (hidden) {
     return (
       <Tooltip title={t("feedback.restore_label")} placement="left">
-        <Box
+        <ButtonBase
           onClick={handleRestore}
+          aria-label={t("feedback.restore_label")}
           sx={{
             position: "fixed",
             bottom: 24,
@@ -42,12 +43,13 @@ const FeedbackButton: React.FC = () => {
             zIndex: 1000,
             width: 12,
             height: 36,
+            minWidth: 0,
+            p: 0,
             bgcolor: "primary.main",
             borderRadius: "4px 0 0 4px",
             opacity: 0.35,
-            cursor: "pointer",
             transition: "opacity 0.2s",
-            "&:hover": { opacity: 0.75 },
+            "&:hover, &:focus-visible": { opacity: 0.75 },
           }}
         />
       </Tooltip>
@@ -73,31 +75,33 @@ const FeedbackButton: React.FC = () => {
           </Zoom>
         </Tooltip>
 
-        {hovered && (
-          <Tooltip title={t("feedback.hide_label")} placement="top">
-            <Box
-              onClick={handleHide}
-              sx={{
-                position: "absolute",
-                top: -8,
-                right: -8,
-                width: 20,
-                height: 20,
-                bgcolor: "grey.700",
-                borderRadius: "50%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-                color: "white",
-                "&:hover": { bgcolor: "error.main" },
-                transition: "background-color 0.15s",
-              }}
-            >
-              <CloseIcon sx={{ fontSize: 13 }} />
-            </Box>
-          </Tooltip>
-        )}
+        <Tooltip title={t("feedback.hide_label")} placement="top">
+          <IconButton
+            onClick={handleHide}
+            aria-label={t("feedback.hide_label")}
+            sx={{
+              position: "absolute",
+              top: -8,
+              right: -8,
+              width: 20,
+              height: 20,
+              p: 0,
+              bgcolor: "grey.700",
+              borderRadius: "50%",
+              color: "common.white",
+              opacity: hovered ? 1 : 0,
+              pointerEvents: hovered ? "auto" : "none",
+              "&:hover, &:focus-visible": {
+                bgcolor: "error.main",
+                opacity: 1,
+                pointerEvents: "auto",
+              },
+              transition: "background-color 0.15s, opacity 0.15s",
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 13 }} />
+          </IconButton>
+        </Tooltip>
       </Box>
 
       <FeedbackModal open={open} onClose={handleClose} />

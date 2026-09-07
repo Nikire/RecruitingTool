@@ -21,6 +21,10 @@ import {
 } from "../../hooks/api/useAuth";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
+// Same pattern used by the shared react-hook-form email rule
+// (see utils/validation.ts -> useValidationRules().email)
+const EMAIL_PATTERN = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
 interface ChangeEmailDialogProps {
   open: boolean;
   onClose: () => void;
@@ -47,9 +51,15 @@ const ChangeEmailDialog: React.FC<ChangeEmailDialogProps> = ({
     onClose();
   };
 
+  const trimmedEmail = newEmail.trim();
+  const isEmailValid = EMAIL_PATTERN.test(trimmedEmail);
+  const showEmailError = trimmedEmail.length > 0 && !isEmailValid;
+
   const handleSendCode = () => {
+    if (!isEmailValid) return;
+
     requestChange(
-      { newEmail },
+      { newEmail: trimmedEmail },
       {
         onSuccess: () => {
           showSuccessToast(t("auth.change_email_code_sent"));
@@ -100,6 +110,10 @@ const ChangeEmailDialog: React.FC<ChangeEmailDialogProps> = ({
               variant="outlined"
               size="small"
               autoFocus
+              error={showEmailError}
+              helperText={
+                showEmailError ? t("validation.email_invalid") : undefined
+              }
             />
           </Box>
         ) : (
@@ -129,7 +143,7 @@ const ChangeEmailDialog: React.FC<ChangeEmailDialogProps> = ({
           <Button
             variant="contained"
             onClick={handleSendCode}
-            disabled={!newEmail || isRequesting}
+            disabled={!isEmailValid || isRequesting}
             startIcon={
               isRequesting ? <CircularProgress size={16} /> : undefined
             }

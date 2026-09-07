@@ -13,6 +13,7 @@ import {
   Paper,
   Chip,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
@@ -31,6 +32,7 @@ import {
 import StageBuilder from "../job-positions/StageBuilder";
 import AddStageDialog, { StageFormData } from "../job-positions/AddStageDialog";
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
+import { wrapLongText } from "../../utils/textOverflow";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import ArrowUpwardIcon from "@mui/icons-material/ArrowUpward";
@@ -356,20 +358,24 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
                                 minWidth: 0,
                               }}
                             >
-                              <Typography
-                                variant="h6"
-                                component="div"
-                                sx={{
-                                  fontWeight: 600,
-                                  overflow: "hidden",
-                                  textOverflow: "ellipsis",
-                                  whiteSpace: "nowrap",
-                                  minWidth: 0,
-                                  flex: 1,
-                                }}
-                              >
-                                {index + 1}. {stage.title}
-                              </Typography>
+                              <Tooltip title={stage.title}>
+                                <Typography
+                                  variant="h6"
+                                  component="div"
+                                  sx={{
+                                    ...wrapLongText,
+                                    fontWeight: 600,
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    display: "-webkit-box",
+                                    WebkitLineClamp: 2,
+                                    WebkitBoxOrient: "vertical",
+                                    flex: 1,
+                                  }}
+                                >
+                                  {index + 1}. {stage.title}
+                                </Typography>
+                              </Tooltip>
 
                               {/* Edit / Delete buttons */}
                               <Box
@@ -409,7 +415,12 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
                             <Box>
                               <Chip
                                 icon={<StageTypeIcon type={stage.type} />}
-                                label={STAGE_TYPE_LABELS[stage.type]}
+                                label={t(
+                                  `stage_types.${stage.type.toLowerCase()}`,
+                                  {
+                                    defaultValue: STAGE_TYPE_LABELS[stage.type],
+                                  },
+                                )}
                                 size="small"
                                 sx={{
                                   bgcolor: `${stageColor}20`,
@@ -472,12 +483,12 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
                     variant="contained"
                     size="small"
                     onClick={handleSavePositions}
-                    disabled={isUpdating}
+                    disabled={isSaving}
                     startIcon={
-                      isUpdating ? <CircularProgress size={14} /> : undefined
+                      isReordering ? <CircularProgress size={14} /> : undefined
                     }
                   >
-                    {isUpdating
+                    {isReordering
                       ? t("manage_stages.saving")
                       : t("manage_stages.save_changes")}
                   </Button>
@@ -541,7 +552,7 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
               ) : (
                 t("manage_stages.add_stages_button", {
                   count: newStages.length,
-                }) + (newStages.length !== 1 ? "s" : "")
+                })
               )}
             </Button>
           )}
@@ -587,6 +598,7 @@ const ManageStagesDialog: React.FC<ManageStagesDialogProps> = ({
           setDeletingStage(null);
         }}
         onConfirm={handleDeleteExisting}
+        isDeleting={isDeleting}
         title={t("manage_stages.delete_stage_title")}
         message={
           deletingStage

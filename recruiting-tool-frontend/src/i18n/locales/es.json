@@ -123,7 +123,8 @@
     "field_required": "{{field}} es requerido",
     "form_errors": "Por favor corrija los siguientes errores:",
     "numeric_only": "Solo se permiten números",
-    "positive_number": "Debe ser un número positivo"
+    "positive_number": "Debe ser un número positivo",
+    "salary_max_below_min": "El salario máximo debe ser mayor o igual que el salario mínimo"
   },
   "errors": {
     "operation_failed": "Operación Fallida",
@@ -182,7 +183,8 @@
     "done": "Completado",
     "current": "Actual",
     "pending_approval": "Pendiente de revisión",
-    "approved": "Aprobada"
+    "approved": "Aprobada",
+    "all": "Todos"
   },
   "candidates": {
     "title": "Candidatos",
@@ -269,7 +271,9 @@
       "note_update_failed": "No se pudo actualizar la nota. Por favor intenta nuevamente.",
       "note_deleted": "¡Nota eliminada exitosamente!",
       "note_delete_failed": "No se pudo eliminar la nota. Por favor intenta nuevamente."
-    }
+    },
+    "source_details_placeholder": "Ej.: Recomendado por Ana García, publicación de LinkedIn, feria de empleo",
+    "source_details_helper": "Opcional. Agrega contexto adicional sobre de dónde proviene este candidato"
   },
   "job_positions": {
     "title": "Posiciones de Trabajo",
@@ -1194,7 +1198,9 @@
     "move_down": "Mover etapa abajo",
     "saving": "Guardando...",
     "save_changes": "Guardar Cambios",
-    "done": "Listo"
+    "done": "Listo",
+    "add_stages_button_one": "Agregar {{count}} Etapa",
+    "add_stages_button_other": "Agregar {{count}} Etapas"
   },
   "schedule_interview": {
     "title": "Programar Entrevista",
@@ -1216,7 +1222,8 @@
     "duration_label": "Duración de la entrevista:",
     "duration_minutes": "{{count}} min",
     "duration_from_settings": "(desde configuración de calendario)",
-    "working_hours_hint": "Horario laboral para este día: {{start}} – {{end}}"
+    "working_hours_hint": "Horario laboral para este día: {{start}} – {{end}}",
+    "for_candidate": "Para {{name}}"
   },
   "update_hiring_process": {
     "title": "Actualizar Proceso de Contratación",
@@ -1342,7 +1349,10 @@
     "answer_placeholder": "Ingrese su respuesta...",
     "no_answer": "No se proporcionó respuesta",
     "question_added": "Pregunta agregada exitosamente",
-    "question_updated": "Pregunta actualizada exitosamente"
+    "question_updated": "Pregunta actualizada exitosamente",
+    "your_answer": "Tu respuesta",
+    "delete_question_title": "Eliminar pregunta",
+    "delete_question_message": "¿Seguro que quieres eliminar esta pregunta de evaluación?"
   },
   "interview": {
     "title": "Entrevista",
@@ -3972,7 +3982,8 @@
   },
   "markdown_editor": {
     "placeholder": "Escribe tu contenido aquí... Admite formato **negrita**, *cursiva*, y más markdown.",
-    "character_count": "{{current}} / {{max}} caracteres"
+    "character_count": "{{current}} / {{max}} caracteres",
+    "limit_reached": "Límite alcanzado: máximo {{max}} caracteres"
   },
   "unauthorized": {
     "title": "Acceso Denegado",

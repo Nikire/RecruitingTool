@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Box,
   TextField,
@@ -17,6 +17,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import FilterPanel from "./FilterPanel";
 import ActiveFilters from "./ActiveFilters";
 import { SearchFilters, FilterOption, ActiveFilter } from "../../types/search";
+
+const SEARCH_DEBOUNCE_MS = 300;
 
 export interface AdvancedSearchBarProps {
   filters: SearchFilters;
@@ -76,6 +78,17 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
 
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState(filters.query || "");
+  const searchTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const clearSearchTimer = () => {
+    if (searchTimerRef.current) {
+      clearTimeout(searchTimerRef.current);
+      searchTimerRef.current = null;
+    }
+  };
+
+  // Cleanup the pending debounce on unmount
+  useEffect(() => clearSearchTimer, []);
 
   // Calculate active filter count
   const activeFilterCount = Object.keys(filters).filter((key) => {
@@ -157,13 +170,28 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
     return activeFilters;
   }, [filters, t]);
 
+  // Debounced so a query is not fired on every keystroke
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchQuery(value);
-    onSearch(value);
+    clearSearchTimer();
+    searchTimerRef.current = setTimeout(() => {
+      searchTimerRef.current = null;
+      onSearch(value);
+    }, SEARCH_DEBOUNCE_MS);
+  };
+
+  // Enter flushes the pending debounce immediately
+  const handleSearchKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      clearSearchTimer();
+      onSearch(searchQuery);
+    }
   };
 
   const handleClearSearch = () => {
+    clearSearchTimer();
     setSearchQuery("");
     onSearch("");
   };
@@ -215,6 +243,10 @@ const AdvancedSearchBar: React.FC<AdvancedSearchBarProps> = ({
           placeholder={placeholder || t("search.search_placeholder")}
           value={searchQuery}
           onChange={handleSearchChange}
+          onKeyDown={handleSearchKeyDown}
+          inputProps={{
+            "aria-label": t("aria.search"),
+          }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">

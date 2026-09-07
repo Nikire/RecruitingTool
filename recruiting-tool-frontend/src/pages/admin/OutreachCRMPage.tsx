@@ -22,6 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import { DataGrid, GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
+import { enUS, esES } from "@mui/x-data-grid/locales";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -1138,6 +1139,8 @@ const OutreachCRMPage: React.FC = () => {
           pageSizeOptions={[25, 50, 100]}
           disableRowSelectionOnClick
           localeText={{
+            ...(i18n.language?.startsWith("es") ? esES : enUS).components
+              .MuiDataGrid.defaultProps.localeText,
             noRowsLabel: t("outreach_crm.no_prospects"),
           }}
           sx={{

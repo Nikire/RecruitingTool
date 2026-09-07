@@ -1,6 +1,8 @@
 import { Typography } from "@mui/material";
 import { format, formatDistanceToNow, isValid } from "date-fns";
+import { useTranslation } from "react-i18next";
 import { CellRow } from "../CellLayouts";
+import { getDateLocale } from "../../../utils/dateFormatters";
 
 interface DateCellProps {
   /**
@@ -55,6 +57,9 @@ const DateCell: React.FC<DateCellProps> = ({
   showTime = false,
   fallback = "-",
 }) => {
+  const { i18n } = useTranslation();
+  const locale = getDateLocale(i18n.language);
+
   if (!value) {
     return (
       <CellRow>
@@ -80,15 +85,15 @@ const DateCell: React.FC<DateCellProps> = ({
   let displayText: string;
 
   if (relative) {
-    displayText = formatDistanceToNow(date, { addSuffix: true });
+    displayText = formatDistanceToNow(date, { addSuffix: true, locale });
   } else {
     const defaultFormat = showTime ? "MMM dd, yyyy HH:mm" : "MMM dd, yyyy";
-    displayText = format(date, formatString || defaultFormat);
+    displayText = format(date, formatString || defaultFormat, { locale });
   }
 
   return (
     <CellRow>
-      <Typography variant="body2" title={format(date, "PPpp")}>
+      <Typography variant="body2" title={format(date, "PPpp", { locale })}>
         {displayText}
       </Typography>
     </CellRow>

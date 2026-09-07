@@ -192,10 +192,8 @@ const CreateCandidateDialog: React.FC<CreateCandidateDialogProps> = ({
             multiline
             rows={2}
             {...register("sourceDetails")}
-            placeholder={t("validation.field_required", {
-              field: t("candidates.source_details_label"),
-            })}
-            helperText={t("candidates.source_details_label")}
+            placeholder={t("candidates.source_details_placeholder")}
+            helperText={t("candidates.source_details_helper")}
           />
 
           {isError && (

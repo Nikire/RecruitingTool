@@ -13,11 +13,13 @@ import {
   FormGroup,
   FormControlLabel,
   FormHelperText,
+  Autocomplete,
 } from "@mui/material";
 import FormDialog from "./FormDialog";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useUpdateUser } from "../../hooks/api/useUsers";
+import { useCompanies } from "../../hooks/api/useCompanies";
 import { User, UserRoles } from "../../types/user.types";
 import { useEffect } from "react";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
@@ -63,6 +65,9 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
   });
 
   const { mutate: updateUser, isPending, isError } = useUpdateUser();
+
+  const { data: companiesData } = useCompanies();
+  const companies = companiesData || [];
 
   // Update form values when user changes
   useEffect(() => {
@@ -232,12 +237,29 @@ const UpdateUserDialog: React.FC<UpdateUserDialogProps> = ({
               )}
             </FormControl>
 
-            <TextField
-              label={t("users.company_uid_label")}
-              fullWidth
-              {...register("companyUid")}
-              helperText={t("users.company_uid_helper")}
-            />
+            {isSuperAdmin && (
+              <Controller
+                name="companyUid"
+                control={control}
+                render={({ field }) => (
+                  <Autocomplete
+                    options={companies}
+                    getOptionLabel={(option) => option.name}
+                    value={companies.find((c) => c.uid === field.value) || null}
+                    onChange={(_, newValue) => {
+                      field.onChange(newValue?.uid || "");
+                    }}
+                    renderInput={(params) => (
+                      <TextField
+                        {...params}
+                        label={t("users.company_label")}
+                        helperText={t("users.company_helper")}
+                      />
+                    )}
+                  />
+                )}
+              />
+            )}
           </Box>
 
           {isError && (

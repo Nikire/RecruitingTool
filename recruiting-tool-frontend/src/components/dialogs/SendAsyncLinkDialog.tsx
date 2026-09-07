@@ -19,6 +19,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { useTranslation } from "react-i18next";
+import { getDateLocale } from "../../utils/dateFormatters";
 import { useSendAsyncInvitation } from "../../hooks/api/useAsyncStage";
 import { AsyncStageTokenResponse } from "../../types/asyncStage.types";
 
@@ -39,7 +40,10 @@ const SendAsyncLinkDialog: React.FC<SendAsyncLinkDialogProps> = ({
   candidateName,
   stageName,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const dateLocale = getDateLocale(
+    i18n.language.startsWith("es") ? "es" : "en",
+  );
   const [deadline, setDeadline] = useState<Date | null>(null);
   const [sentToken, setSentToken] = useState<AsyncStageTokenResponse | null>(
     null,
@@ -109,7 +113,10 @@ const SendAsyncLinkDialog: React.FC<SendAsyncLinkDialogProps> = ({
       <DialogContent>
         <Box sx={{ mt: 1, display: "flex", flexDirection: "column", gap: 3 }}>
           {!sentToken && (
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <LocalizationProvider
+              dateAdapter={AdapterDateFns}
+              adapterLocale={dateLocale}
+            >
               <DateTimePicker
                 label={t("asyncStage.deadline")}
                 value={deadline}

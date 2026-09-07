@@ -207,6 +207,7 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
     reset,
     watch,
     setValue,
+    getValues,
     control,
     formState: { errors, isDirty },
   } = useForm<JobPositionFormData>({
@@ -615,6 +616,21 @@ const CreateJobPositionDialog: React.FC<CreateJobPositionDialogProps> = ({
                       min: {
                         value: 0,
                         message: t("validation.positive_number"),
+                      },
+                      validate: (value) => {
+                        const min = getValues("salaryMin");
+                        if (
+                          value === "" ||
+                          value === undefined ||
+                          min === "" ||
+                          min === undefined
+                        ) {
+                          return true;
+                        }
+                        return (
+                          Number(value) >= Number(min) ||
+                          t("validation.salary_max_below_min")
+                        );
                       },
                     })}
                     error={!!errors.salaryMax}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Dialog,
   DialogTitle,
@@ -21,6 +21,7 @@ import {
   useProgressStage,
   useMoveToStage,
 } from "../../hooks/api/useHiringProcess";
+import { getStatusTranslationKey } from "../../theme/statusPalette";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 
@@ -46,18 +47,43 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
   const isLoading =
     progressStageMutation.isPending || moveToStageMutation.isPending;
 
-  const handleProgressToNext = async () => {
-    await progressStageMutation.mutateAsync(hiringProcessUid);
+  // Clear the previous selection (and any stale error) once the dialog is
+  // closed: the parent keeps this component mounted, so without this a stage
+  // picked for one hiring process stays selected the next time it opens.
+  useEffect(() => {
+    if (!open) {
+      setSelectedStageUid(null);
+      progressStageMutation.reset();
+      moveToStageMutation.reset();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const handleClose = () => {
+    setSelectedStageUid(null);
     onClose();
   };
 
+  const handleProgressToNext = async () => {
+    try {
+      await progressStageMutation.mutateAsync(hiringProcessUid);
+      handleClose();
+    } catch {
+      // The mutation hook already surfaces the failure (toast + inline alert);
+      // keep the dialog open so the user can retry.
+    }
+  };
+
   const handleMoveToStage = async () => {
-    if (selectedStageUid) {
+    if (!selectedStageUid) return;
+    try {
       await moveToStageMutation.mutateAsync({
         uid: hiringProcessUid,
         stageUid: selectedStageUid,
       });
-      onClose();
+      handleClose();
+    } catch {
+      // Keep the dialog open on failure; the error is already surfaced above.
     }
   };
 
@@ -68,7 +94,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
   const hasNextStage = nextStageIndex >= 0 && nextStageIndex < stages.length;
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
       <DialogTitle>
         <Typography variant="h6" sx={{ fontWeight: 600 }}>
           {t("progress.title")}
@@ -118,7 +144,8 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
             sx={{
               maxHeight: 300,
               overflow: "auto",
-              border: "1px solid #e0e0e0",
+              border: "1px solid",
+              borderColor: "divider",
               borderRadius: 1,
             }}
           >
@@ -128,7 +155,9 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
                 disablePadding
                 sx={{
                   backgroundColor:
-                    selectedStageUid === stage.uid ? "#f5f5f5" : "transparent",
+                    selectedStageUid === stage.uid
+                      ? "action.selected"
+                      : "transparent",
                 }}
               >
                 <ListItemButton
@@ -179,7 +208,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
                         secondary={
                           <Typography variant="caption" color="textSecondary">
                             {t("progress.position")} {stage.position + 1} -{" "}
-                            {stage.status}
+                            {t(getStatusTranslationKey(stage.status))}
                           </Typography>
                         }
                       />
@@ -193,7 +222,7 @@ const StageProgressionDialog: React.FC<StageProgressionDialogProps> = ({
       </DialogContent>
 
       <DialogActions sx={{ p: 2 }}>
-        <Button onClick={onClose} disabled={isLoading}>
+        <Button onClick={handleClose} disabled={isLoading}>
           {t("common.cancel")}
         </Button>
         <Button

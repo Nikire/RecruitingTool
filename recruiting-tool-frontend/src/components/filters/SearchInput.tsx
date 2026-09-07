@@ -34,6 +34,9 @@ const SearchInput: React.FC<SearchInputProps> = ({
   const { t } = useTranslation();
   const [localValue, setLocalValue] = useState(value);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  // Last value this input emitted upwards; used to ignore the parent echoing
+  // it back, which would otherwise overwrite keystrokes typed since.
+  const lastEmittedRef = useRef(value);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -46,21 +49,27 @@ const SearchInput: React.FC<SearchInputProps> = ({
 
     // Set new timer for debounced search
     timerRef.current = setTimeout(() => {
+      lastEmittedRef.current = newValue;
       onChange(newValue);
     }, debounceMs);
   };
 
   const handleClear = () => {
     setLocalValue("");
+    lastEmittedRef.current = "";
     onChange("");
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
   };
 
-  // Sync local value with external value prop
+  // Sync local value with external value prop, but only when the parent
+  // actually changed it (not when it echoes back what we just emitted).
   useEffect(() => {
-    setLocalValue(value);
+    if (value !== lastEmittedRef.current) {
+      lastEmittedRef.current = value;
+      setLocalValue(value);
+    }
   }, [value]);
 
   // Cleanup timer on unmount

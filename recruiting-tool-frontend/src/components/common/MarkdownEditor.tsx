@@ -30,8 +30,10 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
   const colorMode = theme.palette.mode;
 
   const handleChange = (val?: string) => {
-    // Enforce max length if specified
+    // Enforce max length by truncating instead of discarding the whole change,
+    // so a paste that exceeds the limit keeps the part that fits.
     if (maxLength && val && val.length > maxLength) {
+      onChange(val.slice(0, maxLength));
       return;
     }
     onChange(val);
@@ -39,6 +41,7 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
 
   const currentLength = value?.length || 0;
   const showCharCount = maxLength !== undefined;
+  const limitReached = maxLength !== undefined && currentLength >= maxLength;
 
   return (
     <Box>
@@ -109,18 +112,21 @@ const MarkdownEditor: React.FC<MarkdownEditorProps> = ({
           <Typography
             variant="caption"
             sx={{
-              color: error ? "error.main" : "text.secondary",
+              color: error || limitReached ? "error.main" : "text.secondary",
             }}
           >
-            {helperText}
+            {limitReached
+              ? t("markdown_editor.limit_reached", { max: maxLength })
+              : helperText}
           </Typography>
 
           {showCharCount && (
             <Typography
               variant="caption"
               sx={{
-                color:
-                  currentLength > maxLength! * 0.9
+                color: limitReached
+                  ? "error.main"
+                  : currentLength > maxLength! * 0.9
                     ? "warning.main"
                     : "text.secondary",
               }}

@@ -43,45 +43,57 @@ export const CustomQuestionRenderer: React.FC<CustomQuestionRendererProps> = ({
     switch (question.type) {
       case QuestionType.TEXT:
         return (
-          <TextField
-            fullWidth
-            type="text"
-            label={question.text + requiredLabel}
-            value={value}
-            onChange={(e) => onAnswerChange(question.id, e.target.value)}
-            error={!!error}
-            helperText={error}
-            required={question.required}
-            placeholder={t("custom_questions.answer_placeholder")}
-            sx={{
-              "& .MuiInputBase-input": {
-                fontSize: { xs: "1rem", sm: "1rem" },
-                minHeight: { xs: 44, sm: "auto" },
-              },
-            }}
-          />
+          <FormControl component="fieldset" error={!!error} fullWidth>
+            {/* The question text is rendered as a wrapping label instead of a
+                MUI input label, which would be ellipsised when long. */}
+            <FormLabel component="legend" sx={{ fontWeight: 600, mb: 1 }}>
+              {question.text + requiredLabel}
+            </FormLabel>
+            <TextField
+              fullWidth
+              type="text"
+              label={t("custom_questions.your_answer")}
+              value={value}
+              onChange={(e) => onAnswerChange(question.id, e.target.value)}
+              error={!!error}
+              helperText={error}
+              required={question.required}
+              placeholder={t("custom_questions.answer_placeholder")}
+              sx={{
+                "& .MuiInputBase-input": {
+                  fontSize: { xs: "1rem", sm: "1rem" },
+                  minHeight: { xs: 44, sm: "auto" },
+                },
+              }}
+            />
+          </FormControl>
         );
 
       case QuestionType.TEXTAREA:
         return (
-          <TextField
-            fullWidth
-            label={question.text + requiredLabel}
-            value={value}
-            onChange={(e) => onAnswerChange(question.id, e.target.value)}
-            error={!!error}
-            helperText={error}
-            multiline
-            rows={4}
-            required={question.required}
-            placeholder={t("custom_questions.answer_placeholder")}
-            sx={{
-              "& .MuiInputBase-input": {
-                fontSize: { xs: "1rem", sm: "1rem" },
-                minHeight: { xs: 100, sm: "auto" },
-              },
-            }}
-          />
+          <FormControl component="fieldset" error={!!error} fullWidth>
+            <FormLabel component="legend" sx={{ fontWeight: 600, mb: 1 }}>
+              {question.text + requiredLabel}
+            </FormLabel>
+            <TextField
+              fullWidth
+              label={t("custom_questions.your_answer")}
+              value={value}
+              onChange={(e) => onAnswerChange(question.id, e.target.value)}
+              error={!!error}
+              helperText={error}
+              multiline
+              rows={4}
+              required={question.required}
+              placeholder={t("custom_questions.answer_placeholder")}
+              sx={{
+                "& .MuiInputBase-input": {
+                  fontSize: { xs: "1rem", sm: "1rem" },
+                  minHeight: { xs: 100, sm: "auto" },
+                },
+              }}
+            />
+          </FormControl>
         );
 
       case QuestionType.MULTIPLE_CHOICE:

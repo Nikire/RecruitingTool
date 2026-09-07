@@ -1,4 +1,4 @@
-import { useState, MouseEvent } from "react";
+import { useState, useRef } from "react";
 import {
   Box,
   Chip,
@@ -102,6 +102,7 @@ const StatusBadgeEditor: React.FC<StatusBadgeEditorProps> = ({
 }) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const chipRef = useRef<HTMLDivElement>(null);
   const open = Boolean(anchorEl);
 
   // Find the current status option
@@ -109,9 +110,11 @@ const StatusBadgeEditor: React.FC<StatusBadgeEditorProps> = ({
     (opt) => opt.value === currentStatus,
   );
 
-  const handleClick = (event: MouseEvent<HTMLDivElement>) => {
+  // Anchors the menu to the chip itself so it stays aligned whether the user
+  // clicks the chip label or the edit (pencil) icon.
+  const handleClick = () => {
     if (!disabled) {
-      setAnchorEl(event.currentTarget);
+      setAnchorEl(chipRef.current);
     }
   };
 
@@ -135,11 +138,12 @@ const StatusBadgeEditor: React.FC<StatusBadgeEditorProps> = ({
       )}
 
       <Chip
+        ref={chipRef}
         label={currentOption ? t(currentOption.labelKey) : currentStatus}
         color={currentOption?.color || "default"}
         size={size}
         onClick={handleClick}
-        onDelete={disabled ? undefined : () => {}} // Shows edit icon
+        onDelete={disabled ? undefined : handleClick} // Shows edit icon
         deleteIcon={<EditIcon fontSize="small" />}
         sx={{
           cursor: disabled ? "default" : "pointer",

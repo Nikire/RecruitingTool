@@ -16,7 +16,11 @@ import ErrorIcon from "@mui/icons-material/Error";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useCreateCandidate } from "../../hooks/api/useCandidates";
+import {
+  useCreateCandidate,
+  useCreateCandidateNote,
+} from "../../hooks/api/useCandidates";
+import { useCreateHiringProcess } from "../../hooks/api/useHiringProcess";
 import { useJobPositions } from "../../hooks/api/useJobPositions";
 import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../common/FormErrorSummary";
@@ -71,6 +75,11 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
   });
 
   const { mutate: createCandidate, isPending, isError } = useCreateCandidate();
+  const { mutateAsync: createCandidateNote, isPending: isCreatingNote } =
+    useCreateCandidateNote();
+  const { mutateAsync: createHiringProcess, isPending: isCreatingProcess } =
+    useCreateHiringProcess();
+  const isSubmitting = isPending || isCreatingNote || isCreatingProcess;
   const { data: jobPositionsData, isLoading: jobPositionsLoading } =
     useJobPositions();
   const jobPositions = Array.isArray(jobPositionsData)
@@ -84,19 +93,44 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
       name: data.name,
       email: data.email,
       phone: data.phone || undefined,
-      // Notes will be handled separately after candidate creation if needed
       source: "MANUAL", // Mark source as MANUAL for tracking
     };
 
     createCandidate(candidateData, {
-      onSuccess: (response) => {
+      onSuccess: async (response) => {
+        const candidateUid = response?.uid;
+
+        // The notes and job-position fields are part of this form, so they have
+        // to be persisted here — the candidate endpoint accepts neither.
+        // Both follow-ups are independent and each hook surfaces its own error,
+        // so one failing must not discard the other.
+        if (candidateUid) {
+          const followUps: Promise<unknown>[] = [];
+          const notes = data.notes?.trim();
+
+          if (notes) {
+            followUps.push(
+              createCandidateNote({ candidateUid, content: notes }),
+            );
+          }
+          if (data.jobPositionUid) {
+            followUps.push(
+              createHiringProcess({
+                candidateUid,
+                jobPositionUid: data.jobPositionUid,
+              }),
+            );
+          }
+          if (followUps.length > 0) {
+            await Promise.allSettled(followUps);
+          }
+        }
+
         reset();
         onClose();
 
-        // If response contains uid, pass it to onSuccess callback
-        // This allows parent component to start hiring process if job position was selected
-        if (onSuccess && response?.uid) {
-          onSuccess(response.uid);
+        if (onSuccess && candidateUid) {
+          onSuccess(candidateUid);
         }
       },
     });
@@ -285,7 +319,7 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
         <DialogActions>
           <Button
             onClick={handleClose}
-            disabled={isPending}
+            disabled={isSubmitting}
             aria-label={t("aria.cancel")}
           >
             {t("common.cancel")}
@@ -293,9 +327,9 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
           <Button
             type="submit"
             variant="contained"
-            disabled={isPending}
+            disabled={isSubmitting}
             startIcon={
-              isPending ? (
+              isSubmitting ? (
                 <CircularProgress
                   size={20}
                   color="inherit"
@@ -306,12 +340,12 @@ const ManualCandidateDialog: React.FC<ManualCandidateDialogProps> = ({
               )
             }
             aria-label={
-              isPending
+              isSubmitting
                 ? t("common.creating")
                 : t("manual_candidate.create_button")
             }
           >
-            {isPending
+            {isSubmitting
               ? t("common.creating")
               : t("manual_candidate.create_button")}
           </Button>

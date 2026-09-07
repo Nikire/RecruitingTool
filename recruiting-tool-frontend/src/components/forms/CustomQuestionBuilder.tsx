@@ -18,14 +18,15 @@ import {
   FormControlLabel,
   Checkbox,
   Typography,
+  Tooltip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import AddIcon from "@mui/icons-material/Add";
-import DragIndicatorIcon from "@mui/icons-material/DragIndicator";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { CustomQuestion, QuestionType } from "../../types/customQuestions";
+import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 interface CustomQuestionBuilderProps {
   questions: CustomQuestion[];
@@ -39,6 +40,8 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
   const { t } = useTranslation();
   const [openDialog, setOpenDialog] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [optionDraft, setOptionDraft] = useState("");
+  const [deletingIndex, setDeletingIndex] = useState<number | null>(null);
   const [formData, setFormData] = useState<CustomQuestion>({
     id: "",
     type: QuestionType.TEXT,
@@ -48,6 +51,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
   });
 
   const handleOpenDialog = (index?: number) => {
+    setOptionDraft("");
     if (index !== undefined) {
       setEditingIndex(index);
       setFormData(questions[index]);
@@ -67,6 +71,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setEditingIndex(null);
+    setOptionDraft("");
   };
 
   const handleAddQuestion = () => {
@@ -75,30 +80,43 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
       return;
     }
 
-    if (
-      (formData.type === QuestionType.MULTIPLE_CHOICE ||
-        formData.type === QuestionType.CHECKBOX) &&
-      (!formData.options || formData.options.length < 2)
-    ) {
+    const needsOptions =
+      formData.type === QuestionType.MULTIPLE_CHOICE ||
+      formData.type === QuestionType.CHECKBOX;
+
+    // Commit an option still sitting in the input so it is not silently lost.
+    const pendingOption = optionDraft.trim();
+    const mergedOptions =
+      needsOptions && pendingOption
+        ? [...(formData.options || []), pendingOption]
+        : formData.options;
+    const questionToSave: CustomQuestion = {
+      ...formData,
+      options: mergedOptions,
+    };
+
+    if (needsOptions && (!mergedOptions || mergedOptions.length < 2)) {
       toast.error(t("custom_questions.options_required_alert"));
       return;
     }
 
     if (editingIndex !== null) {
       const updatedQuestions = [...questions];
-      updatedQuestions[editingIndex] = formData;
+      updatedQuestions[editingIndex] = questionToSave;
       onQuestionsChange(updatedQuestions);
       toast.success(t("custom_questions.question_updated"));
     } else {
-      onQuestionsChange([...questions, formData]);
+      onQuestionsChange([...questions, questionToSave]);
       toast.success(t("custom_questions.question_added"));
     }
 
     handleCloseDialog();
   };
 
-  const handleDeleteQuestion = (index: number) => {
-    onQuestionsChange(questions.filter((_, i) => i !== index));
+  const handleConfirmDeleteQuestion = () => {
+    if (deletingIndex === null) return;
+    onQuestionsChange(questions.filter((_, i) => i !== deletingIndex));
+    setDeletingIndex(null);
   };
 
   const handleAddOption = (option: string) => {
@@ -108,6 +126,7 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
         options: [...(formData.options || []), option.trim()],
       });
     }
+    setOptionDraft("");
   };
 
   const handleRemoveOption = (index: number) => {
@@ -166,7 +185,6 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
                 <Box
                   sx={{ display: "flex", alignItems: "center", gap: 1, mb: 1 }}
                 >
-                  <DragIndicatorIcon fontSize="small" color="action" />
                   <Typography variant="body2" color="text.secondary">
                     {index + 1}.
                   </Typography>
@@ -197,20 +215,26 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
                 )}
               </Box>
               <Box sx={{ display: "flex", gap: 1 }}>
-                <IconButton
-                  size="small"
-                  onClick={() => handleOpenDialog(index)}
-                  sx={{ color: "primary.main" }}
-                >
-                  <EditIcon fontSize="small" />
-                </IconButton>
-                <IconButton
-                  size="small"
-                  onClick={() => handleDeleteQuestion(index)}
-                  sx={{ color: "error.main" }}
-                >
-                  <DeleteIcon fontSize="small" />
-                </IconButton>
+                <Tooltip title={t("common.edit")}>
+                  <IconButton
+                    size="small"
+                    onClick={() => handleOpenDialog(index)}
+                    aria-label={t("common.edit")}
+                    sx={{ color: "primary.main" }}
+                  >
+                    <EditIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={t("common.delete")}>
+                  <IconButton
+                    size="small"
+                    onClick={() => setDeletingIndex(index)}
+                    aria-label={t("common.delete")}
+                    sx={{ color: "error.main" }}
+                  >
+                    <DeleteIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
               </Box>
             </CardContent>
           </Card>
@@ -309,17 +333,30 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
                   </Box>
                 ))}
               </Box>
-              <TextField
-                fullWidth
-                size="small"
-                placeholder={t("custom_questions.add_option_placeholder")}
-                onKeyPress={(e) => {
-                  if (e.key === "Enter") {
-                    handleAddOption((e.target as HTMLInputElement).value);
-                    (e.target as HTMLInputElement).value = "";
-                  }
-                }}
-              />
+              <Box sx={{ display: "flex", gap: 1, alignItems: "flex-start" }}>
+                <TextField
+                  fullWidth
+                  size="small"
+                  value={optionDraft}
+                  onChange={(e) => setOptionDraft(e.target.value)}
+                  placeholder={t("custom_questions.add_option_placeholder")}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddOption(optionDraft);
+                    }
+                  }}
+                />
+                <Button
+                  variant="outlined"
+                  startIcon={<AddIcon />}
+                  onClick={() => handleAddOption(optionDraft)}
+                  disabled={!optionDraft.trim()}
+                  sx={{ flexShrink: 0 }}
+                >
+                  {t("common.add")}
+                </Button>
+              </Box>
             </Box>
           )}
         </DialogContent>
@@ -332,6 +369,17 @@ export const CustomQuestionBuilder: React.FC<CustomQuestionBuilderProps> = ({
           </Button>
         </DialogActions>
       </Dialog>
+
+      <ConfirmDeleteDialog
+        open={deletingIndex !== null}
+        onClose={() => setDeletingIndex(null)}
+        onConfirm={handleConfirmDeleteQuestion}
+        title={t("custom_questions.delete_question_title")}
+        message={t("custom_questions.delete_question_message")}
+        itemName={
+          deletingIndex !== null ? questions[deletingIndex]?.text : undefined
+        }
+      />
     </Box>
   );
 };

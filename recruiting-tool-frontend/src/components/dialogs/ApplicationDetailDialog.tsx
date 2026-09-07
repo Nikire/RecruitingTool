@@ -24,7 +24,6 @@ import {
 } from "@mui/icons-material";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import {
   Application,
@@ -37,6 +36,8 @@ import {
   useAcceptApplication,
 } from "../../hooks/api/useApplications";
 import { useDownloadFile } from "../../hooks/api/useFiles";
+import { formatDateTime } from "../../utils/dateFormatters";
+import { wrapLongText } from "../../utils/textOverflow";
 import ConfirmDeleteDialog from "./ConfirmDeleteDialog";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 
@@ -56,7 +57,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
   onClose,
   application,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const {
@@ -201,7 +202,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
                   <Typography variant="body2" color="text.secondary">
                     {t("application_detail.name")}
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={wrapLongText}>
                     {application.applicantName}
                   </Typography>
                 </Grid>
@@ -209,7 +210,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
                   <Typography variant="body2" color="text.secondary">
                     {t("application_detail.email")}
                   </Typography>
-                  <Typography variant="body1">
+                  <Typography variant="body1" sx={wrapLongText}>
                     {application.applicantEmail}
                   </Typography>
                 </Grid>
@@ -226,10 +227,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
                     {t("application_detail.applied_date")}
                   </Typography>
                   <Typography variant="body1">
-                    {format(
-                      new Date(application.appliedAt),
-                      "MMM d, yyyy h:mm a",
-                    )}
+                    {formatDateTime(application.appliedAt, i18n.language)}
                   </Typography>
                 </Grid>
               </Grid>
@@ -242,11 +240,15 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
               <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
                 {t("application_detail.job_position")}
               </Typography>
-              <Typography variant="body1">
+              <Typography variant="body1" sx={wrapLongText}>
                 {application.jobPositionTitle}
               </Typography>
               {application.companyName && (
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={wrapLongText}
+                >
                   {application.companyName}
                 </Typography>
               )}
@@ -266,7 +268,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
                     {t("application_detail.resume")}
                   </Typography>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                    <Typography variant="body2">
+                    <Typography variant="body2" sx={wrapLongText}>
                       {application.resumeFileName}
                     </Typography>
                     <Tooltip title={t("application_detail.download_resume")}>
@@ -361,10 +363,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
                 <Box sx={{ mt: 2 }}>
                   <Typography variant="caption" color="text.secondary">
                     {t("application_detail.reviewed_on")}{" "}
-                    {format(
-                      new Date(application.reviewedAt),
-                      "MMM d, yyyy h:mm a",
-                    )}
+                    {formatDateTime(application.reviewedAt, i18n.language)}
                     {application.reviewedByName &&
                       ` ${t("application_detail.reviewed_by")} ${application.reviewedByName}`}
                   </Typography>
@@ -427,6 +426,7 @@ const ApplicationDetailDialog: React.FC<ApplicationDetailDialogProps> = ({
         open={confirmDeleteOpen}
         onClose={() => setConfirmDeleteOpen(false)}
         onConfirm={handleConfirmDelete}
+        isDeleting={isDeleting}
         title={t("application_detail.delete_application")}
         message={t("application_detail.delete_confirmation", {
           name: application.applicantName,

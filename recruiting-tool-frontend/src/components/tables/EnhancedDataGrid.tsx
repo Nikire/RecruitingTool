@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import { Box } from "@mui/material";
 import { DataGridProps, GridToolbarContainer } from "@mui/x-data-grid";
+import { enUS, esES } from "@mui/x-data-grid/locales";
 import { useTranslation } from "react-i18next";
 import StyledDataGrid from "./StyledDataGrid";
 import DataGridOnboarding from "./DataGridOnboarding";
@@ -62,29 +63,47 @@ const EnhancedDataGrid: React.FC<EnhancedDataGridProps> = ({
   showOnboarding = true,
   showToolbarHelp = true,
   slots,
+  localeText,
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Merge custom toolbar with our enhanced toolbar
   const customToolbar = slots?.toolbar as React.FC | undefined;
 
+  // MUI ships its own translations for the grid chrome (pagination footer,
+  // column menu, filter panel). Use them as the base so the grid follows the
+  // selected language, while caller-supplied overrides still win.
+  const mergedLocaleText = useMemo(() => {
+    const muiLocaleText = (i18n.language?.startsWith("es") ? esES : enUS)
+      .components.MuiDataGrid.defaultProps.localeText;
+    return { ...muiLocaleText, ...localeText };
+  }, [i18n.language, localeText]);
+
+  // Keep a stable component identity for the toolbar slot, otherwise the
+  // toolbar remounts (and loses its state) on every parent render.
+  const toolbarSlot = useMemo(() => {
+    if (!showToolbarHelp) {
+      return customToolbar;
+    }
+    const Toolbar: React.FC = () => (
+      <EnhancedToolbar showHelp customToolbar={customToolbar} />
+    );
+    return Toolbar;
+  }, [showToolbarHelp, customToolbar]);
+
+  const mergedSlots = useMemo(
+    () => ({ ...slots, toolbar: toolbarSlot }),
+    [slots, toolbarSlot],
+  );
+
   return (
     <Box ref={containerRef} sx={{ width: "100%", height: "100%" }}>
       <StyledDataGrid
         {...props}
-        slots={{
-          ...slots,
-          toolbar: showToolbarHelp
-            ? () => (
-                <EnhancedToolbar
-                  showHelp={showToolbarHelp}
-                  customToolbar={customToolbar}
-                />
-              )
-            : slots?.toolbar,
-        }}
+        slots={mergedSlots}
+        localeText={mergedLocaleText}
         aria-label={t("dataGrid.ariaLabel")}
       />
       {showOnboarding && (

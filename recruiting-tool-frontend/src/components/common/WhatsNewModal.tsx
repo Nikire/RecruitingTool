@@ -53,11 +53,13 @@ const WhatsNewModal: React.FC = () => {
     }
   }, [hasChecked, isSuccess, data, setHasChecked]);
 
-  const handleClose = async () => {
-    if (data?.notes) {
-      await Promise.allSettled(data.notes.map((note) => markSeen(note.uid)));
-    }
+  const handleClose = () => {
+    const notes = data?.notes ?? [];
+    // Close first so repeat clicks cannot fire duplicate mark-seen requests.
     setOpen(false);
+    if (notes.length > 0) {
+      void Promise.allSettled(notes.map((note) => markSeen(note.uid)));
+    }
   };
 
   if (!open || !data?.notes?.length) return null;
