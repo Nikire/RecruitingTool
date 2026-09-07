@@ -219,7 +219,7 @@ export const getNotificationNavigationPath = (
     case NotificationType.CANDIDATE_NOTE_ADDED:
     case NotificationType.CANDIDATE_SCORE_UPDATED:
       if (metadata.candidateUid) {
-        return `/hr/candidates?highlight=${metadata.candidateUid}`;
+        return `/hr/candidates/${metadata.candidateUid}`;
       }
       return "/hr/candidates";
 

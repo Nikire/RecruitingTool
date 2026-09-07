@@ -19,7 +19,7 @@ import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import TimelineIcon from "@mui/icons-material/Timeline";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { formatDate } from "../../utils/dateFormatters";
 import { CenteredLoadingSpinner, EmptyState } from "../common";
 import {
   formatDurationMinutes,
@@ -38,7 +38,7 @@ interface CandidateJourneyProps {
 const JourneyProcessCard: React.FC<{ journey: CandidateJourneyModel }> = ({
   journey,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -125,12 +125,12 @@ const JourneyProcessCard: React.FC<{ journey: CandidateJourneyModel }> = ({
                     </TableCell>
                     <TableCell>
                       {stage.enteredAt
-                        ? format(new Date(stage.enteredAt), "PP")
+                        ? formatDate(stage.enteredAt, "PP", i18n.language)
                         : t("common.n_a")}
                     </TableCell>
                     <TableCell>
                       {stage.exitedAt
-                        ? format(new Date(stage.exitedAt), "PP")
+                        ? formatDate(stage.exitedAt, "PP", i18n.language)
                         : t("candidate_detail.stage_in_progress")}
                     </TableCell>
                     <TableCell>

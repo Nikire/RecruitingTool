@@ -28,6 +28,7 @@ import SortIcon from "@mui/icons-material/Sort";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import NoteAltIcon from "@mui/icons-material/NoteAlt";
+import AddIcon from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
 import {
   useListHiringProcessesGrouped,
@@ -53,6 +54,7 @@ import { getHiringProcessStatusColor } from "../../utils/statusColors";
 import { useDialog } from "../../hooks/useDialog";
 import { useConfirmDelete } from "../../hooks/useConfirmDelete";
 import { ActionsCell } from "../tables";
+import EmptyState, { EmptyStateAction } from "../common/EmptyState";
 import { UserRoles } from "../../types/user.types";
 
 const AI_SCORING_ROLES = [
@@ -68,6 +70,10 @@ interface HiringProcessesGroupedListProps {
   /** End-client UID to narrow the list to a single account. Empty string = all clients. */
   clientUid?: string;
   highlightUid?: string;
+  /** Opens the create-process dialog from the unfiltered empty state. */
+  onCreate?: () => void;
+  /** Resets every filter from the "no results" empty state. */
+  onClearFilters?: () => void;
 }
 
 // Score chip shown on each process row
@@ -194,6 +200,9 @@ const GroupHeader: React.FC<{
       sx={{
         display: "flex",
         alignItems: "center",
+        // Without wrapping, a long position title plus the chip cluster overflows
+        // the Paper (overflow: hidden) on phones and clips the expand chevron.
+        flexWrap: { xs: "wrap", sm: "nowrap" },
         gap: 1.5,
         px: 2,
         py: 1.5,
@@ -202,11 +211,15 @@ const GroupHeader: React.FC<{
         "&:hover": { bgcolor: "action.hover" },
       }}
       onClick={onToggleExpand}
-      role="button"
-      aria-expanded={isExpanded}
     >
       <WorkOutlineIcon sx={{ color: "primary.main", fontSize: 20 }} />
-      <Typography variant="subtitle1" fontWeight={600} sx={{ flexGrow: 1 }}>
+      <Typography
+        variant="subtitle1"
+        fontWeight={600}
+        noWrap
+        title={group.jobPositionTitle}
+        sx={{ flexGrow: 1, minWidth: 0 }}
+      >
         {group.jobPositionTitle}
       </Typography>
 
@@ -268,6 +281,7 @@ const GroupHeader: React.FC<{
           onToggleExpand();
         }}
         aria-label={isExpanded ? t("common.collapse") : t("common.expand")}
+        aria-expanded={isExpanded}
       >
         {isExpanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
       </IconButton>
@@ -389,13 +403,19 @@ const ProcessRow: React.FC<{
         {/* Current Stage */}
         <Box sx={{ flex: "1 1 160px", minWidth: 0 }}>
           {currentStage ? (
-            <Chip
-              label={`(${currentStage.position}) ${currentStage.title}`}
-              size="small"
-              variant="outlined"
-              color="info"
-              sx={{ maxWidth: "100%", fontWeight: 500 }}
-            />
+            <Tooltip
+              title={`(${currentStage.position}) ${currentStage.title}`}
+              arrow
+              placement="top"
+            >
+              <Chip
+                label={`(${currentStage.position}) ${currentStage.title}`}
+                size="small"
+                variant="outlined"
+                color="info"
+                sx={{ maxWidth: "100%", fontWeight: 500 }}
+              />
+            </Tooltip>
           ) : (
             <Typography variant="caption" color="text.disabled">
               {t("hiring_processes.no_current_stage")}
@@ -571,10 +591,26 @@ const GroupSection: React.FC<{
   onDelete,
   onScore,
 }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+  // A notification deep link (?highlight=<uid>) must land on an open group,
+  // otherwise the highlighted row pulses inside a collapsed container.
+  const containsHighlight = () =>
+    Boolean(highlightUid) &&
+    group.processes.some((p) => p.uid === highlightUid);
+
+  const [isExpanded, setIsExpanded] = useState(containsHighlight);
+  // Rankings are only visible once a group is open, so avoid firing one request
+  // per group on first paint (up to 50 groups per page).
+  const [hasBeenExpanded, setHasBeenExpanded] = useState(containsHighlight);
   const [isSortedByScore, setIsSortedByScore] = useState(false);
 
-  const { data: rankings } = useRankings(group.jobPositionUid ?? undefined);
+  const handleToggleExpand = useCallback(() => {
+    setHasBeenExpanded(true);
+    setIsExpanded((prev) => !prev);
+  }, []);
+
+  const { data: rankings } = useRankings(
+    hasBeenExpanded ? (group.jobPositionUid ?? undefined) : undefined,
+  );
 
   const scoreMap = useMemo<Map<string, RankedCandidateDto>>(() => {
     const map = new Map<string, RankedCandidateDto>();
@@ -614,7 +650,7 @@ const GroupSection: React.FC<{
         isSortedByScore={isSortedByScore}
         isExpanded={isExpanded}
         onToggleSortByScore={() => setIsSortedByScore((prev) => !prev)}
-        onToggleExpand={() => setIsExpanded((prev) => !prev)}
+        onToggleExpand={handleToggleExpand}
       />
       <Divider />
       <Collapse in={isExpanded} timeout="auto" unmountOnExit={false}>
@@ -658,6 +694,8 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   status,
   clientUid,
   highlightUid,
+  onCreate,
+  onClearFilters,
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -711,7 +749,8 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   // Scroll to highlighted row once data loads and the ref is set
   useEffect(() => {
     if (!highlightUid || isLoading) return;
-    // Use a short timeout to allow the DOM to paint after data arrives
+    // Wait for the DOM to paint and for the auto-expanded group's Collapse
+    // animation to settle before scrolling the highlighted row into view.
     const timer = setTimeout(() => {
       if (highlightElRef.current) {
         highlightElRef.current.scrollIntoView({
@@ -719,7 +758,7 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
           block: "center",
         });
       }
-    }, 150);
+    }, 400);
     return () => clearTimeout(timer);
   }, [highlightUid, isLoading, data]);
 
@@ -810,20 +849,40 @@ const HiringProcessesGroupedList: React.FC<HiringProcessesGroupedListProps> = ({
   const total = data?.total ?? 0;
 
   if (total === 0 && !isLoading) {
+    const isFiltered =
+      Boolean(search) ||
+      (Boolean(status) && status !== "all") ||
+      Boolean(clientUid);
+
+    let emptyAction: EmptyStateAction | undefined;
+    if (isFiltered && onClearFilters) {
+      emptyAction = { label: "search.clear_filters", onClick: onClearFilters };
+    } else if (!isFiltered && canManage && onCreate) {
+      emptyAction = {
+        label: "hiring_processes.create_title",
+        onClick: onCreate,
+        startIcon: <AddIcon />,
+      };
+    }
+
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          py: 8,
-          gap: 1,
-        }}
-      >
-        <WorkOutlineIcon sx={{ fontSize: 64, color: "text.disabled" }} />
-        <Typography variant="h6" color="text.secondary">
-          {t("hiring_processes.no_processes")}
-        </Typography>
+      <Box sx={{ mt: 2 }}>
+        <EmptyState
+          message={
+            isFiltered
+              ? "hiring_processes.empty_filtered_title"
+              : "hiring_processes.empty_title"
+          }
+          description={
+            isFiltered
+              ? "hiring_processes.empty_filtered_description"
+              : "hiring_processes.empty_description"
+          }
+          icon={
+            <WorkOutlineIcon sx={{ fontSize: 48, color: "text.disabled" }} />
+          }
+          action={emptyAction}
+        />
       </Box>
     );
   }

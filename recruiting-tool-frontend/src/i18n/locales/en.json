@@ -256,7 +256,19 @@
     "key_differentiators": "Key Differentiators",
     "final_recommendation": "Final Recommendation",
     "created_success": "Candidate created successfully!",
-    "create_error": "Failed to create candidate"
+    "create_error": "Failed to create candidate",
+    "empty_title": "No candidates yet",
+    "empty_description": "Candidates are the people you move through your hiring processes. Add your first one manually or import them from a CSV file.",
+    "empty_filtered_title": "No candidates match your search",
+    "empty_filtered_description": "Try another name or email, or clear the search to see every candidate.",
+    "toast": {
+      "note_created": "Note created successfully!",
+      "note_create_failed": "Failed to create note. Please try again.",
+      "note_updated": "Note updated successfully!",
+      "note_update_failed": "Failed to update note. Please try again.",
+      "note_deleted": "Note deleted successfully!",
+      "note_delete_failed": "Failed to delete note. Please try again."
+    }
   },
   "job_positions": {
     "title": "Job Positions",
@@ -376,7 +388,6 @@
     "contract": "Contract",
     "remote": "Remote",
     "applicants_count": "{{count}} applicant",
-    "applicants_count_plural": "{{count}} applicants",
     "no_results": "No job positions match your filters",
     "no_positions": "No job positions yet",
     "view_mode": "View mode",
@@ -397,7 +408,9 @@
     "exp_mid": "Mid",
     "exp_senior": "Senior",
     "exp_lead": "Lead",
-    "exp_executive": "Executive"
+    "exp_executive": "Executive",
+    "applicants_count_other": "{{count}} applicants",
+    "applicants_count_one": "{{count}} applicant"
   },
   "job_position_filters": {
     "search_placeholder": "Search by job title...",
@@ -424,7 +437,8 @@
     "sort_descending": "Descending (Z-A, Newest)",
     "clear_filters": "Clear Filters",
     "active_filters": "{{count}} active filter",
-    "active_filters_plural": "{{count}} active filters"
+    "active_filters_other": "{{count}} active filters",
+    "active_filters_one": "{{count}} active filter"
   },
   "hiring_processes": {
     "title": "Hiring Processes",
@@ -439,7 +453,6 @@
     "create_new": "Create New",
     "no_candidate": "No candidate assigned",
     "stages_count": "{{count}} stage",
-    "stages_count_plural": "{{count}} stages",
     "delete_message": "Are you sure you want to delete this hiring process? This will also delete all associated stages.",
     "attach_cv": "Attach CV (optional)",
     "cv_hint": "Accepted formats: PDF, DOC, DOCX — max 10 MB",
@@ -450,7 +463,6 @@
       "toggle_aria": "Toggle group by job position",
       "no_position": "No Job Position",
       "count": "{{count}} process",
-      "count_plural": "{{count}} processes",
       "expand": "Expand group {{title}}",
       "collapse": "Collapse group {{title}}",
       "expand_icon": "Expand group",
@@ -458,7 +470,9 @@
       "column_title": "Process Title",
       "column_status": "Status",
       "column_stage": "Current Stage",
-      "positions_per_page": "Positions per page"
+      "positions_per_page": "Positions per page",
+      "count_one": "{{count}} process",
+      "count_other": "{{count}} processes"
     },
     "stage_notes_btn": "Stage notes",
     "no_stage_notes": "No stage notes yet",
@@ -472,7 +486,9 @@
     "empty_filtered_title": "No hiring processes match your filters",
     "empty_filtered_description": "Try another search term or status, or clear the filters to see every process.",
     "updated_success": "Hiring process updated successfully!",
-    "update_error": "Failed to update hiring process"
+    "update_error": "Failed to update hiring process",
+    "stages_count_one": "{{count}} stage",
+    "stages_count_other": "{{count}} stages"
   },
   "companies": {
     "title": "Companies",
@@ -582,15 +598,12 @@
     "manage": "Manage Stages",
     "builder_title": "Hiring Stages",
     "stages_configured": "{{count}} stage configured",
-    "stages_configured_plural": "{{count}} stages configured",
     "total_time_minutes": "Total time: {{time}} minutes",
     "templates": "Templates",
     "delete_stage_title": "Delete Stage",
     "delete_stage_message": "Are you sure you want to delete \"{{title}}\"?",
     "no_stages_message": "No stages configured yet. Add at least {{count}} stage to continue. You can use a template for quick setup.",
-    "no_stages_message_plural": "No stages configured yet. Add at least {{count}} stages to continue. You can use a template for quick setup.",
     "add_more_stages": "Please add at least {{count}} more stage.",
-    "add_more_stages_plural": "Please add at least {{count}} more stages.",
     "template_basic": "Basic (3 stages)",
     "template_technical": "Technical (4 stages)",
     "template_comprehensive": "Comprehensive (5 stages)",
@@ -652,7 +665,13 @@
           "description": "Extend final offer and negotiate terms"
         }
       }
-    }
+    },
+    "stages_configured_other": "{{count}} stages configured",
+    "stages_configured_one": "{{count}} stage configured",
+    "no_stages_message_other": "No stages configured yet. Add at least {{count}} stages to continue. You can use a template for quick setup.",
+    "no_stages_message_one": "No stages configured yet. Add at least {{count}} stage to continue. You can use a template for quick setup.",
+    "add_more_stages_other": "Please add at least {{count}} more stages.",
+    "add_more_stages_one": "Please add at least {{count}} more stage."
   },
   "applications": {
     "title": "Applications",
@@ -722,7 +741,6 @@
     "reschedule_history": "Reschedule History",
     "view_reschedule_history": "View Reschedule History",
     "rescheduled_count": "Rescheduled {{count}} time",
-    "rescheduled_count_plural": "Rescheduled {{count}} times",
     "original_date": "Original Date",
     "previous_date": "Previous Date",
     "rescheduled_by": "Rescheduled By",
@@ -749,7 +767,9 @@
     "notes_cleared": "Notes cleared",
     "duration_minutes_short": "{{minutes}}m",
     "duration_hours_minutes": "{{hours}}h {{minutes}}m",
-    "duration_hours": "{{hours}}h"
+    "duration_hours": "{{hours}}h",
+    "rescheduled_count_other": "Rescheduled {{count}} times",
+    "rescheduled_count_one": "Rescheduled {{count}} time"
   },
   "files": {
     "upload": "Upload File",
@@ -1240,7 +1260,8 @@
     "notes_count": "Notes ({{count}})",
     "by_author_date": "By {{author}} • {{date}}",
     "no_notes_yet": "No notes yet. Add one above!",
-    "delete_confirmation": "Are you sure you want to delete this note?"
+    "delete_confirmation": "Are you sure you want to delete this note?",
+    "delete_title": "Delete Note"
   },
   "custom_questions": {
     "title": "Custom Screening Questions",
@@ -1361,12 +1382,13 @@
     "no_position": "No Job Position",
     "group": {
       "count": "{{count}} application",
-      "count_plural": "{{count}} applications",
       "expand": "Expand group {{title}}",
       "collapse": "Collapse group {{title}}",
       "expand_icon": "Expand group",
       "collapse_icon": "Collapse group",
-      "positions_per_page": "Positions per page"
+      "positions_per_page": "Positions per page",
+      "count_other": "{{count}} applications",
+      "count_one": "{{count}} application"
     }
   },
   "email_templates_page": {
@@ -1969,7 +1991,6 @@
     "hero_title": "Join Our Team",
     "hero_subtitle": "Discover exciting career opportunities and be part of something amazing",
     "open_positions_count": "{{count}} Open Position",
-    "open_positions_count_plural": "{{count}} Open Positions",
     "company_name": "Company",
     "apply_now": "Apply Now",
     "new_position": "New",
@@ -1981,7 +2002,9 @@
     "no_positions_yet": "No Open Positions Yet",
     "check_back_soon": "Check back soon for new opportunities",
     "no_results_found": "No Jobs Found",
-    "try_different_keywords": "Try adjusting your search or check back later for new positions"
+    "try_different_keywords": "Try adjusting your search or check back later for new positions",
+    "open_positions_count_other": "{{count}} Open Positions",
+    "open_positions_count_one": "{{count}} Open Position"
   },
   "careersHero": {
     "title": "Find Your Next Opportunity",
@@ -2026,9 +2049,10 @@
   },
   "careersResults": {
     "showing_results": "Showing {{count}} of {{total}} jobs",
-    "showing_results_plural": "Showing {{count}} of {{total}} jobs",
     "showing_range": "Showing {{start}}-{{end}} of {{total}} jobs",
-    "page_of_total": "Page {{page}} of {{total}}"
+    "page_of_total": "Page {{page}} of {{total}}",
+    "showing_results_other": "Showing {{count}} of {{total}} jobs",
+    "showing_results_one": "Showing {{count}} of {{total}} jobs"
   },
   "careersSort": {
     "sort_by": "Sort By",
@@ -2059,7 +2083,6 @@
     "save_note": "Save Note",
     "cancel": "Cancel",
     "notes_count": "{{count}} note",
-    "notes_count_plural": "{{count}} notes",
     "note_by": "Note by {{author}}",
     "created_at": "Created {{date}}",
     "updated_at": "Updated {{date}}",
@@ -2067,7 +2090,14 @@
     "validation_min_length": "Note must be at least {{min}} characters",
     "validation_max_length": "Note must be less than {{max}} characters",
     "you": "You",
-    "only_author_can_edit": "Only the author can edit or delete this note"
+    "only_author_can_edit": "Only the author can edit or delete this note",
+    "toast": {
+      "save_failed": "Failed to save note",
+      "deleted": "Note deleted successfully!",
+      "delete_failed": "Failed to delete note"
+    },
+    "notes_count_other": "{{count}} notes",
+    "notes_count_one": "{{count}} note"
   },
   "admin_dashboard": {
     "title": "Admin Dashboard",
@@ -2340,9 +2370,7 @@
     "no_templates": "No scorecard templates yet",
     "create_first_template": "Create Your First Template",
     "categories_count": "{{count}} category",
-    "categories_count_plural": "{{count}} categories",
     "criteria_count": "{{count}} criterion",
-    "criteria_count_plural": "{{count}} criteria",
     "created_by": "Created by {{name}}",
     "completion_progress": "Completion Progress",
     "score_breakdown": "Score Breakdown",
@@ -2357,7 +2385,11 @@
       "at_least_one_category": "At least one category is required",
       "at_least_one_criterion": "At least one criterion is required",
       "weight_range": "Weight must be between 1 and 100"
-    }
+    },
+    "categories_count_other": "{{count}} categories",
+    "categories_count_one": "{{count}} category",
+    "criteria_count_other": "{{count}} criteria",
+    "criteria_count_one": "{{count}} criterion"
   },
   "coming_soon": {
     "title": "Coming Soon",
@@ -2487,13 +2519,14 @@
     "salary": "Salary",
     "salary_range": "${{min}} - ${{max}}",
     "results_count": "{{count}} result",
-    "results_count_plural": "{{count}} results",
     "save_search": "Save Search",
     "saved_searches": "Saved Searches",
     "load_search": "Load Search",
     "search_placeholder": "Search...",
     "clear_search": "Clear search",
-    "toggle_filters": "Toggle filters"
+    "toggle_filters": "Toggle filters",
+    "results_count_other": "{{count}} results",
+    "results_count_one": "{{count}} result"
   },
   "settings": {
     "system_settings_title": "System Settings",
@@ -2623,7 +2656,9 @@
     "copied": "Copied!",
     "expires": "Expires",
     "error": "Failed to send booking link",
-    "not_enabled": "Booking system is not enabled. Enable it in Company Settings → Calendar & Booking Settings."
+    "not_enabled": "Booking system is not enabled. Enable it in Company Settings → Calendar & Booking Settings.",
+    "copy_failed": "The link could not be copied. Copy it manually from the email sent to the candidate.",
+    "sent_to_email": "Booking link sent to {{email}}"
   },
   "manual_candidate": {
     "create_title": "Add Candidate Manually",
@@ -4302,7 +4337,10 @@
     "saved": "Note saved",
     "char_count": "{{count}} / 1000",
     "rating_label": "Rating",
-    "no_rating": "No rating"
+    "no_rating": "No rating",
+    "delete": "Delete note",
+    "delete_confirm_title": "Delete stage note?",
+    "delete_confirm_message": "This will permanently remove the saved evaluation and rating for this stage."
   },
   "feature_flags": {
     "title": "Feature Flags Management",

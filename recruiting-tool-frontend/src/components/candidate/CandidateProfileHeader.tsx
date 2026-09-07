@@ -3,7 +3,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import EmailIcon from "@mui/icons-material/Email";
 import PhoneIcon from "@mui/icons-material/Phone";
 import { useTranslation } from "react-i18next";
-import { format } from "date-fns";
+import { formatDate } from "../../utils/dateFormatters";
 import { Candidate } from "../../types/candidate";
 import { MetadataDisplay } from "../common";
 import type { MetadataItem } from "../common";
@@ -35,13 +35,13 @@ const CandidateProfileHeader: React.FC<CandidateProfileHeaderProps> = ({
   candidate,
   onEdit,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const metadata: MetadataItem[] = [
     {
       label: "common.created",
       value: candidate.createdAt
-        ? format(new Date(candidate.createdAt), "PP")
+        ? formatDate(candidate.createdAt, "PP", i18n.language)
         : t("common.n_a"),
     },
     {

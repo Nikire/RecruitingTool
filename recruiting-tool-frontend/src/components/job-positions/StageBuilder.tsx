@@ -296,12 +296,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
             )}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            {t(
-              stages.length === 1
-                ? "stages.stages_configured"
-                : "stages.stages_configured_plural",
-              { count: stages.length },
-            )}
+            {t("stages.stages_configured", { count: stages.length })}
             {stages.length > 0 &&
               ` • ${t("stages.total_time_minutes", { time: getTotalEstimatedTime() })}`}
           </Typography>
@@ -363,12 +358,7 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
       {/* Empty State */}
       {stages.length === 0 && (
         <Alert severity="info" sx={{ mb: 2 }}>
-          {t(
-            minStages === 1
-              ? "stages.no_stages_message"
-              : "stages.no_stages_message_plural",
-            { count: minStages },
-          )}
+          {t("stages.no_stages_message", { count: minStages })}
         </Alert>
       )}
 
@@ -432,12 +422,9 @@ const StageBuilder: React.FC<StageBuilderProps> = ({
       {/* Info about minimum stages */}
       {stages.length < minStages && (
         <Alert severity="warning" sx={{ mt: 2 }}>
-          {t(
-            minStages - stages.length === 1
-              ? "stages.add_more_stages"
-              : "stages.add_more_stages_plural",
-            { count: minStages - stages.length },
-          )}
+          {t("stages.add_more_stages", {
+            count: minStages - stages.length,
+          })}
         </Alert>
       )}
 

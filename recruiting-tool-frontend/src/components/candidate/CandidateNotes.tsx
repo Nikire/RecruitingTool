@@ -9,10 +9,10 @@ import {
   IconButton,
   CircularProgress,
   Stack,
+  Tooltip,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
-import { format } from "date-fns";
 import { useTranslation } from "react-i18next";
 import {
   useCandidateNotes,
@@ -20,13 +20,20 @@ import {
   useUpdateCandidateNote,
   useDeleteCandidateNote,
 } from "../../hooks/api/useCandidates";
+import { useConfirmDelete } from "../../hooks/useConfirmDelete";
+import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
+import { formatDateTime } from "../../utils/dateFormatters";
+import type { CandidateNote } from "../../types/candidate";
 
 interface CandidateNotesProps {
   candidateUid?: string;
 }
 
+/** Keeps the delete confirmation readable when a note runs long. */
+const NOTE_PREVIEW_LENGTH = 80;
+
 const CandidateNotes: React.FC<CandidateNotesProps> = ({ candidateUid }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [newNoteContent, setNewNoteContent] = useState("");
   const [editingNoteUid, setEditingNoteUid] = useState<string | null>(null);
   const [editContent, setEditContent] = useState("");
@@ -36,7 +43,8 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({ candidateUid }) => {
     useCreateCandidateNote();
   const { mutate: updateNote, isPending: isUpdating } =
     useUpdateCandidateNote();
-  const { mutate: deleteNote } = useDeleteCandidateNote();
+  const deleteNoteMutation = useDeleteCandidateNote();
+  const deleteConfirm = useConfirmDelete<CandidateNote>(deleteNoteMutation);
 
   if (!candidateUid) {
     return (
@@ -89,12 +97,6 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({ candidateUid }) => {
     );
   };
 
-  const handleDeleteNote = (noteUid: string) => {
-    if (confirm(t("notes.delete_confirmation"))) {
-      deleteNote(noteUid);
-    }
-  };
-
   if (isLoading) {
     return (
       <Box display="flex" justifyContent="center" p={3}>
@@ -102,6 +104,12 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({ candidateUid }) => {
       </Box>
     );
   }
+
+  const noteToDelete = deleteConfirm.selectedItem?.content ?? "";
+  const noteToDeletePreview =
+    noteToDelete.length > NOTE_PREVIEW_LENGTH
+      ? `${noteToDelete.slice(0, NOTE_PREVIEW_LENGTH)}...`
+      : noteToDelete;
 
   return (
     <Box>
@@ -180,32 +188,40 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({ candidateUid }) => {
                         >
                           {note.content}
                         </Typography>
-                        <Box>
-                          <IconButton
-                            size="small"
-                            onClick={() =>
-                              handleStartEdit(note.uid, note.content)
-                            }
-                          >
-                            <EditIcon fontSize="small" />
-                          </IconButton>
-                          <IconButton
-                            size="small"
-                            onClick={() => handleDeleteNote(note.uid)}
-                            color="error"
-                          >
-                            <DeleteIcon fontSize="small" />
-                          </IconButton>
+                        <Box sx={{ display: "flex", flexShrink: 0 }}>
+                          <Tooltip title={t("common.edit")}>
+                            <IconButton
+                              size="small"
+                              aria-label={t("common.edit")}
+                              onClick={() =>
+                                handleStartEdit(note.uid, note.content)
+                              }
+                            >
+                              <EditIcon fontSize="small" />
+                            </IconButton>
+                          </Tooltip>
+                          <Tooltip title={t("common.delete")}>
+                            <span>
+                              <IconButton
+                                size="small"
+                                aria-label={t("common.delete")}
+                                onClick={() =>
+                                  deleteConfirm.confirmDelete(note)
+                                }
+                                disabled={deleteConfirm.isDeleting}
+                                color="error"
+                              >
+                                <DeleteIcon fontSize="small" />
+                              </IconButton>
+                            </span>
+                          </Tooltip>
                         </Box>
                       </Box>
                       <Box mt={1}>
                         <Typography variant="caption" color="text.secondary">
                           {t("notes.by_author_date", {
                             author: note.authorName,
-                            date: format(
-                              new Date(note.createdAt),
-                              "MMM d, yyyy h:mm a",
-                            ),
+                            date: formatDateTime(note.createdAt, i18n.language),
                           })}
                         </Typography>
                       </Box>
@@ -221,6 +237,16 @@ const CandidateNotes: React.FC<CandidateNotesProps> = ({ candidateUid }) => {
           </Typography>
         )}
       </Box>
+
+      <ConfirmDeleteDialog
+        open={deleteConfirm.isOpen}
+        onClose={deleteConfirm.handleCancel}
+        onConfirm={deleteConfirm.handleConfirm}
+        title={t("notes.delete_title")}
+        message={t("notes.delete_confirmation")}
+        itemName={noteToDeletePreview}
+        isDeleting={deleteConfirm.isDeleting}
+      />
     </Box>
   );
 };

@@ -2,6 +2,8 @@ import { GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
 import { Box, Typography, IconButton, Link as MuiLink } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import PersonIcon from "@mui/icons-material/Person";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import PeopleOutlineIcon from "@mui/icons-material/PeopleOutline";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useListCandidates } from "../../hooks/api/useCandidates";
@@ -14,12 +16,21 @@ import { canManageResources } from "../../utils/permissions";
 import { DateCell } from "../tables";
 import { DataTable, DataTableColumn } from "../shared/DataTable";
 
-const CandidatesList: React.FC<SearchableListProps> = ({
+interface CandidatesListProps extends SearchableListProps {
+  /** Opens the create-candidate dialog from the empty state CTA */
+  onCreate?: () => void;
+  /** Clears the active search from the "no results" empty state */
+  onClearFilters?: () => void;
+}
+
+const CandidatesList: React.FC<CandidatesListProps> = ({
   page,
   limit,
   search,
   onPageChange,
   onLimitChange,
+  onCreate,
+  onClearFilters,
 }) => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
@@ -102,9 +113,18 @@ const CandidatesList: React.FC<SearchableListProps> = ({
       width: 180,
       renderCell: (params: GridRenderCellParams) =>
         params.value ? (
-          <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: 0.5,
+              minWidth: 0,
+            }}
+          >
             <PersonIcon sx={{ fontSize: 14, color: "text.secondary" }} />
-            <Typography variant="body2">{params.value}</Typography>
+            <Typography variant="body2" noWrap title={String(params.value)}>
+              {params.value}
+            </Typography>
           </Box>
         ) : (
           <Typography variant="body2" color="text.disabled">
@@ -177,6 +197,28 @@ const CandidatesList: React.FC<SearchableListProps> = ({
         loading={isLoading}
         error={!!error}
         emptyMessage="candidates.no_candidates"
+        emptyIcon={
+          <PeopleOutlineIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+        }
+        emptyTitle="candidates.empty_title"
+        emptyDescription="candidates.empty_description"
+        emptyAction={
+          canManage && onCreate
+            ? {
+                label: "candidates.create_manual",
+                onClick: onCreate,
+                startIcon: <PersonAddIcon />,
+              }
+            : undefined
+        }
+        isFiltered={Boolean(search)}
+        filteredEmptyTitle="candidates.empty_filtered_title"
+        filteredEmptyDescription="candidates.empty_filtered_description"
+        filteredEmptyAction={
+          onClearFilters
+            ? { label: "search.clear_filters", onClick: onClearFilters }
+            : undefined
+        }
         errorMessage="errors.fetch_failed"
         onboardingKey="candidates-list"
         page={page}

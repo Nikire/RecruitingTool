@@ -40,7 +40,7 @@ const CandidatesPage: React.FC = () => {
 
   const canManage = canManageResources(user);
 
-  const { handlePageChange, handleLimitChange } =
+  const { handleSearch, handlePageChange, handleLimitChange } =
     useSearchPaginationHandlers(setSearchState);
 
   if (userLoading) {
@@ -61,8 +61,16 @@ const CandidatesPage: React.FC = () => {
     setAnchorEl(null);
   };
 
+  // Routed through handleSearch so the page resets to 1: keeping the old page
+  // while narrowing the result set renders an empty grid for a search that
+  // actually has matches.
   const handleFilterChange = (filters: FilterBarFilters) => {
-    setSearchState({ ...searchState, search: filters.search });
+    handleSearch(filters.search);
+  };
+
+  // Gives the "no results" empty state a way back to the full list
+  const handleClearFilters = () => {
+    handleSearch("");
   };
 
   return (
@@ -77,6 +85,7 @@ const CandidatesPage: React.FC = () => {
                 startIcon={<AddIcon />}
                 endIcon={<KeyboardArrowDownIcon />}
                 onClick={handleMenuOpen}
+                id="add-candidate-button"
                 sx={{ width: { xs: "100%", sm: "auto" }, minHeight: "44px" }}
                 aria-label={t("candidates.create_candidate")}
                 aria-controls={anchorEl ? "add-candidate-menu" : undefined}
@@ -151,6 +160,8 @@ const CandidatesPage: React.FC = () => {
         search={search}
         onPageChange={handlePageChange}
         onLimitChange={handleLimitChange}
+        onCreate={manualDialog.open}
+        onClearFilters={handleClearFilters}
       />
 
       <CreateCandidateDialog

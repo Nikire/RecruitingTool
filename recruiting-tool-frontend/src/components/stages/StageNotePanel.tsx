@@ -16,6 +16,7 @@ import {
   useDeleteStageEvalNote,
 } from "../../hooks/api/useStageNotes";
 import { StageEvalNote } from "../../types/stage.types";
+import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 
 const MAX_CHARS = 1000;
 
@@ -38,6 +39,7 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
     existingNote?.rating ?? null,
   );
   const [savedBriefly, setSavedBriefly] = useState(false);
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
 
   const { mutate: upsertNote, isPending: isSaving } = useUpsertStageNote();
   const { mutate: deleteNote, isPending: isDeleting } =
@@ -72,20 +74,27 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
 
   const handleClear = () => {
     if (existingNote) {
-      deleteNote(
-        { hiringProcessUid, stageUid },
-        {
-          onSuccess: () => {
-            setContent("");
-            setRating(null);
-            onClose?.();
-          },
-        },
-      );
+      // Deleting a saved evaluation is destructive and shared with the team,
+      // so it always goes through an explicit confirmation.
+      setConfirmDeleteOpen(true);
     } else {
       setContent("");
       setRating(null);
     }
+  };
+
+  const handleConfirmDelete = () => {
+    deleteNote(
+      { hiringProcessUid, stageUid },
+      {
+        onSuccess: () => {
+          setConfirmDeleteOpen(false);
+          setContent("");
+          setRating(null);
+          onClose?.();
+        },
+      },
+    );
   };
 
   const isLoading = isSaving || isDeleting;
@@ -151,7 +160,8 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
       {/* Action buttons */}
       <Box sx={{ display: "flex", gap: 1, justifyContent: "flex-end" }}>
         <Button
-          variant="contained"
+          variant={existingNote ? "outlined" : "contained"}
+          color={existingNote ? "error" : "primary"}
           size="small"
           startIcon={
             isDeleting ? <CircularProgress size={14} /> : <DeleteOutlineIcon />
@@ -159,7 +169,7 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
           onClick={handleClear}
           disabled={isLoading}
         >
-          {t("stage_note.clear")}
+          {existingNote ? t("stage_note.delete") : t("stage_note.clear")}
         </Button>
         <Button
           variant="contained"
@@ -184,6 +194,15 @@ const StageNotePanel: React.FC<StageNotePanelProps> = ({
               : t("stage_note.save")}
         </Button>
       </Box>
+
+      <ConfirmDeleteDialog
+        open={confirmDeleteOpen}
+        onClose={() => setConfirmDeleteOpen(false)}
+        onConfirm={handleConfirmDelete}
+        title={t("stage_note.delete_confirm_title")}
+        message={t("stage_note.delete_confirm_message")}
+        isDeleting={isDeleting}
+      />
     </Box>
   );
 };

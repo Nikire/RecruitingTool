@@ -148,10 +148,19 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
       renderCell: (params) =>
         params.row.candidate ? (
           <CellColumn gap={0.25}>
-            <Typography variant="body2" noWrap>
+            <Typography
+              variant="body2"
+              noWrap
+              title={params.row.candidate.name}
+            >
               {params.row.candidate.name}
             </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              noWrap
+              title={params.row.candidate.email}
+            >
               {params.row.candidate.email}
             </Typography>
           </CellColumn>
@@ -184,10 +193,19 @@ const HiringProcessesList: React.FC<HiringProcessesListProps> = ({
       renderCell: (params) =>
         params.row.jobPosition?.createdBy ? (
           <CellColumn gap={0.25}>
-            <Typography variant="body2" noWrap>
+            <Typography
+              variant="body2"
+              noWrap
+              title={params.row.jobPosition.createdBy.name}
+            >
               {params.row.jobPosition.createdBy.name}
             </Typography>
-            <Typography variant="caption" color="text.secondary" noWrap>
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              noWrap
+              title={params.row.jobPosition.createdBy.email}
+            >
               {params.row.jobPosition.createdBy.email}
             </Typography>
           </CellColumn>

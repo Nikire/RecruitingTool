@@ -38,6 +38,7 @@ import {
   type SendBookingLinkResponse,
 } from "../../../hooks/api/useTimeSlots";
 import { useGetCompanyCalendarSettings } from "../../../hooks/api/useCompanyCalendarSettings";
+import { showErrorToast } from "../../../utils/toast";
 
 type StagesAccordionProps = {
   stage: Stage;
@@ -96,12 +97,18 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
     });
   };
 
-  const handleCopyLink = () => {
+  const handleCopyLink = async () => {
     if (!bookingResult) return;
-    navigator.clipboard.writeText(bookingResult.bookingUrl).then(() => {
+    try {
+      if (!navigator.clipboard?.writeText) {
+        throw new Error("Clipboard API unavailable");
+      }
+      await navigator.clipboard.writeText(bookingResult.bookingUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    });
+    } catch {
+      showErrorToast(null, t("booking_link.copy_failed"));
+    }
   };
 
   return (
@@ -207,8 +214,14 @@ const StagesAccordion: React.FC<StagesAccordionProps> = ({
                     sx={{ mb: 2 }}
                     onClose={() => setBookingResult(null)}
                   >
-                    <Typography variant="caption" display="block">
-                      {t("booking_link.sent_to")} {bookingResult.candidateEmail}
+                    <Typography
+                      variant="caption"
+                      display="block"
+                      sx={{ wordBreak: "break-all", overflowWrap: "anywhere" }}
+                    >
+                      {t("booking_link.sent_to_email", {
+                        email: bookingResult.candidateEmail,
+                      })}
                     </Typography>
                     <Button
                       size="small"

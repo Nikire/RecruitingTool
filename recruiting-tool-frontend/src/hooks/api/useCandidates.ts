@@ -20,6 +20,7 @@ import {
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { ANALYTICS_EVENTS } from "../../analytics";
 import { useActivationEvents } from "./useActivationEvents";
 
@@ -115,10 +116,10 @@ export function useCreateCandidateNote() {
       queryClient.invalidateQueries({
         queryKey: candidateNoteKeys.byCandidate(variables.candidateUid),
       });
-      showSuccessToast("Note created successfully!");
+      showSuccessToast(i18n.t("candidates.toast.note_created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create note");
+      showErrorToast(error, i18n.t("candidates.toast.note_create_failed"));
     },
   });
 }
@@ -136,10 +137,10 @@ export function useUpdateCandidateNote() {
     }) => updateCandidateNote(noteUid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: candidateNoteKeys.all });
-      showSuccessToast("Note updated successfully!");
+      showSuccessToast(i18n.t("candidates.toast.note_updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update note");
+      showErrorToast(error, i18n.t("candidates.toast.note_update_failed"));
     },
   });
 }
@@ -151,10 +152,10 @@ export function useDeleteCandidateNote() {
     mutationFn: (noteUid: string) => deleteCandidateNote(noteUid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: candidateNoteKeys.all });
-      showSuccessToast("Note deleted successfully!");
+      showSuccessToast(i18n.t("candidates.toast.note_deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete note");
+      showErrorToast(error, i18n.t("candidates.toast.note_delete_failed"));
     },
   });
 }

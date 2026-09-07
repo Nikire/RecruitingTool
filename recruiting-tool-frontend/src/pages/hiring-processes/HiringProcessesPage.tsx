@@ -57,10 +57,13 @@ const HiringProcessesPage: React.FC = () => {
 
   // Handle filter changes from FilterBar
   const handleFilterChange = (filters: FilterBarFilters) => {
+    // page: 1 — narrowing the result set while staying on page 3 renders an
+    // empty list for filters that actually have matches.
     setSearchState({
       ...searchState,
       search: filters.search,
       status: filters.status as typeof searchState.status,
+      page: 1,
     });
   };
 
@@ -180,6 +183,8 @@ const HiringProcessesPage: React.FC = () => {
           status={status}
           clientUid={clientUid}
           highlightUid={highlightUid}
+          onCreate={createDialog.open}
+          onClearFilters={handleClearFilters}
         />
       ) : (
         <HiringProcessesList

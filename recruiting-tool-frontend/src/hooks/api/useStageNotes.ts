@@ -7,6 +7,7 @@ import {
 } from "../../api/stageNotes";
 import { UpsertStageEvalNoteDto } from "../../types/stage.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import i18n from "i18next";
 
 export function useCandidateStageNotes(candidateUid: string | undefined) {
   return useQuery({
@@ -39,7 +40,7 @@ export function useUpsertStageNote() {
       queryClient.invalidateQueries({ queryKey: candidateStageNoteKeys.all });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to save note");
+      showErrorToast(error, i18n.t("stage_notes.toast.save_failed"));
     },
   });
 }
@@ -61,10 +62,10 @@ export function useDeleteStageEvalNote() {
       });
       queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
       queryClient.invalidateQueries({ queryKey: candidateStageNoteKeys.all });
-      showSuccessToast("Note deleted successfully!");
+      showSuccessToast(i18n.t("stage_notes.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete note");
+      showErrorToast(error, i18n.t("stage_notes.toast.delete_failed"));
     },
   });
 }
