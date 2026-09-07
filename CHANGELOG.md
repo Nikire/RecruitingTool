@@ -87,8 +87,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Team: owners can no longer remove or demote their own account (a "You" badge replaces the actions menu); approving a join request refreshes the members list and quota; cancel-invitation uses the styled confirmation dialog with a pending state; long emails wrap inside member cards; tabs scroll on phones
 - Analytics: overview shows an error instead of fabricated zeros; stage names, application sources and funnel stages translated; comparison-card labels get tooltips
 
+### 🛠️ Admin panel (24 verified findings)
+- Admin dashboard hides SUPER_ADMIN-only tiles from plain admins (they led to "Access Denied"); companies list shows an error state instead of "no companies yet" on failed fetches
+- Roles, deleted-record statuses, plan tiers, subscription audit actions and plans/statuses translated; company and user admin toasts translated; deleted-at timestamps and MRR follow the app locale
+- Plan limits: tiers sorted as the backend seeds them (Agency no longer first and unnamed); optimistic edits without the value flashing back; saving one plan no longer disables every card
+- Feature flags: switches labelled for screen readers; only the toggled cell shows a pending state, with optimistic update and rollback
+- Deleted records: error states, scrollable tabs for Spanish labels; contact messages page uses a valid page size, previews get tooltips, message bodies and mailto links wrap; SMTP host/sender wrap in system settings
+- Subscriptions audit drawer fits narrow viewports; company detail distinguishes "not found" from failed requests with a back link; transfer-ownership availability uses the member count, not the visible page
+- Webhooks stub no longer shows permanent loading skeletons
+
 ### 🌐 i18n
-- 157 new keys in `en.json` / `es.json` (billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 187 new keys in `en.json` / `es.json` (admin, feature_flags, plan_limits, deleted_records, companies.toast, users.toast, billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

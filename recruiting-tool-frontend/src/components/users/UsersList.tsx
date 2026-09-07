@@ -13,7 +13,7 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { hasRole } from "../../utils/permissions";
 import { useDialog } from "../../hooks/useDialog";
 import { useConfirmDelete } from "../../hooks/useConfirmDelete";
-import { StatusChip } from "../common";
+import { RoleBadge } from "../common";
 import { ActionsCell, DateCell } from "../tables";
 import { DataTable, DataTableColumn } from "../shared/DataTable";
 
@@ -87,18 +87,19 @@ const UsersList: React.FC<UsersListProps> = ({
     {
       field: "roles",
       headerName: t("users.roles_label"),
-      width: 200,
+      flex: 1,
+      minWidth: 200,
       renderCell: (params: GridRenderCellParams) => (
         <Box sx={{ display: "flex", gap: 0.5, flexWrap: "wrap" }}>
           {(params.row.roles as UserRoles[]).map((role: UserRoles) => (
-            <StatusChip key={role} status={role} type="userRole" size="small" />
+            <RoleBadge key={role} role={role} />
           ))}
         </Box>
       ),
       mobileRender: (user: User) => (
         <Box sx={{ display: "flex", gap: 0.5, mb: 1, flexWrap: "wrap" }}>
           {user.roles.map((role) => (
-            <StatusChip key={role} status={role} type="userRole" size="small" />
+            <RoleBadge key={role} role={role} />
           ))}
         </Box>
       ),

@@ -361,7 +361,11 @@ const CompanyDetailPage: React.FC = () => {
     pageSize: limit,
   };
 
-  const { data: company, isLoading: companyLoading } = useCompany(uid ?? "");
+  const {
+    data: company,
+    isLoading: companyLoading,
+    isError: companyError,
+  } = useCompany(uid ?? "");
   const { data: usersData, isLoading: usersLoading } = useCompanyUsers(
     uid ?? "",
     usersParams,
@@ -395,8 +399,35 @@ const CompanyDetailPage: React.FC = () => {
 
   if (!company) {
     return (
-      <Box sx={{ p: 3 }}>
-        <Typography color="error">{t("company_detail.not_found")}</Typography>
+      <Box>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+          <IconButton
+            onClick={() => navigate("/admin/companies")}
+            aria-label={t("company_detail.back_to_companies")}
+            size="small"
+            sx={{ mr: 0.5 }}
+          >
+            <ArrowBackIcon />
+          </IconButton>
+          <Typography
+            variant="h4"
+            sx={{ fontWeight: 700, fontSize: { xs: "1.5rem", sm: "2.125rem" } }}
+          >
+            {t("companies.title")}
+          </Typography>
+        </Stack>
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {companyError
+            ? t("company_detail.load_error")
+            : t("company_detail.not_found")}
+        </Alert>
+        <Button
+          variant="outlined"
+          startIcon={<ArrowBackIcon />}
+          onClick={() => navigate("/admin/companies")}
+        >
+          {t("company_detail.back_to_companies")}
+        </Button>
       </Box>
     );
   }
@@ -456,14 +487,24 @@ const CompanyDetailPage: React.FC = () => {
           {t("company_detail.users_section_title")}
         </Typography>
         <Stack direction="row" spacing={1}>
-          <Button
-            variant="contained"
-            startIcon={<SwapHorizIcon />}
-            onClick={() => handleOpenTransfer(undefined)}
-            disabled={users.length < 2}
+          <Tooltip
+            title={
+              totalUsers < 2
+                ? t("company_detail.transfer_needs_two_members")
+                : ""
+            }
           >
-            {t("company_detail.transfer_ownership")}
-          </Button>
+            <span>
+              <Button
+                variant="contained"
+                startIcon={<SwapHorizIcon />}
+                onClick={() => handleOpenTransfer(undefined)}
+                disabled={totalUsers < 2}
+              >
+                {t("company_detail.transfer_ownership")}
+              </Button>
+            </span>
+          </Tooltip>
           <Button
             variant="contained"
             startIcon={<PersonAddIcon />}

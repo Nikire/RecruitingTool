@@ -28,7 +28,7 @@ const ContactMessagesPage = () => {
   const { t } = useTranslation();
   const theme = useTheme();
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
+  const [limit, setLimit] = useState(25);
 
   const { data, isLoading, isError } = useContactMessages(page, limit);
   const { mutate: markAsRead, isPending: isMarkingAsRead } =
@@ -98,20 +98,20 @@ const ContactMessagesPage = () => {
       flex: 2,
       minWidth: 200,
       renderCell: (params: GridRenderCellParams) => (
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          sx={{
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-            maxWidth: 300,
-          }}
-        >
-          {params.row.message.length > 80
-            ? `${params.row.message.substring(0, 80)}...`
-            : params.row.message}
-        </Typography>
+        <Tooltip title={params.row.message}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              width: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {params.row.message}
+          </Typography>
+        </Tooltip>
       ),
       mobileRender: (msg: ContactMessage) => (
         <Typography variant="body2" color="text.secondary">

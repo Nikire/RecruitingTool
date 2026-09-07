@@ -10,6 +10,7 @@ import {
 } from "../../types/company.types";
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import i18n from "i18next";
 
 export const useCompanies = (uid?: string) => {
   return useQuery({
@@ -52,10 +53,10 @@ export const useCreateCompany = () => {
     mutationFn: (data: CreateCompanyDto) => companiesApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
-      showSuccessToast("Company created successfully!");
+      showSuccessToast(i18n.t("companies.toast.created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create company");
+      showErrorToast(error, i18n.t("companies.toast.create_failed"));
     },
   });
 };
@@ -68,10 +69,10 @@ export const useUpdateCompany = () => {
       companiesApi.update(uid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
-      showSuccessToast("Company updated successfully!");
+      showSuccessToast(i18n.t("companies.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update company");
+      showErrorToast(error, i18n.t("companies.toast.update_failed"));
     },
   });
 };
@@ -83,10 +84,10 @@ export const useDeleteCompany = () => {
     mutationFn: (uid: string) => companiesApi.delete(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
-      showSuccessToast("Company deleted successfully!");
+      showSuccessToast(i18n.t("companies.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete company");
+      showErrorToast(error, i18n.t("companies.toast.delete_failed"));
     },
   });
 };
@@ -113,10 +114,13 @@ export const useTransferOwnership = (companyUid: string) => {
       queryClient.invalidateQueries({
         queryKey: companyKeys.users(companyUid),
       });
-      showSuccessToast("Ownership transferred successfully!");
+      showSuccessToast(i18n.t("company_detail.toast.ownership_transferred"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to transfer ownership");
+      showErrorToast(
+        error,
+        i18n.t("company_detail.toast.ownership_transfer_failed"),
+      );
     },
   });
 };
@@ -132,10 +136,10 @@ export const useForceJoinUser = (companyUid: string) => {
       queryClient.invalidateQueries({
         queryKey: companyKeys.users(companyUid),
       });
-      showSuccessToast("User successfully joined the company!");
+      showSuccessToast(i18n.t("company_detail.toast.force_joined"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to force join user");
+      showErrorToast(error, i18n.t("company_detail.toast.force_join_failed"));
     },
   });
 };
@@ -159,7 +163,7 @@ export const useUpdateMyCompanyProfile = () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update company profile");
+      showErrorToast(error, i18n.t("companies.toast.profile_update_failed"));
     },
   });
 };
@@ -174,7 +178,7 @@ export const useUploadCompanyLogo = () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.all });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to upload logo");
+      showErrorToast(error, i18n.t("companies.toast.logo_upload_failed"));
     },
   });
 };

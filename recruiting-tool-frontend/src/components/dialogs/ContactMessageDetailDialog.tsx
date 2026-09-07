@@ -16,6 +16,7 @@ import { useTranslation } from "react-i18next";
 import { format } from "date-fns";
 import MarkEmailReadIcon from "@mui/icons-material/MarkEmailRead";
 import { ContactMessage } from "../../types/contact-message.types";
+import { wrapLongText } from "../../utils/textOverflow";
 import { useMarkContactMessageAsRead } from "../../hooks/api/useContactMessages";
 
 interface ContactMessageDetailDialogProps {
@@ -94,7 +95,7 @@ const ContactMessageDetailDialog: React.FC<ContactMessageDetailDialogProps> = ({
               href={`mailto:${message.email}`}
               variant="body2"
               underline="hover"
-              sx={{ display: "inline-block" }}
+              sx={{ display: "inline-block", ...wrapLongText }}
             >
               {message.email}
             </Link>
@@ -171,7 +172,11 @@ const ContactMessageDetailDialog: React.FC<ContactMessageDetailDialogProps> = ({
             >
               <Typography
                 variant="body2"
-                sx={{ whiteSpace: "pre-wrap", lineHeight: 1.75 }}
+                sx={{
+                  whiteSpace: "pre-wrap",
+                  lineHeight: 1.75,
+                  ...wrapLongText,
+                }}
               >
                 {message.message}
               </Typography>

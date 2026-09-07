@@ -506,7 +506,18 @@
     "empty_title": "No companies yet",
     "empty_description": "Add your first company to start posting jobs and tracking candidates under it.",
     "empty_filtered_title": "No companies match your search",
-    "empty_filtered_description": "Try a different company name, or clear the search to see them all."
+    "empty_filtered_description": "Try a different company name, or clear the search to see them all.",
+    "error_loading": "Error loading companies. Please try again.",
+    "toast": {
+      "created": "Company created successfully!",
+      "create_failed": "Failed to create company. Please try again.",
+      "updated": "Company updated successfully!",
+      "update_failed": "Failed to update company. Please try again.",
+      "deleted": "Company deleted successfully!",
+      "delete_failed": "Failed to delete company. Please try again.",
+      "profile_update_failed": "Failed to update company profile. Please try again.",
+      "logo_upload_failed": "Failed to upload logo. Please try again."
+    }
   },
   "company_detail": {
     "back_to_companies": "Back to Companies",
@@ -534,7 +545,15 @@
     "role_label": "Role",
     "assign_to_company": "Assign to Company",
     "joining": "Joining...",
-    "transfer_to_user": "Transfer ownership to {{name}}"
+    "transfer_to_user": "Transfer ownership to {{name}}",
+    "load_error": "We couldn't load this company. Please try again.",
+    "transfer_needs_two_members": "The company needs at least two members to transfer ownership.",
+    "toast": {
+      "ownership_transferred": "Ownership transferred successfully!",
+      "ownership_transfer_failed": "Failed to transfer ownership. Please try again.",
+      "force_joined": "User successfully joined the company!",
+      "force_join_failed": "Failed to add the user to the company. Please try again."
+    }
   },
   "users": {
     "title": "Users",
@@ -584,7 +603,17 @@
       "updated": "User updated successfully!",
       "update_failed": "Failed to update user. Please try again.",
       "resume_uploaded": "Resume uploaded successfully!",
-      "resume_upload_failed": "Failed to upload resume. Please try again."
+      "resume_upload_failed": "Failed to upload resume. Please try again.",
+      "created": "User created successfully!",
+      "create_failed": "Failed to create user. Please try again.",
+      "deleted": "User deleted successfully!",
+      "delete_failed": "Failed to delete user. Please try again.",
+      "deactivated": "User deactivated successfully!",
+      "deactivate_failed": "Failed to deactivate user. Please try again.",
+      "reactivated": "User reactivated successfully!",
+      "reactivate_failed": "Failed to reactivate user. Please try again.",
+      "resume_deleted": "Resume deleted successfully!",
+      "resume_delete_failed": "Failed to delete resume. Please try again."
     }
   },
   "stages": {
@@ -2852,6 +2881,9 @@
           "support": "Priority support & SLA guarantee",
           "api": "API access & custom integrations"
         }
+      },
+      "agency": {
+        "name": "Agency"
       }
     },
     "quota": {
@@ -4400,7 +4432,8 @@
     "toggle_success": "Feature flag updated successfully",
     "toggle_error": "Failed to update feature flag",
     "load_error": "Failed to load feature flags",
-    "last_updated": "Last updated"
+    "last_updated": "Last updated",
+    "toggle_aria": "Toggle {{feature}} for the {{plan}} plan"
   },
   "general_settings": {
     "title": "General Settings",
@@ -4961,7 +4994,12 @@
     "previous": "Previous",
     "new_value": "New",
     "days": "days",
-    "no_audit_entries": "No audit entries found for this subscription"
+    "no_audit_entries": "No audit entries found for this subscription",
+    "actions": {
+      "plan_change": "Plan Change",
+      "status_change": "Status Change",
+      "trial_extended": "Trial Extended"
+    }
   },
   "email_deliverability": {
     "title": "Email Deliverability Monitor",

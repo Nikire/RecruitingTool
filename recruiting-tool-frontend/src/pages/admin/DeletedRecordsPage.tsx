@@ -38,7 +38,8 @@ import {
   useRestoreInterview,
   usePurgeInterview,
 } from "../../hooks/api/useDeletedRecords";
-import { format } from "date-fns";
+import { formatDate as formatLocalizedDate } from "../../utils/dateFormatters";
+import StatusChip from "../../components/common/StatusChip";
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -63,7 +64,7 @@ function TabPanel(props: TabPanelProps) {
 }
 
 const DeletedRecordsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [tabValue, setTabValue] = useState(0);
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [confirmAction, setConfirmAction] = useState<
@@ -75,14 +76,26 @@ const DeletedRecordsPage: React.FC = () => {
   >(null);
 
   // Fetch deleted records
-  const { data: deletedCandidates, isLoading: loadingCandidates } =
-    useDeletedCandidates();
-  const { data: deletedJobPositions, isLoading: loadingJobPositions } =
-    useDeletedJobPositions();
-  const { data: deletedApplications, isLoading: loadingApplications } =
-    useDeletedApplications();
-  const { data: deletedInterviews, isLoading: loadingInterviews } =
-    useDeletedInterviews();
+  const {
+    data: deletedCandidates,
+    isLoading: loadingCandidates,
+    isError: errorCandidates,
+  } = useDeletedCandidates();
+  const {
+    data: deletedJobPositions,
+    isLoading: loadingJobPositions,
+    isError: errorJobPositions,
+  } = useDeletedJobPositions();
+  const {
+    data: deletedApplications,
+    isLoading: loadingApplications,
+    isError: errorApplications,
+  } = useDeletedApplications();
+  const {
+    data: deletedInterviews,
+    isLoading: loadingInterviews,
+    isError: errorInterviews,
+  } = useDeletedInterviews();
 
   // Mutations
   const restoreCandidate = useRestoreCandidate();
@@ -154,9 +167,8 @@ const DeletedRecordsPage: React.FC = () => {
     closeConfirmDialog();
   };
 
-  const formatDate = (date: Date | string) => {
-    return format(new Date(date), "PPp");
-  };
+  const formatDate = (date: Date | string) =>
+    formatLocalizedDate(date, "PPp", i18n.language);
 
   return (
     <Box sx={{ width: "100%" }}>
@@ -173,6 +185,10 @@ const DeletedRecordsPage: React.FC = () => {
           value={tabValue}
           onChange={handleTabChange}
           aria-label={t("deleted_records.tabs_aria_label")}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+          sx={{ "& .MuiTab-root": { whiteSpace: "nowrap", minWidth: "auto" } }}
         >
           <Tab label={t("deleted_records.tabs.candidates")} />
           <Tab label={t("deleted_records.tabs.job_positions")} />
@@ -186,6 +202,8 @@ const DeletedRecordsPage: React.FC = () => {
             <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
+          ) : errorCandidates ? (
+            <Alert severity="error">{t("errors.fetch_failed")}</Alert>
           ) : deletedCandidates && deletedCandidates.length > 0 ? (
             <TableContainer>
               <Table>
@@ -259,6 +277,8 @@ const DeletedRecordsPage: React.FC = () => {
             <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
+          ) : errorJobPositions ? (
+            <Alert severity="error">{t("errors.fetch_failed")}</Alert>
           ) : deletedJobPositions && deletedJobPositions.length > 0 ? (
             <TableContainer>
               <Table>
@@ -277,10 +297,11 @@ const DeletedRecordsPage: React.FC = () => {
                     <TableRow key={jobPosition.uid}>
                       <TableCell>{jobPosition.title}</TableCell>
                       <TableCell>
-                        <Chip
-                          label={jobPosition.status}
+                        <StatusChip
+                          status={jobPosition.status}
+                          type="jobPosition"
                           size="small"
-                          color="default"
+                          translate
                         />
                       </TableCell>
                       <TableCell>{formatDate(jobPosition.deletedAt)}</TableCell>
@@ -330,6 +351,8 @@ const DeletedRecordsPage: React.FC = () => {
             <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
+          ) : errorApplications ? (
+            <Alert severity="error">{t("errors.fetch_failed")}</Alert>
           ) : deletedApplications && deletedApplications.length > 0 ? (
             <TableContainer>
               <Table>
@@ -352,7 +375,12 @@ const DeletedRecordsPage: React.FC = () => {
                       <TableCell>{application.applicantName}</TableCell>
                       <TableCell>{application.applicantEmail}</TableCell>
                       <TableCell>
-                        <Chip label={application.status} size="small" />
+                        <StatusChip
+                          status={application.status}
+                          type="application"
+                          size="small"
+                          translate
+                        />
                       </TableCell>
                       <TableCell>{formatDate(application.deletedAt)}</TableCell>
                       <TableCell align="right">
@@ -401,6 +429,8 @@ const DeletedRecordsPage: React.FC = () => {
             <Box sx={{ display: "flex", justifyContent: "center", p: 4 }}>
               <CircularProgress />
             </Box>
+          ) : errorInterviews ? (
+            <Alert severity="error">{t("errors.fetch_failed")}</Alert>
           ) : deletedInterviews && deletedInterviews.length > 0 ? (
             <TableContainer>
               <Table>
@@ -425,7 +455,13 @@ const DeletedRecordsPage: React.FC = () => {
                           : t("common.n_a")}
                       </TableCell>
                       <TableCell>
-                        <Chip label={interview.status} size="small" />
+                        <Chip
+                          label={t(
+                            `interviews.${interview.status.toLowerCase()}`,
+                            { defaultValue: interview.status },
+                          )}
+                          size="small"
+                        />
                       </TableCell>
                       <TableCell>{formatDate(interview.deletedAt)}</TableCell>
                       <TableCell align="right">

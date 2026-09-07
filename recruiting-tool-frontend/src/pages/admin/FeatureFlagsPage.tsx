@@ -170,6 +170,10 @@ const FeatureFlagsPage: React.FC = () => {
   }
 
   const matrix = buildMatrix(flags);
+  // Only the record whose PATCH is in flight is disabled, not the whole matrix
+  const pendingUid = toggleFlag.isPending
+    ? toggleFlag.variables?.uid
+    : undefined;
 
   return (
     <Box>
@@ -196,7 +200,12 @@ const FeatureFlagsPage: React.FC = () => {
                 return (
                   <TableCell key={plan} align="center" sx={{ minWidth: 120 }}>
                     <Chip
-                      label={plan}
+                      label={t(
+                        `subscription.plans.${plan.toLowerCase()}.name`,
+                        {
+                          defaultValue: plan,
+                        },
+                      )}
                       size="small"
                       sx={{
                         backgroundColor: color.main,
@@ -261,17 +270,29 @@ const FeatureFlagsPage: React.FC = () => {
                     flag.updatedAt,
                   ).toLocaleString();
 
+                  const planLabel = t(
+                    `subscription.plans.${plan.toLowerCase()}.name`,
+                    { defaultValue: plan },
+                  );
+
                   return (
                     <TableCell key={plan} align="center">
                       <Tooltip
                         title={`${t("feature_flags.last_updated")}: ${updatedLabel}`}
                         placement="top"
+                        describeChild
                       >
                         <Switch
                           checked={flag.enabled}
                           onChange={() => handleToggle(flag)}
-                          disabled={toggleFlag.isPending}
+                          disabled={pendingUid === flag.uid}
                           size="small"
+                          inputProps={{
+                            "aria-label": t("feature_flags.toggle_aria", {
+                              feature: t(featureI18nKey(featureKey)),
+                              plan: planLabel,
+                            }),
+                          }}
                           sx={{
                             "& .MuiSwitch-switchBase.Mui-checked": {
                               color: color.main,

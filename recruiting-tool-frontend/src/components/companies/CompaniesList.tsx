@@ -39,7 +39,7 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
 }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { data, isLoading } = useListCompanies({
+  const { data, isLoading, error } = useListCompanies({
     page,
     limit,
     search,
@@ -188,6 +188,8 @@ const CompaniesList: React.FC<CompaniesListProps> = ({
       columns={columns}
       getRowId={(row) => row.uid}
       loading={isLoading}
+      error={!!error}
+      errorMessage="companies.error_loading"
       emptyMessage="companies.no_companies"
       emptyIcon={
         <BusinessOutlinedIcon sx={{ fontSize: 40, color: "text.secondary" }} />

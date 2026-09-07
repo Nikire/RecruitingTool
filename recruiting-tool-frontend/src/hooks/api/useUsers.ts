@@ -35,10 +35,10 @@ export const useCreateUser = () => {
     mutationFn: (data: CreateUserDto) => usersApi.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
-      showSuccessToast("User created successfully!");
+      showSuccessToast(i18n.t("users.toast.created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create user");
+      showErrorToast(error, i18n.t("users.toast.create_failed"));
     },
   });
 };
@@ -68,10 +68,10 @@ export const useDeleteUser = () => {
     mutationFn: (uid: string) => usersApi.delete(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
-      showSuccessToast("User deleted successfully!");
+      showSuccessToast(i18n.t("users.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete user");
+      showErrorToast(error, i18n.t("users.toast.delete_failed"));
     },
   });
 };
@@ -83,10 +83,10 @@ export const useDeactivateUser = () => {
     mutationFn: (uid: string) => usersApi.deactivate(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
-      showSuccessToast("User deactivated successfully!");
+      showSuccessToast(i18n.t("users.toast.deactivated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to deactivate user");
+      showErrorToast(error, i18n.t("users.toast.deactivate_failed"));
     },
   });
 };
@@ -98,10 +98,10 @@ export const useReactivateUser = () => {
     mutationFn: (uid: string) => usersApi.reactivate(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: userKeys.all });
-      showSuccessToast("User reactivated successfully!");
+      showSuccessToast(i18n.t("users.toast.reactivated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to reactivate user");
+      showErrorToast(error, i18n.t("users.toast.reactivate_failed"));
     },
   });
 };
@@ -146,10 +146,10 @@ export const useDeleteResume = () => {
     onSuccess: () => {
       // Invalidate auth/me query to refresh user data
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
-      showSuccessToast("Resume deleted successfully!");
+      showSuccessToast(i18n.t("users.toast.resume_deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete resume");
+      showErrorToast(error, i18n.t("users.toast.resume_delete_failed"));
     },
   });
 };

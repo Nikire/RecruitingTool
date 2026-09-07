@@ -27,14 +27,26 @@ import {
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
+import { hasRole } from "../../utils/permissions";
+import { UserRoles } from "../../types/user.types";
 import { UnifiedStatCard } from "../../components/common";
+
+interface AdminDashboardItem {
+  title: string;
+  icon: React.ReactNode;
+  color: string;
+  description: string;
+  path: string;
+  requiresSuperAdmin?: boolean;
+}
 
 const AdminDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
   const navigate = useNavigate();
+  const isSuperAdmin = hasRole(user, UserRoles.SUPER_ADMIN);
 
-  const managementItems = [
+  const managementItems: AdminDashboardItem[] = [
     {
       title: t("admin_dashboard.pipeline_analytics"),
       icon: <BarChartIcon />,
@@ -90,6 +102,7 @@ const AdminDashboard: React.FC = () => {
       color: "#2e7d32",
       description: t("admin_dashboard.company_management_desc"),
       path: "/admin/companies",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.users"),
@@ -97,6 +110,7 @@ const AdminDashboard: React.FC = () => {
       color: "#1976d2",
       description: t("admin_dashboard.user_management_desc"),
       path: "/admin/users",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.subscriptions"),
@@ -125,6 +139,7 @@ const AdminDashboard: React.FC = () => {
       color: "#6a1b9a",
       description: t("admin_dashboard.email_logs_desc"),
       path: "/admin/email-logs",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_dashboard.email_deliverability"),
@@ -142,13 +157,14 @@ const AdminDashboard: React.FC = () => {
     },
   ];
 
-  const configurationItems = [
+  const configurationItems: AdminDashboardItem[] = [
     {
       title: t("admin_layout.plan_limits"),
       icon: <TuneIcon />,
       color: "#9c27b0",
       description: t("admin_dashboard.plan_limits_desc"),
       path: "/admin/plan-limits",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.feature_flags"),
@@ -156,6 +172,7 @@ const AdminDashboard: React.FC = () => {
       color: "#f57c00",
       description: t("admin_dashboard.feature_flags_desc"),
       path: "/admin/feature-flags",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.general_settings"),
@@ -163,6 +180,7 @@ const AdminDashboard: React.FC = () => {
       color: "#455a64",
       description: t("admin_dashboard.general_settings_desc"),
       path: "/admin/general-settings",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.webhooks"),
@@ -170,6 +188,7 @@ const AdminDashboard: React.FC = () => {
       color: "#00838f",
       description: t("admin_dashboard.webhooks_desc"),
       path: "/admin/webhooks",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.custom_plans"),
@@ -177,6 +196,7 @@ const AdminDashboard: React.FC = () => {
       color: "#5e35b1",
       description: t("admin_dashboard.custom_plans_desc"),
       path: "/admin/custom-plans",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.ai_quota"),
@@ -184,6 +204,7 @@ const AdminDashboard: React.FC = () => {
       color: "#e91e63",
       description: t("admin_dashboard.ai_quota_desc"),
       path: "/admin/ai-quota",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.settings"),
@@ -191,6 +212,7 @@ const AdminDashboard: React.FC = () => {
       color: "#37474f",
       description: t("admin_dashboard.system_settings_desc"),
       path: "/admin/settings",
+      requiresSuperAdmin: true,
     },
     {
       title: t("admin_layout.docs"),
@@ -198,8 +220,14 @@ const AdminDashboard: React.FC = () => {
       color: "#558b2f",
       description: t("admin_dashboard.docs_desc"),
       path: "/admin/docs",
+      requiresSuperAdmin: true,
     },
   ];
+
+  const canShowItem = (item: AdminDashboardItem) =>
+    !item.requiresSuperAdmin || isSuperAdmin;
+  const visibleManagementItems = managementItems.filter(canShowItem);
+  const visibleConfigurationItems = configurationItems.filter(canShowItem);
 
   return (
     <Box sx={{ width: "100%", py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 0 } }}>
@@ -219,38 +247,47 @@ const AdminDashboard: React.FC = () => {
       </Box>
 
       {/* Management section */}
-      <SectionHeader label={t("admin_layout.group_management")} />
-      <CardGrid>
-        {managementItems.map((item) => (
-          <UnifiedStatCard
-            key={item.path}
-            title={item.title}
-            icon={item.icon}
-            color={item.color}
-            subtitle={item.description}
-            onClick={() => navigate(item.path)}
-            variant="navigation"
-          />
-        ))}
-      </CardGrid>
+      {visibleManagementItems.length > 0 && (
+        <>
+          <SectionHeader label={t("admin_layout.group_management")} />
+          <CardGrid>
+            {visibleManagementItems.map((item) => (
+              <UnifiedStatCard
+                key={item.path}
+                title={item.title}
+                icon={item.icon}
+                color={item.color}
+                subtitle={item.description}
+                onClick={() => navigate(item.path)}
+                variant="navigation"
+              />
+            ))}
+          </CardGrid>
+        </>
+      )}
 
-      <Divider sx={{ my: 4 }} />
+      {visibleManagementItems.length > 0 &&
+        visibleConfigurationItems.length > 0 && <Divider sx={{ my: 4 }} />}
 
       {/* Configuration section */}
-      <SectionHeader label={t("admin_layout.group_configuration")} />
-      <CardGrid>
-        {configurationItems.map((item) => (
-          <UnifiedStatCard
-            key={item.path}
-            title={item.title}
-            icon={item.icon}
-            color={item.color}
-            subtitle={item.description}
-            onClick={() => navigate(item.path)}
-            variant="navigation"
-          />
-        ))}
-      </CardGrid>
+      {visibleConfigurationItems.length > 0 && (
+        <>
+          <SectionHeader label={t("admin_layout.group_configuration")} />
+          <CardGrid>
+            {visibleConfigurationItems.map((item) => (
+              <UnifiedStatCard
+                key={item.path}
+                title={item.title}
+                icon={item.icon}
+                color={item.color}
+                subtitle={item.description}
+                onClick={() => navigate(item.path)}
+                variant="navigation"
+              />
+            ))}
+          </CardGrid>
+        </>
+      )}
     </Box>
   );
 };

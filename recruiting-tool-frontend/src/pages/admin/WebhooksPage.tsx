@@ -9,7 +9,6 @@ import {
   Chip,
   Button,
   Stack,
-  Skeleton,
   Table,
   TableBody,
   TableCell,
@@ -30,32 +29,6 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
 import PageHeader from "../../components/common/PageHeader";
 import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
-
-/**
- * Skeleton rows to simulate an empty table with upcoming data.
- */
-const SkeletonTableRows: React.FC<{ columns: number; rows?: number }> = ({
-  columns,
-  rows = 3,
-}) => (
-  <>
-    {[...Array(rows)].map((_, rowIdx) => (
-      <TableRow key={rowIdx}>
-        {[...Array(columns)].map((_, colIdx) => (
-          <TableCell key={colIdx}>
-            <Skeleton
-              variant="text"
-              width={
-                colIdx === 0 ? "60%" : colIdx === columns - 1 ? "40%" : "80%"
-              }
-              height={24}
-            />
-          </TableCell>
-        ))}
-      </TableRow>
-    ))}
-  </>
-);
 
 /**
  * WebhooksPage - Webhook & API key management (stub)
@@ -147,7 +120,6 @@ const WebhooksPage: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <SkeletonTableRows columns={5} rows={2} />
                       <TableRow>
                         <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
                           <Typography variant="body2" color="text.disabled">
@@ -226,7 +198,6 @@ const WebhooksPage: React.FC = () => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      <SkeletonTableRows columns={5} rows={2} />
                       <TableRow>
                         <TableCell colSpan={5} align="center" sx={{ py: 3 }}>
                           <Typography variant="body2" color="text.disabled">

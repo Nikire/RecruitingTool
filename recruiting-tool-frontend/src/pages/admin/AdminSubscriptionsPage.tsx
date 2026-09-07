@@ -187,14 +187,23 @@ const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
     const meta = entry.metadata;
     const parts: string[] = [];
 
+    const planLabel = (value: unknown) =>
+      t(`subscription.plans.${String(value).toLowerCase()}.name`, {
+        defaultValue: String(value),
+      });
+    const statusLabel = (value: unknown) =>
+      t(`subscription.status.${String(value).toLowerCase()}`, {
+        defaultValue: String(value),
+      });
+
     if (meta.previousPlan && meta.newPlan) {
       parts.push(
-        `${t("subscription_manager.previous")}: ${meta.previousPlan} → ${t("subscription_manager.new_value")}: ${meta.newPlan}`,
+        `${t("subscription_manager.previous")}: ${planLabel(meta.previousPlan)} → ${t("subscription_manager.new_value")}: ${planLabel(meta.newPlan)}`,
       );
     }
     if (meta.previousStatus && meta.newStatus) {
       parts.push(
-        `${t("subscription_manager.previous")}: ${meta.previousStatus} → ${t("subscription_manager.new_value")}: ${meta.newStatus}`,
+        `${t("subscription_manager.previous")}: ${statusLabel(meta.previousStatus)} → ${t("subscription_manager.new_value")}: ${statusLabel(meta.newStatus)}`,
       );
     }
     if (meta.daysAdded) {
@@ -210,7 +219,12 @@ const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
     }
 
     return parts.length > 0 ? (
-      <Typography variant="caption" color="text.secondary" component="div">
+      <Typography
+        variant="caption"
+        color="text.secondary"
+        component="div"
+        sx={{ wordBreak: "break-word", overflowWrap: "anywhere" }}
+      >
         {parts.map((p, i) => (
           <div key={i}>{p}</div>
         ))}
@@ -223,7 +237,7 @@ const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
       anchor="right"
       open={open}
       onClose={onClose}
-      PaperProps={{ sx: { width: 420 } }}
+      PaperProps={{ sx: { width: { xs: "100%", sm: 420 }, maxWidth: "100vw" } }}
     >
       <Box
         sx={{
@@ -281,7 +295,10 @@ const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
                         }}
                       >
                         <Chip
-                          label={entry.action.replace("_", " ")}
+                          label={t(
+                            `subscription_manager.actions.${entry.action.toLowerCase()}`,
+                            { defaultValue: entry.action.replace(/_/g, " ") },
+                          )}
                           color={getActionBadgeColor(entry.action)}
                           size="small"
                           variant="filled"
@@ -319,7 +336,7 @@ const AuditLogDrawer: React.FC<AuditLogDrawerProps> = ({
  * Supports plan changes and subscription audit log via drawer.
  */
 const AdminSubscriptionsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, isLoading, isError } = useAdminSubscriptions();
 
   // Dialog state
@@ -380,11 +397,12 @@ const AdminSubscriptionsPage: React.FC = () => {
   const hasNoSubscriptions =
     !isLoading && !isError && (data?.subscriptions.length ?? 0) === 0;
 
-  // Helper to format MRR
-  const formatMRR = (mrr: number | undefined): string => {
-    if (!mrr) return "$0.00";
-    return `$${(mrr / 100).toFixed(2)}`;
-  };
+  // Helper to format MRR (stored in cents, always billed in USD)
+  const formatMRR = (mrr: number | undefined): string =>
+    new Intl.NumberFormat(i18n.language, {
+      style: "currency",
+      currency: "USD",
+    }).format((mrr ?? 0) / 100);
 
   // Helper to format date
   const formatDate = (dateString: string | undefined): string => {

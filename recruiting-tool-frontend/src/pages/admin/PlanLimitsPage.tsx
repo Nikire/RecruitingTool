@@ -47,10 +47,19 @@ const PLAN_COLORS: Record<
   { main: string; light: string; contrastText: string }
 > = {
   FREE: { main: "#757575", light: "#f5f5f5", contrastText: "#fff" },
-  STARTER: { main: "#1976d2", light: "#e3f2fd", contrastText: "#fff" },
   PROFESSIONAL: { main: "#7b1fa2", light: "#f3e5f5", contrastText: "#fff" },
+  AGENCY: { main: "#1976d2", light: "#e3f2fd", contrastText: "#fff" },
   ENTERPRISE: { main: "#f57f17", light: "#fff8e1", contrastText: "#fff" },
 };
+
+// Display order, cheapest tier first. Mirrors the tiers seeded by the backend;
+// unknown tiers sort last instead of jumping to the front.
+const PLAN_ORDER = ["FREE", "PROFESSIONAL", "AGENCY", "ENTERPRISE"];
+
+function getPlanRank(planType: string) {
+  const index = PLAN_ORDER.indexOf(planType);
+  return index === -1 ? PLAN_ORDER.length : index;
+}
 
 const DEFAULT_COLOR = {
   main: "#9e9e9e",
@@ -200,7 +209,10 @@ const PlanCard: React.FC<PlanCardProps> = ({
         title={
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <Chip
-              label={record.planType}
+              label={t(
+                `subscription.plans.${record.planType.toLowerCase()}.name`,
+                { defaultValue: record.planType },
+              )}
               size="small"
               sx={{
                 backgroundColor: color.main,
@@ -378,6 +390,11 @@ const PlanLimitsPage: React.FC = () => {
     updatePlanLimit.mutate({ uid, dto });
   };
 
+  // Only the card whose PATCH is in flight is disabled, not all four.
+  const pendingUid = updatePlanLimit.isPending
+    ? updatePlanLimit.variables?.uid
+    : undefined;
+
   if (isLoading) {
     return (
       <Box>
@@ -406,9 +423,8 @@ const PlanLimitsPage: React.FC = () => {
     );
   }
 
-  const PLAN_ORDER = ["FREE", "STARTER", "PROFESSIONAL", "ENTERPRISE"];
   const sortedPlans = [...planLimits].sort(
-    (a, b) => PLAN_ORDER.indexOf(a.planType) - PLAN_ORDER.indexOf(b.planType),
+    (a, b) => getPlanRank(a.planType) - getPlanRank(b.planType),
   );
 
   return (
@@ -421,7 +437,7 @@ const PlanLimitsPage: React.FC = () => {
             <PlanCard
               record={record}
               onUpdate={handleUpdate}
-              isUpdating={updatePlanLimit.isPending}
+              isUpdating={pendingUid === record.uid}
             />
           </Grid>
         ))}

@@ -506,7 +506,18 @@
     "empty_title": "Aún no hay empresas",
     "empty_description": "Agrega tu primera empresa para empezar a publicar ofertas y gestionar candidatos con ella.",
     "empty_filtered_title": "Ninguna empresa coincide con tu búsqueda",
-    "empty_filtered_description": "Prueba con otro nombre de empresa, o limpia la búsqueda para verlas todas."
+    "empty_filtered_description": "Prueba con otro nombre de empresa, o limpia la búsqueda para verlas todas.",
+    "error_loading": "Error al cargar las empresas. Inténtalo de nuevo.",
+    "toast": {
+      "created": "¡Empresa creada correctamente!",
+      "create_failed": "No se pudo crear la empresa. Inténtalo de nuevo.",
+      "updated": "¡Empresa actualizada correctamente!",
+      "update_failed": "No se pudo actualizar la empresa. Inténtalo de nuevo.",
+      "deleted": "¡Empresa eliminada correctamente!",
+      "delete_failed": "No se pudo eliminar la empresa. Inténtalo de nuevo.",
+      "profile_update_failed": "No se pudo actualizar el perfil de la empresa. Inténtalo de nuevo.",
+      "logo_upload_failed": "No se pudo subir el logo. Inténtalo de nuevo."
+    }
   },
   "company_detail": {
     "back_to_companies": "Volver a Empresas",
@@ -534,7 +545,15 @@
     "role_label": "Rol",
     "assign_to_company": "Asignar a la Empresa",
     "joining": "Uniéndose...",
-    "transfer_to_user": "Transferir propiedad a {{name}}"
+    "transfer_to_user": "Transferir propiedad a {{name}}",
+    "load_error": "No pudimos cargar esta empresa. Inténtalo de nuevo.",
+    "transfer_needs_two_members": "La empresa necesita al menos dos miembros para transferir la propiedad.",
+    "toast": {
+      "ownership_transferred": "¡Propiedad transferida correctamente!",
+      "ownership_transfer_failed": "No se pudo transferir la propiedad. Inténtalo de nuevo.",
+      "force_joined": "¡El usuario se unió a la empresa correctamente!",
+      "force_join_failed": "No se pudo agregar al usuario a la empresa. Inténtalo de nuevo."
+    }
   },
   "users": {
     "title": "Usuarios",
@@ -584,7 +603,17 @@
       "updated": "¡Usuario actualizado exitosamente!",
       "update_failed": "No se pudo actualizar el usuario. Por favor intenta nuevamente.",
       "resume_uploaded": "¡Currículum subido exitosamente!",
-      "resume_upload_failed": "No se pudo subir el currículum. Por favor intenta nuevamente."
+      "resume_upload_failed": "No se pudo subir el currículum. Por favor intenta nuevamente.",
+      "created": "¡Usuario creado correctamente!",
+      "create_failed": "No se pudo crear el usuario. Inténtalo de nuevo.",
+      "deleted": "¡Usuario eliminado correctamente!",
+      "delete_failed": "No se pudo eliminar el usuario. Inténtalo de nuevo.",
+      "deactivated": "¡Usuario desactivado correctamente!",
+      "deactivate_failed": "No se pudo desactivar el usuario. Inténtalo de nuevo.",
+      "reactivated": "¡Usuario reactivado correctamente!",
+      "reactivate_failed": "No se pudo reactivar el usuario. Inténtalo de nuevo.",
+      "resume_deleted": "¡CV eliminado correctamente!",
+      "resume_delete_failed": "No se pudo eliminar el CV. Inténtalo de nuevo."
     }
   },
   "stages": {
@@ -2889,6 +2918,9 @@
           "support": "Soporte prioritario y garantía SLA",
           "api": "Acceso a API e integraciones personalizadas"
         }
+      },
+      "agency": {
+        "name": "Agencia"
       }
     },
     "quota": {
@@ -4400,7 +4432,8 @@
     "toggle_success": "Bandera de funcionalidad actualizada exitosamente",
     "toggle_error": "Error al actualizar la bandera de funcionalidad",
     "load_error": "Error al cargar las banderas de funcionalidad",
-    "last_updated": "Última actualización"
+    "last_updated": "Última actualización",
+    "toggle_aria": "Activar o desactivar {{feature}} para el plan {{plan}}"
   },
   "general_settings": {
     "title": "Configuración General",
@@ -4961,7 +4994,12 @@
     "previous": "Anterior",
     "new_value": "Nuevo",
     "days": "días",
-    "no_audit_entries": "No se encontraron entradas de auditoría para esta suscripción"
+    "no_audit_entries": "No se encontraron entradas de auditoría para esta suscripción",
+    "actions": {
+      "plan_change": "Cambio de Plan",
+      "status_change": "Cambio de Estado",
+      "trial_extended": "Prueba Extendida"
+    }
   },
   "email_deliverability": {
     "title": "Monitor de Entregabilidad de Correo",

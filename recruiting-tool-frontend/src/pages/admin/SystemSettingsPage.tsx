@@ -28,6 +28,7 @@ import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { UserRoles } from "../../types/user.types";
 import { Navigate } from "react-router-dom";
 import PageHeader from "../../components/common/PageHeader";
+import { wrapLongText, truncatingChipSx } from "../../utils/textOverflow";
 import AccessDeniedMessage from "../../components/common/AccessDeniedMessage";
 import {
   useSystemSettings,
@@ -161,7 +162,11 @@ const SystemSettingsPage: React.FC = () => {
                     <Typography variant="body2" color="text.secondary">
                       {t("settings.smtp_host")}
                     </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
+                    <Typography
+                      variant="body1"
+                      fontFamily="monospace"
+                      sx={wrapLongText}
+                    >
                       {settings.email.host}
                     </Typography>
                   </Box>
@@ -179,7 +184,11 @@ const SystemSettingsPage: React.FC = () => {
                     <Typography variant="body2" color="text.secondary">
                       {t("settings.smtp_sender")}
                     </Typography>
-                    <Typography variant="body1" fontFamily="monospace">
+                    <Typography
+                      variant="body1"
+                      fontFamily="monospace"
+                      sx={wrapLongText}
+                    >
                       {settings.email.from}
                     </Typography>
                   </Box>
@@ -230,7 +239,7 @@ const SystemSettingsPage: React.FC = () => {
                   label={settings.storage.type || t("common.n_a")}
                   size="small"
                   color="warning"
-                  sx={{ fontFamily: "monospace" }}
+                  sx={{ fontFamily: "monospace", ...truncatingChipSx }}
                 />
               </Box>
 
@@ -238,7 +247,11 @@ const SystemSettingsPage: React.FC = () => {
                 <Typography variant="body2" color="text.secondary">
                   {t("settings.storage_bucket")}
                 </Typography>
-                <Typography variant="body1" fontFamily="monospace">
+                <Typography
+                  variant="body1"
+                  fontFamily="monospace"
+                  sx={wrapLongText}
+                >
                   {settings.storage.bucket || t("common.n_a")}
                 </Typography>
               </Box>
