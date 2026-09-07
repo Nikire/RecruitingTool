@@ -1,13 +1,13 @@
-# Roles y Permisos
+# Roles & Permissions
 
-Borderless utiliza control de acceso basado en roles (RBAC). Cada usuario tiene uno o más roles que determinan qué puede ver y hacer.
+Borderless uses role-based access control (RBAC). Every user has one or more roles that determine what they can see and do.
 
-## Jerarquía de Roles
+## Role Hierarchy
 
 ```
-SUPER_ADMIN (Más alto — administrador global de la plataforma)
+SUPER_ADMIN (Highest — global platform administrator)
     ↓
-ADMIN (Administrador de la plataforma)
+ADMIN (Platform administrator)
     ↓
 COMPANY_OWNER / COMPANY_ADMIN
     ↓
@@ -15,42 +15,42 @@ HR_MANAGER
     ↓
 HR / RECRUITER
     ↓
-USER (Más bajo — empleado básico/entrevistador)
+USER (Lowest — basic employee/interviewer)
 ```
 
-## Descripción de Roles
+## Role Descriptions
 
-| Rol | Para quién es | Acceso principal |
+| Role | Who it is for | Main access |
 |------|-------------|-----------|
-| `SUPER_ADMIN` | Propietario de la plataforma | Acceso completo a todo — todas las empresas, todas las configuraciones, panel de administración |
-| `ADMIN` | Administrador de la plataforma | Panel de administración, gestión de usuarios y empresas |
-| `COMPANY_OWNER` | Propietario de la empresa | Todas las funciones de RRHH + gestión de facturación |
-| `COMPANY_ADMIN` | Administrador de la empresa | Todas las funciones de RRHH + configuración de la empresa |
-| `HR_MANAGER` | RRHH senior | Todas las funciones de RRHH + gestión de equipos + invitaciones |
-| `HR` | Generalista de RRHH | Funciones principales de RRHH (candidatos, contratación, entrevistas) |
-| `RECRUITER` | Reclutador | Funciones principales de RRHH |
-| `USER` | Empleado regular | Solo participar en entrevistas |
+| `SUPER_ADMIN` | Platform owner | Full access to everything — all companies, all settings, admin panel |
+| `ADMIN` | Platform administrator | Admin panel, user and company management |
+| `COMPANY_OWNER` | Company owner | All HR features + billing management |
+| `COMPANY_ADMIN` | Company administrator | All HR features + company settings |
+| `HR_MANAGER` | Senior HR | All HR features + team management + invitations |
+| `HR` | HR generalist | Core HR features (candidates, hiring, interviews) |
+| `RECRUITER` | Recruiter | Core HR features |
+| `USER` | Regular employee | Take part in interviews only |
 
-## Matriz de Permisos
+## Permission Matrix
 
-| Funcionalidad | USER | HR | HR_MANAGER | COMPANY_OWNER | ADMIN | SUPER_ADMIN |
+| Feature | USER | HR | HR_MANAGER | COMPANY_OWNER | ADMIN | SUPER_ADMIN |
 |---------|------|----|----|----|----|-----|
-| Ver candidatos | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Crear/editar candidatos | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Gestionar posiciones de trabajo | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Gestionar procesos de contratación | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Programar entrevistas | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Participar en entrevistas | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Puntuación con IA | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Plantillas de correo | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Analíticas | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Invitar miembros del equipo | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Gestionar roles del equipo | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
-| Editar perfil de empresa | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Gestionar facturación | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
-| Acceder al panel de administración | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
-| Gestionar todas las empresas | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
-| Desactivar usuarios | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Gestionar cuotas de IA | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
-| Gestionar límites de plan | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
-| Indicadores de funcionalidad | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| View candidates | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Create/edit candidates | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Manage job positions | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Manage hiring processes | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Schedule interviews | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Take part in interviews | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| AI scoring | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Email templates | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Analytics | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Invite team members | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Manage team roles | ❌ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Edit company profile | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Manage billing | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Access the admin panel | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Manage all companies | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Deactivate users | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Manage AI quotas | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Manage plan limits | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Feature flags | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ |

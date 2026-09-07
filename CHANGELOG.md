@@ -96,8 +96,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Subscriptions audit drawer fits narrow viewports; company detail distinguishes "not found" from failed requests with a back link; transfer-ownership availability uses the member count, not the visible page
 - Webhooks stub no longer shows permanent loading skeletons
 
+### 📣 Admin: outreach, analytics, inspectors & docs (23 verified findings)
+- Outreach CRM: "Edit in list" from the prospect detail now opens the edit dialog; adding a contact reports success/failure; star toggle has correct tooltips; relative timestamps localised; template picker rows translated; contact/location/website columns get tooltips; long contact links wrap
+- Outreach templates: save/reset report success and failure and keep the dialog open on error; "Reset to default" works for the campaign template; prospecting-guide source descriptions translated
+- Admin dashboards: revenue dashboard shows an error instead of zeros; pipeline analytics no longer flashes raw i18n keys as the title; company health "1 days ago" pluralised and filter placeholders translated
+- Inspectors: quota inspector, company health and email logs show error states; email-type filter debounced; email log status/type and AI quota type translated; AI quota save errors no longer say "failed to load"
+- Admin docs now bilingual (16 English pages added, Spanish originals renamed to `*.es.md`); docs shell fits the viewport without nested scrollbars; markdown tables scroll horizontally
+
 ### 🌐 i18n
-- 187 new keys in `en.json` / `es.json` (admin, feature_flags, plan_limits, deleted_records, companies.toast, users.toast, billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 241 new keys in `en.json` / `es.json` (outreach_crm, outreach, admin_email_logs, quota_inspector, admin, feature_flags, plan_limits, deleted_records, companies.toast, users.toast, billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

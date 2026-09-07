@@ -1,41 +1,41 @@
-# Candidatos
+# Candidates
 
-**Ruta:** `/hr/candidates`
-**Acceso:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Route:** `/hr/candidates`
+**Access:** HR, HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-La página de Candidatos es el directorio central de todas las personas en tu pipeline de reclutamiento. Un candidato representa a una persona — no a una solicitud específica para una posición de trabajo.
+The Candidates page is the central directory of every person in your recruiting pipeline. A candidate represents a person — not a specific application for a job position.
 
-## Qué Puedes Hacer
+## What You Can Do
 
-- **Ver todos los candidatos** en la base de datos de tu empresa
-- **Crear un candidato** manualmente (nombre, email, teléfono)
-- **Editar los datos** del candidato
-- **Eliminar un candidato** (eliminación lógica)
-- **Subir un currículum/CV** (PDF, DOC, DOCX, TXT — máximo 10 MB)
-- **Agregar notas** visibles solo para el equipo de RRHH
-- **Ver la línea de tiempo de actividad** con todas las acciones realizadas sobre un candidato
-- **Puntuar al candidato con IA** respecto a una posición de trabajo
-- **Crear un proceso de contratación** directamente desde el perfil del candidato
+- **View every candidate** in your company database
+- **Create a candidate** manually (name, email, phone)
+- **Edit the candidate's** details
+- **Delete a candidate** (soft delete)
+- **Upload a resume/CV** (PDF, DOC, DOCX, TXT — 10 MB maximum)
+- **Add notes** visible only to the HR team
+- **View the activity timeline** with every action taken on a candidate
+- **Score the candidate with AI** against a job position
+- **Create a hiring process** straight from the candidate profile
 
-## Candidato vs. Solicitud
+## Candidate vs. Application
 
-| Concepto | Descripción |
+| Concept | Description |
 |---------|-------------|
-| **Candidato** | Una persona en tu base de datos — reutilizable en múltiples posiciones |
-| **Solicitud** | Un envío desde la página pública de empleo para un trabajo específico |
-| **Proceso de contratación** | Una evaluación activa de un candidato para una posición de trabajo específica |
+| **Candidate** | A person in your database — reusable across multiple positions |
+| **Application** | A submission from the public careers page for a specific job |
+| **Hiring process** | An active evaluation of a candidate for one specific job position |
 
-> Un candidato puede tener múltiples procesos de contratación (para distintas posiciones), pero solo UNO por posición a la vez.
+> A candidate can have multiple hiring processes (for different positions), but only ONE per position at a time.
 
-## Puntuación con IA
+## AI Scoring
 
-Desde el perfil de un candidato, puedes hacer clic en **"Puntuar con IA"** para obtener una puntuación automatizada usando Google Gemini. La puntuación (0–100) refleja qué tan bien el currículum del candidato coincide con los requisitos del puesto.
+From a candidate profile you can click **"Score with AI"** to get an automated score powered by Google Gemini. The score (0–100) reflects how well the candidate's resume matches the role requirements.
 
-> Requiere un currículum subido y descuenta de la cuota de IA de tu empresa.
+> Requires an uploaded resume and consumes your company's AI quota.
 
-## Carga de Archivos
+## File Uploads
 
-Formatos admitidos: `PDF`, `DOC`, `DOCX`, `TXT`
-Tamaño máximo: `10 MB`
+Supported formats: `PDF`, `DOC`, `DOCX`, `TXT`
+Maximum size: `10 MB`
 
-Los archivos se almacenan de forma segura en MinIO (compatible con S3). Los enlaces expiran después de un período determinado por razones de seguridad.
+Files are stored securely in MinIO (S3 compatible). Links expire after a set period for security reasons.

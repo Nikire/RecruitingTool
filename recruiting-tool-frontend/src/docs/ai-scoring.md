@@ -1,53 +1,53 @@
-# Puntuación con IA
+# AI Scoring
 
-**Acceso:** HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
+**Access:** HR_MANAGER, COMPANY_OWNER, ADMIN, SUPER_ADMIN
 
-Borderless utiliza **Google Gemini AI** para puntuar y clasificar automáticamente a los candidatos en función de su currículum y los requisitos del puesto.
+Borderless uses **Google Gemini AI** to automatically score and rank candidates based on their resume and the role requirements.
 
-## Cómo Funciona la Puntuación
+## How Scoring Works
 
-1. El candidato debe tener un currículum subido
-2. Haz clic en **"Analizar"** o **"Re-analizar"** en un candidato
-3. Gemini AI lee el currículum y la descripción del puesto
-4. Devuelve una **puntuación (0–100)** con un desglose detallado:
-   - Coincidencia educativa
-   - Relevancia de la experiencia
-   - Alineación de habilidades
-   - Otros criterios
+1. The candidate must have an uploaded resume
+2. Click **"Analyze"** or **"Re-analyze"** on a candidate
+3. Gemini AI reads the resume and the job description
+4. It returns a **score (0–100)** with a detailed breakdown:
+   - Education match
+   - Experience relevance
+   - Skills alignment
+   - Other criteria
 
-## Dónde Usarlo
+## Where to Use It
 
-- **Página de Candidatos** — Puntuar candidatos individuales
-- **Página de Procesos de Contratación** — Puntuar candidatos desde la vista de lista agrupada (ordenada por puntuación)
-- **Detalle de Posición de Trabajo** — Ver todos los candidatos clasificados por puntuación de IA
+- **Candidates page** — Score individual candidates
+- **Hiring Processes page** — Score candidates from the grouped list view (sorted by score)
+- **Job Position detail** — See every candidate ranked by AI score
 
-## Puntuación en Lote
+## Batch Scoring
 
-Desde la vista de procesos de contratación, puedes puntuar a todos los candidatos de una posición a la vez usando el botón de análisis en lote.
+From the hiring processes view you can score every candidate for a position at once using the batch analysis button.
 
-## Visualización de Puntuación
+## Score Display
 
-| Puntuación | Significado |
+| Score | Meaning |
 |-------|---------|
-| 80–100 | Coincidencia sólida |
-| 60–79 | Buena coincidencia |
-| 40–59 | Coincidencia moderada |
-| 0–39 | Coincidencia débil |
+| 80–100 | Strong match |
+| 60–79 | Good match |
+| 40–59 | Moderate match |
+| 0–39 | Weak match |
 
-Las puntuaciones se muestran como chips de colores (verde/amarillo/naranja/rojo).
+Scores are shown as colored chips (green/yellow/orange/red).
 
-## Cuota de IA
+## AI Quota
 
-Cada puntuación consume **1 crédito de IA** de la cuota mensual de tu empresa. La cuota depende del plan de suscripción:
+Every score consumes **1 AI credit** from your company's monthly quota. The quota depends on the subscription plan:
 
-| Plan | Créditos/Mes |
+| Plan | Credits/Month |
 |------|-------------|
-| Free | Limitado |
-| Professional | Estándar |
-| Enterprise | Alto |
+| Free | Limited |
+| Professional | Standard |
+| Enterprise | High |
 
-> SUPER_ADMIN puede ver y ajustar las cuotas por empresa en `/admin/ai-quota`.
+> SUPER_ADMIN can view and adjust per-company quotas at `/admin/ai-quota`.
 
-## Visibilidad de la Cuota
+## Quota Visibility
 
-Los usuarios pueden ver su uso actual de IA en **Perfil → Suscripción** (`/profile/subscription`).
+Users can see their current AI usage under **Profile → Subscription** (`/profile/subscription`).

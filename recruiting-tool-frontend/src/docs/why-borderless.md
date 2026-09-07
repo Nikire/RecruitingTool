@@ -1,109 +1,109 @@
-# ¿Por qué Borderless?
+# Why Borderless?
 
-## El problema que resolvemos
+## The problem we solve
 
-El proceso de reclutamiento en la mayoría de las empresas sigue siendo caótico: candidatos gestionados en hojas de cálculo, emails dispersos en varias bandejas de entrada, entrevistas coordinadas por WhatsApp y ninguna visibilidad real sobre el estado de cada proceso. Esto genera pérdida de talento, demoras innecesarias y una experiencia frustrante tanto para los reclutadores como para los candidatos.
+Recruiting at most companies is still chaotic: candidates tracked in spreadsheets, emails scattered across several inboxes, interviews coordinated over WhatsApp, and no real visibility into the state of each process. That means lost talent, unnecessary delays and a frustrating experience for recruiters and candidates alike.
 
-**Borderless** nació para solucionar exactamente esto: una plataforma de reclutamiento moderna, accesible y adaptada a equipos de LATAM que necesitan eficiencia sin sacrificar flexibilidad.
-
----
-
-## Lo que ofrecemos
-
-### Gestión de candidatos
-
-Centraliza todos tus candidatos en un solo lugar. Carga CVs, adjunta documentos, registra notas por etapa y consulta el historial completo de cada postulante desde cualquier proceso.
-
-### Procesos de selección flexibles
-
-Crea procesos de reclutamiento con etapas totalmente personalizables. Desde la recepción de CVs hasta la oferta final, cada empresa puede definir su propio flujo de trabajo.
-
-### Puntuación de candidatos con IA
-
-Nuestro motor de IA analiza automáticamente el perfil del candidato contra los requisitos del puesto y asigna un puntaje de compatibilidad. Esto ahorra horas de screening manual y reduce el sesgo en la preselección.
-
-### Automatización de comunicaciones
-
-Envía emails automáticos en cada cambio de etapa: confirmaciones de postulación, invitaciones a entrevista, notificaciones de rechazo y ofertas de trabajo. Las plantillas son personalizables con variables dinámicas.
-
-### Agenda de entrevistas integrada
-
-Sincronización bidireccional con Google Calendar, reserva de horarios por autogestión del candidato y recordatorios automáticos. Todo el equipo ve la agenda centralizada.
-
-### Página de empleos pública
-
-Genera automáticamente una página de carreras bajo tu marca con todas tus posiciones activas. Los candidatos aplican directamente y el sistema los incorpora al proceso.
-
-### Panel de administración (Super Admin)
-
-Gestión completa de empresas, usuarios, planes de suscripción y cuotas de IA desde un panel dedicado. Ideal para agencias de reclutamiento o grupos empresariales que manejan múltiples organizaciones.
-
-### Análisis y reportes
-
-Dashboard con métricas clave: tiempo por etapa, tasa de conversión por fuente, posiciones activas vs. cerradas, y rendimiento del equipo.
+**Borderless** was born to fix exactly that: a modern, affordable recruiting platform built for LATAM teams that need efficiency without giving up flexibility.
 
 ---
 
-## ¿Por qué somos mejor opción?
+## What we offer
 
-El mercado de ATS (Applicant Tracking Systems) está dominado por herramientas diseñadas para el mercado norteamericano o europeo, con precios en dólares, documentación en inglés y flujos pensados para procesos muy rígidos. **Borderless** fue construido pensando en equipos latinoamericanos: multilingüe desde el día uno, precio accesible y soporte real.
+### Candidate management
 
-### Comparativa con la competencia
+Centralize every candidate in one place. Upload CVs, attach documents, record notes per stage and review the full history of each applicant from any process.
 
-| Característica                          | Borderless   | Workable    | Teamtailor | Recruitee   | Breezy HR   |
+### Flexible selection processes
+
+Build recruiting processes with fully customizable stages. From CV intake to the final offer, every company can define its own workflow.
+
+### AI candidate scoring
+
+Our AI engine automatically analyzes the candidate profile against the role requirements and assigns a match score. That saves hours of manual screening and reduces bias in shortlisting.
+
+### Communication automation
+
+Send automatic emails on every stage change: application confirmations, interview invitations, rejection notices and job offers. Templates are customizable with dynamic variables.
+
+### Built-in interview scheduling
+
+Two-way Google Calendar sync, candidate self-service slot booking and automatic reminders. The whole team sees one shared schedule.
+
+### Public careers page
+
+Automatically generate a branded careers page with all of your open positions. Candidates apply directly and the system brings them into the process.
+
+### Admin panel (Super Admin)
+
+Full management of companies, users, subscription plans and AI quotas from a dedicated panel. Ideal for recruiting agencies or business groups running multiple organizations.
+
+### Analytics and reporting
+
+A dashboard with the key metrics: time per stage, conversion rate by source, active vs. closed positions, and team performance.
+
+---
+
+## Why we are the better option
+
+The ATS (Applicant Tracking System) market is dominated by tools designed for the North American or European market, with dollar pricing, English-only documentation and flows built for very rigid processes. **Borderless** was built with Latin American teams in mind: multilingual from day one, affordable pricing and real support.
+
+### Comparison with the competition
+
+| Feature                                 | Borderless   | Workable    | Teamtailor | Recruitee   | Breezy HR   |
 | --------------------------------------- | ------------ | ----------- | ---------- | ----------- | ----------- |
-| **Precio accesible para PYMEs**         | ✅ Sí        | ⚠️ Caro     | ⚠️ Caro    | ⚠️ Moderado | ✅ Sí       |
-| **Interfaz en español**                 | ✅ Nativo    | ❌ No       | ⚠️ Parcial | ❌ No       | ❌ No       |
-| **IA de puntuación de candidatos**      | ✅ Incluida  | ⚠️ Add-on   | ❌ No      | ❌ No       | ❌ No       |
-| **Etapas de proceso personalizables**   | ✅ Completo  | ✅ Sí       | ✅ Sí      | ✅ Sí       | ✅ Sí       |
-| **Automatización de emails por etapa**  | ✅ Incluida  | ✅ Sí       | ✅ Sí      | ✅ Sí       | ⚠️ Limitado |
-| **Sincronización Google Calendar**      | ✅ Nativa    | ✅ Sí       | ✅ Sí      | ⚠️ Limitado | ✅ Sí       |
-| **Autogestión de agenda (candidato)**   | ✅ Incluida  | ⚠️ Add-on   | ✅ Sí      | ❌ No       | ⚠️ Add-on   |
-| **Panel multi-empresa (agencias)**      | ✅ Incluido  | ❌ No       | ❌ No      | ❌ No       | ❌ No       |
-| **Página de carreras personalizada**    | ✅ Incluida  | ✅ Sí       | ✅ Sí      | ✅ Sí       | ✅ Sí       |
-| **Notas por etapa del proceso**         | ✅ Incluidas | ⚠️ Limitado | ✅ Sí      | ✅ Sí       | ⚠️ Limitado |
-| **Soporte al cliente en español**       | ✅ Nativo    | ❌ No       | ❌ No      | ❌ No       | ❌ No       |
-| **Onboarding guiado**                   | ✅ Wizard    | ⚠️ Básico   | ✅ Sí      | ⚠️ Básico   | ⚠️ Básico   |
-| **Sin límite de usuarios en plan base** | ✅ Sí        | ❌ No       | ❌ No      | ❌ No       | ⚠️ Limitado |
+| **Affordable pricing for SMBs**         | ✅ Yes       | ⚠️ Expensive | ⚠️ Expensive | ⚠️ Moderate | ✅ Yes      |
+| **Spanish interface**                   | ✅ Native    | ❌ No       | ⚠️ Partial | ❌ No       | ❌ No       |
+| **AI candidate scoring**                | ✅ Included  | ⚠️ Add-on   | ❌ No      | ❌ No       | ❌ No       |
+| **Customizable process stages**         | ✅ Full      | ✅ Yes      | ✅ Yes     | ✅ Yes      | ✅ Yes      |
+| **Email automation per stage**          | ✅ Included  | ✅ Yes      | ✅ Yes     | ✅ Yes      | ⚠️ Limited  |
+| **Google Calendar sync**                | ✅ Native    | ✅ Yes      | ✅ Yes     | ⚠️ Limited  | ✅ Yes      |
+| **Candidate self-scheduling**           | ✅ Included  | ⚠️ Add-on   | ✅ Yes     | ❌ No       | ⚠️ Add-on   |
+| **Multi-company panel (agencies)**      | ✅ Included  | ❌ No       | ❌ No      | ❌ No       | ❌ No       |
+| **Custom careers page**                 | ✅ Included  | ✅ Yes      | ✅ Yes     | ✅ Yes      | ✅ Yes      |
+| **Notes per process stage**             | ✅ Included  | ⚠️ Limited  | ✅ Yes     | ✅ Yes      | ⚠️ Limited  |
+| **Customer support in Spanish**         | ✅ Native    | ❌ No       | ❌ No      | ❌ No       | ❌ No       |
+| **Guided onboarding**                   | ✅ Wizard    | ⚠️ Basic    | ✅ Yes     | ⚠️ Basic    | ⚠️ Basic    |
+| **No user cap on the base plan**        | ✅ Yes       | ❌ No       | ❌ No      | ❌ No       | ⚠️ Limited  |
 
-> **Leyenda:** ✅ Disponible y completo · ⚠️ Disponible con limitaciones o costo adicional · ❌ No disponible
-
----
-
-## Nuestros diferenciales clave
-
-### 1. IA accesible, no opcional
-
-Mientras que los competidores ofrecen IA como un add-on de precio elevado, en Borderless la puntuación automática de candidatos está incluida en el plan desde el inicio. Más candidatos evaluados, menos tiempo perdido.
-
-### 2. Construido para LATAM
-
-Soporte nativo en español, precios en moneda local (próximamente), procesos adaptados a las necesidades del mercado regional y equipo de soporte que habla tu idioma.
-
-### 3. Panel de administración para agencias y grupos empresariales
-
-Si gestionas múltiples empresas cliente (como una agencia de reclutamiento o un holding), Borderless es la única opción con un panel Super Admin que permite administrar todas las organizaciones, sus usuarios y sus cuotas desde un único lugar.
-
-### 4. Experiencia de candidato de primer nivel
-
-El proceso de postulación es simple, el seguimiento del estado está disponible en tiempo real para el candidato, y el sistema de autogestión de entrevistas elimina la fricción en la coordinación.
-
-### 5. Precio transparente y sin sorpresas
-
-Sin costos ocultos por usuario, sin módulos esenciales bloqueados detrás de planes superiores. Lo que ves es lo que pagas.
+> **Legend:** ✅ Available and complete · ⚠️ Available with limitations or at extra cost · ❌ Not available
 
 ---
 
-## ¿Para quién es Borderless?
+## Our key differentiators
 
-| Tipo de empresa                                  | ¿Es Borderless la opción correcta?                    |
-| ------------------------------------------------ | ----------------------------------------------------- |
-| Startup o PYME en crecimiento                    | ✅ Ideal — precio accesible, fácil de implementar     |
-| Agencia de reclutamiento                         | ✅ Ideal — panel multi-empresa incluido               |
-| Empresa mediana (50–500 empleados)               | ✅ Ideal — procesos escalables y IA integrada         |
-| Holding o grupo empresarial                      | ✅ Ideal — administración centralizada                |
-| Empresa con procesos muy complejos (Fortune 500) | ⚠️ Evaluar — puede requerir integraciones adicionales |
+### 1. AI that is included, not optional
+
+Where competitors sell AI as an expensive add-on, Borderless includes automatic candidate scoring in the plan from day one. More candidates evaluated, less time wasted.
+
+### 2. Built for LATAM
+
+Native Spanish support, local-currency pricing (coming soon), processes adapted to the needs of the regional market and a support team that speaks your language.
+
+### 3. Admin panel for agencies and business groups
+
+If you manage multiple client companies (as a recruiting agency or a holding group), Borderless is the only option with a Super Admin panel that lets you manage every organization, its users and its quotas from a single place.
+
+### 4. A first-class candidate experience
+
+Applying is simple, status tracking is available to the candidate in real time, and the interview self-scheduling system removes the friction from coordination.
+
+### 5. Transparent pricing with no surprises
+
+No hidden per-user costs, no essential modules locked behind higher tiers. What you see is what you pay.
 
 ---
 
-_Borderless ATS — Reclutamiento sin fronteras._
+## Who is Borderless for?
+
+| Company type                                 | Is Borderless the right fit?                          |
+| -------------------------------------------- | ----------------------------------------------------- |
+| Growing startup or SMB                       | ✅ Ideal — affordable and easy to roll out            |
+| Recruiting agency                            | ✅ Ideal — multi-company panel included               |
+| Mid-sized company (50–500 employees)         | ✅ Ideal — scalable processes and built-in AI         |
+| Holding or business group                    | ✅ Ideal — centralized administration                 |
+| Company with very complex processes (F500)   | ⚠️ Evaluate — may need additional integrations        |
+
+---
+
+_Borderless ATS — Recruiting without borders._

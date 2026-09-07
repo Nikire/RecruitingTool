@@ -38,6 +38,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { UnifiedStatCard } from "../../components/common";
+import { formatRelativeTime } from "../../utils/dateFormatters";
 import {
   useProspects,
   useProspectStats,
@@ -130,22 +131,6 @@ const PROSPECT_SOURCES: ProspectSource[] = [
 const COMPANY_SIZE_OPTIONS = ["1-10", "11-50", "51-200", "201-500", "500+"];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
-
-function formatRelativeTime(dateStr: string | null | undefined): string {
-  if (!dateStr) return "";
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "1 day ago";
-  if (diffDays < 30) return `${diffDays} days ago`;
-  const diffMonths = Math.floor(diffDays / 30);
-  if (diffMonths === 1) return "1 month ago";
-  if (diffMonths < 12) return `${diffMonths} months ago`;
-  const diffYears = Math.floor(diffMonths / 12);
-  return diffYears === 1 ? "1 year ago" : `${diffYears} years ago`;
-}
 
 function getPrimaryContact(prospect: ProspectCompany): string {
   if (!prospect.contacts || prospect.contacts.length === 0) return "";
@@ -537,7 +522,7 @@ const DeleteConfirmDialog: React.FC<DeleteDialogProps> = ({
 // ── Main Page ────────────────────────────────────────────────────────────────
 
 const OutreachCRMPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -560,12 +545,7 @@ const OutreachCRMPage: React.FC = () => {
 
   // Handle editUid coming from detail page navigation
   const locationState = location.state as { editUid?: string } | null;
-  React.useEffect(() => {
-    if (locationState?.editUid) {
-      // Clear the state so it doesn't re-trigger
-      window.history.replaceState({}, "");
-    }
-  }, [locationState]);
+  const handledEditUidRef = React.useRef<string | null>(null);
 
   const deleteMutation = useDeleteProspect();
   const updateMutation = useUpdateProspect();
@@ -612,6 +592,20 @@ const OutreachCRMPage: React.FC = () => {
   const rows = useMemo(() => listData?.data ?? [], [listData]);
   const totalRows = listData?.total ?? 0;
 
+  // Open the edit dialog for the prospect the detail page asked us to edit.
+  React.useEffect(() => {
+    const editUid = locationState?.editUid;
+    if (!editUid || isLoading || handledEditUidRef.current === editUid) return;
+    handledEditUidRef.current = editUid;
+    const target = rows.find((r) => r.uid === editUid);
+    if (target) {
+      setEditTarget(target);
+      setDialogOpen(true);
+    }
+    // Clear the state so it doesn't re-trigger on refresh / back navigation
+    window.history.replaceState({}, "");
+  }, [locationState, rows, isLoading]);
+
   // Derive unique tags from loaded prospects for autocomplete suggestions
   const allTags = useMemo(
     () => [...new Set(rows.flatMap((p) => p.tags ?? []))].sort(),
@@ -657,8 +651,8 @@ const OutreachCRMPage: React.FC = () => {
           <Tooltip
             title={
               params.row.isFeatured
-                ? t("outreach_crm.filter_featured")
-                : t("outreach_crm.filter_featured")
+                ? t("outreach_crm.star_remove")
+                : t("outreach_crm.star_add")
             }
           >
             <IconButton
@@ -746,18 +740,28 @@ const OutreachCRMPage: React.FC = () => {
           if (!url) return null;
           const display = url.replace(/^https?:\/\//, "").replace(/\/$/, "");
           return (
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
-              <Typography
-                variant="body2"
-                sx={{
-                  maxWidth: 100,
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {display}
-              </Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: 0.5,
+                minWidth: 0,
+                width: "100%",
+              }}
+            >
+              <Tooltip title={url}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    minWidth: 0,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {display}
+                </Typography>
+              </Tooltip>
               <IconButton
                 size="small"
                 component="a"
@@ -765,7 +769,7 @@ const OutreachCRMPage: React.FC = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                sx={{ p: 0.25 }}
+                sx={{ p: 0.25, flexShrink: 0 }}
               >
                 <OpenInNewIcon sx={{ fontSize: 14 }} />
               </IconButton>
@@ -816,43 +820,51 @@ const OutreachCRMPage: React.FC = () => {
       {
         field: "location",
         headerName: t("outreach_crm.col_location"),
-        width: 130,
+        flex: 1,
+        minWidth: 160,
         sortable: false,
         valueGetter: (_value: unknown, row: ProspectCompany) => {
           const parts = [row.city, row.country].filter(Boolean);
           return parts.join(", ");
         },
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
-          <Typography
-            variant="body2"
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {params.value as string}
-          </Typography>
+          <Tooltip title={(params.value as string) || ""}>
+            <Typography
+              variant="body2"
+              sx={{
+                minWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {params.value as string}
+            </Typography>
+          </Tooltip>
         ),
       },
       {
         field: "primaryContact",
         headerName: t("outreach_crm.col_contact"),
-        width: 130,
+        flex: 1,
+        minWidth: 160,
         sortable: false,
         valueGetter: (_value: unknown, row: ProspectCompany) =>
           getPrimaryContact(row),
         renderCell: (params: GridRenderCellParams<ProspectCompany>) => (
-          <Typography
-            variant="body2"
-            sx={{
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap",
-            }}
-          >
-            {params.value as string}
-          </Typography>
+          <Tooltip title={(params.value as string) || ""}>
+            <Typography
+              variant="body2"
+              sx={{
+                minWidth: 0,
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+              }}
+            >
+              {params.value as string}
+            </Typography>
+          </Tooltip>
         ),
       },
       {
@@ -869,7 +881,9 @@ const OutreachCRMPage: React.FC = () => {
             );
           }
           return (
-            <Typography variant="body2">{formatRelativeTime(val)}</Typography>
+            <Typography variant="body2">
+              {formatRelativeTime(val, i18n.language)}
+            </Typography>
           );
         },
       },
@@ -923,7 +937,14 @@ const OutreachCRMPage: React.FC = () => {
         ),
       },
     ],
-    [t, navigate, handleOpenEdit, handleOpenDelete, handleToggleFeatured],
+    [
+      t,
+      i18n.language,
+      navigate,
+      handleOpenEdit,
+      handleOpenDelete,
+      handleToggleFeatured,
+    ],
   );
 
   return (

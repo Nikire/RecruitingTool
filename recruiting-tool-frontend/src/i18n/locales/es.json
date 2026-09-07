@@ -2307,7 +2307,13 @@
       "usage_label": "{{used}} / {{limit}}",
       "updated_success": "Límite de cuota actualizado correctamente",
       "load_error": "Error al cargar las cuotas de IA",
-      "companies_load_error": "No se pudo cargar la lista de empresas. Inténtalo de nuevo."
+      "companies_load_error": "No se pudo cargar la lista de empresas. Inténtalo de nuevo.",
+      "update_error": "Error al actualizar el límite de cuota de IA",
+      "types": {
+        "resume_parsing": "Análisis de CV",
+        "candidate_scoring": "Puntuación de candidatos",
+        "batch_scoring": "Puntuación por lotes"
+      }
     },
     "subscriptions": {
       "title": "Gestión de Suscripciones",
@@ -4361,7 +4367,36 @@
     "filter_type": "Tipo de correo...",
     "status_all": "Todos los estados",
     "no_logs": "No se encontraron correos",
-    "rows_per_page": "Correos por página"
+    "rows_per_page": "Correos por página",
+    "status": {
+      "sent": "Enviado",
+      "failed": "Fallido"
+    },
+    "type": {
+      "general": "General",
+      "welcome": "Bienvenida",
+      "email_verification": "Verificación de email",
+      "password_reset": "Restablecer contraseña",
+      "team_invitation": "Invitación al equipo",
+      "application_received": "Postulación recibida",
+      "application_confirmation": "Confirmación de postulación",
+      "application_accepted": "Postulación aceptada",
+      "status_change": "Cambio de estado",
+      "stage_advancement": "Avance de etapa",
+      "hired_notification": "Notificación de contratación",
+      "hr_notification": "Notificación para RRHH",
+      "hiring_process_access_code": "Código de acceso al proceso",
+      "async_stage_invitation": "Invitación a etapa asíncrona",
+      "async_stage_submission_received": "Entrega de etapa asíncrona recibida",
+      "interview_scheduled": "Entrevista agendada",
+      "interview_rescheduled": "Entrevista reprogramada",
+      "interview_cancelled": "Entrevista cancelada",
+      "interview_reminder": "Recordatorio de entrevista",
+      "interview_booked_by_candidate": "Entrevista agendada por el candidato",
+      "template_email": "Email de plantilla",
+      "system_test": "Prueba del sistema",
+      "outreach": "Prospección"
+    }
   },
   "plan_features": {
     "job_positions": "Hasta {{count}} posiciones activas",
@@ -4774,7 +4809,22 @@
     "edit_template": "Editar plantilla",
     "modified_badge": "Modificada",
     "reset_to_default": "Restablecer",
-    "edit_body": "Editar"
+    "edit_body": "Editar",
+    "save_success": "Plantilla guardada",
+    "save_error": "No se pudo guardar la plantilla",
+    "reset_success": "Plantilla restaurada al valor por defecto",
+    "reset_error": "No se pudo restaurar la plantilla",
+    "reset_unavailable": "Esta plantilla no se puede restaurar al valor por defecto",
+    "prospect_desc_clutch": "El directorio B2B más grande de empresas de IT staffing y staff augmentation. Tienen reviews verificadas y datos de contacto.",
+    "prospect_desc_goodfirms": "Directorio similar a Clutch con empresas de staffing rankeadas por reviews y tamaño.",
+    "prospect_desc_linkedin": "Buscar \"staff augmentation\" o \"IT staffing\" como industria. Filtrar por país, tamaño (11-200 empleados ideal). Ver quién es el CEO/Founder/Head of Talent.",
+    "prospect_desc_sales_nav": "Versión paga de LinkedIn. Permite filtrar por industria (Staffing & Recruiting), cargo (CEO, Founder, CTO), ubicación y tamaño de empresa.",
+    "prospect_desc_upwork": "Muchas empresas de staff augmentation tienen perfiles como agencias en Upwork. Pueden ser contactadas directamente desde la plataforma.",
+    "prospect_desc_toptal": "Empresas que compiten con Toptal o lo complementan. Buscar en Google 'Toptal alternative staff augmentation' para encontrar competidores directos.",
+    "prospect_desc_google_maps": "Buscar \"staffing company\" o \"IT recruiting\" en Google Maps con tu ciudad o país objetivo. Aparecen empresas locales con datos de contacto.",
+    "prospect_desc_sia": "Asociación global del sector staffing. Publican rankings anuales de las empresas más grandes. Ideal para encontrar empresas medianas en LATAM y Europa.",
+    "prospect_desc_reddit": "Comunidad de reclutadores y dueños de agencias. Leer conversaciones para entender pain points. Contactar directamente a quienes mencionan problemas con su ATS.",
+    "prospect_desc_crunchbase": "Base de datos de startups y empresas. Filtrar por industria Staffing & Recruiting, país y tamaño. Incluye emails de fundadores en algunos casos."
   },
   "outreach_crm": {
     "title": "CRM de Prospectos",
@@ -4851,7 +4901,9 @@
       "201-500": "201–500 empleados",
       "500+": "500+ empleados"
     },
-    "view_details": "Ver Detalles"
+    "view_details": "Ver Detalles",
+    "star_add": "Marcar como destacado",
+    "star_remove": "Quitar destacado"
   },
   "outreach_crm_detail": {
     "back_to_crm": "Volver al CRM",
@@ -4905,7 +4957,9 @@
     "channel_whatsapp": "WhatsApp",
     "channel_phone": "Teléfono",
     "channel_in_person": "En Persona",
-    "channel_other": "Otro"
+    "channel_other": "Otro",
+    "contact_added": "Contacto agregado",
+    "template_name": "Plantilla {{id}} — {{lang}}"
   },
   "outreach_analytics": {
     "title": "Analíticas de Outreach",
@@ -4938,7 +4992,9 @@
     "filter_plan": "Filtrar por plan",
     "filter_status": "Filtrar por estado",
     "unlimited": "Ilimitado",
-    "description": "Muestra el uso de recursos en tiempo real frente a los límites del plan para cada empresa. Las empresas cerca de sus límites son candidatas a actualizar; las que apenas usan el producto corren riesgo de cancelación. Filtra por tipo de recurso para enfocar tu alcance."
+    "description": "Muestra el uso de recursos en tiempo real frente a los límites del plan para cada empresa. Las empresas cerca de sus límites son candidatas a actualizar; las que apenas usan el producto corren riesgo de cancelación. Filtra por tipo de recurso para enfocar tu alcance.",
+    "all_plans": "Todos los planes",
+    "all_statuses": "Todos los estados"
   },
   "company_health": {
     "title": "Monitor de Salud de Empresas",
@@ -4956,7 +5012,11 @@
     "days_ago": "Hace {{count}} días",
     "never": "Nunca",
     "filter_risk": "Filtrar por nivel de riesgo",
-    "description": "Puntúa a cada cliente en señales de compromiso como posiciones activas, volumen de solicitudes y actividad de usuarios. Las empresas en nivel rojo corren riesgo de abandono — revísalas regularmente y contacta antes de que cancelen."
+    "description": "Puntúa a cada cliente en señales de compromiso como posiciones activas, volumen de solicitudes y actividad de usuarios. Las empresas en nivel rojo corren riesgo de abandono — revísalas regularmente y contacta antes de que cancelen.",
+    "all_tiers": "Todos los niveles de riesgo",
+    "today": "Hoy",
+    "days_ago_one": "Hace {{count}} día",
+    "days_ago_other": "Hace {{count}} días"
   },
   "trial_tracker": {
     "title": "Rastreador de Pruebas y Conversión",

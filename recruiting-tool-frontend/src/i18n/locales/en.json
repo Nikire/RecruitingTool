@@ -2270,7 +2270,13 @@
       "usage_label": "{{used}} / {{limit}}",
       "updated_success": "Quota limit updated successfully",
       "load_error": "Failed to load AI quotas",
-      "companies_load_error": "Could not load the list of companies. Please try again."
+      "companies_load_error": "Could not load the list of companies. Please try again.",
+      "update_error": "Failed to update the AI quota limit",
+      "types": {
+        "resume_parsing": "Resume parsing",
+        "candidate_scoring": "Candidate scoring",
+        "batch_scoring": "Batch scoring"
+      }
     },
     "subscriptions": {
       "title": "Subscriptions Management",
@@ -4361,7 +4367,36 @@
     "filter_type": "Email type...",
     "status_all": "All statuses",
     "no_logs": "No emails found",
-    "rows_per_page": "Emails per page"
+    "rows_per_page": "Emails per page",
+    "status": {
+      "sent": "Sent",
+      "failed": "Failed"
+    },
+    "type": {
+      "general": "General",
+      "welcome": "Welcome",
+      "email_verification": "Email verification",
+      "password_reset": "Password reset",
+      "team_invitation": "Team invitation",
+      "application_received": "Application received",
+      "application_confirmation": "Application confirmation",
+      "application_accepted": "Application accepted",
+      "status_change": "Status change",
+      "stage_advancement": "Stage advancement",
+      "hired_notification": "Hired notification",
+      "hr_notification": "HR notification",
+      "hiring_process_access_code": "Hiring process access code",
+      "async_stage_invitation": "Async stage invitation",
+      "async_stage_submission_received": "Async stage submission received",
+      "interview_scheduled": "Interview scheduled",
+      "interview_rescheduled": "Interview rescheduled",
+      "interview_cancelled": "Interview cancelled",
+      "interview_reminder": "Interview reminder",
+      "interview_booked_by_candidate": "Interview booked by candidate",
+      "template_email": "Template email",
+      "system_test": "System test",
+      "outreach": "Outreach"
+    }
   },
   "plan_features": {
     "job_positions": "Up to {{count}} active job positions",
@@ -4774,7 +4809,22 @@
     "edit_template": "Edit Template",
     "modified_badge": "Modified",
     "reset_to_default": "Reset to default",
-    "edit_body": "Edit"
+    "edit_body": "Edit",
+    "save_success": "Template saved",
+    "save_error": "Failed to save the template",
+    "reset_success": "Template reset to default",
+    "reset_error": "Failed to reset the template",
+    "reset_unavailable": "This template cannot be reset to default",
+    "prospect_desc_clutch": "The largest B2B directory of IT staffing and staff augmentation companies. They have verified reviews and contact details.",
+    "prospect_desc_goodfirms": "A directory similar to Clutch, with staffing companies ranked by reviews and size.",
+    "prospect_desc_linkedin": "Search for \"staff augmentation\" or \"IT staffing\" as an industry. Filter by country and size (11-200 employees is ideal). Check who the CEO/Founder/Head of Talent is.",
+    "prospect_desc_sales_nav": "The paid version of LinkedIn. Lets you filter by industry (Staffing & Recruiting), title (CEO, Founder, CTO), location and company size.",
+    "prospect_desc_upwork": "Many staff augmentation companies have agency profiles on Upwork. They can be contacted directly from the platform.",
+    "prospect_desc_toptal": "Companies that compete with Toptal or complement it. Search Google for 'Toptal alternative staff augmentation' to find direct competitors.",
+    "prospect_desc_google_maps": "Search for \"staffing company\" or \"IT recruiting\" on Google Maps with your target city or country. Local companies show up with their contact details.",
+    "prospect_desc_sia": "The global staffing industry association. They publish annual rankings of the largest companies. Ideal for finding mid-sized companies in LATAM and Europe.",
+    "prospect_desc_reddit": "A community of recruiters and agency owners. Read the conversations to understand pain points. Reach out directly to anyone mentioning problems with their ATS.",
+    "prospect_desc_crunchbase": "A database of startups and companies. Filter by the Staffing & Recruiting industry, country and size. In some cases it includes founders' emails."
   },
   "outreach_crm": {
     "title": "Prospect CRM",
@@ -4851,7 +4901,9 @@
       "201-500": "201–500 employees",
       "500+": "500+ employees"
     },
-    "view_details": "View Details"
+    "view_details": "View Details",
+    "star_add": "Mark as starred",
+    "star_remove": "Remove star"
   },
   "outreach_crm_detail": {
     "back_to_crm": "Back to CRM",
@@ -4905,7 +4957,9 @@
     "channel_whatsapp": "WhatsApp",
     "channel_phone": "Phone",
     "channel_in_person": "In Person",
-    "channel_other": "Other"
+    "channel_other": "Other",
+    "contact_added": "Contact added",
+    "template_name": "Template {{id}} — {{lang}}"
   },
   "outreach_analytics": {
     "title": "Outreach Analytics",
@@ -4938,7 +4992,9 @@
     "filter_plan": "Filter by plan",
     "filter_status": "Filter by status",
     "unlimited": "Unlimited",
-    "description": "Displays real-time resource usage vs. plan limits for every company. Companies near their limits are upgrade candidates; companies barely using the product are churn risks. Filter by resource type to focus your outreach."
+    "description": "Displays real-time resource usage vs. plan limits for every company. Companies near their limits are upgrade candidates; companies barely using the product are churn risks. Filter by resource type to focus your outreach.",
+    "all_plans": "All plans",
+    "all_statuses": "All statuses"
   },
   "company_health": {
     "title": "Company Health Monitor",
@@ -4956,7 +5012,11 @@
     "days_ago": "{{count}} days ago",
     "never": "Never",
     "filter_risk": "Filter by risk tier",
-    "description": "Scores every customer on engagement signals such as active job positions, application volume, and user activity. Red-tier companies are at churn risk — review them regularly and reach out before they cancel."
+    "description": "Scores every customer on engagement signals such as active job positions, application volume, and user activity. Red-tier companies are at churn risk — review them regularly and reach out before they cancel.",
+    "all_tiers": "All risk tiers",
+    "today": "Today",
+    "days_ago_one": "{{count}} day ago",
+    "days_ago_other": "{{count}} days ago"
   },
   "trial_tracker": {
     "title": "Trial & Conversion Tracker",

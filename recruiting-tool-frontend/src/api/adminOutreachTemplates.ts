@@ -1,6 +1,8 @@
 import { adminKeys } from "./queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import i18n from "i18next";
 import api from "./axios";
+import { showSuccessToast, showErrorToast } from "../utils/toast";
 
 export interface OutreachTemplateOverride {
   templateId: number;
@@ -45,8 +47,13 @@ export function useUpsertOutreachTemplateOverride() {
       );
       return data;
     },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: adminKeys.outreachTemplateOverrides() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.outreachTemplateOverrides() });
+      showSuccessToast(i18n.t("outreach.save_success"));
+    },
+    onError: (error) => {
+      showErrorToast(error, i18n.t("outreach.save_error"));
+    },
   });
 }
 
@@ -70,7 +77,12 @@ export function useDeleteOutreachTemplateOverride() {
         `/admin/outreach-templates/${templateId}/${lang}/${variantIndex}`,
       );
     },
-    onSuccess: () =>
-      qc.invalidateQueries({ queryKey: adminKeys.outreachTemplateOverrides() }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: adminKeys.outreachTemplateOverrides() });
+      showSuccessToast(i18n.t("outreach.reset_success"));
+    },
+    onError: (error) => {
+      showErrorToast(error, i18n.t("outreach.reset_error"));
+    },
   });
 }

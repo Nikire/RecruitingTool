@@ -107,6 +107,7 @@ export function useDeleteProspect() {
 }
 
 export function useAddProspectContact() {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   return useMutation({
     mutationFn: ({ uid, ...dto }: CreateOutreachContactDto & { uid: string }) =>
@@ -114,6 +115,14 @@ export function useAddProspectContact() {
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: prospectKeys.detail(vars.uid) });
       qc.invalidateQueries({ queryKey: prospectKeys.list() });
+      showSuccessToast(t("outreach_crm_detail.contact_added"));
+    },
+    onError: () => {
+      showErrorToast(
+        t("errors.create_failed", {
+          entity: t("outreach_crm_detail.contacts"),
+        }),
+      );
     },
   });
 }

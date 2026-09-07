@@ -39,23 +39,40 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useTranslation } from "react-i18next";
 
-// Import all markdown files as raw strings
-import overviewMd from "../../docs/overview.md?raw";
-import rolesMd from "../../docs/roles-permissions.md?raw";
-import candidatesMd from "../../docs/candidates.md?raw";
-import jobPositionsMd from "../../docs/job-positions.md?raw";
-import hiringProcessesMd from "../../docs/hiring-processes.md?raw";
-import applicationsMd from "../../docs/applications.md?raw";
-import interviewsMd from "../../docs/interviews.md?raw";
-import calendarMd from "../../docs/calendar.md?raw";
-import aiScoringMd from "../../docs/ai-scoring.md?raw";
-import emailTemplatesMd from "../../docs/email-templates.md?raw";
-import analyticsMd from "../../docs/analytics.md?raw";
-import teamManagementMd from "../../docs/team-management.md?raw";
-import subscriptionMd from "../../docs/subscription.md?raw";
-import adminPanelMd from "../../docs/admin-panel.md?raw";
-import integrationsMd from "../../docs/integrations.md?raw";
-import whyBorderlessMd from "../../docs/why-borderless.md?raw";
+// Import all markdown files as raw strings (English + Spanish pairs)
+import overviewMdEn from "../../docs/overview.md?raw";
+import rolesMdEn from "../../docs/roles-permissions.md?raw";
+import candidatesMdEn from "../../docs/candidates.md?raw";
+import jobPositionsMdEn from "../../docs/job-positions.md?raw";
+import hiringProcessesMdEn from "../../docs/hiring-processes.md?raw";
+import applicationsMdEn from "../../docs/applications.md?raw";
+import interviewsMdEn from "../../docs/interviews.md?raw";
+import calendarMdEn from "../../docs/calendar.md?raw";
+import aiScoringMdEn from "../../docs/ai-scoring.md?raw";
+import emailTemplatesMdEn from "../../docs/email-templates.md?raw";
+import analyticsMdEn from "../../docs/analytics.md?raw";
+import teamManagementMdEn from "../../docs/team-management.md?raw";
+import subscriptionMdEn from "../../docs/subscription.md?raw";
+import adminPanelMdEn from "../../docs/admin-panel.md?raw";
+import integrationsMdEn from "../../docs/integrations.md?raw";
+import whyBorderlessMdEn from "../../docs/why-borderless.md?raw";
+
+import overviewMdEs from "../../docs/overview.es.md?raw";
+import rolesMdEs from "../../docs/roles-permissions.es.md?raw";
+import candidatesMdEs from "../../docs/candidates.es.md?raw";
+import jobPositionsMdEs from "../../docs/job-positions.es.md?raw";
+import hiringProcessesMdEs from "../../docs/hiring-processes.es.md?raw";
+import applicationsMdEs from "../../docs/applications.es.md?raw";
+import interviewsMdEs from "../../docs/interviews.es.md?raw";
+import calendarMdEs from "../../docs/calendar.es.md?raw";
+import aiScoringMdEs from "../../docs/ai-scoring.es.md?raw";
+import emailTemplatesMdEs from "../../docs/email-templates.es.md?raw";
+import analyticsMdEs from "../../docs/analytics.es.md?raw";
+import teamManagementMdEs from "../../docs/team-management.es.md?raw";
+import subscriptionMdEs from "../../docs/subscription.es.md?raw";
+import adminPanelMdEs from "../../docs/admin-panel.es.md?raw";
+import integrationsMdEs from "../../docs/integrations.es.md?raw";
+import whyBorderlessMdEs from "../../docs/why-borderless.es.md?raw";
 
 const SIDEBAR_WIDTH = 260;
 
@@ -66,28 +83,50 @@ interface DocSection {
   file: string;
 }
 
-const docContent: Record<string, string> = {
-  overview: overviewMd,
-  "roles-permissions": rolesMd,
-  candidates: candidatesMd,
-  "job-positions": jobPositionsMd,
-  "hiring-processes": hiringProcessesMd,
-  applications: applicationsMd,
-  interviews: interviewsMd,
-  calendar: calendarMd,
-  "ai-scoring": aiScoringMd,
-  "email-templates": emailTemplatesMd,
-  analytics: analyticsMd,
-  "team-management": teamManagementMd,
-  subscription: subscriptionMd,
-  "admin-panel": adminPanelMd,
-  integrations: integrationsMd,
-  "why-borderless": whyBorderlessMd,
+const docContentEn: Record<string, string> = {
+  overview: overviewMdEn,
+  "roles-permissions": rolesMdEn,
+  candidates: candidatesMdEn,
+  "job-positions": jobPositionsMdEn,
+  "hiring-processes": hiringProcessesMdEn,
+  applications: applicationsMdEn,
+  interviews: interviewsMdEn,
+  calendar: calendarMdEn,
+  "ai-scoring": aiScoringMdEn,
+  "email-templates": emailTemplatesMdEn,
+  analytics: analyticsMdEn,
+  "team-management": teamManagementMdEn,
+  subscription: subscriptionMdEn,
+  "admin-panel": adminPanelMdEn,
+  integrations: integrationsMdEn,
+  "why-borderless": whyBorderlessMdEn,
+};
+
+const docContentEs: Record<string, string> = {
+  overview: overviewMdEs,
+  "roles-permissions": rolesMdEs,
+  candidates: candidatesMdEs,
+  "job-positions": jobPositionsMdEs,
+  "hiring-processes": hiringProcessesMdEs,
+  applications: applicationsMdEs,
+  interviews: interviewsMdEs,
+  calendar: calendarMdEs,
+  "ai-scoring": aiScoringMdEs,
+  "email-templates": emailTemplatesMdEs,
+  analytics: analyticsMdEs,
+  "team-management": teamManagementMdEs,
+  subscription: subscriptionMdEs,
+  "admin-panel": adminPanelMdEs,
+  integrations: integrationsMdEs,
+  "why-borderless": whyBorderlessMdEs,
 };
 
 const DocsPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
+  const docContent = i18n.language.startsWith("es")
+    ? docContentEs
+    : docContentEn;
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const [activeSection, setActiveSection] = useState<string>("overview");
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -270,7 +309,16 @@ const DocsPage: React.FC = () => {
 
   return (
     <Box
-      sx={{ display: "flex", height: "calc(100vh - 64px)", overflow: "hidden" }}
+      sx={{
+        display: "flex",
+        // The layout <main> already adds its own padding around this shell,
+        // so subtract the app bar height plus that padding to avoid a second scrollbar.
+        height: {
+          xs: `calc(100vh - 64px - ${theme.spacing(4)})`,
+          sm: `calc(100vh - 64px - ${theme.spacing(6)})`,
+        },
+        overflow: "hidden",
+      }}
     >
       {/* Mobile toggle button */}
       {isMobile && (
@@ -459,8 +507,10 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
         },
         "& table": {
           width: "100%",
+          // Wide markdown tables scroll inside their wrapper instead of being clipped.
+          minWidth: 480,
           borderCollapse: "collapse",
-          mb: 2,
+          mb: 0,
           fontSize: "0.875rem",
           "& thead": {
             bgcolor: "action.hover",
@@ -499,10 +549,6 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
               },
             },
           },
-          border: "1px solid",
-          borderColor: "divider",
-          borderRadius: 1,
-          overflow: "hidden",
         },
         "& hr": {
           border: "none",
@@ -519,7 +565,31 @@ const MarkdownContent: React.FC<MarkdownContentProps> = ({ content }) => {
         },
       }}
     >
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          // react-markdown hands custom components an AST `node` prop that must
+          // not be spread onto the DOM element.
+          table: ({ node, ...props }) => {
+            void node;
+            return (
+              <Box
+                sx={{
+                  overflowX: "auto",
+                  mb: 2,
+                  border: "1px solid",
+                  borderColor: "divider",
+                  borderRadius: 1,
+                }}
+              >
+                <table {...props} />
+              </Box>
+            );
+          },
+        }}
+      >
+        {content}
+      </ReactMarkdown>
     </Box>
   );
 };

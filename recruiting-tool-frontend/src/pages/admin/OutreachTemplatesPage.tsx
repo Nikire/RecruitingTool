@@ -443,7 +443,7 @@ const CHANNEL_ICONS: Record<Template["channel"], React.ReactNode> = {
 interface ProspectSource {
   name: string;
   url: string;
-  description: string;
+  descriptionKey: string;
   tipKey: string;
   category: "directory" | "social" | "community" | "search";
 }
@@ -452,80 +452,70 @@ const PROSPECT_SOURCES: ProspectSource[] = [
   {
     name: "Clutch.co",
     url: "https://clutch.co/it-services/staff-augmentation",
-    description:
-      "El directorio B2B más grande de empresas de IT staffing y staff augmentation. Tienen reviews verificadas y datos de contacto.",
+    descriptionKey: "outreach.prospect_desc_clutch",
     tipKey: "outreach.prospect_tip_clutch",
     category: "directory",
   },
   {
     name: "GoodFirms",
     url: "https://www.goodfirms.co/it-services/staff-augmentation",
-    description:
-      "Directorio similar a Clutch con empresas de staffing rankeadas por reviews y tamaño.",
+    descriptionKey: "outreach.prospect_desc_goodfirms",
     tipKey: "outreach.prospect_tip_goodfirms",
     category: "directory",
   },
   {
     name: "LinkedIn — Búsqueda de empresas",
     url: "https://www.linkedin.com/search/results/companies/?keywords=staff%20augmentation",
-    description:
-      'Buscar "staff augmentation" o "IT staffing" como industria. Filtrar por país, tamaño (11-200 empleados ideal). Ver quién es el CEO/Founder/Head of Talent.',
+    descriptionKey: "outreach.prospect_desc_linkedin",
     tipKey: "outreach.prospect_tip_linkedin",
     category: "social",
   },
   {
     name: "LinkedIn Sales Navigator",
     url: "https://business.linkedin.com/sales-solutions/sales-navigator",
-    description:
-      "Versión paga de LinkedIn. Permite filtrar por industria (Staffing & Recruiting), cargo (CEO, Founder, CTO), ubicación y tamaño de empresa.",
+    descriptionKey: "outreach.prospect_desc_sales_nav",
     tipKey: "outreach.prospect_tip_sales_nav",
     category: "social",
   },
   {
     name: "Upwork — Agencias",
     url: "https://www.upwork.com/nx/search/talent/?nbs=1&q=staff%20augmentation",
-    description:
-      "Muchas empresas de staff augmentation tienen perfiles como agencias en Upwork. Pueden ser contactadas directamente desde la plataforma.",
+    descriptionKey: "outreach.prospect_desc_upwork",
     tipKey: "outreach.prospect_tip_upwork",
     category: "directory",
   },
   {
     name: "Toptal — Partners",
     url: "https://www.toptal.com/",
-    description:
-      "Empresas que compiten con Toptal o lo complementan. Buscar en Google 'Toptal alternative staff augmentation' para encontrar competidores directos.",
+    descriptionKey: "outreach.prospect_desc_toptal",
     tipKey: "outreach.prospect_tip_toptal",
     category: "search",
   },
   {
     name: "Google Maps / Local",
     url: "https://www.google.com/maps/search/staffing+company",
-    description:
-      'Buscar "staffing company" o "IT recruiting" en Google Maps con tu ciudad o país objetivo. Aparecen empresas locales con datos de contacto.',
+    descriptionKey: "outreach.prospect_desc_google_maps",
     tipKey: "outreach.prospect_tip_google_maps",
     category: "search",
   },
   {
     name: "Staffing Industry Analysts (SIA)",
     url: "https://www2.staffingindustry.com/",
-    description:
-      "Asociación global del sector staffing. Publican rankings anuales de las empresas más grandes. Ideal para encontrar empresas medianas en LATAM y Europa.",
+    descriptionKey: "outreach.prospect_desc_sia",
     tipKey: "outreach.prospect_tip_sia",
     category: "community",
   },
   {
     name: "Reddit — r/staffing",
     url: "https://www.reddit.com/r/staffing/",
-    description:
-      "Comunidad de reclutadores y dueños de agencias. Leer conversaciones para entender pain points. Contactar directamente a quienes mencionan problemas con su ATS.",
+    descriptionKey: "outreach.prospect_desc_reddit",
     tipKey: "outreach.prospect_tip_reddit",
     category: "community",
   },
   {
     name: "Crunchbase",
     url: "https://www.crunchbase.com/search/organizations?q=staffing",
-    description:
-      "Base de datos de startups y empresas. Filtrar por industria Staffing & Recruiting, país, y tamaño. Incluye emails de fundadores en algunos casos.",
+    descriptionKey: "outreach.prospect_desc_crunchbase",
     tipKey: "outreach.prospect_tip_crunchbase",
     category: "directory",
   },
@@ -558,6 +548,7 @@ interface EditDialogProps {
   onClose: () => void;
   onSave: (subject: string, body: string) => void;
   onReset: () => void;
+  canReset?: boolean;
   isSaving?: boolean;
   isResetting?: boolean;
 }
@@ -567,6 +558,7 @@ const EditTemplateDialog: React.FC<EditDialogProps> = ({
   onClose,
   onSave,
   onReset,
+  canReset = true,
   isSaving,
   isResetting,
 }) => {
@@ -604,14 +596,24 @@ const EditTemplateDialog: React.FC<EditDialogProps> = ({
         </Stack>
       </DialogContent>
       <DialogActions sx={{ justifyContent: "space-between", px: 3, pb: 2 }}>
-        <Button
-          variant="outlined"
-          color="warning"
-          onClick={onReset}
-          disabled={isLoading}
-        >
-          {t("outreach.reset_to_default")}
-        </Button>
+        {canReset ? (
+          <Button
+            variant="outlined"
+            color="warning"
+            onClick={onReset}
+            disabled={isLoading}
+          >
+            {t("outreach.reset_to_default")}
+          </Button>
+        ) : (
+          <Tooltip title={t("outreach.reset_unavailable")}>
+            <span>
+              <Button variant="outlined" color="warning" disabled>
+                {t("outreach.reset_to_default")}
+              </Button>
+            </span>
+          </Tooltip>
+        )}
         <Stack direction="row" spacing={1}>
           <Button onClick={onClose} disabled={isLoading}>
             {t("common.cancel")}
@@ -689,14 +691,19 @@ const OutreachTemplatesPage: React.FC = () => {
     }
     const [templateIdStr, langStr, variantIndexStr] =
       editDialogState.key.split("-");
-    await upsertMutation.mutateAsync({
-      templateId: Number(templateIdStr),
-      lang: langStr,
-      variantIndex: Number(variantIndexStr),
-      subject: editDialogState.hasSubject ? subject : undefined,
-      body,
-    });
-    setEditDialogState(null);
+    try {
+      await upsertMutation.mutateAsync({
+        templateId: Number(templateIdStr),
+        lang: langStr,
+        variantIndex: Number(variantIndexStr),
+        subject: editDialogState.hasSubject ? subject : undefined,
+        body,
+      });
+      setEditDialogState(null);
+    } catch {
+      // Error toast is raised by the mutation hook; keep the dialog open
+      // so the admin can retry without losing their edits.
+    }
   };
 
   const handleResetEdit = async () => {
@@ -707,21 +714,29 @@ const OutreachTemplatesPage: React.FC = () => {
     }
     const [templateIdStr, langStr, variantIndexStr] =
       editDialogState.key.split("-");
-    await deleteMutation.mutateAsync({
-      templateId: Number(templateIdStr),
-      lang: langStr,
-      variantIndex: Number(variantIndexStr),
-    });
-    setEditDialogState(null);
+    try {
+      await deleteMutation.mutateAsync({
+        templateId: Number(templateIdStr),
+        lang: langStr,
+        variantIndex: Number(variantIndexStr),
+      });
+      setEditDialogState(null);
+    } catch {
+      // Error toast is raised by the mutation hook; keep the dialog open.
+    }
   };
 
   const handleSaveCampaignTemplate = async (subject: string, body: string) => {
     if (!campaignEmailTemplate) return;
-    await updateEmailTemplateMutation.mutateAsync({
-      uid: campaignEmailTemplate.uid,
-      data: { subject, body },
-    });
-    setEditDialogState(null);
+    try {
+      await updateEmailTemplateMutation.mutateAsync({
+        uid: campaignEmailTemplate.uid,
+        data: { subject, body },
+      });
+      setEditDialogState(null);
+    } catch {
+      // Error toast is raised by useUpdateEmailTemplate; keep the dialog open.
+    }
   };
 
   return (
@@ -1381,7 +1396,7 @@ const OutreachTemplatesPage: React.FC = () => {
                     color="text.secondary"
                     sx={{ flex: 1 }}
                   >
-                    {source.description}
+                    {t(source.descriptionKey)}
                   </Typography>
 
                   <Box
@@ -1452,6 +1467,7 @@ const OutreachTemplatesPage: React.FC = () => {
           onClose={() => setEditDialogState(null)}
           onSave={handleSaveEdit}
           onReset={handleResetEdit}
+          canReset={editDialogState.key !== "campaign"}
           isSaving={upsertMutation.isPending}
           isResetting={deleteMutation.isPending}
         />

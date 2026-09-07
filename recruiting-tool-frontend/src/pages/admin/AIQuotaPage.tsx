@@ -129,7 +129,7 @@ const AIQuotaPage: React.FC = () => {
       toast.success(t("admin.ai_quota.updated_success"));
       closeEditDialog();
     } catch {
-      toast.error(t("admin.ai_quota.load_error"));
+      toast.error(t("admin.ai_quota.update_error"));
     }
   };
 
@@ -146,15 +146,20 @@ const AIQuotaPage: React.FC = () => {
       headerName: t("admin.ai_quota.columns.quota_type"),
       flex: 1,
       minWidth: 180,
-      renderCell: (params) => (
-        <Chip
-          label={params.value}
-          color="primary"
-          size="small"
-          variant="filled"
-          icon={<PsychologyIcon />}
-        />
-      ),
+      renderCell: (params) => {
+        const quotaType = String(params.value ?? "");
+        return (
+          <Chip
+            label={t(`admin.ai_quota.types.${quotaType.toLowerCase()}`, {
+              defaultValue: quotaType,
+            })}
+            color="primary"
+            size="small"
+            variant="filled"
+            icon={<PsychologyIcon />}
+          />
+        );
+      },
     },
     {
       field: "companyUid",

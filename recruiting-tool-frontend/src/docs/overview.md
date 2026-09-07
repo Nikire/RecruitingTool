@@ -1,43 +1,43 @@
-# Borderless ATS — Descripción General de la Plataforma
+# Borderless ATS — Platform Overview
 
-Borderless es un **Sistema de Seguimiento de Candidatos (ATS)** full-stack diseñado para ayudar a los equipos de RRHH a gestionar el ciclo completo de reclutamiento: desde la publicación de empleos y la recepción de solicitudes hasta la programación de entrevistas y la toma de decisiones de contratación.
+Borderless is a full-stack **Applicant Tracking System (ATS)** built to help HR teams run the entire recruiting cycle: from publishing jobs and receiving applications to scheduling interviews and making hiring decisions.
 
-## Stack Tecnológico
+## Tech Stack
 
-| Capa | Tecnología |
+| Layer | Technology |
 |-------|-----------|
 | Backend | NestJS + TypeScript + Prisma + PostgreSQL |
 | Frontend | React 19 + TypeScript + Vite + Material-UI |
-| Infraestructura | Docker + MinIO (almacenamiento de archivos) |
-| Pagos | Stripe |
-| IA | Google Gemini |
-| Correo electrónico | Resend HTTP API |
-| Calendario | Google Calendar OAuth |
+| Infrastructure | Docker + MinIO (file storage) |
+| Payments | Stripe |
+| AI | Google Gemini |
+| Email | Resend HTTP API |
+| Calendar | Google Calendar OAuth |
 
-## Estructura de la Aplicación
+## Application Structure
 
-La app tiene tres áreas principales:
+The app has three main areas:
 
-- **Pública (`/`)** — Página de inicio, portal de empleo, páginas legales
-- **Panel de RRHH (`/hr/`)** — Funcionalidad principal de reclutamiento para equipos de RRHH
-- **Panel de Administración (`/admin/`)** — Administración a nivel de plataforma para superadministradores
+- **Public (`/`)** — Landing page, careers portal, legal pages
+- **HR Panel (`/hr/`)** — Core recruiting functionality for HR teams
+- **Admin Panel (`/admin/`)** — Platform-level administration for super admins
 
-## Entornos
+## Environments
 
-- **Frontend:** `http://localhost:80` (Docker) o `http://localhost:5173` (dev)
+- **Frontend:** `http://localhost:80` (Docker) or `http://localhost:5173` (dev)
 - **Backend API:** `http://localhost:4000/api`
 - **Swagger Docs:** `http://localhost:4000/api/docs`
 - **PgAdmin:** `http://localhost:8080`
 - **MinIO Console:** `http://localhost:9001`
 
-## Ramas
+## Branches
 
-| Rama | Propósito |
+| Branch | Purpose |
 |--------|---------|
-| `development` | Desarrollo activo — hacer push aquí primero |
-| `production` | Listo para producción — fusionar desde development |
+| `development` | Active development — push here first |
+| `production` | Production ready — merge from development |
 
-## Credenciales por Defecto (Desarrollo)
+## Default Credentials (Development)
 
 - **Admin:** `admin@example.com` / `admin`
 - **PgAdmin:** `admin@pgadmin.com` / `admin`

@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
@@ -148,12 +149,13 @@ const QuotaInspectorPage: React.FC = () => {
     pageSize: 20,
   });
 
-  const { data, isLoading, isFetching } = useAdminQuotaOverview({
-    page: paginationModel.page + 1,
-    limit: paginationModel.pageSize,
-    plan: planFilter || undefined,
-    status: statusFilter || undefined,
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useAdminQuotaOverview({
+      page: paginationModel.page + 1,
+      limit: paginationModel.pageSize,
+      plan: planFilter || undefined,
+      status: statusFilter || undefined,
+    });
 
   const handlePlanChange = (e: SelectChangeEvent) => {
     setPlanFilter(e.target.value);
@@ -266,6 +268,28 @@ const QuotaInspectorPage: React.FC = () => {
     },
   ];
 
+  if (isError) {
+    return (
+      <Box sx={{ width: "100%", py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 0 } }}>
+        <PageHeader
+          title={t("quota_inspector.title")}
+          subtitle={t("quota_inspector.subtitle")}
+          translate={false}
+        />
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={() => refetch()}>
+              {t("common.retry")}
+            </Button>
+          }
+        >
+          {t("errors.generic")}
+        </Alert>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ width: "100%", py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 0 } }}>
       <PageHeader
@@ -326,7 +350,7 @@ const QuotaInspectorPage: React.FC = () => {
             label={t("quota_inspector.filter_plan")}
             onChange={handlePlanChange}
           >
-            <MenuItem value="">{t("common.filter")}</MenuItem>
+            <MenuItem value="">{t("quota_inspector.all_plans")}</MenuItem>
             <MenuItem value="FREE">FREE</MenuItem>
             <MenuItem value="PROFESSIONAL">PROFESSIONAL</MenuItem>
             <MenuItem value="ENTERPRISE">ENTERPRISE</MenuItem>
@@ -340,7 +364,7 @@ const QuotaInspectorPage: React.FC = () => {
             label={t("quota_inspector.filter_status")}
             onChange={handleStatusChange}
           >
-            <MenuItem value="">{t("common.filter")}</MenuItem>
+            <MenuItem value="">{t("quota_inspector.all_statuses")}</MenuItem>
             <MenuItem value="OK">{t("quota_inspector.ok")}</MenuItem>
             <MenuItem value="WARNING">{t("quota_inspector.warning")}</MenuItem>
             <MenuItem value="CRITICAL">

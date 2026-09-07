@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import {
+  Alert,
   Box,
+  Button,
   Chip,
   MenuItem,
   Paper,
@@ -28,6 +30,7 @@ const AdminEmailLogsPage: React.FC = () => {
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
+  const [emailTypeInput, setEmailTypeInput] = useState("");
   const [emailType, setEmailType] = useState("");
 
   // Pagination state
@@ -43,18 +46,22 @@ const AdminEmailLogsPage: React.FC = () => {
     return () => clearTimeout(timer);
   }, [searchInput]);
 
+  // Debounce email type input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setEmailType(emailTypeInput);
+      setPage(0);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [emailTypeInput]);
+
   // Reset page on filter changes
   const handleStatusChange = (value: string) => {
     setStatus(value);
     setPage(0);
   };
 
-  const handleEmailTypeChange = (value: string) => {
-    setEmailType(value);
-    setPage(0);
-  };
-
-  const { data, isLoading } = useEmailLogs({
+  const { data, isLoading, isError, refetch } = useEmailLogs({
     page: page + 1, // API is 1-based
     limit: rowsPerPage,
     status: status || undefined,
@@ -64,6 +71,16 @@ const AdminEmailLogsPage: React.FC = () => {
 
   const rows = data?.data ?? [];
   const total = data?.total ?? 0;
+
+  const statusLabel = (value: string) =>
+    t(`admin_email_logs.status.${value.toLowerCase()}`, {
+      defaultValue: value,
+    });
+
+  const typeLabel = (value: string) =>
+    t(`admin_email_logs.type.${value.toLowerCase()}`, {
+      defaultValue: value,
+    });
 
   return (
     <Box sx={{ width: "100%", py: { xs: 3, sm: 4 }, px: { xs: 2, sm: 0 } }}>
@@ -91,119 +108,132 @@ const AdminEmailLogsPage: React.FC = () => {
           sx={{ minWidth: 130 }}
         >
           <MenuItem value="">{t("admin_email_logs.status_all")}</MenuItem>
-          <MenuItem value="SENT">SENT</MenuItem>
-          <MenuItem value="FAILED">FAILED</MenuItem>
+          <MenuItem value="SENT">{statusLabel("SENT")}</MenuItem>
+          <MenuItem value="FAILED">{statusLabel("FAILED")}</MenuItem>
         </Select>
 
         <TextField
           size="small"
           placeholder={t("admin_email_logs.filter_type")}
-          value={emailType}
-          onChange={(e) => handleEmailTypeChange(e.target.value)}
+          value={emailTypeInput}
+          onChange={(e) => setEmailTypeInput(e.target.value)}
           sx={{ minWidth: 180 }}
         />
       </Stack>
 
       {/* Table */}
-      <Paper variant="outlined">
-        <TableContainer>
-          <Table size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell>{t("admin_email_logs.col_status")}</TableCell>
-                <TableCell>{t("admin_email_logs.col_type")}</TableCell>
-                <TableCell>{t("admin_email_logs.col_recipient")}</TableCell>
-                <TableCell>{t("admin_email_logs.col_subject")}</TableCell>
-                <TableCell>{t("admin_email_logs.col_sent_at")}</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {isLoading ? (
-                Array.from({ length: 10 }).map((_, idx) => (
-                  <TableRow key={idx}>
-                    <TableCell>
-                      <Skeleton variant="rounded" width={56} height={24} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton variant="rounded" width={120} height={24} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton variant="text" width={160} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton variant="text" width={200} />
-                    </TableCell>
-                    <TableCell>
-                      <Skeleton variant="text" width={140} />
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : rows.length === 0 ? (
+      {isError ? (
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={() => refetch()}>
+              {t("common.retry")}
+            </Button>
+          }
+        >
+          {t("errors.generic")}
+        </Alert>
+      ) : (
+        <Paper variant="outlined">
+          <TableContainer>
+            <Table size="small">
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
-                    <Typography variant="body2" color="text.secondary">
-                      {t("admin_email_logs.no_logs")}
-                    </Typography>
-                  </TableCell>
+                  <TableCell>{t("admin_email_logs.col_status")}</TableCell>
+                  <TableCell>{t("admin_email_logs.col_type")}</TableCell>
+                  <TableCell>{t("admin_email_logs.col_recipient")}</TableCell>
+                  <TableCell>{t("admin_email_logs.col_subject")}</TableCell>
+                  <TableCell>{t("admin_email_logs.col_sent_at")}</TableCell>
                 </TableRow>
-              ) : (
-                rows.map((row) => (
-                  <TableRow key={row.uid} hover>
-                    <TableCell>
-                      <Chip
-                        label={row.status}
-                        size="small"
-                        color={row.status === "SENT" ? "success" : "error"}
-                      />
-                    </TableCell>
-                    <TableCell>
-                      <Chip
-                        label={row.emailType}
-                        size="small"
-                        variant="outlined"
-                        color="default"
-                      />
-                    </TableCell>
-                    <TableCell sx={{ maxWidth: 200 }}>
-                      <Typography
-                        variant="body2"
-                        noWrap
-                        title={row.recipientEmail}
-                      >
-                        {row.recipientEmail}
-                      </Typography>
-                    </TableCell>
-                    <TableCell sx={{ maxWidth: 280 }}>
-                      <Typography variant="body2" noWrap title={row.subject}>
-                        {row.subject}
-                      </Typography>
-                    </TableCell>
-                    <TableCell>
-                      <Typography variant="body2" noWrap>
-                        {new Date(row.sentAt).toLocaleString()}
+              </TableHead>
+              <TableBody>
+                {isLoading ? (
+                  Array.from({ length: 10 }).map((_, idx) => (
+                    <TableRow key={idx}>
+                      <TableCell>
+                        <Skeleton variant="rounded" width={56} height={24} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="rounded" width={120} height={24} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width={160} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width={200} />
+                      </TableCell>
+                      <TableCell>
+                        <Skeleton variant="text" width={140} />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : rows.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center" sx={{ py: 6 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        {t("admin_email_logs.no_logs")}
                       </Typography>
                     </TableCell>
                   </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+                ) : (
+                  rows.map((row) => (
+                    <TableRow key={row.uid} hover>
+                      <TableCell>
+                        <Chip
+                          label={statusLabel(row.status)}
+                          size="small"
+                          color={row.status === "SENT" ? "success" : "error"}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          label={typeLabel(row.emailType)}
+                          size="small"
+                          variant="outlined"
+                          color="default"
+                        />
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 200 }}>
+                        <Typography
+                          variant="body2"
+                          noWrap
+                          title={row.recipientEmail}
+                        >
+                          {row.recipientEmail}
+                        </Typography>
+                      </TableCell>
+                      <TableCell sx={{ maxWidth: 280 }}>
+                        <Typography variant="body2" noWrap title={row.subject}>
+                          {row.subject}
+                        </Typography>
+                      </TableCell>
+                      <TableCell>
+                        <Typography variant="body2" noWrap>
+                          {new Date(row.sentAt).toLocaleString()}
+                        </Typography>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
 
-        <TablePagination
-          component="div"
-          count={total}
-          page={page}
-          onPageChange={(_, newPage) => setPage(newPage)}
-          rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(e) => {
-            setRowsPerPage(parseInt(e.target.value, 10));
-            setPage(0);
-          }}
-          rowsPerPageOptions={[10, 20, 50]}
-          labelRowsPerPage={t("admin_email_logs.rows_per_page")}
-        />
-      </Paper>
+          <TablePagination
+            component="div"
+            count={total}
+            page={page}
+            onPageChange={(_, newPage) => setPage(newPage)}
+            rowsPerPage={rowsPerPage}
+            onRowsPerPageChange={(e) => {
+              setRowsPerPage(parseInt(e.target.value, 10));
+              setPage(0);
+            }}
+            rowsPerPageOptions={[10, 20, 50]}
+            labelRowsPerPage={t("admin_email_logs.rows_per_page")}
+          />
+        </Paper>
+      )}
     </Box>
   );
 };

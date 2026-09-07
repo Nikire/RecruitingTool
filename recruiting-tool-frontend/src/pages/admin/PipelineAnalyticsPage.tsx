@@ -197,15 +197,15 @@ const PipelineAnalyticsPage: React.FC = () => {
   return (
     <Box>
       <PageHeader
-        title="pipeline_analytics.title"
+        title={t("pipeline_analytics.title")}
         subtitle={
           isLoading
-            ? "pipeline_analytics.subtitle"
+            ? t("pipeline_analytics.subtitle")
             : t("pipeline_analytics.platform_note", {
                 count: stats?.totalActiveCompanies ?? 0,
               })
         }
-        translate={!isLoading}
+        translate={false}
       />
 
       <Alert severity="info" variant="outlined" sx={{ mb: 3 }}>

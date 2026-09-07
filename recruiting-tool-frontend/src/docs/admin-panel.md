@@ -1,104 +1,104 @@
-# Panel de Administración
+# Admin Panel
 
-**Ruta:** `/admin`
-**Acceso:** Solo ADMIN, SUPER_ADMIN
+**Route:** `/admin`
+**Access:** ADMIN, SUPER_ADMIN only
 
-El Panel de Administración es el centro de control a nivel de plataforma para Borderless. Los usuarios de RRHH no pueden acceder a esta área.
+The Admin Panel is the platform-level control center for Borderless. HR users cannot reach this area.
 
 ## Dashboard (`/admin`)
 
-Estadísticas generales de toda la plataforma:
-- Total de usuarios, empresas, candidatos
-- Procesos de contratación activos
-- Actividad reciente del sistema
+Overall platform-wide statistics:
+- Total users, companies, candidates
+- Active hiring processes
+- Recent system activity
 
-## Empresas (`/admin/companies`) — SUPER_ADMIN
+## Companies (`/admin/companies`) — SUPER_ADMIN
 
-Ver y gestionar todas las empresas en la plataforma:
-- Listar todas las empresas con estado de suscripción
-- Acceder a una empresa para ver sus usuarios, posiciones y actividad
-- Editar los datos de la empresa si es necesario
+View and manage every company on the platform:
+- List all companies with their subscription status
+- Drill into a company to see its users, positions and activity
+- Edit company details when needed
 
-## Usuarios (`/admin/users`)
+## Users (`/admin/users`)
 
-Ver todos los usuarios de todas las empresas:
-- Filtrar por rol, estado, empresa
-- Crear nuevos usuarios manualmente
-- Ver registros de actividad de usuarios
-- Desactivar/reactivar usuarios (solo SUPER_ADMIN)
+View every user across all companies:
+- Filter by role, status, company
+- Create new users manually
+- View user activity logs
+- Deactivate/reactivate users (SUPER_ADMIN only)
 
-## Suscripciones (`/admin/subscriptions`)
+## Subscriptions (`/admin/subscriptions`)
 
-Ver todas las suscripciones de empresas:
-- Plan actual, estado, fechas de facturación
-- MRR (Monthly Recurring Revenue) por empresa
-- Filtrar por plan o estado
-- Estadísticas resumidas (activos totales, en trial, con pago pendiente)
+View every company subscription:
+- Current plan, status, billing dates
+- MRR (Monthly Recurring Revenue) per company
+- Filter by plan or status
+- Summary statistics (total active, trialing, past due)
 
-## Cuota de IA (`/admin/ai-quota`) — SUPER_ADMIN
+## AI Quota (`/admin/ai-quota`) — SUPER_ADMIN
 
-Gestionar las cuotas de puntuación con IA por empresa:
-- Buscar y seleccionar una empresa
-- Ver su uso actual de IA (usado / límite / restante)
-- Editar el límite mensual
-- Establecer en `-1` para ilimitado
+Manage AI scoring quotas per company:
+- Search for and select a company
+- View its current AI usage (used / limit / remaining)
+- Edit the monthly limit
+- Set `-1` for unlimited
 
-## Límites de Plan (`/admin/plan-limits`)
+## Plan Limits (`/admin/plan-limits`)
 
-Configurar los límites de funcionalidades para cada nivel de suscripción (Free, Professional, Enterprise):
-- Máximo de usuarios
-- Máximo de posiciones de trabajo
-- Máximo de candidatos por posición
-- Límites de almacenamiento
-- Créditos de puntuación con IA por mes
-- Indicadores de funcionalidad (plantillas de correo, analíticas)
+Configure the feature limits for each subscription tier (Free, Professional, Enterprise):
+- Maximum users
+- Maximum job positions
+- Maximum candidates per position
+- Storage limits
+- AI scoring credits per month
+- Feature flags (email templates, analytics)
 
-## Indicadores de Funcionalidad (`/admin/feature-flags`)
+## Feature Flags (`/admin/feature-flags`)
 
-Activar/desactivar funcionalidades de forma global o por empresa:
-- Habilitar/deshabilitar nuevas funcionalidades para un despliegue gradual
-- Soporte para pruebas A/B
-- Efecto inmediato — no se necesita reiniciar
+Turn features on or off globally or per company:
+- Enable/disable new features for a gradual rollout
+- A/B testing support
+- Takes effect immediately — no restart needed
 
-## Planes Personalizados (`/admin/custom-plans`)
+## Custom Plans (`/admin/custom-plans`)
 
-Crear niveles de suscripción personalizados para empresas específicas:
-- Precios personalizados
-- Asignación personalizada de funcionalidades
-- Reemplaza los límites del plan estándar
+Create bespoke subscription tiers for specific companies:
+- Custom pricing
+- Custom feature allocation
+- Overrides the standard plan limits
 
-## Configuración General (`/admin/general-settings`)
+## General Settings (`/admin/general-settings`)
 
-Configuración de toda la plataforma:
-- Configuración del proveedor de correo
-- Parámetros del sistema
-- Valores predeterminados
+Platform-wide configuration:
+- Email provider configuration
+- System parameters
+- Default values
 
-## Configuración del Sistema (`/admin/settings`)
+## System Settings (`/admin/settings`)
 
-Configuración de bajo nivel del sistema:
-- Configuración de base de datos
-- Configuración de almacenamiento
-- Limitación de velocidad
-- Parámetros de seguridad
+Low-level system configuration:
+- Database configuration
+- Storage configuration
+- Rate limiting
+- Security parameters
 
-## Registros Eliminados (`/admin/deleted-records`)
+## Deleted Records (`/admin/deleted-records`)
 
-Ver y restaurar entidades eliminadas de forma lógica:
-- Candidatos, posiciones de trabajo, usuarios, etc.
-- Restaurar registros eliminados accidentalmente
-- Eliminar de forma permanente si es necesario
+View and restore soft-deleted entities:
+- Candidates, job positions, users, etc.
+- Restore accidentally deleted records
+- Delete permanently if needed
 
-## Mensajes de Contacto (`/admin/contact-messages`)
+## Contact Messages (`/admin/contact-messages`)
 
-Ver los envíos del formulario público `/contact`:
-- Comentarios e inquietudes de usuarios
-- Seguimiento de respuestas
+Read submissions from the public `/contact` form:
+- User feedback and questions
+- Response tracking
 
 ## Webhooks (`/admin/webhooks`)
 
-Configurar webhooks salientes hacia sistemas externos:
-- Establecer URLs de destino
-- Elegir qué eventos enviar
-- Probar la entrega de webhooks
-- Ver el historial de entregas y reintentar eventos fallidos
+Configure outbound webhooks to external systems:
+- Set destination URLs
+- Choose which events to send
+- Test webhook delivery
+- Review delivery history and retry failed events

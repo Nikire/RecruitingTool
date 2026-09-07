@@ -1,6 +1,7 @@
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   Grid,
@@ -162,7 +163,7 @@ const ChartCard: React.FC<ChartCardProps> = ({
 const RevenueDashboardPage: React.FC = () => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { data, isLoading } = useAdminRevenueStats();
+  const { data, isLoading, isError, refetch } = useAdminRevenueStats();
 
   // MRR growth indicator
   const growth = data?.mrrGrowth ?? 0;
@@ -182,6 +183,28 @@ const RevenueDashboardPage: React.FC = () => {
   const mrrSubLabel = isLoading
     ? undefined
     : `${growth >= 0 ? "+" : ""}${growth}% ${t("revenue_dashboard.vs_last_month")}`;
+
+  if (isError) {
+    return (
+      <Box>
+        <PageHeader
+          title="revenue_dashboard.title"
+          subtitle="revenue_dashboard.subtitle"
+          translate={true}
+        />
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={() => refetch()}>
+              {t("common.retry")}
+            </Button>
+          }
+        >
+          {t("errors.generic")}
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box>

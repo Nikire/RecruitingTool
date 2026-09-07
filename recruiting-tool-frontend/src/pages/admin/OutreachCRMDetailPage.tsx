@@ -41,6 +41,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import AddIcon from "@mui/icons-material/Add";
 import { useTranslation } from "react-i18next";
+import type { TFunction } from "i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import {
@@ -51,6 +52,8 @@ import {
   useUpdateProspect,
 } from "../../hooks/api/useProspectTracking";
 import { useOutreachTemplateOverrides } from "../../api/adminOutreachTemplates";
+import { formatRelativeTime } from "../../utils/dateFormatters";
+import { wrapLongText } from "../../utils/textOverflow";
 import type {
   ProspectStatus,
   ProspectContact,
@@ -148,21 +151,22 @@ function ActivityIcon({ type }: { type: OutreachActivityType }) {
   }
 }
 
-// ── Relative time ─────────────────────────────────────────────────────────────
+// ── Outreach template reference ───────────────────────────────────────────────
 
-function formatRelativeTime(dateStr: string): string {
-  const date = new Date(dateStr);
-  const now = new Date();
-  const diffMs = now.getTime() - date.getTime();
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "1 day ago";
-  if (diffDays < 30) return `${diffDays} days ago`;
-  const diffMonths = Math.floor(diffDays / 30);
-  if (diffMonths === 1) return "1 month ago";
-  if (diffMonths < 12) return `${diffMonths} months ago`;
-  const diffYears = Math.floor(diffMonths / 12);
-  return diffYears === 1 ? "1 year ago" : `${diffYears} years ago`;
+/**
+ * `templateUsed` is persisted as a stable, language-neutral reference
+ * (`<templateId>-<lang>`) so the label can be translated at render time.
+ * Values saved before that change are rendered verbatim.
+ */
+const TEMPLATE_REF_PATTERN = /^(\d+)-([a-zA-Z]{2})$/;
+
+function formatTemplateRef(value: string, t: TFunction): string {
+  const match = TEMPLATE_REF_PATTERN.exec(value);
+  if (!match) return value;
+  return t("outreach_crm_detail.template_name", {
+    id: match[1],
+    lang: match[2].toUpperCase(),
+  });
 }
 
 // ── Log Activity Dialog ───────────────────────────────────────────────────────
@@ -235,13 +239,13 @@ const LogActivityDialog: React.FC<LogActivityDialogProps> = ({
     onClose();
   };
 
-  const handleTemplateSelect = (body: string, name: string) => {
+  const handleTemplateSelect = (body: string, templateRef: string) => {
     const substituted = body
       .replace(/\{\{EMPRESA\}\}/g, prospectName)
       .replace(/{{EMPRESA}}/g, prospectName);
     setValue("notes", substituted);
-    setValue("templateUsed", name);
-    setSelectedTemplateName(name);
+    setValue("templateUsed", templateRef);
+    setSelectedTemplateName(formatTemplateRef(templateRef, t));
     setShowTemplates(false);
   };
 
@@ -390,12 +394,15 @@ const LogActivityDialog: React.FC<LogActivityDialogProps> = ({
                           onClick={() =>
                             handleTemplateSelect(
                               tpl.body,
-                              `Template ${tpl.templateId} (${tpl.lang})`,
+                              `${tpl.templateId}-${tpl.lang}`,
                             )
                           }
                         >
                           <Typography variant="body2" fontWeight={500}>
-                            Template {tpl.templateId} — {tpl.lang.toUpperCase()}
+                            {t("outreach_crm_detail.template_name", {
+                              id: tpl.templateId,
+                              lang: tpl.lang.toUpperCase(),
+                            })}
                           </Typography>
                           <Typography
                             variant="caption"
@@ -508,8 +515,13 @@ const AddContactDialog: React.FC<AddContactDialogProps> = ({
       phone: data.phone || undefined,
       isPrimary: data.isPrimary,
     };
-    await addContact.mutateAsync({ uid: prospectUid, ...dto });
-    onClose();
+    try {
+      await addContact.mutateAsync({ uid: prospectUid, ...dto });
+      onClose();
+    } catch {
+      // Failure is surfaced by the mutation's error toast; keep the dialog
+      // open with the entered data so the admin can retry.
+    }
   };
 
   return (
@@ -716,14 +728,27 @@ const ContactRow: React.FC<ContactRowProps> = ({ contact, prospectUid }) => {
               {contact.role}
             </Typography>
           )}
-          <Box sx={{ display: "flex", gap: 1, mt: 0.5, flexWrap: "wrap" }}>
+          <Box
+            sx={{
+              display: "flex",
+              gap: 1,
+              mt: 0.5,
+              flexWrap: "wrap",
+              minWidth: 0,
+            }}
+          >
             {contact.email && (
               <Link
                 href={`mailto:${contact.email}`}
                 variant="caption"
-                sx={{ display: "flex", alignItems: "center", gap: 0.25 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.25,
+                  ...wrapLongText,
+                }}
               >
-                <EmailIcon sx={{ fontSize: 12 }} />
+                <EmailIcon sx={{ fontSize: 12, flexShrink: 0 }} />
                 {contact.email}
               </Link>
             )}
@@ -731,9 +756,14 @@ const ContactRow: React.FC<ContactRowProps> = ({ contact, prospectUid }) => {
               <Link
                 href={`tel:${contact.phone}`}
                 variant="caption"
-                sx={{ display: "flex", alignItems: "center", gap: 0.25 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.25,
+                  ...wrapLongText,
+                }}
               >
-                <PhoneIcon sx={{ fontSize: 12 }} />
+                <PhoneIcon sx={{ fontSize: 12, flexShrink: 0 }} />
                 {contact.phone}
               </Link>
             )}
@@ -743,9 +773,14 @@ const ContactRow: React.FC<ContactRowProps> = ({ contact, prospectUid }) => {
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="caption"
-                sx={{ display: "flex", alignItems: "center", gap: 0.25 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 0.25,
+                  ...wrapLongText,
+                }}
               >
-                <LinkedInIcon sx={{ fontSize: 12 }} />
+                <LinkedInIcon sx={{ fontSize: 12, flexShrink: 0 }} />
                 LinkedIn
               </Link>
             )}
@@ -775,7 +810,7 @@ const ContactRow: React.FC<ContactRowProps> = ({ contact, prospectUid }) => {
 // ── Main Page ─────────────────────────────────────────────────────────────────
 
 const OutreachCRMDetailPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { uid } = useParams<{ uid: string }>();
   const navigate = useNavigate();
   const { data: prospect, isLoading, isError } = useProspect(uid ?? null);
@@ -1029,12 +1064,12 @@ const OutreachCRMDetailPage: React.FC = () => {
                           sx={{ display: "block", mb: 0.5 }}
                         >
                           {t("outreach_crm_detail.template_label")}{" "}
-                          {activity.templateUsed}
+                          {formatTemplateRef(activity.templateUsed, t)}
                         </Typography>
                       )}
 
                       <Typography variant="caption" color="text.disabled">
-                        {formatRelativeTime(activity.createdAt)}
+                        {formatRelativeTime(activity.createdAt, i18n.language)}
                         {activity.createdBy && ` · ${activity.createdBy.name}`}
                       </Typography>
                     </Box>

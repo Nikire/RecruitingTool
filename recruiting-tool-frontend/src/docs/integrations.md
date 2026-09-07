@@ -1,99 +1,99 @@
-# Integraciones
+# Integrations
 
 ## Google Calendar
 
-**Configuración:** `/settings/calendar`
+**Setup:** `/settings/calendar`
 
-Conecta tu cuenta de Google para sincronizar las entrevistas con tu calendario personal.
+Connect your Google account to sync interviews with your personal calendar.
 
-### Pasos de Configuración
-1. Ve a **Configuración → Calendario**
-2. Haz clic en **"Conectar Google Calendar"**
-3. Autoriza mediante Google OAuth
-4. Listo — las entrevistas futuras crearán automáticamente eventos en el calendario
+### Setup Steps
+1. Go to **Settings → Calendar**
+2. Click **"Connect Google Calendar"**
+3. Authorize through Google OAuth
+4. Done — future interviews will automatically create calendar events
 
-### Qué se Sincroniza
-- Título, fecha, hora y duración de la entrevista
-- Asistentes (entrevistadores)
-- Enlace de video de Google Meet generado automáticamente
-- Cancelaciones y reprogramaciones
+### What Gets Synced
+- Interview title, date, time and duration
+- Attendees (interviewers)
+- Automatically generated Google Meet video link
+- Cancellations and reschedules
 
-> Cada usuario conecta su propio calendario de forma individual. La vista del calendario de equipo en `/hr/calendar` agrega todas las entrevistas del equipo.
+> Every user connects their own calendar individually. The team calendar view at `/hr/calendar` aggregates every interview across the team.
 
 ---
 
-## Stripe (Pagos)
+## Stripe (Payments)
 
-Stripe gestiona toda la facturación y la administración de suscripciones.
+Stripe handles all billing and subscription management.
 
-### Operaciones Admitidas
-- Creación de suscripciones mediante Stripe Checkout
-- Actualizaciones y degradaciones de plan
-- Renovación automática
-- Gestión de facturas
-- Cancelación (al final del período)
-- Sincronización del estado de suscripción mediante webhooks
+### Supported Operations
+- Subscription creation through Stripe Checkout
+- Plan upgrades and downgrades
+- Automatic renewal
+- Invoice management
+- Cancellation (at period end)
+- Subscription status sync through webhooks
 
-### Para SUPER_ADMIN
-Configura las claves de API de Stripe en **Administración → Configuración del Sistema**.
+### For SUPER_ADMIN
+Configure the Stripe API keys under **Admin → System Settings**.
 
 ---
 
 ## Google Gemini AI
 
-Impulsa la funcionalidad de puntuación de candidatos con IA.
+Powers the AI candidate scoring feature.
 
-### Configuración
-Establece la variable de entorno `GEMINI_API_KEY` en el backend.
+### Setup
+Set the `GEMINI_API_KEY` environment variable on the backend.
 
-### Límites de Velocidad
-Las llamadas a la API se gestionan por cuota por empresa. Configura los límites por empresa en `/admin/ai-quota`.
-
----
-
-## Correo Electrónico (Resend)
-
-Borderless utiliza la **Resend HTTP API** para todos los correos transaccionales.
-
-### Configuración
-Establece en el entorno del backend:
-- `SMTP_PASSWORD` — Clave de API de Resend (usada como token Bearer)
-- `SMTP_ENABLED=true` — Activa el envío de correos
-- `SMTP_FROM` — Dirección de remitente (p. ej., `noreply@borderlessats.com`)
-
-### Tipos de Correo
-- Confirmaciones de solicitudes
-- Notificaciones de programación de entrevistas
-- Recordatorios de entrevistas (24 h antes)
-- Notificaciones de cambio de estado
-- Invitaciones de equipo
-- Correos de restablecimiento de contraseña
+### Rate Limits
+API calls are governed by a per-company quota. Configure the limits per company at `/admin/ai-quota`.
 
 ---
 
-## MinIO / S3 (Almacenamiento de Archivos)
+## Email (Resend)
 
-Todos los archivos subidos (currículums, documentos) se almacenan en MinIO (local) o AWS S3 (producción).
+Borderless uses the **Resend HTTP API** for every transactional email.
 
-### Tipos de Archivo Admitidos
+### Setup
+Set in the backend environment:
+- `SMTP_PASSWORD` — Resend API key (used as the Bearer token)
+- `SMTP_ENABLED=true` — Turns email sending on
+- `SMTP_FROM` — Sender address (e.g. `noreply@borderlessats.com`)
+
+### Email Types
+- Application confirmations
+- Interview scheduling notifications
+- Interview reminders (24 h in advance)
+- Status change notifications
+- Team invitations
+- Password reset emails
+
+---
+
+## MinIO / S3 (File Storage)
+
+Every uploaded file (resumes, documents) is stored in MinIO (local) or AWS S3 (production).
+
+### Supported File Types
 `PDF`, `DOC`, `DOCX`, `TXT`
 
-### Límite de Tamaño
-10 MB por archivo
+### Size Limit
+10 MB per file
 
-### Seguridad
-Los archivos se almacenan con acceso privado. Se generan URLs firmadas para acceso temporal y limitado en el tiempo.
+### Security
+Files are stored with private access. Signed URLs are generated for temporary, time-limited access.
 
 ---
 
-## N8N (Automatización de Flujos de Trabajo)
+## N8N (Workflow Automation)
 
-N8N puede integrarse para flujos de trabajo personalizados activados por eventos de Borderless mediante webhooks.
+N8N can be integrated for custom workflows triggered by Borderless events through webhooks.
 
-### Casos de Uso
-- Flujos de notificación personalizados
-- Integraciones con CRM
-- Notificaciones en Slack sobre acciones de candidatos
-- Informes personalizados
+### Use Cases
+- Custom notification flows
+- CRM integrations
+- Slack notifications about candidate actions
+- Custom reporting
 
-Consulta la documentación de Integración con N8N para ver los detalles de configuración.
+See the N8N Integration documentation for the configuration details.

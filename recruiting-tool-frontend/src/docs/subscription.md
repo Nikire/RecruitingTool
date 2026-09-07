@@ -1,45 +1,45 @@
-# Suscripción y Facturación
+# Subscription & Billing
 
-**Ruta:** `/profile/subscription` (todos los usuarios) · `/hr/billing` (solo COMPANY_OWNER)
-**Acceso:** COMPANY_OWNER para gestión de facturación; todos los usuarios para consultar
+**Route:** `/profile/subscription` (all users) · `/hr/billing` (COMPANY_OWNER only)
+**Access:** COMPANY_OWNER for billing management; all users for viewing
 
-## Planes
+## Plans
 
-| Plan | Precio | Características Principales |
+| Plan | Price | Key Features |
 |------|-------|-------------|
-| **Free** | $0 | Usuarios, posiciones, almacenamiento y créditos de IA limitados |
-| **Professional** | $79/mes o $799/año | Límites estándar, plantillas de correo, analíticas |
-| **Enterprise** | $249/mes o $2.499/año | Límites altos, IA avanzada, funciones personalizadas |
+| **Free** | $0 | Limited users, positions, storage and AI credits |
+| **Professional** | $79/month or $799/year | Standard limits, email templates, analytics |
+| **Enterprise** | $249/month or $2,499/year | High limits, advanced AI, custom features |
 
-> La facturación anual ahorra aproximadamente un 20%.
+> Annual billing saves roughly 20%.
 
-## Ciclo de Vida de la Suscripción
+## Subscription Lifecycle
 
-1. **Trial** — Las nuevas cuentas comienzan con una prueba gratuita de 14 días (estado TRIALING)
-2. **Active** — Suscripción de pago funcionando normalmente
-3. **Past Due** — El pago falló, período de gracia activo
-4. **Cancelled** — Suscripción cancelada al final del período
-5. **Expired** — El trial o la suscripción han terminado
+1. **Trial** — New accounts start with a 14-day free trial (TRIALING status)
+2. **Active** — Paid subscription running normally
+3. **Past Due** — Payment failed, grace period active
+4. **Cancelled** — Subscription cancelled at the end of the period
+5. **Expired** — The trial or subscription has ended
 
-## Uso de Cuota
+## Quota Usage
 
-La página de Suscripción muestra el uso en tiempo real de:
-- **Usuarios** — Miembros activos del equipo vs. límite del plan
-- **Posiciones de Trabajo** — Posiciones activas vs. límite del plan
-- **Candidatos por Posición** — Límite de candidatos por posición
-- **Almacenamiento** — Almacenamiento de archivos usado vs. límite del plan
-- **Créditos de Puntuación con IA** — Créditos usados este mes vs. límite del plan
+The Subscription page shows real-time usage of:
+- **Users** — Active team members vs. plan limit
+- **Job Positions** — Active positions vs. plan limit
+- **Candidates per Position** — Candidate limit per position
+- **Storage** — File storage used vs. plan limit
+- **AI Scoring Credits** — Credits used this month vs. plan limit
 
-## Actualización de Plan
+## Upgrading a Plan
 
-Solo `COMPANY_OWNER` puede actualizar el plan. Ve a `/hr/billing` → selecciona plan → Stripe Checkout.
+Only `COMPANY_OWNER` can upgrade the plan. Go to `/hr/billing` → pick a plan → Stripe Checkout.
 
-Después del pago, Stripe envía un webhook y la suscripción se activa en segundos.
+After payment, Stripe sends a webhook and the subscription activates within seconds.
 
-## Cancelación
+## Cancellation
 
-Las cancelaciones tienen efecto al **final del período de facturación actual** — conservas el acceso hasta entonces.
+Cancellations take effect at the **end of the current billing period** — you keep access until then.
 
-## Planes Personalizados
+## Custom Plans
 
-SUPER_ADMIN puede crear planes personalizados con límites específicos asignados a empresas individuales en `/admin/custom-plans`.
+SUPER_ADMIN can create custom plans with specific limits assigned to individual companies at `/admin/custom-plans`.

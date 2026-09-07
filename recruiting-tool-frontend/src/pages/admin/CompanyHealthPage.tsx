@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardContent,
   Chip,
@@ -162,11 +163,12 @@ const CompanyHealthPage: React.FC = () => {
   const [page, setPage] = useState(0); // DataGrid uses 0-based pages
   const [pageSize, setPageSize] = useState(20);
 
-  const { data, isLoading, isFetching } = useAdminCompanyHealth({
-    page: page + 1,
-    limit: pageSize,
-    riskTier: riskTierFilter || undefined,
-  });
+  const { data, isLoading, isFetching, isError, refetch } =
+    useAdminCompanyHealth({
+      page: page + 1,
+      limit: pageSize,
+      riskTier: riskTierFilter || undefined,
+    });
 
   const handleRiskTierChange = (e: SelectChangeEvent<string>) => {
     setRiskTierFilter(e.target.value);
@@ -278,7 +280,9 @@ const CompanyHealthPage: React.FC = () => {
           <Typography variant="body2" color="text.secondary">
             {params.value === null
               ? t("company_health.never")
-              : t("company_health.days_ago", { count: params.value })}
+              : params.value === 0
+                ? t("company_health.today")
+                : t("company_health.days_ago", { count: params.value })}
           </Typography>
         </Box>
       ),
@@ -319,6 +323,27 @@ const CompanyHealthPage: React.FC = () => {
   ];
 
   const summary = data?.summary;
+
+  if (isError) {
+    return (
+      <Box sx={{ width: "100%", py: { xs: 2, sm: 3 }, px: { xs: 2, sm: 0 } }}>
+        <PageHeader
+          title="company_health.title"
+          subtitle="company_health.subtitle"
+        />
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={() => refetch()}>
+              {t("common.retry")}
+            </Button>
+          }
+        >
+          {t("errors.generic")}
+        </Alert>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ width: "100%", py: { xs: 2, sm: 3 }, px: { xs: 2, sm: 0 } }}>
@@ -383,9 +408,7 @@ const CompanyHealthPage: React.FC = () => {
             label={t("company_health.filter_risk")}
             onChange={handleRiskTierChange}
           >
-            <MenuItem value="">
-              {t("common.filter")} — {t("common.select")}
-            </MenuItem>
+            <MenuItem value="">{t("company_health.all_tiers")}</MenuItem>
             <MenuItem value="HEALTHY">{t("company_health.healthy")}</MenuItem>
             <MenuItem value="AT_RISK">{t("company_health.at_risk")}</MenuItem>
             <MenuItem value="CHURNING">{t("company_health.churning")}</MenuItem>
