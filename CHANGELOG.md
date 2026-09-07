@@ -80,8 +80,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Interview popover: reschedule seeds a proper yyyy-MM-dd date (it sent a full ISO timestamp and produced an Invalid Date), date shown formatted, status translated, copy-link failures reported, save disabled until date and time are set
 - Email templates: async-stage default template uses the variable the backend actually provides; variable chips insert at the cursor; empty state keyed off the filtered list with a clear-search action; Esc/backdrop no longer discards an edited template silently; "default" checkbox is a controlled field; toasts translated; applications empty state no longer interpolates a raw enum
 
+### 💳 Billing, team & analytics (17 verified findings)
+- Billing: invoice amounts no longer render "$NaN" (the `Invoice` type now matches the Dodo Payments response and amounts are not divided by 100); invoice status and plan translated with safe fallbacks; payment reference shown instead of an empty "Invoice #"; "Manage billing" reports portal failures
+- Past-due banner and expired-subscription modal navigate to the real /hr/billing route instead of a 404
+- Upgrade button shows a "Redirecting..." busy state while the checkout session is created
+- Team: owners can no longer remove or demote their own account (a "You" badge replaces the actions menu); approving a join request refreshes the members list and quota; cancel-invitation uses the styled confirmation dialog with a pending state; long emails wrap inside member cards; tabs scroll on phones
+- Analytics: overview shows an error instead of fabricated zeros; stage names, application sources and funnel stages translated; comparison-card labels get tooltips
+
 ### 🌐 i18n
-- 139 new keys in `en.json` / `es.json` (files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 157 new keys in `en.json` / `es.json` (billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

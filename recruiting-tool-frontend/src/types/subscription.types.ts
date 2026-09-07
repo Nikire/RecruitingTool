@@ -112,17 +112,15 @@ export interface CancelSubscriptionResponse {
 }
 
 // Invoice Response DTO
+// Mirrors DoInvoiceDto returned by GET /billing/invoices (Dodo Payments).
+// `amount` is already in major units (the provider total is divided by 100
+// server-side), so it must not be divided again on the client.
 export interface Invoice {
   id: string;
-  invoiceNumber: string;
-  amountDue: number;
-  amountPaid: number;
+  amount: number;
   currency: string;
   status: string;
   createdAt: string;
-  dueDate?: string;
-  pdfUrl?: string;
-  hostedInvoiceUrl?: string;
   invoiceUrl?: string;
 }
 

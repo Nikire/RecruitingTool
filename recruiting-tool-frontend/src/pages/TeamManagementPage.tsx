@@ -12,6 +12,8 @@ import {
   CardContent,
   Typography,
   Stack,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import GroupIcon from "@mui/icons-material/Group";
@@ -24,6 +26,7 @@ import InviteTeamMemberDialog from "../components/team/InviteTeamMemberDialog";
 import TeamMemberCard from "../components/team/TeamMemberCard";
 import ChangeRoleDialog from "../components/team/ChangeRoleDialog";
 import ConfirmDeleteDialog from "../components/dialogs/ConfirmDeleteDialog";
+import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import {
   useCompanyMembers,
   useUpdateUserRole,
@@ -61,8 +64,16 @@ const TabPanel: React.FC<TabPanelProps> = ({ children, value, index }) => {
 const TeamManagementPage: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useUserAtom();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const [activeTab, setActiveTab] = useState(0);
   const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+
+  // Cancel invitation state
+  const [invitationToCancel, setInvitationToCancel] = useState<{
+    uid: string;
+    email: string;
+  } | null>(null);
 
   // Remove member state
   const [removeDialogOpen, setRemoveDialogOpen] = useState(false);
@@ -103,7 +114,8 @@ const TeamManagementPage: React.FC = () => {
     },
   );
 
-  const { mutate: cancelInvitation } = useCancelInvitation(companyUid);
+  const { mutate: cancelInvitation, isPending: isCancelling } =
+    useCancelInvitation(companyUid);
   const { mutate: removeUserFromCompany, isPending: isRemoving } =
     useRemoveUserFromCompany(companyUid);
   const { mutate: updateUserRole, isPending: isUpdatingRole } =
@@ -113,10 +125,20 @@ const TeamManagementPage: React.FC = () => {
     setActiveTab(newValue);
   };
 
-  const handleCancelInvitation = (invitationUid: string) => {
-    if (window.confirm(t("team.confirm_cancel_invitation"))) {
-      cancelInvitation(invitationUid);
+  const handleCancelInvitation = (invitationUid: string, email: string) => {
+    setInvitationToCancel({ uid: invitationUid, email });
+  };
+
+  const handleConfirmCancelInvitation = () => {
+    if (invitationToCancel) {
+      cancelInvitation(invitationToCancel.uid, {
+        onSuccess: () => setInvitationToCancel(null),
+      });
     }
+  };
+
+  const handleCloseCancelInvitationDialog = () => {
+    setInvitationToCancel(null);
   };
 
   // Remove member handlers
@@ -213,21 +235,23 @@ const TeamManagementPage: React.FC = () => {
         <Tabs
           value={activeTab}
           onChange={handleTabChange}
-          variant="fullWidth"
+          variant={isMobile ? "scrollable" : "fullWidth"}
+          scrollButtons="auto"
+          allowScrollButtonsMobile
           sx={{
             borderBottom: 1,
             borderColor: "divider",
             "& .MuiTab-root": {
               minHeight: 72,
               textTransform: "none",
-              fontSize: "1rem",
+              fontSize: { xs: "0.875rem", sm: "1rem" },
               fontWeight: 500,
             },
           }}
         >
           <Tab
             icon={<GroupIcon />}
-            iconPosition="start"
+            iconPosition={isMobile ? "top" : "start"}
             label={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {t("team.current_members")}
@@ -242,7 +266,7 @@ const TeamManagementPage: React.FC = () => {
           />
           <Tab
             icon={<MailIcon />}
-            iconPosition="start"
+            iconPosition={isMobile ? "top" : "start"}
             label={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {t("team.pending_invitations")}
@@ -257,7 +281,7 @@ const TeamManagementPage: React.FC = () => {
           />
           <Tab
             icon={<PendingIcon />}
-            iconPosition="start"
+            iconPosition={isMobile ? "top" : "start"}
             label={
               <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                 {t("team.connection_requests")}
@@ -290,24 +314,35 @@ const TeamManagementPage: React.FC = () => {
             alignItems="stretch"
             justifyContent="center"
           >
-            {members.map((member) => (
-              <Grid
-                size={{ xs: 12, sm: 6, md: 4 }}
-                key={member.uid}
-                sx={{ display: "flex" }}
-              >
-                <TeamMemberCard
-                  uid={member.uid}
-                  name={member.name}
-                  email={member.email}
-                  roles={member.roles}
-                  profilePicture={member.profilePicture}
-                  canManage={canManage}
-                  onEditRole={canManage ? handleEditRole : undefined}
-                  onRemove={canManage ? handleRemoveMember : undefined}
-                />
-              </Grid>
-            ))}
+            {members.map((member) => {
+              // The viewer must never be able to demote or remove themselves:
+              // the backend allows it and it detaches them from their own
+              // company with no in-app way back.
+              const isSelf = member.uid === user?.uid;
+              return (
+                <Grid
+                  size={{ xs: 12, sm: 6, md: 4 }}
+                  key={member.uid}
+                  sx={{ display: "flex" }}
+                >
+                  <TeamMemberCard
+                    uid={member.uid}
+                    name={member.name}
+                    email={member.email}
+                    roles={member.roles}
+                    profilePicture={member.profilePicture}
+                    canManage={canManage}
+                    isSelf={isSelf}
+                    onEditRole={
+                      canManage && !isSelf ? handleEditRole : undefined
+                    }
+                    onRemove={
+                      canManage && !isSelf ? handleRemoveMember : undefined
+                    }
+                  />
+                </Grid>
+              );
+            })}
           </Grid>
         )}
       </TabPanel>
@@ -396,7 +431,13 @@ const TeamManagementPage: React.FC = () => {
                           variant="contained"
                           color="error"
                           startIcon={<CancelIcon />}
-                          onClick={() => handleCancelInvitation(invitation.uid)}
+                          disabled={isCancelling}
+                          onClick={() =>
+                            handleCancelInvitation(
+                              invitation.uid,
+                              invitation.email,
+                            )
+                          }
                         >
                           {t("common.cancel")}
                         </Button>
@@ -442,6 +483,21 @@ const TeamManagementPage: React.FC = () => {
         })}
         isDeleting={isRemoving}
         confirmText={t("team.remove_member_button")}
+      />
+
+      {/* Cancel Invitation Dialog */}
+      <ConfirmationDialog
+        open={Boolean(invitationToCancel)}
+        onClose={handleCloseCancelInvitationDialog}
+        onConfirm={handleConfirmCancelInvitation}
+        title={t("team.cancel_invitation_title")}
+        message={t("team.cancel_invitation_message", {
+          email: invitationToCancel?.email || "",
+        })}
+        confirmText={t("team.cancel_invitation_button")}
+        cancelText={t("common.back")}
+        severity="warning"
+        isLoading={isCancelling}
       />
 
       {/* Change Role Dialog */}

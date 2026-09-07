@@ -32,7 +32,7 @@ const SubscriptionExpiredModal: React.FC<SubscriptionExpiredModalProps> = ({
 
   const handleGoToBilling = () => {
     onClose();
-    navigate("/billing");
+    navigate("/hr/billing");
   };
 
   return (

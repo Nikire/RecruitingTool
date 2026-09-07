@@ -87,7 +87,7 @@ const SubscriptionWarningBanner: React.FC<SubscriptionWarningBannerProps> = ({
         <Button
           variant="contained"
           color={severity === "error" ? "error" : "warning"}
-          onClick={() => navigate("/billing")}
+          onClick={() => navigate("/hr/billing")}
           sx={{ flexShrink: 0 }}
         >
           {t("subscription.warning_banner.update_payment_button")}

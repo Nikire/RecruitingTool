@@ -67,7 +67,8 @@
     "copy": "Copiar",
     "uploading": "Subiendo...",
     "expand": "Expandir",
-    "collapse": "Contraer"
+    "collapse": "Contraer",
+    "redirecting": "Redirigiendo..."
   },
   "dataGrid": {
     "ariaLabel": "Tabla de datos con columnas ordenables y filtrables",
@@ -1915,7 +1916,13 @@
     "status_void": "Anulada",
     "status_uncollectible": "Incobrable",
     "grace_period_expires": "El período de gracia expira",
-    "subscription_expired": "Tu suscripción ha expirado. Por favor actualiza tu método de pago para restaurar el acceso."
+    "subscription_expired": "Tu suscripción ha expirado. Por favor actualiza tu método de pago para restaurar el acceso.",
+    "payment_reference": "Referencia de pago",
+    "status_succeeded": "Pagado",
+    "status_processing": "Procesando",
+    "status_failed": "Fallido",
+    "status_cancelled": "Cancelado",
+    "status_unknown": "Desconocido"
   },
   "home": {
     "hero": {
@@ -2556,7 +2563,16 @@
     "date_from": "Desde",
     "date_to": "Hasta",
     "apply": "Aplicar",
-    "showing_period": "Mostrando datos para"
+    "showing_period": "Mostrando datos para",
+    "pipeline_stages": {
+      "application": "Postulación",
+      "screening": "Criba Inicial",
+      "interview": "Entrevista",
+      "technical_interview": "Entrevista Técnica",
+      "final_interview": "Entrevista Final",
+      "offer": "Oferta",
+      "hired": "Contratado"
+    }
   },
   "search": {
     "advanced_search": "Búsqueda Avanzada",
@@ -3858,7 +3874,11 @@
       "COMPANY_OWNER": "Propietario de Empresa",
       "SUPER_ADMIN": "Super Administrador"
     },
-    "connection_requests_no_permission": "Solo el propietario o un administrador de la empresa pueden revisar las solicitudes de conexión."
+    "connection_requests_no_permission": "Solo el propietario o un administrador de la empresa pueden revisar las solicitudes de conexión.",
+    "you": "Tú",
+    "cancel_invitation_title": "Cancelar Invitación",
+    "cancel_invitation_message": "¿Seguro que quieres cancelar la invitación enviada a {{email}}? El enlace de invitación dejará de funcionar.",
+    "cancel_invitation_button": "Cancelar Invitación"
   },
   "check_status": {
     "title": "Verificar Estado de Solicitud",

@@ -67,7 +67,8 @@
     "copy": "Copy",
     "uploading": "Uploading...",
     "expand": "Expand",
-    "collapse": "Collapse"
+    "collapse": "Collapse",
+    "redirecting": "Redirecting..."
   },
   "dataGrid": {
     "ariaLabel": "Data table with sortable and filterable columns",
@@ -1878,7 +1879,13 @@
     "status_void": "Void",
     "status_uncollectible": "Uncollectible",
     "grace_period_expires": "Grace period expires",
-    "subscription_expired": "Your subscription has expired. Please update your payment method to restore access."
+    "subscription_expired": "Your subscription has expired. Please update your payment method to restore access.",
+    "payment_reference": "Payment Reference",
+    "status_succeeded": "Paid",
+    "status_processing": "Processing",
+    "status_failed": "Failed",
+    "status_cancelled": "Cancelled",
+    "status_unknown": "Unknown"
   },
   "home": {
     "hero": {
@@ -2519,7 +2526,16 @@
     "date_from": "From",
     "date_to": "To",
     "apply": "Apply",
-    "showing_period": "Showing data for"
+    "showing_period": "Showing data for",
+    "pipeline_stages": {
+      "application": "Application",
+      "screening": "Screening",
+      "interview": "Interview",
+      "technical_interview": "Technical Interview",
+      "final_interview": "Final Interview",
+      "offer": "Offer",
+      "hired": "Hired"
+    }
   },
   "search": {
     "advanced_search": "Advanced Search",
@@ -3821,7 +3837,11 @@
       "COMPANY_OWNER": "Company Owner",
       "SUPER_ADMIN": "Super Admin"
     },
-    "connection_requests_no_permission": "Only the company owner or a company admin can review requests to join this company."
+    "connection_requests_no_permission": "Only the company owner or a company admin can review requests to join this company.",
+    "you": "You",
+    "cancel_invitation_title": "Cancel Invitation",
+    "cancel_invitation_message": "Are you sure you want to cancel the invitation sent to {{email}}? The invitation link will stop working.",
+    "cancel_invitation_button": "Cancel Invitation"
   },
   "check_status": {
     "title": "Check Application Status",

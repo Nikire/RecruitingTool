@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Skeleton, Card, CardContent, Box } from "@mui/material";
+import { Alert, Grid, Skeleton, Card, CardContent, Box } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useTranslation } from "react-i18next";
 import AssignmentIcon from "@mui/icons-material/Assignment";
@@ -29,7 +29,7 @@ interface OverviewStatsRowProps {
 const OverviewStatsRow: React.FC<OverviewStatsRowProps> = ({ dateRange }) => {
   const { t } = useTranslation();
   const theme = useTheme();
-  const { data, isLoading } = useAnalyticsOverview(dateRange);
+  const { data, isLoading, isError } = useAnalyticsOverview(dateRange);
 
   if (isLoading) {
     return (
@@ -67,6 +67,10 @@ const OverviewStatsRow: React.FC<OverviewStatsRowProps> = ({ dateRange }) => {
         ))}
       </Grid>
     );
+  }
+
+  if (isError) {
+    return <Alert severity="error">{t("analytics.fetch_failed")}</Alert>;
   }
 
   const metrics: MetricCardData[] = [

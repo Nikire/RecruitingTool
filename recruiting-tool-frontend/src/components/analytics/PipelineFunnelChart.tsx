@@ -18,6 +18,13 @@ import {
   type PipelineStageDto,
 } from "../../hooks/api/useAnalytics";
 
+/**
+ * Converts a backend pipeline stage label (hardcoded English, e.g. "Technical
+ * Interview") into the i18n slug used under `analytics.pipeline_stages`.
+ */
+const pipelineStageKey = (stage: string): string =>
+  `analytics.pipeline_stages.${stage.toLowerCase().replace(/ /g, "_")}`;
+
 interface PipelineFunnelChartProps {
   /** Optional date range filter */
   dateRange?: DateRange;
@@ -50,7 +57,7 @@ const PipelineFunnelTooltip = ({
         }}
       >
         <Typography variant="body2" fontWeight="bold">
-          {item.stage}
+          {t(pipelineStageKey(item.stage), { defaultValue: item.stage })}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {t("analytics.count")}: {item.count}
@@ -201,7 +208,14 @@ const PipelineFunnelChart: React.FC<PipelineFunnelChartProps> = ({
           >
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis type="number" />
-            <YAxis dataKey="stage" type="category" width={110} />
+            <YAxis
+              dataKey="stage"
+              type="category"
+              width={130}
+              tickFormatter={(stage: string) =>
+                t(pipelineStageKey(stage), { defaultValue: stage })
+              }
+            />
             <Tooltip content={<PipelineFunnelTooltip />} />
             <Bar dataKey="count" radius={[0, 8, 8, 0]}>
               {data.stages.map((_entry, index) => (

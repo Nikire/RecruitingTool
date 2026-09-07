@@ -14,6 +14,7 @@ import {
   DenyConnectionRequestDto,
   GetConnectionRequestsQuery,
 } from "../../types/connection-requests";
+import { companyRoleKeys, quotaKeys } from "../../api/queryKeys";
 
 /**
  * Hook to create a connection request
@@ -80,6 +81,10 @@ export const useApproveConnectionRequest = () => {
     }) => approveConnectionRequest(requestUid, dto),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["connection-requests"] });
+      // Approving attaches the user to the company, so the team members list
+      // and the users quota are both stale now.
+      queryClient.invalidateQueries({ queryKey: companyRoleKeys.all });
+      queryClient.invalidateQueries({ queryKey: quotaKeys.current() });
       showSuccessToast(t("connection_requests.request_approved"));
     },
     onError: (error: unknown) => {

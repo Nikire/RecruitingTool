@@ -175,7 +175,11 @@ const SourceEffectivenessTable: React.FC<SourceEffectivenessTableProps> = ({
                             flexShrink: 0,
                           }}
                         />
-                        <Typography variant="body2">{row.source}</Typography>
+                        <Typography variant="body2">
+                          {t(`candidates.sources.${row.source}`, {
+                            defaultValue: row.source,
+                          })}
+                        </Typography>
                       </Box>
                     </TableCell>
                     <TableCell align="right">

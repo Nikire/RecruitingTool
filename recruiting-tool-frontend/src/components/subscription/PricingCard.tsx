@@ -11,6 +11,7 @@ import {
   ListItemIcon,
   ListItemText,
   Chip,
+  CircularProgress,
 } from "@mui/material";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import { useTranslation } from "react-i18next";
@@ -27,6 +28,8 @@ interface PricingCardProps {
   isCurrentPlan: boolean;
   onUpgrade?: () => void;
   upgradeDisabled?: boolean;
+  /** True while this card's own checkout session is being created. */
+  isUpgrading?: boolean;
   highlighted?: boolean;
 }
 
@@ -39,6 +42,7 @@ const PricingCard: React.FC<PricingCardProps> = ({
   isCurrentPlan,
   onUpgrade,
   upgradeDisabled = false,
+  isUpgrading = false,
   highlighted = false,
 }) => {
   const { t } = useTranslation();
@@ -171,8 +175,15 @@ const PricingCard: React.FC<PricingCardProps> = ({
               fullWidth
               onClick={onUpgrade}
               disabled={upgradeDisabled}
+              startIcon={
+                isUpgrading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : undefined
+              }
             >
-              {t("subscription.upgrade_to_plan")}
+              {isUpgrading
+                ? t("common.redirecting")
+                : t("subscription.upgrade_to_plan")}
             </Button>
           ) : null}
         </Box>

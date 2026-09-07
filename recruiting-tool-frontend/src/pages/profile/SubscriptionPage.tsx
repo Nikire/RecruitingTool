@@ -126,6 +126,11 @@ const SubscriptionPage: React.FC = () => {
   const queryClient = useQueryClient();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [upgradeDialogOpen, setUpgradeDialogOpen] = useState(false);
+  // Which card's checkout is in flight, so only that card shows the busy
+  // state instead of greying out every upgrade button at once.
+  const [upgradingPlan, setUpgradingPlan] = useState<SubscriptionPlan | null>(
+    null,
+  );
   const [selectedPlan, setSelectedPlan] = useState<SubscriptionPlan | null>(
     null,
   );
@@ -210,6 +215,7 @@ const SubscriptionPage: React.FC = () => {
     if (plan === SubscriptionPlan.FREE) return;
     const successUrl = `${window.location.origin}/profile/subscription?success=true`;
     const cancelUrl = `${window.location.origin}/profile/subscription?canceled=true`;
+    setUpgradingPlan(plan);
     createCheckout(
       { plan, interval: billingInterval, successUrl, cancelUrl },
       {
@@ -217,6 +223,9 @@ const SubscriptionPage: React.FC = () => {
           toast.error(
             error?.message || t("subscription.errors.checkout_failed"),
           );
+        },
+        onSettled: () => {
+          setUpgradingPlan(null);
         },
       },
     );
@@ -544,6 +553,10 @@ const SubscriptionPage: React.FC = () => {
                   : undefined
               }
               upgradeDisabled={isCreatingCheckout}
+              isUpgrading={
+                isCreatingCheckout &&
+                upgradingPlan === SubscriptionPlan.PROFESSIONAL
+              }
               highlighted
             />
           </Grid>
@@ -562,6 +575,10 @@ const SubscriptionPage: React.FC = () => {
                   : undefined
               }
               upgradeDisabled={isCreatingCheckout}
+              isUpgrading={
+                isCreatingCheckout &&
+                upgradingPlan === SubscriptionPlan.ENTERPRISE
+              }
             />
           </Grid>
         </Grid>

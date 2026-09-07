@@ -23,13 +23,15 @@ import {
 import { CenteredLoadingSpinner, PageHeader } from "../../components/common";
 import { Invoice, SubscriptionStatus } from "../../types/subscription.types";
 import { Button } from "@mui/material";
+import { wrapLongText } from "../../utils/textOverflow";
+import { showErrorToast } from "../../utils/toast";
 
 /**
  * BillingPage - Billing and invoice management page for Company Owners
  * Displays invoice history with download links
  */
 const BillingPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data, isLoading, isError } = useInvoices();
   const { data: subscription } = useSubscription();
   const billingPortal = useBillingPortal();
@@ -53,7 +55,11 @@ const BillingPage: React.FC = () => {
   const hasInvoices = invoices.length > 0;
 
   const handleManageBilling = () => {
-    billingPortal.mutate(undefined as never);
+    billingPortal.mutate(undefined as never, {
+      onError: (error: unknown) => {
+        showErrorToast(error, t("subscription.errors.billing_portal_failed"));
+      },
+    });
   };
 
   const getSubscriptionStatusColor = (status: SubscriptionStatus) => {
@@ -98,7 +104,12 @@ const BillingPage: React.FC = () => {
               >
                 <Typography variant="body1">
                   {t("subscription.plan_label")}:{" "}
-                  <strong>{subscription.plan}</strong>
+                  <strong>
+                    {t(
+                      `subscription.plans.${subscription.plan.toLowerCase()}.name`,
+                      { defaultValue: subscription.plan },
+                    )}
+                  </strong>
                 </Typography>
                 <Chip
                   label={t(
@@ -137,13 +148,20 @@ const BillingPage: React.FC = () => {
                 </Typography>
               )}
             </Box>
-            <Button
-              variant="contained"
-              onClick={handleManageBilling}
-              disabled={billingPortal.isPending}
-            >
-              {t("subscription.manage_billing")}
-            </Button>
+            <Box>
+              <Button
+                variant="contained"
+                onClick={handleManageBilling}
+                disabled={billingPortal.isPending}
+              >
+                {t("subscription.manage_billing")}
+              </Button>
+              {billingPortal.isError && (
+                <Alert severity="error" sx={{ mt: 1 }}>
+                  {t("subscription.errors.billing_portal_failed")}
+                </Alert>
+              )}
+            </Box>
           </Box>
         </Paper>
       )}
@@ -163,7 +181,7 @@ const BillingPage: React.FC = () => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>{t("billing.invoice_number")}</TableCell>
+                <TableCell>{t("billing.payment_reference")}</TableCell>
                 <TableCell>{t("billing.date")}</TableCell>
                 <TableCell>{t("billing.amount")}</TableCell>
                 <TableCell>{t("billing.status")}</TableCell>
@@ -174,8 +192,12 @@ const BillingPage: React.FC = () => {
               {invoices.map((invoice: Invoice) => (
                 <TableRow key={invoice.id} hover>
                   <TableCell>
-                    <Typography variant="body2" fontWeight="medium">
-                      {invoice.invoiceNumber}
+                    <Typography
+                      variant="body2"
+                      fontWeight="medium"
+                      sx={wrapLongText}
+                    >
+                      {invoice.id}
                     </Typography>
                   </TableCell>
                   <TableCell>
@@ -185,12 +207,19 @@ const BillingPage: React.FC = () => {
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" fontWeight="medium">
-                      {formatAmount(invoice.amountPaid, invoice.currency)}
+                      {formatAmount(
+                        invoice.amount,
+                        invoice.currency,
+                        i18n.language,
+                      )}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Chip
-                      label={t(`billing.status_${invoice.status}`)}
+                      label={t(
+                        `billing.status_${invoice.status.toLowerCase()}`,
+                        { defaultValue: invoice.status },
+                      )}
                       color={getStatusColor(invoice.status)}
                       size="small"
                     />
@@ -201,15 +230,9 @@ const BillingPage: React.FC = () => {
                         <IconButton
                           size="small"
                           color="primary"
-                          disabled={
-                            !invoice.invoiceUrl && !invoice.hostedInvoiceUrl
-                          }
+                          disabled={!invoice.invoiceUrl}
                           component="a"
-                          href={
-                            invoice.invoiceUrl ??
-                            invoice.hostedInvoiceUrl ??
-                            "#"
-                          }
+                          href={invoice.invoiceUrl ?? "#"}
                           target="_blank"
                           rel="noopener noreferrer"
                         >
@@ -239,13 +262,19 @@ const BillingPage: React.FC = () => {
 };
 
 /**
- * Format amount in cents to currency string
+ * Format an amount already expressed in major units to a currency string.
+ * The API divides the provider total by 100 before returning it, so dividing
+ * again here would render a hundredth of the real charge.
  */
-const formatAmount = (amountInCents: number, currency: string): string => {
-  const amount = amountInCents / 100;
-  return new Intl.NumberFormat("en-US", {
+const formatAmount = (
+  amount: number,
+  currency: string,
+  locale: string,
+): string => {
+  if (typeof amount !== "number" || Number.isNaN(amount)) return "—";
+  return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: currency.toUpperCase(),
+    currency: (currency || "USD").toUpperCase(),
   }).format(amount);
 };
 
@@ -264,12 +293,16 @@ const getStatusColor = (
   | "warning" => {
   switch (status.toLowerCase()) {
     case "paid":
+    case "succeeded":
       return "success";
     case "open":
     case "draft":
+    case "processing":
       return "warning";
     case "void":
     case "uncollectible":
+    case "failed":
+    case "cancelled":
       return "error";
     default:
       return "default";

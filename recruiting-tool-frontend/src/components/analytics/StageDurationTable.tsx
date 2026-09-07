@@ -188,7 +188,9 @@ const StageDurationTable: React.FC<StageDurationTableProps> = ({
                           variant="body2"
                           fontWeight={isBottleneck ? 600 : 400}
                         >
-                          {row.stageType}
+                          {t(`stage_types.${row.stageType.toLowerCase()}`, {
+                            defaultValue: row.stageType,
+                          })}
                         </Typography>
                         {isBottleneck && (
                           <Chip

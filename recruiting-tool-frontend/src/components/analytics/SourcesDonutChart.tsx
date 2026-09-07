@@ -62,7 +62,9 @@ const CustomTooltip = ({
         }}
       >
         <Typography variant="body2" fontWeight={600}>
-          {item.source}
+          {t(`candidates.sources.${item.source}`, {
+            defaultValue: item.source,
+          })}
         </Typography>
         <Typography variant="body2" color="text.secondary">
           {t("analytics.count")}: {item.count}
@@ -259,7 +261,9 @@ const SourcesDonutChart: React.FC<SourcesDonutChartProps> = ({ dateRange }) => {
                       }}
                     />
                     <Typography variant="body2" noWrap>
-                      {item.source}
+                      {t(`candidates.sources.${item.source}`, {
+                        defaultValue: item.source,
+                      })}
                     </Typography>
                   </Box>
                   <Typography

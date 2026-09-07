@@ -8,11 +8,13 @@ import {
   MenuItem,
   Box,
   Avatar,
+  Chip,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import EmailIcon from "@mui/icons-material/Email";
 import { useTranslation } from "react-i18next";
 import { RoleBadge } from "../common";
+import { wrapLongText } from "../../utils/textOverflow";
 
 interface TeamMemberCardProps {
   uid: string;
@@ -23,6 +25,8 @@ interface TeamMemberCardProps {
   onEditRole?: (uid: string) => void;
   onRemove?: (uid: string) => void;
   canManage: boolean;
+  /** True when this card represents the signed-in user; hides the actions menu. */
+  isSelf?: boolean;
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
@@ -34,6 +38,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   onEditRole,
   onRemove,
   canManage,
+  isSelf = false,
 }) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -67,23 +72,43 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
           >
             {name.charAt(0).toUpperCase()}
           </Avatar>
-          <Box sx={{ flexGrow: 1 }}>
-            <Typography variant="h6" component="div">
+          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+            <Typography variant="h6" component="div" sx={wrapLongText}>
               {name}
             </Typography>
             <Box
               sx={{ display: "flex", alignItems: "center", gap: 0.5, mt: 0.5 }}
             >
-              <EmailIcon sx={{ fontSize: 16, color: "text.secondary" }} />
-              <Typography variant="body2" color="text.secondary">
+              <EmailIcon
+                sx={{ fontSize: 16, color: "text.secondary", flexShrink: 0 }}
+              />
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={wrapLongText}
+              >
                 {email}
               </Typography>
             </Box>
           </Box>
-          {canManage && (
-            <IconButton onClick={handleMenuOpen} size="small">
-              <MoreVertIcon />
-            </IconButton>
+          {isSelf ? (
+            <Chip
+              label={t("team.you")}
+              size="small"
+              variant="filled"
+              sx={{ flexShrink: 0 }}
+            />
+          ) : (
+            canManage && (
+              <IconButton
+                onClick={handleMenuOpen}
+                size="small"
+                sx={{ flexShrink: 0 }}
+                aria-label={t("aria.actions")}
+              >
+                <MoreVertIcon />
+              </IconButton>
+            )
           )}
         </Box>
 

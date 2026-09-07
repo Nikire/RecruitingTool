@@ -128,9 +128,8 @@ const ComparisonCard = ({
           letterSpacing: 0.5,
           fontWeight: 600,
           mb: 0.25,
-          whiteSpace: "nowrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
+          lineHeight: 1.2,
+          hyphens: "auto",
         }}
       >
         {label}
