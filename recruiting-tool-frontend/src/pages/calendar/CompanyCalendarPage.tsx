@@ -10,6 +10,7 @@ import {
   Chip,
   Tooltip,
   Avatar,
+  Alert,
 } from "@mui/material";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
@@ -31,6 +32,7 @@ import {
   HOUR_END,
   timeToMinutes,
 } from "../../components/calendar/calendarUtils";
+import { formatDate } from "../../utils/dateFormatters";
 
 type CalendarView = "month" | "week" | "day";
 
@@ -39,11 +41,8 @@ const HOURS = Array.from(
   (_, i) => HOUR_START + i,
 );
 
-// Short day labels Mon-Sun
-const DAY_LABELS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-
 const CompanyCalendarPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useUserAtom();
 
   const [view, setView] = useState<CalendarView>("month");
@@ -92,8 +91,12 @@ const CompanyCalendarPage: React.FC = () => {
         : undefined;
   const skipFetch = selectedUids !== null && selectedUids.length === 0;
 
-  const { data: rawInterviews = [], isLoading: interviewsLoading } =
-    useCompanyCalendarInterviews(startDate, endDate, memberUidsParam);
+  const {
+    data: rawInterviews = [],
+    isLoading: interviewsLoading,
+    isError: interviewsError,
+    refetch: refetchInterviews,
+  } = useCompanyCalendarInterviews(startDate, endDate, memberUidsParam);
 
   // When all members are deselected (selectedUids === []), show empty calendar
   const interviews = useMemo(
@@ -179,34 +182,26 @@ const CompanyCalendarPage: React.FC = () => {
     return map;
   }, [interviews]);
 
+  // ─── Short weekday labels (Mon-Sun) in the active language ────────────────
+  const dayLabels = useMemo(
+    () =>
+      getWeekDays(new Date()).map((d) => formatDate(d, "EEE", i18n.language)),
+    [i18n.language],
+  );
+
   // ─── Title label ─────────────────────────────────────────────────────────
   const titleLabel = useMemo(() => {
     if (view === "month") {
-      return currentDate.toLocaleDateString(undefined, {
-        year: "numeric",
-        month: "long",
-      });
+      return formatDate(currentDate, "MMMM yyyy", i18n.language);
     }
     if (view === "week") {
       const days = getWeekDays(currentDate);
-      const first = days[0].toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-      });
-      const last = days[6].toLocaleDateString(undefined, {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
+      const first = formatDate(days[0], "MMM d", i18n.language);
+      const last = formatDate(days[6], "MMM d, yyyy", i18n.language);
       return `${first} – ${last}`;
     }
-    return currentDate.toLocaleDateString(undefined, {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    });
-  }, [view, currentDate]);
+    return formatDate(currentDate, "EEEE, MMMM d, yyyy", i18n.language);
+  }, [view, currentDate, i18n.language]);
 
   const todayStr = toDateString(new Date());
 
@@ -267,7 +262,7 @@ const CompanyCalendarPage: React.FC = () => {
             borderColor: "divider",
           }}
         >
-          {DAY_LABELS.map((d) => (
+          {dayLabels.map((d) => (
             <Box key={d} sx={{ textAlign: "center", py: 0.75 }}>
               <Typography
                 variant="caption"
@@ -420,7 +415,7 @@ const CompanyCalendarPage: React.FC = () => {
                 sx={{ textAlign: "center", py: 0.75, position: "relative" }}
               >
                 <Typography variant="caption" color="text.secondary">
-                  {DAY_LABELS[i]}
+                  {formatDate(day, "EEE", i18n.language)}
                 </Typography>
                 <Box
                   sx={{
@@ -531,6 +526,14 @@ const CompanyCalendarPage: React.FC = () => {
                     const color = iv.candidate?.uid
                       ? getOrganizerColor(iv.candidate.uid)
                       : "#757575";
+                    // Split the column between interviews starting at the same time
+                    const overlaps = dayInterviews.filter(
+                      (o) =>
+                        timeToMinutes(o.scheduledTime ?? `${HOUR_START}:00`) ===
+                        mins,
+                    );
+                    const overlapIndex = overlaps.indexOf(iv);
+                    const widthPct = 100 / overlaps.length;
 
                     return (
                       <Tooltip
@@ -543,8 +546,8 @@ const CompanyCalendarPage: React.FC = () => {
                           sx={{
                             position: "absolute",
                             top: topPx,
-                            left: 2,
-                            right: 2,
+                            left: `calc(${overlapIndex * widthPct}% + 2px)`,
+                            width: `calc(${widthPct}% - 4px)`,
                             height: Math.max(heightPx, 20),
                             bgcolor: color,
                             borderRadius: 0.75,
@@ -664,6 +667,14 @@ const CompanyCalendarPage: React.FC = () => {
                 const color = iv.candidate?.uid
                   ? getOrganizerColor(iv.candidate.uid)
                   : "#757575";
+                // Split the column between interviews starting at the same time
+                const overlaps = dayInterviews.filter(
+                  (o) =>
+                    timeToMinutes(o.scheduledTime ?? `${HOUR_START}:00`) ===
+                    mins,
+                );
+                const overlapIndex = overlaps.indexOf(iv);
+                const widthPct = 100 / overlaps.length;
 
                 return (
                   <Box
@@ -672,8 +683,8 @@ const CompanyCalendarPage: React.FC = () => {
                     sx={{
                       position: "absolute",
                       top: topPx,
-                      left: 4,
-                      right: 4,
+                      left: `calc(${overlapIndex * widthPct}% + 4px)`,
+                      width: `calc(${widthPct}% - 8px)`,
                       height: Math.max(heightPx, 28),
                       bgcolor: color,
                       borderRadius: 1,
@@ -826,9 +837,30 @@ const CompanyCalendarPage: React.FC = () => {
             overflow: "hidden",
           }}
         >
-          {view === "month" && renderMonthView()}
-          {view === "week" && renderWeekView()}
-          {view === "day" && renderDayView()}
+          {interviewsError ? (
+            <Box sx={{ p: 3 }}>
+              <Alert
+                severity="error"
+                action={
+                  <Button
+                    color="inherit"
+                    size="small"
+                    onClick={() => refetchInterviews()}
+                  >
+                    {t("common.retry")}
+                  </Button>
+                }
+              >
+                {t("errors.fetch_failed")}
+              </Alert>
+            </Box>
+          ) : (
+            <>
+              {view === "month" && renderMonthView()}
+              {view === "week" && renderWeekView()}
+              {view === "day" && renderDayView()}
+            </>
+          )}
         </Box>
       </Box>
 

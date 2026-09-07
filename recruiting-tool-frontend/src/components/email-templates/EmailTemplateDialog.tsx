@@ -16,7 +16,7 @@ import {
   Divider,
   MenuItem,
 } from "@mui/material";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Visibility } from "@mui/icons-material";
 import { useForm, Controller } from "react-hook-form";
 import { useTranslation } from "react-i18next";
@@ -31,6 +31,7 @@ import {
 } from "../../types/emailTemplate.types";
 import { useUserAtom } from "../../hooks/api/state/useUserAtom";
 import { EmailTemplateRenderedPreview } from "../dialogs/EmailTemplatePreviewDialog";
+import ConfirmationDialog from "../common/ConfirmationDialog";
 
 interface DefaultTemplateContent {
   name: string;
@@ -281,7 +282,7 @@ const DEFAULT_TEMPLATES: Record<EmailTemplateType, DefaultTemplateContent> = {
       `<p style="margin:0 0 8px;font-size:16px;color:#1e293b;">Hi <strong>{{candidateName}}</strong>,</p>
       <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">We'd like you to submit your materials for the <strong>{{jobTitle}}</strong> position at <strong>{{companyName}}</strong>.</p>
       <p style="margin:0 0 16px;font-size:15px;color:#475569;line-height:1.7;">Please use the link below to complete your submission before the deadline.</p>
-      <a href="{{submissionLink}}" style="display:inline-block;padding:12px 28px;background:#325CE7;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;">Submit Now</a>
+      <a href="{{submissionUrl}}" style="display:inline-block;padding:12px 28px;background:#325CE7;color:#fff;border-radius:6px;text-decoration:none;font-weight:600;">Submit Now</a>
       ${SIGNATURE}`,
     ),
   },
@@ -389,6 +390,9 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
     renderedBody: string;
   } | null>(null);
   const [isUnsavedPreview, setIsUnsavedPreview] = useState(false);
+  const [confirmDiscardOpen, setConfirmDiscardOpen] = useState(false);
+  // Live textarea node, used to splice variable chips in at the caret.
+  const bodyInputRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Sample values mirroring the backend preview sample data
   // (email-templates.service.ts -> preview()).
@@ -560,6 +564,7 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
   };
 
   const handleClose = () => {
+    setConfirmDiscardOpen(false);
     reset();
     setShowPreview(false);
     setPreviewData(null);
@@ -567,11 +572,36 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
     onClose();
   };
 
+  // Backdrop click, Esc and Cancel all route through here so an edited template
+  // is never discarded silently.
+  const requestClose = () => {
+    if (isDirty) {
+      setConfirmDiscardOpen(true);
+      return;
+    }
+    handleClose();
+  };
+
   const insertVariable = (variable: string) => {
     const currentBody = watch("body") || "";
+    // Splice at the caret instead of appending — the body is prefilled with a
+    // complete HTML document, so an append lands after </html>.
+    const el = bodyInputRef.current;
+    const start = el?.selectionStart ?? currentBody.length;
+    const end = el?.selectionEnd ?? start;
+    const nextBody =
+      currentBody.slice(0, start) + variable + currentBody.slice(end);
     // shouldDirty so the preview knows the form no longer matches the saved
     // template and renders the current content locally instead.
-    setValue("body", currentBody + variable, { shouldDirty: true });
+    setValue("body", nextBody, { shouldDirty: true });
+
+    const caret = start + variable.length;
+    requestAnimationFrame(() => {
+      const input = bodyInputRef.current;
+      if (!input) return;
+      input.focus();
+      input.setSelectionRange(caret, caret);
+    });
   };
 
   const handlePreview = () => {
@@ -609,233 +639,263 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
   };
 
   return (
-    <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
-      <DialogTitle>
-        {isEditMode
-          ? t("email_template.edit_title")
-          : t("email_template.create_title")}
-      </DialogTitle>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <TextField
-            label={t("email_template.template_name")}
-            fullWidth
-            margin="normal"
-            {...register("name", {
-              required: t("email_template.name_required"),
-              minLength: {
-                value: 3,
-                message: t("email_template.name_min_length", { min: 3 }),
-              },
-              maxLength: {
-                value: 200,
-                message: t("email_template.name_max_length", { max: 200 }),
-              },
-            })}
-            error={!!errors.name}
-            helperText={errors.name?.message}
-            placeholder={t("email_template.template_name_placeholder")}
-          />
+    <>
+      <Dialog open={open} onClose={requestClose} maxWidth="md" fullWidth>
+        <DialogTitle>
+          {isEditMode
+            ? t("email_template.edit_title")
+            : t("email_template.create_title")}
+        </DialogTitle>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <DialogContent>
+            <TextField
+              label={t("email_template.template_name")}
+              fullWidth
+              margin="normal"
+              {...register("name", {
+                required: t("email_template.name_required"),
+                minLength: {
+                  value: 3,
+                  message: t("email_template.name_min_length", { min: 3 }),
+                },
+                maxLength: {
+                  value: 200,
+                  message: t("email_template.name_max_length", { max: 200 }),
+                },
+              })}
+              error={!!errors.name}
+              helperText={errors.name?.message}
+              placeholder={t("email_template.template_name_placeholder")}
+            />
 
-          <TextField
-            label={t("email_template.subject")}
-            fullWidth
-            margin="normal"
-            {...register("subject", {
-              required: t("email_template.subject_required"),
-              minLength: {
-                value: 3,
-                message: t("email_template.subject_min_length", { min: 3 }),
-              },
-              maxLength: {
-                value: 500,
-                message: t("email_template.subject_max_length", { max: 500 }),
-              },
-            })}
-            error={!!errors.subject}
-            helperText={errors.subject?.message}
-            placeholder={t("email_template.subject_placeholder")}
-          />
+            <TextField
+              label={t("email_template.subject")}
+              fullWidth
+              margin="normal"
+              {...register("subject", {
+                required: t("email_template.subject_required"),
+                minLength: {
+                  value: 3,
+                  message: t("email_template.subject_min_length", { min: 3 }),
+                },
+                maxLength: {
+                  value: 500,
+                  message: t("email_template.subject_max_length", { max: 500 }),
+                },
+              })}
+              error={!!errors.subject}
+              helperText={errors.subject?.message}
+              placeholder={t("email_template.subject_placeholder")}
+            />
 
-          <Controller
-            name="type"
-            control={control}
-            render={({ field }) => (
-              <TextField
-                select
-                label={t("email_template.type_label")}
-                fullWidth
-                margin="normal"
-                {...field}
-                onChange={(e) => {
-                  field.onChange(e);
-                  if (!isEditMode) {
-                    const selected = e.target.value as EmailTemplateType;
-                    if (selected && selected in DEFAULT_TEMPLATES) {
-                      const currentBody = getValues("body");
-                      if (!currentBody || currentBody.trim() === "") {
-                        const defaults = DEFAULT_TEMPLATES[selected];
-                        setValue("name", defaults.name, { shouldDirty: true });
-                        setValue("subject", defaults.subject, {
-                          shouldDirty: true,
-                        });
-                        setValue("body", defaults.body, { shouldDirty: true });
+            <Controller
+              name="type"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  select
+                  label={t("email_template.type_label")}
+                  fullWidth
+                  margin="normal"
+                  {...field}
+                  onChange={(e) => {
+                    field.onChange(e);
+                    if (!isEditMode) {
+                      const selected = e.target.value as EmailTemplateType;
+                      if (selected && selected in DEFAULT_TEMPLATES) {
+                        const currentBody = getValues("body");
+                        if (!currentBody || currentBody.trim() === "") {
+                          const defaults = DEFAULT_TEMPLATES[selected];
+                          setValue("name", defaults.name, {
+                            shouldDirty: true,
+                          });
+                          setValue("subject", defaults.subject, {
+                            shouldDirty: true,
+                          });
+                          setValue("body", defaults.body, {
+                            shouldDirty: true,
+                          });
+                        }
                       }
                     }
+                  }}
+                  error={!!errors.type}
+                  helperText={
+                    errors.type?.message || t("email_template.type_helper")
                   }
-                }}
-                error={!!errors.type}
-                helperText={
-                  errors.type?.message || t("email_template.type_helper")
-                }
-              >
-                <MenuItem value="">{t("email_template.type_none")}</MenuItem>
-                <MenuItem value={EmailTemplateType.APPLICATION_RECEIVED}>
-                  {t("email_template.type_application_received")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.APPLICATION_UNDER_REVIEW}>
-                  {t("email_template.type_application_under_review")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.APPLICATION_REJECTED}>
-                  {t("email_template.type_application_rejected")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.APPLICATION_SHORTLISTED}>
-                  {t("email_template.type_application_shortlisted")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.APPLICATION_STATUS_UPDATE}>
-                  {t("email_template.type_application_status_update")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.INTERVIEW_INVITATION}>
-                  {t("email_template.type_interview_invitation")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.INTERVIEW_REMINDER}>
-                  {t("email_template.type_interview_reminder")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.OFFER_LETTER}>
-                  {t("email_template.type_offer_letter")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.ASYNC_STAGE_INVITATION}>
-                  {t("email_template.type_async_stage_invitation")}
-                </MenuItem>
-                <MenuItem
-                  value={EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED}
                 >
-                  {t("email_template.type_async_stage_submission_received")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.CUSTOM}>
-                  {t("email_template.type_custom")}
-                </MenuItem>
-                <MenuItem value={EmailTemplateType.OUTREACH}>
-                  {t("email_template.type_outreach")}
-                </MenuItem>
-              </TextField>
-            )}
-          />
+                  <MenuItem value="">{t("email_template.type_none")}</MenuItem>
+                  <MenuItem value={EmailTemplateType.APPLICATION_RECEIVED}>
+                    {t("email_template.type_application_received")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.APPLICATION_UNDER_REVIEW}>
+                    {t("email_template.type_application_under_review")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.APPLICATION_REJECTED}>
+                    {t("email_template.type_application_rejected")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.APPLICATION_SHORTLISTED}>
+                    {t("email_template.type_application_shortlisted")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.APPLICATION_STATUS_UPDATE}>
+                    {t("email_template.type_application_status_update")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.INTERVIEW_INVITATION}>
+                    {t("email_template.type_interview_invitation")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.INTERVIEW_REMINDER}>
+                    {t("email_template.type_interview_reminder")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.OFFER_LETTER}>
+                    {t("email_template.type_offer_letter")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.ASYNC_STAGE_INVITATION}>
+                    {t("email_template.type_async_stage_invitation")}
+                  </MenuItem>
+                  <MenuItem
+                    value={EmailTemplateType.ASYNC_STAGE_SUBMISSION_RECEIVED}
+                  >
+                    {t("email_template.type_async_stage_submission_received")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.CUSTOM}>
+                    {t("email_template.type_custom")}
+                  </MenuItem>
+                  <MenuItem value={EmailTemplateType.OUTREACH}>
+                    {t("email_template.type_outreach")}
+                  </MenuItem>
+                </TextField>
+              )}
+            />
 
-          <Box sx={{ mt: 2, mb: 1 }}>
-            <Typography variant="body2" color="text.secondary" gutterBottom>
-              {t("email_template.available_variables")}
-            </Typography>
-            <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-              {AVAILABLE_VARIABLES.map((variable) => (
-                <Chip
-                  key={variable.key}
-                  label={variable.key}
-                  onClick={() => insertVariable(variable.key)}
-                  size="small"
-                  sx={{ mb: 1 }}
-                  color="primary"
-                  variant="filled"
-                />
-              ))}
-            </Stack>
-          </Box>
-
-          <TextField
-            label={t("email_template.body")}
-            fullWidth
-            margin="normal"
-            multiline
-            rows={12}
-            {...register("body", {
-              required: t("email_template.body_required"),
-            })}
-            error={!!errors.body}
-            helperText={errors.body?.message || t("email_template.body_helper")}
-            placeholder={t("email_template.body_placeholder")}
-          />
-
-          <FormControlLabel
-            control={
-              <Checkbox
-                {...register("isDefault")}
-                defaultChecked={template?.isDefault || false}
-              />
-            }
-            label={t("email_template.mark_default")}
-          />
-
-          {showPreview && previewData && (
-            <Box sx={{ mt: 3 }}>
-              <Divider sx={{ my: 2 }} />
-              <Typography variant="h6" gutterBottom>
-                {t("email_template.preview_title")}
+            <Box sx={{ mt: 2, mb: 1 }}>
+              <Typography variant="body2" color="text.secondary" gutterBottom>
+                {t("email_template.available_variables")}
               </Typography>
-              <Alert
-                severity={isUnsavedPreview ? "warning" : "info"}
-                sx={{ mb: 2 }}
-              >
-                {isUnsavedPreview
-                  ? t("email_template.preview_unsaved_info")
-                  : t("email_template.preview_info")}
-              </Alert>
-              <EmailTemplateRenderedPreview
-                renderedSubject={previewData.renderedSubject}
-                renderedBody={previewData.renderedBody}
-              />
-              <Button
-                size="small"
-                sx={{ mt: 2 }}
-                onClick={() => setShowPreview(false)}
-              >
-                {t("email_template.hide_preview")}
-              </Button>
+              <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+                {AVAILABLE_VARIABLES.map((variable) => (
+                  <Chip
+                    key={variable.key}
+                    label={variable.key}
+                    onClick={() => insertVariable(variable.key)}
+                    size="small"
+                    sx={{ mb: 1 }}
+                    color="primary"
+                    variant="filled"
+                  />
+                ))}
+              </Stack>
             </Box>
-          )}
-        </DialogContent>
 
-        <DialogActions>
-          <Button onClick={handleClose} disabled={isPending}>
-            {t("common.cancel")}
-          </Button>
-          <Button
-            onClick={handlePreview}
-            disabled={isPreviewing}
-            startIcon={
-              isPreviewing ? <CircularProgress size={20} /> : <Visibility />
-            }
-          >
-            {isPreviewing
-              ? t("email_template.previewing")
-              : t("email_template.preview")}
-          </Button>
-          <Button
-            type="submit"
-            variant="contained"
-            disabled={isPending}
-            startIcon={
-              isPending ? <CircularProgress size={20} color="inherit" /> : null
-            }
-          >
-            {isPending
-              ? t("common.saving")
-              : isEditMode
-                ? t("common.update")
-                : t("common.create")}
-          </Button>
-        </DialogActions>
-      </form>
-    </Dialog>
+            <TextField
+              label={t("email_template.body")}
+              fullWidth
+              margin="normal"
+              multiline
+              rows={12}
+              {...register("body", {
+                required: t("email_template.body_required"),
+              })}
+              inputRef={bodyInputRef}
+              error={!!errors.body}
+              helperText={
+                errors.body?.message || t("email_template.body_helper")
+              }
+              placeholder={t("email_template.body_placeholder")}
+            />
+
+            <FormControlLabel
+              control={
+                <Controller
+                  name="isDefault"
+                  control={control}
+                  render={({ field }) => (
+                    <Checkbox
+                      checked={!!field.value}
+                      onChange={(e) => field.onChange(e.target.checked)}
+                      onBlur={field.onBlur}
+                      inputRef={field.ref}
+                    />
+                  )}
+                />
+              }
+              label={t("email_template.mark_default")}
+            />
+
+            {showPreview && previewData && (
+              <Box sx={{ mt: 3 }}>
+                <Divider sx={{ my: 2 }} />
+                <Typography variant="h6" gutterBottom>
+                  {t("email_template.preview_title")}
+                </Typography>
+                <Alert
+                  severity={isUnsavedPreview ? "warning" : "info"}
+                  sx={{ mb: 2 }}
+                >
+                  {isUnsavedPreview
+                    ? t("email_template.preview_unsaved_info")
+                    : t("email_template.preview_info")}
+                </Alert>
+                <EmailTemplateRenderedPreview
+                  renderedSubject={previewData.renderedSubject}
+                  renderedBody={previewData.renderedBody}
+                />
+                <Button
+                  size="small"
+                  sx={{ mt: 2 }}
+                  onClick={() => setShowPreview(false)}
+                >
+                  {t("email_template.hide_preview")}
+                </Button>
+              </Box>
+            )}
+          </DialogContent>
+
+          <DialogActions>
+            <Button type="button" onClick={requestClose} disabled={isPending}>
+              {t("common.cancel")}
+            </Button>
+            <Button
+              onClick={handlePreview}
+              disabled={isPreviewing}
+              startIcon={
+                isPreviewing ? <CircularProgress size={20} /> : <Visibility />
+              }
+            >
+              {isPreviewing
+                ? t("email_template.previewing")
+                : t("email_template.preview")}
+            </Button>
+            <Button
+              type="submit"
+              variant="contained"
+              disabled={isPending}
+              startIcon={
+                isPending ? (
+                  <CircularProgress size={20} color="inherit" />
+                ) : null
+              }
+            >
+              {isPending
+                ? t("common.saving")
+                : isEditMode
+                  ? t("common.update")
+                  : t("common.create")}
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+
+      <ConfirmationDialog
+        open={confirmDiscardOpen}
+        onClose={() => setConfirmDiscardOpen(false)}
+        onConfirm={handleClose}
+        title={t("email_template.discard_title")}
+        message={t("email_template.discard_message")}
+        confirmText={t("email_template.discard_confirm")}
+        cancelText={t("email_template.discard_cancel")}
+        severity="warning"
+      />
+    </>
   );
 };
 

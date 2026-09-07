@@ -31,6 +31,7 @@ export function useFile(uid: string) {
  */
 export function useUploadFile() {
   const queryClient = useQueryClient();
+  const { t } = useTranslation();
 
   return useMutation({
     mutationFn: filesApi.uploadFile,
@@ -45,12 +46,12 @@ export function useUploadFile() {
         });
       }
 
-      toast.success(`File "${data.originalName}" uploaded successfully`);
+      toast.success(t("files.file_uploaded", { name: data.originalName }));
     },
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to upload file";
+          ?.data?.message || t("files.upload_error");
       toast.error(errorMessage);
     },
   });
@@ -69,7 +70,7 @@ export function useUploadImage() {
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to upload image";
+          ?.data?.message || t("files.image_upload_error");
       toast.error(errorMessage);
     },
   });
@@ -89,7 +90,7 @@ export function useDownloadFile() {
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to download file";
+          ?.data?.message || t("files.download_error");
       toast.error(errorMessage);
     },
   });
@@ -135,7 +136,7 @@ export function useDeleteFile() {
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to delete file";
+          ?.data?.message || t("files.delete_error");
       toast.error(errorMessage);
     },
   });
@@ -192,7 +193,7 @@ export function useDeleteManyFiles() {
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to delete files";
+          ?.data?.message || t("files.delete_many_error");
       toast.error(errorMessage);
     },
   });

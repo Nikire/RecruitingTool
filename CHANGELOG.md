@@ -73,8 +73,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Candidate profile: note edit/delete buttons labelled, deletion via the shared confirmation dialog with pending state, dates localised, activity metadata rendered as readable labels, timeline single-column on mobile
 - Stage notes: "Clear note" asks for confirmation; booking-link copy handles browsers without the Clipboard API; confirmation sentence built with interpolation; candidate and stage note toasts translated
 
+### 🗓️ Calendar, files, email templates (19 verified findings + 6 adjacent)
+- File manager: clicking a file name opens it through the signed view-URL hook instead of a route that 404s for every private document; per-row delete asks for confirmation; failed fetches show an error with Retry instead of "No files found"; long names get tooltips; dates localised
+- File upload fully translated, uses a ref instead of a global DOM id, and lets you re-pick the same file after a rejection
+- Calendar: weekday headers and titles follow the app language; overlapping interviews share the column instead of stacking; failed fetches show an error; member-filter buttons wrap in Spanish
+- Interview popover: reschedule seeds a proper yyyy-MM-dd date (it sent a full ISO timestamp and produced an Invalid Date), date shown formatted, status translated, copy-link failures reported, save disabled until date and time are set
+- Email templates: async-stage default template uses the variable the backend actually provides; variable chips insert at the cursor; empty state keyed off the filtered list with a clear-search action; Esc/backdrop no longer discards an edited template silently; "default" checkbox is a controlled field; toasts translated; applications empty state no longer interpolates a raw enum
+
 ### 🌐 i18n
-- 108 new keys in `en.json` / `es.json` (candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 139 new keys in `en.json` / `es.json` (files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

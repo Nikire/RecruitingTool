@@ -25,7 +25,7 @@ import {
   useDownloadFile,
   useDeleteFile,
 } from "../../hooks/api/useFiles";
-import { format } from "date-fns";
+import { formatDateTime } from "../../utils/dateFormatters";
 import ConfirmDeleteDialog from "../dialogs/ConfirmDeleteDialog";
 import { useTranslation } from "react-i18next";
 
@@ -38,7 +38,7 @@ const FileList: React.FC<FileListProps> = ({
   candidateUid,
   showActions = true,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { data: files, isLoading, isError } = useFiles(candidateUid);
   const { mutate: downloadFile } = useDownloadFile();
   const { mutate: deleteFile } = useDeleteFile();
@@ -131,7 +131,15 @@ const FileList: React.FC<FileListProps> = ({
             >
               <ListItemIcon>{getFileIcon(file.mimetype)}</ListItemIcon>
               <ListItemText
-                primary={file.originalName}
+                sx={{ pr: showActions ? 14 : 0, minWidth: 0, my: 0 }}
+                primary={
+                  <Tooltip title={file.originalName}>
+                    <Typography variant="body1" noWrap>
+                      {file.originalName}
+                    </Typography>
+                  </Tooltip>
+                }
+                secondaryTypographyProps={{ noWrap: true }}
                 secondary={
                   <>
                     <Typography
@@ -147,7 +155,7 @@ const FileList: React.FC<FileListProps> = ({
                       variant="body2"
                       color="text.secondary"
                     >
-                      {format(new Date(file.createdAt), "MMM dd, yyyy HH:mm")}
+                      {formatDateTime(file.createdAt, i18n.language)}
                     </Typography>
                   </>
                 }

@@ -769,7 +769,9 @@
     "duration_hours_minutes": "{{hours}} h {{minutes}} min",
     "duration_hours": "{{hours}} h",
     "rescheduled_count_other": "Reprogramada {{count}} veces",
-    "rescheduled_count_one": "Reprogramada {{count}} vez"
+    "rescheduled_count_one": "Reprogramada {{count}} vez",
+    "in_progress": "En curso",
+    "no_show": "No asistió"
   },
   "files": {
     "upload": "Subir Archivo",
@@ -807,7 +809,13 @@
     "downloadError": "Error al descargar archivos",
     "deleteSuccess": "{{count}} archivo(s) eliminados correctamente",
     "selectedCount": "{{count}} archivo(s) seleccionados",
-    "view_error": "No se pudo abrir este archivo. Puede que no tengas acceso a él."
+    "view_error": "No se pudo abrir este archivo. Puede que no tengas acceso a él.",
+    "file_uploaded": "Archivo \"{{name}}\" subido correctamente",
+    "upload_error": "No se pudo subir el archivo",
+    "image_upload_error": "No se pudo subir la imagen",
+    "download_error": "No se pudo descargar el archivo",
+    "delete_error": "No se pudo eliminar el archivo",
+    "delete_many_error": "No se pudieron eliminar los archivos"
   },
   "profile": {
     "title": "Perfil",
@@ -921,7 +929,20 @@
     "empty_title": "Aún no hay plantillas de correo",
     "empty_description": "Comienza creando tu primera plantilla o genera todas las plantillas predeterminadas de una vez.",
     "create_defaults": "Crear Plantillas Predeterminadas",
-    "creating_defaults": "Creando..."
+    "creating_defaults": "Creando...",
+    "no_search_results": "Ninguna plantilla coincide con tu búsqueda",
+    "no_search_results_description": "Prueba con otro nombre, asunto o autor, o borra la búsqueda para ver todas las plantillas.",
+    "toast": {
+      "create_failed": "No se pudo crear la plantilla de correo",
+      "created": "¡Plantilla de correo creada correctamente!",
+      "defaults_create_failed": "No se pudieron crear las plantillas predeterminadas",
+      "defaults_created": "¡Plantillas de correo predeterminadas creadas correctamente!",
+      "delete_failed": "No se pudo eliminar la plantilla de correo",
+      "deleted": "¡Plantilla de correo eliminada correctamente!",
+      "preview_failed": "No se pudo previsualizar la plantilla de correo",
+      "update_failed": "No se pudo actualizar la plantilla de correo",
+      "updated": "¡Plantilla de correo actualizada correctamente!"
+    }
   },
   "forms": {
     "custom_questions": "Preguntas Personalizadas",
@@ -1096,7 +1117,11 @@
     "variable_new_stage": "Nueva etapa",
     "variable_previous_stage": "Etapa anterior",
     "variable_status": "Estado de la postulación",
-    "variable_hiring_process_url": "Enlace del proceso de selección"
+    "variable_hiring_process_url": "Enlace del proceso de selección",
+    "discard_cancel": "Seguir editando",
+    "discard_confirm": "Descartar cambios",
+    "discard_message": "Esta plantilla tiene cambios sin guardar. Si la cierras ahora, se perderán.",
+    "discard_title": "¿Descartar los cambios?"
   },
   "add_stage": {
     "add_title": "Agregar Nueva Etapa",
@@ -4509,7 +4534,9 @@
     "see_all_notes": "Ver todas las notas",
     "hide_notes": "Ocultar notas",
     "no_stage_notes": "Sin notas de evaluación todavía",
-    "stage_eval_notes": "Notas de Evaluación"
+    "stage_eval_notes": "Notas de Evaluación",
+    "link_copy_failed": "No se pudo copiar el enlace al portapapeles",
+    "date_time_required": "La fecha y la hora son obligatorias"
   },
   "aiScoringWeights": {
     "title": "Ponderaciones de Puntuación IA",
@@ -5524,5 +5551,13 @@
       "inactive": "Inactivo",
       "archived": "Archivado"
     }
+  },
+  "file_upload": {
+    "drop_here": "Arrastra y suelta un archivo aquí",
+    "or_browse": "o haz clic para buscar",
+    "accepted_types": "Tipos aceptados: {{types}} (máx. {{max}} MB)",
+    "uploading": "Subiendo...",
+    "error_too_large": "El archivo debe pesar menos de {{max}} MB",
+    "error_bad_type": "El tipo de archivo debe ser uno de: {{types}}"
   }
 }

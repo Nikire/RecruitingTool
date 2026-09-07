@@ -15,6 +15,7 @@ import {
   PreviewEmailTemplateDto,
   EmailTemplate,
 } from "../../types/emailTemplate.types";
+import i18n from "i18next";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 
 export function useEmailTemplates(companyUid?: string) {
@@ -39,10 +40,10 @@ export function useCreateEmailTemplate() {
     mutationFn: (data: CreateEmailTemplateDto) => createEmailTemplate(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
-      showSuccessToast("Email template created successfully!");
+      showSuccessToast(i18n.t("email_templates.toast.created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create email template");
+      showErrorToast(error, i18n.t("email_templates.toast.create_failed"));
     },
   });
 }
@@ -60,10 +61,10 @@ export function useUpdateEmailTemplate() {
     }) => updateEmailTemplate(uid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
-      showSuccessToast("Email template updated successfully!");
+      showSuccessToast(i18n.t("email_templates.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update email template");
+      showErrorToast(error, i18n.t("email_templates.toast.update_failed"));
     },
   });
 }
@@ -82,10 +83,10 @@ export function useDeleteEmailTemplate() {
           old?.filter((t) => t.uid !== uid) ?? [],
       );
       queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
-      showSuccessToast("Email template deleted successfully!");
+      showSuccessToast(i18n.t("email_templates.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete email template");
+      showErrorToast(error, i18n.t("email_templates.toast.delete_failed"));
     },
   });
 }
@@ -97,10 +98,13 @@ export function useCreateDefaultEmailTemplates() {
     mutationFn: () => createDefaultEmailTemplates(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: emailTemplateKeys.all });
-      showSuccessToast("Default email templates created successfully!");
+      showSuccessToast(i18n.t("email_templates.toast.defaults_created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create default templates");
+      showErrorToast(
+        error,
+        i18n.t("email_templates.toast.defaults_create_failed"),
+      );
     },
   });
 }
@@ -115,7 +119,7 @@ export function usePreviewEmailTemplate() {
       data?: PreviewEmailTemplateDto;
     }) => previewEmailTemplate(uid, data),
     onError: (error) => {
-      showErrorToast(error, "Failed to preview email template");
+      showErrorToast(error, i18n.t("email_templates.toast.preview_failed"));
     },
   });
 }

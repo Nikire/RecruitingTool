@@ -31,6 +31,7 @@ import {
   useCancelCalendarInterview,
 } from "../../hooks/api/useCalendarInterviews";
 import { useCandidateStageNotes } from "../../hooks/api/useStageNotes";
+import { formatDate } from "../../utils/dateFormatters";
 
 interface InterviewDetailPopoverProps {
   interview: CalendarInterview | null;
@@ -43,7 +44,15 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
   anchorEl,
   onClose,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const scheduledLabel = [
+    interview?.scheduledDate
+      ? formatDate(interview.scheduledDate, "MMM d, yyyy", i18n.language)
+      : null,
+    interview?.scheduledTime,
+  ]
+    .filter(Boolean)
+    .join(" · ");
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [cancelOpen, setCancelOpen] = useState(false);
   const [newDate, setNewDate] = useState("");
@@ -60,15 +69,25 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
   const open = Boolean(anchorEl) && interview !== null;
 
   const handleCopyLink = () => {
-    if (interview?.meetingLink) {
-      navigator.clipboard.writeText(interview.meetingLink).then(() => {
-        toast.success(t("calendar.link_copied"));
-      });
+    if (!interview?.meetingLink) return;
+    if (!navigator.clipboard?.writeText) {
+      toast.error(t("calendar.link_copy_failed"));
+      return;
     }
+    navigator.clipboard
+      .writeText(interview.meetingLink)
+      .then(() => {
+        toast.success(t("calendar.link_copied"));
+      })
+      .catch(() => {
+        toast.error(t("calendar.link_copy_failed"));
+      });
   };
 
   const handleRescheduleOpen = () => {
-    setNewDate(interview?.scheduledDate ?? "");
+    // scheduledDate arrives as a full ISO timestamp; <input type="date"> only
+    // accepts yyyy-MM-dd and silently blanks anything else.
+    setNewDate(interview?.scheduledDate?.substring(0, 10) ?? "");
     setNewTime(interview?.scheduledTime ?? "");
     setRescheduleOpen(true);
   };
@@ -79,14 +98,16 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
     setNewTime("");
   };
 
+  const canSaveReschedule = Boolean(newDate) && Boolean(newTime);
+
   const handleRescheduleSave = () => {
-    if (!interview) return;
+    if (!interview || !canSaveReschedule) return;
     reschedule.mutate(
       {
         uid: interview.uid,
         data: {
-          scheduledDate: newDate || undefined,
-          scheduledTime: newTime || undefined,
+          scheduledDate: newDate,
+          scheduledTime: newTime,
         },
       },
       {
@@ -143,9 +164,11 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
 
           {interview.status && (
             <Chip
-              label={interview.status}
+              label={t(`interviews.${interview.status.toLowerCase()}`, {
+                defaultValue: interview.status,
+              })}
               size="small"
-              sx={{ mb: 1.5, textTransform: "capitalize", fontSize: "0.7rem" }}
+              sx={{ mb: 1.5, fontSize: "0.7rem" }}
             />
           )}
         </Box>
@@ -207,11 +230,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
                   {t("calendar.scheduled_date")} /{" "}
                   {t("calendar.scheduled_time")}
                 </Typography>
-                <Typography variant="body2">
-                  {[interview.scheduledDate, interview.scheduledTime]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </Typography>
+                <Typography variant="body2">{scheduledLabel}</Typography>
               </Box>
             )}
 
@@ -449,6 +468,9 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
               value={newDate}
               onChange={(e) => setNewDate(e.target.value)}
               fullWidth
+              required
+              error={!newDate}
+              helperText={!newDate ? t("calendar.date_time_required") : " "}
               slotProps={{ inputLabel: { shrink: true } }}
             />
             <TextField
@@ -457,6 +479,9 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
               value={newTime}
               onChange={(e) => setNewTime(e.target.value)}
               fullWidth
+              required
+              error={!newTime}
+              helperText={!newTime ? t("calendar.date_time_required") : " "}
               slotProps={{ inputLabel: { shrink: true } }}
             />
           </Stack>
@@ -466,7 +491,7 @@ const InterviewDetailPopover: React.FC<InterviewDetailPopoverProps> = ({
           <Button
             onClick={handleRescheduleSave}
             variant="contained"
-            disabled={reschedule.isPending}
+            disabled={reschedule.isPending || !canSaveReschedule}
           >
             {t("calendar.save_reschedule")}
           </Button>

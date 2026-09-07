@@ -52,12 +52,24 @@ const MemberFilterPanel: React.FC<MemberFilterPanelProps> = ({
         {t("calendar.members")}
       </Typography>
 
-      <Stack direction="row" spacing={1} sx={{ mb: 1.5 }}>
+      <Stack
+        direction="row"
+        spacing={1}
+        useFlexGap
+        flexWrap="wrap"
+        sx={{ mb: 1.5 }}
+      >
         <Button
           size="small"
           variant="contained"
           onClick={onMyMeetingsOnly}
-          sx={{ fontSize: "0.7rem", py: 0.25, px: 1 }}
+          sx={{
+            fontSize: "0.7rem",
+            py: 0.25,
+            px: 1,
+            whiteSpace: "nowrap",
+            minWidth: 0,
+          }}
         >
           {t("calendar.my_meetings_only")}
         </Button>
@@ -65,7 +77,13 @@ const MemberFilterPanel: React.FC<MemberFilterPanelProps> = ({
           size="small"
           variant="text"
           onClick={onShowAll}
-          sx={{ fontSize: "0.7rem", py: 0.25, px: 1 }}
+          sx={{
+            fontSize: "0.7rem",
+            py: 0.25,
+            px: 1,
+            whiteSpace: "nowrap",
+            minWidth: 0,
+          }}
         >
           {t("calendar.show_all")}
         </Button>

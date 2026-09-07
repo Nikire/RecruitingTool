@@ -769,7 +769,9 @@
     "duration_hours_minutes": "{{hours}}h {{minutes}}m",
     "duration_hours": "{{hours}}h",
     "rescheduled_count_other": "Rescheduled {{count}} times",
-    "rescheduled_count_one": "Rescheduled {{count}} time"
+    "rescheduled_count_one": "Rescheduled {{count}} time",
+    "in_progress": "In Progress",
+    "no_show": "No Show"
   },
   "files": {
     "upload": "Upload File",
@@ -807,7 +809,13 @@
     "downloadError": "Failed to download files",
     "deleteSuccess": "{{count}} file(s) deleted successfully",
     "selectedCount": "{{count}} file(s) selected",
-    "view_error": "Could not open this file. You may not have access to it."
+    "view_error": "Could not open this file. You may not have access to it.",
+    "file_uploaded": "File \"{{name}}\" uploaded successfully",
+    "upload_error": "Failed to upload file",
+    "image_upload_error": "Failed to upload image",
+    "download_error": "Failed to download file",
+    "delete_error": "Failed to delete file",
+    "delete_many_error": "Failed to delete files"
   },
   "profile": {
     "title": "Profile",
@@ -921,6 +929,19 @@
       "application_confirmation": "Application Confirmation",
       "status_update": "Status Update",
       "interview_reminder": "Interview Reminder"
+    },
+    "no_search_results": "No templates match your search",
+    "no_search_results_description": "Try a different name, subject or author, or clear the search to see every template.",
+    "toast": {
+      "create_failed": "Failed to create email template",
+      "created": "Email template created successfully!",
+      "defaults_create_failed": "Failed to create default templates",
+      "defaults_created": "Default email templates created successfully!",
+      "delete_failed": "Failed to delete email template",
+      "deleted": "Email template deleted successfully!",
+      "preview_failed": "Failed to preview email template",
+      "update_failed": "Failed to update email template",
+      "updated": "Email template updated successfully!"
     }
   },
   "forms": {
@@ -1096,7 +1117,11 @@
     "variable_new_stage": "New stage",
     "variable_previous_stage": "Previous stage",
     "variable_status": "Application status",
-    "variable_hiring_process_url": "Hiring process link"
+    "variable_hiring_process_url": "Hiring process link",
+    "discard_cancel": "Keep editing",
+    "discard_confirm": "Discard changes",
+    "discard_message": "This template has unsaved changes. If you close now, they will be lost.",
+    "discard_title": "Discard changes?"
   },
   "add_stage": {
     "add_title": "Add New Stage",
@@ -4509,7 +4534,9 @@
     "see_all_notes": "See all notes",
     "hide_notes": "Hide notes",
     "no_stage_notes": "No evaluation notes yet",
-    "stage_eval_notes": "Evaluation Notes"
+    "stage_eval_notes": "Evaluation Notes",
+    "link_copy_failed": "Could not copy the link to the clipboard",
+    "date_time_required": "Date and time are both required"
   },
   "aiScoringWeights": {
     "title": "AI Scoring Weights",
@@ -5524,5 +5551,13 @@
       "inactive": "Inactive",
       "archived": "Archived"
     }
+  },
+  "file_upload": {
+    "drop_here": "Drag and drop a file here",
+    "or_browse": "or click to browse",
+    "accepted_types": "Accepted types: {{types}} (max {{max}}MB)",
+    "uploading": "Uploading...",
+    "error_too_large": "File size must be less than {{max}}MB",
+    "error_bad_type": "File type must be one of: {{types}}"
   }
 }

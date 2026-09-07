@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -27,11 +28,13 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import PageHeader from "../../components/common/PageHeader";
 import QuotaBanner from "../../components/common/QuotaBanner";
+import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import {
   useCompanyFiles,
   useDownloadZip,
   useDeleteManyFiles,
   useDeleteFile,
+  useOpenFileView,
 } from "../../hooks/api/useFiles";
 import { CompanyFile } from "../../api/files";
 
@@ -71,14 +74,21 @@ const FilesPage: React.FC = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
-  const { data: files = [], isLoading: filesLoading } = useCompanyFiles();
+  const {
+    data: files = [],
+    isLoading: filesLoading,
+    isError: filesError,
+    refetch: refetchFiles,
+  } = useCompanyFiles();
   const downloadZip = useDownloadZip();
   const deleteManyFiles = useDeleteManyFiles();
   const deleteFile = useDeleteFile();
+  const openFileView = useOpenFileView();
 
   const [selectedUids, setSelectedUids] = useState<string[]>([]);
   const [typeFilter, setTypeFilter] = useState<FileTypeFilter>("all");
   const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
+  const [fileToDelete, setFileToDelete] = useState<CompanyFile | null>(null);
 
   const filteredFiles = useMemo(() => {
     if (typeFilter === "all") return files;
@@ -122,10 +132,13 @@ const FilesPage: React.FC = () => {
     });
   };
 
-  const handleDeleteSingle = (uid: string) => {
+  const handleConfirmDeleteSingle = () => {
+    if (!fileToDelete) return;
+    const uid = fileToDelete.uid;
     deleteFile.mutate(uid, {
       onSuccess: () => {
         setSelectedUids((prev) => prev.filter((u) => u !== uid));
+        setFileToDelete(null);
       },
     });
   };
@@ -145,12 +158,7 @@ const FilesPage: React.FC = () => {
             cursor: "pointer",
             "&:hover": { color: "primary.main", textDecoration: "underline" },
           }}
-          onClick={() =>
-            window.open(
-              `${import.meta.env.VITE_API_URL}/files/${params.row.uid}/view`,
-              "_blank",
-            )
-          }
+          onClick={() => openFileView.mutate(params.row.uid)}
         >
           <AttachFileIcon fontSize="small" sx={{ flexShrink: 0 }} />
           <Typography variant="body2" noWrap>
@@ -259,7 +267,7 @@ const FilesPage: React.FC = () => {
             <IconButton
               size="small"
               color="error"
-              onClick={() => handleDeleteSingle(params.row.uid)}
+              onClick={() => setFileToDelete(params.row)}
             >
               <DeleteIcon fontSize="small" />
             </IconButton>
@@ -339,48 +347,61 @@ const FilesPage: React.FC = () => {
       </Stack>
 
       {/* DataGrid */}
-      <Box sx={{ height: 520 }}>
-        <DataGrid
-          rows={filteredFiles}
-          columns={columns}
-          getRowId={(row) => row.uid}
-          loading={filesLoading}
-          checkboxSelection
-          disableRowSelectionOnClick
-          rowSelectionModel={{ type: "include", ids: new Set(selectedUids) }}
-          onRowSelectionModelChange={handleSelectionChange}
-          pageSizeOptions={[25, 50, 100]}
-          initialState={{
-            pagination: { paginationModel: { pageSize: 25 } },
-          }}
-          slots={{
-            noRowsOverlay: () => (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  height: "100%",
-                }}
-              >
-                <Typography color="text.secondary">
-                  {t("files.noFiles")}
-                </Typography>
-              </Box>
-            ),
-          }}
-          sx={{
-            "& .MuiDataGrid-cell": {
-              display: "flex",
-              alignItems: "center",
-            },
-            "& .MuiDataGrid-cell--withRenderer": {
-              display: "flex",
-              alignItems: "center",
-            },
-          }}
-        />
-      </Box>
+      {filesError ? (
+        <Alert
+          severity="error"
+          action={
+            <Button color="inherit" size="small" onClick={() => refetchFiles()}>
+              {t("common.retry")}
+            </Button>
+          }
+        >
+          {t("file_list.error_loading")}
+        </Alert>
+      ) : (
+        <Box sx={{ height: 520 }}>
+          <DataGrid
+            rows={filteredFiles}
+            columns={columns}
+            getRowId={(row) => row.uid}
+            loading={filesLoading}
+            checkboxSelection
+            disableRowSelectionOnClick
+            rowSelectionModel={{ type: "include", ids: new Set(selectedUids) }}
+            onRowSelectionModelChange={handleSelectionChange}
+            pageSizeOptions={[25, 50, 100]}
+            initialState={{
+              pagination: { paginationModel: { pageSize: 25 } },
+            }}
+            slots={{
+              noRowsOverlay: () => (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    height: "100%",
+                  }}
+                >
+                  <Typography color="text.secondary">
+                    {t("files.noFiles")}
+                  </Typography>
+                </Box>
+              ),
+            }}
+            sx={{
+              "& .MuiDataGrid-cell": {
+                display: "flex",
+                alignItems: "center",
+              },
+              "& .MuiDataGrid-cell--withRenderer": {
+                display: "flex",
+                alignItems: "center",
+              },
+            }}
+          />
+        </Box>
+      )}
 
       {/* Confirm Delete Dialog */}
       <Dialog
@@ -414,6 +435,18 @@ const FilesPage: React.FC = () => {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Confirm Single Delete Dialog */}
+      <ConfirmDeleteDialog
+        open={fileToDelete !== null}
+        onClose={() => setFileToDelete(null)}
+        onConfirm={handleConfirmDeleteSingle}
+        title={t("file_list.delete_title")}
+        message={t("file_list.delete_message", {
+          fileName: fileToDelete?.originalName,
+        })}
+        isDeleting={deleteFile.isPending}
+      />
     </Box>
   );
 };

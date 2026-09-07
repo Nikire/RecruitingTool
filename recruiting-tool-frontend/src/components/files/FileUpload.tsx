@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef } from "react";
 import {
   Box,
   Typography,
@@ -13,6 +13,7 @@ import {
   Close as CloseIcon,
   InsertDriveFile as FileIcon,
 } from "@mui/icons-material";
+import { useTranslation } from "react-i18next";
 import { useUploadFile } from "../../hooks/api/useFiles";
 
 interface FileUploadProps {
@@ -28,6 +29,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
   maxSizeMB = 10,
   acceptedTypes = ["pdf", "doc", "docx", "txt"],
 }) => {
+  const { t } = useTranslation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [validationError, setValidationError] = useState<string | null>(null);
@@ -41,7 +44,9 @@ const FileUpload: React.FC<FileUploadProps> = ({
       // Check file size
       const maxSizeBytes = maxSizeMB * 1024 * 1024;
       if (file.size > maxSizeBytes) {
-        setValidationError(`File size must be less than ${maxSizeMB}MB`);
+        setValidationError(
+          t("file_upload.error_too_large", { max: maxSizeMB }),
+        );
         return false;
       }
 
@@ -49,14 +54,14 @@ const FileUpload: React.FC<FileUploadProps> = ({
       const fileExtension = file.name.split(".").pop()?.toLowerCase();
       if (!fileExtension || !acceptedTypes.includes(fileExtension)) {
         setValidationError(
-          `File type must be one of: ${acceptedTypes.join(", ")}`,
+          t("file_upload.error_bad_type", { types: acceptedTypes.join(", ") }),
         );
         return false;
       }
 
       return true;
     },
-    [maxSizeMB, acceptedTypes],
+    [maxSizeMB, acceptedTypes, t],
   );
 
   const handleFileSelect = useCallback(
@@ -95,6 +100,8 @@ const FileUpload: React.FC<FileUploadProps> = ({
     if (e.target.files && e.target.files[0]) {
       handleFileSelect(e.target.files[0]);
     }
+    // Reset so re-picking the same file after a validation error still fires
+    e.target.value = "";
   };
 
   const handleUpload = () => {
@@ -148,26 +155,29 @@ const FileUpload: React.FC<FileUploadProps> = ({
               borderColor: "#1976d2",
             },
           }}
-          onClick={() => document.getElementById("file-input")?.click()}
+          onClick={() => fileInputRef.current?.click()}
         >
           <CloudUploadIcon
             sx={{ fontSize: 48, color: "text.secondary", mb: 2 }}
           />
           <Typography variant="h6" gutterBottom>
-            Drag and drop a file here
+            {t("file_upload.drop_here")}
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom>
-            or click to browse
+            {t("file_upload.or_browse")}
           </Typography>
           <Typography
             variant="caption"
             color="text.secondary"
             sx={{ mt: 1, display: "block" }}
           >
-            Accepted types: {acceptedTypes.join(", ")} (max {maxSizeMB}MB)
+            {t("file_upload.accepted_types", {
+              types: acceptedTypes.join(", "),
+              max: maxSizeMB,
+            })}
           </Typography>
           <input
-            id="file-input"
+            ref={fileInputRef}
             type="file"
             accept={acceptedTypes.map((type) => `.${type}`).join(",")}
             onChange={handleFileInputChange}
@@ -207,7 +217,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 color="text.secondary"
                 sx={{ mt: 1 }}
               >
-                Uploading...
+                {t("file_upload.uploading")}
               </Typography>
             </Box>
           )}
@@ -222,7 +232,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
               }}
             >
               <Button onClick={handleClearFile} disabled={isPending}>
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button
                 variant="contained"
@@ -230,7 +240,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
                 disabled={isPending}
                 startIcon={<CloudUploadIcon />}
               >
-                Upload
+                {t("common.upload")}
               </Button>
             </Box>
           )}

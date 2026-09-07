@@ -327,7 +327,9 @@ const ApplicationsGroupedList: React.FC<ApplicationsGroupedListProps> = ({
         <Typography variant="h6" color="text.secondary">
           {statusFilter
             ? t("applications.no_applications_with_status", {
-                status: statusFilter,
+                status: t(`status.${statusFilter.toLowerCase()}`, {
+                  defaultValue: statusFilter,
+                }),
               })
             : t("applications.no_applications_submitted")}
         </Typography>

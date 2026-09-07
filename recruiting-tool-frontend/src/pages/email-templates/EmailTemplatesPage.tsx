@@ -11,6 +11,7 @@ import { useTranslation } from "react-i18next";
 import { useState, useMemo } from "react";
 import AddIcon from "@mui/icons-material/Add";
 import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
+import SearchOffIcon from "@mui/icons-material/SearchOff";
 import { GridColDef } from "@mui/x-data-grid";
 import {
   EnhancedDataGrid,
@@ -29,7 +30,11 @@ import EmailTemplateDialog from "../../components/email-templates/EmailTemplateD
 import EmailTemplatePreviewDialog from "../../components/dialogs/EmailTemplatePreviewDialog";
 import ConfirmDeleteDialog from "../../components/dialogs/ConfirmDeleteDialog";
 import { canManageResources } from "../../utils/permissions";
-import { AccessDeniedMessage, PageHeader } from "../../components/common";
+import {
+  AccessDeniedMessage,
+  EmptyState,
+  PageHeader,
+} from "../../components/common";
 import {
   EmailTemplate,
   EmailTemplateType,
@@ -139,6 +144,13 @@ const EmailTemplatesPage: React.FC = () => {
           template.createdByName.toLowerCase().includes(query)),
     );
   }, [templates, searchQuery]);
+
+  // The grid renders `filteredTemplates`, so the empty state must be keyed off
+  // the same list — otherwise a search with no matches (or a company whose
+  // templates are all OUTREACH) falls through to the grid's untranslated
+  // "No rows" overlay.
+  const isSearching = searchQuery.trim().length > 0;
+  const isEmpty = !isLoading && filteredTemplates.length === 0;
 
   const handleDelete = () => {
     if (deleteDialog.selectedItem) {
@@ -283,7 +295,17 @@ const EmailTemplatesPage: React.FC = () => {
         />
       </Paper>
 
-      {!isLoading && templates?.length === 0 ? (
+      {isEmpty && isSearching ? (
+        <EmptyState
+          message="email_templates.no_search_results"
+          description="email_templates.no_search_results_description"
+          icon={<SearchOffIcon sx={{ fontSize: 48, color: "text.disabled" }} />}
+          secondaryAction={{
+            label: "search.clear_search",
+            onClick: () => setSearchQuery(""),
+          }}
+        />
+      ) : isEmpty ? (
         <Paper
           sx={{
             p: 6,
