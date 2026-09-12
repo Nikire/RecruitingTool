@@ -294,7 +294,7 @@ const ChangelogPage: React.FC = () => {
     },
     {
       field: "isPublished",
-      headerName: "Status",
+      headerName: t("changelog.col_status"),
       width: 120,
       renderCell: (params: GridRenderCellParams<ReleaseNoteAdminItem>) => (
         <Box sx={{ display: "flex", alignItems: "center", height: "100%" }}>
@@ -318,8 +318,9 @@ const ChangelogPage: React.FC = () => {
     },
     {
       field: "seenCount",
-      headerName: t("changelog.seen_by"),
-      width: 110,
+      headerName: t("changelog.col_seen_by"),
+      flex: 0.6,
+      minWidth: 110,
       type: "number",
     },
     {

@@ -1255,8 +1255,8 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
     },
     {
       field: "sendEmail",
-      headerName: t("outreachCampaigns.sendEmail.title"),
-      width: 70,
+      headerName: t("outreachCampaigns.sendEmail.col_header"),
+      width: 110,
       sortable: false,
       align: "center",
       headerAlign: "center",
@@ -1278,7 +1278,7 @@ const LeadsTable: React.FC<LeadsTableProps> = ({
     {
       field: "previewEmail",
       headerName: t("outreachCampaigns.previewEmail.col_header"),
-      width: 70,
+      width: 110,
       sortable: false,
       align: "center",
       headerAlign: "center",

@@ -117,8 +117,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Booking-flow errors show the backend reason instead of "Request failed with status code NNN"; stage, onboarding and import toasts translated; legacy `dateUtils` removed in favour of the locale-aware formatters
 - Dark mode no longer flashes white on load (persisted atoms read storage at init); filter state resets between navigations and accounts; error toasts wrap long emails, URLs and UIDs
 
+### 🌍 Translation layer (13 verified findings)
+- Three call sites passed a translation key without its interpolation value, and this i18next version leaves the placeholder verbatim, so users saw "Failed to update {{entity}}" and a column header reading "Seen by {{count}} users". All three now pass a value or use a specific key
+- Error toasts keep the caller's translated fallback instead of being overridden by raw axios text ("Network Error", HTTP status text); network failures use the existing translated message
+- A dev-only missing-interpolation handler now warns when a `{{var}}` goes unresolved, so the next one is caught while writing it rather than in production
+- Email-template body placeholder renders real line breaks instead of literal `&#10;` entities
+- Admin tables: hardcoded "Status" and "Health" headers translated, plan filter shows plan names instead of enum tokens, KPI titles and bounced subjects get tooltips, icon columns widened for Spanish
+- Removed 6 orphaned locale keys left behind by earlier fixes; en.json and es.json stay at exact parity (4,859 keys each)
+
 ### 🌐 i18n
-- 292 new keys in `en.json` / `es.json` (time_slots, stages, candidate_import, manage_stages, create_candidate, outreach_crm, outreach, admin_email_logs, quota_inspector, admin, feature_flags, plan_limits, deleted_records, companies.toast, users.toast, billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
+- 297 new keys in `en.json` / `es.json` (changelog, email_deliverability, team, time_slots, stages, candidate_import, manage_stages, create_candidate, outreach_crm, outreach, admin_email_logs, quota_inspector, admin, feature_flags, plan_limits, deleted_records, companies.toast, users.toast, billing, team, analytics, files, file_upload, calendar, email_templates, candidates, hiring_processes, stage_notes, job_positions, companies, booking, asyncStage, interview, hiring_process, onboarding, users.toast, api_keys, notifications, subscription, contact, apply_job, landing.product_preview, seo.check_status, job_position_detail, careersCompany, hiring_process_tracking, auth.toast, profile.toast, verify_email, registration_wizard, forgot_password, reset_password); apply-flow and auth toasts translated
 
 ### Affected files
 `recruiting-tool-frontend/src/{pages/landing,pages/contact,pages/careers,pages/job-position-detail,pages/public,pages/status,pages/blog,pages/errors,components/careers,components/dialogs,components/navbar,components/layout,components/contact,layouts,hooks/api,i18n/locales}`

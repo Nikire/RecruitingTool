@@ -40,6 +40,34 @@ const missingKeyHandler = (
 };
 
 /**
+ * Reports `t()` calls that omit an interpolation value. i18next's
+ * `skipOnVariables` defaults to `true`, so a missing value leaves the literal
+ * `{{entity}}` visible in the UI instead of failing loudly.
+ *
+ * The handler returns the original `{{var}}` token so runtime behaviour is
+ * unchanged (returning a non-string would blank the placeholder and hide the
+ * bug); it only adds a dev console warning. Deduped per key like above.
+ */
+const reportedMissingInterpolations = new Set<string>();
+
+const missingInterpolationHandler = (
+  text: string,
+  value: RegExpExecArray,
+): string => {
+  const token = value[0];
+
+  if (isDev && !reportedMissingInterpolations.has(`${text}|${token}`)) {
+    reportedMissingInterpolations.add(`${text}|${token}`);
+    console.warn(
+      `[i18n] Missing interpolation value for "${token}" in "${text}". ` +
+        `Pass it as an option, e.g. t("key", { ${value[1]?.trim() ?? "entity"}: ... }).`,
+    );
+  }
+
+  return token;
+};
+
+/**
  * Keeps `<html lang>` in sync with the active i18next language.
  *
  * index.html hardcodes `lang="en"`, so without this the Spanish UI is served
@@ -77,6 +105,9 @@ i18n
     // Kept dev-only so production never pays the lookup cost nor spams logs.
     saveMissing: isDev,
     missingKeyHandler,
+    missingInterpolationHandler: isDev
+      ? missingInterpolationHandler
+      : undefined,
     interpolation: {
       escapeValue: false,
     },

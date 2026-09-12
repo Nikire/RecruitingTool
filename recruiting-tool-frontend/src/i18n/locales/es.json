@@ -392,7 +392,6 @@
     "switch_template_message": "Cambiar de plantilla reemplazará tus etapas actuales. ¿Estás seguro de que quieres continuar?"
   },
   "job_position_card": {
-    "full_time": "Tiempo completo",
     "part_time": "Medio tiempo",
     "contract": "Contrato",
     "remote": "Remoto",
@@ -1125,7 +1124,7 @@
     "subject": "Asunto",
     "subject_placeholder": "ej., Invitación a Entrevista - {{positionTitle}}",
     "body": "Cuerpo",
-    "body_placeholder": "Estimado/a {{candidateName}},&#10;&#10;Gracias por aplicar a la posición de {{positionTitle}} en {{companyName}}...",
+    "body_placeholder": "Estimado/a {{candidateName}},\n\nGracias por aplicar a la posición de {{positionTitle}} en {{companyName}}...",
     "body_helper": "Usa las variables de arriba para personalización",
     "available_variables": "Variables Disponibles (clic para insertar):",
     "mark_default": "Marcar como plantilla predeterminada",
@@ -1532,8 +1531,8 @@
       "sign_in_with_email": "O inicia sesión con correo",
       "login_with_linkedin": "Continuar con LinkedIn",
       "signup_with_linkedin": "Registrarse con LinkedIn",
-      "completing_login": "Completando inicio de sesión, por favor espere...",
-      "callback_error": "El inicio de sesión con cuenta social falló. Por favor intente nuevamente."
+      "callback_error": "El inicio de sesión con cuenta social falló. Por favor intente nuevamente.",
+      "completing_login": "Completando inicio de sesión, por favor espere..."
     },
     "add_email_banner": "Tu cuenta no tiene dirección de correo. Agrega una para desbloquear todas las funciones.",
     "add_email_action": "Agregar Email",
@@ -1626,7 +1625,6 @@
     "resend_success": "¡Correo de verificación enviado! Revisa tu bandeja de entrada.",
     "resend_error": "No se pudo enviar el correo de verificación. Inténtalo de nuevo.",
     "logout": "Cerrar sesión",
-    "already_verified": "¿Ya verificaste? Intenta refrescar la página.",
     "check_status_button": "Ya verifiqué mi correo",
     "checking_status": "Comprobando...",
     "not_verified_yet": "Aún no pudimos confirmar tu correo. Haz clic en el enlace del correo y vuelve a intentarlo.",
@@ -1974,12 +1972,10 @@
     "subtitle": "Vea y descargue sus facturas de facturación",
     "no_invoices": "No Hay Facturas Disponibles",
     "no_invoices_description": "Aún no tiene ninguna factura. Las facturas aparecerán aquí una vez que se suscriba a un plan de pago.",
-    "invoice_number": "Factura #",
     "date": "Fecha",
     "amount": "Monto",
     "status": "Estado",
     "actions": "Acciones",
-    "download_pdf": "Descargar PDF",
     "view_invoice": "Ver Factura",
     "total_invoices": "Total: {{count}} factura(s)",
     "error_loading": "Error al cargar las facturas. Por favor, inténtelo de nuevo más tarde.",
@@ -3974,7 +3970,8 @@
     "you": "Tú",
     "cancel_invitation_title": "Cancelar Invitación",
     "cancel_invitation_message": "¿Seguro que quieres cancelar la invitación enviada a {{email}}? El enlace de invitación dejará de funcionar.",
-    "cancel_invitation_button": "Cancelar Invitación"
+    "cancel_invitation_button": "Cancelar Invitación",
+    "invitation_send_failed": "No se pudo enviar la invitación. Por favor intenta de nuevo."
   },
   "check_status": {
     "title": "Verificar Estado de Solicitud",
@@ -5139,7 +5136,8 @@
     "health_ok": "OK",
     "health_warning": "ADVERTENCIA",
     "health_critical": "CRÍTICO",
-    "description": "Monitoriza el estado de todos los correos transaccionales enviados por la plataforma: confirmaciones de entrega, aperturas, rebotes y quejas de spam. Una tasa de rebote superior al 5% puede dañar tu reputación de remitente. Investiga y limpia las direcciones problemáticas rápidamente."
+    "description": "Monitoriza el estado de todos los correos transaccionales enviados por la plataforma: confirmaciones de entrega, aperturas, rebotes y quejas de spam. Una tasa de rebote superior al 5% puede dañar tu reputación de remitente. Investiga y limpia las direcciones problemáticas rápidamente.",
+    "health": "Estado"
   },
   "pipeline_analytics": {
     "title": "Analítica del Pipeline",
@@ -5182,7 +5180,6 @@
     "all_tiers": "Todos los Usuarios",
     "professional_plus": "Professional+",
     "enterprise_only": "Solo Enterprise",
-    "seen_by": "Visto por {{count}} usuarios",
     "save": "Guardar",
     "delete": "Eliminar",
     "confirm_delete": "¿Estás seguro de que deseas eliminar esta nota de lanzamiento? Esta acción no se puede deshacer.",
@@ -5197,7 +5194,9 @@
     "updated_error": "Error al actualizar la nota de lanzamiento",
     "deleted_error": "Error al eliminar la nota de lanzamiento",
     "toggle_error": "Error al actualizar el estado de publicación",
-    "description": "Crea y publica notas de versión que aparecen a los clientes en el modal '¿Qué hay de nuevo?' al iniciar sesión. Las notas pueden dirigirse por nivel de plan: todos, Profesional y superior, o solo Empresarial. Los borradores no serán visibles hasta que los publiques."
+    "description": "Crea y publica notas de versión que aparecen a los clientes en el modal '¿Qué hay de nuevo?' al iniciar sesión. Las notas pueden dirigirse por nivel de plan: todos, Profesional y superior, o solo Empresarial. Los borradores no serán visibles hasta que los publiques.",
+    "col_status": "Estado",
+    "col_seen_by": "Visto por"
   },
   "whats_new": {
     "title": "Novedades",
@@ -5292,14 +5291,14 @@
     "lead_updated": "Prospecto actualizado",
     "error": "Algo salió mal",
     "sendEmail": {
-      "title": "Enviar Email de Prospección",
       "confirmMessage": "¿Enviar el email de prospección a {{name}} de {{company}}?",
       "sending": "Enviando...",
       "success": "Email enviado a {{name}}",
       "error": "Error al enviar el email",
       "noEmail": "Este prospecto no tiene dirección de email",
       "subject_preview": "Asunto del email: {{subject}}",
-      "disabled_tooltip": "Envío de email temporalmente deshabilitado"
+      "disabled_tooltip": "Envío de email temporalmente deshabilitado",
+      "col_header": "Enviar"
     },
     "previewEmail": {
       "title": "Vista Previa del Email",

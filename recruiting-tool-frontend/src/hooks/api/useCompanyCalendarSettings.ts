@@ -72,7 +72,7 @@ export function useUpdateCompanyCalendarSettings() {
       showSuccessToast(t("calendar_settings.save_success"));
     },
     onError: (error) => {
-      showErrorToast(error, t("errors.update_failed"));
+      showErrorToast(error, t("calendar_settings.settings_save_error"));
     },
   });
 }

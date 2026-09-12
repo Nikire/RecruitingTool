@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import i18n from "../i18n/i18n";
 import { ValidationErrors } from "../types/api.types";
 
 /**
@@ -48,6 +49,8 @@ interface ErrorWithResponse {
     statusText?: string;
   };
   message?: string;
+  /** Axios sets this only on transport failures (ERR_NETWORK, ECONNABORTED...). */
+  code?: string;
 }
 
 function extractValidationErrors(error: unknown): ValidationErrors | null {
@@ -80,9 +83,15 @@ function formatValidationErrors(errors: ValidationErrors): string {
   return errorMessages.join("\n");
 }
 
+/**
+ * `defaultMessage` is the caller's translated, context-specific fallback. Only
+ * genuinely informative server text may override it — never untranslated axios
+ * boilerplate such as "Network Error" or "Bad Gateway", which would otherwise
+ * drop a Spanish user into English mid-flow.
+ */
 export const showErrorToast = (
   error: unknown,
-  defaultMessage = "An error occurred",
+  defaultMessage = i18n.t("errors.operation_failed"),
 ) => {
   let errorMessage = defaultMessage;
   let validationErrors: ValidationErrors | null = null;
@@ -115,11 +124,18 @@ export const showErrorToast = (
         } else if (response.data.error) {
           errorMessage = response.data.error;
         }
-      } else if (response.statusText) {
-        errorMessage = response.statusText;
       }
+      // `response.statusText` is deliberately not used: it is untranslated HTTP
+      // boilerplate ("Internal Server Error"), so the caller's translated
+      // `defaultMessage` is kept instead.
     } else if ("message" in error && typeof error.message === "string") {
-      errorMessage = error.message;
+      const transportCode = (error as ErrorWithResponse).code;
+      if (!transportCode) {
+        errorMessage = error.message;
+      } else if (transportCode === "ERR_NETWORK") {
+        errorMessage = i18n.t("errors.network_error");
+      }
+      // Any other transport failure (timeout, abort) keeps `defaultMessage`.
     }
   } else if (typeof error === "string") {
     errorMessage = error;

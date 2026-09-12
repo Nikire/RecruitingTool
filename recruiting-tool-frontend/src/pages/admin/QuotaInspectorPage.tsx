@@ -351,9 +351,15 @@ const QuotaInspectorPage: React.FC = () => {
             onChange={handlePlanChange}
           >
             <MenuItem value="">{t("quota_inspector.all_plans")}</MenuItem>
-            <MenuItem value="FREE">FREE</MenuItem>
-            <MenuItem value="PROFESSIONAL">PROFESSIONAL</MenuItem>
-            <MenuItem value="ENTERPRISE">ENTERPRISE</MenuItem>
+            <MenuItem value="FREE">
+              {t("subscription.plans.free.name")}
+            </MenuItem>
+            <MenuItem value="PROFESSIONAL">
+              {t("subscription.plans.professional.name")}
+            </MenuItem>
+            <MenuItem value="ENTERPRISE">
+              {t("subscription.plans.enterprise.name")}
+            </MenuItem>
           </Select>
         </FormControl>
 

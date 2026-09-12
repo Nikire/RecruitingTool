@@ -15,6 +15,7 @@ import {
   Alert,
   Divider,
   MenuItem,
+  Tooltip,
 } from "@mui/material";
 import { useState, useEffect, useRef } from "react";
 import { Visibility } from "@mui/icons-material";
@@ -773,15 +774,16 @@ const EmailTemplateDialog: React.FC<EmailTemplateDialogProps> = ({
               </Typography>
               <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
                 {AVAILABLE_VARIABLES.map((variable) => (
-                  <Chip
-                    key={variable.key}
-                    label={variable.key}
-                    onClick={() => insertVariable(variable.key)}
-                    size="small"
-                    sx={{ mb: 1 }}
-                    color="primary"
-                    variant="filled"
-                  />
+                  <Tooltip key={variable.key} title={variable.description}>
+                    <Chip
+                      label={variable.key}
+                      onClick={() => insertVariable(variable.key)}
+                      size="small"
+                      sx={{ mb: 1 }}
+                      color="primary"
+                      variant="filled"
+                    />
+                  </Tooltip>
                 ))}
               </Stack>
             </Box>

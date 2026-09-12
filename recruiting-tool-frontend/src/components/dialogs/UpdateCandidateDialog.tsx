@@ -103,7 +103,13 @@ const UpdateCandidateDialog: React.FC<UpdateCandidateDialogProps> = ({
     >
       <DialogTitle>{t("candidates.update_title")}</DialogTitle>
       <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
-        <Tabs value={activeTab} onChange={handleTabChange}>
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          allowScrollButtonsMobile
+        >
           <Tab label={t("candidates.info_tab")} />
           <Tab label={t("candidates.files_tab")} />
           <Tab label={t("candidates.notes_tab")} />

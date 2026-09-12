@@ -48,7 +48,7 @@ export const useCreateInvitation = (companyUid: string) => {
         response?: { data?: { message?: string } };
       };
       const message =
-        axiosError.response?.data?.message || t("errors.create_failed");
+        axiosError.response?.data?.message || t("team.invitation_send_failed");
       toast.error(message);
     },
   });

@@ -392,7 +392,6 @@
     "switch_template_message": "Switching templates will replace your current stages. Are you sure you want to continue?"
   },
   "job_position_card": {
-    "full_time": "Full-time",
     "part_time": "Part-time",
     "contract": "Contract",
     "remote": "Remote",
@@ -1125,7 +1124,7 @@
     "subject": "Subject",
     "subject_placeholder": "e.g., Interview Invitation - {{positionTitle}}",
     "body": "Body",
-    "body_placeholder": "Dear {{candidateName}},&#10;&#10;Thank you for applying to the {{positionTitle}} position at {{companyName}}...",
+    "body_placeholder": "Dear {{candidateName}},\n\nThank you for applying to the {{positionTitle}} position at {{companyName}}...",
     "body_helper": "Use variables above for personalization",
     "available_variables": "Available Variables (click to insert):",
     "mark_default": "Mark as default template",
@@ -1532,8 +1531,8 @@
       "sign_in_with_email": "Or sign in with email",
       "login_with_linkedin": "Continue with LinkedIn",
       "signup_with_linkedin": "Sign up with LinkedIn",
-      "completing_login": "Completing sign-in, please wait...",
-      "callback_error": "Sign-in with social account failed. Please try again."
+      "callback_error": "Sign-in with social account failed. Please try again.",
+      "completing_login": "Completing sign-in, please wait..."
     },
     "add_email_banner": "Your account has no email address. Add one to unlock all features.",
     "add_email_action": "Add Email",
@@ -1626,7 +1625,6 @@
     "resend_success": "Verification email sent! Please check your inbox.",
     "resend_error": "Failed to send verification email. Please try again.",
     "logout": "Logout",
-    "already_verified": "Already verified? Try refreshing the page.",
     "check_status_button": "I've verified my email",
     "checking_status": "Checking...",
     "not_verified_yet": "We couldn't confirm your email yet. Click the link in the email, then try again.",
@@ -1937,12 +1935,10 @@
     "subtitle": "View and download your billing invoices",
     "no_invoices": "No Invoices Available",
     "no_invoices_description": "You don't have any invoices yet. Invoices will appear here once you subscribe to a paid plan.",
-    "invoice_number": "Invoice #",
     "date": "Date",
     "amount": "Amount",
     "status": "Status",
     "actions": "Actions",
-    "download_pdf": "Download PDF",
     "view_invoice": "View Invoice",
     "total_invoices": "Total: {{count}} invoice(s)",
     "error_loading": "Failed to load invoices. Please try again later.",
@@ -3937,7 +3933,8 @@
     "you": "You",
     "cancel_invitation_title": "Cancel Invitation",
     "cancel_invitation_message": "Are you sure you want to cancel the invitation sent to {{email}}? The invitation link will stop working.",
-    "cancel_invitation_button": "Cancel Invitation"
+    "cancel_invitation_button": "Cancel Invitation",
+    "invitation_send_failed": "Failed to send invitation. Please try again."
   },
   "check_status": {
     "title": "Check Application Status",
@@ -5139,7 +5136,8 @@
     "health_ok": "OK",
     "health_warning": "WARNING",
     "health_critical": "CRITICAL",
-    "description": "Monitors the health of all transactional emails sent by the platform — delivery confirmations, opens, bounces, and spam complaints. A bounce rate above 5% or complaint rate above 0.1% can damage your sender reputation. Investigate and clean problematic addresses quickly."
+    "description": "Monitors the health of all transactional emails sent by the platform — delivery confirmations, opens, bounces, and spam complaints. A bounce rate above 5% or complaint rate above 0.1% can damage your sender reputation. Investigate and clean problematic addresses quickly.",
+    "health": "Health"
   },
   "pipeline_analytics": {
     "title": "Pipeline Analytics",
@@ -5182,7 +5180,6 @@
     "all_tiers": "All Users",
     "professional_plus": "Professional+",
     "enterprise_only": "Enterprise Only",
-    "seen_by": "Seen by {{count}} users",
     "save": "Save",
     "delete": "Delete",
     "confirm_delete": "Are you sure you want to delete this release note? This action cannot be undone.",
@@ -5197,7 +5194,9 @@
     "updated_error": "Failed to update release note",
     "deleted_error": "Failed to delete release note",
     "toggle_error": "Failed to update publish status",
-    "description": "Create and publish release notes that appear to customers in the 'What's New' modal when they log in. Notes can be targeted by plan tier — all customers, Professional and above, or Enterprise only. Unpublished notes are saved as drafts and won't be visible until you publish them."
+    "description": "Create and publish release notes that appear to customers in the 'What's New' modal when they log in. Notes can be targeted by plan tier — all customers, Professional and above, or Enterprise only. Unpublished notes are saved as drafts and won't be visible until you publish them.",
+    "col_status": "Status",
+    "col_seen_by": "Seen by"
   },
   "whats_new": {
     "title": "What's New",
@@ -5292,14 +5291,14 @@
     "lead_updated": "Lead updated",
     "error": "Something went wrong",
     "sendEmail": {
-      "title": "Send Outreach Email",
       "confirmMessage": "Send the outreach email to {{name}} at {{company}}?",
       "sending": "Sending...",
       "success": "Email sent to {{name}}",
       "error": "Failed to send email",
       "noEmail": "This lead has no email address",
       "subject_preview": "Email subject: {{subject}}",
-      "disabled_tooltip": "Email sending temporarily disabled"
+      "disabled_tooltip": "Email sending temporarily disabled",
+      "col_header": "Send"
     },
     "previewEmail": {
       "title": "Preview Email",

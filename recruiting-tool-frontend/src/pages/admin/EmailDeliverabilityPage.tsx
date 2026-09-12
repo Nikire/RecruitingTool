@@ -44,9 +44,23 @@ const KpiCard: React.FC<KpiCardProps> = ({
 }) => (
   <Card variant="outlined">
     <CardContent>
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, mb: 1 }}>
+      <Box
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          gap: 1.5,
+          mb: 1,
+          minWidth: 0,
+        }}
+      >
         <Box sx={{ color: iconColor, display: "flex" }}>{icon}</Box>
-        <Typography variant="body2" color="text.secondary" noWrap>
+        <Typography
+          variant="body2"
+          color="text.secondary"
+          noWrap
+          title={title}
+          sx={{ minWidth: 0 }}
+        >
           {title}
         </Typography>
       </Box>
@@ -163,7 +177,7 @@ const usePerTypeColumns = (): GridColDef<EmailDeliverabilityPerTypeItem>[] => {
     },
     {
       field: "health",
-      headerName: "Health",
+      headerName: t("email_deliverability.health"),
       flex: 0.8,
       minWidth: 100,
       sortable: false,
@@ -360,6 +374,7 @@ const EmailDeliverabilityPage: React.FC = () => {
                         variant="body2"
                         color="text.secondary"
                         noWrap
+                        title={bounce.subject}
                       >
                         {bounce.subject}
                       </Typography>
