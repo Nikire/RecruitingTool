@@ -31,6 +31,7 @@ import {
 } from "../../types/timeSlots.types";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { showErrorToast } from "../../utils/toast";
 
 // ==================== PROTECTED HOOKS (HR/ADMIN) ====================
 
@@ -61,7 +62,7 @@ export const useGenerateTimeSlots = () => {
       toast.success(t("time_slots.generated"));
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to generate time slots");
+      showErrorToast(error, t("time_slots.generate_error"));
     },
   });
 };
@@ -83,7 +84,7 @@ export const useGenerateCustomTimeSlots = () => {
         toast.success(t("time_slots.custom_generated"));
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to generate custom time slots");
+        showErrorToast(error, t("time_slots.custom_generate_error"));
       },
     },
   );
@@ -100,7 +101,7 @@ export const useGenerateBookingToken = () => {
       toast.success(t("time_slots.booking_token_generated"));
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to generate booking token");
+      showErrorToast(error, t("time_slots.booking_token_error"));
     },
   });
 };
@@ -122,7 +123,7 @@ export const useCancelSlotSelection = () => {
       toast.success(t("time_slots.selection_cancelled"));
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to cancel slot selection");
+      showErrorToast(error, t("time_slots.cancel_error"));
     },
   });
 };
@@ -158,7 +159,7 @@ export const useSendBookingLink = () => {
       if (axiosError?.response?.status === 403) {
         toast.error(t("booking_link.not_enabled"));
       } else {
-        toast.error(error.message || t("booking_link.error"));
+        showErrorToast(error, t("booking_link.error"));
       }
     },
   });
@@ -176,7 +177,7 @@ export const useSendStageBookingLink = () => {
       if (axiosError?.response?.status === 403) {
         toast.error(t("booking_link.not_enabled"));
       } else {
-        toast.error(error.message || t("booking_link.error"));
+        showErrorToast(error, t("booking_link.error"));
       }
     },
   });
@@ -216,7 +217,7 @@ export const useSelectTimeSlot = () => {
       toast.success(t("time_slots.interview_selected"));
     },
     onError: (error) => {
-      toast.error(error.message || "Failed to select time slot");
+      showErrorToast(error, t("time_slots.select_error"));
     },
   });
 };

@@ -19,13 +19,6 @@ export {
   type SupportedLanguage,
 } from "./dateFormatters";
 
-// Legacy Date Utilities (deprecated - use dateFormatters instead)
-export {
-  formatDate as legacyFormatDate,
-  formatDateTime as legacyFormatDateTime,
-  getRelativeTime,
-} from "./dateUtils";
-
 // Toast Notifications
 export {
   showSuccessToast,

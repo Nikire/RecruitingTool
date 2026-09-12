@@ -1,18 +1,16 @@
-import axios from "axios";
+import api from "../api/axios";
 import {
   NotificationPreferences,
   UpdateNotificationPreferencesDto,
 } from "../types/notification-preferences.types";
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /**
  * Get notification preferences for the current user
  */
 export const getNotificationPreferences =
   async (): Promise<NotificationPreferences> => {
-    const response = await axios.get<NotificationPreferences>(
-      `${API_BASE_URL}/notification-preferences`,
+    const response = await api.get<NotificationPreferences>(
+      "/notification-preferences",
     );
     return response.data;
   };
@@ -23,8 +21,8 @@ export const getNotificationPreferences =
 export const updateNotificationPreferences = async (
   data: UpdateNotificationPreferencesDto,
 ): Promise<NotificationPreferences> => {
-  const response = await axios.patch<NotificationPreferences>(
-    `${API_BASE_URL}/notification-preferences`,
+  const response = await api.patch<NotificationPreferences>(
+    "/notification-preferences",
     data,
   );
   return response.data;

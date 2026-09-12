@@ -1,4 +1,4 @@
-import { fileKeys } from "../../api/queryKeys";
+import { fileKeys, quotaKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import * as filesApi from "../../api/files";
 import toast from "react-hot-toast";
@@ -45,6 +45,9 @@ export function useUploadFile() {
           queryKey: fileKeys.byCandidate(data.candidateUid),
         });
       }
+
+      // The upload changes storage usage shown by QuotaBanner.
+      queryClient.invalidateQueries({ queryKey: quotaKeys.all });
 
       toast.success(t("files.file_uploaded", { name: data.originalName }));
     },
@@ -131,6 +134,8 @@ export function useDeleteFile() {
       queryClient.invalidateQueries({ queryKey: fileKeys.all });
       queryClient.invalidateQueries({ queryKey: fileKeys.companyList() });
       queryClient.invalidateQueries({ queryKey: fileKeys.companyStorage() });
+      // The delete frees storage shown by QuotaBanner.
+      queryClient.invalidateQueries({ queryKey: quotaKeys.all });
       toast.success(t("files.file_deleted"));
     },
     onError: (error: unknown) => {
@@ -188,6 +193,8 @@ export function useDeleteManyFiles() {
       queryClient.invalidateQueries({ queryKey: fileKeys.companyList() });
       queryClient.invalidateQueries({ queryKey: fileKeys.companyStorage() });
       queryClient.invalidateQueries({ queryKey: fileKeys.all });
+      // The delete frees storage shown by QuotaBanner.
+      queryClient.invalidateQueries({ queryKey: quotaKeys.all });
       toast.success(t("files.deleteSuccess", { count: data.deleted }));
     },
     onError: (error: unknown) => {

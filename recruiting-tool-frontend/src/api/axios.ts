@@ -53,6 +53,30 @@ const PROTECTED_ROUTE_PREFIXES = [
   "/pending-email-verification",
 ];
 
+/**
+ * Fired on `window` whenever this module drops the stored session (a missing,
+ * malformed or unrefreshable token). The interceptor only redirects when the
+ * visitor is on a protected route, so on a public page nothing else would ever
+ * learn that the session ended: `useAuthMe` listens for this event to clear the
+ * user atom and the cached /auth/me entry, instead of leaving a signed-out
+ * visitor with their avatar and name still rendered in the navbar.
+ */
+export const AUTH_CLEARED_EVENT = "borderless:auth-cleared";
+
+/**
+ * Removes both tokens and announces it. Use this instead of calling
+ * `localStorage.removeItem` directly so no clear path stays silent.
+ */
+function clearStoredSession(): void {
+  localStorage.removeItem("authToken");
+  localStorage.removeItem("refreshToken");
+  try {
+    window.dispatchEvent(new Event(AUTH_CLEARED_EVENT));
+  } catch {
+    // Never let a blocked/missing Event constructor break the auth flow.
+  }
+}
+
 export function isProtectedRoute(
   currentPath: string = window.location.pathname,
 ): boolean {
@@ -161,8 +185,7 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
         "[AUTH] Invalid or missing refresh token, clearing auth state",
       );
       isRefreshing = false;
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("refreshToken");
+      clearStoredSession();
       // Only redirect to login when the visitor is on a protected page
       if (isProtectedRoute()) {
         window.location.href = "/login";
@@ -223,8 +246,7 @@ api.interceptors.response.use(enhancedResponseNormalizer, async (error) => {
       processQueue(refreshError as Error, null);
       isRefreshing = false;
 
-      localStorage.removeItem("authToken");
-      localStorage.removeItem("refreshToken");
+      clearStoredSession();
       // Only redirect to login when the visitor is on a protected page
       if (isProtectedRoute()) {
         window.location.href = "/login";

@@ -114,7 +114,7 @@ export function useAddProspectContact() {
       addProspectContact(uid, dto),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: prospectKeys.detail(vars.uid) });
-      qc.invalidateQueries({ queryKey: prospectKeys.list() });
+      qc.invalidateQueries({ queryKey: prospectKeys.lists() });
       showSuccessToast(t("outreach_crm_detail.contact_added"));
     },
     onError: () => {
@@ -134,7 +134,7 @@ export function useRemoveProspectContact() {
       removeProspectContact(uid, contactUid),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: prospectKeys.detail(vars.uid) });
-      qc.invalidateQueries({ queryKey: prospectKeys.list() });
+      qc.invalidateQueries({ queryKey: prospectKeys.lists() });
     },
   });
 }
@@ -150,7 +150,7 @@ export function useAddProspectActivity() {
       addProspectActivity(uid, dto),
     onSuccess: (_data, vars) => {
       qc.invalidateQueries({ queryKey: prospectKeys.detail(vars.uid) });
-      qc.invalidateQueries({ queryKey: prospectKeys.list() });
+      qc.invalidateQueries({ queryKey: prospectKeys.lists() });
       qc.invalidateQueries({ queryKey: prospectKeys.analytics() });
       showSuccessToast(t("outreach_crm_detail.activity_logged"));
     },

@@ -270,7 +270,11 @@
       "note_updated": "¡Nota actualizada exitosamente!",
       "note_update_failed": "No se pudo actualizar la nota. Por favor intenta nuevamente.",
       "note_deleted": "¡Nota eliminada exitosamente!",
-      "note_delete_failed": "No se pudo eliminar la nota. Por favor intenta nuevamente."
+      "note_delete_failed": "No se pudo eliminar la nota. Por favor intenta nuevamente.",
+      "updated": "¡Candidato actualizado exitosamente!",
+      "update_failed": "No se pudo actualizar el candidato",
+      "deleted": "¡Candidato eliminado exitosamente!",
+      "delete_failed": "No se pudo eliminar el candidato"
     },
     "source_details_placeholder": "Ej.: Recomendado por Ana García, publicación de LinkedIn, feria de empleo",
     "source_details_helper": "Opcional. Agrega contexto adicional sobre de dónde proviene este candidato"
@@ -493,7 +497,13 @@
     "updated_success": "¡Proceso de contratación actualizado exitosamente!",
     "update_error": "No se pudo actualizar el proceso de contratación",
     "stages_count_one": "{{count}} etapa",
-    "stages_count_other": "{{count}} etapas"
+    "stages_count_other": "{{count}} etapas",
+    "toast": {
+      "created": "¡Proceso de contratación creado exitosamente!",
+      "create_failed": "No se pudo crear el proceso de contratación",
+      "deleted": "¡Proceso de contratación eliminado exitosamente!",
+      "delete_failed": "No se pudo eliminar el proceso de contratación"
+    }
   },
   "companies": {
     "title": "Empresas",
@@ -705,7 +715,18 @@
     "no_stages_message_other": "No hay etapas configuradas aún. Agregue al menos {{count}} etapas para continuar. Puede usar una plantilla para configuración rápida.",
     "no_stages_message_one": "No hay etapas configuradas aún. Agregue al menos {{count}} etapa para continuar. Puede usar una plantilla para configuración rápida.",
     "add_more_stages_other": "Por favor agregue al menos {{count}} etapas más.",
-    "add_more_stages_one": "Por favor agregue al menos {{count}} etapa más."
+    "add_more_stages_one": "Por favor agregue al menos {{count}} etapa más.",
+    "toast": {
+      "created": "¡Etapa creada exitosamente!",
+      "create_failed": "No se pudo crear la etapa",
+      "bulk_created": "¡Etapas creadas exitosamente!",
+      "bulk_create_failed": "No se pudieron crear las etapas",
+      "updated": "¡Etapa actualizada exitosamente!",
+      "update_failed": "No se pudo actualizar la etapa",
+      "reorder_failed": "No se pudieron reordenar las etapas",
+      "deleted": "¡Etapa eliminada exitosamente!",
+      "delete_failed": "No se pudo eliminar la etapa"
+    }
   },
   "applications": {
     "title": "Aplicaciones",
@@ -729,7 +750,15 @@
     "empty_description": "Las aplicaciones aparecen aquí en cuanto un candidato se postula. Publica una oferta para empezar a recibirlas.",
     "empty_action": "Publicar una oferta",
     "empty_filtered_title": "No hay aplicaciones con este estado",
-    "empty_filtered_description": "Nada coincide con el estado seleccionado. Limpia el filtro para ver todas las aplicaciones."
+    "empty_filtered_description": "Nada coincide con el estado seleccionado. Limpia el filtro para ver todas las aplicaciones.",
+    "toast": {
+      "updated": "¡Postulación actualizada exitosamente!",
+      "update_failed": "No se pudo actualizar la postulación",
+      "deleted": "¡Postulación eliminada exitosamente!",
+      "delete_failed": "No se pudo eliminar la postulación",
+      "accepted": "¡Postulación aceptada! Se crearon el candidato y el proceso de contratación.",
+      "accept_failed": "No se pudo aceptar la postulación"
+    }
   },
   "interviews": {
     "title": "Entrevistas",
@@ -1311,7 +1340,12 @@
     "custom_generated": "Franjas horarias personalizadas generadas exitosamente",
     "booking_token_generated": "Token de reserva generado exitosamente",
     "selection_cancelled": "Selección de franja horaria cancelada",
-    "interview_selected": "Franja horaria de entrevista seleccionada exitosamente"
+    "interview_selected": "Franja horaria de entrevista seleccionada exitosamente",
+    "generate_error": "No se pudieron generar las franjas horarias",
+    "custom_generate_error": "No se pudieron generar las franjas horarias personalizadas",
+    "booking_token_error": "No se pudo generar el token de reserva",
+    "cancel_error": "No se pudo cancelar la selección de la franja horaria",
+    "select_error": "No se pudo seleccionar la franja horaria"
   },
   "notes": {
     "save_candidate_first": "Por favor guarde el candidato primero antes de agregar notas.",
@@ -2088,7 +2122,16 @@
     "import_completed_with_errors": "Importación Completada con Errores",
     "imported_count": "Importados exitosamente",
     "failed_count": "Fallaron al importar",
-    "import_errors": "Errores de Importación"
+    "import_errors": "Errores de Importación",
+    "toast": {
+      "preview_failed": "No se pudo previsualizar el archivo CSV",
+      "imported_one": "Se importó {{count}} candidato exitosamente",
+      "imported_other": "Se importaron {{count}} candidatos exitosamente",
+      "rows_failed_one": "{{count}} fila no se pudo importar",
+      "rows_failed_other": "{{count}} filas no se pudieron importar",
+      "import_failed": "No se pudieron importar los candidatos",
+      "template_download_failed": "No se pudo descargar la plantilla"
+    }
   },
   "careers": {
     "title": "Vacantes disponibles",
@@ -2202,7 +2245,11 @@
     "toast": {
       "save_failed": "No se pudo guardar la nota",
       "deleted": "¡Nota eliminada correctamente!",
-      "delete_failed": "No se pudo eliminar la nota"
+      "delete_failed": "No se pudo eliminar la nota",
+      "created": "¡Nota creada exitosamente!",
+      "create_failed": "No se pudo crear la nota",
+      "updated": "¡Nota actualizada exitosamente!",
+      "update_failed": "No se pudo actualizar la nota"
     },
     "notes_count_other": "{{count}} notas",
     "notes_count_one": "{{count}} nota"
@@ -3188,7 +3235,8 @@
       "redirecting": "Redirigiendo al panel..."
     },
     "toast": {
-      "complete_failed": "No se pudo completar la configuración inicial. Por favor intenta nuevamente."
+      "complete_failed": "No se pudo completar la configuración inicial. Por favor intenta nuevamente.",
+      "complete_success": "¡Configuración inicial completada exitosamente!"
     }
   },
   "landing": {

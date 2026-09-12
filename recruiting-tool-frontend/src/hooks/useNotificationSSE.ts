@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   NOTIFICATIONS_QUERY_KEY,
@@ -22,6 +22,13 @@ export function useNotificationSSE() {
   const eventSourceRef = useRef<EventSource | null>(null);
   const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const reconnectAttemptsRef = useRef(0);
+  // Real state, not a ref read during render: a ref never re-renders, so the
+  // previous `eventSourceRef.current?.readyState` expression could not drive
+  // any UI indicator.
+  const [isConnected, setIsConnected] = useState(false);
+  // Lets the visibility/online listeners below restart a stream that already
+  // exhausted its retries, without re-running the whole connection effect.
+  const reconnectNowRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
     const MAX_RECONNECT_ATTEMPTS = 5;
@@ -45,11 +52,13 @@ export function useNotificationSSE() {
         console.log("[SSE] Connecting to notification stream...");
         const eventSource = new EventSource(sseUrl);
         eventSourceRef.current = eventSource;
+        setIsConnected(false);
 
         // Connection established
         eventSource.addEventListener("CONNECTION_ESTABLISHED", (event) => {
           console.log("[SSE] Connection established:", event.data);
           reconnectAttemptsRef.current = 0; // Reset reconnect attempts on success
+          setIsConnected(true);
         });
 
         // Heartbeat to keep connection alive
@@ -82,12 +91,14 @@ export function useNotificationSSE() {
         eventSource.onopen = () => {
           console.log("[SSE] Connection opened");
           reconnectAttemptsRef.current = 0;
+          setIsConnected(true);
         };
 
         // Error handler
         eventSource.onerror = (error) => {
           console.error("[SSE] Connection error:", error);
           eventSource.close();
+          setIsConnected(false);
 
           // Attempt to reconnect with exponential backoff
           if (reconnectAttemptsRef.current < MAX_RECONNECT_ATTEMPTS) {
@@ -119,9 +130,46 @@ export function useNotificationSSE() {
     // Connect on mount
     connectSSE();
 
+    // Five retries span only ~31s, after which the stream used to stay dead
+    // until a full page reload — a backend deploy, a laptop waking from sleep
+    // or a brief network drop killed real-time notifications for the rest of
+    // the session. Coming back to the tab (or back online) resets the budget
+    // and reconnects.
+    const retryFromScratch = () => {
+      const readyState = eventSourceRef.current?.readyState;
+      if (
+        readyState === EventSource.OPEN ||
+        readyState === EventSource.CONNECTING
+      ) {
+        return;
+      }
+      if (reconnectTimeoutRef.current) {
+        clearTimeout(reconnectTimeoutRef.current);
+        reconnectTimeoutRef.current = null;
+      }
+      eventSourceRef.current?.close();
+      eventSourceRef.current = null;
+      reconnectAttemptsRef.current = 0;
+      connectSSE();
+    };
+
+    reconnectNowRef.current = retryFromScratch;
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        retryFromScratch();
+      }
+    };
+
+    window.addEventListener("online", retryFromScratch);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     // Cleanup on unmount
     return () => {
       console.log("[SSE] Cleaning up SSE connection...");
+      window.removeEventListener("online", retryFromScratch);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      reconnectNowRef.current = null;
       if (eventSourceRef.current) {
         eventSourceRef.current.close();
         eventSourceRef.current = null;
@@ -133,7 +181,13 @@ export function useNotificationSSE() {
     };
   }, [queryClient]);
 
+  /** Force an immediate reconnect, resetting the retry budget. */
+  const reconnect = useCallback(() => {
+    reconnectNowRef.current?.();
+  }, []);
+
   return {
-    isConnected: eventSourceRef.current?.readyState === EventSource.OPEN,
+    isConnected,
+    reconnect,
   };
 }

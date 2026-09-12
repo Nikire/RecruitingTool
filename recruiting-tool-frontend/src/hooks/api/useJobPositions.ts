@@ -1,4 +1,4 @@
-import { jobPositionKeys } from "../../api/queryKeys";
+import { deletedKeys, jobPositionKeys, quotaKeys } from "../../api/queryKeys";
 import {
   useQuery,
   useMutation,
@@ -102,6 +102,8 @@ export function useCreateJobPosition() {
     onSuccess: (created) => {
       // Invalidate all job position queries including public career page
       queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
+      // A new position consumes the job-position quota shown by QuotaBanner.
+      queryClient.invalidateQueries({ queryKey: quotaKeys.all });
       showSuccessToast(t("job_positions.created_success"));
       // Activation milestone. Mirrored server-side as JOB_POSITION_CREATED.
       trackFirstTime(ANALYTICS_EVENTS.FIRST_JOB_POSITION_CREATED, {
@@ -141,6 +143,9 @@ export function useDeleteJobPosition() {
     onSuccess: () => {
       // Invalidate all job position queries including public career page
       queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
+      // Soft delete: the record moves to the recycle bin and frees quota.
+      queryClient.invalidateQueries({ queryKey: deletedKeys.all });
+      queryClient.invalidateQueries({ queryKey: quotaKeys.all });
       showSuccessToast(t("job_positions.deleted_success"));
     },
     onError: (error) => {

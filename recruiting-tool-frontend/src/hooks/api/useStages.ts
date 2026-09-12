@@ -25,6 +25,7 @@ import {
 } from "../../types/stage.types";
 import { PaginationParams } from "../../types/pagination.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
+import i18n from "i18next";
 
 export function useStage(uid: string) {
   return useQuery({
@@ -53,10 +54,10 @@ export function useCreateStage() {
         refetchType: "all",
       });
       queryClient.invalidateQueries({ queryKey: stageKeys.all });
-      showSuccessToast("Stage created successfully!");
+      showSuccessToast(i18n.t("stages.toast.created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create stage");
+      showErrorToast(error, i18n.t("stages.toast.create_failed"));
     },
   });
 }
@@ -73,10 +74,10 @@ export function useBulkCreateStages() {
         refetchType: "all",
       });
       queryClient.invalidateQueries({ queryKey: stageKeys.all });
-      showSuccessToast("Stages created successfully!");
+      showSuccessToast(i18n.t("stages.toast.bulk_created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create stages");
+      showErrorToast(error, i18n.t("stages.toast.bulk_create_failed"));
     },
   });
 }
@@ -91,10 +92,10 @@ export function useUpdateStage() {
       queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
       queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
       queryClient.invalidateQueries({ queryKey: stageKeys.all });
-      showSuccessToast("Stage updated successfully!");
+      showSuccessToast(i18n.t("stages.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update stage");
+      showErrorToast(error, i18n.t("stages.toast.update_failed"));
     },
   });
 }
@@ -110,7 +111,7 @@ export function useReorderStages() {
       queryClient.invalidateQueries({ queryKey: stageKeys.all });
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to reorder stages");
+      showErrorToast(error, i18n.t("stages.toast.reorder_failed"));
     },
   });
 }
@@ -123,10 +124,10 @@ export function useDeleteStage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: jobPositionKeys.all });
       queryClient.invalidateQueries({ queryKey: stageKeys.all });
-      showSuccessToast("Stage deleted successfully!");
+      showSuccessToast(i18n.t("stages.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete stage");
+      showErrorToast(error, i18n.t("stages.toast.delete_failed"));
     },
   });
 }
@@ -155,10 +156,10 @@ export function useCreateStageNote() {
       queryClient.invalidateQueries({
         queryKey: stageNoteKeys.byStage(variables.stageUid),
       });
-      showSuccessToast("Note created successfully!");
+      showSuccessToast(i18n.t("stage_notes.toast.created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create note");
+      showErrorToast(error, i18n.t("stage_notes.toast.create_failed"));
     },
   });
 }
@@ -178,10 +179,10 @@ export function useUpdateStageNote() {
       queryClient.invalidateQueries({
         queryKey: stageNoteKeys.byStage(updatedNote.stageUid),
       });
-      showSuccessToast("Note updated successfully!");
+      showSuccessToast(i18n.t("stage_notes.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update note");
+      showErrorToast(error, i18n.t("stage_notes.toast.update_failed"));
     },
   });
 }
@@ -196,10 +197,10 @@ export function useDeleteStageNote() {
       queryClient.invalidateQueries({
         queryKey: stageNoteKeys.byStage(variables.stageUid),
       });
-      showSuccessToast("Note deleted successfully!");
+      showSuccessToast(i18n.t("stage_notes.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete note");
+      showErrorToast(error, i18n.t("stage_notes.toast.delete_failed"));
     },
   });
 }

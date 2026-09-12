@@ -54,12 +54,25 @@ const defaultTablePreferences: TablePreferences = {
 const defaultColumnVisibility: ColumnVisibilityPreferences = {};
 
 /**
+ * Options shared by every persisted preference atom.
+ *
+ * `getOnInit` makes the atom read localStorage during initialisation instead of
+ * in the mount effect. Without it the first committed render always uses the
+ * hard-coded default, so a dark-mode user gets a full-page white flash (and the
+ * sidebar/row-count preferences flash their defaults) on every load before the
+ * stored value is rehydrated a frame later.
+ */
+const persistedAtomOptions = { getOnInit: true } as const;
+
+/**
  * Global table preferences atom
  * Affects all tables in the application
  */
 export const tablePreferencesAtom = atomWithStorage<TablePreferences>(
   "recruiting_table_prefs",
   defaultTablePreferences,
+  undefined,
+  persistedAtomOptions,
 );
 
 /**
@@ -79,6 +92,8 @@ export const columnVisibilityAtom =
 export const sidebarCollapsedAtom = atomWithStorage<boolean>(
   "recruiting_sidebar_collapsed",
   false,
+  undefined,
+  persistedAtomOptions,
 );
 
 /**
@@ -90,6 +105,8 @@ export type ThemeMode = "light" | "dark" | "system";
 export const themeModeAtom = atomWithStorage<ThemeMode>(
   "recruiting_theme_mode",
   "light",
+  undefined,
+  persistedAtomOptions,
 );
 
 /**

@@ -1,4 +1,8 @@
-import { candidateKeys, candidateNoteKeys } from "../../api/queryKeys";
+import {
+  candidateKeys,
+  candidateNoteKeys,
+  deletedKeys,
+} from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   getCandidates,
@@ -75,10 +79,10 @@ export function useUpdateCandidate() {
       updateCandidate(data, uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: candidateKeys.all });
-      showSuccessToast("Candidate updated successfully!");
+      showSuccessToast(i18n.t("candidates.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update candidate");
+      showErrorToast(error, i18n.t("candidates.toast.update_failed"));
     },
   });
 }
@@ -90,10 +94,12 @@ export function useDeleteCandidate() {
     mutationFn: (uid: string) => deleteCandidate(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: candidateKeys.all });
-      showSuccessToast("Candidate deleted successfully!");
+      // Soft delete: the record now shows up in the recycle bin.
+      queryClient.invalidateQueries({ queryKey: deletedKeys.all });
+      showSuccessToast(i18n.t("candidates.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete candidate");
+      showErrorToast(error, i18n.t("candidates.toast.delete_failed"));
     },
   });
 }

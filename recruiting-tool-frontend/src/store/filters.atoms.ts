@@ -224,6 +224,47 @@ export const useEmailTemplateFiltersSetter = () =>
   useSetAtom(emailTemplateFiltersAtom);
 
 // ============================================================================
+// Global Reset
+// ============================================================================
+
+/**
+ * Write-only atom that returns every filter atom to its default state.
+ *
+ * The filter atoms are module-level globals living under a single root
+ * `JotaiProvider`, and every logout path is an SPA navigation, so nothing else
+ * clears them. Without this, the next account to sign in on the same tab lands
+ * on a list page still carrying the previous user's search term and page
+ * number — an empty grid filtered by a string they never typed.
+ *
+ * @example
+ * ```tsx
+ * const resetAllFilters = useSetAtom(resetAllFiltersAtom);
+ * resetAllFilters();
+ * ```
+ */
+export const resetAllFiltersAtom = atom(null, (_get, set) => {
+  set(candidateFiltersAtom, { ...createDefaultFilterState() });
+  set(jobPositionFiltersAtom, {
+    ...createDefaultFilterState(),
+    status: "all",
+  });
+  set(hiringProcessFiltersAtom, {
+    ...createDefaultFilterState(),
+    status: "all",
+  });
+  set(applicationFiltersAtom, {
+    ...createDefaultFilterState("appliedAt"),
+    status: "all",
+  });
+  set(companyFiltersAtom, createDefaultFilterState("name"));
+  set(userFiltersAtom, createDefaultFilterState("name"));
+  set(emailTemplateFiltersAtom, createDefaultFilterState("name"));
+});
+
+/** Hook returning a setter that clears every list filter at once. */
+export const useResetAllFilters = () => useSetAtom(resetAllFiltersAtom);
+
+// ============================================================================
 // Legacy Compatibility Exports
 // Maintains backward compatibility with existing useSearchState imports
 // ============================================================================

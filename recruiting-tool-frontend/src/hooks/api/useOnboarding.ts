@@ -56,7 +56,7 @@ export function useCompleteHROnboarding() {
       const response = await axios.post("/users/onboarding/hr/complete", data);
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       // Invalidate onboarding status
       queryClient.invalidateQueries({
         queryKey: onboardingKeys.hrStatus(),
@@ -64,7 +64,9 @@ export function useCompleteHROnboarding() {
       // Invalidate user data
       queryClient.invalidateQueries({ queryKey: authKeys.me() });
 
-      showSuccessToast(data.message);
+      // `data.message` is untranslated English prose from the API; the toast
+      // must follow the UI language like every other user-facing string.
+      showSuccessToast(i18n.t("hr_onboarding.toast.complete_success"));
     },
     onError: (error: unknown) => {
       const message =

@@ -270,7 +270,11 @@
       "note_updated": "Note updated successfully!",
       "note_update_failed": "Failed to update note. Please try again.",
       "note_deleted": "Note deleted successfully!",
-      "note_delete_failed": "Failed to delete note. Please try again."
+      "note_delete_failed": "Failed to delete note. Please try again.",
+      "updated": "Candidate updated successfully!",
+      "update_failed": "Failed to update candidate",
+      "deleted": "Candidate deleted successfully!",
+      "delete_failed": "Failed to delete candidate"
     },
     "source_details_placeholder": "e.g. Referred by Ana García, LinkedIn post, career fair",
     "source_details_helper": "Optional. Add any extra context about where this candidate came from"
@@ -493,7 +497,13 @@
     "updated_success": "Hiring process updated successfully!",
     "update_error": "Failed to update hiring process",
     "stages_count_one": "{{count}} stage",
-    "stages_count_other": "{{count}} stages"
+    "stages_count_other": "{{count}} stages",
+    "toast": {
+      "created": "Hiring process created successfully!",
+      "create_failed": "Failed to create hiring process",
+      "deleted": "Hiring process deleted successfully!",
+      "delete_failed": "Failed to delete hiring process"
+    }
   },
   "companies": {
     "title": "Companies",
@@ -705,7 +715,18 @@
     "no_stages_message_other": "No stages configured yet. Add at least {{count}} stages to continue. You can use a template for quick setup.",
     "no_stages_message_one": "No stages configured yet. Add at least {{count}} stage to continue. You can use a template for quick setup.",
     "add_more_stages_other": "Please add at least {{count}} more stages.",
-    "add_more_stages_one": "Please add at least {{count}} more stage."
+    "add_more_stages_one": "Please add at least {{count}} more stage.",
+    "toast": {
+      "created": "Stage created successfully!",
+      "create_failed": "Failed to create stage",
+      "bulk_created": "Stages created successfully!",
+      "bulk_create_failed": "Failed to create stages",
+      "updated": "Stage updated successfully!",
+      "update_failed": "Failed to update stage",
+      "reorder_failed": "Failed to reorder stages",
+      "deleted": "Stage deleted successfully!",
+      "delete_failed": "Failed to delete stage"
+    }
   },
   "applications": {
     "title": "Applications",
@@ -729,7 +750,15 @@
     "empty_description": "Applications appear here as soon as candidates apply. Publish a job position to start receiving them.",
     "empty_action": "Post a job position",
     "empty_filtered_title": "No applications with this status",
-    "empty_filtered_description": "Nothing matches the selected status. Clear the filter to see every application."
+    "empty_filtered_description": "Nothing matches the selected status. Clear the filter to see every application.",
+    "toast": {
+      "updated": "Application updated successfully!",
+      "update_failed": "Failed to update application",
+      "deleted": "Application deleted successfully!",
+      "delete_failed": "Failed to delete application",
+      "accepted": "Application accepted! Candidate and hiring process created.",
+      "accept_failed": "Failed to accept application"
+    }
   },
   "interviews": {
     "title": "Interviews",
@@ -1311,7 +1340,12 @@
     "custom_generated": "Custom time slots generated successfully",
     "booking_token_generated": "Booking token generated successfully",
     "selection_cancelled": "Time slot selection cancelled",
-    "interview_selected": "Interview time slot selected successfully"
+    "interview_selected": "Interview time slot selected successfully",
+    "generate_error": "Failed to generate time slots",
+    "custom_generate_error": "Failed to generate custom time slots",
+    "booking_token_error": "Failed to generate booking token",
+    "cancel_error": "Failed to cancel the time slot selection",
+    "select_error": "Failed to select the time slot"
   },
   "notes": {
     "save_candidate_first": "Please save the candidate first before adding notes.",
@@ -2051,7 +2085,16 @@
     "import_completed_with_errors": "Import Completed with Errors",
     "imported_count": "Successfully imported",
     "failed_count": "Failed to import",
-    "import_errors": "Import Errors"
+    "import_errors": "Import Errors",
+    "toast": {
+      "preview_failed": "Failed to preview CSV file",
+      "imported_one": "Successfully imported {{count}} candidate",
+      "imported_other": "Successfully imported {{count}} candidates",
+      "rows_failed_one": "{{count}} row failed to import",
+      "rows_failed_other": "{{count}} rows failed to import",
+      "import_failed": "Failed to import candidates",
+      "template_download_failed": "Failed to download template"
+    }
   },
   "careers": {
     "title": "Open Positions",
@@ -2165,7 +2208,11 @@
     "toast": {
       "save_failed": "Failed to save note",
       "deleted": "Note deleted successfully!",
-      "delete_failed": "Failed to delete note"
+      "delete_failed": "Failed to delete note",
+      "created": "Note created successfully!",
+      "create_failed": "Failed to create note",
+      "updated": "Note updated successfully!",
+      "update_failed": "Failed to update note"
     },
     "notes_count_other": "{{count}} notes",
     "notes_count_one": "{{count}} note"
@@ -3151,7 +3198,8 @@
       "redirecting": "Redirecting to dashboard..."
     },
     "toast": {
-      "complete_failed": "Failed to complete onboarding. Please try again."
+      "complete_failed": "Failed to complete onboarding. Please try again.",
+      "complete_success": "Onboarding completed successfully!"
     }
   },
   "landing": {

@@ -5,6 +5,18 @@ import { ValidationErrors } from "../types/api.types";
  * Toast notification utilities with consistent styling
  */
 
+/**
+ * react-hot-toast caps its bar at 350px and sets no word-breaking rule, so a
+ * single unbroken token (a long email address, an object key, a URL) coming
+ * back from the API overruns the coloured background and can run off-screen.
+ * Applied to every toast variant because they all interpolate server data.
+ */
+const WRAP_STYLE = {
+  maxWidth: "min(420px, calc(100vw - 32px))",
+  overflowWrap: "anywhere" as const,
+  wordBreak: "break-word" as const,
+};
+
 export const showSuccessToast = (message: string) => {
   toast.success(message, {
     duration: 3000,
@@ -14,6 +26,7 @@ export const showSuccessToast = (message: string) => {
       color: "#fff",
       padding: "16px",
       borderRadius: "8px",
+      ...WRAP_STYLE,
     },
     iconTheme: {
       primary: "#fff",
@@ -129,6 +142,7 @@ export const showErrorToast = (
       padding: "16px",
       borderRadius: "8px",
       whiteSpace: "pre-line", // Preserve line breaks
+      ...WRAP_STYLE,
     },
     iconTheme: {
       primary: "#fff",
@@ -147,6 +161,7 @@ export const showWarningToast = (message: string) => {
       color: "#fff",
       padding: "16px",
       borderRadius: "8px",
+      ...WRAP_STYLE,
     },
   });
 };
@@ -161,6 +176,7 @@ export const showInfoToast = (message: string) => {
       color: "#fff",
       padding: "16px",
       borderRadius: "8px",
+      ...WRAP_STYLE,
     },
   });
 };

@@ -1,4 +1,9 @@
-import { applicationKeys } from "../../api/queryKeys";
+import {
+  applicationKeys,
+  candidateKeys,
+  deletedKeys,
+  hiringProcessKeys,
+} from "../../api/queryKeys";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   createApplication,
@@ -17,6 +22,7 @@ import {
 } from "../../types/application.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 
 export function useApplications(filters?: ApplicationFilterDto) {
   return useQuery({
@@ -64,10 +70,10 @@ export function useUpdateApplication() {
       updateApplication(uid, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
-      showSuccessToast("Application updated successfully!");
+      showSuccessToast(i18n.t("applications.toast.updated"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to update application");
+      showErrorToast(error, i18n.t("applications.toast.update_failed"));
     },
   });
 }
@@ -79,10 +85,11 @@ export function useDeleteApplication() {
     mutationFn: (uid: string) => deleteApplication(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
-      showSuccessToast("Application deleted successfully!");
+      queryClient.invalidateQueries({ queryKey: deletedKeys.all });
+      showSuccessToast(i18n.t("applications.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete application");
+      showErrorToast(error, i18n.t("applications.toast.delete_failed"));
     },
   });
 }
@@ -94,12 +101,12 @@ export function useAcceptApplication() {
     mutationFn: (uid: string) => acceptApplication(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: applicationKeys.all });
-      showSuccessToast(
-        "Application accepted! Candidate and hiring process created.",
-      );
+      queryClient.invalidateQueries({ queryKey: candidateKeys.all });
+      queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
+      showSuccessToast(i18n.t("applications.toast.accepted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to accept application");
+      showErrorToast(error, i18n.t("applications.toast.accept_failed"));
     },
   });
 }

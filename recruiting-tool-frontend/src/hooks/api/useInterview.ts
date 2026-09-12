@@ -1,4 +1,4 @@
-import { interviewKeys } from "../../api/queryKeys";
+import { deletedKeys, interviewKeys } from "../../api/queryKeys";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -101,6 +101,8 @@ export const useDeleteInterview = () => {
     onSuccess: () => {
       toast.success(t("success.interview_deleted"));
       queryClient.invalidateQueries({ queryKey: interviewKeys.all });
+      // Soft delete: the record now shows up in the recycle bin.
+      queryClient.invalidateQueries({ queryKey: deletedKeys.all });
     },
     onError: (error: unknown) => {
       toast.error(

@@ -40,7 +40,7 @@ import {
 } from "../../types/connection-requests";
 import { useValidationRules } from "../../utils/validation";
 import FormErrorSummary from "../common/FormErrorSummary";
-import { formatDate } from "../../utils/dateUtils";
+import { formatDate } from "../../utils/dateFormatters";
 
 interface ConnectionRequestsListProps {
   companyUid: string;
@@ -49,7 +49,7 @@ interface ConnectionRequestsListProps {
 const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
   companyUid,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const validationRules = useValidationRules();
   const [selectedRequest, setSelectedRequest] =
     useState<ConnectionRequest | null>(null);
@@ -210,7 +210,11 @@ const ConnectionRequestsList: React.FC<ConnectionRequestsListProps> = ({
                     )}
                   </Box>
                   <Typography variant="caption" color="textSecondary">
-                    {formatDate(request.createdAt)}
+                    {formatDate(
+                      request.createdAt,
+                      "MMM dd, yyyy",
+                      i18n.language,
+                    )}
                   </Typography>
                 </Box>
 

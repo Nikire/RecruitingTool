@@ -32,7 +32,7 @@ export const usePreviewCandidateImport = () => {
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to preview CSV file";
+          ?.data?.message || i18n.t("candidate_import.toast.preview_failed");
       toast.error(errorMessage);
     },
   });
@@ -67,18 +67,24 @@ export const useImportCandidates = () => {
 
       if (data.successCount > 0) {
         toast.success(
-          `Successfully imported ${data.successCount} candidate(s)`,
+          i18n.t("candidate_import.toast.imported", {
+            count: data.successCount,
+          }),
         );
       }
 
       if (data.errorCount > 0) {
-        toast.error(`${data.errorCount} row(s) failed to import`);
+        toast.error(
+          i18n.t("candidate_import.toast.rows_failed", {
+            count: data.errorCount,
+          }),
+        );
       }
     },
     onError: (error: unknown) => {
       const errorMessage =
         (error as { response?: { data?: { message?: string } } })?.response
-          ?.data?.message || "Failed to import candidates";
+          ?.data?.message || i18n.t("candidate_import.toast.import_failed");
       toast.error(errorMessage);
     },
   });
@@ -107,7 +113,7 @@ export const downloadCandidateImportTemplate = async () => {
   } catch (error: unknown) {
     const errorMessage =
       (error as { response?: { data?: { message?: string } } })?.response?.data
-        ?.message || "Failed to download template";
+        ?.message || i18n.t("candidate_import.toast.template_download_failed");
     toast.error(errorMessage);
   }
 };

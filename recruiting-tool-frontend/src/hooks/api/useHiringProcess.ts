@@ -19,6 +19,7 @@ import { PaginationParams } from "../../types/pagination.types";
 import { HiringProcessGroupedFilterDto } from "../../types/hiringProcess.types";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { useTranslation } from "react-i18next";
+import i18n from "i18next";
 import { ANALYTICS_EVENTS } from "../../analytics";
 import { useActivationEvents } from "./useActivationEvents";
 
@@ -54,10 +55,10 @@ export function useCreateHiringProcess() {
     mutationFn: (data: CreateHiringProcessDto) => createHiringProcess(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
-      showSuccessToast("Hiring process created successfully!");
+      showSuccessToast(i18n.t("hiring_processes.toast.created"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to create hiring process");
+      showErrorToast(error, i18n.t("hiring_processes.toast.create_failed"));
     },
   });
 }
@@ -102,10 +103,10 @@ export function useDeleteHiringProcess() {
     mutationFn: (uid: string) => deleteHiringProcess(uid),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: hiringProcessKeys.all });
-      showSuccessToast("Hiring process deleted successfully!");
+      showSuccessToast(i18n.t("hiring_processes.toast.deleted"));
     },
     onError: (error) => {
-      showErrorToast(error, "Failed to delete hiring process");
+      showErrorToast(error, i18n.t("hiring_processes.toast.delete_failed"));
     },
   });
 }

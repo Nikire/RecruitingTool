@@ -17,12 +17,16 @@ import {
   confirmEmailChange,
   requestPasswordChange,
   confirmPasswordChange,
+  logout as revokeRefreshToken,
 } from "../../api/auth";
 import { LinkedAccountsResponse, User } from "../../types/user.types";
 import { useUserAtom } from "./state/useUserAtom";
 import { showSuccessToast, showErrorToast } from "../../utils/toast";
 import { identify, reset } from "../../analytics";
 import { clearAttribution } from "../../utils/attribution";
+import { AUTH_CLEARED_EVENT } from "../../api/axios";
+import { resetAllFiltersAtom } from "../../store/filters.atoms";
+import { useSetAtom } from "jotai";
 
 /**
  * Binds the analytics + error-reporting identity to the user that just
@@ -52,6 +56,7 @@ function identifyAuthenticatedUser(user: User | undefined | null): void {
 
 export function useAuthMe() {
   const { setUser } = useUserAtom();
+  const queryClient = useQueryClient();
   const token = localStorage.getItem("authToken");
 
   const {
@@ -74,6 +79,25 @@ export function useAuthMe() {
       setUser(null);
     }
   }, [user, token, setUser]);
+
+  // The axios interceptor wipes both tokens when a refresh fails, but it only
+  // redirects on protected routes — on /careers, /blog or the landing page the
+  // session just disappears. React Query keeps serving the last successful
+  // /auth/me payload after a failed refetch, so the branch above never reaches
+  // `setUser(null)` and the navbar keeps rendering a signed-out visitor's
+  // avatar and name. Listen for the interceptor's event and drop the identity
+  // explicitly.
+  useEffect(() => {
+    const handleAuthCleared = () => {
+      setUser(null);
+      queryClient.removeQueries({ queryKey: authKeys.me() });
+    };
+
+    window.addEventListener(AUTH_CLEARED_EVENT, handleAuthCleared);
+    return () => {
+      window.removeEventListener(AUTH_CLEARED_EVENT, handleAuthCleared);
+    };
+  }, [setUser, queryClient]);
 
   return {
     user,
@@ -206,6 +230,7 @@ export function useRegister() {
 export function useLogout() {
   const queryClient = useQueryClient();
   const { setUser } = useUserAtom();
+  const resetAllFilters = useSetAtom(resetAllFiltersAtom);
 
   return () => {
     // Drop the analytics + Sentry identity first, so nothing captured after
@@ -216,11 +241,34 @@ export function useLogout() {
       // Telemetry only — swallow.
     }
 
+    // Revoke the refresh token server-side BEFORE dropping it from storage.
+    // Without this the token stays exchangeable at POST /auth/refresh for its
+    // full lifetime, so a copy taken from a shared machine still buys a fresh
+    // access token long after the user signed out. Best-effort: sign-out must
+    // complete locally even if the network call fails.
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (refreshToken) {
+      void revokeRefreshToken(refreshToken).catch(() => {
+        // Already signing out locally — nothing useful to surface.
+      });
+    }
+
     // Clear both tokens
     localStorage.removeItem("authToken");
     localStorage.removeItem("refreshToken");
     setUser(null);
-    queryClient.removeQueries({ queryKey: authKeys.me() });
+
+    // Every logout path is an SPA navigation, so nothing else drops the cache.
+    // Removing only authKeys.me() left candidates, job positions, files,
+    // analytics and quota entries from the previous account in memory (5 min
+    // staleTime / 10 min gcTime), where the next account to sign in on the same
+    // tab would be served them before any refetch. Drop the whole cache.
+    queryClient.clear();
+
+    // Filter atoms are module-level globals under a single root provider, so a
+    // stale search term and page number would otherwise follow the next user
+    // into their first list view.
+    resetAllFilters();
   };
 }
 

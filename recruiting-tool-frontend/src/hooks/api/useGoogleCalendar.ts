@@ -124,9 +124,10 @@ export const useDisconnectCalendar = () => {
       return response.data;
     },
     onSuccess: () => {
-      // Invalidate calendar status query
+      // Invalidate the whole domain: status, settings and availability all
+      // depend on the connection that was just removed.
       queryClient.invalidateQueries({
-        queryKey: googleCalendarKeys.status(),
+        queryKey: googleCalendarKeys.all,
       });
     },
   });
@@ -233,7 +234,7 @@ export const useSaveCalendarSettings = () => {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.setQueryData(["google-calendar", "settings"], data);
+      queryClient.setQueryData(googleCalendarKeys.settings(), data);
     },
   });
 };
