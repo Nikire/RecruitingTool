@@ -13,10 +13,20 @@ Candidates are at the heart of your recruiting process. Each candidate profile c
 
 ## Creating Candidates
 
+**Navigate to Candidates:** Sidebar → **Recruitment** → **Candidates**, or go directly to `/hr/candidates`.
+
+The **Create Candidate** button at the top of the page opens a menu with three ways in:
+
+| Menu option | Use it for |
+|-------------|-----------|
+| From Job Application | Turning an existing application into a candidate |
+| Add Manually | Phone calls, referrals, walk-ins |
+| Import from CSV | Bulk import from a spreadsheet |
+
 ### Method 1: Manual Creation
 
-1. Navigate to **Admin Panel** → **Candidates**
-2. Click **Create Candidate** button
+1. Navigate to **Recruitment** → **Candidates**
+2. Click **Create Candidate** → **Add Manually**
 3. Fill in the form:
    - **Name** (required): Full name
    - **Email** (required): Must be unique
@@ -34,16 +44,68 @@ Candidates are at the heart of your recruiting process. Each candidate profile c
 ### Method 2: From Application
 
 When an external applicant applies through the careers page:
-1. Navigate to **Admin Panel** → **Applications**
+1. Navigate to **Recruitment** → **Applications**
 2. Find the application
-3. Click **Accept** button
+3. Click **Accept & Create**
 4. System automatically creates candidate and hiring process
 
-### Method 3: Bulk Import (Future Feature)
+See [Applications](./applications.md#accept--create) for what that button does in detail.
 
-CSV import for multiple candidates.
+### Method 3: Bulk Import from CSV
+
+Use this to load a list of candidates you already hold in a spreadsheet or another tool.
+
+**Steps:**
+
+1. Click **Create Candidate** → **Import from CSV**
+2. Click **Download CSV Template** to get `candidate-import-template.csv`, pre-filled with the correct headers and two example rows
+3. Fill in your rows and save the file as `.csv`
+4. Click **Select CSV File** and choose it — the file is validated as soon as you pick it
+5. Read the **Import Preview**, then click **Import Candidates**
+
+**Template columns:**
+
+| Column | Required | Rules |
+|--------|----------|-------|
+| `name` | Yes | Cannot be blank |
+| `email` | Yes | Must contain `@`; must not already exist in your company |
+| `phone` | No | At least 7 characters if present |
+| `linkedin` | No | Must start with `http` or `https` if present |
+| `notes` | No | Stored as the candidate's source details |
+
+Headers are matched case-insensitively and values are trimmed, so trailing spaces from a spreadsheet export are harmless.
+
+**The preview step:**
+
+Before anything is written, the dialog reports **Total rows**, **Valid rows** and — if any failed — **Invalid rows**. Click **View Errors** to expand a table listing each bad row by its line number in the file (row 2 is the first data row), with the name, email and one chip per validation error. **Import Candidates** is disabled unless at least one row is valid.
+
+**The result step:**
+
+After importing, the dialog reports **Successfully imported** and, when relevant, **Failed to import**, followed by the same row-by-row error table. Rows that fail do not stop the rest of the import — valid rows are created and invalid ones are reported. If every row succeeded, the dialog closes itself after a moment.
+
+Duplicate emails are the most common failure: a candidate whose email already exists in your company is reported as *"Candidate with email … already exists"* and skipped. Email uniqueness is scoped to your company, so the same address belonging to another company on the platform is not a conflict.
+
+**What gets stored:**
+
+Imported candidates are created with their name and email, a source of **CSV Import**, their `notes` column as the source details, and their `linkedin` column as the source URL. The `phone` column is validated but is **not** currently saved to the candidate record — add phone numbers from the candidate profile after importing if you need them.
 
 ## Candidate Profile
+
+### Profile Layout
+
+Clicking a candidate's name opens their profile at `/hr/candidates/:uid`. A header shows the candidate's details with an **Edit** button, and everything else is split across five tabs:
+
+| Tab | Contents |
+|-----|----------|
+| Pipeline | Every hiring process this candidate is in, with each process's stages, when the candidate entered and left each one, and how long they spent there |
+| Interviews | Every interview scheduled for this candidate, across all of their hiring processes |
+| Notes | Team notes on the candidate, newest first |
+| Activity | The automatic event timeline — see [Candidate Activity Log](#candidate-activity-log) |
+| Files | Upload new files, and the list of files already attached |
+
+The first tab is labeled **Pipeline**. **Back to Candidates** above the header returns you to the list.
+
+Editing is done only through the **Edit** button in the header, which opens the same update dialog used elsewhere in the app — the tabs themselves are read-and-add surfaces, not edit forms.
 
 ### Personal Information
 
@@ -111,7 +173,7 @@ Notes enable team collaboration and documentation of candidate interactions.
 
 **Create Note:**
 1. From candidate detail page
-2. Scroll to **Notes** section
+2. Open the **Notes** tab
 3. Click **Add Note** button
 4. Write your note in the text area
 5. Click **Save**
@@ -178,47 +240,45 @@ Next Steps:
 - Prepare React coding challenge
 ```
 
-## Searching and Filtering Candidates
+## Searching Candidates
 
 ### Search Bar
 
-1. Use search bar at top of candidates list
-2. Search by:
-   - Name
-   - Email
-   - Source
+The Candidates page has a single filter bar with one control: a search box, placeholder *"Search by name or email..."*.
 
-3. Results update in real-time as you type
+- It matches the candidate's **name** and **email address**, case-insensitively, on a partial match.
+- It does **not** match source, phone number, notes or resume contents.
+- The list pages back to page 1 whenever the search changes.
+- **Clear Filters**, offered from the "no results" empty state, empties the box and restores the full list.
 
-### Filters
+### Filters and Sorting Are Not Exposed
 
-**Filter by Source:**
-1. Click **Filter** button
-2. Select source from dropdown
-3. View candidates from that source only
+There is no source filter, no hiring-process status filter and no sort control on the Candidates page today. The list is returned newest-created first.
 
-**Filter by Status:**
-1. Filter by hiring process status:
-   - Active (in process)
-   - Completed (hired or rejected)
-   - No hiring process
+The API behind the list (`GET /api/candidate/list`) does accept `source`, `status`, `skills`, `startDate`, `endDate`, `sortBy` and `sortOrder` parameters, so these filters exist server-side — but nothing in the interface sets them. If you need that slicing today, use [Analytics](./analytics.md) or the public API.
 
-**Sort Options:**
-- Name (A-Z)
-- Email (A-Z)
-- Created date (newest/oldest)
-- Last updated (most recent)
+## Candidate Activity Log
 
-## Candidate Activity Log (Future Feature)
+The **Activity** tab on the candidate profile shows an automatic, chronological timeline of what has happened to this candidate. You cannot write to it — every entry is recorded by the system as the event occurs.
 
-Track all actions taken on a candidate:
-- Created date
-- Hiring process created
-- Interviews scheduled
-- Notes added
-- Stage progression
-- Status changes
-- File uploads
+**Events recorded:**
+
+| Event | Recorded when |
+|-------|---------------|
+| Candidate Created | The candidate record is first created |
+| Stage Changed | The candidate moves between stages in a hiring process |
+| Status Changed | A hiring process status changes |
+| Interview Scheduled | An interview is created for this candidate |
+| Interview Updated | An existing interview is changed or rescheduled |
+| Interview Cancelled | An interview is cancelled |
+| Interview Completed | An interview is marked complete |
+| Note Added | Someone adds a note |
+| Application Received | An application from this person arrives |
+| Email Sent | The system sends the candidate an email |
+
+If nothing has happened yet, the tab reads *"No activity history yet"*.
+
+File uploads are not part of this timeline — see the **Files** tab for what is currently attached.
 
 ## Soft Delete and GDPR Compliance
 
@@ -326,7 +386,7 @@ Track all actions taken on a candidate:
 
 - External applications are converted to candidates
 - Application data is preserved
-- See [Applications Guide](./applications.md) (future)
+- See [Applications Guide](./applications.md)
 
 ## Troubleshooting
 
@@ -355,5 +415,6 @@ Track all actions taken on a candidate:
 ## Next Steps
 
 - [Job Positions](./job-positions.md) - Create and manage job openings
+- [Applications](./applications.md) - Convert inbound applications into candidates
 - [Hiring Process](./hiring-process.md) - Track candidates through recruitment stages
 - [Interviews](./interviews.md) - Schedule and manage interviews

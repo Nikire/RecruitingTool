@@ -117,6 +117,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Booking-flow errors show the backend reason instead of "Request failed with status code NNN"; stage, onboarding and import toasts translated; legacy `dateUtils` removed in favour of the locale-aware formatters
 - Dark mode no longer flashes white on load (persisted atoms read storage at init); filter state resets between navigations and accounts; error toasts wrap long emails, URLs and UIDs
 
+### 📝 Documentation (140 verified gaps)
+- `docs/` grew from 21 to 50 pages. New API reference: index, public Business API (`/api/v1`), webhooks (outbound HMAC and inbound n8n), API keys, files, AI and quota, billing, internal/metrics, and an audit of every endpoint reachable without a JWT
+- New user guide pages: applications inbox, dashboard, AI scoring, calendar and scheduling, billing, API keys, company settings, notifications, roles and permissions, admin panel, plus a guide index
+- New applicant-facing pages: the applicant experience end to end, status tracking, email unsubscribe, demo booking and contact, registration and onboarding
+- New SEO and marketing pages: prerendering and sitemap, public URL scheme, structured data and meta, blog and content
+- Corrections to existing pages, all verified against the code: every plan limit in the subscription guide was wrong (free tier is 1 position and 1 user with no AI credits, not 3/3/20) and the Agency tier was missing; interview scorecards were documented as a working feature although the UI is deliberately disconnected; the team-management guide described an admin screen HR users never see; authentication, job positions and hiring-process API pages were missing most of their routes
+- Configuration and deployment pages now list the env vars the code actually reads, including the ones that are documented but never read
+- In-app admin documentation (`/admin/docs`) covers all 29 admin pages in both languages
+- Developer notes in `.claude/docs` refreshed: new analytics and prerendering pages, plus corrections across architecture, components, layouts, state, API routes, database and features
+
 ### 🌍 Translation layer (13 verified findings)
 - Three call sites passed a translation key without its interpolation value, and this i18next version leaves the placeholder verbatim, so users saw "Failed to update {{entity}}" and a column header reading "Seen by {{count}} users". All three now pass a value or use a specific key
 - Error toasts keep the caller's translated fallback instead of being overridden by raw axios text ("Network Error", HTTP status text); network failures use the existing translated message

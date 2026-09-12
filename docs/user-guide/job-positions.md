@@ -18,27 +18,66 @@ At the top of the Job Positions page, a quota banner shows how many job position
 - **Yellow** — between 70% and 90%
 - **Red** — above 90% or limit exceeded
 
-If you are on the Enterprise plan, the banner shows your current count without a limit. To increase your job position limit, upgrade at `/hr/billing`. See [Subscription and Limits](./subscription-and-limits.md) for plan details.
+If you are on the Enterprise plan, the banner shows your current count without a limit. To increase your job position limit, upgrade at `/profile/subscription`. See [Subscription and Limits](./subscription-and-limits.md) for plan details.
 
 ## Creating Job Positions
 
-**Navigate to Job Positions:**
-1. From dashboard or sidebar, click **Job Positions**
-2. Click **Create Job Position** button
+**Navigate to Job Positions:** Sidebar → **Recruitment** → **Job Positions** (`/hr/job-positions`), then click **Create Job Position**.
 
-**Required Fields:**
-- **Title**: Job position name (e.g., "Senior Software Engineer")
-- **Description**: Full job description, requirements, responsibilities
-- **Status**: OPEN, CLOSED, or CANCELLED
+The create dialog is grouped into collapsible sections. Only two things are mandatory: a **title** and at least **one stage**. Everything else is optional, and blank fields simply do not appear on the public posting.
 
-**Optional Fields:**
-- **Department**: Engineering, Sales, Marketing, etc.
-- **Employment Type**: Full-time, Part-time, Contract, Internship
-- **Location**: Office location or "Remote"
-- **Salary Range**: Min and max salary
-- **Required Skills**: Comma-separated list
-- **Benefits**: Company benefits description
-- **Application Deadline**: Last date to apply
+There is **no status field on create** — every new posting starts as OPEN. Status is changed later from the edit dialog.
+
+### Job Details
+
+| Field | Type | Notes |
+|-------|------|-------|
+| Job Title | Text | Required |
+| Description | Markdown editor | The body of the posting, up to 5,000 characters |
+| Job Type | Choice | Full Time, Part Time, Contract, Internship, Temporary, Freelance |
+| Experience Level | Choice | Entry Level, Mid Level, Senior Level, Lead, Executive |
+| Education Level | Choice | High School, Associate Degree, Bachelor's Degree, Master's Degree, Doctorate, No Requirement |
+| Work Location | Choice | Remote, On-site, Hybrid |
+| Urgent Hiring | Switch | Off by default. When on, the posting is highlighted to candidates as urgent |
+
+### Location
+
+Location is three separate fields, not one free-text line:
+
+| Field | Notes |
+|-------|-------|
+| City | |
+| State / Province | |
+| Country | |
+
+**Work Location** (above) is what tells an applicant whether the role is remote; these three fields say where the role is based.
+
+### Salary
+
+| Field | Notes |
+|-------|-------|
+| Minimum Salary | Number |
+| Maximum Salary | Number |
+| Currency | USD, EUR, GBP, MXN, ARS or COP. Defaults to USD |
+| Pay Period | Hourly, Monthly or Yearly |
+| Show salary publicly | Switch, **off by default** |
+
+**Show salary publicly** is the one to watch: with it off, you can record a salary band internally and applicants never see it. Turn it on and the range appears on the public posting.
+
+### Requirements and Skills
+
+**Requirements**, **Responsibilities** and **Skills** are chip lists — type an entry and press Enter (or click **Add**), and it becomes a removable chip. They are stored as lists rather than as one block of text.
+
+### Benefits and Deadline
+
+| Field | Notes |
+|-------|-------|
+| Benefits | Chip list, same behavior as above |
+| Application Deadline | Date. Leave blank if there is no deadline |
+
+### Custom Questions
+
+At the bottom of the dialog you can add **custom application questions** that applicants must answer on the apply form. See [Custom Questions](#custom-questions-on-the-apply-form).
 
 ## Stage Templates
 
@@ -105,44 +144,111 @@ Choose the type that best describes what happens in each stage. The type is show
 
 ## Job Status
 
-### OPEN
-- Visible on public careers page
-- Accepts new applications
-- Active for external candidates
+Every posting carries **two independent states**: a lifecycle status you control, and a moderation status the Borderless platform team controls. A posting reaches the public careers board only when both are right.
 
-### CLOSED
-- Not visible on public careers page
-- No longer accepting applications
-- Existing hiring processes continue
+### Lifecycle Status
 
-### CANCELLED
-- Job is no longer needed
-- Existing hiring processes can be closed
-- Hidden from careers page
+You set this from the edit dialog.
+
+| Status | Effect |
+|--------|--------|
+| OPEN | Eligible for the public careers page and for new applications |
+| CLOSED | Off the careers page, no longer accepting applications. Existing hiring processes continue |
+| CANCELLED | Role no longer needed. Off the careers page; existing hiring processes can be closed |
+
+New postings are created as OPEN.
+
+### Moderation Status
+
+This is the anti-spam gate on the public board and it is not yours to set.
+
+| Moderation status | What it means |
+|-------------------|---------------|
+| PENDING_APPROVAL | Waiting for review. The posting is **not** on the public careers board |
+| APPROVED | Cleared for publication |
+| REJECTED | Blocked from publication, with a reason from the reviewer |
+
+**How a posting is assigned a moderation status when you create it:**
+
+- If your company has an **active paid subscription**, the posting is **APPROVED automatically** and is live as soon as you save it.
+- Otherwise it starts at **PENDING_APPROVAL** and waits for a platform administrator to approve it.
+- Postings created by a platform SUPER_ADMIN are approved automatically, because they are the reviewers.
+
+The two states are independent: a posting can be APPROVED and CLOSED at the same time.
+
+### Seeing Where Your Postings Stand
+
+On the Job Positions list, any posting that is not APPROVED shows a moderation label next to its status chip. If you have one or more postings waiting, a banner appears above the list:
+
+> **Waiting for review** — {n} of your postings are being reviewed by our team and are not on the public careers board yet.
+
+If your company has no active paid subscription, the banner adds an upgrade prompt — *"Postings from paid plans publish instantly, with no review wait."* — with a **See plans** link to `/profile/subscription`.
+
+Opening a rejected posting shows the same banner in its rejected form, with the reviewer's **Reason** spelled out so you know what to change before resubmitting.
+
+Approval and rejection happen in the platform moderation queue at `/admin/job-moderation`, which only SUPER_ADMIN accounts can reach.
 
 ## Public Careers Page
 
 ### Publishing Jobs
 
-1. Set status to **OPEN**
-2. Save job position
-3. Job appears on public careers page: `/careers`
+A posting appears on the public careers board when **both** of the following are true:
+
+1. Its lifecycle status is **OPEN**.
+2. Its moderation status is **APPROVED**.
+
+On a paid plan those happen together the moment you save. On the Free plan, a brand new OPEN posting stays invisible to the public until an administrator approves it — see [Moderation Status](#moderation-status) above. This is the single most common reason a new posting cannot be found on `/careers`.
+
+### Where the Posting Appears
+
+| Surface | URL |
+|---------|-----|
+| Platform-wide careers board | `/careers` |
+| Your company's branded board | `/careers/company/{company-slug}` |
+| The posting itself (canonical URL) | `/jobs/{company-slug}/{job-title-slug}-{uid}` |
+
+The canonical job URL is the one to paste into an email or a social post: it carries your company name and the job title as readable text. Only the UID at the end is load-bearing — the slugs in front of it are decoration and are never used to look anything up, so a link still resolves if the title changes later.
+
+The branded company board (`/careers/company/{slug}`) is the URL to put on your own website; it resolves by company name slug, with the company UID accepted as an unambiguous fallback.
 
 ### Applicant View
 
 External candidates can:
-- Browse all open positions
+- Browse open, approved positions
 - View job details
-- Click **Apply** button
-- Submit application with resume
+- Click **Apply**
+- Submit an application with a resume
 
-### Application Process
+### The Apply Form
 
-1. Applicant fills form (name, email, phone, resume, cover letter)
-2. Application submitted
-3. HR reviews in **Admin → Applications**
-4. HR accepts/rejects application
-5. Accepted applications auto-create candidate and hiring process
+An applicant fills in:
+
+| Field | Required |
+|-------|----------|
+| Full name | Yes |
+| Email address | Yes |
+| Phone number | Yes |
+| Resume | Upload |
+| Cover letter | No |
+| *How did you hear about this job?* | No |
+
+The source question offers eleven options — Website, LinkedIn, Indeed, Glassdoor, Referral, Job Fair, University, Recruiter, Direct Application, Social Media and Other — plus a blank "prefer not to say". Whatever the applicant picks is carried onto the candidate record when you accept the application, which is what makes the Source Effectiveness report in [Analytics](./analytics.md) meaningful.
+
+Application submissions are rate-limited to **5 per hour per IP address**.
+
+### Custom Questions on the Apply Form
+
+Each posting can carry its own extra questions, authored in the **Custom Questions** section of the create or edit dialog. Applicants answer them on the apply form, and questions you mark as required block submission until they are answered.
+
+Answers are stored with the application. **They are not currently displayed anywhere in the HR interface** — the application detail dialog shows the applicant's details, resume and cover letter, but not their custom answers. Keep that in mind before relying on a custom question to make a screening decision.
+
+### What Happens After Someone Applies
+
+1. The application arrives in **Recruitment → Applications** (`/hr/applications`)
+2. HR reviews it and records a status
+3. **Accept & Create** converts it into a candidate plus a hiring process, with stages copied from this job position's template
+
+See the [Applications guide](./applications.md) for the whole review workflow.
 
 ## Managing Job Positions
 
@@ -235,5 +341,7 @@ Navigate to **Analytics** to view detailed reports.
 ## Next Steps
 
 - [Hiring Process](./hiring-process.md) - Track candidates through stages
+- [Applications](./applications.md) - Review what the public posting brings in
 - [Interviews](./interviews.md) - Schedule and manage interviews
 - [Candidates](./candidates.md) - Manage candidate profiles
+- [Subscription and Limits](./subscription-and-limits.md) - The job position quota and the paid-plan moderation shortcut

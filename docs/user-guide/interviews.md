@@ -7,25 +7,37 @@ Complete guide to scheduling, conducting, and evaluating interviews.
 Interviews are scheduled at the stage level within a hiring process. Features include:
 - Interview scheduling with date/time
 - Meeting link integration (Zoom, Google Meet)
+- Optional automatic Google Calendar events
 - Email notifications to candidates
-- Interview scorecards for structured evaluations
-- Consensus reports across multiple interviewers
+- A company-wide interview list at `/hr/interviews` and a calendar at `/hr/calendar`
+- Free-text interview notes, and stage evaluation notes with a star rating
 
 ## Scheduling Interviews
 
 ### Create Interview
 
 1. Navigate to hiring process detail page
-2. Find the stage where interview should be scheduled
-3. Click **Schedule Interview** button
-4. Fill in interview form:
-   - **Scheduled Date** (optional): Select date
-   - **Scheduled Time** (optional): Select time (HH:mm format)
-   - **Duration** (optional): Minutes (e.g., 60 for 1 hour)
-   - **Meeting Link** (optional): Zoom, Google Meet, Teams link
-   - **Notes** (optional): Interview agenda or special instructions
-
+2. Expand the stage where the interview should be scheduled
+3. Click **Schedule Interview**
+4. Fill in the form (every field is optional)
 5. Click **Schedule**
+
+**What the dialog shows you:**
+
+| Element | Behavior |
+|---------|----------|
+| Header | *"For {candidate name}"* |
+| Interview duration | A read-only chip, not an input. It takes the stage's estimated time if the stage has one, otherwise the default duration from your Calendar settings, otherwise 60 minutes. When it came from settings, a *(from calendar settings)* hint appears next to it |
+| Interview Date | Date picker. Must not be in the past |
+| Interview Time | Time picker, with the hint *"Times are shown in your local timezone ({your browser's timezone})"* |
+| Working hours hint | Once you pick a date, a second hint shows your company's configured working hours for that weekday, e.g. *"Working hours for this day: 09:00 – 17:00"*. It only appears for days you have marked as working days |
+| Google Calendar notice | Green when Google Calendar is connected — *"A Google Calendar event will be created automatically when you schedule this interview."* Blue when it is not — *"Connect Google Calendar in Calendar Settings to auto-generate Meet links"* |
+| Meeting Link (optional) | Paste any video conferencing URL |
+| Notes (optional) | Agenda or special instructions |
+
+The duration is derived, not chosen. To change it, either set an estimated time on the stage template or change the default duration in **Settings → Calendar**.
+
+The timezone shown is **your** browser's timezone, not the candidate's. Always state the timezone explicitly in the notes or the meeting invitation when scheduling across regions.
 
 ### Interview Status
 
@@ -59,9 +71,26 @@ When interview is scheduled (date and time provided):
 2. Click on stage
 3. View all interviews scheduled for that stage
 
-**From Interview List (Future):**
-- Upcoming interviews across all hiring processes
-- Filter by status, date, interviewer
+**From the Interviews page:**
+
+The Interviews page (`/hr/interviews`, sidebar → **Scheduling** → **Interviews**) lists every interview across your whole company, not just one hiring process. It covers a rolling window of **three months back to three months forward**, sorted most recent first, and it has no filter controls.
+
+Each interview is a card showing:
+
+- Candidate name
+- Job position, and a chip with the stage number and title
+- Date, time and duration
+- Organizer
+- A status chip (Pending, Scheduled, Completed, Cancelled)
+- **Join Meeting**, when a meeting link was saved
+- A notes icon, which opens an inline editor for that interview's notes (up to 1,000 characters) with **Save** and **Cancel** — you never leave the page
+- An evaluation-notes icon, which expands every stage note written for that candidate, each with its stage name and star rating
+
+Arriving from a notification link of the form `/hr/interviews?highlight={uid}` scrolls to that interview and outlines its card.
+
+**From the calendar:**
+
+The Meetings page (`/hr/calendar`, sidebar → **Scheduling** → **Meetings**) shows the same interviews laid out on a calendar, which is the better view for spotting clashes and free slots.
 
 ### Update Interview
 
@@ -92,84 +121,24 @@ When interview is scheduled (date and time provided):
 1. After interview is finished
 2. Mark interview as **COMPLETED**
 3. Optionally add notes about outcome
-4. Submit scorecard for structured feedback
+4. Write a stage note with a star rating so the rest of the team can see the assessment
 
-## Interview Scorecards
+## Interview Scorecards — Not Available in the Product
 
-Scorecards provide structured evaluation framework for interviews.
+Structured scorecards are **not reachable in Borderless today**. There is no page, route or button anywhere in the application that creates a scorecard template, submits a scorecard, or shows a consensus summary.
 
-### Scorecard Templates
+What exists is backend-only:
 
-**Admins create templates with:**
-- **Categories**: e.g., Technical Skills, Communication, Cultural Fit
-- **Criteria**: Specific evaluation points within each category
-- **Scoring**: Max score per criterion (e.g., 1-5 scale)
-- **Weights**: Category importance (total 100%)
+| Piece | State |
+|-------|-------|
+| `Scorecard*` database tables | Present |
+| Nine endpoints under `/api/scorecard` (templates CRUD, submit, by-interview, by-uid, consensus summary) | Live and authenticated |
+| React scorecard components (`ScorecardTemplateList`, `ScorecardForm`, `ScorecardViewer`) | Written, but no route renders them |
+| The frontend scorecard service | Deliberately non-functional — every call rejects, so nothing can render placeholder evaluation data by accident |
 
-**Example Template:**
-```
-Technical Skills (40% weight)
-- Programming proficiency (max 5 points)
-- Problem-solving (max 5 points)
-- System design (max 5 points)
+That last point is intentional rather than a bug. The service used to return hardcoded sample scorecards; those fixtures were removed precisely so that no one could ever be shown invented evaluation data as if it were their own hiring records.
 
-Communication (30% weight)
-- Clarity of explanation (max 5 points)
-- Listening skills (max 5 points)
-
-Cultural Fit (30% weight)
-- Team collaboration (max 5 points)
-- Company values alignment (max 5 points)
-```
-
-### Submitting Scorecard
-
-1. After interview is completed
-2. Click **Submit Scorecard** button
-3. Select scorecard template
-4. Rate each criterion (1 to max score)
-5. Add notes for each criterion (optional)
-6. Overall notes (optional)
-7. Click **Submit**
-
-**Calculation:**
-- Overall score = Weighted average across all categories
-- Category score = Average of criteria scores within category
-- Final score = Sum of (Category score × Category weight)
-
-### Viewing Scorecards
-
-**Individual Scorecard:**
-1. View interview detail
-2. See all submitted scorecards
-3. Click on scorecard to view full evaluation
-
-**Consensus Summary:**
-1. After multiple team members submit scorecards
-2. Click **View Consensus** button
-3. See aggregated report:
-   - Average overall score across evaluators
-   - Average score per category
-   - Variance (areas of disagreement)
-   - High-variance items flagged for discussion
-   - Individual evaluator summaries
-
-### Scorecard Best Practices
-
-**Before Interview:**
-- Review scorecard template
-- Prepare questions aligned with criteria
-- Understand scoring scale
-
-**During Interview:**
-- Take notes on each criterion
-- Observe specific examples for each area
-- Don't rely on memory alone
-
-**After Interview:**
-- Submit scorecard within 24 hours
-- Provide specific examples in notes
-- Be honest and objective
+**What to use instead today:** record interview feedback as **stage notes**. A stage note carries free text and a **star rating**, is attributed to its author, and is visible to the whole team — from the stage accordion on the hiring process, from the note icon on each row of the Hiring Processes grouped list, and from the evaluation-notes panel on each card of the Interviews page. See [Hiring Process](./hiring-process.md#stage-notes).
 
 ## Interview Types
 
@@ -177,28 +146,28 @@ Cultural Fit (30% weight)
 
 - **Duration**: 20-30 minutes
 - **Purpose**: Initial qualification check
-- **Scorecard**: Basic screening criteria
+- **Assess**: Basic qualification criteria
 - **Interviewer**: HR or Recruiter
 
 ### Technical Interview
 
 - **Duration**: 60-90 minutes
 - **Purpose**: Assess technical skills
-- **Scorecard**: Technical proficiency criteria
+- **Assess**: Technical proficiency
 - **Interviewer**: Senior engineers or tech lead
 
 ### Team Interview
 
 - **Duration**: 30-60 minutes
 - **Purpose**: Cultural fit and team compatibility
-- **Scorecard**: Soft skills and collaboration criteria
+- **Assess**: Soft skills and collaboration
 - **Interviewer**: Future teammates
 
 ### Final Interview
 
 - **Duration**: 30-45 minutes
 - **Purpose**: Executive approval and final questions
-- **Scorecard**: Leadership assessment criteria
+- **Assess**: Leadership and final fit
 - **Interviewer**: VP, Director, or C-level
 
 ## Meeting Link Integration
@@ -256,9 +225,6 @@ Any video conferencing link works!
 | Edit interview | ❌ | ✅ | ✅ | ✅ |
 | Cancel interview | ❌ | ✅ | ✅ | ✅ |
 | Delete interview | ❌ | ❌ | ✅ | ✅ |
-| Submit scorecard | ✅ | ✅ | ✅ | ✅ |
-| View scorecards | ❌ | ✅ | ✅ | ✅ |
-| View consensus | ❌ | ✅ | ✅ | ✅ |
 
 ## Best Practices
 
@@ -272,21 +238,21 @@ Any video conferencing link works!
 ### Interview Preparation
 
 - Review candidate resume before interview
-- Prepare questions aligned with scorecard
+- Agree the questions with the other interviewers in advance
 - Test meeting link before interview
 - Have backup communication method
 
 ### Conducting Interviews
 
 - Start on time
-- Follow structured format (scorecard criteria)
+- Follow the same structure for every candidate in a stage
 - Take detailed notes
 - Leave time for candidate questions
 - Explain next steps at end
 
 ### Post-Interview
 
-- Submit scorecard within 24 hours
+- Write the stage note and set its star rating within 24 hours
 - Debrief with team if panel interview
 - Make timely hiring decisions
 - Communicate outcome to candidate
@@ -312,18 +278,15 @@ Any video conferencing link works!
 - Verify stage exists in hiring process
 - Check that hiring process status is IN_PROGRESS
 
-### Scorecard Not Submitting
+### I Cannot Find Scorecards Anywhere
 
-**Issue**: Form validation errors or submission fails
+**Issue**: The scorecard screens described in older material do not exist
 
-**Solution**:
-- Ensure all criteria are rated (no blank scores)
-- Verify scores are within valid range (1 to max)
-- Check that template is active
-- Review backend logs for validation errors
+**Solution**: This is expected. Scorecards are a backend-only capability with no user interface — see [Interview Scorecards](#interview-scorecards--not-available-in-the-product). Use stage notes and their star rating for structured feedback today.
 
 ## Next Steps
 
-- [Hiring Process](./hiring-process.md) - Manage multi-stage workflows
+- [Hiring Process](./hiring-process.md) - Manage multi-stage workflows and stage notes
 - [Team Management](./team-management.md) - Assign interviewers and roles
-- [Candidates](./candidates.md) - View candidate profiles
+- [Candidates](./candidates.md) - View candidate profiles and their Interviews tab
+- [Async Stages](./async-stages.md) - Stages candidates complete without a meeting

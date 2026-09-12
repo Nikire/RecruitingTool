@@ -6,7 +6,7 @@ Complete guide to creating and managing custom email templates for automated can
 
 Email templates let you customize every automated email sent to candidates and HR team members. Templates override the default Borderless branded emails with your own subject lines, body content, and dynamic variables.
 
-**Where to find it:** **Settings → Email Templates**
+**Where to find it:** **Email Templates** in the sidebar — a top-level item, not under Settings — or go directly to `/hr/email-templates`.
 
 Templates are defined at the company level. Every template supports Handlebars variables (e.g., `{{candidateName}}`) that are automatically replaced with real data when the email is sent.
 
@@ -14,21 +14,31 @@ Templates are defined at the company level. Every template supports Handlebars v
 
 ## Template Types
 
-Each template is tied to a specific event in the hiring workflow.
+Each template is tied to a specific event in the hiring workflow. These are the eleven types the Email Templates page offers in the **Template Type** dropdown.
 
-| Type | Triggered when |
-|------|----------------|
-| **Interview Scheduled** | An interview is scheduled for a candidate |
-| **Stage Advancement** | A candidate moves to the next stage |
-| **Application Status Update** | An application status changes |
-| **Async Stage Invitation** | HR sends a submission request link |
-| **Async Stage Submission Received** | A candidate submits async materials (sent to HR) |
+| Type | Sent to | Used when |
+|------|---------|-----------|
+| **Application Received** | Candidate | An application is submitted |
+| **Application Under Review** | Candidate | An application moves into review |
+| **Application Shortlisted** | Candidate | An application is shortlisted |
+| **Application Rejected** | Candidate | An application is rejected |
+| **Application Status Update** | Candidate | An application status changes and no more specific type applies |
+| **Interview Invitation** | Candidate | A candidate is invited to interview |
+| **Interview Reminder** | Candidate | An upcoming interview is approaching |
+| **Offer Letter** | Candidate | An offer is extended |
+| **Async Stage Invitation** | Candidate | HR sends a submission request link, and again for the deadline reminder |
+| **Async Stage Submission Received** | Candidate | A candidate finishes an async submission |
+| **Custom** | Candidate | Any ad-hoc message that does not fit the types above |
+
+A twelfth type, `OUTREACH`, exists in the database enum and can be selected in the template editor, but outreach templates are **filtered out of the Email Templates list** — they are managed from the admin area at `/admin/outreach-templates`. A template you save as Outreach here will disappear from this page.
+
+There is no "Interview Scheduled" or "Stage Advancement" template type.
 
 ---
 
 ## Creating a Template
 
-1. Navigate to **Settings → Email Templates**.
+1. Navigate to **Email Templates** (`/hr/email-templates`).
 2. Click **Create Template**.
 3. Fill in the form:
    - **Name**: Internal label to identify this template (not visible to candidates).
@@ -43,24 +53,28 @@ Each template is tied to a specific event in the hiring workflow.
 
 ## Template Variables
 
-Insert variables by clicking the chips in the editor, or type them directly into the subject or body.
+Insert variables by clicking the chips in the editor, or type them directly into the subject or body. These fourteen chips are what the editor offers:
 
 | Variable | Description |
 |----------|-------------|
 | `{{candidateName}}` | Full name of the candidate |
-| `{{jobTitle}}` | Job position title |
+| `{{positionTitle}}` | Job position title |
 | `{{companyName}}` | Your company name |
+| `{{interviewerName}}` | Name of the HR contact who triggered the email |
+| `{{meetingLink}}` | Video call link for the interview |
+| `{{interviewDate}}` | Date of the scheduled interview |
+| `{{interviewTime}}` | Time of the scheduled interview |
 | `{{newStage}}` | Stage the candidate moved to |
 | `{{previousStage}}` | Stage the candidate moved from |
+| `{{status}}` | The new application status |
 | `{{hiringProcessUrl}}` | Link to the candidate's hiring process page |
 | `{{submissionUrl}}` | Secure link for async stage submission |
 | `{{deadline}}` | Submission deadline (formatted date and time) |
 | `{{stageName}}` | Name of the async stage |
-| `{{hrName}}` | Name of the HR contact who triggered the email |
-| `{{interviewDate}}` | Date of the scheduled interview |
-| `{{meetingLink}}` | Video call link for the interview |
 
-Variables that are not relevant to a template type will render as empty strings if used — stick to variables that match the template's context.
+Which variables are actually supplied depends on the event that sends the email, so a variable that does not apply to a template's context renders empty. Preview the template before making it the default.
+
+The built-in default templates also use `{{jobTitle}}`, and the Custom template uses `{{message}}` — neither is offered as a chip, but both are substituted for the events that supply them.
 
 ---
 
@@ -79,8 +93,9 @@ Only **one template per type** can be the default at a time.
 To quickly set up a complete template library:
 
 1. Click **Create Default Templates** on the Email Templates page.
-2. The system generates pre-filled templates for all five template types.
-3. Existing templates are preserved — duplicate types are skipped.
+2. The system generates twelve pre-filled, branded HTML templates — one for each of the eleven types listed above, plus one Outreach template that stays hidden from this page.
+3. Every generated template is created with **Set as Default** on.
+4. Existing templates are preserved — a template whose name already exists for your company is skipped, so re-running the action is safe.
 
 After generation, review and edit each template to match your company's tone and branding.
 
@@ -121,14 +136,19 @@ If you delete the active default template for a type, the system reverts to the 
 
 ## Permissions
 
-| Action | HR Specialist | HR Manager | HR Admin |
-|--------|:------------:|:----------:|:--------:|
-| View templates | ✅ | ✅ | ✅ |
-| Create template | ❌ | ✅ | ✅ |
-| Edit template | ❌ | ✅ | ✅ |
-| Delete template | ❌ | ❌ | ✅ |
-| Set default template | ❌ | ✅ | ✅ |
-| Create default templates (bulk) | ❌ | ✅ | ✅ |
+Everything on this page is served by `/api/email-templates`, guarded at the controller level with `@Auth(['HR', 'ADMIN'])`. The backend role guard reads that as **"HR and every role above HR"**, so the same set of roles gets every action — there is no read-only tier.
+
+| Action | HR | HR_MANAGER | RECRUITER | COMPANY_ADMIN | COMPANY_OWNER | ADMIN | SUPER_ADMIN |
+|--------|:--:|:----------:|:---------:|:-------------:|:-------------:|:-----:|:-----------:|
+| Open `/hr/email-templates` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| View templates | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Create template | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Edit template | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Delete template | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Preview template | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Create default templates (bulk) | ✅ | ✅ | ❌ | ✅ | ✅ | ✅ | ✅ |
+
+A **RECRUITER** can open the page — the HR route group admits them — but every request is refused with 403, so the list never loads. See [Roles and Permissions](./roles-and-permissions.md).
 
 ---
 
@@ -163,5 +183,6 @@ Use the **Preview** button to check rendering before marking a template as the d
 ## Next Steps
 
 - [Async Stages](./async-stages.md) - Send submission requests to candidates
-- [Interviews](./interviews.md) - Schedule interviews (uses Interview Scheduled template)
-- [Hiring Process](./hiring-process.md) - Manage stage advancement (uses Stage Advancement template)
+- [Interviews](./interviews.md) - Schedule interviews (uses the Interview Invitation and Interview Reminder templates)
+- [Hiring Process](./hiring-process.md) - Manage stage advancement (uses the Application Status Update template)
+- [Roles and Permissions](./roles-and-permissions.md) - Who can edit templates

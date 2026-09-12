@@ -39,9 +39,9 @@ Before creating a hiring process:
 ### Method 3: From Accepted Application
 
 When you accept an application:
-1. Navigate to **Admin → Applications**
+1. Navigate to **Recruitment → Applications**
 2. Find application to accept
-3. Click **Accept** button
+3. Click **Accept & Create**
 4. System automatically creates:
    - Candidate profile (if doesn't exist)
    - Hiring process with stages from job template
@@ -76,6 +76,44 @@ When a hiring process is created:
 
 ## Stage Management
 
+### Anatomy of a Stage
+
+A stage is more than a label on a timeline. Each one carries:
+
+| Property | Notes |
+|----------|-------|
+| Title | Free text, e.g. "Technical Interview" |
+| Type | One of 18 stage types (see below). Set on the job position's stage template |
+| Description | What happens in this stage |
+| Position | Its order in the pipeline |
+| Status | OPEN, CURRENT, DONE or CANCELLED |
+| Estimated time | Optional. Pre-fills the duration when you schedule an interview on this stage |
+| Note | One stage note with free text and a star rating |
+| Interviews | Any number of live interviews |
+| Async submissions | Any number of things the candidate submits on their own time |
+
+The last two matter most: **every stage carries both an interview block and an async block, whatever its type**. Nothing stops you from requesting a take-home submission on a stage typed FINAL_INTERVIEW, or scheduling a call on one typed TAKE_HOME_ASSIGNMENT. The type describes intent for your team; it does not restrict what you can do.
+
+### Stage Types
+
+The 18 types, grouped by how you would normally run them:
+
+| Usually run live (schedule an interview) | Usually run asynchronously (request a submission) |
+|------------------------------------------|----------------------------------------------------|
+| PHONE_SCREEN | SCREENING |
+| HR_INTERVIEW | CASE_STUDY |
+| INTERVIEW | TAKE_HOME_ASSIGNMENT |
+| TECHNICAL_INTERVIEW | SKILLS_ASSESSMENT |
+| PANEL_INTERVIEW | PORTFOLIO_REVIEW |
+| GROUP_INTERVIEW | BACKGROUND_CHECK |
+| ONSITE_INTERVIEW | REFERENCE_CHECK |
+| FINAL_INTERVIEW | |
+| CULTURE_FIT | |
+| SALARY_NEGOTIATION | |
+| OFFER | |
+
+That split is advice, not enforcement — see the note above. For what each type means, see [Job Positions](./job-positions.md#stage-templates), where stage templates are authored.
+
 ### Stage Status
 
 Each stage has a status:
@@ -86,15 +124,35 @@ Each stage has a status:
 
 ### Viewing Stages
 
-**Timeline View:**
-- Visual representation of progress
-- Shows completed, current, and upcoming stages
-- Click on stage to view details
+The hiring process detail page renders the stages as a vertical timeline. Each step on the timeline is a numbered circle colored by status, and each stage's body is an expandable accordion.
 
-**Accordion View:**
-- Expandable list of all stages
-- View stage details, notes, and interviews
-- Add notes to each stage
+**The accordion header** carries a status icon, the stage title, and a note button on the right.
+
+| Header element | Meaning |
+|----------------|---------|
+| Open padlock icon | The stage is CURRENT |
+| Check circle icon | The stage is DONE |
+| Closed, grayed-out padlock icon | The stage is OPEN or CANCELLED — not reached yet |
+| Note button | Add or edit this stage's note. When a note with a rating already exists, the button shows it as ★ n |
+
+The stage that is CURRENT is expanded by default; the others start collapsed.
+
+**Inside an expanded stage** you always get two sections, in this order.
+
+#### Interviews
+
+The stage's description, then every interview booked on this stage, then the actions:
+
+- **Schedule Interview** — opens the scheduling dialog. See [Interviews](./interviews.md#create-interview).
+- **Send Booking Link** — only appears when booking is enabled in the **Calendar & Booking Settings** card, which lives both at **Settings → Calendar** (`/settings/calendar`) and on the Company Profile page. Instead of picking a time yourself, this creates a draft interview and emails the candidate a link to choose their own slot from your availability. After sending, a green confirmation names the address it went to — *"Booking link sent to {email}"* — with a **Copy link** action next to it so you can paste the same link into your own message if the email does not arrive.
+
+If booking is not enabled, only **Schedule Interview** is shown.
+
+Both actions are visible only to users who can manage resources (HR, Company Owner, Admin, Super Admin).
+
+#### Async Submissions
+
+Below the interviews, **Request Submission** opens the dialog that emails the candidate a link to upload files or write a response for this stage, with an optional deadline. Submissions appear in the panel underneath as they arrive. See [Async Stages](./async-stages.md).
 
 ### Moving Between Stages
 
@@ -120,10 +178,12 @@ Each stage has a status:
 ### Stage Notes
 
 **Add Note to Stage:**
-1. Open stage detail
-2. Click **Add Note** button
-3. Write note about stage progress
+1. Expand the stage in the accordion
+2. Click the note button on the stage header
+3. Write your note and set a star rating
 4. Click **Save**
+
+A stage holds one note. Opening the note button again edits the existing note rather than adding a second one, and the rating you set is what shows on the header (★ n) and in the stage-notes panels on the Hiring Processes list and the Interviews page.
 
 **Use Cases:**
 - Interview feedback
@@ -233,9 +293,11 @@ Each process row in the grouped view includes a note icon. Click it to expand an
 
 ### Interview Feedback
 
-- Multiple team members can submit scorecards
-- View consensus summary across evaluators
-- Identify areas of agreement/disagreement
+- Each interviewer records their assessment as a **stage note** with a star rating
+- Every team member can read every stage note, with its author and timestamp
+- The note icon on a row of the Hiring Processes list expands all of that candidate's stage notes at once, so a panel's views sit side by side
+
+Structured scorecards with weighted criteria and an automatic consensus summary are **not available in the product** — the backend endpoints exist but nothing renders them. See [Interview Scorecards](./interviews.md#interview-scorecards--not-available-in-the-product).
 
 ### Activity Timeline
 
@@ -307,5 +369,7 @@ Track all actions:
 ## Next Steps
 
 - [Interviews](./interviews.md) - Schedule and manage interviews
-- [Job Positions](./job-positions.md) - Create job templates
+- [Job Positions](./job-positions.md) - Create job templates and stage templates
 - [Candidates](./candidates.md) - Manage candidate profiles
+- [Async Stages](./async-stages.md) - Stages candidates complete on their own time
+- [AI Candidate Scoring](./ai-scoring.md) - The score chips on the grouped list

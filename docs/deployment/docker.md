@@ -7,14 +7,29 @@ Complete guide to deploying BorderLess using Docker and Docker Compose.
 BorderLess is fully containerized and can be deployed using Docker Compose with minimal configuration.
 
 **Included Services:**
-- **backend** - NestJS API server
-- **frontend** - React application (Nginx)
-- **db** - PostgreSQL 15 database
-- **pgadmin** - Database management UI
-- **minio** - S3-compatible file storage
-- **pgbouncer** - Connection pooling (optional)
-- **n8n** - Workflow automation (optional)
-- **stripe-cli** - Stripe webhook forwarding (optional)
+
+| Service | Container name | Image | Host port | Profile |
+|---------|----------------|-------|-----------|---------|
+| `db` | auto-generated | `postgres:17` | 5432 | default |
+| `backend` | auto-generated | built from `recruiting-tool-backend/Dockerfile` | `${API_PORT:-4000}` | default |
+| `frontend` | auto-generated | `ghcr.io/nikire/borderless-frontend:latest` (or built locally) | `${VITE_PORT:-5137}` → 80 | default |
+| `minio` | `recruiting_minio` | `minio/minio:latest` | 9000 (API), 9001 (console) | default |
+| `n8n` | `borderless-n8n` | `n8nio/n8n:latest` | 5678 | default |
+| `pgadmin` | `recruiting_pgadmin` | `dpage/pgadmin4:8` | 8080 | `tools` |
+| `pgbouncer` | `recruiting_pgbouncer` | `pgbouncer/pgbouncer:latest` | 6432 | `tools` |
+| `stripe-cli` | `borderless-stripe-cli` | `stripe/stripe-cli:latest` | - | `stripe` |
+
+**Profiles matter.** `docker-compose up -d` starts `db`, `backend`, `frontend`, `minio` and `n8n`
+only. Services behind a profile need it named explicitly:
+
+```bash
+docker-compose --profile tools up -d      # adds pgadmin and pgbouncer
+docker-compose --profile stripe up -d     # adds stripe-cli
+```
+
+`db`, `backend` and `frontend` declare no `container_name`, so Docker Compose names them from the
+project directory (for example `borderless-backend-1`). Use `docker-compose ps` to see the real
+names rather than guessing.
 
 ## Prerequisites
 
@@ -43,11 +58,12 @@ cp recruiting-tool-frontend/.env.example recruiting-tool-frontend/.env
 
 ### 3. Update Environment Variables
 
-Edit `.env` and configure:
-- Database passwords
-- JWT secret
-- Admin credentials
-- SendGrid API key (for emails)
+Edit the files and configure:
+- Database passwords (`POSTGRES_USER`, `POSTGRES_PASSWORD` in the root `.env`)
+- JWT secret and admin credentials (`JWT_SECRET`, `ADMIN_*` in the backend `.env`)
+- Resend API key for emails (`SMTP_ENABLED`, `SMTP_PASSWORD` in the backend `.env`)
+- Frontend build arguments (`VITE_API_URL` and any `VITE_*` telemetry keys in the **root** `.env` -
+  Vite inlines them at build time, so they have no effect anywhere else)
 
 See [Configuration Guide](../getting-started/configuration.md) for complete reference.
 
@@ -69,58 +85,72 @@ docker-compose logs -f frontend
 ```
 
 **Access the application:**
-- Frontend: http://localhost:3000
-- Backend API: http://localhost:4000
-- Swagger Docs: http://localhost:4000/api
-- pgAdmin: http://localhost:8080
+- Frontend: http://localhost:5137 (the `VITE_PORT` default)
+- Backend API: http://localhost:4000/api
+- Public API Swagger docs: http://localhost:4000/api/docs
+- Internal Swagger docs: http://localhost:4000/api/internal-docs
 - MinIO Console: http://localhost:9001
+- n8n: http://localhost:5678
+- pgAdmin: http://localhost:8080 (only with `--profile tools`)
 
 ## Docker Services
 
 ### Backend Service
 
-**Container:** `recruiting_backend`
-**Port:** 4000
+**Container:** auto-named (no `container_name` is set)
+**Port:** `${API_PORT:-4000}`
 **Image:** Built from `recruiting-tool-backend/Dockerfile`
 
 **Features:**
-- Auto-runs database migrations on startup
-- Creates admin user if doesn't exist
-- Seeds dummy data on first run
+- `docker-entrypoint.sh` runs `npx prisma generate` then `npx prisma migrate deploy` on every start
+- Creates the admin user on boot when `ADMIN_EMAIL`, `ADMIN_NAME` and `ADMIN_PASSWORD` are all set
+- Seeds default plan limits and feature flags on boot
 - Health check endpoint: `/api/health/liveness`
 
 **Environment:**
-- Uses `DATABASE_URL` from docker-compose
-- Connection pooling configured (20 connections max)
+- `DATABASE_URL` is set in `docker-compose.yml` (direct to `db`, `connection_limit=20`,
+  `pool_timeout=15`) and therefore **overrides** any value in the backend `.env`
+- The rest comes from `env_file: ./recruiting-tool-backend/.env`
 
 **Restart Policy:** `unless-stopped`
 
+> **This service is a development runtime.** The base compose file pins `NODE_ENV=development` and
+> boots through `ts-node`, which makes the exception filters attach raw messages and stack traces to
+> API responses. For production you must add the overlay - see
+> [Production Guide](./production.md).
+
+> **Dummy data:** `DummyModule` is registered only when `DUMMY_DATA_ENABLED=true`. With the variable
+> unset or `false`, no demo data is seeded.
+
 ### Frontend Service
 
-**Container:** `recruiting_frontend`
-**Port:** 3000 (mapped to 80 inside container)
-**Image:** Built from `recruiting-tool-frontend/Dockerfile`
+**Container:** auto-named (no `container_name` is set)
+**Port:** `${VITE_PORT:-5137}` on the host, mapped to 80 in the container
+**Image:** `ghcr.io/nikire/borderless-frontend:latest`, with a local build definition as the
+alternative (`docker-compose build frontend` or `up --build`)
 
 **Features:**
-- Vite production build
-- Served by Nginx
-- Optimized static assets
+- Vite production build served by Nginx
 - Health check on port 80
 
-**Environment:**
-- `VITE_API_URL` points to backend
+**Build arguments:** `VITE_API_URL`, `VITE_AUTH0_DOMAIN`, `VITE_AUTH0_CLIENT_ID`,
+`VITE_AUTH0_AUDIENCE`, `VITE_POSTHOG_KEY`, `VITE_POSTHOG_HOST`, `VITE_SENTRY_DSN`,
+`VITE_SENTRY_ENVIRONMENT`, `VITE_SENTRY_TRACES_SAMPLE_RATE`, `VITE_APP_VERSION` - all read from the
+root `.env`, all defaulting to an empty string. Vite inlines them into the bundle at build time, so
+the `env_file` on this service reaches only the nginx runtime and changes nothing about the
+compiled assets.
 
 ### Database Service
 
-**Container:** `recruiting_db`
+**Container:** auto-named (no `container_name` is set)
 **Port:** 5432
-**Image:** `postgres:latest`
+**Image:** `postgres:17`
 
 **Volumes:**
 - `pgdata:/var/lib/postgresql/data` (persistent storage)
 
 **Health Check:**
-- PostgreSQL ready check every 10 seconds
+- `pg_isready` every 10 seconds
 
 **Timezone:** America/Argentina/Buenos_Aires
 
@@ -138,7 +168,7 @@ docker-compose logs -f frontend
 
 **Access Console:** http://localhost:9001
 
-### PgAdmin Service
+### PgAdmin Service (`tools` profile)
 
 **Container:** `recruiting_pgadmin`
 **Port:** 8080
@@ -147,25 +177,50 @@ docker-compose logs -f frontend
 **Volumes:**
 - `pgadmin_data:/var/lib/pgadmin` (persistent storage)
 
+**Start it:** `docker-compose --profile tools up -d pgadmin`
+
 **Access:** http://localhost:8080
 - Email: From `PGADMIN_EMAIL`
 - Password: From `PGADMIN_PASSWORD`
 
-### PgBouncer Service (Optional)
+### PgBouncer Service (`tools` profile)
 
 **Container:** `recruiting_pgbouncer`
 **Port:** 6432
+**Image:** `pgbouncer/pgbouncer:latest`
 
-**Configuration:**
-- Pool mode: Transaction
-- Max client connections: 100
-- Default pool size: 20
-- Min pool size: 5
+**Configuration set in `docker-compose.yml`:**
+- `PGBOUNCER_POOL_MODE=transaction`
+- `PGBOUNCER_MAX_CLIENT_CONN=100`
+- `PGBOUNCER_DEFAULT_POOL_SIZE=20`
+- `PGBOUNCER_MIN_POOL_SIZE=5`
+- `PGBOUNCER_RESERVE_POOL_SIZE=5`
+- `PGBOUNCER_MAX_DB_CONNECTIONS=20`
 
 **Enable for Production:**
-1. Uncomment PgBouncer in `docker-compose.yml` dependencies
-2. Update `DATABASE_URL` to use `pgbouncer:6432`
-3. Restart: `docker-compose up -d --build backend`
+1. `docker-compose --profile tools up -d pgbouncer`
+2. Change the backend's `DATABASE_URL` in `docker-compose.yml` to point at `pgbouncer:6432` (a
+   commented `OPTION 2` line is already there)
+3. Optionally uncomment the `pgbouncer` entry under the backend's `depends_on`
+4. Recreate: `docker-compose --profile tools up -d --build backend`
+
+### n8n Service
+
+**Container:** `borderless-n8n`
+**Port:** 5678
+**Image:** `n8nio/n8n:latest`
+
+Basic auth is on by default, using `N8N_USER` / `N8N_PASSWORD`. Workflows persist in the `n8n_data`
+volume.
+
+### Stripe CLI Service (`stripe` profile)
+
+**Container:** `borderless-stripe-cli`
+**Image:** `stripe/stripe-cli:latest`
+
+Started only with `--profile stripe`. It forwards events to
+`http://backend:4000/api/stripe/webhook`, **a route the backend does not serve** - billing is
+handled by `/api/billing`. Treat this service as dormant unless a Stripe controller is added.
 
 ## Docker Commands
 
@@ -298,13 +353,20 @@ docker-compose exec backend npx prisma migrate reset
 
 ## Production Deployment
 
+> **Start with the production overlay.** `docker-compose.yml` alone is the local development
+> configuration. Production runs as
+> `docker-compose -f docker-compose.yml -f docker-compose.prod.yml up -d`. See
+> [Production Guide](./production.md#starting-the-production-stack) before using anything below.
+
 ### 1. Environment Variables
 
 **Critical Changes:**
-- Set `NODE_ENV=production`
+- Start with the production overlay so `NODE_ENV=production` and the backend runs `node dist/main.js`
 - Use strong `JWT_SECRET` (32+ characters)
 - Change all default passwords
-- Configure SendGrid for emails
+- Configure Resend for emails (`SMTP_ENABLED=true`, `SMTP_PASSWORD=<resend key>`, `EMAIL_FROM`)
+- Set `INTERNAL_API_KEY` and `METRICS_TOKEN` - both fail closed when unset
+- Set `DUMMY_DATA_ENABLED=false`
 - Use AWS S3 instead of MinIO (recommended)
 
 ### 2. Enable HTTPS
@@ -325,7 +387,7 @@ server {
     ssl_certificate_key /path/to/key.pem;
 
     location / {
-        proxy_pass http://localhost:3000;
+        proxy_pass http://localhost:5137;  # ${VITE_PORT:-5137}
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
     }
@@ -342,7 +404,13 @@ server {
 
 ### 3. Enable PgBouncer
 
-For production, enable connection pooling:
+PgBouncer sits behind the `tools` profile, so it must be requested explicitly:
+
+```bash
+docker-compose --profile tools up -d pgbouncer
+```
+
+Then point the backend at it in `docker-compose.yml` and uncomment the dependency:
 
 ```yaml
 # docker-compose.yml
@@ -419,13 +487,20 @@ docker-compose restart backend
 
 ### Frontend Shows "API Connection Error"
 
-```bash
-# Check VITE_API_URL in frontend .env
-cat recruiting-tool-frontend/.env
+`VITE_API_URL` is compiled into the bundle, so it must be set in the **root** `.env` (where
+`docker-compose.yml` reads it as a build arg) and the image must be rebuilt. Editing
+`recruiting-tool-frontend/.env` or restarting the container changes nothing.
 
-# Rebuild frontend
+```bash
+# Check the build arg source
+grep VITE_API_URL .env
+
+# Rebuild the image so the new value is inlined
 docker-compose up -d --build frontend
 ```
+
+The `frontend` service defaults to `ghcr.io/nikire/borderless-frontend:latest`. If you want your
+local edits, pass `--build`; otherwise Compose will use the registry image.
 
 ### Database Connection Failed
 
@@ -459,6 +534,7 @@ docker volume prune
 
 ## Next Steps
 
-- [Production Deployment](./production.md) - Production best practices
+- [Production Deployment](./production.md) - Production overlay, CI/CD and hardening
 - [Configuration Guide](../getting-started/configuration.md) - Environment variables
 - [Installation Guide](../getting-started/installation.md) - Initial setup
+- [External APIs - Production Activation](../EXTERNAL_APIS_PRODUCTION.md) - Per-service setup steps
